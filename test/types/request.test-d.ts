@@ -17,7 +17,7 @@ import fastify, {
 } from '../../fastify'
 import { RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
-import { FastifyRequest } from '../../types/request'
+import { FastifyRequest, RequestRouteOptions } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { FastifyInstance } from '../../types/instance'
 import { RouteGenericInterface } from '../../types/route'
@@ -66,6 +66,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.method)
   expectType<string>(request.routerPath)
   expectType<string>(request.routerMethod)
+  expectType<Readonly<RequestRouteOptions>>(request.routeOptions)
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
   expectType<string>(request.ip)
@@ -75,6 +76,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<RequestParamsDefault>(request.params)
   expectType<FastifyContext<ContextConfigDefault>>(request.context)
   expectType<FastifyContextConfig>(request.context.config)
+  expectType<FastifyContextConfig>(request.routeConfig)
+  expectType<FastifySchema>(request.routeSchema)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}
@@ -142,8 +145,7 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
-  child: () => customLogger as pino.Logger<never>,
-  setBindings: () => { }
+  child: () => customLogger as pino.Logger<never>
 }
 
 const serverWithCustomLogger = fastify({ logger: customLogger })

@@ -29,7 +29,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v2
+            uses: actions/dependency-review-action@v3
 
   linter:
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18]
+        node-version: [14, 16, 18, 19]
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:

@@ -13,25 +13,21 @@ import pino from 'pino'
  */
 export type FastifyLogFn = pino.LogFn
 
-export type LogLevel = pino.Level
+export type LogLevel = pino.LevelWithSilent
 
 export type Bindings = pino.Bindings
 
 export type ChildLoggerOptions = pino.ChildLoggerOptions
 
-export interface FastifyBaseLogger<T extends FastifyBaseLogger<any> = FastifyBaseLogger<any>> extends pino.BaseLogger {
-  child(bindings: Bindings, options?: ChildLoggerOptions): T
-}
-
-export interface DefaultFastifyLogger extends FastifyBaseLogger<DefaultFastifyLogger>, Pick<pino.Logger, 'setBindings'> {
-
+export type FastifyBaseLogger = pino.BaseLogger & {
+  child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
 // TODO delete FastifyBaseLogger in the next major release. It seems that it is enough to have only FastifyBaseLogger.
 /**
  * @deprecated Use FastifyBaseLogger instead
  */
-export type FastifyLoggerInstance = DefaultFastifyLogger
+export type FastifyLoggerInstance = FastifyBaseLogger
 
 export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
@@ -64,7 +60,7 @@ export interface FastifyLoggerOptions<
       [key: string]: unknown;
     };
     res?: (res: RawReply) => {
-      statusCode: string | number;
+      statusCode?: string | number;
       [key: string]: unknown;
     };
   };

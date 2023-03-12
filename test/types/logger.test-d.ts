@@ -10,7 +10,6 @@ import fastify, {
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
 import P from 'pino'
-import { DefaultFastifyLogger } from '../../types/logger'
 
 expectType<FastifyLoggerInstance>(fastify().log)
 
@@ -25,7 +24,7 @@ class Foo {}
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
 })
 
-interface CustomLogger extends DefaultFastifyLogger {
+interface CustomLogger extends FastifyBaseLogger {
   customMethod(msg: string, ...args: unknown[]): void;
 }
 
@@ -46,7 +45,6 @@ class CustomLoggerImpl implements CustomLogger {
   silent (...args: unknown[]) { }
 
   child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
-  setBindings (bindings: P.Bindings): void { }
 }
 
 const customLogger = new CustomLoggerImpl()
@@ -125,34 +123,20 @@ const serverAutoInferredFileOption = fastify({
 
 expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 
-const serverAutoInferredPinoPrettyBooleanOption = fastify({
+const serverAutoInferredSerializerResponseObjectOption = fastify({
   logger: {
-    prettyPrint: true
-  }
-})
-
-expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyBooleanOption.log)
-
-const serverAutoInferredPinoPrettyObjectOption = fastify({
-  logger: {
-    prettyPrint: {
-      translateTime: true,
-      levelFirst: false,
-      messageKey: 'msg',
-      timestampKey: 'time',
-      messageFormat: false,
-      colorize: true,
-      crlf: false,
-      errorLikeObjectKeys: ['err', 'error'],
-      errorProps: '',
-      search: 'foo == `bar`',
-      ignore: 'pid,hostname',
-      suppressFlushSyncWarning: true
+    serializers: {
+      res (ServerResponse) {
+        expectType<FastifyReply>(ServerResponse)
+        return {
+          status: '200'
+        }
+      }
     }
   }
 })
 
-expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyObjectOption.log)
+expectType<FastifyBaseLogger>(serverAutoInferredSerializerResponseObjectOption.log)
 
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
@@ -202,9 +186,6 @@ const passPinoOption = fastify({
     redact: ['custom'],
     messageKey: 'msg',
     nestedKey: 'nested',
-    prettyPrint: {
-
-    },
     enabled: true
   }
 })
@@ -217,6 +198,7 @@ expectDeprecated({} as FastifyLoggerInstance)
 const childParent = fastify().log
 // we test different option variant here
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { redact: ['pass', 'pin'] }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { serializers: { key: () => {} } }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))

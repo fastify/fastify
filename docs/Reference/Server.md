@@ -9,6 +9,7 @@ options object which is used to customize the resulting instance. This document
 describes the properties available in that options object.
 
 - [Factory](#factory)
+  - [`http`](#http)
   - [`http2`](#http2)
   - [`https`](#https)
   - [`connectionTimeout`](#connectiontimeout)
@@ -90,6 +91,18 @@ describes the properties available in that options object.
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
     - [initialConfig](#initialconfig)
+
+### `http`
+<a id="factory-http"></a>
+
+An object used to configure the server's listening socket. The options
+are the same as the Node.js core [`createServer`
+method](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_http_createserver_options_requestlistener).
+
+This option is ignored if options [`http2`](#factory-http2) or
+[`https`](#factory-https) are set.
+
++ Default: `null`
 
 ### `http2`
 <a id="factory-http2"></a>
@@ -369,7 +382,9 @@ fastify.addHook('onResponse', (req, reply, done) => {
 ```
 
 Please note that this setting will also disable an error log written by the
-default `onResponse` hook on reply callback errors.
+default `onResponse` hook on reply callback errors. Other log messages 
+emitted by Fastify will stay enabled, like deprecation warnings and messages
+emitted when requests are received while the server is closing.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>
@@ -494,7 +509,7 @@ request-id](./Logging.md#logging-request-id) section.
 Setting `requestIdHeader` to `false` will always use [genReqId](#genreqid)
 
 + Default: `'request-id'`
-  
+
 ```js
 const fastify = require('fastify')({
   requestIdHeader: 'x-custom-id', // -> use 'X-Custom-Id' header if available
@@ -674,7 +689,7 @@ The default configuration is explained in the
 const fastify = require('fastify')({
   ajv: {
     customOptions: {
-      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/#options)
+      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/options.html#removeadditional)
     },
     plugins: [
       require('ajv-merge-patch'),
@@ -723,7 +738,8 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+*Note: Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at 
+the moment.*
 
 ```js
 const fastify = require('fastify')({
@@ -1011,6 +1027,9 @@ Note that the array contains the `fastify.server.address()` too.
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
 
+**Notice**: this method is deprecated and should be removed in the next Fastify
+major version.
+
 The `defaultRoute` handler handles requests that do not match any URL specified
 by your Fastify application. This defaults to the 404 handler, but can be
 overridden with [setDefaultRoute](#setdefaultroute). Method to get the
@@ -1023,14 +1042,25 @@ const defaultRoute = fastify.getDefaultRoute()
 #### setDefaultRoute
 <a id="setDefaultRoute"></a>
 
-**Note**: The default 404 handler, or one set using `setNotFoundHandler`, will
-never trigger if the default route is overridden. This sets the handler for the 
+**Notice**: this method is deprecated and should be removed in the next Fastify
+major version. Please, consider to use `setNotFoundHandler` or a wildcard
+matching route.
+
+The default 404 handler, or one set using `setNotFoundHandler`, will
+never trigger if the default route is overridden. This sets the handler for the
 Fastify application, not just the current instance context. Use
 [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling
-instead. Method to set the `defaultRoute` for the server:
+instead.
+
+This method sets the `defaultRoute` for the server. Note that, its purpose is
+to interact with the underlying raw requests. Unlike other Fastify handlers, the
+arguments received are of type [RawRequest](./TypeScript.md#rawrequest) and
+[RawReply](./TypeScript.md#rawreply) respectively.
 
 ```js
 const defaultRoute = function (req, res) {
+  // req = RawRequest
+  // res = RawReply
   res.end('hello world')
 }
 
@@ -1426,6 +1456,13 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
+> Note: Some config properties from the request object will be
+> undefined inside the custom not found handler. E.g:
+> `request.routerPath`, `routerMethod` and `context.config`.
+> This method design goal is to allow calling the common not found route.
+> To return a per-route customized 404 response, you can do it in
+> the response itself.
+
 #### setErrorHandler
 <a id="set-error-handler"></a>
 
@@ -1663,7 +1700,7 @@ information.
 `fastify.defaultTextParser()` can be used to parse content as plain text.
 
 ```js
-fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser())
+fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser)
 ```
 
 #### errorHandler

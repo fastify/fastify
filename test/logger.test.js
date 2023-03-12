@@ -28,15 +28,17 @@ before(async function () {
   [localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
-teardown(() => {
-  files.forEach((file) => {
-    try {
-      fs.unlinkSync(file)
-    } catch (e) {
-      console.log(e)
-    }
+if (process.env.CI) {
+  teardown(() => {
+    files.forEach((file) => {
+      try {
+        fs.unlinkSync(file)
+      } catch (e) {
+        console.log(e)
+      }
+    })
   })
-})
+}
 
 test('defaults to info level', t => {
   let fastify = null
@@ -1686,18 +1688,4 @@ test('should not throw error when serializing custom req', t => {
   fastify.log.info({ req: {} })
 
   t.same(lines[0].req, {})
-})
-
-test('set bindings', t => {
-  t.plan(1)
-
-  const stream = split(JSON.parse)
-  stream.once('data', info => {
-    t.same(info.hello, 'world')
-  })
-
-  const fastify = Fastify({ logger: { level: 'info', stream } })
-
-  fastify.log.setBindings({ hello: 'world' })
-  fastify.log.info('hello world')
 })

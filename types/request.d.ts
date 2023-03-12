@@ -1,11 +1,11 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { DefaultFastifyLogger, FastifyBaseLogger } from './logger'
+import { FastifyBaseLogger } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
 import { FastifySchema } from './schema'
-import { FastifyContext } from './context'
+import { FastifyContext, FastifyContextConfig } from './context'
 
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 export interface RequestGenericInterface {
@@ -20,6 +20,17 @@ export interface ValidationFunction {
   errors?: null | ErrorObject[];
 }
 
+export interface RequestRouteOptions {
+  method: string,
+  url: string,
+  bodyLimit:number,
+  attachValidation:boolean,
+  logLevel:string,
+  version: string | undefined,
+  exposeHeadRoute: boolean,
+  prefixTrailingSlash: string
+}
+
 /**
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
@@ -30,7 +41,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  Logger extends FastifyBaseLogger = DefaultFastifyLogger,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
   // ^ Temporary Note: RequestType has been re-ordered to be the last argument in
   //   generic list. This generic argument is now considered optional as it can be
@@ -48,6 +59,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   server: FastifyInstance;
   body: RequestType['body'];
   context: FastifyContext<ContextConfig>;
+  routeConfig: FastifyContextConfig & ContextConfig;
+  routeSchema: FastifySchema
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
@@ -64,6 +77,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routerPath: string;
   readonly routerMethod: string;
+  readonly routeOptions: Readonly<RequestRouteOptions>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 

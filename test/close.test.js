@@ -6,6 +6,8 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const { Client } = require('undici')
+const semver = require('semver')
+const split = require('split2')
 
 test('close callback', t => {
   t.plan(4)
@@ -164,7 +166,7 @@ test('Should return error while closing (promise) - injection', t => {
         url: '/'
       }).catch(err => {
         t.ok(err)
-        t.equal(err.message, 'Server is closed')
+        t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
       })
     }, 100)
   })
@@ -196,13 +198,14 @@ test('Should return error while closing (callback) - injection', t => {
         url: '/'
       }, (err, res) => {
         t.ok(err)
-        t.equal(err.message, 'Server is closed')
+        t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
       })
     }, 100)
   })
 })
 
-t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false', t => {
+const isV19plus = semver.gte(process.version, '19.0.0')
+t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -218,13 +221,13 @@ t.test('Current opened connection should continue to work after closing and retu
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
           t.match(data.toString(), /Connection:\s*close/i)
@@ -235,6 +238,45 @@ t.test('Current opened connection should continue to work after closing and retu
             t.end()
           })
         })
+      })
+    })
+  })
+})
+
+t.test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, t => {
+  t.plan(4)
+  const fastify = Fastify({
+    return503OnClosing: false,
+    forceCloseConnections: false
+  })
+
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const port = fastify.server.address().port
+    const client = net.createConnection({ port }, () => {
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+      client.on('error', function () {
+        // Dependending on the Operating System
+        // the socket could error or not.
+        // However, it will always be closed.
+      })
+
+      client.on('close', function () {
+        t.pass('close')
+      })
+
+      client.once('data', data => {
+        t.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.match(data.toString(), /200 OK/i)
+
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
       })
     })
   })
@@ -258,6 +300,40 @@ t.test('Current opened connection should not accept new incoming connections', t
     })
     instance.request({ path: '/', method: 'GET' }).then(data => {
       t.equal(data.statusCode, 503)
+    })
+  })
+})
+
+t.test('rejected incoming connections should be logged', t => {
+  t.plan(2)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+
+  const messages = []
+  stream.on('data', message => {
+    messages.push(message)
+  })
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    setTimeout(() => {
+      reply.send({ hello: 'world' })
+    }, 250)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    const instance = new Client('http://localhost:' + fastify.server.address().port)
+    // initial request to trigger close
+    instance.request({ path: '/', method: 'GET' })
+    // subsequent request should be rejected
+    instance.request({ path: '/', method: 'GET' }).then(() => {
+      t.ok(messages.find(message => message.msg.includes('request aborted')))
     })
   })
 })

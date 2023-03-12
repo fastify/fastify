@@ -42,6 +42,17 @@ Request is a core Fastify object containing the following fields:
   handling the request
 - `routeConfig` - The route [`config`](./Routes.md#routes-config) 
   object.
+- `routeOptions` - The route [`option`](./Routes.md#routes-options) object
+  - `bodyLimit` - either server limit or route limit
+  - `method` - the http method for the route
+  - `url` - the path of the URL to match this route
+  - `attachValidation` - attach `validationError` to request 
+    (if there is a schema defined)
+  - `logLevel` - log level defined for this route
+  - `version` -  a semver compatible string that defines the version of the endpoint
+  - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
+  - `prefixTrailingSlash` - string used to determine how to handle passing / 
+    as a route with a prefix.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.
@@ -90,7 +101,15 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.protocol)
   console.log(request.url)
   console.log(request.routerMethod)
-  console.log(request.routerPath)
+  console.log(request.routeOptions.bodyLimit)
+  console.log(request.routeOptions.method)
+  console.log(request.routeOptions.url)
+  console.log(request.routeOptions.attachValidation)
+  console.log(request.routeOptions.logLevel)
+  console.log(request.routeOptions.version)
+  console.log(request.routeOptions.exposeHeadRoute)
+  console.log(request.routeOptions.prefixTrailingSlash)
+  console.log(request.routerPath.logLevel)
   request.log.info('some info')
 })
 ```

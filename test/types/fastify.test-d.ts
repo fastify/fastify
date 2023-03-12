@@ -10,7 +10,8 @@ import fastify, {
   InjectOptions, FastifyBaseLogger,
   RouteGenericInterface,
   ValidationResult,
-  FastifyErrorCodes
+  FastifyErrorCodes,
+  FastifyError
 } from '../../fastify'
 import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
@@ -24,6 +25,7 @@ import { Socket } from 'net'
 // http server
 expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
 expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({}))
+expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ http: {} }))
 // https server
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: null }))
@@ -234,6 +236,12 @@ const ajvErrorObject: AjvErrorObject = {
   message: ''
 }
 expectAssignable<ValidationResult>(ajvErrorObject)
+
+expectAssignable<FastifyError['validation']>([ajvErrorObject])
+expectAssignable<FastifyError['validationContext']>('body')
+expectAssignable<FastifyError['validationContext']>('headers')
+expectAssignable<FastifyError['validationContext']>('params')
+expectAssignable<FastifyError['validationContext']>('querystring')
 
 const routeGeneric: RouteGenericInterface = {}
 expectType<unknown>(routeGeneric.Body)

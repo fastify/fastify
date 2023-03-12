@@ -289,8 +289,6 @@ listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),
   <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
-* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
-  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__David Mark Clements__](https://github.com/davidmarkclements),
@@ -339,6 +337,8 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
+* [__Simone Busoli__](https://github.com/simoneb),
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>  
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -360,6 +360,8 @@ to join this group by Lead Maintainers.
   <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Nathan Woltman__](https://github.com/nwoltman),
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
+  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 
 ## Hosted by
 
@@ -374,10 +376,14 @@ in the [OpenJS Foundation](https://openjsf.org/).
 ## Acknowledgements
 
 This project is kindly sponsored by:
-- [nearForm](https://nearform.com)
+- [NearForm](https://nearform.com)
+- [Platformatic](https://platformatic.dev)
 
 Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
+
+This list includes all companies that support one or more of the team members
+in the maintainance of this project.
 
 ## License
 

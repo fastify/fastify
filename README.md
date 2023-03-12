@@ -304,6 +304,8 @@ listed in alphabetical order.
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Denis Fäcke__](https://github.com/SerayaEryn),
   <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
@@ -327,6 +329,8 @@ listed in alphabetical order.
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Ayoub El Khattabi__](https://github.com/AyoubElk),
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Salman Mitha__](https://github.com/salmanm),
   <https://www.npmjs.com/~salmanm>
@@ -338,7 +342,7 @@ listed in alphabetical order.
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Simone Busoli__](https://github.com/simoneb),
-  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>  
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited

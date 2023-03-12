@@ -28,15 +28,17 @@ before(async function () {
   [localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
-teardown(() => {
-  files.forEach((file) => {
-    try {
-      fs.unlinkSync(file)
-    } catch (e) {
-      console.log(e)
-    }
+if (process.env.CI) {
+  teardown(() => {
+    files.forEach((file) => {
+      try {
+        fs.unlinkSync(file)
+      } catch (e) {
+        console.log(e)
+      }
+    })
   })
-})
+}
 
 test('defaults to info level', t => {
   let fastify = null

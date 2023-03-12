@@ -1493,3 +1493,17 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
     }
   })
 })
+
+test('using fastify.all when a catchall is defined does not degrade performance', { timeout: 5000 }, async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.get('/*', async (_, reply) => reply.json({ ok: true }))
+
+  for (let i = 0; i < 100; i++) {
+    fastify.all(`/${i}`, async (_, reply) => reply.json({ ok: true }))
+  }
+
+  t.pass()
+})

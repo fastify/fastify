@@ -372,3 +372,16 @@ t.test('ready return registered', t => {
     .then(instance => { t.same(instance, fastify) })
     .catch(err => { t.fail(err) })
 })
+
+t.test('do not crash with error in follow up onReady hook', async t => {
+  const fastify = Fastify()
+
+  fastify.addHook('onReady', async function () {
+  })
+
+  fastify.addHook('onReady', function () {
+    throw new Error('kaboom')
+  })
+
+  await t.rejects(fastify.ready())
+})

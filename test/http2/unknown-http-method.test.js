@@ -27,6 +27,7 @@ fastify.listen({ port: 0 }, err => {
     t.equal(res.headers[':status'], 404)
     t.same(JSON.parse(res.body), {
       statusCode: 404,
+      code: 'FST_ERR_NOT_FOUND',
       error: 'Not Found',
       message: 'Not Found'
     })

@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
-const { kReplySerializeWeakMap, kRouteContext } = require('../../lib/symbols')
+const { kReplyCacheSerializeFns, kRouteContext } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 function getDefaultSchema () {
@@ -207,9 +207,9 @@ test('Reply#compileSerializationSchema', t => {
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
 
-      t.equal(reply[kRouteContext][kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
       t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
-      t.type(reply[kRouteContext][kReplySerializeWeakMap], WeakMap)
+      t.type(reply[kRouteContext][kReplyCacheSerializeFns], WeakMap)
       t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
 
       reply.send({ hello: 'world' })
@@ -408,9 +408,9 @@ test('Reply#getSerializationFunction', t => {
 
     fastify.get('/', (req, reply) => {
       t.notOk(reply.getSerializationFunction(getDefaultSchema()))
-      t.equal(reply[kRouteContext][kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
       t.notOk(reply.getSerializationFunction('200'))
-      t.equal(reply[kRouteContext][kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
 
       reply.send({ hello: 'world' })
     })
@@ -684,9 +684,9 @@ test('Reply#serializeInput', t => {
 
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
-      t.equal(reply[kRouteContext][kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
       t.equal(reply.serializeInput(input, getDefaultSchema()), JSON.stringify(input))
-      t.type(reply[kRouteContext][kReplySerializeWeakMap], WeakMap)
+      t.type(reply[kRouteContext][kReplyCacheSerializeFns], WeakMap)
 
       reply.send({ hello: 'world' })
     })

@@ -123,6 +123,21 @@ const serverAutoInferredFileOption = fastify({
 
 expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 
+const serverAutoInferredSerializerResponseObjectOption = fastify({
+  logger: {
+    serializers: {
+      res (ServerResponse) {
+        expectType<FastifyReply>(ServerResponse)
+        return {
+          status: '200'
+        }
+      }
+    }
+  }
+})
+
+expectType<FastifyBaseLogger>(serverAutoInferredSerializerResponseObjectOption.log)
+
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
     serializers: {

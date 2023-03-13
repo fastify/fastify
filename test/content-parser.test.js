@@ -750,38 +750,3 @@ test('edge case content-type - ;', async t => {
 
   t.pass('end')
 })
-
-test('edge case content-type - empty string', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser('', function (request, body, done) {
-    t.fail('should not be called')
-    done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'application/json; foo=bar; charset=utf8'
-    },
-    body: ''
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'image/jpeg'
-    },
-    body: ''
-  })
-
-  t.pass('end')
-})

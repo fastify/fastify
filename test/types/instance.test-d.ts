@@ -284,6 +284,8 @@ expectType<string>(server.printRoutes({ includeHooks: true, commonPrefix: false,
 
 expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] }))
 
+expectType<string>(server.printRoutes({ method: 'GET' }))
+
 expectType<string>(server.printRoutes())
 
 server.decorate<(x: string) => void>('test', function (x: string): void {

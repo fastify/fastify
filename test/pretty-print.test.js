@@ -27,6 +27,41 @@ test('pretty print - static routes', t => {
   })
 })
 
+test('pretty print - internal tree - static routes', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+  fastify.get('/test', () => {})
+  fastify.get('/test/hello', () => {})
+  fastify.get('/hello/world', () => {})
+
+  fastify.put('/test', () => {})
+  fastify.put('/test/foo', () => {})
+
+  fastify.ready(() => {
+    const getTree = fastify.printRoutes({ method: 'GET' })
+    const expectedGetTree = `\
+└── /
+    ├── test (GET)
+    │   └── /hello (GET)
+    └── hello/world (GET)
+`
+
+    t.equal(typeof getTree, 'string')
+    t.equal(getTree, expectedGetTree)
+
+    const putTree = fastify.printRoutes({ method: 'PUT' })
+    const expectedPutTree = `\
+└── /
+    └── test (PUT)
+        └── /foo (PUT)
+`
+
+    t.equal(typeof putTree, 'string')
+    t.equal(putTree, expectedPutTree)
+  })
+})
+
 test('pretty print - parametric routes', t => {
   t.plan(2)
 
@@ -49,6 +84,44 @@ test('pretty print - parametric routes', t => {
 
     t.equal(typeof tree, 'string')
     t.equal(tree, expected)
+  })
+})
+
+test('pretty print - internal tree - parametric routes', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+  fastify.get('/test', () => {})
+  fastify.get('/test/:hello', () => {})
+  fastify.get('/hello/:world', () => {})
+
+  fastify.put('/test', () => {})
+  fastify.put('/test/:hello', () => {})
+
+  fastify.ready(() => {
+    const getTree = fastify.printRoutes({ method: 'GET' })
+    const expectedGetTree = `\
+└── /
+    ├── test (GET)
+    │   └── /
+    │       └── :hello (GET)
+    └── hello/
+        └── :world (GET)
+`
+
+    t.equal(typeof getTree, 'string')
+    t.equal(getTree, expectedGetTree)
+
+    const putTree = fastify.printRoutes({ method: 'PUT' })
+    const expectedPutTree = `\
+└── /
+    └── test (PUT)
+        └── /
+            └── :hello (PUT)
+`
+
+    t.equal(typeof putTree, 'string')
+    t.equal(putTree, expectedPutTree)
   })
 })
 
@@ -99,6 +172,44 @@ test('pretty print - wildcard routes', t => {
 
     t.equal(typeof tree, 'string')
     t.equal(tree, expected)
+  })
+})
+
+test('pretty print - internal tree - wildcard routes', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+  fastify.get('/test', () => {})
+  fastify.get('/test/*', () => {})
+  fastify.get('/hello/*', () => {})
+
+  fastify.put('/*', () => {})
+  fastify.put('/test/*', () => {})
+
+  fastify.ready(() => {
+    const getTree = fastify.printRoutes({ method: 'GET' })
+    const expectedGetTree = `\
+└── /
+    ├── test (GET)
+    │   └── /
+    │       └── * (GET)
+    └── hello/
+        └── * (GET)
+`
+
+    t.equal(typeof getTree, 'string')
+    t.equal(getTree, expectedGetTree)
+
+    const putTree = fastify.printRoutes({ method: 'PUT' })
+    const expectedPutTree = `\
+└── /
+    ├── test/
+    │   └── * (PUT)
+    └── * (PUT)
+`
+
+    t.equal(typeof putTree, 'string')
+    t.equal(putTree, expectedPutTree)
   })
 })
 

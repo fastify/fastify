@@ -36,19 +36,18 @@ test('listen should accept stringified number port', t => {
 
 test('listen should reject string port', async (t) => {
   t.plan(2)
-
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   try {
     await fastify.listen({ port: 'hello-world' })
   } catch (error) {
-    t.same(error.message, 'options.port should be >= 0 and < 65536. Received hello-world.')
+    t.equal(error.code, 'ERR_SOCKET_BAD_PORT')
   }
 
   try {
     await fastify.listen({ port: '1234hello' })
   } catch (error) {
-    t.same(error.message, 'options.port should be >= 0 and < 65536. Received 1234hello.')
+    t.equal(error.code, 'ERR_SOCKET_BAD_PORT')
   }
 })

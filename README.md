@@ -289,8 +289,6 @@ listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),
   <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
-* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
-  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__David Mark Clements__](https://github.com/davidmarkclements),
@@ -306,6 +304,8 @@ listed in alphabetical order.
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Denis Fäcke__](https://github.com/SerayaEryn),
   <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
@@ -329,6 +329,8 @@ listed in alphabetical order.
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Ayoub El Khattabi__](https://github.com/AyoubElk),
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Salman Mitha__](https://github.com/salmanm),
   <https://www.npmjs.com/~salmanm>
@@ -340,7 +342,7 @@ listed in alphabetical order.
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Simone Busoli__](https://github.com/simoneb),
-  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>  
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -362,6 +364,8 @@ to join this group by Lead Maintainers.
   <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Nathan Woltman__](https://github.com/nwoltman),
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
+  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 
 ## Hosted by
 

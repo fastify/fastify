@@ -15,7 +15,8 @@ test('pretty print - static routes', t => {
   fastify.ready(() => {
     const tree = fastify.printRoutes()
 
-    const expected = `└── /
+    const expected = `\
+└── /
     ├── test (GET)
     │   └── /hello (GET)
     └── hello/world (GET)
@@ -23,6 +24,41 @@ test('pretty print - static routes', t => {
 
     t.equal(typeof tree, 'string')
     t.equal(tree, expected)
+  })
+})
+
+test('pretty print - internal tree - static routes', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+  fastify.get('/test', () => {})
+  fastify.get('/test/hello', () => {})
+  fastify.get('/hello/world', () => {})
+
+  fastify.put('/test', () => {})
+  fastify.put('/test/foo', () => {})
+
+  fastify.ready(() => {
+    const getTree = fastify.printRoutes({ method: 'GET' })
+    const expectedGetTree = `\
+└── /
+    ├── test (GET)
+    │   └── /hello (GET)
+    └── hello/world (GET)
+`
+
+    t.equal(typeof getTree, 'string')
+    t.equal(getTree, expectedGetTree)
+
+    const putTree = fastify.printRoutes({ method: 'PUT' })
+    const expectedPutTree = `\
+└── /
+    └── test (PUT)
+        └── /foo (PUT)
+`
+
+    t.equal(typeof putTree, 'string')
+    t.equal(putTree, expectedPutTree)
   })
 })
 
@@ -37,14 +73,55 @@ test('pretty print - parametric routes', t => {
   fastify.ready(() => {
     const tree = fastify.printRoutes()
 
-    const expected = `└── /
+    const expected = `\
+└── /
     ├── test (GET)
-    │   └── /:hello (GET)
-    └── hello/:world (GET)
+    │   └── /
+    │       └── :hello (GET)
+    └── hello/
+        └── :world (GET)
 `
 
     t.equal(typeof tree, 'string')
     t.equal(tree, expected)
+  })
+})
+
+test('pretty print - internal tree - parametric routes', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+  fastify.get('/test', () => {})
+  fastify.get('/test/:hello', () => {})
+  fastify.get('/hello/:world', () => {})
+
+  fastify.put('/test', () => {})
+  fastify.put('/test/:hello', () => {})
+
+  fastify.ready(() => {
+    const getTree = fastify.printRoutes({ method: 'GET' })
+    const expectedGetTree = `\
+└── /
+    ├── test (GET)
+    │   └── /
+    │       └── :hello (GET)
+    └── hello/
+        └── :world (GET)
+`
+
+    t.equal(typeof getTree, 'string')
+    t.equal(getTree, expectedGetTree)
+
+    const putTree = fastify.printRoutes({ method: 'PUT' })
+    const expectedPutTree = `\
+└── /
+    └── test (PUT)
+        └── /
+            └── :hello (PUT)
+`
+
+    t.equal(typeof putTree, 'string')
+    t.equal(putTree, expectedPutTree)
   })
 })
 
@@ -60,11 +137,12 @@ test('pretty print - mixed parametric routes', t => {
   fastify.ready(() => {
     const tree = fastify.printRoutes()
 
-    const expected = `└── /test (GET)
-    └── /
-        └── :hello (GET)
-            :hello (POST)
-            └── /world (GET)
+    const expected = `\
+└── /
+    └── test (GET)
+        └── /
+            └── :hello (GET, POST)
+                └── /world (GET)
 `
 
     t.equal(typeof tree, 'string')
@@ -83,14 +161,55 @@ test('pretty print - wildcard routes', t => {
   fastify.ready(() => {
     const tree = fastify.printRoutes()
 
-    const expected = `└── /
+    const expected = `\
+└── /
     ├── test (GET)
-    │   └── /* (GET)
-    └── hello/* (GET)
+    │   └── /
+    │       └── * (GET)
+    └── hello/
+        └── * (GET)
 `
 
     t.equal(typeof tree, 'string')
     t.equal(tree, expected)
+  })
+})
+
+test('pretty print - internal tree - wildcard routes', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+  fastify.get('/test', () => {})
+  fastify.get('/test/*', () => {})
+  fastify.get('/hello/*', () => {})
+
+  fastify.put('/*', () => {})
+  fastify.put('/test/*', () => {})
+
+  fastify.ready(() => {
+    const getTree = fastify.printRoutes({ method: 'GET' })
+    const expectedGetTree = `\
+└── /
+    ├── test (GET)
+    │   └── /
+    │       └── * (GET)
+    └── hello/
+        └── * (GET)
+`
+
+    t.equal(typeof getTree, 'string')
+    t.equal(getTree, expectedGetTree)
+
+    const putTree = fastify.printRoutes({ method: 'PUT' })
+    const expectedPutTree = `\
+└── /
+    ├── test/
+    │   └── * (PUT)
+    └── * (PUT)
+`
+
+    t.equal(typeof putTree, 'string')
+    t.equal(putTree, expectedPutTree)
   })
 })
 
@@ -134,17 +253,15 @@ test('pretty print - commonPrefix', t => {
     const radixTree = fastify.printRoutes()
     const flatTree = fastify.printRoutes({ commonPrefix: false })
 
-    const radixExpected = `└── /
-    ├── hel
-    │   ├── lo (GET)
-    │   │   lo (HEAD)
-    │   └── icopter (GET)
-    │       icopter (HEAD)
-    └── hello (PUT)
+    const radixExpected = `\
+└── /
+    └── hel
+        ├── lo (GET, HEAD, PUT)
+        └── icopter (GET, HEAD)
 `
-    const flatExpected = `└── / (-)
-    ├── helicopter (GET, HEAD)
-    └── hello (GET, HEAD, PUT)
+    const flatExpected = `\
+├── /hello (GET, HEAD, PUT)
+└── /helicopter (GET, HEAD)
 `
     t.equal(typeof radixTree, 'string')
     t.equal(typeof flatTree, 'string')
@@ -170,49 +287,64 @@ test('pretty print - includeMeta, includeHooks', t => {
     const flatTree = fastify.printRoutes({ commonPrefix: false, includeHooks: true, includeMeta: ['errorHandler'] })
     const hooksOnly = fastify.printRoutes({ commonPrefix: false, includeHooks: true })
 
-    const radixExpected = `└── /
-    ├── hel
-    │   ├── lo (GET)
-    │   │   • (onTimeout) ["onTimeout()"]
-    │   │   • (onRequest) ["anonymous()"]
-    │   │   • (errorHandler) "defaultErrorHandler()"
-    │   │   lo (HEAD)
-    │   │   • (onTimeout) ["onTimeout()"]
-    │   │   • (onRequest) ["anonymous()"]
-    │   │   • (onSend) ["headRouteOnSendHandler()"]
-    │   │   • (errorHandler) "defaultErrorHandler()"
-    │   └── icopter (GET)
-    │       • (onTimeout) ["onTimeout()"]
-    │       • (onRequest) ["anonymous()"]
-    │       • (errorHandler) "defaultErrorHandler()"
-    │       icopter (HEAD)
-    │       • (onTimeout) ["onTimeout()"]
-    │       • (onRequest) ["anonymous()"]
-    │       • (onSend) ["headRouteOnSendHandler()"]
-    │       • (errorHandler) "defaultErrorHandler()"
-    └── hello (PUT)
-        • (onTimeout) ["onTimeout()"]
-        • (onRequest) ["anonymous()"]
-        • (errorHandler) "defaultErrorHandler()"
+    const radixExpected = `\
+└── /
+    └── hel
+        ├── lo (GET, PUT)
+        │   • (onTimeout) ["onTimeout()"]
+        │   • (onRequest) ["anonymous()"]
+        │   • (errorHandler) "defaultErrorHandler()"
+        │   lo (HEAD)
+        │   • (onTimeout) ["onTimeout()"]
+        │   • (onRequest) ["anonymous()"]
+        │   • (onSend) ["headRouteOnSendHandler()"]
+        │   • (errorHandler) "defaultErrorHandler()"
+        └── icopter (GET)
+            • (onTimeout) ["onTimeout()"]
+            • (onRequest) ["anonymous()"]
+            • (errorHandler) "defaultErrorHandler()"
+            icopter (HEAD)
+            • (onTimeout) ["onTimeout()"]
+            • (onRequest) ["anonymous()"]
+            • (onSend) ["headRouteOnSendHandler()"]
+            • (errorHandler) "defaultErrorHandler()"
 `
-    const flatExpected = `└── / (-)
-    ├── helicopter (GET, HEAD)
-    │   • (onTimeout) ["onTimeout()"]
-    │   • (onRequest) ["anonymous()"]
-    │   • (errorHandler) "defaultErrorHandler()"
-    └── hello (GET, HEAD, PUT)
-        • (onTimeout) ["onTimeout()"]
-        • (onRequest) ["anonymous()"]
-        • (errorHandler) "defaultErrorHandler()"
+    const flatExpected = `\
+├── /hello (GET, PUT)
+│   • (onTimeout) ["onTimeout()"]
+│   • (onRequest) ["anonymous()"]
+│   • (errorHandler) "defaultErrorHandler()"
+│   /hello (HEAD)
+│   • (onTimeout) ["onTimeout()"]
+│   • (onRequest) ["anonymous()"]
+│   • (onSend) ["headRouteOnSendHandler()"]
+│   • (errorHandler) "defaultErrorHandler()"
+└── /helicopter (GET)
+    • (onTimeout) ["onTimeout()"]
+    • (onRequest) ["anonymous()"]
+    • (errorHandler) "defaultErrorHandler()"
+    /helicopter (HEAD)
+    • (onTimeout) ["onTimeout()"]
+    • (onRequest) ["anonymous()"]
+    • (onSend) ["headRouteOnSendHandler()"]
+    • (errorHandler) "defaultErrorHandler()"
 `
 
-    const hooksOnlyExpected = `└── / (-)
-    ├── helicopter (GET, HEAD)
-    │   • (onTimeout) ["onTimeout()"]
-    │   • (onRequest) ["anonymous()"]
-    └── hello (GET, HEAD, PUT)
-        • (onTimeout) ["onTimeout()"]
-        • (onRequest) ["anonymous()"]
+    const hooksOnlyExpected = `\
+├── /hello (GET, PUT)
+│   • (onTimeout) ["onTimeout()"]
+│   • (onRequest) ["anonymous()"]
+│   /hello (HEAD)
+│   • (onTimeout) ["onTimeout()"]
+│   • (onRequest) ["anonymous()"]
+│   • (onSend) ["headRouteOnSendHandler()"]
+└── /helicopter (GET)
+    • (onTimeout) ["onTimeout()"]
+    • (onRequest) ["anonymous()"]
+    /helicopter (HEAD)
+    • (onTimeout) ["onTimeout()"]
+    • (onRequest) ["anonymous()"]
+    • (onSend) ["headRouteOnSendHandler()"]
 `
     t.equal(typeof radixTree, 'string')
     t.equal(typeof flatTree, 'string')

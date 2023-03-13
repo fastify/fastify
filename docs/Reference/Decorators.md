@@ -107,7 +107,13 @@ route [route](./Routes.md) handlers:
 fastify.decorate('db', new DbConnection())
 
 fastify.get('/', async function (request, reply) {
-  reply({hello: await this.db.query('world')})
+  // using return
+  return { hello: await this.db.query('world') }
+  
+  // or
+  // using reply.send()
+  reply.send({ hello: await this.db.query('world') })
+  await reply
 })
 ```
 

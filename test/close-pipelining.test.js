@@ -36,7 +36,7 @@ test('Should return 503 while closing - pipelining', async t => {
   await instance.close()
 })
 
-const isV19plus = semver.satisfies(process.version, '>= v19.0.0')
+const isV19plus = semver.gte(process.version, '19.0.0')
 test('Should not return 503 while closing - pipelining - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, async t => {
   const fastify = Fastify({
     return503OnClosing: false,

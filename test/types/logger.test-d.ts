@@ -123,6 +123,21 @@ const serverAutoInferredFileOption = fastify({
 
 expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 
+const serverAutoInferredSerializerResponseObjectOption = fastify({
+  logger: {
+    serializers: {
+      res (ServerResponse) {
+        expectType<FastifyReply>(ServerResponse)
+        return {
+          status: '200'
+        }
+      }
+    }
+  }
+})
+
+expectType<FastifyBaseLogger>(serverAutoInferredSerializerResponseObjectOption.log)
+
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
     serializers: {
@@ -183,6 +198,7 @@ expectDeprecated({} as FastifyLoggerInstance)
 const childParent = fastify().log
 // we test different option variant here
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { redact: ['pass', 'pin'] }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { serializers: { key: () => {} } }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))

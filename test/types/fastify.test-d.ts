@@ -25,6 +25,7 @@ import { Socket } from 'net'
 // http server
 expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
 expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({}))
+expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ http: {} }))
 // https server
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: null }))
@@ -239,7 +240,7 @@ expectAssignable<ValidationResult>(ajvErrorObject)
 expectAssignable<FastifyError['validation']>([ajvErrorObject])
 expectAssignable<FastifyError['validationContext']>('body')
 expectAssignable<FastifyError['validationContext']>('headers')
-expectAssignable<FastifyError['validationContext']>('parameters')
+expectAssignable<FastifyError['validationContext']>('params')
 expectAssignable<FastifyError['validationContext']>('querystring')
 
 const routeGeneric: RouteGenericInterface = {}

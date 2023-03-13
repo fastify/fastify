@@ -568,7 +568,7 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
       }
     })
   } catch (err) {
-    t.equal(err.message, 'schemaErrorFormatter option should not be an async function')
+    t.equal(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   }
 
   try {
@@ -576,14 +576,14 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
       schemaErrorFormatter: 500
     })
   } catch (err) {
-    t.equal(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+    t.equal(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   }
 
   try {
     const fastify = Fastify()
     fastify.setSchemaErrorFormatter(500)
   } catch (err) {
-    t.equal(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+    t.equal(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   }
 })
 

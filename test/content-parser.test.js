@@ -649,3 +649,252 @@ test('content-type regexp list should be cloned when plugin override', async t =
     t.same(payload, 'png')
   }
 })
+
+test('allow partial content-type /1', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('json', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'image/jpeg'
+    },
+    body: ''
+  })
+})
+
+test('allow partial content-type /2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('  json', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'image/jpeg'
+    },
+    body: ''
+  })
+})
+
+test('allow partial content-type /3', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('json  ', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'image/jpeg'
+    },
+    body: ''
+  })
+})
+
+test('allow partial content-type /4', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('  json  ', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'image/jpeg'
+    },
+    body: ''
+  })
+})
+
+test('allow partial content-type /5', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('json;', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'image/jpeg'
+    },
+    body: ''
+  })
+})
+
+test('content-type isEssence-check should use ParserListItem.type /1', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('   application/json', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type isEssence-check should use ParserListItem.type /2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('application/json   ', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type isEssence-check should use ParserListItem.type /3', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('   application/json   ', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})

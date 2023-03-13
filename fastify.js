@@ -326,6 +326,7 @@ function fastify (options) {
       binded.push(this.server.address())
       return binded.filter(adr => adr)
     },
+    url: null,
     // extend fastify objects
     decorate: decorator.add,
     hasDecorator: decorator.exist,
@@ -377,6 +378,19 @@ function fastify (options) {
       configurable: true,
       get () {
         return this[kErrorHandler].func
+      }
+    },
+    url: {
+      configurable: true,
+      get () {
+        const primaryAddress = this.server.address()
+        if (primaryAddress === null) {
+          return null
+        }
+        const { address, port } = primaryAddress
+        const protocol = this[kOptions].https ? 'https' : 'http'
+        const addressString = address === '::1' ? 'localhost' : address
+        return `${protocol}://${addressString}:${port}`
       }
     }
   })

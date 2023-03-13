@@ -612,4 +612,9 @@ export interface FastifyInstance<
     requestIdLogLabel?: string,
     http2SessionTimeout?: number
   }>
+
+  /**
+   * Application url
+   */
+  url: string | null
 }

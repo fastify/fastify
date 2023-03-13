@@ -253,6 +253,91 @@ test('Should not change the input schemas', t => {
   })
 })
 
+test('Should throw if the schema body is undefined', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:id', {
+    handler: echoParams,
+    schema: {
+      body: undefined
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.equal(err.message, 'Failed building the validation schema for GET: /:id, due to error body schema is undefined')
+  })
+})
+
+test('Should throw if the schema headers is undefined', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:id', {
+    handler: echoParams,
+    schema: {
+      headers: undefined
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.equal(err.message, 'Failed building the validation schema for GET: /:id, due to error headers schema is undefined')
+  })
+})
+
+test('Should throw if the schema params is undefined', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:id', {
+    handler: echoParams,
+    schema: {
+      params: undefined
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.equal(err.message, 'Failed building the validation schema for GET: /:id, due to error params schema is undefined')
+  })
+})
+
+test('Should throw if the schema query is undefined', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:id', {
+    handler: echoParams,
+    schema: {
+      querystring: undefined
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.equal(err.message, 'Failed building the validation schema for GET: /:id, due to error querystring schema is undefined')
+  })
+})
+
+test('Should throw if the schema query is undefined', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:id', {
+    handler: echoParams,
+    schema: {
+      querystring: undefined
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.equal(err.message, 'Failed building the validation schema for GET: /:id, due to error querystring schema is undefined')
+  })
+})
+
 test('First level $ref', t => {
   t.plan(2)
   const fastify = Fastify()

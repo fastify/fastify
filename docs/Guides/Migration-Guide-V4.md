@@ -121,7 +121,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
 
   Into this:
   ```js
-  await fastify.register((instance, opts) => {
+  await fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
       console.log({ path, method });

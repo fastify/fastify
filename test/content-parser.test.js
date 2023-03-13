@@ -256,27 +256,25 @@ test('Error thrown 415 from content type is null and make post request to server
 
 test('remove', t => {
   test('should remove default parser', t => {
-    t.plan(2)
+    t.plan(3)
 
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    contentTypeParser.remove('application/json')
-
+    t.ok(contentTypeParser.remove('application/json'))
     t.notOk(contentTypeParser.customParsers['application/json'])
     t.notOk(contentTypeParser.parserList.find(parser => parser === 'application/json'))
   })
 
   test('should remove RegExp parser', t => {
-    t.plan(2)
+    t.plan(3)
 
     const fastify = Fastify()
     fastify.addContentTypeParser(/^text\/*/, first)
 
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    contentTypeParser.remove(/^text\/*/)
-
+    t.ok(contentTypeParser.remove(/^text\/*/))
     t.notOk(contentTypeParser.customParsers[/^text\/*/])
     t.notOk(contentTypeParser.parserRegExpList.find(parser => parser.toString() === /^text\/*/.toString()))
   })
@@ -289,23 +287,22 @@ test('remove', t => {
     t.throws(() => fastify[keys.kContentTypeParser].remove(12), FST_ERR_CTP_INVALID_TYPE)
   })
 
-  test('should not throw error if content type does not exist', t => {
+  test('should return false if content type does not exist', t => {
     t.plan(1)
 
     const fastify = Fastify()
 
-    t.doesNotThrow(() => fastify[keys.kContentTypeParser].remove('image/png'))
+    t.notOk(fastify[keys.kContentTypeParser].remove('image/png'))
   })
 
   test('should not remove any content type parser if content type does not exist', t => {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = Fastify()
 
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    contentTypeParser.remove('image/png')
-
+    t.notOk(contentTypeParser.remove('image/png'))
     t.same(contentTypeParser.customParsers.size, 2)
   })
 

@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.12.0'
+const VERSION = '4.14.1'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -586,6 +586,10 @@ function fastify (options) {
       }
     } else if (name === 'onReady') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    } else if (name === 'onRequestAbort') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 1) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     } else {

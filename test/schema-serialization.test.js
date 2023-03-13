@@ -833,8 +833,9 @@ test('do not crash if status code serializer errors', async t => {
   t.equal(res.statusCode, 500)
   t.same(res.json(), {
     statusCode: 500,
-    error: 'Internal Server Error',
-    message: '"code" is required!'
+    code: 'FST_ERR_FAILED_ERROR_SERIALIZATION',
+    message: 'Failed to serialize an error. Error: "code" is required!. ' +
+      'Original error: querystring must have required property \'foo\''
   })
 })
 

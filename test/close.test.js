@@ -7,6 +7,7 @@ const test = t.test
 const Fastify = require('..')
 const { Client } = require('undici')
 const semver = require('semver')
+const split = require('split2')
 
 test('close callback', t => {
   t.plan(4)
@@ -299,6 +300,40 @@ t.test('Current opened connection should not accept new incoming connections', t
     })
     instance.request({ path: '/', method: 'GET' }).then(data => {
       t.equal(data.statusCode, 503)
+    })
+  })
+})
+
+t.test('rejected incoming connections should be logged', t => {
+  t.plan(2)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+
+  const messages = []
+  stream.on('data', message => {
+    messages.push(message)
+  })
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    setTimeout(() => {
+      reply.send({ hello: 'world' })
+    }, 250)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    const instance = new Client('http://localhost:' + fastify.server.address().port)
+    // initial request to trigger close
+    instance.request({ path: '/', method: 'GET' })
+    // subsequent request should be rejected
+    instance.request({ path: '/', method: 'GET' }).then(() => {
+      t.ok(messages.find(message => message.msg.includes('request aborted')))
     })
   })
 })

@@ -281,6 +281,12 @@ A callback for a hook timed out
 
 The logger accepts either a `'stream'` or a `'file'` as the destination.
 
+#### FST_ERR_LOG_INVALID_LOGGER
+<a id="FST_ERR_LOG_INVALID_LOGGER"></a>
+
+The logger should have all these methods: `'info'`, `'error'`,
+`'debug'`, `'fatal'`, `'warn'`, `'trace'`, `'child'`.
+
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 

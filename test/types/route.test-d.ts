@@ -35,9 +35,9 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
   return reply.send()
 }
 
-type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options'
+type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options';
 
-;['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
+['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
   // route method
   expectType<FastifyInstance>(fastify().route({
     method: method as HTTPMethods,
@@ -146,7 +146,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
       expectType<number>(res.statusCode)
     },
-    onError: (req, res, done) => {
+    onError: (req, res, error, done) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -156,7 +156,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
-    preSerialization: (req, res, done) => {
+    preSerialization: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -166,7 +166,108 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
-    onSend: (req, res, done) => {
+    onSend: (req, res, payload, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    handler: (req, res) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    }
+  })
+
+  fastify().route<RouteGeneric>({
+    url: '/',
+    method: method as HTTPMethods,
+    config: { foo: 'bar', bar: 100 },
+    prefixTrailingSlash: 'slash',
+    onRequest: async (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    preParsing: async (req, res, payload, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+      expectType<RequestPayload>(payload)
+      expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
+      expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+    },
+    preValidation: async (req, res, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    preHandler: async (req, res, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    onResponse: async (req, res, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+      expectType<number>(res.statusCode)
+    },
+    onError: async (req, res, error, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    preSerialization: async (req, res, payload, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    onSend: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)

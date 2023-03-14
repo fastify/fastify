@@ -1545,35 +1545,61 @@ a custom constraint strategy with the same name.
 #### printRoutes
 <a id="print-routes"></a>
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree
-used by the router, useful for debugging. Alternatively, `fastify.printRoutes({
-commonPrefix: false })` can be used to print the flattened routes tree.
+`fastify.printRoutes()`: Fastify router builds a tree of routes for each HTTP
+method. If you call the prettyPrint without specifying an HTTP method, it will
+merge all the trees into one and print it. The merged tree doesn't represent the
+internal router structure. **Don't use it for debugging.**
 
 *Remember to call it inside or after a `ready` call.*
 
 ```js
 fastify.get('/test', () => {})
 fastify.get('/test/hello', () => {})
-fastify.get('/hello/world', () => {})
-fastify.get('/helicopter', () => {})
+fastify.get('/testing', () => {})
+fastify.get('/testing/:param', () => {})
+fastify.put('/update', () => {})
 
 fastify.ready(() => {
   console.log(fastify.printRoutes())
   // └── /
   //     ├── test (GET)
-  //     │   └── /hello (GET)
-  //     └── hel
-  //         ├── lo/world (GET)
-  //         └── licopter (GET)
-
-  console.log(fastify.printRoutes({ commonPrefix: false }))
-  // └── / (-)
-  //     ├── test (GET)
-  //     │   └── /hello (GET)
-  //     ├── hello/world (GET)
-  //     └── helicopter (GET)
-
+  //     │   ├── /hello (GET)
+  //     │   └── ing (GET)
+  //     │       └── /
+  //     │           └── :param (GET)
+  //     └── update (PUT)
 })
+```
+
+If you want to print the internal router tree, you should specify the `method`
+param. Printed tree will represent the internal router structure.
+**You can use it for debugging.**
+
+```js
+  console.log(fastify.printRoutes({ method: 'GET' }))
+  // └── /
+  //     └── test (GET)
+  //         ├── /hello (GET)
+  //         └── ing (GET)
+  //             └── /
+  //                 └── :param (GET)
+
+  console.log(fastify.printRoutes({ method: 'PUT' }))
+  // └── /
+  //     └── update (PUT)
+```
+
+`fastify.printRoutes({ commonPrefix: false })` will print compressed trees. This
+might useful when you have a large number of routes with common prefixes.
+It doesn't represent the internal router structure. **Don't use it for debugging.**
+
+```js
+  console.log(fastify.printRoutes({ commonPrefix: false }))
+  // ├── /test (GET)
+  // │   ├── /hello (GET)
+  // │   └── ing (GET)
+  // │       └── /:param (GET)
+  // └── /update (PUT)
 ```
 
 `fastify.printRoutes({ includeMeta: (true | []) })` will display properties from
@@ -1583,26 +1609,51 @@ A shorthand option, `fastify.printRoutes({ includeHooks: true })` will include
 all [hooks](./Hooks.md).
 
 ```js
-  console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['metaProperty'] }))
+  fastify.get('/test', () => {})
+  fastify.get('/test/hello', () => {})
+
+  const onTimeout = () => {}
+
+  fastify.addHook('onRequest', () => {})
+  fastify.addHook('onTimeout', onTimeout)
+
+  console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['errorHandler'] }))
   // └── /
-  //     ├── test (GET)
-  //     │   • (onRequest) ["anonymous()","namedFunction()"]
-  //     │   • (metaProperty) "value"
-  //     │   └── /hello (GET)
-  //     └── hel
-  //         ├── lo/world (GET)
-  //         │   • (onTimeout) ["anonymous()"]
-  //         └── licopter (GET)
+  //     └── test (GET)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         • (errorHandler) "defaultErrorHandler()"
+  //         test (HEAD)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         • (onSend) ["headRouteOnSendHandler()"]
+  //         • (errorHandler) "defaultErrorHandler()"
+  //         └── /hello (GET)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             • (errorHandler) "defaultErrorHandler()"
+  //             /hello (HEAD)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             • (onSend) ["headRouteOnSendHandler()"]
+  //             • (errorHandler) "defaultErrorHandler()"
 
   console.log(fastify.printRoutes({ includeHooks: true }))
   // └── /
-  //     ├── test (GET)
-  //     │   • (onRequest) ["anonymous()","namedFunction()"]
-  //     │   └── /hello (GET)
-  //     └── hel
-  //         ├── lo/world (GET)
-  //         │   • (onTimeout) ["anonymous()"]
-  //         └── licopter (GET)
+  //     └── test (GET)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         test (HEAD)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         • (onSend) ["headRouteOnSendHandler()"]
+  //         └── /hello (GET)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             /hello (HEAD)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             • (onSend) ["headRouteOnSendHandler()"]
 ```
 
 #### printPlugins

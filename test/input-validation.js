@@ -182,7 +182,8 @@ module.exports.payloadMethod = function (method, t) {
         t.same(body, {
           error: 'Bad Request',
           message: 'body/hello must be integer',
-          statusCode: 400
+          statusCode: 400,
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })

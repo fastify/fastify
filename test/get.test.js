@@ -243,6 +243,7 @@ fastify.listen({ port: 0 }, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
+        code: 'FST_ERR_VALIDATION',
         message: 'params/test must be integer',
         statusCode: 400
       })
@@ -280,6 +281,7 @@ fastify.listen({ port: 0 }, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
+        code: 'FST_ERR_VALIDATION',
         message: 'headers/x-test must be number',
         statusCode: 400
       })
@@ -309,6 +311,7 @@ fastify.listen({ port: 0 }, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
+        code: 'FST_ERR_VALIDATION',
         message: 'querystring/hello must be integer',
         statusCode: 400
       })

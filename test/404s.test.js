@@ -1831,7 +1831,8 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
       t.same(JSON.parse(response.payload), {
         error: 'Bad Request',
         message: "'/hello/%world' is not a valid url component",
-        statusCode: 400
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
       })
     })
   })
@@ -1849,7 +1850,8 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
       t.same(JSON.parse(response.payload), {
         error: 'Bad Request',
         message: "'/hello/%world' is not a valid url component",
-        statusCode: 400
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
       })
     })
   })

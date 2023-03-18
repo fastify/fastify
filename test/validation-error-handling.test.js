@@ -400,10 +400,7 @@ test('should return a defined output message parsing JOI errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-
-    // TODO: "code" "FST_ERR_VALIDATION"
-    //
-    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"\\"name\\" is required"}')
+    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"\\"name\\" is required"}')
   })
 })
 

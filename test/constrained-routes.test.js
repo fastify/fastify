@@ -755,22 +755,22 @@ test('error in async constraints', async (t) => {
 
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', code: 'FST_ERR_ASYNC_CONSTRAINT', message: 'Unexpected error from async constraint', statusCode: 500 })
     t.equal(statusCode, 500)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', code: 'FST_ERR_ASYNC_CONSTRAINT', message: 'Unexpected error from async constraint', statusCode: 500 })
     t.equal(statusCode, 500)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', code: 'FST_ERR_ASYNC_CONSTRAINT', message: 'Unexpected error from async constraint', statusCode: 500 })
     t.equal(statusCode, 500)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/' })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', code: 'FST_ERR_ASYNC_CONSTRAINT', message: 'Unexpected error from async constraint', statusCode: 500 })
     t.equal(statusCode, 500)
   }
 })

@@ -22,6 +22,7 @@ import {
 } from './type-provider'
 import { HTTPMethods, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 import { AddressInfo } from 'net'
+import { AnySchemaObject } from 'ajv'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -97,9 +98,9 @@ export interface FastifyInstance<
   addresses(): AddressInfo[]
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
-  addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-  getSchema(schemaId: string): unknown;
-  getSchemas(): Record<string, unknown>;
+  addSchema(schema: AnySchemaObject): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  getSchema(schemaId: string): AnySchemaObject | undefined;
+  getSchemas(): Record<string, AnySchemaObject>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;

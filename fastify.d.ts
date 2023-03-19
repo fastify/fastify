@@ -24,6 +24,7 @@ import { FastifySchema, FastifySchemaCompiler, SchemaErrorDataVar, SchemaErrorFo
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
+import { AnySchemaObject } from 'ajv'
 
 declare module '@fastify/error' {
   interface FastifyError {
@@ -128,10 +129,10 @@ declare namespace fastify {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
     },
     schemaController?: {
-      bucket?: (parentSchemas?: unknown) => {
-        add(schema: unknown): FastifyInstance;
-        getSchema(schemaId: string): unknown;
-        getSchemas(): Record<string, unknown>;
+      bucket?: (parentSchemas?: AnySchemaObject) => {
+        add(schema: AnySchemaObject): FastifyInstance;
+        getSchema(schemaId: string): AnySchemaObject | undefined;
+        getSchemas(): Record<string, AnySchemaObject>;
       };
       compilersFactory?: {
         buildValidator?: ValidatorFactory;

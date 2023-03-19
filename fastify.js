@@ -708,7 +708,7 @@ function fastify (options) {
           const reply = new Reply(res, request, childLogger)
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
-        const body = '{"error":"Internal Server Error","code":"FST_ERR_ASYNC_CONSTRAINT","message":"Unexpected error from async constraint","statusCode":500}'
+        const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
         res.writeHead(500, {
           'Content-Type': 'application/json',
           'Content-Length': body.length

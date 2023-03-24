@@ -3413,7 +3413,7 @@ test('onRequestAbort should be triggered', t => {
   const fastify = Fastify()
   let order = 0
 
-  t.plan(9)
+  t.plan(7)
   t.teardown(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
@@ -3424,8 +3424,7 @@ test('onRequestAbort should be triggered', t => {
   })
 
   fastify.addHook('onError', function hook (request, reply, error, done) {
-    t.same(error, { hello: 'world' }, 'onError should be called')
-    t.ok(request.raw.aborted, 'request should be aborted')
+    t.fail('onError should not be called')
     done()
   })
 

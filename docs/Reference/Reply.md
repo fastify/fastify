@@ -243,7 +243,7 @@ reply.trailer('server-timing', function() {
 })
 
 const { createHash } = require('crypto')
-// trailer function also recieve two argument
+// trailer function also receive two argument
 // @param {object} reply fastify reply
 // @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
 // @param {function} done callback to set trailer value
@@ -396,7 +396,7 @@ The function returned (a.k.a. _serialization function_) returned is compiled
 by using the provided `SerializerCompiler`. Also this is cached by using
 a `WeakMap` for reducing compilation calls.
 
-The optional paramaters `httpStatus` and `contentType`, if provided, 
+The optional parameters `httpStatus` and `contentType`, if provided, 
 are forwarded directly to the `SerializerCompiler`, so it can be used 
 to compile the serialization function if a custom `SerializerCompiler` is used.
 

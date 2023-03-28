@@ -78,7 +78,7 @@ fastify.route(options)
   when a response has been sent, so you will not be able to send more data to
   the client. It could also be an array of functions.
 * `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called
-  when a request is timed out and the HTTP socket has been hanged up.
+  when a request is timed out and the HTTP socket has been hung up.
 * `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror)
   called when an Error is thrown or sent to the client by the route handler.
 * `handler(request, reply)`: the function that will handle this request. The
@@ -219,7 +219,7 @@ fastify.get('/', opts)
 ```
 
 > Note: if the handler is specified in both the `options` and as the third
-> parameter to the shortcut method then throws duplicate `handler` error.
+> parameter to the shortcut method then throws a duplicate `handler` error.
 
 ### Url building
 <a id="url-building"></a>

@@ -13,11 +13,11 @@ up to `unknown`.
 The reasoning is that certain methods of `FastifyInstance` are 
 contravariant on `TypeProvider`, which can lead to TypeScript surfacing 
 assignability issues unless the custom type provider interface is 
-substitutible with `FastifyTypeProviderDefault`.
+substitutable with `FastifyTypeProviderDefault`.
 
 For example, `FastifyTypeProviderDefault` will not be assignable to the following:
 ```ts
-export interface NotSubstitutibleTypeProvider extends FastifyTypeProvider {
+export interface NotSubstitutableTypeProvider extends FastifyTypeProvider {
    // bad, nothing is assignable to `never` (except for itself)
   output: this['input'] extends /** custom check here**/ ? /** narrowed type here **/ : never;
 }
@@ -25,7 +25,7 @@ export interface NotSubstitutibleTypeProvider extends FastifyTypeProvider {
 
 Unless changed to:
 ```ts
-export interface SubstitutibleTypeProvider extends FastifyTypeProvider {
+export interface SubstitutableTypeProvider extends FastifyTypeProvider {
   // good, anything can be assigned to `unknown`
   output: this['input'] extends /** custom check here**/ ? /** narrowed type here **/ : unknown; 
 }

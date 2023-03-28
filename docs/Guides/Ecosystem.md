@@ -11,7 +11,7 @@ section.
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
-  to serialize to output according to `Accept` header.
+  to serialize to output according to the `Accept` header.
 - [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save
   multiple schemas and decide which one to use to serialize the payload
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
@@ -151,7 +151,7 @@ section.
 - [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
   easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
 - [`@ethicdevs/fastify-custom-session`](https://github.com/EthicDevs/fastify-custom-session)
-  A plugin that let you use session and decide only where to load/save from/to. Has
+  A plugin lets you use session and decide only where to load/save from/to. Has
   great TypeScript support + built-in adapters for common ORMs/databases (Firebase,
   Prisma Client, Postgres (wip), InMemory) and you can easily make your own adapter!
 - [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
@@ -391,7 +391,7 @@ section.
 - [`fastify-keycloak-adapter`](https://github.com/yubinTW/fastify-keycloak-adapter)
   A keycloak adapter for a Fastify app.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify
-  plugin for support KnexJS Query Builder.
+  plugin for supporting KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)
   Fastify Mock KnexJS for testing support.
 - [`fastify-kubernetes`](https://github.com/greguz/fastify-kubernetes) Fastify
@@ -401,7 +401,7 @@ section.
 - [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
   Lightweight cache plugin
 - [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes)
-  A simple plugin for Fastify list all available routes.
+  A simple plugin for Fastify to list all available routes.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua

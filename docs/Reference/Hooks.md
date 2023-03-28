@@ -266,7 +266,7 @@ fastify.addHook('onTimeout', async (request, reply) => {
 `onTimeout` is useful if you need to monitor the request timed out in your
 service (if the `connectionTimeout` property is set on the Fastify instance).
 The `onTimeout` hook is executed when a request is timed out and the HTTP socket
-has been hanged up. Therefore, you will not be able to send data to the client.
+has been hung up. Therefore, you will not be able to send data to the client.
 
 ### onRequestAbort
 
@@ -728,7 +728,7 @@ fastify.get('/me/is-admin', async function (req, reply) {
 ```
 
 Note that `.authenticatedUser` could actually be any property name
-choosen by yourself. Using your own custom property prevents you
+chosen by yourself. Using your own custom property prevents you
 from mutating existing properties, which
 would be a dangerous and destructive operation. So be careful and
 make sure your property is entirely new, also using this approach
@@ -774,7 +774,7 @@ initialization of the tracking package, in the typical "require instrumentation
 tools first" fashion.
 
 ```js
-const tracer = /* retrieved from elsehwere in the package */
+const tracer = /* retrieved from elsewhere in the package */
 const dc = require('diagnostics_channel')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()

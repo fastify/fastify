@@ -29,9 +29,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install with pnpm
-        run: |
-          curl -L https://unpkg.com/@pnpm/self-installer | node
-          pnpm install
+        uses: pnpm/action-setup@v2
+        with:
+          version 7
 
       - name: Run tests
         run: |

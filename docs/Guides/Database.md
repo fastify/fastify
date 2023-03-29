@@ -130,19 +130,18 @@ fastify.register(require('@fastify/mongodb'), {
   url: 'mongodb://mongo/mydb'
 })
 
-fastify.get('/user/:id', function (req, reply) {
+fastify.get('/user/:id', async function (req, reply) {
   // Or this.mongo.client.db('mydb').collection('users')
   const users = this.mongo.db.collection('users')
 
   // if the id is an ObjectId format, you need to create a new ObjectId
   const id = this.mongo.ObjectId(req.params.id)
-  users.findOne({ id }, (err, user) => {
-    if (err) {
-      reply.send(err)
-      return
-    }
-    reply.send(user)
-  })
+  try {
+    const user = await users.findOne({ id })
+    return user
+  } catch (err) {
+    return err
+  }
 })
 
 fastify.listen({ port: 3000 }, err => {

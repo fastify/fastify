@@ -31,6 +31,7 @@ jobs:
       - name: Install with pnpm
         uses: pnpm/action-setup@v2
         with:
+          # pnpm@8 does not support Node.js 14
           version: 7
 
       - name: Run tests

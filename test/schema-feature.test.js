@@ -286,12 +286,12 @@ test('Should emit warning if the schema body is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP016')
+    t.equal(warning.code, 'FSTDEP015')
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTDEP016', false)
+    warning.emitted.set('FSTDEP015', false)
   })
 
   fastify.get('/:id', {
@@ -311,12 +311,12 @@ test('Should emit warning if the schema query is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP017')
+    t.equal(warning.code, 'FSTDEP015')
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTDEP017', false)
+    warning.emitted.set('FSTDEP015', false)
   })
 
   fastify.get('/:id', {
@@ -336,12 +336,12 @@ test('Should emit warning if the schema params is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP018')
+    t.equal(warning.code, 'FSTDEP015')
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTDEP018', false)
+    warning.emitted.set('FSTDEP015', false)
   })
 
   fastify.get('/:id', {

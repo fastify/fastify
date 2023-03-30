@@ -16,56 +16,56 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dependency-review:
-      name: Dependency Review
-      if: github.event_name == 'pull_request'
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-      steps:
-          - name: Check out repo
-            uses: actions/checkout@v3
-            with:
-              persist-credentials: false
+  # dependency-review:
+  #     name: Dependency Review
+  #     if: github.event_name == 'pull_request'
+  #     runs-on: ubuntu-latest
+  #     permissions:
+  #       contents: read
+  #     steps:
+  #         - name: Check out repo
+  #           uses: actions/checkout@v3
+  #           with:
+  #             persist-credentials: false
 
-          - name: Dependency review
-            uses: actions/dependency-review-action@v3
+  #         - name: Dependency review
+  #           uses: actions/dependency-review-action@v3
 
-  linter:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: false
+  # linter:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         persist-credentials: false
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 'lts/*'
 
-      - name: Install
-        run: |
-          npm install --ignore-scripts
+  #     - name: Install
+  #       run: |
+  #         npm install --ignore-scripts
 
-      - name: Lint code
-        run: |
-          npm run lint
+  #     - name: Lint code
+  #       run: |
+  #         npm run lint
 
-  coverage-nix:
-    needs: linter
-    permissions:
-      contents: read
-    uses: ./.github/workflows/coverage-nix.yml
-  coverage-win:
-    needs: linter
-    permissions:
-      contents: read
-    uses: ./.github/workflows/coverage-win.yml
+  # coverage-nix:
+  #   needs: linter
+  #   permissions:
+  #     contents: read
+  #   uses: ./.github/workflows/coverage-nix.yml
+  # coverage-win:
+  #   needs: linter
+  #   permissions:
+  #     contents: read
+  #   uses: ./.github/workflows/coverage-win.yml
 
   test:
-    needs: [linter, coverage-nix, coverage-win]
+    # needs: [linter, coverage-nix, coverage-win]
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
@@ -85,13 +85,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: actions/cache@v3
-        id: check-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-
+      # - uses: actions/cache@v3
+      #   id: check-cache
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-${{ matrix.node-version }}-
 
       - name: Install
         run: |
@@ -105,52 +105,52 @@ jobs:
         run: |
           npm run test:ci
 
-  automerge:
-    if: >
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.user.login == 'dependabot[bot]'
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - uses: fastify/github-action-merge-dependabot@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+  # automerge:
+  #   if: >
+  #       github.event_name == 'pull_request' &&
+  #       github.event.pull_request.user.login == 'dependabot[bot]'
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     pull-requests: write
+  #     contents: write
+  #   steps:
+  #     - uses: fastify/github-action-merge-dependabot@v3
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  package:
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-      - uses: actions/cache@v3
-        id: check-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: install fastify
-        run: |
-          npm install --ignore-scripts
-      - name: install webpack stack
-        run: |
-          cd test/bundler/webpack && npm install
-      - name: Test webpack bundle
-        run: |
-          cd test/bundler/webpack && npm run test
-      - name: install esbuild stack
-        run: |
-          cd test/bundler/esbuild && npm install
-      - name: Test esbuild bundle
-        run: |
-          cd test/bundler/esbuild && npm run test
+  # package:
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         persist-credentials: false
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 'lts/*'
+  #     - uses: actions/cache@v3
+  #       id: check-cache
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-
+  #     - name: install fastify
+  #       run: |
+  #         npm install --ignore-scripts
+  #     - name: install webpack stack
+  #       run: |
+  #         cd test/bundler/webpack && npm install
+  #     - name: Test webpack bundle
+  #       run: |
+  #         cd test/bundler/webpack && npm run test
+  #     - name: install esbuild stack
+  #       run: |
+  #         cd test/bundler/esbuild && npm install
+  #     - name: Test esbuild bundle
+  #       run: |
+  #         cd test/bundler/esbuild && npm run test

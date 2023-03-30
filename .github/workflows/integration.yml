@@ -32,8 +32,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Pnpm
-        run: |
-          npm i -g pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          # pnpm@8 does not support Node.js 14
+          version: 7
       
       - name: Install Production
         run: |

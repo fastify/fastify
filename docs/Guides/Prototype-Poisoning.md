@@ -44,7 +44,8 @@ defect a validation library can have.
 To understand this story, we need to understand how JavaScript works a bit.
 Every object in JavaScript can have a prototype. It is a set of methods and
 properties it "inherits" from another object. I have put inherits in quotes because
-JavaScript isn't really an object-oriented language. It is prototype-based object-oriented language.
+JavaScript isn't really an object-oriented language.
+It is prototype-based object-oriented language.
 
 A long time ago, for a bunch of irrelevant reasons, someone decided that it
 would be a good idea to use the special property name `__proto__` to access (and

@@ -71,7 +71,8 @@ only validates the object's own properties. This allows `c` to sneak in via the
 prototype.
 
 Another important part of this story is the way `JSON.parse()` — a utility
-provided by the language to convert JSON(Javascript Object Notation) formatted text into objects  —  handles this magic `__proto__` property name.
+provided by the language to convert JSON formatted text into
+objects  —  handles this magic `__proto__` property name.
 
 ```
 > const text = '{ "b": 5, "__proto__": { "c": 6 } }';

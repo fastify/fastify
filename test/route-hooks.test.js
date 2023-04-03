@@ -101,6 +101,35 @@ function testExecutionHook (hook) {
     })
   })
 
+  test(`${hook} option could accept an array of async functions`, t => {
+    t.plan(3)
+    const fastify = Fastify()
+    const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
+      get: function () { return ++this.calledTimes }
+    })
+
+    fastify.post('/', {
+      [hook]: [
+        async (req, reply) => {
+          t.equal(checker.check, 1)
+        },
+        async (req, reply) => {
+          t.equal(checker.check, 2)
+        }
+      ]
+    }, (req, reply) => {
+      reply.send({})
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    }, (err, res) => {
+      t.error(err)
+    })
+  })
+
   test(`${hook} option does not interfere with ${hook} hook`, t => {
     t.plan(7)
     const fastify = Fastify()

@@ -394,6 +394,8 @@ section.
   plugin for supporting KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)
   Fastify Mock KnexJS for testing support.
+- [`fastify-koa`](https://github.com/rozzilla/fastify-koa) Convert Koa
+middlewares into Fastify plugins
 - [`fastify-kubernetes`](https://github.com/greguz/fastify-kubernetes) Fastify
   Kubernetes client plugin.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser)

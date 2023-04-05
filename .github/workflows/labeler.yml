@@ -11,4 +11,5 @@ jobs:
     steps:
     - uses: actions/labeler@v4
       with:
+        sync-labels: ''
         repo-token: "${{ secrets.GITHUB_TOKEN }}"

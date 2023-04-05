@@ -255,7 +255,7 @@ test('Should not change the input schemas', t => {
 })
 
 test('Should emit warning if the schema headers is undefined', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -276,11 +276,11 @@ test('Should emit warning if the schema headers is undefined', t => {
     }
   })
 
-  fastify.ready()
+  fastify.ready(err => t.error(err))
 })
 
 test('Should emit warning if the schema body is undefined', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -301,11 +301,11 @@ test('Should emit warning if the schema body is undefined', t => {
     }
   })
 
-  fastify.ready()
+  fastify.ready(err => t.error(err))
 })
 
 test('Should emit warning if the schema query is undefined', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -326,11 +326,11 @@ test('Should emit warning if the schema query is undefined', t => {
     }
   })
 
-  fastify.ready()
+  fastify.ready(err => t.error(err))
 })
 
 test('Should emit warning if the schema params is undefined', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -351,7 +351,7 @@ test('Should emit warning if the schema params is undefined', t => {
     }
   })
 
-  fastify.ready()
+  fastify.ready(err => t.error(err))
 })
 
 test('First level $ref', t => {

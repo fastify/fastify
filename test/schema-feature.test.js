@@ -255,7 +255,7 @@ test('Should not change the input schemas', t => {
 })
 
 test('Should emit warning if the schema headers is undefined', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -269,18 +269,24 @@ test('Should emit warning if the schema headers is undefined', t => {
     warning.emitted.set('FSTDEP015', false)
   })
 
-  fastify.get('/:id', {
+  fastify.post('/:id', {
     handler: echoParams,
     schema: {
       headers: undefined
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
 })
 
 test('Should emit warning if the schema body is undefined', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -294,18 +300,24 @@ test('Should emit warning if the schema body is undefined', t => {
     warning.emitted.set('FSTDEP015', false)
   })
 
-  fastify.get('/:id', {
+  fastify.post('/:id', {
     handler: echoParams,
     schema: {
       body: undefined
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
 })
 
 test('Should emit warning if the schema query is undefined', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -319,18 +331,24 @@ test('Should emit warning if the schema query is undefined', t => {
     warning.emitted.set('FSTDEP015', false)
   })
 
-  fastify.get('/:id', {
+  fastify.post('/:id', {
     handler: echoParams,
     schema: {
       querystring: undefined
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
 })
 
 test('Should emit warning if the schema params is undefined', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -344,14 +362,73 @@ test('Should emit warning if the schema params is undefined', t => {
     warning.emitted.set('FSTDEP015', false)
   })
 
-  fastify.get('/:id', {
+  fastify.post('/:id', {
     handler: echoParams,
     schema: {
       params: undefined
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should emit a warning for every route with undefined schema', t => {
+  t.plan(16)
+  const fastify = Fastify()
+
+  let runs = 0
+  const expectedWarningEmitted = [0, 1, 2, 3]
+  // It emits 4 warnings:
+  // - 2 - GET and HEAD for /undefinedParams/:id
+  // - 2 - GET and HEAD for /undefinedBody/:id
+  // => 3 x 4 assertions = 12 assertions
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, 'FSTDEP015')
+    t.equal(runs++, expectedWarningEmitted.shift())
+  }
+
+  process.on('warning', onWarning)
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTDEP015', false)
+  })
+
+  fastify.get('/undefinedParams/:id', {
+    handler: echoParams,
+    schema: {
+      params: undefined
+    }
+  })
+
+  fastify.get('/undefinedBody/:id', {
+    handler: echoParams,
+    schema: {
+      body: undefined
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/undefinedParams/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/undefinedBody/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
 })
 
 test('First level $ref', t => {

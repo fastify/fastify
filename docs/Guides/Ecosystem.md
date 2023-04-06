@@ -101,6 +101,7 @@ section.
   A simple plugin that enables response validation for Fastify.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
+- [`fastify-redis-session`](https://github.com/mohammadraufzahed/fastify-redis-session) Redis Session plugin for fastify
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
   scheduling periodic jobs, based on
   [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
@@ -643,7 +644,6 @@ section.
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`fastify-redis-session`](https://github.com/mohammadraufzahed/fastify-redis-session) Redis Session plugin for fastify
 #### [Community Tools](#community-tools)
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
   Reusable workflows for use in the Fastify plugin

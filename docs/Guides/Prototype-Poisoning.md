@@ -12,9 +12,16 @@ particularity interesting web security issue. It is also a perfect illustration
 of the efforts required to maintain popular pieces of open source software and
 the limitations of existing communication channels.
 
-But first, if we use a JavaScript framework to process incoming JSON data, take
-a moment to read up on [Prototype Poisoning](https://medium.com/intrinsic/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96)
-in general, and the specific [technical details](https://github.com/hapijs/hapi/issues/3916) of this issue. This could be a critical issue so, we might need to verify your own code first. While this story is focused on a specific framework however, any solution that uses `JSON.parse()` to process external data is potentially at risk.
+But first, if we use a JavaScript framework to process incoming JSON data,
+take a moment to read up on [Prototype Poisoning]
+(https://medium.com/intrinsic/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96)
+in general, and the specific [technical details]
+(https://github.com/hapijs/hapi/issues/3916) 
+of this issue. This could be a critical issue so, we might need to verify 
+your own code first.
+While this story is focused on a specific framework however,
+any solution that uses `JSON.parse()` to process 
+external data is potentially at risk.
 
 ### BOOM
 <a id="pp-boom"></a>

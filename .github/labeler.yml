@@ -2,6 +2,9 @@
 documentation:
 - all: ["docs/**/*"]
 
+"github actions":
+- all: [".github/workflows/*"]
+
 # PRs that only touch type files
 typescript:
 - all: ["**/*[.|-]d.ts"]

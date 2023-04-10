@@ -134,7 +134,7 @@
   "homepage": "https://www.fastify.io/",
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
-    "@sinclair/typebox": "^0.26.8",
+    "@sinclair/typebox": "^0.27.1",
     "@sinonjs/fake-timers": "^10.0.0",
     "@types/node": "^18.7.18",
     "@typescript-eslint/eslint-plugin": "^5.37.0",

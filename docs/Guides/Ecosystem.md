@@ -174,7 +174,6 @@ section.
 - [`@immobiliarelabs/fastify-sentry`](https://github.com/immobiliare/fastify-sentry)
   Sentry errors handler that just works! Install, add your DSN and you're good
   to go!
-- [`@mateonunez/fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
   A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
@@ -409,7 +408,6 @@ middlewares into Fastify plugins
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
   scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and
   [lured](https://github.com/enobufs/lured).
-- [`fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
   A plugin to implement [Lyra](https://github.com/LyraSearch/lyra) search engine
   on Fastify.
 - [`fastify-mailer`](https://github.com/coopflow/fastify-mailer) Plugin to
@@ -477,6 +475,7 @@ middlewares into Fastify plugins
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an
   [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a
   Fastify server instance.
+- [`fastify-orama`](https://github.com/mateonunez/fastify-orama)
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.

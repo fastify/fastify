@@ -148,6 +148,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<Jso
 // Request Hooks
 // -------------------------------------------------------------------
 
+// Sync handlers
+
 expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   '/',
   {
@@ -158,47 +160,112 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         z: Type.Boolean()
       })
     },
-    preHandler: req => {
+    preHandler: (req, reply, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    preParsing: req => {
+    preParsing: (req, reply, payload, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    preSerialization: req => {
+    preSerialization: (req, reply, payload, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    preValidation: req => {
+    preValidation: (req, reply, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    onError: req => {
+    onError: (req, reply, error, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    onRequest: req => {
+    onRequest: (req, reply, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    onResponse: req => {
+    onResponse: (req, reply, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    onTimeout: req => {
+    onTimeout: (req, reply, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
     },
-    onSend: req => {
+    onSend: (req, reply, payload, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    }
+  },
+  req => {
+    expectType<number>(req.body.x)
+    expectType<string>(req.body.y)
+    expectType<boolean>(req.body.z)
+  }
+))
+
+// Async handlers
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      body: Type.Object({
+        x: Type.Number(),
+        y: Type.String(),
+        z: Type.Boolean()
+      })
+    },
+    preHandler: async (req, reply, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    preParsing: async (req, reply, payload, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    preSerialization: async (req, reply, payload, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    preValidation: async (req, reply, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onError: async (req, reply, error, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onRequest: async (req, reply, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onResponse: async (req, reply, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onTimeout: async (req, reply, done) => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onSend: async (req, reply, payload, done) => {
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
@@ -793,7 +860,7 @@ interface InlineHandlerProvider extends FastifyTypeProvider { output: 'handler-i
 expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
   '/',
   {
-    onRequest: (req, res) => {
+    onRequest: (req, res, done) => {
       expectType<'handler-inline'>(req.body)
     },
     schema: { body: null }

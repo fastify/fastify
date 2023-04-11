@@ -97,3 +97,13 @@ test('errorHandler in plugin should be separate from the external one', async t 
   t.ok(fastify[kErrorHandler].func instanceof Function)
   t.same(fastify.errorHandler, fastify[kErrorHandler].func)
 })
+
+test('fastify instance should contains listeningOrigin property', async t => {
+  t.plan(1)
+  const port = 3000
+  const host = 'localhost'
+  const fastify = Fastify()
+  await fastify.listen({ port, host })
+  t.same(fastify.listeningOrigin, `http://${host}:${port}`)
+  await fastify.close()
+})

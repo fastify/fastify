@@ -655,6 +655,12 @@ fastify.route({
     // This hook will always be executed after the shared `onRequest` hooks
     done()
   },
+  // // Example with an async hook. All hooks support this syntax
+  //
+  // onRequest: async function (request, reply) {
+  //  // This hook will always be executed after the shared `onRequest` hooks
+  //  await ...
+  // }
   onResponse: function (request, reply, done) {
     // this hook will always be executed after the shared `onResponse` hooks
     done()

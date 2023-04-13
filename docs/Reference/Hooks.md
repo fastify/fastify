@@ -278,7 +278,7 @@ fastify.addHook('onRequestAbort', (request, reply, done) => {
 ```
 Or `async/await`:
 ```js
-fastify.addHook('onRequestAbort', async (request, reply) => {
+fastify.addHook('onRequestAbort', async (request) => {
   // Some code
   await asyncMethod()
 })

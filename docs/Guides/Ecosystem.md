@@ -101,7 +101,6 @@ section.
   A simple plugin that enables response validation for Fastify.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
-- [`fastify-redis-session`](https://github.com/mohammadraufzahed/fastify-redis-session) Redis Session plugin for fastify
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
   scheduling periodic jobs, based on
   [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
@@ -519,6 +518,8 @@ section.
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels)
   A plugin for fast, reliable, and scalable channels implementation based on
   Redis streams.
+- [`fastify-redis-session`](https://github.com/mohammadraufzahed/fastify-redis-session)
+  Redis Session plugin for fastify.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes)
   Plugin to automatically load routes from a specified path and optionally limit
   loaded file names by a regular expression.

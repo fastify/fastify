@@ -271,7 +271,7 @@ has been hung up. Therefore, you will not be able to send data to the client.
 ### onRequestAbort
 
 ```js
-fastify.addHook('onRequestAbort', (request, reply, done) => {
+fastify.addHook('onRequestAbort', (request, done) => {
   // Some code
   done()
 })

@@ -437,7 +437,7 @@ fastify.addHook('onClose', async (instance) => {
 ### onRoute
 <a id="on-route"></a>
 
-Triggered when a new route is registered. Listeners are passed a `routeOptions`
+Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
 

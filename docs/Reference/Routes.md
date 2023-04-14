@@ -290,6 +290,17 @@ fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, r
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
 
+The last parameter can be made optional if you add a question mark ("?") at the
+end of the parameters name.
+```js
+fastify.get('/example/posts/:id?', function (request, reply) {
+  const { id } = request.params;
+  // your code here
+})
+```
+In this case you can request `/example/posts` as well as `/example/posts/1`.
+The optional param will be undefined if not specified.
+
 Having a route with multiple parameters may negatively affect performance, so
 prefer a single parameter approach whenever possible, especially on routes that
 are on the hot path of your application. If you are interested in how we handle

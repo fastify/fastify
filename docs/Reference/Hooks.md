@@ -437,7 +437,7 @@ fastify.addHook('onClose', async (instance) => {
 ### onRoute
 <a id="on-route"></a>
 
-Triggered when a new route is registered. Listeners are passed a `routeOptions`
+Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
 
@@ -655,6 +655,12 @@ fastify.route({
     // This hook will always be executed after the shared `onRequest` hooks
     done()
   },
+  // // Example with an async hook. All hooks support this syntax
+  //
+  // onRequest: async function (request, reply) {
+  //  // This hook will always be executed after the shared `onRequest` hooks
+  //  await ...
+  // }
   onResponse: function (request, reply, done) {
     // this hook will always be executed after the shared `onResponse` hooks
     done()

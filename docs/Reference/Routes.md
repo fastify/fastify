@@ -290,7 +290,7 @@ fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, r
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
 
-The last parameter can be made optional if you add a question mark ("?") at the
+The last parameter can be made optional if you add a question mark ("?") to the
 end of the parameters name.
 ```js
 fastify.get('/example/posts/:id?', function (request, reply) {

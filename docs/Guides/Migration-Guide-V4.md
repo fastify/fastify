@@ -133,8 +133,8 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
 ### Optional URL parameters
 
 If you've already used any implicitly optional parameters, you'll get a 404
-error when trying to access the route. Now you will need to declare the
-optional parameters explicitly:
+error when trying to access the route. You will now need to declare the
+optional parameters explicitly.
 
 For example, if you have the same route for listing and showing a post,
 refactor this:

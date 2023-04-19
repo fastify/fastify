@@ -271,14 +271,14 @@ has been hung up. Therefore, you will not be able to send data to the client.
 ### onRequestAbort
 
 ```js
-fastify.addHook('onRequestAbort', (request, reply, done) => {
+fastify.addHook('onRequestAbort', (request, done) => {
   // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
-fastify.addHook('onRequestAbort', async (request, reply) => {
+fastify.addHook('onRequestAbort', async (request) => {
   // Some code
   await asyncMethod()
 })
@@ -437,7 +437,7 @@ fastify.addHook('onClose', async (instance) => {
 ### onRoute
 <a id="on-route"></a>
 
-Triggered when a new route is registered. Listeners are passed a `routeOptions`
+Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
 

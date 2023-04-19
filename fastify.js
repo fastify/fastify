@@ -350,8 +350,9 @@ function fastify (options) {
   Object.defineProperties(fastify, {
     listeningOrigin: {
       get () {
-        const ipv4Address = this.addresses().find(address => address.family === 'IPv4')
-        return `${this[kOptions].https ? 'https' : 'http'}://${ipv4Address.address}:${ipv4Address.port}`
+        const addresses = this.addresses()
+        const address = addresses[addresses.length - 1]
+        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
       }
     },
     pluginName: {

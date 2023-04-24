@@ -589,6 +589,10 @@ middlewares into Fastify plugins
   TOTP (e.g. for 2FA).
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
   Useful functions for Twitch Extension Backend Services (EBS).
+- [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
+  Fastify
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  for [@effect/schema](https://github.com/effect-ts/schema).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)

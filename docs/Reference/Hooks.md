@@ -417,7 +417,7 @@ fastify.addHook('onReady', async function () {
 <a id="on-close"></a>
 
 Triggered when `fastify.close()` is invoked to stop the server, after all in-flight
-HTTP requests has been completed.
+HTTP requests have been completed.
 It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
 to close an open connection to a database.
 

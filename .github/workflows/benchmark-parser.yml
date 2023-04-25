@@ -55,7 +55,7 @@ jobs:
       - name: Run benchmark
         id: benchmark-main
         run: |
-          npm run --silent benchmark:parser > ./bench-result.md
+          npm run benchmark:parser > ./bench-result.md
           result=$(awk '/requests in/' ./bench-result.md)
           echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
 

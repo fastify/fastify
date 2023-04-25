@@ -928,7 +928,7 @@ It is possible to override the default `Server listening at [address]` log entry
 
 ```js
 server.listen({ 
-  port: 3000, 
+  port: 9080, 
   listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` } 
 })
 ```

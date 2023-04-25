@@ -35,11 +35,17 @@ test('listen should accept stringified number port', t => {
 })
 
 test('listen should accept log text resolution function', t => {
-  t.plan(1)
+  t.plan(2)
 
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: '1234', listenTextResolver: () => 'hardcoded text' }, (err) => {
+  fastify.listen({
+    port: '1234',
+    listenTextResolver: () => {
+      t.pass('executed')
+      return 'hardcoded text'
+    }
+  }, (err) => {
     t.error(err)
   })
 })

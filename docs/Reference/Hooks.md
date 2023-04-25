@@ -441,8 +441,8 @@ fastify.addHook('onClose', async (instance) => {
 <a id="pre-close"></a>
 
 Triggered when `fastify.close()` is invoked to stop the server, before all in-flight
-HTTP requests has been completed.
-It is useful when [plugins](./Plugins.md) has set up some state attached
+HTTP requests have been completed.
+It is useful when [plugins](./Plugins.md) have set up some state attached
 to the HTTP server that would prevent the server to close.
 _It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.

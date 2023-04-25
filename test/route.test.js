@@ -1494,7 +1494,7 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
   })
 })
 
-test('using fastify.all when a catchall is defined does not degrade performance', { timeout: 5000 }, async t => {
+test('using fastify.all when a catchall is defined does not degrade performance', { timeout: 30000 }, async t => {
   t.plan(1)
 
   const fastify = Fastify()

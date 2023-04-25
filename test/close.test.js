@@ -495,3 +495,50 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', t 
     })
   })
 })
+
+test('preClose callback', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  let preCloseCalled = false
+  function onClose (instance, done) {
+    t.type(fastify, instance)
+    t.equal(preCloseCalled, true)
+    done()
+  }
+  fastify.addHook('preClose', preClose)
+
+  function preClose (done) {
+    preCloseCalled = true
+    done()
+  }
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
+    })
+  })
+})
+
+test('preClose async', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  let preCloseCalled = false
+  async function onClose () {
+    t.equal(preCloseCalled, true)
+  }
+  fastify.addHook('preClose', preClose)
+
+  async function preClose () {
+    preCloseCalled = true
+    t.pass('preClose called')
+  }
+
+  await fastify.listen({ port: 0 })
+
+  await fastify.close()
+})

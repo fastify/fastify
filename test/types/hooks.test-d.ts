@@ -338,3 +338,14 @@ server.route<RouteGenericInterface, CustomContextConfig>({
     expectType<CustomContextConfig>(reply.context.config)
   }
 })
+
+server.addHook('preClose', function (done) {
+  expectType<FastifyInstance>(this)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
+server.addHook('preClose', async function () {
+  expectType<FastifyInstance>(this)
+})

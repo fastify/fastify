@@ -502,13 +502,13 @@ test('preClose callback', t => {
   fastify.addHook('onClose', onClose)
   let preCloseCalled = false
   function onClose (instance, done) {
-    t.type(fastify, instance)
     t.equal(preCloseCalled, true)
     done()
   }
   fastify.addHook('preClose', preClose)
 
   function preClose (done) {
+    t.type(this, fastify)
     preCloseCalled = true
     done()
   }
@@ -535,7 +535,7 @@ test('preClose async', async t => {
 
   async function preClose () {
     preCloseCalled = true
-    t.pass('preClose called')
+    t.type(this, fastify)
   }
 
   await fastify.listen({ port: 0 })

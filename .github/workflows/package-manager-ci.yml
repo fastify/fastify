@@ -34,6 +34,8 @@ jobs:
           # pnpm@8 does not support Node.js 14
           version: 7
 
+      - run: pnpm install
+
       - name: Run tests
         run: |
           pnpm run test:ci
@@ -61,6 +63,8 @@ jobs:
         run: |
           curl -o- -L https://yarnpkg.com/install.sh | bash
           yarn install --ignore-engines
+
+      - run: yarn
 
       - name: Run tests
         run: |

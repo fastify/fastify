@@ -405,6 +405,8 @@ middlewares into Fastify plugins
   A simple plugin for Fastify to list all available routes.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
+- [`fastify-log-controller`](https://github.com/Eomm/fastify-log-controller/)
+  changes the log level of your Fastify server at runtime.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
   scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and
   [lured](https://github.com/enobufs/lured).
@@ -519,6 +521,8 @@ middlewares into Fastify plugins
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels)
   A plugin for fast, reliable, and scalable channels implementation based on
   Redis streams.
+- [`fastify-redis-session`](https://github.com/mohammadraufzahed/fastify-redis-session)
+  Redis Session plugin for fastify.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes)
   Plugin to automatically load routes from a specified path and optionally limit
   loaded file names by a regular expression.

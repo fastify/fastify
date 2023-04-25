@@ -918,13 +918,16 @@ Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
 `callback` parameters extend the [Node.js
 core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
-object. Thus, all core options are available with the following additional Fastify specific options:
+object. Thus, all core options are available with the following additional 
+Fastify specific options:
 
 ### `listenTextResolver`
 <a id="listen-text-resolver"></a>
 
-Set an optional resolver for the text to log after server has been successfully started.
-It is possible to override the default `Server listening at [address]` log entry using this option.
+Set an optional resolver for the text to log after server has been successfully
+started.
+It is possible to override the default `Server listening at [address]` log 
+entry using this option.
 
 ```js
 server.listen({ 

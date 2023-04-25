@@ -65,7 +65,7 @@ jobs:
     uses: ./.github/workflows/coverage-win.yml
 
   test:
-    # needs: [linter, coverage-nix, coverage-win]
+    needs: [linter, coverage-nix, coverage-win]
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read

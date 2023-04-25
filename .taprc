@@ -3,7 +3,6 @@ jsx: false
 flow: false
 check-coverage: true
 coverage: true
-debug: true
 node-arg: --allow-natives-syntax
 
 files:

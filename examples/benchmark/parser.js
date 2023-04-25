@@ -1,7 +1,7 @@
 'use strict'
 
 const fastify = require('../../fastify')({
-  logger: false
+  logger: true
 })
 
 const jsonParser = require('fast-json-body')

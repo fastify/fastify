@@ -14,9 +14,6 @@ jobs:
       PR-BENCH-14: ${{ steps.benchmark-pr.outputs.BENCH_RESULT14 }}
       PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
       PR-BENCH-18: ${{ steps.benchmark-pr.outputs.BENCH_RESULT18 }}
-      MAIN-BENCH-14: ${{ steps.benchmark-main.outputs.BENCH_RESULT14 }}
-      MAIN-BENCH-16: ${{ steps.benchmark-main.outputs.BENCH_RESULT16 }}
-      MAIN-BENCH-18: ${{ steps.benchmark-main.outputs.BENCH_RESULT18 }}
     strategy:
       matrix:
         node-version: [14, 16, 18]
@@ -42,23 +39,6 @@ jobs:
           result=$(awk '/requests in/' ./bench-result.md)
           echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
 
-      # main benchmark
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          ref: 'main'
-
-      - name: Install
-        run: |
-          npm install --only=production --ignore-scripts
-
-      - name: Run benchmark
-        id: benchmark-main
-        run: |
-          npm run benchmark:parser > ./bench-result.md
-          result=$(awk '/requests in/' ./bench-result.md)
-          echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
-
   output-benchmark:
     needs: [benchmark]
     runs-on: ubuntu-latest
@@ -73,21 +53,18 @@ jobs:
             **Node**: 14
             **Type**: Parser
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-14 }}
-            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-14 }}
             
             ---
             
             **Node**: 16
             **Type**: Parser
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-16 }}
-            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-16 }}
             
             ---
             
             **Node**: 18
             **Type**: Parser
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-18 }}
-            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-18 }}
 
       - uses: actions-ecosystem/action-remove-labels@v1
         with:

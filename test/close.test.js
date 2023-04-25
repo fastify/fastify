@@ -542,3 +542,47 @@ test('preClose async', async t => {
 
   await fastify.close()
 })
+
+test('preClose execution order', t => {
+  t.plan(4)
+  async function sleep (ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    })
+  }
+  const fastify = Fastify()
+  const order = []
+  fastify.addHook('onClose', onClose)
+  function onClose (instance, done) {
+    t.same(order, [1, 2, 3])
+    done()
+  }
+
+  fastify.addHook('preClose', (done) => {
+    setTimeout(function () {
+      order.push(1)
+      done()
+    }, 200)
+  })
+
+  fastify.addHook('preClose', async () => {
+    await sleep(100)
+    order.push(2)
+  })
+
+  fastify.addHook('preClose', (done) => {
+    setTimeout(function () {
+      order.push(3)
+      done()
+    }, 100)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
+    })
+  })
+})

@@ -170,7 +170,7 @@ function plugin1(fastify: FastifyInstance, _opts, done): void {
       })
     }
   }, (req) => {
-    // it doesn't works! in a new scope needs to call `withTypeProvider` again
+    // it doesn't work! in a new scope needs to call `withTypeProvider` again
     const { x, y, z } = req.body
   });
   done()

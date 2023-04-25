@@ -538,7 +538,7 @@ an amazing [ecosystem](./Ecosystem.md)!
 <a id="test-server"></a>
 
 Fastify does not offer a testing framework, but we do recommend a way to write
-your tests that uses the features and architecture of Fastify.
+your tests that use the features and architecture of Fastify.
 
 Read the [testing](./Testing.md) documentation to learn more!
 

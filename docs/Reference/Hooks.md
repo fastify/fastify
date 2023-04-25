@@ -266,19 +266,19 @@ fastify.addHook('onTimeout', async (request, reply) => {
 `onTimeout` is useful if you need to monitor the request timed out in your
 service (if the `connectionTimeout` property is set on the Fastify instance).
 The `onTimeout` hook is executed when a request is timed out and the HTTP socket
-has been hanged up. Therefore, you will not be able to send data to the client.
+has been hung up. Therefore, you will not be able to send data to the client.
 
 ### onRequestAbort
 
 ```js
-fastify.addHook('onRequestAbort', (request, reply, done) => {
+fastify.addHook('onRequestAbort', (request, done) => {
   // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
-fastify.addHook('onRequestAbort', async (request, reply) => {
+fastify.addHook('onRequestAbort', async (request) => {
   // Some code
   await asyncMethod()
 })
@@ -437,7 +437,7 @@ fastify.addHook('onClose', async (instance) => {
 ### onRoute
 <a id="on-route"></a>
 
-Triggered when a new route is registered. Listeners are passed a `routeOptions`
+Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
 
@@ -655,6 +655,12 @@ fastify.route({
     // This hook will always be executed after the shared `onRequest` hooks
     done()
   },
+  // // Example with an async hook. All hooks support this syntax
+  //
+  // onRequest: async function (request, reply) {
+  //  // This hook will always be executed after the shared `onRequest` hooks
+  //  await ...
+  // }
   onResponse: function (request, reply, done) {
     // this hook will always be executed after the shared `onResponse` hooks
     done()
@@ -728,7 +734,7 @@ fastify.get('/me/is-admin', async function (req, reply) {
 ```
 
 Note that `.authenticatedUser` could actually be any property name
-choosen by yourself. Using your own custom property prevents you
+chosen by yourself. Using your own custom property prevents you
 from mutating existing properties, which
 would be a dangerous and destructive operation. So be careful and
 make sure your property is entirely new, also using this approach
@@ -774,7 +780,7 @@ initialization of the tracking package, in the typical "require instrumentation
 tools first" fashion.
 
 ```js
-const tracer = /* retrieved from elsehwere in the package */
+const tracer = /* retrieved from elsewhere in the package */
 const dc = require('diagnostics_channel')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()

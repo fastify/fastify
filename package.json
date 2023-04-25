@@ -21,7 +21,7 @@
     "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
     "prepublishOnly": "PREPUBLISH=true tap --no-check-coverage test/build/**.test.js && npm run test:validator:integrity",
     "test": "npm run lint && npm run unit && npm run test:typescript",
-    "test:ci": "npm run unit -- --cov --coverage-report=lcovonly && npm run test:typescript",
+    "test:ci": "npm run unit -- -R terse --cov --coverage-report=lcovonly && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts && tsd",

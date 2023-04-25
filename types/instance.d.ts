@@ -74,6 +74,12 @@ export interface FastifyListenOptions {
    * @since This option is available only in Node.js v15.6.0 and greater
    */
   signal?: AbortSignal;
+
+  /**
+   * Function that resolves text to log after server has been successfully started
+   * @param address
+   */
+  listenTextResolver?: (address: string) => string;
 }
 
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key

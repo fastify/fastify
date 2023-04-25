@@ -62,7 +62,7 @@ YAML workflow labels below:
 | OS      | YAML Workflow Label    | Package Manager           | Node.js      |
 |---------|------------------------|---------------------------|--------------|
 | Linux   | `ubuntu-latest`        | npm                       | 14,16,18,20  |
-| Linux   | `ubuntu-latest`        | yarn,pnpm                 | 14,16,18     |
+| Linux   | `ubuntu-latest`        | yarn,pnpm                 | 14,16,18,20  |
 | Windows | `windows-latest`       | npm                       | 14,16,18,20  |
 | MacOS   | `macos-latest`         | npm                       | 14,16,18,20  |
 

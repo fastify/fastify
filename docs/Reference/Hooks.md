@@ -444,7 +444,7 @@ Triggered when `fastify.close()` is invoked to stop the server, before all in-fl
 HTTP requests has been completed.
 It is useful when [plugins](./Plugins.md) has set up some state attached
 to the HTTP server that would prevent the server to close.
-_It is unlilely you would need to use this hook_,
+_It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.
 
 ```js

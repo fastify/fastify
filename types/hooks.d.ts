@@ -527,3 +527,31 @@ export interface onCloseAsyncHookHandler<
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }
+
+/**
+ * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need to cancel some state to allow the server to close successfully.
+ */
+export interface preCloseHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
+}
+
+export interface preCloseAsyncHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  ): Promise<unknown>;
+}

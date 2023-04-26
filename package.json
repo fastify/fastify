@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "4.16.2",
+  "version": "4.16.3",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -152,7 +152,6 @@
     "eslint-plugin-n": "^15.2.5",
     "eslint-plugin-promise": "^6.0.1",
     "fast-json-body": "^1.1.0",
-    "fast-json-stringify": "^5.7.0",
     "fastify-plugin": "^4.2.1",
     "fluent-json-schema": "^4.0.0",
     "form-data": "^4.0.0",
@@ -182,6 +181,7 @@
     "@fastify/ajv-compiler": "^3.5.0",
     "@fastify/error": "^3.0.0",
     "@fastify/fast-json-stringify-compiler": "^4.3.0",
+    "fast-json-stringify": "^5.7.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.2.0",
     "fast-content-type-parse": "^1.0.0",

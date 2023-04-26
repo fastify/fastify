@@ -107,6 +107,7 @@ test('fastify instance should contains listeningOrigin property (with port and h
   t.same(fastify.listeningOrigin, `http://${host}:${port}`)
   await fastify.close()
 })
+
 test('fastify instance should contains listeningOrigin property (with port and https)', async t => {
   t.plan(1)
   const port = 3000
@@ -116,6 +117,7 @@ test('fastify instance should contains listeningOrigin property (with port and h
   t.same(fastify.listeningOrigin, `https://${host}:${port}`)
   await fastify.close()
 })
+
 test('fastify instance should contains listeningOrigin property (no options)', async t => {
   t.plan(1)
   const fastify = Fastify()

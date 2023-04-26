@@ -350,8 +350,7 @@ function fastify (options) {
   Object.defineProperties(fastify, {
     listeningOrigin: {
       get () {
-        const addresses = this.addresses()
-        const address = addresses[addresses.length - 1]
+        const address = this.addresses().slice(-1).pop()
         return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
       }
     },

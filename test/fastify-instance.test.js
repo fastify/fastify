@@ -126,3 +126,12 @@ test('fastify instance should contains listeningOrigin property (no options)', a
   t.same(fastify.listeningOrigin, `http://${address.address}:${address.port}`)
   await fastify.close()
 })
+
+test('fastify instance should contains listeningOrigin property (unix socket)', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const path = `fastify.${Date.now()}.sock`
+  await fastify.listen({ path })
+  t.same(fastify.listeningOrigin, path)
+  await fastify.close()
+})

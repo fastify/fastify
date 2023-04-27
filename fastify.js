@@ -351,6 +351,9 @@ function fastify (options) {
     listeningOrigin: {
       get () {
         const address = this.addresses().slice(-1).pop()
+        if (typeof address === 'string') {
+          return address
+        }
         return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
       }
     },

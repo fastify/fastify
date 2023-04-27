@@ -63,6 +63,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
+    - [listeningOrigin](#listeningOrigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -1230,6 +1231,12 @@ fastify.ready(() => {
   fastify.hasPlugin('@fastify/cookie') // true
 })
 ```
+
+### listeningOrigin
+<a id="listeningOrigin"></a>
+
+Immutable instance property indicating the current origin the server
+is listening to, e.g.: `http://127.0.0.1:3000`.
 
 #### log
 <a id="log"></a>

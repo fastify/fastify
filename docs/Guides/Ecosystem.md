@@ -465,6 +465,9 @@ middlewares into Fastify plugins
   ORM.
 - [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes)
   Plugin to cherry-pick classes from objectionjs ORM.
+- [`fastify-opaque-apake`](https://github.com/squirrelchat/fastify-opaque-apake)
+  A Fastify plugin to implement the OPAQUE aPAKE protocol. Uses
+  [@squirrelchat/opaque-wasm-server](https://github.com/squirrelchat/opaque-wasm).
 - [`fastify-openapi-docs`](https://github.com/ShogunPanda/fastify-openapi-docs)
   A Fastify plugin that generates OpenAPI spec automatically.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue)

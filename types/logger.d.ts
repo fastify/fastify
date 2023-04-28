@@ -41,7 +41,7 @@ export type PinoLoggerOptions = pino.LoggerOptions
  */
 export type ResSerializerReply<
   RawServer extends RawServerBase,
-  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProvider>
+  RawReply extends FastifyReply<RawServer>
 > = Partial<RawReply> & Pick<RawReply, 'statusCode'>;
 
 /**

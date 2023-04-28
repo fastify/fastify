@@ -750,3 +750,69 @@ test('edge case content-type - ;', async t => {
 
   t.pass('end')
 })
+
+test('header charset is matched in a case-insensitive manner', async t => {
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('text/plain; charset=UTF-8',
+    { parseAs: 'string' },
+    fastify.getDefaultJsonParser('ignore', 'ignore'))
+
+  fastify.post('/', async (req) => {
+    t.equal(typeof req.body, 'object')
+    t.same(JSON.parse(req.body), { x: 'y' })
+
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'text/plain; charset=UTF-8'
+    },
+    body: '{"x":"y"}'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'text/plain; charset=utf-8'
+    },
+    body: '{"x":"y"}'
+  })
+})
+
+test('header charset is matched in a case-insensitive manner', async t => {
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('text/plain; charset=utf-8',
+    { parseAs: 'string' },
+    fastify.getDefaultJsonParser('ignore', 'ignore'))
+
+  fastify.post('/', async (req) => {
+    t.equal(typeof req.body, 'object')
+    t.same(JSON.parse(req.body), { x: 'y' })
+
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'text/plain; charset=UTF-8'
+    },
+    body: '{"x":"y"}'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'text/plain; charset=utf-8'
+    },
+    body: '{"x":"y"}'
+  })
+})

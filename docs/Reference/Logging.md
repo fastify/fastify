@@ -109,7 +109,6 @@ by `req` is the Fastify [`Request`](./Request.md) object, while the object
 received by `res` is the Fastify [`Reply`](./Reply.md) object. This behaviour
 can be customized by specifying custom serializers.
 
-
 ```js
 const fastify = require('fastify')({
   logger: {
@@ -181,7 +180,6 @@ const fastify = require('fastify')({
   }
 });
 ```
-
 
 **Note**: The body cannot be serialized inside a `req` method because the
 request is serialized when we create the child logger. At that time, the body is

@@ -1236,7 +1236,7 @@ fastify.ready(() => {
 <a id="listeningOrigin"></a>
 
 Immutable instance property indicating the current origin the server
-is listening to, e.g.: `http://127.0.0.1:3000`.
+is listening to, e.g.: `http://127.0.0.1:3000`, `fastify.temp.sock`.
 
 #### log
 <a id="log"></a>

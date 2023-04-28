@@ -1235,8 +1235,11 @@ fastify.ready(() => {
 ### listeningOrigin
 <a id="listeningOrigin"></a>
 
-Immutable instance property indicating the current origin the server
-is listening to, e.g.: `http://127.0.0.1:3000`, `fastify.temp.sock`.
+The current origin the server is listening to.
+For example, a TCP socket based server returns
+a base address like `http://127.0.0.1:3000`,
+and a Unix socket server will return the socket
+path, e.g. `fastify.temp.sock`.
 
 #### log
 <a id="log"></a>

@@ -300,3 +300,18 @@ test('build schema - uppercased headers are not included', t => {
     return () => {}
   })
 })
+
+test('build schema - maintain custom response schema', t => {
+  t.plan(1)
+
+  class CustomSchema {}
+  const opts = {
+    schema: {
+      response: {
+        200: new CustomSchema()
+      }
+    }
+  }
+  opts.schema = normalizeSchema(opts.schema)
+  t.type(opts.schema.response['200'], CustomSchema)
+})

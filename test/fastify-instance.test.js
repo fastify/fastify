@@ -113,7 +113,7 @@ test('fastify instance should contains listeningOrigin property (with port and h
   const port = 3000
   const host = '127.0.0.1'
   const fastify = Fastify({ https: {} })
-  await fastify.listen({ port })
+  await fastify.listen({ port, host })
   t.same(fastify.listeningOrigin, `https://${host}:${port}`)
   await fastify.close()
 })

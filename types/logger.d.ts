@@ -35,6 +35,15 @@ export interface FastifyLoggerStreamDestination {
 
 export type PinoLoggerOptions = pino.LoggerOptions
 
+// TODO: once node 18 is EOL, this type can be replaced with plain FastifyReply.
+/**
+ * Specialized reply type used for the `res` log serializer, since only `statusCode` is passed in certain cases.
+ */
+export type ResSerializerReply<
+  RawServer extends RawServerBase,
+  RawReply extends FastifyReply<RawServer>
+> = Partial<RawReply> & Pick<RawReply, 'statusCode'>;
+
 /**
  * Fastify Custom Logger options.
  */
@@ -59,7 +68,7 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: RawReply) => {
+    res?: (res: ResSerializerReply<RawServer, RawReply>) => {
       statusCode?: string | number;
       [key: string]: unknown;
     };

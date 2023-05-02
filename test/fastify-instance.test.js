@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const os = require('os')
 const {
   kOptions,
   kErrorHandler
@@ -127,8 +128,7 @@ test('fastify instance should contains listeningOrigin property (no options)', a
   await fastify.close()
 })
 
-test('fastify instance should contains listeningOrigin property (unix socket)', async t => {
-  t.plan(1)
+test('fastify instance should contains listeningOrigin property (unix socket)', { skip: os.platform() === 'win32' }, async t => {
   const fastify = Fastify()
   const path = `fastify.${Date.now()}.sock`
   await fastify.listen({ path })

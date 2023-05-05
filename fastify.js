@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.15.0'
+const VERSION = '4.17.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -414,30 +414,33 @@ function fastify (options) {
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
-      if (fastify[kState].listening) {
-        // No new TCP connections are accepted
-        instance.server.close(done)
 
-        /* istanbul ignore next: Cannot test this without Node.js core support */
-        if (forceCloseConnections === 'idle') {
-          // Not needed in Node 19
-          instance.server.closeIdleConnections()
-        /* istanbul ignore next: Cannot test this without Node.js core support */
-        } else if (serverHasCloseAllConnections && forceCloseConnections) {
-          instance.server.closeAllConnections()
-        } else if (forceCloseConnections === true) {
-          for (const conn of fastify[kKeepAliveConnections]) {
-            // We must invoke the destroy method instead of merely unreffing
-            // the sockets. If we only unref, then the callback passed to
-            // `fastify.close` will never be invoked; nor will any of the
-            // registered `onClose` hooks.
-            conn.destroy()
-            fastify[kKeepAliveConnections].delete(conn)
+      hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
+        if (fastify[kState].listening) {
+          // No new TCP connections are accepted
+          instance.server.close(done)
+
+          /* istanbul ignore next: Cannot test this without Node.js core support */
+          if (forceCloseConnections === 'idle') {
+            // Not needed in Node 19
+            instance.server.closeIdleConnections()
+          /* istanbul ignore next: Cannot test this without Node.js core support */
+          } else if (serverHasCloseAllConnections && forceCloseConnections) {
+            instance.server.closeAllConnections()
+          } else if (forceCloseConnections === true) {
+            for (const conn of fastify[kKeepAliveConnections]) {
+              // We must invoke the destroy method instead of merely unreffing
+              // the sockets. If we only unref, then the callback passed to
+              // `fastify.close` will never be invoked; nor will any of the
+              // registered `onClose` hooks.
+              conn.destroy()
+              fastify[kKeepAliveConnections].delete(conn)
+            }
           }
+        } else {
+          done(null)
         }
-      } else {
-        done(null)
-      }
+      })
     })
   })
 
@@ -686,7 +689,7 @@ function fastify (options) {
       const reply = new Reply(res, request, childLogger)
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',
       'Content-Length': body.length

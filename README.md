@@ -38,6 +38,18 @@ resources of your server, knowing that you are serving the highest number of
 requests as possible, without sacrificing security validations and handy
 development?
 
+Enter Fastify. Fastify is a web framework highly focused on providing the best
+developer experience with the least overhead and a powerful plugin architecture.
+It is inspired by Hapi and Express and as far as we know, it is one of the
+fastest web frameworks in town.
+
+The `main` branch refers to the Fastify `v4` release. Check out the
+[`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.
+
+
+
+### Table of Contents 
+
  - [Quick start](#quick-start)
  - [Install](#install)
  - [Example](#example)
@@ -51,13 +63,6 @@ development?
  - [Hosted by](#hosted-by)
  - [License](#license)
 
-Enter Fastify. Fastify is a web framework highly focused on providing the best
-developer experience with the least overhead and a powerful plugin architecture.
-It is inspired by Hapi and Express and as far as we know, it is one of the
-fastest web frameworks in town.
-
-This branch refers to the Fastify v4 release. Check out the
-[v3.x](https://github.com/fastify/fastify/tree/v3.x) branch for v3.
 
 ### Quick start
 

@@ -295,6 +295,48 @@ server.route<RouteGenericInterface, CustomContextConfig>({
   }
 })
 
+server.get<RouteGenericInterface, CustomContextConfig>('/', {
+  onRequest: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preParsing: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preValidation: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preHandler: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preSerialization: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onSend: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onResponse: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onTimeout: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onError: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  }
+}, async (request, reply) => {
+  expectType<CustomContextConfig>(request.context.config)
+  expectType<CustomContextConfig>(reply.context.config)
+})
+
 type CustomContextRequest = FastifyRequest<any, any, any, any, any, CustomContextConfig, any>
 type CustomContextReply = FastifyReply<any, any, any, any, CustomContextConfig, any, any>
 server.route<RouteGenericInterface, CustomContextConfig>({
@@ -337,4 +379,15 @@ server.route<RouteGenericInterface, CustomContextConfig>({
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   }
+})
+
+server.addHook('preClose', function (done) {
+  expectType<FastifyInstance>(this)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
+server.addHook('preClose', async function () {
+  expectType<FastifyInstance>(this)
 })

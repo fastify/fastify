@@ -19,4 +19,8 @@ jobs:
     steps:
       - name: Build website
         run: |
-          curl -X POST --header 'Content-Type: application/json' "https://circleci.com/api/v1.1/project/github/fastify/website?circle-token=${{ secrets.circleci_token }}"
+          curl -X POST \
+            -H 'Content-Type: application/json' \
+            -H 'Circle-Token: ${{ secrets.circleci_token }}' \
+            -d '{"branch":"master"}' \
+            "https://circleci.com/api/v2/project/gh/fastify/website/pipeline"

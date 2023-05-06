@@ -18,7 +18,6 @@ const {
 const fs = require('fs')
 const path = require('path')
 const warning = require('../../lib/warnings')
-const { request } = require('undici')
 
 const doGet = function (url) {
   return new Promise((resolve, reject) => {
@@ -479,7 +478,7 @@ test('Uint8Array without content type should send a application/octet-stream and
   })
 })
 test('Uint16Array without content type should send a application/octet-stream and raw buffer', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = require('../..')()
 
@@ -491,18 +490,18 @@ test('Uint16Array without content type should send a application/octet-stream an
     t.error(err)
     t.teardown(fastify.close.bind(fastify))
 
-    request(
-      'http://localhost:' + fastify.server.address().port
-    ).then(({ body, headers }) => {
-      t.equal(headers['content-type'], 'application/octet-stream')
-      body.arrayBuffer().then(({ buffer }) => {
-        t.same(new Uint16Array(buffer), new Uint16Array(50).fill(0xffffffff))
-      })
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.same(new Uint16Array(body.buffer, body.byteOffset, body.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(50).fill(0xffffffff))
     })
   })
 })
 test('TypedArray with content type should not send application/octet-stream', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = require('../..')()
 
@@ -515,13 +514,13 @@ test('TypedArray with content type should not send application/octet-stream', t 
     t.error(err)
     t.teardown(fastify.close.bind(fastify))
 
-    request(
-      'http://localhost:' + fastify.server.address().port
-    ).then(({ body, headers }) => {
-      t.equal(headers['content-type'], 'text/plain')
-      body.arrayBuffer().then(({ buffer }) => {
-        t.same(new Uint16Array(buffer), new Uint16Array(1024).fill(0xffffffff))
-      })
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'text/plain')
+      t.same(new Uint16Array(body.buffer, body.byteOffset, body.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(1024).fill(0xffffffff))
     })
   })
 })

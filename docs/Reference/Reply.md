@@ -712,22 +712,13 @@ fastify.get('/streams', async function (request, reply) {
 #### TypedArrays
 <a id="send-typedarrays"></a>
 
-*send* can also manage to send a typedarray and if you have not set
-a `'Content-Type'` header, *send* will set it to `'application/octet-stream'`.
+`send` manages TypedArray and sets the `'Content-Type'=application/octet-stream'`
+header if not already set.
 ```js
 const fs = require('fs')
 fastify.get('/streams', function (request, reply) {
-    const typedArray = new Uint16Array(10)
-    reply.send(typedArray)
-})
-```
-
-When using async-await you will need to return or await the reply object:
-```js
-const fs = require('fs')
-fastify.get('/streams', async function (request, reply) {
   const typedArray = new Uint16Array(10)
-  return reply.send(typedArray)
+  reply.send(typedArray)
 })
 ```
 

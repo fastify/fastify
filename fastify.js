@@ -348,6 +348,16 @@ function fastify (options) {
   }
 
   Object.defineProperties(fastify, {
+    listeningOrigin: {
+      get () {
+        const address = this.addresses().slice(-1).pop()
+        /* istanbul ignore if windows: unix socket is not testable on Windows platform */
+        if (typeof address === 'string') {
+          return address
+        }
+        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
+      }
+    },
     pluginName: {
       configurable: true,
       get () {

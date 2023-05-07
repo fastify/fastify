@@ -99,7 +99,7 @@ export interface FastifyInstance<
   prefix: string;
   version: string;
   log: Logger;
-
+  listeningOrigin: string;
   addresses(): AddressInfo[]
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 

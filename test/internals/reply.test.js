@@ -467,13 +467,13 @@ test('Uint8Array without content type should send a application/octet-stream and
     t.error(err)
     t.teardown(fastify.close.bind(fastify))
 
-    sget({
+    fastify.inject({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
+      url: '/'
+    }, (err, response) => {
       t.error(err)
       t.equal(response.headers['content-type'], 'application/octet-stream')
-      t.same(new Uint8Array(body), new Uint8Array(1024).fill(0xff))
+      t.same(new Uint8Array(response.rawPayload), new Uint8Array(1024).fill(0xff))
     })
   })
 })
@@ -490,13 +490,13 @@ test('Uint16Array without content type should send a application/octet-stream an
     t.error(err)
     t.teardown(fastify.close.bind(fastify))
 
-    sget({
+    fastify.inject({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
+      url: '/'
+    }, (err, res) => {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
-      t.same(new Uint16Array(body.buffer, body.byteOffset, body.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(50).fill(0xffffffff))
+      t.equal(res.headers['content-type'], 'application/octet-stream')
+      t.same(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(50).fill(0xffffffff))
     })
   })
 })
@@ -514,13 +514,13 @@ test('TypedArray with content type should not send application/octet-stream', t 
     t.error(err)
     t.teardown(fastify.close.bind(fastify))
 
-    sget({
+    fastify.inject({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
+      url: '/'
+    }, (err, res) => {
       t.error(err)
-      t.equal(response.headers['content-type'], 'text/plain')
-      t.same(new Uint16Array(body.buffer, body.byteOffset, body.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(1024).fill(0xffffffff))
+      t.equal(res.headers['content-type'], 'text/plain')
+      t.same(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(1024).fill(0xffffffff))
     })
   })
 })

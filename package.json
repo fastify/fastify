@@ -136,7 +136,7 @@
     "@fastify/pre-commit": "^2.0.2",
     "@sinclair/typebox": "^0.28.9",
     "@sinonjs/fake-timers": "^10.0.2",
-    "@types/node": "^18.16.3",
+    "@types/node": "^20.1.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
     "ajv": "^8.12.0",

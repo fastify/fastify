@@ -31,6 +31,7 @@ expectType<AddressInfo[]>(server.addresses())
 expectType<unknown>(server.getSchema('SchemaId'))
 expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())
+expectType<string>(server.listeningOrigin)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {

@@ -25,6 +25,7 @@ are Request/Reply hooks and application hooks:
 - [Application Hooks](#application-hooks)
   - [onReady](#onready)
   - [onClose](#onclose)
+  - [preClose](#preclose)
   - [onRoute](#onroute)
   - [onRegister](#onregister)
 - [Scope](#scope)
@@ -385,6 +386,7 @@ You can hook into the application-lifecycle as well.
 
 - [onReady](#onready)
 - [onClose](#onclose)
+- [preClose](#preclose)
 - [onRoute](#onroute)
 - [onRegister](#onregister)
 
@@ -414,9 +416,10 @@ fastify.addHook('onReady', async function () {
 ### onClose
 <a id="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server. It is useful
-when [plugins](./Plugins.md) need a "shutdown" event, for example, to close an
-open connection to a database.
+Triggered when `fastify.close()` is invoked to stop the server, after all in-flight
+HTTP requests have been completed.
+It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
+to close an open connection to a database.
 
 The hook function takes the Fastify instance as a first argument, 
 and a `done` callback for synchronous hook functions.
@@ -431,6 +434,30 @@ fastify.addHook('onClose', (instance, done) => {
 fastify.addHook('onClose', async (instance) => {
   // Some async code
   await closeDatabaseConnections()
+})
+```
+
+### preClose
+<a id="pre-close"></a>
+
+Triggered when `fastify.close()` is invoked to stop the server, before all in-flight
+HTTP requests have been completed.
+It is useful when [plugins](./Plugins.md) have set up some state attached
+to the HTTP server that would prevent the server to close.
+_It is unlikely you will need to use this hook_,
+use the [`onClose`](#onclose) for the most common case.
+
+```js
+// callback style
+fastify.addHook('preClose', (done) => {
+  // Some code
+  done()
+})
+
+// or async/await style
+fastify.addHook('preClose', async () => {
+  // Some async code
+  await removeSomeServerState()
 })
 ```
 

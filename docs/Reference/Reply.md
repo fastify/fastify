@@ -708,6 +708,20 @@ fastify.get('/streams', async function (request, reply) {
   return reply
 })
 ```
+
+#### TypedArrays
+<a id="send-typedarrays"></a>
+
+`send` manages TypedArray and sets the `'Content-Type'=application/octet-stream'`
+header if not already set.
+```js
+const fs = require('fs')
+fastify.get('/streams', function (request, reply) {
+  const typedArray = new Uint16Array(10)
+  reply.send(typedArray)
+})
+```
+
 #### Errors
 <a id="errors"></a>
 

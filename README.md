@@ -194,7 +194,7 @@ changes should be based on **`branch 1.x`**. In a similar way, all Fastify
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
   frameworks in town, depending on the code complexity we can serve up to 76+
   thousand requests per second.
-- **Extendible:** Fastify is fully extensible via its hooks, plugins and
+- **Extensible:** Fastify is fully extensible via its hooks, plugins and
   decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON
   Schema](https://json-schema.org/) to validate your routes and serialize your

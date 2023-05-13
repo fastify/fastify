@@ -202,8 +202,7 @@ changes should be based on **`branch 1.x`**. In a similar way, all Fastify
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
   frameworks in town, depending on the code complexity we can serve up to 76+
   thousand requests per second.
-- **Extenss
-ible:** Fastify is fully extensible via its hooks, plugins and
+- **Extensible:** Fastify is fully extensible via its hooks, plugins and
   decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON
   Schema](https://json-schema.org/) to validate your routes and serialize your
@@ -353,8 +352,6 @@ listed in alphabetical order.
 * [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
-* [__Rafael Gonzaga__](https://github.com/rafaelgss),
-  <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Simone Busoli__](https://github.com/simoneb),
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 

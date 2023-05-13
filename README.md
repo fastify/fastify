@@ -43,6 +43,14 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
+**Features**
+
+- Fast and efficient routing
+- Low overhead for fast and efficient development
+- Powerful plugin architecture for easy customization and extension
+- Built-in support for various data formats and protocols
+- Highly scalable, able to handle a large number of concurrent requests
+
 The `main` branch refers to the Fastify `v4` release. Check out the
 [`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.
 
@@ -194,7 +202,8 @@ changes should be based on **`branch 1.x`**. In a similar way, all Fastify
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
   frameworks in town, depending on the code complexity we can serve up to 76+
   thousand requests per second.
-- **Extensible:** Fastify is fully extensible via its hooks, plugins and
+- **Extenss
+ible:** Fastify is fully extensible via its hooks, plugins and
   decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON
   Schema](https://json-schema.org/) to validate your routes and serialize your

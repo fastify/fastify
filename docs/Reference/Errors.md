@@ -429,6 +429,11 @@ Handler for the route must be a function.
 
 Missing handler function for the route.
 
+#### FST_ERR_ROUTE_METHOD_INVALID
+<a id="FST_ERR_ROUTE_METHOD_INVALID"></a>
+
+Method is not a valid value.
+
 #### FST_ERR_ROUTE_METHOD_NOT_SUPPORTED
 <a id="FST_ERR_ROUTE_METHOD_NOT_SUPPORTED"></a>
 

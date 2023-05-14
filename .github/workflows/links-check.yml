@@ -19,7 +19,7 @@ jobs:
       # See: https://github.com/lycheeverse/lychee-action/issues/17
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@9ace499fe66cee282a29eaa628fdac2c72fa087f
+        uses: lycheeverse/lychee-action@97189f2c0a3c8b0cb0e704fd4e878af6e5e2b2c5
         with:
           fail: true
           # As external links behaviour is not predictable, we check only internal links

@@ -495,3 +495,94 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', t 
     })
   })
 })
+
+test('preClose callback', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  let preCloseCalled = false
+  function onClose (instance, done) {
+    t.equal(preCloseCalled, true)
+    done()
+  }
+  fastify.addHook('preClose', preClose)
+
+  function preClose (done) {
+    t.type(this, fastify)
+    preCloseCalled = true
+    done()
+  }
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
+    })
+  })
+})
+
+test('preClose async', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  let preCloseCalled = false
+  async function onClose () {
+    t.equal(preCloseCalled, true)
+  }
+  fastify.addHook('preClose', preClose)
+
+  async function preClose () {
+    preCloseCalled = true
+    t.type(this, fastify)
+  }
+
+  await fastify.listen({ port: 0 })
+
+  await fastify.close()
+})
+
+test('preClose execution order', t => {
+  t.plan(4)
+  async function sleep (ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    })
+  }
+  const fastify = Fastify()
+  const order = []
+  fastify.addHook('onClose', onClose)
+  function onClose (instance, done) {
+    t.same(order, [1, 2, 3])
+    done()
+  }
+
+  fastify.addHook('preClose', (done) => {
+    setTimeout(function () {
+      order.push(1)
+      done()
+    }, 200)
+  })
+
+  fastify.addHook('preClose', async () => {
+    await sleep(100)
+    order.push(2)
+  })
+
+  fastify.addHook('preClose', (done) => {
+    setTimeout(function () {
+      order.push(3)
+      done()
+    }, 100)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
+    })
+  })
+})

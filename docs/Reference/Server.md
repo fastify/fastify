@@ -63,6 +63,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
+    - [listeningOrigin](#listeningOrigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -916,9 +917,25 @@ fastify.ready().then(() => {
 
 Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
-`callback` parameters follow the [Node.js
-core](https://nodejs.org/api/net.html#serverlistenoptions-callback) parameter
-definitions.
+`callback` parameters extend the [Node.js
+core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
+object. Thus, all core options are available with the following additional 
+Fastify specific options:
+
+### `listenTextResolver`
+<a id="listen-text-resolver"></a>
+
+Set an optional resolver for the text to log after server has been successfully
+started.
+It is possible to override the default `Server listening at [address]` log 
+entry using this option.
+
+```js
+server.listen({ 
+  port: 9080, 
+  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` } 
+})
+```
 
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
@@ -1214,6 +1231,15 @@ fastify.ready(() => {
   fastify.hasPlugin('@fastify/cookie') // true
 })
 ```
+
+### listeningOrigin
+<a id="listeningOrigin"></a>
+
+The current origin the server is listening to.
+For example, a TCP socket based server returns
+a base address like `http://127.0.0.1:3000`,
+and a Unix socket server will return the socket
+path, e.g. `fastify.temp.sock`.
 
 #### log
 <a id="log"></a>

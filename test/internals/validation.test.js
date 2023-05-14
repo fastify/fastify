@@ -300,3 +300,61 @@ test('build schema - uppercased headers are not included', t => {
     return () => {}
   })
 })
+
+test('build schema - mixed schema types are individually skipped or normalized', t => {
+  t.plan(6)
+
+  class CustomSchemaClass {}
+  const nonNormalizedSchema = {
+    hello: { type: 'string' }
+  }
+  const normalizedSchema = {
+    type: 'object',
+    properties: nonNormalizedSchema
+  }
+
+  const testCases = [{
+    schema: {
+      body: new CustomSchemaClass()
+    },
+    assertions: (schema) => {
+      t.type(schema.body, CustomSchemaClass)
+    }
+  }, {
+    schema: {
+      response: {
+        200: new CustomSchemaClass()
+      }
+    },
+    assertions: (schema) => {
+      t.type(schema.response[200], CustomSchemaClass)
+    }
+  }, {
+    schema: {
+      body: nonNormalizedSchema,
+      response: {
+        200: new CustomSchemaClass()
+      }
+    },
+    assertions: (schema) => {
+      t.same(schema.body, normalizedSchema)
+      t.type(schema.response[200], CustomSchemaClass)
+    }
+  }, {
+    schema: {
+      body: new CustomSchemaClass(),
+      response: {
+        200: nonNormalizedSchema
+      }
+    },
+    assertions: (schema) => {
+      t.type(schema.body, CustomSchemaClass)
+      t.same(schema.response[200], normalizedSchema)
+    }
+  }]
+
+  testCases.forEach((testCase) => {
+    const result = normalizeSchema(testCase.schema, { jsonShorthand: true })
+    testCase.assertions(result)
+  })
+})

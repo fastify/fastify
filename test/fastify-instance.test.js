@@ -3,6 +3,8 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const os = require('os')
+
 const {
   kOptions,
   kErrorHandler
@@ -96,4 +98,41 @@ test('errorHandler in plugin should be separate from the external one', async t 
 
   t.ok(fastify[kErrorHandler].func instanceof Function)
   t.same(fastify.errorHandler, fastify[kErrorHandler].func)
+})
+
+test('fastify instance should contains listeningOrigin property (with port and host)', async t => {
+  t.plan(1)
+  const port = 3000
+  const host = '127.0.0.1'
+  const fastify = Fastify()
+  await fastify.listen({ port, host })
+  t.same(fastify.listeningOrigin, `http://${host}:${port}`)
+  await fastify.close()
+})
+
+test('fastify instance should contains listeningOrigin property (with port and https)', async t => {
+  t.plan(1)
+  const port = 3000
+  const host = '127.0.0.1'
+  const fastify = Fastify({ https: {} })
+  await fastify.listen({ port, host })
+  t.same(fastify.listeningOrigin, `https://${host}:${port}`)
+  await fastify.close()
+})
+
+test('fastify instance should contains listeningOrigin property (no options)', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  await fastify.listen()
+  const address = fastify.server.address()
+  t.same(fastify.listeningOrigin, `http://${address.address}:${address.port}`)
+  await fastify.close()
+})
+
+test('fastify instance should contains listeningOrigin property (unix socket)', { skip: os.platform() === 'win32' }, async t => {
+  const fastify = Fastify()
+  const path = `fastify.${Date.now()}.sock`
+  await fastify.listen({ path })
+  t.same(fastify.listeningOrigin, path)
+  await fastify.close()
 })

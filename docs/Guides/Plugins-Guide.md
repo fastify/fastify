@@ -427,7 +427,7 @@ variables that were injected by preceding plugins in the order of declaration.
 
 ESM is supported as well from [Node.js
 `v13.3.0`](https://nodejs.org/api/esm.html) and above! Just export your plugin
-as ESM module and you are good to go!
+as an ESM module and you are good to go!
 
 ```js
 // plugin.mjs

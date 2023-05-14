@@ -11,4 +11,6 @@ jobs:
     steps:
     - uses: actions/labeler@v4
       with:
+        # Workaround only valid until the next major version bump (v5)
+        sync-labels: ''
         repo-token: "${{ secrets.GITHUB_TOKEN }}"

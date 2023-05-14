@@ -1,15 +1,17 @@
-import { expectDeprecated, expectError, expectType } from 'tsd'
+import { expectAssignable, expectDeprecated, expectError, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   FastifyLogFn,
   LogLevel,
   FastifyLoggerInstance,
   FastifyRequest,
   FastifyReply,
-  FastifyBaseLogger
+  FastifyBaseLogger,
+  FastifyInstance
 } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
 import P from 'pino'
+import { ResSerializerReply } from '../../types/logger'
 
 expectType<FastifyLoggerInstance>(fastify().log)
 
@@ -127,7 +129,9 @@ const serverAutoInferredSerializerResponseObjectOption = fastify({
   logger: {
     serializers: {
       res (ServerResponse) {
-        expectType<FastifyReply>(ServerResponse)
+        expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
+        expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
+        expectNotAssignable<FastifyReply>(ServerResponse)
         return {
           status: '200'
         }
@@ -154,7 +158,9 @@ const serverAutoInferredSerializerObjectOption = fastify({
         }
       },
       res (ServerResponse) {
-        expectType<FastifyReply>(ServerResponse)
+        expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
+        expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
+        expectNotAssignable<FastifyReply>(ServerResponse)
         return {
           statusCode: 'statusCode'
         }

@@ -144,7 +144,7 @@ test('route', t => {
     const fastify = Fastify()
     t.doesNotThrow(() =>
       fastify.route({
-        method: ['GET', 'DELETE'],
+        method: ['get', 'delete'],
         url: '/multiple',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })

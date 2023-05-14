@@ -71,3 +71,33 @@ test('Should not allow forceCloseConnection=idle if the server does not support 
     "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
   )
 })
+
+test('Should accept user defined serverFactory and emit a warning', async t => {
+  const server = http.createServer(() => {})
+  const app = Fastify({
+    serverFactory: () => server
+  })
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'Fastify Warning')
+    t.equal(warning.code, 'FSTWARN001')
+  }
+  t.teardown(() => process.removeListener('warning', onWarning))
+  t.teardown(app.close.bind(app))
+  t.teardown(() => new Promise(resolve => server.close(resolve)))
+  await app.listen({ port: 0 })
+})
+
+test('Should accept user defined serverFactory and throw an error if the supplied server is listening', async t => {
+  const server = http.createServer(() => {})
+  server.listen()
+  t.teardown(() => new Promise(resolve => server.close(resolve)))
+  const app = await Fastify({
+    serverFactory: () => server
+  })
+  t.rejects(
+    async () => {
+      await app.listen({ port: 0 })
+    }
+  )
+})

@@ -7,6 +7,7 @@ const http = require('http')
 const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 const sget = require('simple-get').concat
 const dns = require('dns').promises
+const warning = require('../lib/warnings')
 
 test('Should support a custom http server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
@@ -79,10 +80,13 @@ test('Should accept user defined serverFactory and emit a warning', async t => {
   })
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'Fastify Warning')
-    t.equal(warning.code, 'FSTWARN001')
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN002')
   }
-  t.teardown(() => process.removeListener('warning', onWarning))
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTWRN002', false)
+  })
   t.teardown(app.close.bind(app))
   t.teardown(() => new Promise(resolve => server.close(resolve)))
   await app.listen({ port: 0 })

@@ -744,3 +744,172 @@ test('The default schema compilers should not be called when overwritte by the u
 
   await fastify.ready()
 })
+
+test('Supports async JOI validation', t => {
+  t.plan(7)
+
+  const schemaValidator = ({ schema }) => async data => {
+    const validationResult = await schema.validateAsync(data)
+    return validationResult
+  }
+
+  const fastify = Fastify()
+  fastify.setValidatorCompiler(schemaValidator)
+
+  fastify.get('/', {
+    schema: {
+      headers: Joi.object({
+        'user-agent': Joi.string().external(async (val) => {
+          if (val !== 'lightMyRequest') {
+            throw new Error('Invalid user-agent')
+          }
+
+          t.equal(val, 'lightMyRequest')
+          return val
+        }),
+        host: Joi.string().required()
+      })
+    }
+  }, (request, reply) => {
+    reply.send(request.headers)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), {
+      'user-agent': 'lightMyRequest',
+      host: 'localhost:80'
+    })
+  })
+
+  fastify.inject({
+    url: '/',
+    headers: {
+      'user-agent': 'invalid'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'Invalid user-agent (user-agent)'
+    })
+  })
+})
+
+test('Supports async AJV validation', t => {
+  t.plan(12)
+
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        allErrors: true,
+        keywords: [
+          {
+            keyword: 'idExists',
+            async: true,
+            type: 'number',
+            validate: checkIdExists
+          }
+        ]
+      },
+      plugins: [
+        [ajvErrors, { singleError: '@@@@' }]
+      ]
+    }
+  })
+
+  async function checkIdExists (schema, data) {
+    const res = await Promise.resolve(data)
+    switch (res) {
+      case 42:
+        return true
+
+      case 500:
+        throw new Error('custom error')
+
+      default:
+        return false
+    }
+  }
+
+  const schema = {
+    $async: true,
+    type: 'object',
+    properties: {
+      userId: {
+        type: 'integer',
+        idExists: { table: 'users' }
+      },
+      postId: {
+        type: 'integer',
+        idExists: { table: 'posts' }
+      }
+    }
+  }
+
+  fastify.post('/', {
+    schema: {
+      body: schema
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 99 }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'validation failed'
+    })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 500 }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'custom error'
+    })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 42 }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { userId: 42 })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 42, postId: 19 }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'validation failed'
+    })
+  })
+})

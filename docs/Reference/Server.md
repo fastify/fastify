@@ -830,9 +830,14 @@ URLs.
 
 ```js
 // req is the Node.js HTTP request
-// logger is the the Fastify logger instance
-function rewriteUrl (req, logger) { 
-  return req.url === '/hi' ? '/hello' : req.url;
+// opts is an object containing the logger (it is not the Fastify instance)
+function rewriteUrl (req, opts) { 
+  if (req.url === '/hi') {
+    opts.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
+    return '/hello'
+  } else {
+    return req.url;
+  }
 }
 ```
 

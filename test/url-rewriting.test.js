@@ -8,8 +8,9 @@ const sget = require('simple-get').concat
 test('Should rewrite url', t => {
   t.plan(5)
   const fastify = Fastify({
-    rewriteUrl (req) {
+    rewriteUrl (req, opts) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      opts.log.info('rewriting url')
       return '/'
     }
   })
@@ -41,8 +42,9 @@ test('Should rewrite url', t => {
 test('Should not rewrite if the url is the same', t => {
   t.plan(4)
   const fastify = Fastify({
-    rewriteUrl (req) {
+    rewriteUrl (req, opts) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      opts.log.info('rewriting url')
       return req.url
     }
   })
@@ -72,8 +74,9 @@ test('Should not rewrite if the url is the same', t => {
 test('Should throw an error', t => {
   t.plan(5)
   const fastify = Fastify({
-    rewriteUrl (req) {
+    rewriteUrl (req, opts) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      opts.log.info('rewriting url')
       return undefined
     }
   })

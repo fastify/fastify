@@ -792,6 +792,10 @@ function fastify (options) {
     let isAsync
     return function preRouting (req, res) {
       // only call isAsyncConstraint once
+      /* istanbul ignore next */
+      if (req.originalUrl == null) {
+        req.originalUrl = req.url
+      }
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
         const originalUrl = req.url

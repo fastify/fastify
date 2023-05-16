@@ -50,6 +50,7 @@ fastest web frameworks in town.
 - Powerful plugin architecture for easy customization and extension
 - Built-in support for various data formats and protocols
 - Highly scalable, able to handle a large number of concurrent requests
+- Input validation ready to use
 
 The `main` branch refers to the Fastify `v4` release. Check out the
 [`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.

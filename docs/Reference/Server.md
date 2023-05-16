@@ -830,10 +830,10 @@ URLs.
 
 ```js
 // req is the Node.js HTTP request
-// opts is an object containing the logger (it is not the Fastify instance)
-function rewriteUrl (req, opts) { 
+// this is an object containing the logger (it is not the Fastify instance)
+function rewriteUrl (req) { 
   if (req.url === '/hi') {
-    opts.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
+    this.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
     return '/hello'
   } else {
     return req.url;

@@ -81,7 +81,7 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
-  export interface RewriteUrlParams<Logger extends FastifyBaseLogger = FastifyBaseLogger> {
+  export interface FastifyInstanceLoggerOnly<Logger extends FastifyBaseLogger = FastifyBaseLogger> {
     log: Logger;
   }
 
@@ -152,7 +152,7 @@ declare namespace fastify {
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,
       res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RequestGeneric, FastifyContextConfig, SchemaCompiler, TypeProvider>
     ) => void,
-    rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>, opts: RewriteUrlParams<Logger>) => string,
+    rewriteUrl?: (this: FastifyInstanceLoggerOnly<Logger>, req: RawRequestDefaultExpression<RawServer>) => string,
     schemaErrorFormatter?: SchemaErrorFormatter,
     /**
      * listener to error events emitted by client connections

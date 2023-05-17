@@ -63,17 +63,7 @@ export interface FastifyReply<
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
   trailer: (
     key: string,
-    fn:
-      | (() => string)
-      | ((
-          reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
-          payload: string | Buffer | null
-        ) => Promise<string>)
-      | ((
-          reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
-          payload: string | Buffer | null,
-          done: (err: Error | null, value?: string) => void
-        ) => void),
+    fn: (() => string) | ((reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, payload: string | Buffer | null) => Promise<string>) | ((reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, payload: string | Buffer | null, done: (err: Error | null, value?: string) => void) => void)
   ) => FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hasTrailer(key: string): boolean;
   removeTrailer(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

@@ -1,6 +1,9 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
+import { CallTypeProvider, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
+import { FastifySchema } from './schema'
+import { RouteGenericInterface } from './route'
 
 /**
  * Standard HTTP method strings
@@ -43,3 +46,44 @@ export type RequestHeadersDefault = unknown
 
 export type ContextConfigDefault = unknown
 export type ReplyDefault = unknown
+
+/**
+ * Helpers for determining the type of the response payload based on the code
+ */
+
+type WildCardKeys = {1: '1xx', 2:'2xx', 3:'3xx', 4:'4xx', 5:'5xx'};
+type ResponseCodes100 = 100 | 101 | 102 | 103 | 122;
+type ResponseCodes200 = 200 | 201 | 202 | 203 | 204 | 205 | 206 | 207 | 208 | 226;
+type ResponseCodes300 = 300 | 301 | 302 | 303 | 304 | 305 | 306 | 307 | 308;
+type ResponseCodes400 = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 421 | 422 | 423 | 424 | 425 | 426 | 428 | 429 | 431 | 451;
+type ResponseCodes500 = 500 | 501 | 502 | 503 | 504 | 505 | 506 | 507 | 508 | 510 | 511;
+type ResponseCodes = ResponseCodes100 | ResponseCodes200 | ResponseCodes300 | ResponseCodes400 | ResponseCodes500;
+type ResponseKeys = WildCardKeys[keyof WildCardKeys] | ResponseCodes;
+
+type ResponseObject = {
+  // eslint-disable-next-line no-unused-vars
+  [Key in ResponseKeys]?: unknown;
+};
+
+type FirstChar<Str extends string> = Str extends `${infer X}${string}` ? X : never;
+type GetHundred<N extends number> = FirstChar<`${N}`> extends `${infer Num extends number}` ? Num : never;
+
+export type HttpCodesCovered<Key> = Key extends ResponseCodes ? Key :
+  Key extends `${infer X extends keyof WildCardKeys}xx` ?
+    X extends 1 ? ResponseCodes100 :
+      X extends 2 ? ResponseCodes200 :
+        X extends 3 ? ResponseCodes300 :
+          X extends 4 ? ResponseCodes400 :
+            X extends 5 ? ResponseCodes500 : never : never;
+
+export type CodeToKeyFromSchema<Code extends ResponseCodes, Schema> = Code extends keyof Schema ? Code :
+  GetHundred<Code> extends keyof WildCardKeys ? WildCardKeys[GetHundred<Code>] : never;
+
+export type ReplyTypeInfer<
+  Code extends ResponseCodes,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface> =
+  SchemaCompiler['response'] extends ResponseObject ?
+    CallTypeProvider<TypeProvider, SchemaCompiler['response'][CodeToKeyFromSchema<Code, Response>]> :
+    ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>;

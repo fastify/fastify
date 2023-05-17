@@ -32,6 +32,7 @@ describes the properties available in that options object.
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
   - [`genReqId`](#genreqid)
+  - [`childLoggerFactory`](#childloggerfactory)
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
   - [`querystringParser`](#querystringparser)
@@ -547,6 +548,31 @@ const fastify = require('fastify')({
 **Note: genReqId will _not_ be called if the header set in
 <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
 'request-id').**
+
+### `childLoggerFactory`
+<a id="factory-child-logger-factory"></a>
+
+Hook function that is called when creating a child logger instance for each request
+which allows for modifying or adding child logger bindings and logger options, or
+returning a completely custom child logger implementation.
+
+Child logger bindings have a performance advantage over per-log bindings, because
+they are pre-serialised by Pino when the child logger is created.
+
+The first parameter is the parent logger instance, followed by the default bindings
+and logger options which should be passed to the child logger, and finally
+the raw request (not a Fastify request object).
+
+For example:
+```js
+const fastify = require('fastify')({
+  childLoggerFactory: function (logger, bindings, opts, rawReq) {
+    // Calculate additional bindings from the request if needed
+    bindings.traceContext = rawReq.headers['x-cloud-trace-context']
+    return logger.child(bindings, opts)
+  }
+})
+```
 
 ### `trustProxy`
 <a id="factory-trust-proxy"></a>

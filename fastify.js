@@ -39,7 +39,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createLogger } = require('./lib/logger')
+const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
@@ -95,6 +95,9 @@ function defaultBuildPrettyMeta (route) {
   return Object.assign({}, cleanKeys)
 }
 
+/**
+ * @param {import('./fastify.js').FastifyServerOptions} options
+ */
 function fastify (options) {
   // Options validations
   options = options || {}
@@ -148,6 +151,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.childLoggerFactory = options.childLoggerFactory || defaultChildLoggerFactory
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -691,7 +695,7 @@ function fastify (options) {
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = genReqId(req)
-      const childLogger = logger.child({ reqId: id })
+      const childLogger = createChildLogger(logger, req, id, options)
 
       childLogger.info({ req }, 'incoming request')
 
@@ -713,7 +717,7 @@ function fastify (options) {
       if (err) {
         if (frameworkErrors) {
           const id = genReqId(req)
-          const childLogger = logger.child({ reqId: id })
+          const childLogger = createChildLogger(logger, req, id, options)
 
           childLogger.info({ req }, 'incoming request')
 

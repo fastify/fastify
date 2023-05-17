@@ -14,7 +14,7 @@ import { FastifyContext, FastifyContextConfig } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler } from './types/hooks'
 import { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
-import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel } from './types/logger'
+import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel, Bindings, ChildLoggerOptions } from './types/logger'
 import { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
 import { FastifyReply } from './types/reply'
@@ -153,7 +153,30 @@ declare namespace fastify {
     /**
      * listener to error events emitted by client connections
      */
-    clientErrorHandler?: (error: ConnectionError, socket: Socket) => void
+    clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
+    /**
+     * Hook function that is called when creating a child logger instance for each request
+     * which allows for modifying or adding child logger bindings and logger options, or
+     * returning a completely custom child logger implementation.
+     *
+     * Child logger bindings have a performance advantage over per-log bindings, because
+     * they are pre-serialised by Pino when the child logger is created.
+     *
+     * For example:
+     * ```
+     * function childLoggerFactory(logger, bindings, opts, rawReq) {
+     *   // Calculate additional bindings from the request
+     *   bindings.traceContext = rawReq.headers['x-cloud-trace-context']
+     *   return logger.child(bindings, opts);
+     * }
+     * ```
+     *
+     * @param logger The parent logger
+     * @param bindings The bindings object that will be passed to the child logger
+     * @param childLoggerOpts The logger options that will be passed to the child logger
+     * @param rawReq The raw request
+     */
+    childLoggerFactory?: (logger: Logger, bindings: Bindings, childLoggerOpts: ChildLoggerOptions, rawReq: RawReplyDefaultExpression<RawServer>) => Logger,
   }
 
   export interface ValidationResult {

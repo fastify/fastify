@@ -5,7 +5,6 @@ import { FastifyLoggerInstance } from '../../types/logger'
 import { RouteGenericInterface } from '../../types/route'
 import { FastifyInstance } from '../../types/instance'
 import { Buffer } from 'buffer'
-import { FastifyReplyType } from '../../types/type-provider'
 
 type DefaultSerializationFunction = (payload: {[key: string]: unknown}) => string
 
@@ -15,8 +14,9 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<FastifyContextConfig>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
-  expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeInfer<Code>>>(reply.code)
-  expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeInfer<Code>>>(reply.status)
+  type ModifiedReplyType<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeInfer<Code>, Code>
+  expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => ModifiedReplyType<Code>>(reply.code)
+  expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => ModifiedReplyType<Code>>(reply.status)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)

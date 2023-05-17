@@ -68,22 +68,26 @@ type ResponseObject = {
 type FirstChar<Str extends string> = Str extends `${infer X}${string}` ? X : never;
 type GetHundred<N extends number> = FirstChar<`${N}`> extends `${infer Num extends number}` ? Num : never;
 
-export type HttpCodesCovered<Key> = Key extends ResponseCodes ? Key :
-  Key extends `${infer X extends keyof WildCardKeys}xx` ?
-    X extends 1 ? ResponseCodes100 :
-      X extends 2 ? ResponseCodes200 :
-        X extends 3 ? ResponseCodes300 :
-          X extends 4 ? ResponseCodes400 :
-            X extends 5 ? ResponseCodes500 : never : never;
+// weird TS quirk: https://stackoverflow.com/questions/58977876/generic-conditional-type-resolves-to-never-when-the-generic-type-is-set-to-never
+export type HttpCodesCovered<Key> = [Key] extends [never] ? number :
+  Key extends ResponseCodes ? Key :
+    Key extends `${infer X extends keyof WildCardKeys}xx` ?
+      X extends 1 ? ResponseCodes100 :
+        X extends 2 ? ResponseCodes200 :
+          X extends 3 ? ResponseCodes300 :
+            X extends 4 ? ResponseCodes400 :
+              X extends 5 ? ResponseCodes500 : never : number;
 
 export type CodeToKeyFromSchema<Code extends ResponseCodes, Schema> = Code extends keyof Schema ? Code :
   GetHundred<Code> extends keyof WildCardKeys ? WildCardKeys[GetHundred<Code>] : never;
 
 export type ReplyTypeInfer<
-  Code extends ResponseCodes,
+  Code extends number,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface> =
   SchemaCompiler['response'] extends ResponseObject ?
-    CallTypeProvider<TypeProvider, SchemaCompiler['response'][CodeToKeyFromSchema<Code, Response>]> :
+    Code extends ResponseCodes ?
+      CallTypeProvider<TypeProvider, SchemaCompiler['response'][CodeToKeyFromSchema<Code, Response>]> :
+      ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric> :
     ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>;

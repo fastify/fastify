@@ -342,3 +342,15 @@ expectType<boolean>(fastify().hasRoute({
   method: 'GET',
   constraints: { version: '1.2.0' }
 }))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: 'get',
+  handler: routeHandlerWithReturnValue
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: ['put', 'patch'],
+  handler: routeHandlerWithReturnValue
+}))

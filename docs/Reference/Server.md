@@ -561,7 +561,8 @@ they are pre-serialised by Pino when the child logger is created.
 
 The first parameter is the parent logger instance, followed by the default bindings
 and logger options which should be passed to the child logger, and finally
-the raw request (not a Fastify request object).
+the raw request (not a Fastify request object). The function is bound with `this`
+being the Fastify instance.
 
 For example:
 ```js

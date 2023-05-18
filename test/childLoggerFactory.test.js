@@ -10,6 +10,7 @@ test('Should accept a custom childLoggerFactory function', t => {
     childLoggerFactory: function (logger, bindings, opts) {
       t.ok(bindings.reqId)
       t.ok(opts)
+      this.log.debug(bindings, 'created child logger')
       return logger.child(bindings, opts)
     }
   })
@@ -36,6 +37,7 @@ test('req.log should be the instance returned by the factory', t => {
 
   const fastify = Fastify({
     childLoggerFactory: function (logger, bindings, opts) {
+      this.log.debug('using root logger')
       return fastify.log
     }
   })
@@ -63,6 +65,7 @@ test('should throw error if invalid logger is returned', t => {
 
   const fastify = Fastify({
     childLoggerFactory: function () {
+      this.log.debug('returning an invalid logger, expect error')
       return undefined
     }
   })

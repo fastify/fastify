@@ -175,8 +175,16 @@ declare namespace fastify {
      * @param bindings The bindings object that will be passed to the child logger
      * @param childLoggerOpts The logger options that will be passed to the child logger
      * @param rawReq The raw request
+     * @this {} The fastify instance
+     * @returns The child logger instance
      */
-    childLoggerFactory?: (logger: Logger, bindings: Bindings, childLoggerOpts: ChildLoggerOptions, rawReq: RawReplyDefaultExpression<RawServer>) => Logger,
+    childLoggerFactory?: (
+      this: FastifyInstance<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, Logger, FastifyTypeProviderDefault>,
+      logger: Logger,
+      bindings: Bindings,
+      childLoggerOpts: ChildLoggerOptions,
+      rawReq: RawRequestDefaultExpression<RawServer>
+    ) => Logger,
   }
 
   export interface ValidationResult {

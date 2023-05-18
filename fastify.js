@@ -695,7 +695,7 @@ function fastify (options) {
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = genReqId(req)
-      const childLogger = createChildLogger(logger, req, id, options)
+      const childLogger = createChildLogger(fastify, logger, req, id, options)
 
       childLogger.info({ req }, 'incoming request')
 
@@ -717,7 +717,7 @@ function fastify (options) {
       if (err) {
         if (frameworkErrors) {
           const id = genReqId(req)
-          const childLogger = createChildLogger(logger, req, id, options)
+          const childLogger = createChildLogger(fastify, logger, req, id, options)
 
           childLogger.info({ req }, 'incoming request')
 

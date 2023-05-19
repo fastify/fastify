@@ -14,9 +14,10 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<FastifyContextConfig>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
-  type ModifiedReplyType<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeInfer<Code>, Code>
+  type ModifiedReplyType<Code extends number = number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeInfer<Code>, Code>
   expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => ModifiedReplyType<Code>>(reply.code)
   expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => ModifiedReplyType<Code>>(reply.status)
+  expectType<(payload?: unknown) => ModifiedReplyType>(reply.status(200).send)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)

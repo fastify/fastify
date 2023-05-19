@@ -5,7 +5,7 @@ import fastify, {
   FastifyReply,
   FastifyInstance
 } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
@@ -78,13 +78,22 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         x: Type.Number(),
         y: Type.Number(),
         z: Type.Number()
-      })
+      }),
+      response: {
+        200: Type.String(),
+        '3xx': Type.Literal('123')
+      }
     }
   },
-  (req) => {
+  (req, res) => {
     expectType<number>(req.body.x)
     expectType<number>(req.body.y)
     expectType<number>(req.body.z)
+
+    // response type narrowing
+    expectAssignable<(payload: string) => unknown>(res.code(200).send)
+    expectAssignable<(payload:'abc') => unknown>(res.code(200).send)
+    expectNotAssignable<(payload: string) => unknown>(res.code(301).send)
   }
 ))
 
@@ -107,13 +116,22 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
           y: { type: 'string' },
           z: { type: 'boolean' }
         }
+      } as const,
+      response: {
+        200: { type: 'string' },
+        '3xx': { const: '123' }
       } as const
     }
   },
-  (req) => {
+  (req, res) => {
     expectType<number | undefined>(req.body.x)
     expectType<string | undefined>(req.body.y)
     expectType<boolean | undefined>(req.body.z)
+
+    // response type narrowing
+    expectAssignable<(payload: string) => unknown>(res.code(200).send)
+    expectAssignable<(payload:'abc') => unknown>(res.code(200).send)
+    expectNotAssignable<(payload: string) => unknown>(res.code(301).send)
   }
 ))
 
@@ -134,13 +152,22 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<Jso
           y: { type: 'string' },
           z: { type: 'boolean' }
         }
+      } as const,
+      response: {
+        200: { type: 'string' },
+        '3xx': { const: '123' }
       } as const
     }
   },
-  (req) => {
+  (req, res) => {
     expectType<number | undefined>(req.body.x)
     expectType<string | undefined>(req.body.y)
     expectType<boolean | undefined>(req.body.z)
+
+    // response type narrowing
+    expectAssignable<(payload: string) => unknown>(res.code(200).send)
+    expectAssignable<(payload:'abc') => unknown>(res.code(200).send)
+    expectNotAssignable<(payload: string) => unknown>(res.code(301).send)
   }
 ))
 

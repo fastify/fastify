@@ -88,6 +88,6 @@ export type ReplyTypeInfer<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface> =
   SchemaCompiler['response'] extends ResponseObject ?
     Code extends ResponseCodes ?
-      CallTypeProvider<TypeProvider, SchemaCompiler['response'][CodeToKeyFromSchema<Code, Response>]> :
+      CallTypeProvider<TypeProvider, SchemaCompiler['response'][CodeToKeyFromSchema<Code, SchemaCompiler['response']>]> :
       ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric> :
     ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>;

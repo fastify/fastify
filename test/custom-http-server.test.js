@@ -7,15 +7,14 @@ const http = require('http')
 const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 const sget = require('simple-get').concat
 const dns = require('dns').promises
-const warning = require('../lib/warnings')
 
 test('Should support a custom http server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  t.plan(localAddresses.length + 3)
+  t.plan((localAddresses.length - 1) + 3)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
+    t.ok(opts.serverFactory, 'it is called once for localhost')
 
     const server = http.createServer((req, res) => {
       req.custom = true
@@ -73,35 +72,13 @@ test('Should not allow forceCloseConnection=idle if the server does not support 
   )
 })
 
-test('Should accept user defined serverFactory and emit a warning', async t => {
+test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
   const server = http.createServer(() => {})
-  const app = Fastify({
-    serverFactory: () => server
-  })
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN002')
-  }
-  t.teardown(() => {
-    process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTWRN002', false)
-  })
-  t.teardown(app.close.bind(app))
-  t.teardown(() => new Promise(resolve => server.close(resolve)))
-  await app.listen({ port: 0 })
-})
-
-test('Should accept user defined serverFactory and throw an error if the supplied server is listening', async t => {
-  const server = http.createServer(() => {})
-  server.listen()
   t.teardown(() => new Promise(resolve => server.close(resolve)))
   const app = await Fastify({
     serverFactory: () => server
   })
-  t.rejects(
-    async () => {
-      await app.listen({ port: 0 })
-    }
-  )
+  t.resolves(async () => {
+    await app.listen({ port: 0 })
+  })
 })

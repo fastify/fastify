@@ -913,3 +913,397 @@ test('Supports async AJV validation', t => {
     })
   })
 })
+
+test('Check all the async AJV validation paths', t => {
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        allErrors: true,
+        keywords: [
+          {
+            keyword: 'idExists',
+            async: true,
+            type: 'number',
+            validate: checkIdExists
+          }
+        ]
+      }
+    }
+  })
+
+  async function checkIdExists (schema, data) {
+    const res = await Promise.resolve(data)
+    switch (res) {
+      case 200:
+        return true
+
+      default:
+        return false
+    }
+  }
+
+  const schema = {
+    $async: true,
+    type: 'object',
+    properties: {
+      id: {
+        type: 'integer',
+        idExists: { table: 'posts' }
+      }
+    }
+  }
+
+  fastify.post('/:id', {
+    schema: {
+      params: schema,
+      body: schema,
+      query: schema,
+      headers: schema
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  const testCases = [
+    {
+      params: 400,
+      body: 200,
+      querystring: 200,
+      headers: 200,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 400,
+      querystring: 200,
+      headers: 200,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 200,
+      querystring: 400,
+      headers: 200,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 400,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 200,
+      response: 200
+    }
+  ]
+  t.plan(testCases.length * 2)
+  testCases.forEach(validate)
+
+  function validate ({
+    params,
+    body,
+    querystring,
+    headers,
+    response
+  }) {
+    fastify.inject({
+      method: 'POST',
+      url: `/${params}`,
+      headers: { id: headers },
+      query: { id: querystring },
+      payload: { id: body }
+    }, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, response)
+    })
+  }
+})
+
+test('Check mixed sync and async AJV validations', t => {
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        allErrors: true,
+        keywords: [
+          {
+            keyword: 'idExists',
+            async: true,
+            type: 'number',
+            validate: checkIdExists
+          }
+        ]
+      }
+    }
+  })
+
+  async function checkIdExists (schema, data) {
+    const res = await Promise.resolve(data)
+    switch (res) {
+      case 200:
+        return true
+
+      default:
+        return false
+    }
+  }
+
+  const schemaSync = {
+    type: 'object',
+    properties: {
+      id: { type: 'integer' }
+    }
+  }
+
+  const schemaAsync = {
+    $async: true,
+    type: 'object',
+    properties: {
+      id: {
+        type: 'integer',
+        idExists: { table: 'posts' }
+      }
+    }
+  }
+
+  fastify.post('/queryAsync/:id', {
+    schema: {
+      params: schemaSync,
+      body: schemaSync,
+      query: schemaAsync,
+      headers: schemaSync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  fastify.post('/paramsAsync/:id', {
+    schema: {
+      params: schemaAsync,
+      body: schemaSync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  fastify.post('/bodyAsync/:id', {
+    schema: {
+      params: schemaAsync,
+      body: schemaAsync,
+      query: schemaSync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  fastify.post('/headersSync/:id', {
+    schema: {
+      params: schemaSync,
+      body: schemaSync,
+      query: schemaAsync,
+      headers: schemaSync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  fastify.post('/noHeader/:id', {
+    schema: {
+      params: schemaSync,
+      body: schemaSync,
+      query: schemaAsync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  fastify.post('/noBody/:id', {
+    schema: {
+      params: schemaSync,
+      query: schemaAsync,
+      headers: schemaSync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  const testCases = [
+    {
+      url: '/queryAsync',
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 'not a number sync',
+      response: 400
+    },
+    {
+      url: '/paramsAsync',
+      params: 200,
+      body: 'not a number sync',
+      querystring: 200,
+      headers: 200,
+      response: 400
+    },
+    {
+      url: '/bodyAsync',
+      params: 200,
+      body: 200,
+      querystring: 'not a number sync',
+      headers: 200,
+      response: 400
+    },
+    {
+      url: '/headersSync',
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 'not a number sync',
+      response: 400
+    },
+    {
+      url: '/noHeader',
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 'not a number sync, but not validated',
+      response: 200
+    },
+    {
+      url: '/noBody',
+      params: 200,
+      body: 'not a number sync, but not validated',
+      querystring: 200,
+      headers: 'not a number sync',
+      response: 400
+    }
+  ]
+  t.plan(testCases.length * 2)
+  testCases.forEach(validate)
+
+  function validate ({
+    url,
+    params,
+    body,
+    querystring,
+    headers,
+    response
+  }) {
+    fastify.inject({
+      method: 'POST',
+      url: `${url}/${params || ''}`,
+      headers: { id: headers },
+      query: { id: querystring },
+      payload: { id: body }
+    }, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, response)
+    })
+  }
+})
+
+test('Check if hooks and attachValidation work with AJV validations', t => {
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        allErrors: true,
+        keywords: [
+          {
+            keyword: 'idExists',
+            async: true,
+            type: 'number',
+            validate: checkIdExists
+          }
+        ]
+      }
+    }
+  })
+
+  async function checkIdExists (schema, data) {
+    const res = await Promise.resolve(data)
+    switch (res) {
+      case 200:
+        return true
+
+      default:
+        return false
+    }
+  }
+
+  const schemaAsync = {
+    $async: true,
+    type: 'object',
+    properties: {
+      id: {
+        type: 'integer',
+        idExists: { table: 'posts' }
+      }
+    }
+  }
+
+  fastify.post('/:id', {
+    preHandler: function hook (request, reply, done) {
+      t.equal(request.validationError.message, 'validation failed')
+      t.pass('preHandler called')
+
+      reply.code(400).send(request.body)
+    },
+    attachValidation: true,
+    schema: {
+      params: schemaAsync,
+      body: schemaAsync,
+      query: schemaAsync,
+      headers: schemaAsync
+    },
+    handler (req, reply) { reply.send(req.body) }
+  })
+
+  const testCases = [
+    {
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 400,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 400,
+      querystring: 200,
+      headers: 200,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 200,
+      querystring: 400,
+      headers: 200,
+      response: 400
+    },
+    {
+      params: 200,
+      body: 200,
+      querystring: 200,
+      headers: 400,
+      response: 400
+    }
+  ]
+  t.plan(testCases.length * 4)
+  testCases.forEach(validate)
+
+  function validate ({
+    url,
+    params,
+    body,
+    querystring,
+    headers,
+    response
+  }) {
+    fastify.inject({
+      method: 'POST',
+      url: `/${params}`,
+      headers: { id: headers },
+      query: { id: querystring },
+      payload: { id: body }
+    }, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, response)
+    })
+  }
+})

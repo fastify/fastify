@@ -26,9 +26,11 @@ const testRequestValues = (t, req, options) => {
     t.ok(req.ip, 'ip is defined')
     t.equal(req.ip, options.ip, 'gets ip from x-forwarded-for')
   }
-  if (options.hostname) {
-    t.ok(req.hostname, 'hostname is defined')
-    t.equal(req.hostname, options.hostname, 'gets hostname from x-forwarded-host')
+  if (options.host) {
+    t.ok(req.host, 'host is defined')
+    t.equal(req.host, options.host, 'gets host from x-forwarded-host')
+    t.ok(req.hostname)
+    t.equal(req.hostname, options.host, 'gets host from x-forwarded-host')
   }
   if (options.ips) {
     t.same(req.ips, options.ips, 'gets ips from x-forwarded-for')
@@ -47,18 +49,17 @@ before(async function () {
 })
 
 test('trust proxy, not add properties to node req', (t) => {
-  t.plan(8)
   const app = fastify({
     trustProxy: true
   })
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    testRequestValues(t, req, { ip: '1.1.1.1', host: 'example.com' })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   app.get('/trustproxychain', function (req, reply) {
     testRequestValues(t, req, { ip: '2.2.2.2', ips: [localhost, '1.1.1.1', '2.2.2.2'] })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   t.teardown(app.close.bind(app))
@@ -68,6 +69,7 @@ test('trust proxy, not add properties to node req', (t) => {
     t.error(err)
     sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
     sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain')
+    t.end()
   })
 })
 
@@ -79,7 +81,7 @@ test('trust proxy chain', (t) => {
 
   app.get('/trustproxychain', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   t.teardown(app.close.bind(app))
@@ -98,7 +100,7 @@ test('trust proxy function', (t) => {
   })
   app.get('/trustproxyfunc', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   t.teardown(app.close.bind(app))
@@ -117,7 +119,7 @@ test('trust proxy number', (t) => {
   })
   app.get('/trustproxynumber', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'] })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   t.teardown(app.close.bind(app))
@@ -136,7 +138,7 @@ test('trust proxy IP addresses', (t) => {
   })
   app.get('/trustproxyipaddrs', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'] })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   t.teardown(app.close.bind(app))
@@ -155,15 +157,15 @@ test('trust proxy protocol', (t) => {
   })
   app.get('/trustproxyprotocol', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'lorem' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
   app.get('/trustproxynoprotocol', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'http' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
   app.get('/trustproxyprotocols', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'dolor' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
   t.teardown(app.close.bind(app))

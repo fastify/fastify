@@ -71,6 +71,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   readonly ip: string;
   readonly ips?: string[];
+  readonly host: string;
+  readonly port: number;
   readonly hostname: string;
   readonly url: string;
   readonly protocol: 'http' | 'https';

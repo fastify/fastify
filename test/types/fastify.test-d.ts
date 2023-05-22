@@ -92,7 +92,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
           method: 'GET',
           url: '/',
           version: '1.0.0',
-          hostname: 'localhost',
+          host: 'localhost',
           remoteAddress: '127.0.0.1',
           remotePort: 3000
         }

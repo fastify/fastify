@@ -564,7 +564,7 @@ const fastify = Fastify({
           method: req.method,
           url: req.url,
           headers: req.headers,
-          hostname: req.hostname,
+          host: req.host,
           remoteAddress: req.ip,
           remotePort: req.socket.remotePort
         }

@@ -243,7 +243,7 @@ const fastify = Fastify({
           method: request.method,
           url: request.url,
           headers: request.headers,
-          hostname: request.hostname,
+          host: request.host,
           remoteAddress: request.ip,
           remotePort: request.socket.remotePort
         }

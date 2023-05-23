@@ -753,7 +753,9 @@ test('Supports async JOI validation', t => {
     return validationResult
   }
 
-  const fastify = Fastify()
+  const fastify = Fastify({
+    exposeHeadRoutes: false
+  })
   fastify.setValidatorCompiler(schemaValidator)
 
   fastify.get('/', {
@@ -804,6 +806,7 @@ test('Supports async AJV validation', t => {
   t.plan(12)
 
   const fastify = Fastify({
+    exposeHeadRoutes: false,
     ajv: {
       customOptions: {
         allErrors: true,
@@ -916,6 +919,7 @@ test('Supports async AJV validation', t => {
 
 test('Check all the async AJV validation paths', t => {
   const fastify = Fastify({
+    exposeHeadRoutes: false,
     ajv: {
       customOptions: {
         allErrors: true,
@@ -1025,6 +1029,7 @@ test('Check all the async AJV validation paths', t => {
 
 test('Check mixed sync and async AJV validations', t => {
   const fastify = Fastify({
+    exposeHeadRoutes: false,
     ajv: {
       customOptions: {
         allErrors: true,
@@ -1200,6 +1205,7 @@ test('Check mixed sync and async AJV validations', t => {
 
 test('Check if hooks and attachValidation work with AJV validations', t => {
   const fastify = Fastify({
+    exposeHeadRoutes: false,
     ajv: {
       customOptions: {
         allErrors: true,

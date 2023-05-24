@@ -67,8 +67,10 @@ test('Test for hostname and port', t => {
   const app = Fastify()
   t.teardown(app.close.bind(app))
   app.get('/host', (req, res) => {
-    t.equal(req.hostname, 'localhost')
-    t.equal(req.port, 8000)
+    const host = 'localhost:8000'
+    t.equal(req.host, host)
+    t.equal(req.hostname, req.host.split(':')[0])
+    t.equal(req.port, Number(req.host.split(':')[1]))
     res.send('ok')
   })
   app.listen({ port: 8000 }, () => {

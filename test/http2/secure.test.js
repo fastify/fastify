@@ -10,7 +10,7 @@ const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
 test('secure', (t) => {
-  t.plan(4)
+  t.plan(5)
 
   let fastify
   try {
@@ -31,6 +31,9 @@ test('secure', (t) => {
   })
   fastify.get('/proto', function (req, reply) {
     reply.code(200).send({ proto: req.protocol })
+  })
+  fastify.get('/hostname_port', function (req, reply) {
+    reply.code(200).send({ hostname: req.hostname, port: req.port })
   })
 
   fastify.listen({ port: 0 }, err => {
@@ -54,6 +57,14 @@ test('secure', (t) => {
       const url = `https://localhost:${fastify.server.address().port}/proto`
       t.same(JSON.parse((await h2url.concat({ url })).body), { proto: 'https' })
       t.same(JSON.parse((await h2url.concat({ url, headers: { 'X-Forwarded-Proto': 'lorem' } })).body), { proto: 'https' })
+    })
+    t.test('https get request - test hostname and port', async (t) => {
+      t.plan(2)
+
+      const url = `https://localhost:${fastify.server.address().port}/hostname_port`
+      const parsedbody = JSON.parse((await h2url.concat({ url })).body)
+      t.equal(parsedbody.hostname, 'localhost')
+      t.equal(parsedbody.port, fastify.server.address().port)
     })
   })
 })

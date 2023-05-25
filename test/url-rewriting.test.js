@@ -104,3 +104,37 @@ test('Should throw an error', t => {
 
   t.teardown(() => fastify.close())
 })
+
+test('Should rewrite url and test for hostname and port', t => {
+  t.plan(5)
+  const fastify = Fastify({
+    rewriteUrl (req) {
+      t.equal(req.url, '/this-would-404-without-url-rewrite')
+      return '/'
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send({ hello: 'world', hostname: req.hostname, port: req.port })
+    }
+  })
+
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
+    }, (err, response, body) => {
+      t.error(err)
+      const parsedBody = JSON.parse(body)
+      t.same(parsedBody, { hello: 'world', hostname: 'localhost', port: fastify.server.address().port })
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  t.teardown(() => fastify.close())
+})

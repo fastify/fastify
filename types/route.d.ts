@@ -11,7 +11,7 @@ import {
   FastifyTypeProviderDefault,
   ResolveFastifyReplyReturnType
 } from './type-provider'
-import { FastifyBaseLogger, LogLevel } from './logger'
+import { Bindings, ChildLoggerOptions, FastifyBaseLogger, LogLevel } from './logger'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
@@ -41,6 +41,12 @@ export interface RouteShorthandOptions<
   constraints?: { [name: string]: any },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+  childLoggerFactory?: (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    logger: Logger,
+    bindings: Bindings,
+    childLoggerOpts: ChildLoggerOptions,
+    rawReq: RawRequest) => void;
   schemaErrorFormatter?: SchemaErrorFormatter;
 
   // hooks

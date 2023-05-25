@@ -7,7 +7,8 @@ const Context = require('../../lib/context')
 const {
   kPublicRouteContext,
   kReply,
-  kRequest
+  kRequest,
+  kOptions
 } = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
@@ -39,7 +40,10 @@ test('Regular request', t => {
     },
     server: {
       [kReply]: {},
-      [kRequest]: Request
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
     }
   })
   req.connection = req.socket
@@ -137,7 +141,10 @@ test('Request with trust proxy', t => {
     },
     server: {
       [kReply]: {},
-      [kRequest]: Request
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
     }
   })
 

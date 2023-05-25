@@ -28,7 +28,8 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kFourOhFourContext
+  kFourOhFourContext,
+  kChildLoggerFactory
 } = require('./lib/symbols.js')
 
 const { createServer, compileValidateHTTPVersion } = require('./lib/server')
@@ -121,6 +122,7 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const childLoggerFactory = options.childLoggerFactory || defaultChildLoggerFactory
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -151,7 +153,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-  options.childLoggerFactory = options.childLoggerFactory || defaultChildLoggerFactory
+  options.childLoggerFactory = childLoggerFactory
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -239,6 +241,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
+    [kChildLoggerFactory]: childLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -344,6 +347,8 @@ function fastify (options) {
     // custom error handling
     setNotFoundHandler,
     setErrorHandler,
+    // child logger
+    setChildLoggerFactory,
     // Set fastify initial configuration options read-only object
     initialConfig,
     // constraint strategies
@@ -382,6 +387,10 @@ function fastify (options) {
     serializerCompiler: {
       configurable: true,
       get () { return this[kSchemaController].getSerializerCompiler() }
+    },
+    childLoggerFactory: {
+      configurable: true,
+      get () { return this[kChildLoggerFactory] }
     },
     version: {
       configurable: true,
@@ -783,6 +792,13 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
+    return this
+  }
+
+  function setChildLoggerFactory (factory) {
+    throwIfAlreadyStarted('Cannot call "setChildLoggerFactory"!')
+
+    this[kChildLoggerFactory] = factory
     return this
   }
 

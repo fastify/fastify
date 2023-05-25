@@ -81,6 +81,7 @@ describes the properties available in that options object.
     - [schemaController](#schemacontroller)
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
+    - [setChildLoggerFactory](#setchildloggerfactory)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -92,6 +93,7 @@ describes the properties available in that options object.
     - [getDefaultJsonParser](#getdefaultjsonparser)
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
+    - [childLoggerFactory](#childloggerfactory-1)
     - [initialConfig](#initialconfig)
 
 ### `http`
@@ -1553,6 +1555,17 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+#### setChildLoggerFactory
+<a id="set-child-logger-factory"></a>
+
+`fastify.setChildLoggerFactory(factory(logger, bindings, opts, rawReq))`: Set a
+function that will be called to produce a child logger instance for every
+request. 
+
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set different logger factories.
+
+See the [`childLoggerFactory` config option](#childloggerfactory) for more info.
 
 #### addConstraintStrategy
 <a id="addConstraintStrategy"></a>
@@ -1825,6 +1838,13 @@ fastify.get('/', {
   }
 }, handler)
 ```
+
+#### childLoggerFactory
+<a id="childLoggerFactory"></a>
+
+`fastify.childLoggerFactory` returns the custom logger factory function for the
+Fastify instance. See the [`childLoggerFactory` config option](#childloggerfactory)
+for more info.
 
 #### initialConfig
 <a id="initial-config"></a>

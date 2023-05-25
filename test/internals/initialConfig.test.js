@@ -55,7 +55,7 @@ test('without options passed to Fastify, initialConfig should expose default val
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(20)
+  t.plan(21)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -132,6 +132,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.serverFactory, undefined)
   t.equal(fastify.initialConfig.trustProxy, undefined)
   t.equal(fastify.initialConfig.genReqId, undefined)
+  t.equal(fastify.initialConfig.childLoggerFactory, undefined)
   t.equal(fastify.initialConfig.querystringParser, undefined)
   t.equal(fastify.initialConfig.logger, undefined)
   t.equal(fastify.initialConfig.trustProxy, undefined)
@@ -243,7 +244,7 @@ test('Original options must not be altered (test deep cloning)', t => {
 })
 
 test('Should not have issues when passing stream options to Pino.js', t => {
-  t.plan(15)
+  t.plan(17)
 
   const stream = split(JSON.parse)
 
@@ -252,6 +253,10 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     logger: {
       level: 'trace',
       stream
+    },
+    childLoggerFactory: function (logger, bindings, opts) {
+      bindings.someBinding = 'value'
+      return logger.child(bindings, opts)
     }
   }
 
@@ -297,6 +302,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     stream.once('data', line => {
       const id = line.reqId
       t.ok(line.reqId, 'reqId is defined')
+      t.equal(line.someBinding, 'value', 'child logger binding is set')
       t.ok(line.req, 'req is defined')
       t.equal(line.msg, 'incoming request', 'message is set')
       t.equal(line.req.method, 'GET', 'method is get')
@@ -304,6 +310,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       stream.once('data', line => {
         t.equal(line.reqId, id)
         t.ok(line.reqId, 'reqId is defined')
+        t.equal(line.someBinding, 'value', 'child logger binding is set')
         t.ok(line.res, 'res is defined')
         t.equal(line.msg, 'request completed', 'message is set')
         t.equal(line.res.statusCode, 200, 'statusCode is 200')

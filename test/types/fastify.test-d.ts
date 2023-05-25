@@ -198,7 +198,10 @@ expectAssignable<FastifyInstance>(fastify({
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
-  rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
+  rewriteUrl: function (req) {
+    this.log.debug('rewrite url')
+    return req.url === '/hi' ? '/hello' : req.url!
+  }
 }))
 expectAssignable<FastifyInstance>(fastify({
   schemaErrorFormatter: (errors, dataVar) => {

@@ -5,6 +5,7 @@ import { FastifyReply } from './reply'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
+import { FastifyInstance } from './instance'
 
 import pino from 'pino'
 
@@ -78,3 +79,17 @@ export interface FastifyLoggerOptions<
   genReqId?: (req: RawRequest) => string;
   stream?: FastifyLoggerStreamDestination;
 }
+
+export type FastifyChildLoggerFactory<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+> = (
+  this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  logger: Logger,
+  bindings: Bindings,
+  childLoggerOpts: ChildLoggerOptions,
+  rawReq: RawRequest
+) => Logger

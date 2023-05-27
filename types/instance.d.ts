@@ -4,7 +4,7 @@ import * as http from 'http'
 import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, preCloseHookHandler, preCloseAsyncHookHandler } from './hooks'
-import { Bindings, ChildLoggerOptions, FastifyBaseLogger } from './logger'
+import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
@@ -547,28 +547,14 @@ export interface FastifyInstance<
    * which allows for modifying or adding child logger bindings and logger options, or
    * returning a completely custom child logger implementation.
    */
-  childLoggerFactory: (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-    logger: Logger,
-    bindings: Bindings,
-    childLoggerOpts: ChildLoggerOptions,
-    rawReq: RawRequest
-  ) => Logger;
+  childLoggerFactory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Set the hook function that is called when creating a child logger instance for each request
    * which allows for modifying or adding child logger bindings and logger options, or
    * returning a completely custom child logger implementation.
    */
-  setChildLoggerFactory(
-    factory: (
-      this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-      logger: Logger,
-      bindings: Bindings,
-      childLoggerOpts: ChildLoggerOptions,
-      rawReq: RawRequest
-    ) => Logger
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  setChildLoggerFactory(factory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Fastify schema validator for all routes.

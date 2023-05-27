@@ -262,6 +262,7 @@ expectType<FastifyInstance>(fastify().get('/', {
   handler: () => {},
   childLoggerFactory: (logger, bindings, opts, req) => {
     expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
+    return server.childLoggerFactory(logger, bindings, opts, req)
   }
 }))
 

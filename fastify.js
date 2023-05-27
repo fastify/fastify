@@ -28,13 +28,13 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kFourOhFourContext,
   kChildLoggerFactory
 } = require('./lib/symbols.js')
 
 const { createServer, compileValidateHTTPVersion } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
+const Context = require('./lib/context.js')
 const { supportedMethods } = require('./lib/httpMethods')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
@@ -74,14 +74,6 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-
-const onBadUrlContext = {
-  config: {
-  },
-  onSend: [],
-  onError: [],
-  [kFourOhFourContext]: null
-}
 
 function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
@@ -467,6 +459,12 @@ function fastify (options) {
     })
   })
 
+  // Create bad URL context
+  const onBadUrlContext = new Context({
+    server: fastify,
+    config: {}
+  })
+
   // Set the default 404 handler
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
@@ -704,7 +702,7 @@ function fastify (options) {
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = genReqId(req)
-      const childLogger = createChildLogger(fastify, logger, req, id, options)
+      const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       childLogger.info({ req }, 'incoming request')
 
@@ -726,7 +724,7 @@ function fastify (options) {
       if (err) {
         if (frameworkErrors) {
           const id = genReqId(req)
-          const childLogger = createChildLogger(fastify, logger, req, id, options)
+          const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           childLogger.info({ req }, 'incoming request')
 

@@ -76,7 +76,7 @@ test('https', (t) => {
 })
 
 test('https - headers', (t) => {
-  t.plan(3)
+  t.plan(4)
   let fastify
   try {
     fastify = Fastify({
@@ -111,6 +111,22 @@ test('https - headers', (t) => {
         const parsedBody = JSON.parse(body)
         t.equal(parsedBody.hostname, 'localhost')
         t.equal(parsedBody.port, fastify.server.address().port)
+      })
+    })
+    t.test('https get request - test port fall back', t => {
+      t.plan(3)
+      sget({
+        method: 'GET',
+        headers: {
+          host: 'example.com'
+        },
+        url: 'https://localhost:' + fastify.server.address().port,
+        rejectUnauthorized: false
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        const parsedBody = JSON.parse(body)
+        t.equal(parsedBody.port, null)
       })
     })
   })

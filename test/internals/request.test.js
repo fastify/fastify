@@ -75,7 +75,7 @@ test('Regular request', t => {
 })
 
 test('Regular request - host from authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     ':authority': 'authority'
   }
@@ -89,10 +89,11 @@ test('Regular request - host from authority', t => {
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
   t.equal(request.host, 'authority')
+  t.equal(request.port, null)
 })
 
 test('Regular request - host header has precedence over authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     host: 'hostname',
     ':authority': 'authority'
@@ -106,6 +107,7 @@ test('Regular request - host header has precedence over authority', t => {
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
   t.equal(request.host, 'hostname')
+  t.equal(request.port, null)
 })
 
 test('Request with trust proxy', t => {

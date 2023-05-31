@@ -247,14 +247,21 @@ can do it as follows:
         schema: {
           body: User,
           response: {
-            200: User
+            200: User,
+            '4xx': CustomError,
           },
         },
       },
       (request, reply) => {
         // The `name` and `mail` types are automatically inferred
         const { name, mail } = request.body;
-        reply.status(200).send({ name, mail });
+        // chaining status() and send() will narrow the types for the send payload
+        if (name.length > 7)
+          // send() only accepts User schema
+          reply.status(200).send({ name, mail });
+        else
+          // send() only accepts CustomError schema
+          reply.status(400).send({ error: 'Name too short' });
       }
     )
     ```

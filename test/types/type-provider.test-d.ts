@@ -3,7 +3,8 @@ import fastify, {
   HookHandlerDoneFunction,
   FastifyRequest,
   FastifyReply,
-  FastifyInstance
+  FastifyInstance,
+  RouteHandlerMethod
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
@@ -891,3 +892,33 @@ expectAssignable(server.withTypeProvider<AuxiliaryHandlerProvider>().get(
     expectType<'handler-auxiliary'>(req.body)
   }
 ))
+
+// -------------------------------------------------------------------
+// Type-narrowed Return
+// -------------------------------------------------------------------
+
+expectAssignable(server.get('/', {
+  schema: {
+    response: {
+      200: {
+        type: 'string'
+      }
+    }
+  }
+}, (_, reply) => {
+  expectAssignable<RouteHandlerMethod>((_: unknown, res: typeof reply) => res.code(200).send('abc'))
+  expectAssignable<ReturnType<RouteHandlerMethod>>(reply.code(200).send('abc'))
+}
+))
+
+server.get('/', {
+  schema: {
+    response: {
+      200: {
+        type: 'string'
+      }
+    }
+  }
+}, (_, reply) => {
+  return reply.code(200).send('abc')
+})

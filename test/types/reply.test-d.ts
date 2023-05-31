@@ -1,6 +1,6 @@
 import { expectType, expectError, expectAssignable } from 'tsd'
-import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply } from '../../fastify'
-import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from '../../types/utils'
+import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply, FastifySchema, FastifyTypeProviderDefault } from '../../fastify'
+import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, HttpCodesCovered, ReplyTypeInfer } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { RouteGenericInterface } from '../../types/route'
 import { FastifyInstance } from '../../types/instance'
@@ -14,8 +14,10 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<FastifyContextConfig>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
-  expectType<(statusCode: number) => FastifyReply>(reply.code)
-  expectType<(statusCode: number) => FastifyReply>(reply.status)
+  type ModifiedReplyType<Code extends number = number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeInfer<Code>, Code>
+  expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => ModifiedReplyType<Code>>(reply.code)
+  expectType<<Code extends HttpCodesCovered<keyof FastifySchema['response']>>(statusCode: Code) => ModifiedReplyType<Code>>(reply.status)
+  expectType<(payload?: unknown) => ModifiedReplyType>(reply.status(200).send)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)

@@ -9,9 +9,6 @@ CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 .clinic
 
-# tsconfig
-types/tsconfig.json
-
 # test certification
 test/https/fastify.cert
 test/https/fastify.key

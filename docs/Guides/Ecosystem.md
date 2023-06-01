@@ -310,6 +310,9 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
+  plugin for instantiating and encapsulating the 
+  [Evervault](https://evervault.com/) client.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of
   your decorators across all the encapsulated contexts.
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon)

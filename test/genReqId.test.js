@@ -30,3 +30,43 @@ test('Should accept a custom genReqId function', t => {
     })
   })
 })
+
+test('Custom genReqId function gets raw request as argument', t => {
+  t.plan(8)
+
+  const REQUEST_ID = 'REQ-1234'
+
+  const fastify = Fastify({
+    genReqId: function (req) {
+      t.notOk(req.id)
+      t.notOk(req.raw)
+      // http.IncomingMessage does have `rawHeaders` property, but FastifyRequest does not
+      const index = req.rawHeaders.indexOf('x-request-id')
+      const xReqId = req.rawHeaders[index + 1]
+      t.equal(xReqId, REQUEST_ID)
+      t.equal(req.headers['x-request-id'], REQUEST_ID)
+      return xReqId
+    }
+  })
+
+  fastify.get('/', (req, reply) => {
+    t.equal(req.id, REQUEST_ID)
+    reply.send({ id: req.id })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    fastify.inject({
+      method: 'GET',
+      headers: {
+        'x-request-id': REQUEST_ID
+      },
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, REQUEST_ID)
+      fastify.close()
+    })
+  })
+})

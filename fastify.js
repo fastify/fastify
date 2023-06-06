@@ -812,16 +812,12 @@ function fastify (options) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
-        const originalUrl = req.url
-        const url = rewriteUrl(req)
-        if (originalUrl !== url) {
-          logger.debug({ originalUrl, url }, 'rewrite url')
-          if (typeof url === 'string') {
-            req.url = url
-          } else {
-            const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
-            req.destroy(err)
-          }
+        const url = rewriteUrl.call(fastify, req)
+        if (typeof url === 'string') {
+          req.url = url
+        } else {
+          const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
+          req.destroy(err)
         }
       }
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))

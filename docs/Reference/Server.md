@@ -858,8 +858,16 @@ URLs.
 > Rewriting a URL will modify the `url` property of the `req` object
 
 ```js
-function rewriteUrl (req) { // req is the Node.js HTTP request
-  return req.url === '/hi' ? '/hello' : req.url;
+// @param {object} req The raw Node.js HTTP request, not the `FastifyRequest` object.
+// @this Fastify The root Fastify instance (not an encapsulated instance).
+// @returns {string} The path that the request should be mapped to.
+function rewriteUrl (req) { 
+  if (req.url === '/hi') {
+    this.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
+    return '/hello'
+  } else {
+    return req.url;
+  }
 }
 ```
 

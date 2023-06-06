@@ -1,4 +1,3 @@
-
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
 

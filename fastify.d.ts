@@ -106,6 +106,7 @@ declare namespace fastify {
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
+    allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
     requestIdLogLabel?: string;
     jsonShorthand?: boolean;

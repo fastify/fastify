@@ -457,7 +457,7 @@ Then it should work fine
 ## Vercel
 
 [Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
-applications. To use it now, it is as simple as configuring your `vercel.json`
+applications(you don't need to configure package.json). To use it now, it is as simple as configuring your `vercel.json`
 file like the following:
 
 ```json
@@ -489,10 +489,21 @@ const app = Fastify({
 });
 
 // Register your application as a normal plugin.
-app.register(import("../src/app"));
+app.register(import("../src/app.js"));
 
 export default async (req, res) => {
     await app.ready();
     app.server.emit('request', req, res);
 }
+```
+
+In `src/app.js` define the plugin.
+```
+async function routes (fastify, options) {
+  fastify.get('/', async (request, reply) => {
+    return { hello: 'world' }
+  })
+}
+
+export default routes;
 ```

@@ -81,7 +81,7 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         exclude:
           # excludes node 14 on Windows
-          - os: macos-latest
+          - os: windows-latest
             node-version: 14
 
     steps:

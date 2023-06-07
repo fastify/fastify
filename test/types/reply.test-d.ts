@@ -23,7 +23,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(values: {[key: string]: any}) => FastifyReply>(reply.headers)
   expectType<(key: string) => number | string | string[] | undefined>(reply.getHeader)
   expectType<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
-  expectType<(key: string) => void>(reply.removeHeader)
+  expectType<(key: string) => FastifyReply>(reply.removeHeader)
   expectType<(key: string) => boolean>(reply.hasHeader)
   expectType<{(statusCode: number, url: string): FastifyReply; (url: string): FastifyReply }>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)

@@ -10,6 +10,7 @@ test('Should rewrite url', t => {
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      this.log.info('rewriting url')
       return '/'
     }
   })
@@ -43,6 +44,7 @@ test('Should not rewrite if the url is the same', t => {
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      this.log.info('rewriting url')
       return req.url
     }
   })
@@ -74,6 +76,7 @@ test('Should throw an error', t => {
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      this.log.info('rewriting url')
       return undefined
     }
   })

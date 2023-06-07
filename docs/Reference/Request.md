@@ -147,7 +147,7 @@ console.log(validate({ foo: 0.5 })) // false
 console.log(validate.errors) // validation errors
 ```
 
-See [.compilaValidationSchema(schema, [httpStatus])](#compilevalidationschema)
+See [.compileValidationSchema(schema, [httpStatus])](#compilevalidationschema)
 for more information on how to compile validation function.
 
 ### .compileValidationSchema(schema, [httpPart])

@@ -457,7 +457,7 @@ Then it should work fine
 ## Vercel
 
 [Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
-applications(you don't need to configure package.json). To use it now, it is as simple as configuring your `vercel.json`
+applications. To use it now, it is as simple as configuring your `vercel.json`
 file like the following:
 
 ```json

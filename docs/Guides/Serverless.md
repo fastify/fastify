@@ -498,7 +498,7 @@ export default async (req, res) => {
 ```
 
 In `src/app.js` define the plugin.
-```
+```js
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }

@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const Ajv = require('ajv')
-const { kRequestValidateWeakMap, kRouteContext } = require('../../lib/symbols')
+const { kRequestCacheValidateFns, kRouteContext } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 const defaultSchema = {
@@ -231,11 +231,11 @@ test('#compileValidationSchema', subtest => {
       t.plan(5)
 
       fastify.get('/', (req, reply) => {
-        t.equal(req[kRouteContext][kRequestValidateWeakMap], null)
+        t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
         t.type(req.compileValidationSchema(defaultSchema), Function)
-        t.type(req[kRouteContext][kRequestValidateWeakMap], WeakMap)
+        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
         t.type(req.compileValidationSchema(Object.assign({}, defaultSchema)), Function)
-        t.type(req[kRouteContext][kRequestValidateWeakMap], WeakMap)
+        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
 
         reply.send({ hello: 'world' })
       })
@@ -424,7 +424,7 @@ test('#getValidationFunction', subtest => {
       req.getValidationFunction(defaultSchema)
       req.getValidationFunction('body')
 
-      t.equal(req[kRouteContext][kRequestValidateWeakMap], null)
+      t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
       reply.send({ hello: 'world' })
     })
 
@@ -724,9 +724,9 @@ test('#validate', subtest => {
       t.plan(3)
 
       fastify.get('/', (req, reply) => {
-        t.equal(req[kRouteContext][kRequestValidateWeakMap], null)
+        t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
         t.equal(req.validateInput({ hello: 'world' }, defaultSchema), true)
-        t.type(req[kRouteContext][kRequestValidateWeakMap], WeakMap)
+        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
 
         reply.send({ hello: 'world' })
       })

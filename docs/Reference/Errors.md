@@ -112,6 +112,9 @@ fastify.setErrorHandler(function (error, request, reply) {
     this.log.error(error)
     // Send error response
     reply.status(500).send({ ok: false })
+  } else {
+    // fastify will use parent error handler to handle this
+    reply.send(error)
   }
 })
 
@@ -130,7 +133,43 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 404 Not Found.
 
+#### FST_ERR_OPTIONS_NOT_OBJ
+<a id="FST_ERR_OPTIONS_NOT_OBJ"></a>
+
+Fastify options must be an object.
+
+#### FST_ERR_QSP_NOT_FN
+<a id="FST_ERR_QSP_NOT_FN"></a>
+
+QueryStringParser option should be a function.
+
+#### FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN
+<a id="FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN"></a>
+
+SchemaController.bucket option should be a function.
+
+#### FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
+<a id="FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN"></a>
+
+SchemaErrorFormatter option should be a non async function.
+
+#### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ
+<a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ"></a>
+
+ajv.customOptions option should be an object.
+
+#### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR
+<a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR"></a>
+
+ajv.plugins option should be an array.
+
+#### FST_ERR_VERSION_CONSTRAINT_NOT_STR
+<a id="FST_ERR_VERSION_CONSTRAINT_NOT_STR"></a>
+
+Version constraint should be a string.
+
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
+
 #### FST_ERR_CTP_ALREADY_PRESENT
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>
 
@@ -181,6 +220,16 @@ Request body size did not match `Content-Length`.
 
 Body cannot be empty when content-type is set to `application/json`.
 
+#### FST_ERR_CTP_INSTANCE_ALREADY_STARTED
+<a id="FST_ERR_CTP_INSTANCE_ALREADY_STARTED"></a>
+
+Fastify is already started.
+
+#### FST_ERR_INSTANCE_ALREADY_LISTENING
+<a id="FST_ERR_INSTANCE_ALREADY_LISTENING"></a>
+
+Fastify instance is already listening.
+
 #### FST_ERR_DEC_ALREADY_PRESENT
 <a id="FST_ERR_DEC_ALREADY_PRESENT"></a>
 
@@ -211,10 +260,15 @@ The hook name must be a string.
 
 The hook callback must be a function.
 
+#### FST_ERR_HOOK_NOT_SUPPORTED
+<a id="FST_ERR_HOOK_NOT_SUPPORTED"></a>
+
+The hook is not supported.
+
 #### FST_ERR_MISSING_MIDDLEWARE
 <a id="FST_ERR_MISSING_MIDDLEWARE"></a>
 
-You must register a plugin for handling middlewares, 
+You must register a plugin for handling middlewares,
 visit [`Middleware`](./Middleware.md) for more info.
 
 <a name="FST_ERR_HOOK_TIMEOUT"></a>
@@ -226,6 +280,12 @@ A callback for a hook timed out
 <a id="FST_ERR_LOG_INVALID_DESTINATION"></a>
 
 The logger accepts either a `'stream'` or a `'file'` as the destination.
+
+#### FST_ERR_LOG_INVALID_LOGGER
+<a id="FST_ERR_LOG_INVALID_LOGGER"></a>
+
+The logger should have all these methods: `'info'`, `'error'`,
+`'debug'`, `'fatal'`, `'warn'`, `'trace'`, `'child'`.
 
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
@@ -275,7 +335,7 @@ Missing serialization function.
 #### FST_ERR_REQ_INVALID_VALIDATION_INVOCATION
 <a id="FST_ERR_REQ_INVALID_VALIDATION_INVOCATION"></a>
 
-Invalid validation invocation. Missing validation function for 
+Invalid validation invocation. Missing validation function for
 HTTP part nor schema provided.
 
 #### FST_ERR_SCH_MISSING_ID
@@ -303,6 +363,11 @@ The JSON schema provided for validation to a route is not valid.
 
 The JSON schema provided for serialization of a route response is not valid.
 
+#### FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX
+<a id="FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX"></a>
+
+Response schemas should be nested under a valid status code (2XX).
+
 #### FST_ERR_HTTP2_INVALID_VERSION
 <a id="FST_ERR_HTTP2_INVALID_VERSION"></a>
 
@@ -316,7 +381,7 @@ Invalid initialization options.
 #### FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE
 <a id="FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE"></a>
 
-Cannot set forceCloseConnections to `idle` as your HTTP server 
+Cannot set forceCloseConnections to `idle` as your HTTP server
 does not support `closeIdleConnections` method.
 
 <a name="FST_ERR_DUPLICATED_ROUTE"></a>
@@ -339,6 +404,51 @@ The router received an error when using asynchronous constraints.
 
 URL must be a string.
 
+#### FST_ERR_ROUTE_OPTIONS_NOT_OBJ
+<a id="FST_ERR_ROUTE_OPTIONS_NOT_OBJ"></a>
+
+Options for the route must be an object.
+
+#### FST_ERR_ROUTE_DUPLICATED_HANDLER
+<a id="FST_ERR_ROUTE_DUPLICATED_HANDLER"></a>
+
+Duplicate handler for the route is not allowed.
+
+#### FST_ERR_ROUTE_HANDLER_NOT_FN
+<a id="FST_ERR_ROUTE_HANDLER_NOT_FN"></a>
+
+Handler for the route must be a function.
+
+#### FST_ERR_ROUTE_MISSING_HANDLER
+<a id="FST_ERR_ROUTE_MISSING_HANDLER"></a>
+
+Missing handler function for the route.
+
+#### FST_ERR_ROUTE_METHOD_INVALID
+<a id="FST_ERR_ROUTE_METHOD_INVALID"></a>
+
+Method is not a valid value.
+
+#### FST_ERR_ROUTE_METHOD_NOT_SUPPORTED
+<a id="FST_ERR_ROUTE_METHOD_NOT_SUPPORTED"></a>
+
+Method is not supported for the route.
+
+#### FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED
+<a id="FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED"></a>
+
+Body validation schema route is not supported.
+
+#### FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT
+<a id="FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT"></a>
+
+BodyLimit option must be an integer.
+
+#### FST_ERR_ROUTE_REWRITE_NOT_STR
+<a id="FST_ERR_ROUTE_REWRITE_NOT_STR"></a>
+
+Rewrite url needs to be of type "string".
+
 #### FST_ERR_REOPENED_CLOSE_SERVER
 <a id="FST_ERR_REOPENED_CLOSE_SERVER"></a>
 
@@ -355,26 +465,37 @@ Fastify is already listening.
 Installed Fastify plugin mismatched expected version.
 
 <a name="FST_ERR_PLUGIN_CALLBACK_NOT_FN"></a>
+
 #### FST_ERR_PLUGIN_CALLBACK_NOT_FN
 
 Callback for a hook is not a function (mapped directly from `avvio`)
 
 <a name="FST_ERR_PLUGIN_NOT_VALID"></a>
+
 #### FST_ERR_PLUGIN_NOT_VALID
 
 Plugin must be a function or a promise.
 
 <a name="FST_ERR_ROOT_PLG_BOOTED"></a>
+
 #### FST_ERR_ROOT_PLG_BOOTED
 
 Root plugin has already booted (mapped directly from `avvio`)
 
 <a name="FST_ERR_PARENT_PLUGIN_BOOTED"></a>
+
 #### FST_ERR_PARENT_PLUGIN_BOOTED
 
 Impossible to load plugin because the parent (mapped directly from `avvio`)
 
 <a name="FST_ERR_PLUGIN_TIMEOUT"></a>
+
 #### FST_ERR_PLUGIN_TIMEOUT
 
 Plugin did not start in time. Default timeout (in millis): `10000`
+
+<a name="FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE"></a>
+
+#### FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE
+
+The decorator is not present in the instance.

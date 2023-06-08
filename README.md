@@ -9,11 +9,11 @@
 
 <div align="center">
 
-[![CI](https://github.com/fastify/fastify/workflows/ci/badge.svg)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
+[![CI](https://github.com/fastify/fastify/workflows/ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
 [![Package Manager
-CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
+CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web
-SIte](https://github.com/fastify/fastify/workflows/website/badge.svg)](https://github.com/fastify/fastify/actions/workflows/website.yml)
+SIte](https://github.com/fastify/fastify/workflows/website/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
 </div>
@@ -38,6 +38,18 @@ resources of your server, knowing that you are serving the highest number of
 requests as possible, without sacrificing security validations and handy
 development?
 
+Enter Fastify. Fastify is a web framework highly focused on providing the best
+developer experience with the least overhead and a powerful plugin architecture.
+It is inspired by Hapi and Express and as far as we know, it is one of the
+fastest web frameworks in town.
+
+The `main` branch refers to the Fastify `v4` release. Check out the
+[`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.
+
+
+
+### Table of Contents 
+
  - [Quick start](#quick-start)
  - [Install](#install)
  - [Example](#example)
@@ -51,13 +63,6 @@ development?
  - [Hosted by](#hosted-by)
  - [License](#license)
 
-Enter Fastify. Fastify is a web framework highly focused on providing the best
-developer experience with the least overhead and a powerful plugin architecture.
-It is inspired by Hapi and Express and as far as we know, it is one of the
-fastest web frameworks in town.
-
-This branch refers to the Fastify v4 release. Check out the
-[v3.x](https://github.com/fastify/fastify/tree/v3.x) branch for v3.
 
 ### Quick start
 
@@ -189,7 +194,7 @@ changes should be based on **`branch 1.x`**. In a similar way, all Fastify
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
   frameworks in town, depending on the code complexity we can serve up to 76+
   thousand requests per second.
-- **Extendible:** Fastify is fully extensible via its hooks, plugins and
+- **Extensible:** Fastify is fully extensible via its hooks, plugins and
   decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON
   Schema](https://json-schema.org/) to validate your routes and serialize your
@@ -289,8 +294,6 @@ listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),
   <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
-* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
-  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__David Mark Clements__](https://github.com/davidmarkclements),
@@ -306,6 +309,8 @@ listed in alphabetical order.
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Denis Fäcke__](https://github.com/SerayaEryn),
   <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
@@ -329,6 +334,8 @@ listed in alphabetical order.
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Ayoub El Khattabi__](https://github.com/AyoubElk),
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Salman Mitha__](https://github.com/salmanm),
   <https://www.npmjs.com/~salmanm>
@@ -337,10 +344,8 @@ listed in alphabetical order.
 * [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
-* [__Rafael Gonzaga__](https://github.com/rafaelgss),
-  <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Simone Busoli__](https://github.com/simoneb),
-  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>  
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -362,6 +367,8 @@ to join this group by Lead Maintainers.
   <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Nathan Woltman__](https://github.com/nwoltman),
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
+  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 
 ## Hosted by
 

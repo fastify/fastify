@@ -9,6 +9,7 @@ options object which is used to customize the resulting instance. This document
 describes the properties available in that options object.
 
 - [Factory](#factory)
+  - [`http`](#http)
   - [`http2`](#http2)
   - [`https`](#https)
   - [`connectionTimeout`](#connectiontimeout)
@@ -60,6 +61,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
+    - [listeningOrigin](#listeningOrigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -88,6 +90,18 @@ describes the properties available in that options object.
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
     - [initialConfig](#initialconfig)
+
+### `http`
+<a id="factory-http"></a>
+
+An object used to configure the server's listening socket. The options
+are the same as the Node.js core [`createServer`
+method](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_http_createserver_options_requestlistener).
+
+This option is ignored if options [`http2`](#factory-http2) or
+[`https`](#factory-https) are set.
+
++ Default: `null`
 
 ### `http2`
 <a id="factory-http2"></a>
@@ -367,7 +381,9 @@ fastify.addHook('onResponse', (req, reply, done) => {
 ```
 
 Please note that this setting will also disable an error log written by the
-default `onResponse` hook on reply callback errors.
+default `onResponse` hook on reply callback errors. Other log messages 
+emitted by Fastify will stay enabled, like deprecation warnings and messages
+emitted when requests are received while the server is closing.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>
@@ -492,7 +508,7 @@ request-id](./Logging.md#logging-request-id) section.
 Setting `requestIdHeader` to `false` will always use [genReqId](#genreqid)
 
 + Default: `'request-id'`
-  
+
 ```js
 const fastify = require('fastify')({
   requestIdHeader: 'x-custom-id', // -> use 'X-Custom-Id' header if available
@@ -721,7 +737,8 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+*Note: Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at 
+the moment.*
 
 ```js
 const fastify = require('fastify')({
@@ -810,8 +827,16 @@ URLs.
 > Rewriting a URL will modify the `url` property of the `req` object
 
 ```js
-function rewriteUrl (req) { // req is the Node.js HTTP request
-  return req.url === '/hi' ? '/hello' : req.url;
+// @param {object} req The raw Node.js HTTP request, not the `FastifyRequest` object.
+// @this Fastify The root Fastify instance (not an encapsulated instance).
+// @returns {string} The path that the request should be mapped to.
+function rewriteUrl (req) { 
+  if (req.url === '/hi') {
+    this.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
+    return '/hello'
+  } else {
+    return req.url;
+  }
 }
 ```
 
@@ -898,9 +923,25 @@ fastify.ready().then(() => {
 
 Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
-`callback` parameters follow the [Node.js
-core](https://nodejs.org/api/net.html#serverlistenoptions-callback) parameter
-definitions.
+`callback` parameters extend the [Node.js
+core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
+object. Thus, all core options are available with the following additional 
+Fastify specific options:
+
+### `listenTextResolver`
+<a id="listen-text-resolver"></a>
+
+Set an optional resolver for the text to log after server has been successfully
+started.
+It is possible to override the default `Server listening at [address]` log 
+entry using this option.
+
+```js
+server.listen({ 
+  port: 9080, 
+  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` } 
+})
+```
 
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
@@ -1154,6 +1195,15 @@ fastify.ready(() => {
 })
 ```
 
+### listeningOrigin
+<a id="listeningOrigin"></a>
+
+The current origin the server is listening to.
+For example, a TCP socket based server returns
+a base address like `http://127.0.0.1:3000`,
+and a Unix socket server will return the socket
+path, e.g. `fastify.temp.sock`.
+
 #### log
 <a id="log"></a>
 
@@ -1395,9 +1445,9 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
-> Note: Some config properties from the request object will be 
+> Note: Some config properties from the request object will be
 > undefined inside the custom not found handler. E.g:
-> `request.routerPath`, `routerMethod` and `context.config`. 
+> `request.routerPath`, `routerMethod` and `context.config`.
 > This method design goal is to allow calling the common not found route.
 > To return a per-route customized 404 response, you can do it in
 > the response itself.
@@ -1484,35 +1534,61 @@ a custom constraint strategy with the same name.
 #### printRoutes
 <a id="print-routes"></a>
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree
-used by the router, useful for debugging. Alternatively, `fastify.printRoutes({
-commonPrefix: false })` can be used to print the flattened routes tree.
+`fastify.printRoutes()`: Fastify router builds a tree of routes for each HTTP
+method. If you call the prettyPrint without specifying an HTTP method, it will
+merge all the trees into one and print it. The merged tree doesn't represent the
+internal router structure. **Don't use it for debugging.**
 
 *Remember to call it inside or after a `ready` call.*
 
 ```js
 fastify.get('/test', () => {})
 fastify.get('/test/hello', () => {})
-fastify.get('/hello/world', () => {})
-fastify.get('/helicopter', () => {})
+fastify.get('/testing', () => {})
+fastify.get('/testing/:param', () => {})
+fastify.put('/update', () => {})
 
 fastify.ready(() => {
   console.log(fastify.printRoutes())
   // └── /
   //     ├── test (GET)
-  //     │   └── /hello (GET)
-  //     └── hel
-  //         ├── lo/world (GET)
-  //         └── licopter (GET)
-
-  console.log(fastify.printRoutes({ commonPrefix: false }))
-  // └── / (-)
-  //     ├── test (GET)
-  //     │   └── /hello (GET)
-  //     ├── hello/world (GET)
-  //     └── helicopter (GET)
-
+  //     │   ├── /hello (GET)
+  //     │   └── ing (GET)
+  //     │       └── /
+  //     │           └── :param (GET)
+  //     └── update (PUT)
 })
+```
+
+If you want to print the internal router tree, you should specify the `method`
+param. Printed tree will represent the internal router structure.
+**You can use it for debugging.**
+
+```js
+  console.log(fastify.printRoutes({ method: 'GET' }))
+  // └── /
+  //     └── test (GET)
+  //         ├── /hello (GET)
+  //         └── ing (GET)
+  //             └── /
+  //                 └── :param (GET)
+
+  console.log(fastify.printRoutes({ method: 'PUT' }))
+  // └── /
+  //     └── update (PUT)
+```
+
+`fastify.printRoutes({ commonPrefix: false })` will print compressed trees. This
+might useful when you have a large number of routes with common prefixes.
+It doesn't represent the internal router structure. **Don't use it for debugging.**
+
+```js
+  console.log(fastify.printRoutes({ commonPrefix: false }))
+  // ├── /test (GET)
+  // │   ├── /hello (GET)
+  // │   └── ing (GET)
+  // │       └── /:param (GET)
+  // └── /update (PUT)
 ```
 
 `fastify.printRoutes({ includeMeta: (true | []) })` will display properties from
@@ -1522,26 +1598,51 @@ A shorthand option, `fastify.printRoutes({ includeHooks: true })` will include
 all [hooks](./Hooks.md).
 
 ```js
-  console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['metaProperty'] }))
+  fastify.get('/test', () => {})
+  fastify.get('/test/hello', () => {})
+
+  const onTimeout = () => {}
+
+  fastify.addHook('onRequest', () => {})
+  fastify.addHook('onTimeout', onTimeout)
+
+  console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['errorHandler'] }))
   // └── /
-  //     ├── test (GET)
-  //     │   • (onRequest) ["anonymous()","namedFunction()"]
-  //     │   • (metaProperty) "value"
-  //     │   └── /hello (GET)
-  //     └── hel
-  //         ├── lo/world (GET)
-  //         │   • (onTimeout) ["anonymous()"]
-  //         └── licopter (GET)
+  //     └── test (GET)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         • (errorHandler) "defaultErrorHandler()"
+  //         test (HEAD)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         • (onSend) ["headRouteOnSendHandler()"]
+  //         • (errorHandler) "defaultErrorHandler()"
+  //         └── /hello (GET)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             • (errorHandler) "defaultErrorHandler()"
+  //             /hello (HEAD)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             • (onSend) ["headRouteOnSendHandler()"]
+  //             • (errorHandler) "defaultErrorHandler()"
 
   console.log(fastify.printRoutes({ includeHooks: true }))
   // └── /
-  //     ├── test (GET)
-  //     │   • (onRequest) ["anonymous()","namedFunction()"]
-  //     │   └── /hello (GET)
-  //     └── hel
-  //         ├── lo/world (GET)
-  //         │   • (onTimeout) ["anonymous()"]
-  //         └── licopter (GET)
+  //     └── test (GET)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         test (HEAD)
+  //         • (onTimeout) ["onTimeout()"]
+  //         • (onRequest) ["anonymous()"]
+  //         • (onSend) ["headRouteOnSendHandler()"]
+  //         └── /hello (GET)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             /hello (HEAD)
+  //             • (onTimeout) ["onTimeout()"]
+  //             • (onRequest) ["anonymous()"]
+  //             • (onSend) ["headRouteOnSendHandler()"]
 ```
 
 #### printPlugins

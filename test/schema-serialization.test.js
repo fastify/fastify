@@ -394,7 +394,8 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     t.same(res.json(), {
       error: 'Bad Request',
       message: "body must have required property 'address'",
-      statusCode: 400
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
   })
 })
@@ -503,7 +504,8 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       t.same(res.json(), {
         error: 'Bad Request',
         message: 'body/0/location/email must match format "email"',
-        statusCode: 400
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
   })
@@ -806,9 +808,9 @@ test('do not crash if status code serializer errors', async t => {
   const someUserErrorType2 = {
     type: 'object',
     properties: {
-      code: { type: 'number' }
+      customCode: { type: 'number' }
     },
-    required: ['code']
+    required: ['customCode']
   }
 
   fastify.get(
@@ -833,8 +835,9 @@ test('do not crash if status code serializer errors', async t => {
   t.equal(res.statusCode, 500)
   t.same(res.json(), {
     statusCode: 500,
-    error: 'Internal Server Error',
-    message: '"code" is required!'
+    code: 'FST_ERR_FAILED_ERROR_SERIALIZATION',
+    message: 'Failed to serialize an error. Error: "customCode" is required!. ' +
+      'Original error: querystring must have required property \'foo\''
   })
 })
 

@@ -11,7 +11,7 @@ section.
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
-  to serialize to output according to `Accept` header.
+  to serialize to output according to the `Accept` header.
 - [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save
   multiple schemas and decide which one to use to serialize the payload
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
@@ -140,6 +140,8 @@ section.
 
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
+- [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)
+  Add authentication and user management to your Fastify application with Clerk.
 - [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly
   typed routes with a runtime validation using JSON schema generated from types.
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for
@@ -149,7 +151,7 @@ section.
 - [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
   easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
 - [`@ethicdevs/fastify-custom-session`](https://github.com/EthicDevs/fastify-custom-session)
-  A plugin that let you use session and decide only where to load/save from/to. Has
+  A plugin lets you use session and decide only where to load/save from/to. Has
   great TypeScript support + built-in adapters for common ORMs/databases (Firebase,
   Prisma Client, Postgres (wip), InMemory) and you can easily make your own adapter!
 - [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
@@ -172,7 +174,6 @@ section.
 - [`@immobiliarelabs/fastify-sentry`](https://github.com/immobiliare/fastify-sentry)
   Sentry errors handler that just works! Install, add your DSN and you're good
   to go!
-- [`@mateonunez/fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
   A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
@@ -201,6 +202,8 @@ section.
   using Fastify without the need of consuming a port on Electron apps.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
+- [`fastify-204`](https://github.com/Shiva127/fastify-204) Fastify plugin that
+  return 204 status on empty response.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds
   405 HTTP status to your routes
 - [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Fastify plugin
@@ -220,6 +223,10 @@ section.
   plugin to authenticate HTTP requests based on api key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
+- [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
+  MySQL plugin with auto SQL injection attack prevention.
+- [`fastify-at-postgres`](https://github.com/mateonunez/fastify-at-postgres) Fastify
+  Postgres plugin with auto SQL injection attack prevention.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
   [fastify-jwt](https://npm.im/fastify-jwt) and
@@ -262,6 +269,10 @@ section.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
   Fastify plugin to generate and forward Fastify events in the Cloudevents
   format.
+- [`fastify-cloudinary`](https://github.com/Vanilla-IceCream/fastify-cloudinary)
+  The Cloudinary Fastify SDK allows you to quickly and easily integrate your
+  application with Cloudinary. Effortlessly optimize and transform your cloud's
+  assets.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
   Sequelize ORM.
@@ -276,6 +287,9 @@ section.
   functions.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify
   plugin that provides the set of TypeScript decorators.
+- [`fastify-delay-request`](https://github.com/climba03003/fastify-delay-request)
+  Fastify plugin that allows requests to be delayed whilst a task the response is
+  dependent on is run, such as a resource intensive process.
 - [`fastify-disablecache`](https://github.com/Fdawgs/fastify-disablecache)
   Fastify plugin to disable client-side caching, inspired by
   [nocache](https://github.com/helmetjs/nocache).
@@ -296,6 +310,9 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
+  plugin for instantiating and encapsulating the 
+  [Evervault](https://evervault.com/) client.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of
   your decorators across all the encapsulated contexts.
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon)
@@ -362,6 +379,11 @@ section.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
   InfluxDB plugin connecting to an InfluxDB instance via the Influx default
   package.
+- [`fastify-ip`](https://github.com/metcoder95/fastify-ip) A plugin
+  for Fastify that allows you to infer a request ID by a
+  given set of custom Request headers.
+- [`fastify-json-to-xml`](https://github.com/Fdawgs/fastify-json-to-xml) Fastify
+  plugin to serialize JSON responses into XML.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT
   user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT
@@ -371,22 +393,28 @@ section.
 - [`fastify-keycloak-adapter`](https://github.com/yubinTW/fastify-keycloak-adapter)
   A keycloak adapter for a Fastify app.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify
-  plugin for support KnexJS Query Builder.
+  plugin for supporting KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)
   Fastify Mock KnexJS for testing support.
+- [`fastify-koa`](https://github.com/rozzilla/fastify-koa) Convert Koa
+middlewares into Fastify plugins
 - [`fastify-kubernetes`](https://github.com/greguz/fastify-kubernetes) Fastify
   Kubernetes client plugin.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser)
   Fastify plugin to parse request language.
 - [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
   Lightweight cache plugin
-- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes) 
-  A simple plugin for Fastify list all available routes.
+- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes)
+  A simple plugin for Fastify to list all available routes.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
+- [`fastify-log-controller`](https://github.com/Eomm/fastify-log-controller/)
+  changes the log level of your Fastify server at runtime.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
   scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and
   [lured](https://github.com/enobufs/lured).
+  A plugin to implement [Lyra](https://github.com/LyraSearch/lyra) search engine
+  on Fastify.
 - [`fastify-mailer`](https://github.com/coopflow/fastify-mailer) Plugin to
   initialize and encapsulate [Nodemailer](https://nodemailer.com)'s transporters
   instances in Fastify.
@@ -440,6 +468,9 @@ section.
   ORM.
 - [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes)
   Plugin to cherry-pick classes from objectionjs ORM.
+- [`fastify-opaque-apake`](https://github.com/squirrelchat/fastify-opaque-apake)
+  A Fastify plugin to implement the OPAQUE aPAKE protocol. Uses
+  [@squirrelchat/opaque-wasm-server](https://github.com/squirrelchat/opaque-wasm).
 - [`fastify-openapi-docs`](https://github.com/ShogunPanda/fastify-openapi-docs)
   A Fastify plugin that generates OpenAPI spec automatically.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue)
@@ -452,6 +483,7 @@ section.
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an
   [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a
   Fastify server instance.
+- [`fastify-orama`](https://github.com/mateonunez/fastify-orama)
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.
@@ -467,6 +499,8 @@ section.
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
   Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in
   a Fastify project.
+- [`fastify-postgres-dot-js`](https://github.com/kylerush/fastify-postgresjs) Fastify
+  PostgreSQL connection plugin that uses [Postgres.js](https://github.com/porsager/postgres).
 - [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A Fastify
   plugin that uses [prettier](https://github.com/prettier/prettier) under the
   hood to beautify outgoing responses and/or other things in the Fastify server.
@@ -493,6 +527,8 @@ section.
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels)
   A plugin for fast, reliable, and scalable channels implementation based on
   Redis streams.
+- [`fastify-redis-session`](https://github.com/mohammadraufzahed/fastify-redis-session)
+  Redis Session plugin for fastify.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes)
   Plugin to automatically load routes from a specified path and optionally limit
   loaded file names by a regular expression.
@@ -525,9 +561,11 @@ section.
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session)
   A session plugin with support for arbitrary backing caches via
   `fastify-caching`.
+- [`fastify-shared-schema`](https://github.com/Adibla/fastify-shared-schema) Plugin
+  for sharing schemas between different routes.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
   plugin, with this you can use slonik in every part of your server.
-- [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin 
+- [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin
   to delay the response from the server.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
@@ -559,12 +597,18 @@ section.
   TOTP (e.g. for 2FA).
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
   Useful functions for Twitch Extension Backend Services (EBS).
+- [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
+  Fastify
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  for [@effect/schema](https://github.com/effect-ts/schema).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.
+- [`fastify-user-agent`](https://github.com/Eomm/fastify-user-agent) parses your
+  request's `user-agent` header.
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on
@@ -576,6 +620,8 @@ section.
   should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web
   Application Messaging Protocol router for Fastify.
+- [`fastify-web-response`](https://github.com/erfanium/fastify-web-response)
+  Enables returning web streams objects `Response` and `ReadableStream` in routes.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Webpack hot module reloading plugin for Fastify.
 - [`fastify-webpack-hot`](https://github.com/gajus/fastify-webpack-hot) Webpack
@@ -606,17 +652,18 @@ section.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify)
   Swagger and OpenAPI 3.0 spec-based request validation middleware that supports
   Fastify.
-- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
+- [`pubsub-http-handler`](https://github.com/simenandre/pubsub-http-handler) A Fastify
   plugin to easily create Google Cloud PubSub endpoints.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-
 #### [Community Tools](#community-tools)
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
   Reusable workflows for use in the Fastify plugin
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration
   generator by directory structure.
+- [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
+  Fastify APIs using decorators and convert Typescript interface to JSON Schema.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
   generate JSON Schema from TypeScript interfaces.

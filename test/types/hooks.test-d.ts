@@ -114,9 +114,17 @@ server.addHook('onError', function (request, reply, error, done) {
   expectType<void>(done())
 })
 
+server.addHook('onRequestAbort', function (request, done) {
+  expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
 server.addHook('onRoute', function (opts) {
   expectType<FastifyInstance>(this)
-  expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
+  expectType<RouteOptions & { routePath: string; path: string; prefix: string }>(opts)
 })
 
 server.addHook('onRegister', (instance, opts, done) => {
@@ -201,6 +209,11 @@ server.addHook('onError', async function (request, reply, error) {
   expectType<FastifyError>(error)
 })
 
+server.addHook('onRequestAbort', async function (request) {
+  expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+})
+
 server.addHook('onRegister', async (instance, opts) => {
   expectType<FastifyInstance>(instance)
   expectType<RegisterOptions & FastifyPluginOptions>(opts)
@@ -243,41 +256,138 @@ type CustomContextConfig = FastifyContextConfig & {
 server.route<RouteGenericInterface, CustomContextConfig>({
   method: 'GET',
   url: '/',
-  handler: () => {},
-  onRequest: (request, reply) => {
+  handler: () => { },
+  onRequest: (request, reply, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  preParsing: (request, reply) => {
+  preParsing: (request, reply, payload, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  preValidation: (request, reply) => {
+  preValidation: (request, reply, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  preHandler: (request, reply) => {
+  preHandler: (request, reply, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  preSerialization: (request, reply) => {
+  preSerialization: (request, reply, payload, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  onSend: (request, reply) => {
+  onSend: (request, reply, payload, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  onResponse: (request, reply) => {
+  onResponse: (request, reply, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  onTimeout: (request, reply) => {
+  onTimeout: (request, reply, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   },
-  onError: (request, reply) => {
+  onError: (request, reply, error, done) => {
     expectType<CustomContextConfig>(request.context.config)
     expectType<CustomContextConfig>(reply.context.config)
   }
+})
+
+server.get<RouteGenericInterface, CustomContextConfig>('/', {
+  onRequest: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preParsing: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preValidation: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preHandler: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preSerialization: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onSend: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onResponse: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onTimeout: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onError: async (request, reply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  }
+}, async (request, reply) => {
+  expectType<CustomContextConfig>(request.context.config)
+  expectType<CustomContextConfig>(reply.context.config)
+})
+
+type CustomContextRequest = FastifyRequest<any, any, any, any, any, CustomContextConfig, any>
+type CustomContextReply = FastifyReply<any, any, any, any, CustomContextConfig, any, any>
+server.route<RouteGenericInterface, CustomContextConfig>({
+  method: 'GET',
+  url: '/',
+  handler: () => { },
+  onRequest: async (request: CustomContextRequest, reply: CustomContextReply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preParsing: async (request: CustomContextRequest, reply: CustomContextReply, payload: RequestPayload) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preValidation: async (request: CustomContextRequest, reply: CustomContextReply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preHandler: async (request: CustomContextRequest, reply: CustomContextReply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  preSerialization: async (request: CustomContextRequest, reply: CustomContextReply, payload: any) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onSend: async (request: CustomContextRequest, reply: CustomContextReply, payload: any) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onResponse: async (request: CustomContextRequest, reply: CustomContextReply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onTimeout: async (request: CustomContextRequest, reply: CustomContextReply) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  },
+  onError: async (request: CustomContextRequest, reply: CustomContextReply, error: FastifyError) => {
+    expectType<CustomContextConfig>(request.context.config)
+    expectType<CustomContextConfig>(reply.context.config)
+  }
+})
+
+server.addHook('preClose', function (done) {
+  expectType<FastifyInstance>(this)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
+server.addHook('preClose', async function () {
+  expectType<FastifyInstance>(this)
 })

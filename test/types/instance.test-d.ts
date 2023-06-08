@@ -12,6 +12,7 @@ import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
 import { DefaultRoute } from '../../types/route'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
+import { AddressInfo } from 'net'
 
 const server = fastify()
 
@@ -26,9 +27,11 @@ expectAssignable<FastifyInstance>(server.addSchema({
 }))
 
 expectType<Record<string, unknown>>(server.getSchemas())
+expectType<AddressInfo[]>(server.addresses())
 expectType<unknown>(server.getSchema('SchemaId'))
 expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())
+expectType<string>(server.listeningOrigin)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
@@ -215,6 +218,7 @@ expectDeprecated(server.listen('3000', ''))
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
@@ -222,6 +226,7 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', 
 
 expectAssignable<void>(server.listen(() => {}))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
@@ -281,6 +286,8 @@ expectType<FastifyBodyParser<string>>(server.getDefaultJsonParser('ignore', 'err
 expectType<string>(server.printRoutes({ includeHooks: true, commonPrefix: false, includeMeta: true }))
 
 expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] }))
+
+expectType<string>(server.printRoutes({ method: 'GET' }))
 
 expectType<string>(server.printRoutes())
 

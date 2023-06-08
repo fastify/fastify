@@ -66,6 +66,8 @@ test('Regular request', t => {
   t.equal(request.routerMethod, context.config.method)
   t.equal(request.routeConfig, context[kPublicRouteContext].config)
   t.equal(request.routeSchema, context[kPublicRouteContext].schema)
+  // Aim to not bad property keys (including Symbols)
+  t.notOk('undefined' in request)
 
   // This will be removed, it's deprecated
   t.equal(request.connection, req.connection)

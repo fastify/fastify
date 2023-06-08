@@ -32,7 +32,7 @@ const doGet = function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(13)
+  t.plan(14)
   const response = { res: 'res' }
   const context = {}
   const request = { [kRouteContext]: context }
@@ -50,6 +50,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
   t.equal(reply.request, request)
+  // Aim to not bad property keys (including Symbols)
+  t.notOk('undefined' in reply)
 })
 
 test('reply.send will logStream error and destroy the stream', t => {
@@ -452,7 +454,76 @@ test('buffer without content type should send a application/octet-stream and raw
     })
   })
 })
+test('Uint8Array without content type should send a application/octet-stream and raw buffer', t => {
+  t.plan(4)
 
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(new Uint8Array(1024).fill(0xff))
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.same(new Uint8Array(response.rawPayload), new Uint8Array(1024).fill(0xff))
+    })
+  })
+})
+test('Uint16Array without content type should send a application/octet-stream and raw buffer', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(new Uint16Array(50).fill(0xffffffff))
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.equal(res.headers['content-type'], 'application/octet-stream')
+      t.same(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(50).fill(0xffffffff))
+    })
+  })
+})
+test('TypedArray with content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.header('Content-Type', 'text/plain')
+    reply.send(new Uint16Array(1024).fill(0xffffffff))
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.equal(res.headers['content-type'], 'text/plain')
+      t.same(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(1024).fill(0xffffffff))
+    })
+  })
+})
 test('buffer with content type should not send application/octet-stream', t => {
   t.plan(4)
 
@@ -1740,7 +1811,7 @@ test('cannot set the replySerializer when the server is running', t => {
       fastify.setReplySerializer(() => {})
       t.fail('this serializer should not be setup')
     } catch (e) {
-      t.equal(e.message, 'Cannot call "setReplySerializer" when fastify instance is already started!')
+      t.equal(e.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
     }
   })
 })

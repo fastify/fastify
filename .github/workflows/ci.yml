@@ -2,6 +2,11 @@ name: ci
 
 on:
   push:
+    branches:
+     - main
+     - master
+     - next
+     - 'v*'
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -29,7 +34,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v2
+            uses: actions/dependency-review-action@v3
 
   linter:
     runs-on: ubuntu-latest
@@ -74,6 +79,10 @@ jobs:
       matrix:
         node-version: [14, 16, 18, 19]
         os: [macos-latest, ubuntu-latest, windows-latest]
+        exclude:
+          # excludes node 14 on Windows
+          - os: windows-latest
+            node-version: 14
 
     steps:
       - uses: actions/checkout@v3

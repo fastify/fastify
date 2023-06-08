@@ -39,6 +39,11 @@ const res = await fastify.inject('/encapsulated')
 console.log(res.json().message) // 'wrapped'
 ```
 
+>The root error handler is Fastify’s generic error handler. 
+>This error handler will use the headers and status code in the Error object, 
+>if they exist. **The headers and status code will not be automatically set if
+>a custom error handler is provided**. 
+
 ### Removed `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
 
 With v4 of Fastify, `app.use()` has been removed and the use of middleware is
@@ -116,7 +121,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
 
   Into this:
   ```js
-  await fastify.register((instance, opts) => {
+  await fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
       console.log({ path, method });
@@ -124,6 +129,27 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
+
+### Optional URL parameters
+
+If you've already used any implicitly optional parameters, you'll get a 404
+error when trying to access the route. You will now need to declare the
+optional parameters explicitly.
+
+For example, if you have the same route for listing and showing a post,
+refactor this:
+```js
+fastify.get('/posts/:id', (request, reply) => {
+  const { id } = request.params;
+});
+```
+
+Into this:
+```js
+fastify.get('/posts/:id?', (request, reply) => {
+  const { id } = request.params;
+});
+```
 
 ## Non-Breaking Changes
 

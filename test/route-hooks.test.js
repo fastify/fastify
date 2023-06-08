@@ -101,6 +101,35 @@ function testExecutionHook (hook) {
     })
   })
 
+  test(`${hook} option could accept an array of async functions`, t => {
+    t.plan(3)
+    const fastify = Fastify()
+    const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
+      get: function () { return ++this.calledTimes }
+    })
+
+    fastify.post('/', {
+      [hook]: [
+        async (req, reply) => {
+          t.equal(checker.check, 1)
+        },
+        async (req, reply) => {
+          t.equal(checker.check, 2)
+        }
+      ]
+    }, (req, reply) => {
+      reply.send({})
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    }, (err, res) => {
+      t.error(err)
+    })
+  })
+
   test(`${hook} option does not interfere with ${hook} hook`, t => {
     t.plan(7)
     const fastify = Fastify()
@@ -466,6 +495,44 @@ test('preParsing option should be able to modify the payload', t => {
     t.error(err)
     t.equal(res.statusCode, 200)
     t.same(JSON.parse(res.payload), { hello: 'another world' })
+  })
+})
+
+test('preParsing option should be able to supply statusCode', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/only', {
+    preParsing: async (req, reply, payload) => {
+      const stream = new Readable({
+        read () {
+          const error = new Error('kaboom')
+          error.statusCode = 408
+          this.destroy(error)
+        }
+      })
+      stream.receivedEncodedLength = 20
+      return stream
+    },
+    onError: async (req, res, err) => {
+      t.equal(err.statusCode, 408)
+    }
+  }, (req, reply) => {
+    t.fail('should not be called')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/only',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 408)
+    t.same(JSON.parse(res.payload), {
+      statusCode: 408,
+      error: 'Request Timeout',
+      message: 'kaboom'
+    })
   })
 })
 

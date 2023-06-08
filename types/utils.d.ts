@@ -5,8 +5,10 @@ import * as https from 'https'
 /**
  * Standard HTTP method strings
  */
-export type HTTPMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS' |
+type _HTTPMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS' |
 'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' | 'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH'
+
+export type HTTPMethods = Uppercase<_HTTPMethods> | Lowercase<_HTTPMethods>
 
 /**
  * A union type of the Node.js server types from the http, https, and http2 modules.

@@ -186,7 +186,7 @@ Serialization](./Validation-and-Serialization.md) documentation for more info.
 Also it has the advantage to use the defined type within your handlers
 (including pre-validation, etc.).
 
-Here are some options how to achieve this.
+Here are some options on how to achieve this.
 
 #### Fastify Type Providers
 
@@ -1307,10 +1307,10 @@ types defined in this section are used under-the-hood by the Fastify instance
 [src](https://github.com/fastify/fastify/blob/main/types/route.d.ts#L105)
 
 A type declaration for the route handler methods. Has two arguments, `request`
-and `reply` which are typed by `FastifyRequest` and `FastifyReply` respectfully.
+and `reply` which are typed by `FastifyRequest` and `FastifyReply` respectively.
 The generics parameters are passed through to these arguments. The method
 returns either `void` or `Promise<any>` for synchronous and asynchronous
-handlers respectfully.
+handlers respectively.
 
 ##### fastify.RouteOptions<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
 

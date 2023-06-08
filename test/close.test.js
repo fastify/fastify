@@ -7,6 +7,7 @@ const test = t.test
 const Fastify = require('..')
 const { Client } = require('undici')
 const semver = require('semver')
+const split = require('split2')
 
 test('close callback', t => {
   t.plan(4)
@@ -165,7 +166,7 @@ test('Should return error while closing (promise) - injection', t => {
         url: '/'
       }).catch(err => {
         t.ok(err)
-        t.equal(err.message, 'Server is closed')
+        t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
       })
     }, 100)
   })
@@ -197,7 +198,7 @@ test('Should return error while closing (callback) - injection', t => {
         url: '/'
       }, (err, res) => {
         t.ok(err)
-        t.equal(err.message, 'Server is closed')
+        t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
       })
     }, 100)
   })
@@ -220,13 +221,13 @@ t.test('Current opened connection should continue to work after closing and retu
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
           t.match(data.toString(), /Connection:\s*close/i)
@@ -259,7 +260,7 @@ t.test('Current opened connection should NOT continue to work after closing and 
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.on('error', function () {
         // Dependending on the Operating System
@@ -275,7 +276,7 @@ t.test('Current opened connection should NOT continue to work after closing and 
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
       })
     })
   })
@@ -299,6 +300,40 @@ t.test('Current opened connection should not accept new incoming connections', t
     })
     instance.request({ path: '/', method: 'GET' }).then(data => {
       t.equal(data.statusCode, 503)
+    })
+  })
+})
+
+t.test('rejected incoming connections should be logged', t => {
+  t.plan(2)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+
+  const messages = []
+  stream.on('data', message => {
+    messages.push(message)
+  })
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    setTimeout(() => {
+      reply.send({ hello: 'world' })
+    }, 250)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    const instance = new Client('http://localhost:' + fastify.server.address().port)
+    // initial request to trigger close
+    instance.request({ path: '/', method: 'GET' })
+    // subsequent request should be rejected
+    instance.request({ path: '/', method: 'GET' }).then(() => {
+      t.ok(messages.find(message => message.msg.includes('request aborted')))
     })
   })
 })
@@ -457,6 +492,97 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', t 
         // feature being tested works as designed.
         t.equal(client.closed, false)
       })
+    })
+  })
+})
+
+test('preClose callback', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  let preCloseCalled = false
+  function onClose (instance, done) {
+    t.equal(preCloseCalled, true)
+    done()
+  }
+  fastify.addHook('preClose', preClose)
+
+  function preClose (done) {
+    t.type(this, fastify)
+    preCloseCalled = true
+    done()
+  }
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
+    })
+  })
+})
+
+test('preClose async', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  let preCloseCalled = false
+  async function onClose () {
+    t.equal(preCloseCalled, true)
+  }
+  fastify.addHook('preClose', preClose)
+
+  async function preClose () {
+    preCloseCalled = true
+    t.type(this, fastify)
+  }
+
+  await fastify.listen({ port: 0 })
+
+  await fastify.close()
+})
+
+test('preClose execution order', t => {
+  t.plan(4)
+  async function sleep (ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    })
+  }
+  const fastify = Fastify()
+  const order = []
+  fastify.addHook('onClose', onClose)
+  function onClose (instance, done) {
+    t.same(order, [1, 2, 3])
+    done()
+  }
+
+  fastify.addHook('preClose', (done) => {
+    setTimeout(function () {
+      order.push(1)
+      done()
+    }, 200)
+  })
+
+  fastify.addHook('preClose', async () => {
+    await sleep(100)
+    order.push(2)
+  })
+
+  fastify.addHook('preClose', (done) => {
+    setTimeout(function () {
+      order.push(3)
+      done()
+    }, 100)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
     })
   })
 })

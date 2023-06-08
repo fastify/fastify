@@ -1,9 +1,8 @@
-import { expectAssignable, expectError } from 'tsd'
-import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from '../../fastify'
-import { RouteGenericInterface } from '../../types/route'
-import { ContextConfigDefault } from '../../types/utils'
-import { FastifyReply } from '../../types/reply'
+import { expectAssignable } from 'tsd'
+import fastify, { FastifyInstance, FastifySchema } from '../../fastify'
 import Ajv from 'ajv'
+import { StandaloneValidator } from '@fastify/ajv-compiler'
+import { StandaloneSerializer } from '@fastify/fast-json-stringify-compiler'
 
 const server = fastify()
 
@@ -63,3 +62,36 @@ expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { 
 expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & { validate: string }>(
   () => data => JSON.stringify(data)
 ))
+
+// https://github.com/fastify/ajv-compiler/issues/95
+{
+  const factory = StandaloneValidator({
+    readMode: false,
+    storeFunction (routeOpts, schemaValidationCode) { }
+  })
+
+  const app = fastify({
+    jsonShorthand: false,
+    schemaController: {
+      compilersFactory: {
+        buildValidator: factory
+      }
+    }
+  })
+}
+
+{
+  const factory = StandaloneSerializer({
+    readMode: false,
+    storeFunction (routeOpts, schemaValidationCode) { }
+  })
+
+  const app = fastify({
+    jsonShorthand: false,
+    schemaController: {
+      compilersFactory: {
+        buildSerializer: factory
+      }
+    }
+  })
+}

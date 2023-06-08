@@ -1,6 +1,8 @@
 <h1 align="center">Fastify</h1>
 
 ## Lifecycle
+<a id="lifecycle"></a>
+
 Following the schema of the internal lifecycle of Fastify.
 
 On the right branch of every section there is the next phase of the lifecycle,
@@ -49,6 +51,7 @@ NB (*): If `reply.raw` is used to send a response back to the user, `onResponse`
 hooks will still be executed
 
 ## Reply Lifecycle
+<a id="reply-lifecycle"></a>
 
 Whenever the user handles the request, the result may be:
 

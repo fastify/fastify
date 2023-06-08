@@ -316,7 +316,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     test(`${upMethod} should fail with empty body and application/json content-type`, t => {
       if (upMethod === 'OPTIONS') return t.end()
 
-      t.plan(12)
+      t.plan(14)
 
       fastify.inject({
         method: `${upMethod}`,

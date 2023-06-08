@@ -794,7 +794,7 @@ function fastify (options) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
-        req.originalUrl = req.originalUrl || req.url
+        req.originalUrl = req.url
         const url = rewriteUrl.call(fastify, req)
         if (typeof url === 'string') {
           req.url = url

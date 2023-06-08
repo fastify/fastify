@@ -194,6 +194,160 @@ test('preParsing hooks should be able to modify the payload', t => {
   })
 })
 
+test('preParsing hooks should be able to supply statusCode', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    const stream = new Readable({
+      read () {
+        const error = new Error('kaboom')
+        error.statusCode = 408
+        this.destroy(error)
+      }
+    })
+    stream.receivedEncodedLength = 20
+    return stream
+  })
+
+  fastify.addHook('onError', async (req, res, err) => {
+    t.equal(err.statusCode, 408)
+  })
+
+  fastify.post('/', function (request, reply) {
+    t.fail('should not be called')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 408)
+    t.same(JSON.parse(res.payload), {
+      statusCode: 408,
+      error: 'Request Timeout',
+      message: 'kaboom'
+    })
+  })
+})
+
+test('preParsing hooks should ignore statusCode 200 in stream error', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    const stream = new Readable({
+      read () {
+        const error = new Error('kaboom')
+        error.statusCode = 200
+        this.destroy(error)
+      }
+    })
+    stream.receivedEncodedLength = 20
+    return stream
+  })
+
+  fastify.addHook('onError', async (req, res, err) => {
+    t.equal(err.statusCode, 400)
+  })
+
+  fastify.post('/', function (request, reply) {
+    t.fail('should not be called')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'kaboom'
+    })
+  })
+})
+
+test('preParsing hooks should ignore non-number statusCode in stream error', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    const stream = new Readable({
+      read () {
+        const error = new Error('kaboom')
+        error.statusCode = '418'
+        this.destroy(error)
+      }
+    })
+    stream.receivedEncodedLength = 20
+    return stream
+  })
+
+  fastify.addHook('onError', async (req, res, err) => {
+    t.equal(err.statusCode, 400)
+  })
+
+  fastify.post('/', function (request, reply) {
+    t.fail('should not be called')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'kaboom'
+    })
+  })
+})
+
+test('preParsing hooks should default to statusCode 400 if stream error', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    const stream = new Readable({
+      read () {
+        this.destroy(new Error('kaboom'))
+      }
+    })
+    stream.receivedEncodedLength = 20
+    return stream
+  })
+
+  fastify.addHook('onError', async (req, res, err) => {
+    t.equal(err.statusCode, 400)
+  })
+
+  fastify.post('/', function (request, reply) {
+    t.fail('should not be called')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'kaboom'
+    })
+  })
+})
+
 test('preParsing hooks should handle errors', t => {
   t.plan(3)
   const fastify = Fastify()

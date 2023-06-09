@@ -8,6 +8,7 @@ import fastify, {
   LightMyRequestResponse,
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
+  RawRequestDefaultExpression,
   RouteGenericInterface,
   ValidationResult,
   FastifyErrorCodes,
@@ -127,7 +128,25 @@ expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServ
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: false }))
-expectAssignable<FastifyInstance>(fastify({ genReqId: (req) => req.rawHeaders[1] || 'foo' }))
+expectAssignable<FastifyInstance>(fastify({
+  genReqId: (req) => {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  }
+}))
+expectAssignable<FastifyInstance<http.Server>>(fastify({
+  genReqId: (req) => {
+    expectType<http.IncomingMessage>(req)
+    return 'foo'
+  }
+}))
+expectAssignable<FastifyInstance<http2.Http2Server>>(fastify({
+  http2: true,
+  genReqId: (req) => {
+    expectType<http2.Http2ServerRequest>(req)
+    return 'foo'
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))

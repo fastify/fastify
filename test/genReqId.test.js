@@ -1,5 +1,6 @@
 'use strict'
 
+const { Readable } = require('stream')
 const { test } = require('tap')
 const Fastify = require('..')
 
@@ -32,14 +33,15 @@ test('Should accept a custom genReqId function', t => {
 })
 
 test('Custom genReqId function gets raw request as argument', t => {
-  t.plan(8)
+  t.plan(9)
 
   const REQUEST_ID = 'REQ-1234'
 
   const fastify = Fastify({
     genReqId: function (req) {
-      t.notOk(req.id)
-      t.notOk(req.raw)
+      t.notOk('id' in req)
+      t.notOk('raw' in req)
+      t.ok(req instanceof Readable)
       // http.IncomingMessage does have `rawHeaders` property, but FastifyRequest does not
       const index = req.rawHeaders.indexOf('x-request-id')
       const xReqId = req.rawHeaders[index + 1]

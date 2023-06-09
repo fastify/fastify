@@ -107,10 +107,11 @@ test('Should reply 400 on client error', t => {
   t.plan(2)
 
   const fastify = Fastify()
-  fastify.listen({ port: 0 }, err => {
+  t.teardown(fastify.close.bind(fastify))
+  fastify.listen({ port: 0, host: '127.0.0.1' }, err => {
     t.error(err)
 
-    const client = net.connect(fastify.server.address().port)
+    const client = net.connect(fastify.server.address().port, '127.0.0.1')
     client.end('oooops!')
 
     let chunks = ''
@@ -125,7 +126,6 @@ test('Should reply 400 on client error', t => {
         statusCode: 400
       })
       t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`, chunks)
-      fastify.close()
     })
   })
 })
@@ -156,10 +156,11 @@ test('Should set the response from client error handler', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0, host: '127.0.0.1' }, err => {
     t.error(err)
+    t.teardown(fastify.close.bind(fastify))
 
-    const client = net.connect(fastify.server.address().port)
+    const client = net.connect(fastify.server.address().port, '127.0.0.1')
     client.end('oooops!')
 
     let chunks = ''
@@ -169,7 +170,6 @@ test('Should set the response from client error handler', t => {
 
     client.once('end', () => {
       t.equal(response, chunks)
-      fastify.close()
     })
   })
 
@@ -705,7 +705,7 @@ test('setting content-type on reply object should not hang the server case 2', a
   })
 
   try {
-    await fastify.listen({ port: 0 })
+    await fastify.ready()
     const res = await fastify.inject({
       url: '/',
       method: 'GET'

@@ -123,6 +123,7 @@ test('default clientError handler ignores ECONNRESET', t => {
 
     client.resume()
     client.write('GET / HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
     client.write('Connection: close\r\n')
     client.write('\r\n\r\n')
   })
@@ -308,8 +309,10 @@ test('default clientError replies with bad request on reused keep-alive connecti
 
     client.resume()
     client.write('GET / HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
     client.write('\r\n\r\n')
     client.write('GET /?a b HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
     client.write('Connection: close\r\n')
     client.write('\r\n\r\n')
   })

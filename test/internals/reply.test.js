@@ -1961,6 +1961,12 @@ test('redirect to an invalid URL should not crash the server', async t => {
   })
 
   await fastify.listen({ port: 0 })
+  t.teardown(fastify.close.bind(fastify))
+
+  t.comment('localhost addresses:')
+  for (const address of fastify.addresses()) {
+    t.comment(JSON.stringify(address))
+  }
 
   {
     const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/redirect?useCase=1`)
@@ -1983,8 +1989,6 @@ test('redirect to an invalid URL should not crash the server', async t => {
     t.equal(response.statusCode, 302)
     t.equal(response.headers.location, '/?key=ab')
   }
-
-  await fastify.close()
 })
 
 test('invalid response headers should not crash the server', async t => {
@@ -2007,6 +2011,7 @@ test('invalid response headers should not crash the server', async t => {
   })
 
   await fastify.listen({ port: 0 })
+  t.teardown(fastify.close.bind(fastify))
 
   const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
   t.equal(response.statusCode, 500)
@@ -2016,8 +2021,6 @@ test('invalid response headers should not crash the server', async t => {
     error: 'Internal Server Error',
     message: 'Invalid character in header content ["smile-encoded"]'
   })
-
-  await fastify.close()
 })
 
 test('invalid response headers when sending back an error', async t => {
@@ -2036,6 +2039,7 @@ test('invalid response headers when sending back an error', async t => {
   })
 
   await fastify.listen({ port: 0 })
+  t.teardown(fastify.close.bind(fastify))
 
   const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
   t.equal(response.statusCode, 500)
@@ -2045,8 +2049,6 @@ test('invalid response headers when sending back an error', async t => {
     error: 'Internal Server Error',
     message: 'Invalid character in header content ["smile"]'
   })
-
-  await fastify.close()
 })
 
 test('invalid response headers and custom error handler', async t => {
@@ -2070,6 +2072,7 @@ test('invalid response headers and custom error handler', async t => {
   })
 
   await fastify.listen({ port: 0 })
+  t.teardown(fastify.close.bind(fastify))
 
   const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
   t.equal(response.statusCode, 500)
@@ -2079,6 +2082,4 @@ test('invalid response headers and custom error handler', async t => {
     error: 'Internal Server Error',
     message: 'Invalid character in header content ["smile"]'
   })
-
-  await fastify.close()
 })

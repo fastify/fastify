@@ -77,7 +77,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18, 20.3.0]
+        node-version: [14, 16, 18, 20]
         os: [macos-latest, ubuntu-latest, windows-latest]
         exclude:
           # excludes node 14 on Windows

@@ -11,10 +11,10 @@ const dns = require('dns').promises
 test('Should support a custom http server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  t.plan(localAddresses.length + 3)
+  t.plan((localAddresses.length - 1) + 3)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
+    t.ok(opts.serverFactory, 'it is called once for localhost')
 
     const server = http.createServer((req, res) => {
       req.custom = true
@@ -70,4 +70,15 @@ test('Should not allow forceCloseConnection=idle if the server does not support 
     FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
     "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
   )
+})
+
+test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
+  const server = http.createServer(() => {})
+  t.teardown(() => new Promise(resolve => server.close(resolve)))
+  const app = await Fastify({
+    serverFactory: () => server
+  })
+  t.resolves(async () => {
+    await app.listen({ port: 0 })
+  })
 })

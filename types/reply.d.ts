@@ -44,7 +44,7 @@ export interface FastifyReply<
     // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
     [key: string]: number | string | string[] | undefined;
   };
-  removeHeader(key: string): void;
+  removeHeader(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hasHeader(key: string): boolean;
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

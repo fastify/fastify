@@ -44,6 +44,8 @@ jobs:
       - name: Run tests
         run: |
           pnpm run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 
 
   yarn:
     runs-on: ${{ matrix.os }}
@@ -74,3 +76,5 @@ jobs:
       - name: Run tests
         run: |
           yarn run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 

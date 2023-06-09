@@ -26,7 +26,7 @@
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts && tsd",
     "test:watch": "npm run unit -- -w --no-coverage-report -R terse",
-    "unit": "NODE_OPTIONS=no-network-family-autoselection tap",
+    "unit": "tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap"
   },

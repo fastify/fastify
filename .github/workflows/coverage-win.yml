@@ -34,8 +34,6 @@ jobs:
       - name: Generate coverage report
         run: |
           npm run coverage:ci
-        env:
-          NODE_OPTIONS: no-network-family-autoselection 
 
       - uses: actions/upload-artifact@v3
         if: ${{ success() }}

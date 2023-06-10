@@ -60,6 +60,7 @@ test('Regular request', t => {
   t.equal(request.body, undefined)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
+  t.equal(request.originalUrl, '/')
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
   t.equal(request.routerPath, context.config.url)

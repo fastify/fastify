@@ -248,7 +248,8 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
-- [`fastify-better-sqlite3`](https://www.npmjs.com/package/@punkish/fastify-better-sqlite3) Plugin for better-sqlite3.
+- [`fastify-better-sqlite3`](https://www.npmjs.com/package/@punkish/fastify-better-sqlite3) 
+  Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify

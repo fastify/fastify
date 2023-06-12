@@ -114,7 +114,7 @@ jobs:
         run: |
           npm run test:ci
         env:
-          NODE_OPTIONS: no-network-family-autoselection 
+          NODE_OPTIONS: fastify-is-awesome
 
   automerge:
     if: >

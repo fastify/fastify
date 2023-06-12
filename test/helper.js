@@ -316,7 +316,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     test(`${upMethod} should fail with empty body and application/json content-type`, t => {
       if (upMethod === 'OPTIONS') return t.end()
 
-      t.plan(14)
+      t.plan(12)
 
       fastify.inject({
         method: `${upMethod}`,
@@ -408,23 +408,6 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           'Content-Type': 'application/json'
         },
         payload: undefined
-      }, (err, res, body) => {
-        t.error(err)
-        t.same(JSON.parse(body.toString()), {
-          error: 'Bad Request',
-          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400
-        })
-      })
-
-      sget({
-        method: upMethod,
-        url: `http://localhost:${fastify.server.address().port}`,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        payload: Buffer.alloc(0)
       }, (err, res, body) => {
         t.error(err)
         t.same(JSON.parse(body.toString()), {

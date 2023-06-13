@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod, FastifyContextConfig } from '../../fastify'
 import { expectType, expectError, expectAssignable, printType } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
@@ -74,7 +74,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     Headers: HeadersInterface;
   }
 
-  fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
+  fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { url: 'localhost', foo: 'bar', bar: 100, extra: true } }, (req, res) => {
     expectType<BodyInterface>(req.body)
     expectType<QuerystringInterface>(req.query)
     expectType<ParamsInterface>(req.params)
@@ -90,7 +90,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   fastify().route<RouteGeneric>({
     url: '/',
     method: method as HTTPMethods,
-    config: { foo: 'bar', bar: 100 },
+    config: { foo: 'bar', bar: 100, url: 'localhost' },
     prefixTrailingSlash: 'slash',
     onRequest: (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
       expectType<BodyInterface>(req.body)
@@ -101,6 +101,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     preParsing: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -111,6 +112,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
       expectType<RequestPayload>(payload)
       expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
       expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
@@ -124,6 +126,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     preHandler: (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -134,6 +137,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     onResponse: (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -144,6 +148,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
       expectType<number>(res.statusCode)
     },
     onError: (req, res, error, done) => {
@@ -155,6 +160,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     preSerialization: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -165,6 +171,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     onSend: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -175,6 +182,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     handler: (req, res) => {
       expectType<BodyInterface>(req.body)
@@ -185,13 +193,14 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     }
   })
 
   fastify().route<RouteGeneric>({
     url: '/',
     method: method as HTTPMethods,
-    config: { foo: 'bar', bar: 100 },
+    config: { url: 'localhost', foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
     onRequest: async (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
       expectType<BodyInterface>(req.body)
@@ -202,6 +211,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     preParsing: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -212,6 +222,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
       expectType<RequestPayload>(payload)
       expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
       expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
@@ -225,6 +236,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     preHandler: async (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -235,6 +247,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     onResponse: async (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -245,6 +258,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
       expectType<number>(res.statusCode)
     },
     onError: async (req, res, error, done) => {
@@ -256,6 +270,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     preSerialization: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -266,6 +281,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     onSend: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -276,6 +292,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     },
     handler: (req, res) => {
       expectType<BodyInterface>(req.body)
@@ -286,6 +303,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(res.context.config.url)
     }
   })
 })

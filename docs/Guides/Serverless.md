@@ -490,7 +490,7 @@ API key as an env file, e.g. `yourworkspace.txt`.
 Then, you can easily deploy your application with the following commmand:
 
 ```bash
-platformatic deploy --keys `yuourworkspace.xt`
+platformatic deploy --keys `yuourworkspace.txt`
 ```
 
 Check out the [Full Guide](https://blog.platformatic.dev/how-to-migrate-a-fastify-app-to-platformatic-service)

@@ -448,12 +448,99 @@ test('shutsdown while keep-alive connections are active (non-async, idle, native
   })
 })
 
-test('triggers on-close hook in the right order with multiple bindings', { only: true }, async t => {
+test('triggers on-close hook in the right order with multiple bindings', async t => {
+  const expectedOrder = [1, 2, 3]
+  const order = []
+  const fastify = Fastify()
+
+  t.plan(1)
+
+  // Follows LIFO
+  fastify.addHook('onClose', () => {
+    order.push(2)
+  })
+
+  fastify.addHook('onClose', () => {
+    order.push(1)
+  })
+
+  await fastify.listen({ port: 0 })
+
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      fastify.close(err => {
+        order.push(3)
+        t.match(order, expectedOrder)
+
+        if (err) t.error(err)
+        else resolve()
+      })
+    }, 2000)
+  })
+})
+
+test('triggers on-close hook in the right order with multiple bindings (forceCloseConnections - idle)', { skip: noSupport }, async t => {
   const expectedPayload = { hello: 'world' }
   const timeoutTime = 2 * 60 * 1000
   const expectedOrder = [1, 2]
   const order = []
   const fastify = Fastify({ forceCloseConnections: 'idle' })
+
+  fastify.server.setTimeout(timeoutTime)
+  fastify.server.keepAliveTimeout = timeoutTime
+
+  fastify.get('/', async (req, reply) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000)
+    })
+
+    return expectedPayload
+  })
+
+  fastify.addHook('onClose', () => {
+    order.push(1)
+  })
+
+  await fastify.listen({ port: 0 })
+  const addresses = fastify.addresses()
+  const testPlan = (addresses.length * 2) + 1
+
+  t.plan(testPlan)
+
+  for (const addr of addresses) {
+    const { family, address, port } = addr
+    const host = family === 'IPv6' ? `[${address}]` : address
+    const client = new Client(`http://${host}:${port}`, {
+      keepAliveTimeout: 1 * 60 * 1000
+    })
+
+    client.request({ path: '/', method: 'GET' })
+      .then((res) => res.body.json(), err => t.error(err))
+      .then(json => {
+        t.match(json, expectedPayload, 'should payload match')
+        t.notOk(client.closed, 'should client not be closed')
+      }, err => t.error(err))
+  }
+
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      fastify.close(err => {
+        order.push(2)
+        t.match(order, expectedOrder)
+
+        if (err) t.error(err)
+        else resolve()
+      })
+    }, 2000)
+  })
+})
+
+test('triggers on-close hook in the right order with multiple bindings (forceCloseConnections - true)', { skip: noSupport }, async t => {
+  const expectedPayload = { hello: 'world' }
+  const timeoutTime = 2 * 60 * 1000
+  const expectedOrder = [1, 2]
+  const order = []
+  const fastify = Fastify({ forceCloseConnections: true })
 
   fastify.server.setTimeout(timeoutTime)
   fastify.server.keepAliveTimeout = timeoutTime

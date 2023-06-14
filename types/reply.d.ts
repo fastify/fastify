@@ -1,4 +1,4 @@
-import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault } from './utils'
+import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault, StatusCodeReply } from './utils'
 import { FastifyReplyType, ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyContext } from './context'
 import { FastifyBaseLogger } from './logger'
@@ -11,6 +11,9 @@ import { Buffer } from 'buffer'
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
+
+export type CodeConstrainer<RG extends RouteGenericInterface> = (RG['Reply'] extends StatusCodeReply ? keyof RG['Reply']: number)
+export type ReplyTypeConstrainer<RG extends RouteGenericInterface, Code extends CodeConstrainer<RG>> = Code extends keyof RG['Reply'] ? RG['Reply'][Code] : unknown;
 
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.
@@ -31,8 +34,8 @@ export interface FastifyReply<
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
-  code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  code<Code extends CodeConstrainer<RouteGeneric>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ReplyTypeConstrainer<RouteGeneric, Code>>;
+  status<Code extends CodeConstrainer<RouteGeneric>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ReplyTypeConstrainer<RouteGeneric, Code>>;
   statusCode: number;
   sent: boolean;
   send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

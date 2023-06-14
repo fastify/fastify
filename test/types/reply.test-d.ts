@@ -1,12 +1,14 @@
 import { expectType, expectError, expectAssignable } from 'tsd'
-import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply } from '../../fastify'
+import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply, FastifySchema, FastifyTypeProviderDefault } from '../../fastify'
 import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { RouteGenericInterface } from '../../types/route'
 import { FastifyInstance } from '../../types/instance'
 import { Buffer } from 'buffer'
+import { ReplyTypeConstrainer } from '../../types/reply'
 
-type DefaultSerializationFunction = (payload: {[key: string]: unknown}) => string
+type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
+type DefaultFasitfyReplyWithCode<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeConstrainer<RouteGenericInterface, Code>>
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
@@ -14,8 +16,8 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<FastifyContextConfig>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
-  expectType<(statusCode: number) => FastifyReply>(reply.code)
-  expectType<(statusCode: number) => FastifyReply>(reply.status)
+  expectType<<Code extends number>(statusCode: Code) => DefaultFasitfyReplyWithCode<Code>>(reply.code)
+  expectType<<Code extends number>(statusCode: Code) => DefaultFasitfyReplyWithCode<Code>>(reply.status)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)

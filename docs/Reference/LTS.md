@@ -48,7 +48,7 @@ A "month" is defined as 30 consecutive days.
 | 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11      |
 | 2.0.0   | 2019-02-25   | 2021-01-31      | 6, 8, 10, 12, 14     |
 | 3.0.0   | 2020-07-07   | 2023-06-30      | 10, 12, 14, 16, 18   |
-| 4.0.0   | 2022-06-08   | TBD             | 14, 16, 18           |
+| 4.0.0   | 2022-06-08   | TBD             | 14, 16, 18, 20       |
 
 ### CI tested operating systems
 <a id="supported-os"></a>
@@ -61,10 +61,10 @@ YAML workflow labels below:
 
 | OS      | YAML Workflow Label    | Package Manager           | Node.js      |
 |---------|------------------------|---------------------------|--------------|
-| Linux   | `ubuntu-latest`        | npm                       | 14,16,18     |
-| Linux   | `ubuntu-latest`        | yarn,pnpm                 | 14,16,18     |
-| Windows | `windows-latest`       | npm                       | 14,16,18     |
-| MacOS   | `macos-latest`         | npm                       | 14,16,18     |
+| Linux   | `ubuntu-latest`        | npm                       | 14,16,18,20  |
+| Linux   | `ubuntu-latest`        | yarn,pnpm                 | 14,16,18,20  |
+| Windows | `windows-latest`       | npm                       | 14,16,18,20  |
+| MacOS   | `macos-latest`         | npm                       | 14,16,18,20  |
 
 Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines`
 flag.

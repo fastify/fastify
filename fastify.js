@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.17.0'
+const VERSION = '4.18.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -616,7 +616,6 @@ function fastify (options) {
     } else if (name === 'onReady') {
       this[kHooks].add(name, fn)
     } else if (name === 'onRoute') {
-      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -794,6 +793,7 @@ function fastify (options) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
+        req.originalUrl = req.url
         const url = rewriteUrl.call(fastify, req)
         if (typeof url === 'string') {
           req.url = url

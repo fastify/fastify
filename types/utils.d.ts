@@ -64,9 +64,6 @@ export type StatusCodeReply = {
   [Key in ResponseKeys]?: unknown;
 };
 
-type FirstChar<Str extends string> = Str extends `${infer X}${string}` ? X : never;
-type GetHundred<N extends number> = FirstChar<`${N}`> extends `${infer Num extends number}` ? Num : never;
-
 // weird TS quirk: https://stackoverflow.com/questions/58977876/generic-conditional-type-resolves-to-never-when-the-generic-type-is-set-to-never
 export type HttpCodesCovered<Key> = [Key] extends [never] ? number :
   Key extends ResponseCodes ? Key :
@@ -76,3 +73,9 @@ export type HttpCodesCovered<Key> = [Key] extends [never] ? number :
           X extends 3 ? ResponseCodes300 :
             X extends 4 ? ResponseCodes400 :
               X extends 5 ? ResponseCodes500 : never : number;
+
+export type CodeToReplyKey<Code extends ResponseKeys> = Code extends ResponseCodes100 ? '1xx' :
+  Code extends ResponseCodes200 ? '2xx' :
+    Code extends ResponseCodes300 ? '3xx' :
+      Code extends ResponseCodes400 ? '4xx' :
+        Code extends ResponseCodes500 ? '5xx' : Code;

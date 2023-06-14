@@ -1,4 +1,4 @@
-import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault, StatusCodeReply } from './utils'
+import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault, StatusCodeReply, HttpCodesCovered, CodeToReplyKey } from './utils'
 import { FastifyReplyType, ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyContext } from './context'
 import { FastifyBaseLogger } from './logger'
@@ -12,8 +12,13 @@ export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
 
-export type CodeConstrainer<RG extends RouteGenericInterface> = (RG['Reply'] extends StatusCodeReply ? keyof RG['Reply']: number)
-export type ReplyTypeConstrainer<RG extends RouteGenericInterface, Code extends CodeConstrainer<RG>> = Code extends keyof RG['Reply'] ? RG['Reply'][Code] : unknown;
+type CodeConstrainer<RG extends RouteGenericInterface> =
+  RG['Reply'] extends StatusCodeReply ?
+    HttpCodesCovered<keyof RG['Reply']> : number;
+export type ReplyTypeConstrainer<RG extends RouteGenericInterface, Code extends CodeConstrainer<RG>> =
+  RG['Reply'] extends StatusCodeReply ?
+    RG['Reply'][Code extends keyof RG['Reply'] ? Code : Code extends keyof StatusCodeReply ? CodeToReplyKey<Code> : never] :
+    unknown;
 
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.

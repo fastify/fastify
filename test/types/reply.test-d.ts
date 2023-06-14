@@ -60,6 +60,15 @@ interface ReplyUnion {
   }
 }
 
+interface ReplyHttpCodes {
+  Reply: {
+    '1xx': number,
+    200: 'abc',
+    201: boolean,
+    300: { foo: string },
+  }
+}
+
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
 }
@@ -104,4 +113,25 @@ expectError(server.get<ReplyUnion>('/get-generic-union-return-error-1', async fu
 }))
 expectError(server.get<ReplyUnion>('/get-generic-union-return-error-2', async function handler (request, reply) {
   return { error: 500 }
+}))
+server.get<ReplyHttpCodes>('/get-generic-http-codes-send', async function handler (request, reply) {
+  reply.code(200).send('abc')
+  reply.code(201).send(true)
+  reply.code(300).send({ foo: 'bar' })
+  reply.code(101).send(123)
+})
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-1', async function handler (request, reply) {
+  reply.code(200).send('def')
+}))
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-2', async function handler (request, reply) {
+  reply.code(201).send(0)
+}))
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
+  reply.code(300).send({ foo: 123 })
+}))
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', async function handler (request, reply) {
+  reply.code(100).send('asdasd')
+}))
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
+  reply.code(401).send({ foo: 123 })
 }))

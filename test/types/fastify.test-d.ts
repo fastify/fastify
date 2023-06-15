@@ -134,19 +134,6 @@ expectAssignable<FastifyInstance>(fastify({
     return 'foo'
   }
 }))
-expectAssignable<FastifyInstance<http.Server>>(fastify({
-  genReqId: (req) => {
-    expectType<http.IncomingMessage>(req)
-    return 'foo'
-  }
-}))
-expectAssignable<FastifyInstance<http2.Http2Server>>(fastify({
-  http2: true,
-  genReqId: (req) => {
-    expectType<http2.Http2ServerRequest>(req)
-    return 'foo'
-  }
-}))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))

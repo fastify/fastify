@@ -132,6 +132,6 @@ expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', a
 expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', async function handler (request, reply) {
   reply.code(100).send('asdasd')
 }))
-expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
   reply.code(401).send({ foo: 123 })
 }))

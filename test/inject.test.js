@@ -6,6 +6,7 @@ const Stream = require('stream')
 const util = require('util')
 const Fastify = require('..')
 const FormData = require('form-data')
+const { Readable } = require('stream')
 
 test('inject should exist', t => {
   t.plan(2)
@@ -454,4 +455,33 @@ test('should handle errors in builder-style injection correctly', async (t) => {
     t.ok(err)
     t.equal(err.message, 'Kaboom')
   }
+})
+
+test('Should not throw on access to routeConfig frameworkErrors handler - FST_ERR_BAD_URL', t => {
+  t.plan(6)
+
+  const fastify = Fastify({
+    frameworkErrors: function (err, req, res) {
+      t.ok(typeof req.id === 'string')
+      t.ok(req.raw instanceof Readable)
+      t.same(req.routerPath, undefined)
+      t.same(req.routeConfig, undefined)
+      res.send(`${err.message} - ${err.code}`)
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/%world'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+    }
+  )
 })

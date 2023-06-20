@@ -301,7 +301,7 @@ test('within an instance', t => {
       })
     })
 
-    test('auto status code shoud be 200', t => {
+    test('auto status code should be 200', t => {
       t.plan(3)
       sget({
         method: 'GET',
@@ -313,7 +313,7 @@ test('within an instance', t => {
       })
     })
 
-    test('auto type shoud be text/plain', t => {
+    test('auto type should be text/plain', t => {
       t.plan(3)
       sget({
         method: 'GET',

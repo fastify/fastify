@@ -112,6 +112,11 @@ fastify.route(options)
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
   version of the endpoint. [Example](#version-constraints).
+* `constraints`: defines route restrictions based on request properties or
+  values, enabling customized matching using 
+  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes 
+  built-in `version` and `host` constraints, with support for custom constraint
+  strategies.
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
   route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.

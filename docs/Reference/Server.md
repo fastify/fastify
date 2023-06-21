@@ -527,8 +527,8 @@ Defines the label used for the request identifier when logging the request.
 ### `genReqId`
 <a id="factory-gen-request-id"></a>
 
-Function for generating the request-id. It will receive the incoming request as
-a parameter. This function is expected to be error-free.
+Function for generating the request-id. It will receive the _raw_ incoming
+request as a parameter. This function is expected to be error-free.
 
 + Default: `value of 'request-id' header if provided or monotonically increasing
   integers`

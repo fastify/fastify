@@ -394,7 +394,7 @@ test('Bad accept version (inject)', t => {
   })
 })
 
-test('Bas accept version (server)', t => {
+test('Bad accept version (server)', t => {
   t.plan(5)
   const fastify = Fastify()
 

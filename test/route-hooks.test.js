@@ -498,6 +498,44 @@ test('preParsing option should be able to modify the payload', t => {
   })
 })
 
+test('preParsing option should be able to supply statusCode', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/only', {
+    preParsing: async (req, reply, payload) => {
+      const stream = new Readable({
+        read () {
+          const error = new Error('kaboom')
+          error.statusCode = 408
+          this.destroy(error)
+        }
+      })
+      stream.receivedEncodedLength = 20
+      return stream
+    },
+    onError: async (req, res, err) => {
+      t.equal(err.statusCode, 408)
+    }
+  }, (req, reply) => {
+    t.fail('should not be called')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/only',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 408)
+    t.same(JSON.parse(res.payload), {
+      statusCode: 408,
+      error: 'Request Timeout',
+      message: 'kaboom'
+    })
+  })
+})
+
 test('onRequest option should be called before preParsing', t => {
   t.plan(3)
   const fastify = Fastify()

@@ -105,11 +105,12 @@ test('Should throw an error', t => {
   t.teardown(() => fastify.close())
 })
 
-test('Should rewrite url and test for hostname and port', t => {
-  t.plan(5)
+test('Should rewrite url but keep originalUrl unchanged', t => {
+  t.plan(7)
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
       return '/'
     }
   })
@@ -119,6 +120,7 @@ test('Should rewrite url and test for hostname and port', t => {
     url: '/',
     handler: (req, reply) => {
       reply.send({ hello: 'world', hostname: req.hostname, port: req.port })
+      t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
     }
   })
 

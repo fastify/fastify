@@ -145,6 +145,10 @@ await fastify.ready()
 
 await fastify.listen({ port: 3000 })
 ```
+*Note: Using await when registering a plugin finalizes the encapsulation 
+process, so any mutations to the instance after the plugin has been awaited will
+not be reflected in the parent instance. 
+See: [Issue #3863](https://github.com/fastify/fastify/issues/3863#issuecomment-1114132490)*
 
 #### ESM support
 <a id="esm-support"></a>

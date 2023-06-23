@@ -382,7 +382,7 @@ async function myPlugin(fastify, options) {
 export default fP(myPlugin)
 ```
 
-A basic example of a Plugin. See [Plugin Guide](./Plugins-Guide)
+A basic example of a Plugin. See [Plugin Guide](./Plugins-Guide.md)
 
 **test/myFirstPlugin.test.js**:
 

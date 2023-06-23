@@ -856,6 +856,9 @@ is an instance-wide configuration.
 [server](https://nodejs.org/api/http.html#http_class_http_server) object as
 returned by the [**`Fastify factory function`**](#factory).
 
+>__Warning__: If utilized improperly, certain Fastify features could be disrupted.
+>It is recommended to only use it for attaching listeners.
+
 #### after
 <a id="after"></a>
 

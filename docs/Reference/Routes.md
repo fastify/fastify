@@ -181,6 +181,24 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 
 `fastify.patch(path, [options], handler)`
 
+`fastify.propfind(path, [options], handler)`
+
+`fastify.proppatch(path, [options], handler)`
+
+`fastify.mkcol(path, [options], handler)`
+
+`fastify.copy(path, [options], handler)`
+
+`fastify.move(path, [options], handler)`
+
+`fastify.lock(path, [options], handler)`
+
+`fastify.unlock(path, [options], handler)`
+
+`fastify.trace(path, [options], handler)`
+
+`fastify.search(path, [options], handler)`
+
 Example:
 ```js
 const opts = {

@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.18.0'
+const VERSION = '5.0.0-dev'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -249,8 +249,6 @@ function fastify (options) {
     [kAvvioBoot]: null,
     // routing method
     routing: httpHandler,
-    getDefaultRoute: router.getDefaultRoute.bind(router),
-    setDefaultRoute: router.setDefaultRoute.bind(router),
     // routes shorthand methods
     delete: function _delete (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
@@ -272,6 +270,33 @@ function fastify (options) {
     },
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+    },
+    propfind: function _propfind (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PROPFIND', url, options, handler })
+    },
+    proppatch: function _proppatch (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
+    },
+    mkcol: function _mkcol (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
+    },
+    copy: function _copy (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'COPY', url, options, handler })
+    },
+    move: function _move (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MOVE', url, options, handler })
+    },
+    lock: function _lock (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'LOCK', url, options, handler })
+    },
+    unlock: function _unlock (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'UNLOCK', url, options, handler })
+    },
+    trace: function _trace (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+    },
+    search: function _search (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })

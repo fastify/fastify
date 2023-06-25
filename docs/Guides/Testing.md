@@ -8,11 +8,6 @@ is very flexible when it comes to testing and is compatible with most testing
 frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in
 the examples below).
 
-**Table of contents**
-- [Testing](#testing)
-  - [Application](#application)
-  - [Plugins](#plugins)
-
 ## Application
 
 Let's `cd` into a fresh directory called 'testing-example' and type `npm init
@@ -362,24 +357,17 @@ Let's `cd` into a fresh directory called 'testing-plugin-example' and type `npm 
 
 Run `npm i fastify fastify-plugin && npm i tap -D`
 
-To use ESM (`import` statements)
-
-**package.json**:
-```json
-"type": "module"
-```
-
 **plugin/myFirstPlugin.js**:
 
 ```js
-import fP from "fastify-plugin"
+const fP = require("fastify-plugin")
 
 async function myPlugin(fastify, options) {
     fastify.decorateRequest("helloRequest", "Hello World")
     fastify.decorate("helloInstance", "Hello Fastify Instance")
 }
 
-export default fP(myPlugin)
+module.exports = fP(myPlugin)
 ```
 
 A basic example of a Plugin. See [Plugin Guide](./Plugins-Guide.md)
@@ -387,9 +375,9 @@ A basic example of a Plugin. See [Plugin Guide](./Plugins-Guide.md)
 **test/myFirstPlugin.test.js**:
 
 ```js
-import Fastify from "fastify";
-import tap from "tap";
-import myPlugin from "../plugin/myFirstPlugin.js";
+const Fastify = require("fastify");
+const tap = require("tap");
+const myPlugin = require("../plugin/myFirstPlugin");
 
 tap.test("Test the Plugin Route", async t => {
     // Create a mock fastify application to test the plugin
@@ -431,9 +419,9 @@ Create the tap test for the endpoint.
 **test/myFirstPlugin.test.js**:
 
 ```js
-import Fastify from "fastify";
-import tap from "tap";
-import myPlugin from "../plugin/myFirstPlugin.js";
+const Fastify = require("fastify");
+const tap = require("tap");
+const myPlugin = require("../plugin/myFirstPlugin");
 
 tap.test("Test the Plugin Route", async t => {
     // Specifies the number of test
@@ -464,9 +452,9 @@ Test the ```.decorate()``` and ```.decorateRequest()```.
 **test/myFirstPlugin.test.js**:
 
 ```js
-import Fastify from "fastify";
-import tap from "tap";
-import myPlugin from "../plugin/myFirstPlugin.js";
+const Fastify = require("fastify");
+const tap = require("tap");
+const myPlugin = require("../plugin/myFirstPlugin");
 
 tap.test("Test the Plugin Route", async t => {
     t.plan(5)

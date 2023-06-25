@@ -3,16 +3,16 @@
 Every decision in the Fastify framework and its official plugins is guided by
 the following technical principles:
 
-1. “Zero” overhead in production;
-2. “Good” developer experience;
-3. Works great for small & big projects alike;
-4. Easy to migrate to microservices (or even serverless) and back;
-5. Security & data validation;
-6. If something could be a plugin, it likely should
-7. Easily testable;
-8. Do not monkeypatch core;
-9. Semantic versioning & Long Term Support;
-10. Specification adherence.
+1. “Zero” overhead in production
+2. “Good” developer experience
+3. Works great for small & big projects alike
+4. Easy to migrate to microservices (or even serverless) and back
+5. Security & data validation
+6. If something could be a plugin, it likely should be
+7. Easily testable
+8. Do not monkeypatch core
+9. Semantic versioning & Long Term Support
+10. Specification adherence
 
 ## "Zero" Overhead in Production
 
@@ -29,8 +29,8 @@ as usually those cost some overhead.
 
 Fastify aims to provide the best developer experience at the performance point
 it is operating.
-It provides a great out-of-the-box experience that it is flexible enough to be
-adapted to a various level of situations.
+It provides a great out-of-the-box experience that is flexible enough to be
+adapted to a variety of situations.
 
 As an example, this means that binary addons are forbidden because most JavaScript
 developers would not
@@ -50,18 +50,18 @@ How you deploy your routes should not matter. The framework should "just work".
 ## Security and Data Validation
 
 Your web framework is the first point of contact with untrusted data, and it
-needs to act as the first line of defence for your system.
+needs to act as the first line of defense for your system.
 
 ## If something could be a plugin, it likely should
 
 We recognize that there are an infinite amount of use cases for an HTTP framework
 for Node.js. Catering to them in a single module would make the codebase unmaintainable.
-Thefore we provide hooks and options to allow you to customize the framework
+Therefore we provide hooks and options to allow you to customize the framework
 as you please.
 
 ## Easily testable
 
-Testing Fastify applications should be a first class concern.
+Testing Fastify applications should be a first-class concern.
 
 ## Do not monkeypatch core
 

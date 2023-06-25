@@ -8,7 +8,7 @@ import { Buffer } from 'buffer'
 import { ReplyTypeConstrainer } from '../../types/reply'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
-type DefaultFasitfyReplyWithCode<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeConstrainer<RouteGenericInterface, Code>>
+type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeConstrainer<RouteGenericInterface, Code>>
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)

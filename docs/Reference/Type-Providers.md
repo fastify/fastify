@@ -94,38 +94,9 @@ up AJV to work with TypeBox.
 
 ### Zod
 
-The following sets up a Zod Type Provider
+See [official documentation](https://github.com/turkerdev/fastify-type-provider-zod)
+for Zod type provider instructions.
 
-```bash
-$ npm i fastify-type-provider-zod
-```
-
-```typescript
-import { ZodTypeProvider, validatorCompiler, serializerCompiler } from "fastify-type-provider-zod";
-import { z } from 'zod';
-
-import fastify from 'fastify'
-
-const server = fastify().withTypeProvider<ZodTypeProvider>()
-
-// This part is necessary if you also want to use zod for validating your requests and responses
-server.setValidatorCompiler(validatorCompiler)
-server.setSerializerCompiler(serializerCompiler)
-
-server.get('/route', {
-    schema: {
-        querystring: z.object({
-          foo: z.number(),
-          bar: z.string(),
-        })
-    }
-}, (request, reply) => {
-
-    // type Query = { foo: number, bar: string }
-
-    const { foo, bar } = request.query // type safe!
-})
-```
 
 ### Scoped Type-Provider
 

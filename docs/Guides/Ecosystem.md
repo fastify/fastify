@@ -261,7 +261,8 @@ section.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
 - [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
-  Small and efficient cache provider for Node.JS with In-memory, File, Redis and MongoDB engines for Fastify
+  Small and efficient cache provider for Node.JS with In-memory, File, Redis
+   and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
   for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest)

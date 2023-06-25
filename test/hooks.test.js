@@ -165,7 +165,7 @@ test('hooks', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -175,7 +175,7 @@ test('hooks', t => {
 
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -183,7 +183,7 @@ test('hooks', t => {
 
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -288,7 +288,7 @@ test('onRequest hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -298,7 +298,7 @@ test('onRequest hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -349,7 +349,7 @@ test('preHandler hook should support encapsulation / 5', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -359,7 +359,7 @@ test('preHandler hook should support encapsulation / 5', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -966,7 +966,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -976,7 +976,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1043,7 +1043,7 @@ test('onSend hook should support encapsulation / 2', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1053,7 +1053,7 @@ test('onSend hook should support encapsulation / 2', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1338,7 +1338,7 @@ test('onSend hook throws', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1347,21 +1347,21 @@ test('onSend hook throws', t => {
     })
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
     })
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
     })
     sget({
       method: 'PUT',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://127.0.0.1:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -2476,7 +2476,7 @@ test('preValidation hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2486,7 +2486,7 @@ test('preValidation hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2623,7 +2623,7 @@ test('preParsing hook should run before parsing and be able to modify the payloa
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2666,7 +2666,7 @@ test('preParsing hooks should run in the order in which they are defined', t => 
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2716,7 +2716,7 @@ test('preParsing hooks should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2728,7 +2728,7 @@ test('preParsing hooks should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/second',
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second',
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2837,7 +2837,7 @@ test('preParsing hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2847,7 +2847,7 @@ test('preParsing hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2899,7 +2899,7 @@ test('preSerialization hook should run before serialization and be able to modif
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2950,7 +2950,7 @@ test('preSerialization hook should be able to throw errors which are validated a
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -2984,7 +2984,7 @@ test('preSerialization hook which returned error should still run onError hooks'
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -3018,7 +3018,7 @@ test('preSerialization hooks should run in the order in which they are defined',
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -3062,7 +3062,7 @@ test('preSerialization hooks should support encapsulation', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -3072,7 +3072,7 @@ test('preSerialization hooks should support encapsulation', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -3413,7 +3413,7 @@ test('onRequestAbort should be triggered', t => {
   const fastify = Fastify()
   let order = 0
 
-  t.plan(9)
+  t.plan(7)
   t.teardown(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
@@ -3424,8 +3424,7 @@ test('onRequestAbort should be triggered', t => {
   })
 
   fastify.addHook('onError', function hook (request, reply, error, done) {
-    t.same(error, { hello: 'world' }, 'onError should be called')
-    t.ok(request.raw.aborted, 'request should be aborted')
+    t.fail('onError should not be called')
     done()
   })
 

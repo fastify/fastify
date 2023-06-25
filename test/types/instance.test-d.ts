@@ -26,11 +26,14 @@ expectAssignable<FastifyInstance>(server.addSchema({
   schemas: []
 }))
 
+expectType<string>(server.pluginName)
+
 expectType<Record<string, unknown>>(server.getSchemas())
 expectType<AddressInfo[]>(server.addresses())
 expectType<unknown>(server.getSchema('SchemaId'))
 expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())
+expectType<string>(server.listeningOrigin)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
@@ -217,6 +220,7 @@ expectDeprecated(server.listen('3000', ''))
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
@@ -224,6 +228,7 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', 
 
 expectAssignable<void>(server.listen(() => {}))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))

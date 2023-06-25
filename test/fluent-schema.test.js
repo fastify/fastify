@@ -34,7 +34,7 @@ test('use fluent-json-schema object', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'params/id must be >= 42' })
+    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'params/id must be >= 42' })
   })
 
   // check header
@@ -47,7 +47,7 @@ test('use fluent-json-schema object', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'headers/x-custom must match format "email"' })
+    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'headers/x-custom must match format "email"' })
   })
 
   // check query
@@ -60,7 +60,7 @@ test('use fluent-json-schema object', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'querystring must have required property \'surname\'' })
+    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'querystring must have required property \'surname\'' })
   })
 
   // check body
@@ -73,7 +73,7 @@ test('use fluent-json-schema object', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'body/name must be string' })
+    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'body/name must be string' })
   })
 
   // check response

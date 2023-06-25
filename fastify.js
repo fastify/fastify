@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.14.1'
+const VERSION = '4.18.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -348,6 +348,16 @@ function fastify (options) {
   }
 
   Object.defineProperties(fastify, {
+    listeningOrigin: {
+      get () {
+        const address = this.addresses().slice(-1).pop()
+        /* istanbul ignore if windows: unix socket is not testable on Windows platform */
+        if (typeof address === 'string') {
+          return address
+        }
+        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
+      }
+    },
     pluginName: {
       configurable: true,
       get () {
@@ -414,30 +424,33 @@ function fastify (options) {
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
-      if (fastify[kState].listening) {
-        // No new TCP connections are accepted
-        instance.server.close(done)
 
-        /* istanbul ignore next: Cannot test this without Node.js core support */
-        if (forceCloseConnections === 'idle') {
-          // Not needed in Node 19
-          instance.server.closeIdleConnections()
-        /* istanbul ignore next: Cannot test this without Node.js core support */
-        } else if (serverHasCloseAllConnections && forceCloseConnections) {
-          instance.server.closeAllConnections()
-        } else if (forceCloseConnections === true) {
-          for (const conn of fastify[kKeepAliveConnections]) {
-            // We must invoke the destroy method instead of merely unreffing
-            // the sockets. If we only unref, then the callback passed to
-            // `fastify.close` will never be invoked; nor will any of the
-            // registered `onClose` hooks.
-            conn.destroy()
-            fastify[kKeepAliveConnections].delete(conn)
+      hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
+        if (fastify[kState].listening) {
+          // No new TCP connections are accepted
+          instance.server.close(done)
+
+          /* istanbul ignore next: Cannot test this without Node.js core support */
+          if (forceCloseConnections === 'idle') {
+            // Not needed in Node 19
+            instance.server.closeIdleConnections()
+          /* istanbul ignore next: Cannot test this without Node.js core support */
+          } else if (serverHasCloseAllConnections && forceCloseConnections) {
+            instance.server.closeAllConnections()
+          } else if (forceCloseConnections === true) {
+            for (const conn of fastify[kKeepAliveConnections]) {
+              // We must invoke the destroy method instead of merely unreffing
+              // the sockets. If we only unref, then the callback passed to
+              // `fastify.close` will never be invoked; nor will any of the
+              // registered `onClose` hooks.
+              conn.destroy()
+              fastify[kKeepAliveConnections].delete(conn)
+            }
           }
+        } else {
+          done(null)
         }
-      } else {
-        done(null)
-      }
+      })
     })
   })
 
@@ -603,7 +616,6 @@ function fastify (options) {
     } else if (name === 'onReady') {
       this[kHooks].add(name, fn)
     } else if (name === 'onRoute') {
-      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -680,13 +692,16 @@ function fastify (options) {
       const id = genReqId(req)
       const childLogger = logger.child({ reqId: id })
 
-      childLogger.info({ req }, 'incoming request')
-
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
+
+      if (disableRequestLogging === false) {
+        childLogger.info({ req: request }, 'incoming request')
+      }
+
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',
       'Content-Length': body.length
@@ -702,10 +717,13 @@ function fastify (options) {
           const id = genReqId(req)
           const childLogger = logger.child({ reqId: id })
 
-          childLogger.info({ req }, 'incoming request')
-
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
+
+          if (disableRequestLogging === false) {
+            childLogger.info({ req: request }, 'incoming request')
+          }
+
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
@@ -781,16 +799,13 @@ function fastify (options) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
-        const originalUrl = req.url
-        const url = rewriteUrl(req)
-        if (originalUrl !== url) {
-          logger.debug({ originalUrl, url }, 'rewrite url')
-          if (typeof url === 'string') {
-            req.url = url
-          } else {
-            const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
-            req.destroy(err)
-          }
+        req.originalUrl = req.url
+        const url = rewriteUrl.call(fastify, req)
+        if (typeof url === 'string') {
+          req.url = url
+        } else {
+          const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
+          req.destroy(err)
         }
       }
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))

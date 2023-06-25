@@ -8,6 +8,7 @@ import fastify, {
   LightMyRequestResponse,
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
+  RawRequestDefaultExpression,
   RouteGenericInterface,
   ValidationResult,
   FastifyErrorCodes,
@@ -127,7 +128,12 @@ expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServ
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: false }))
-expectAssignable<FastifyInstance>(fastify({ genReqId: () => 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({
+  genReqId: (req) => {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))
@@ -198,7 +204,10 @@ expectAssignable<FastifyInstance>(fastify({
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
-  rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
+  rewriteUrl: function (req) {
+    this.log.debug('rewrite url')
+    return req.url === '/hi' ? '/hello' : req.url!
+  }
 }))
 expectAssignable<FastifyInstance>(fastify({
   schemaErrorFormatter: (errors, dataVar) => {

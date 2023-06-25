@@ -63,6 +63,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
+    - [listeningOrigin](#listeningOrigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -526,8 +527,8 @@ Defines the label used for the request identifier when logging the request.
 ### `genReqId`
 <a id="factory-gen-request-id"></a>
 
-Function for generating the request-id. It will receive the incoming request as
-a parameter. This function is expected to be error-free.
+Function for generating the request-id. It will receive the _raw_ incoming
+request as a parameter. This function is expected to be error-free.
 
 + Default: `value of 'request-id' header if provided or monotonically increasing
   integers`
@@ -828,8 +829,16 @@ URLs.
 > Rewriting a URL will modify the `url` property of the `req` object
 
 ```js
-function rewriteUrl (req) { // req is the Node.js HTTP request
-  return req.url === '/hi' ? '/hello' : req.url;
+// @param {object} req The raw Node.js HTTP request, not the `FastifyRequest` object.
+// @this Fastify The root Fastify instance (not an encapsulated instance).
+// @returns {string} The path that the request should be mapped to.
+function rewriteUrl (req) { 
+  if (req.url === '/hi') {
+    this.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
+    return '/hello'
+  } else {
+    return req.url;
+  }
 }
 ```
 
@@ -846,6 +855,9 @@ is an instance-wide configuration.
 `fastify.server`: The Node core
 [server](https://nodejs.org/api/http.html#http_class_http_server) object as
 returned by the [**`Fastify factory function`**](#factory).
+
+>__Warning__: If utilized improperly, certain Fastify features could be disrupted.
+>It is recommended to only use it for attaching listeners.
 
 #### after
 <a id="after"></a>
@@ -916,9 +928,25 @@ fastify.ready().then(() => {
 
 Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
-`callback` parameters follow the [Node.js
-core](https://nodejs.org/api/net.html#serverlistenoptions-callback) parameter
-definitions.
+`callback` parameters extend the [Node.js
+core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
+object. Thus, all core options are available with the following additional 
+Fastify specific options:
+
+### `listenTextResolver`
+<a id="listen-text-resolver"></a>
+
+Set an optional resolver for the text to log after server has been successfully
+started.
+It is possible to override the default `Server listening at [address]` log 
+entry using this option.
+
+```js
+server.listen({ 
+  port: 9080, 
+  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` } 
+})
+```
 
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
@@ -1214,6 +1242,15 @@ fastify.ready(() => {
   fastify.hasPlugin('@fastify/cookie') // true
 })
 ```
+
+### listeningOrigin
+<a id="listeningOrigin"></a>
+
+The current origin the server is listening to.
+For example, a TCP socket based server returns
+a base address like `http://127.0.0.1:3000`,
+and a Unix socket server will return the socket
+path, e.g. `fastify.temp.sock`.
 
 #### log
 <a id="log"></a>

@@ -502,6 +502,7 @@ test('should return custom error messages with ajv-errors', t => {
     t.error(err)
     t.same(JSON.parse(res.payload), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'body/age bad age - should be num, body name please, body work please'
     })
@@ -557,6 +558,7 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
   }, (_err, res) => {
     t.same(JSON.parse(res.payload), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'body/id must match format "uuid"'
     })

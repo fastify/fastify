@@ -14,8 +14,8 @@
 
 ## Lead Maintainers
 
-Fastify Lead Maintainers are the founder of the project and the organization
-owners. They are the only members of the `@fastify/leads` team. The Lead
+Fastify Lead Maintainers are the organization owners.
+They are the only members of the `@fastify/leads` team. The Lead
 Maintainers are the curator of the Fastify project and their key responsibility
 is to issue releases of Fastify and its dependencies.
 

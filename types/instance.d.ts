@@ -96,7 +96,7 @@ export interface FastifyInstance<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   server: RawServer;
-  pluginName?: string;
+  pluginName: string;
   prefix: string;
   version: string;
   log: Logger;

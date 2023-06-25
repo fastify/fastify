@@ -26,7 +26,7 @@ expectAssignable<FastifyInstance>(server.addSchema({
   schemas: []
 }))
 
-expectType<string | undefined>(server.pluginName)
+expectType<string>(server.pluginName)
 
 expectType<Record<string, unknown>>(server.getSchemas())
 expectType<AddressInfo[]>(server.addresses())

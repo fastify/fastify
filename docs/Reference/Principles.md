@@ -22,7 +22,7 @@ This is usually delivered by implementing fast algorithms and data structures,
 as well as JavaScript-specific features.
 
 Given that JavaScript does not offer zero-overhead data structures, this principle
-is at add with providing a great developer experience and providing more features,
+is at odds with providing a great developer experience and providing more features,
 as usually those cost some overhead.
 
 ## "Good" Developer Experience

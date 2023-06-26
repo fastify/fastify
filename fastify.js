@@ -653,6 +653,11 @@ function fastify (options) {
       errorStatus = http.STATUS_CODES[errorCode]
       body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
       errorLabel = 'timeout'
+    } else if (err.code === 'HPE_HEADER_OVERFLOW') {
+      errorCode = '431'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
+      errorLabel = 'header_overflow'
     } else {
       errorCode = '400'
       errorStatus = http.STATUS_CODES[errorCode]

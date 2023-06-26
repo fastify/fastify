@@ -115,21 +115,36 @@ export interface FastifyInstance<
   close(closeListener: () => void): undefined;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
-  decorate<T>(property: string | symbol,
+  decorate<
+    // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorate<Foo> would suddenly mean something new
+    // eslint-disable-next-line no-use-before-define
+    T extends (P extends keyof FastifyInstance ? FastifyInstance[P] : unknown),
+    P extends string | symbol = string | symbol
+  >(property: P,
     value: T extends (...args: any[]) => any
       ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, ...args: Parameters<T>) => ReturnType<T>
       : T,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  decorateRequest<T>(property: string | symbol,
+  decorateRequest<
+    // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorateRequest<Foo> would suddenly mean something new
+    // eslint-disable-next-line no-use-before-define
+    T extends (P extends keyof FastifyRequest ? FastifyRequest[P] : unknown),
+    P extends string | symbol = string | symbol
+  >(property: P,
     value: T extends (...args: any[]) => any
       ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
       : T,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  decorateReply<T>(property: string | symbol,
+  decorateReply<
+    // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorateReply<Foo> would suddenly mean something new
+    // eslint-disable-next-line no-use-before-define
+    T extends (P extends keyof FastifyReply ? FastifyReply[P] : unknown),
+    P extends string | symbol = string | symbol
+  >(property: P,
     value: T extends (...args: any[]) => any
       ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
       : T,

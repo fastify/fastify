@@ -253,10 +253,6 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     logger: {
       level: 'trace',
       stream
-    },
-    childLoggerFactory: function (logger, bindings, opts) {
-      bindings.someBinding = 'value'
-      return logger.child(bindings, opts)
     }
   }
 
@@ -264,6 +260,10 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
   try {
     fastify = Fastify(originalOptions)
+    fastify.setChildLoggerFactory(function (logger, bindings, opts) {
+      bindings.someBinding = 'value'
+      return logger.child(bindings, opts)
+    })
 
     t.type(fastify, 'object')
     t.same(fastify.initialConfig, {

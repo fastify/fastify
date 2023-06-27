@@ -80,16 +80,26 @@ export interface FastifyLoggerOptions<
   stream?: FastifyLoggerStreamDestination;
 }
 
-export type FastifyChildLoggerFactory<
+export interface FastifyChildLoggerFactory<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-  logger: Logger,
-  bindings: Bindings,
-  childLoggerOpts: ChildLoggerOptions,
-  rawReq: RawRequest
-) => Logger
+> {
+  /**
+   * @param logger The parent logger
+   * @param bindings The bindings object that will be passed to the child logger
+   * @param childLoggerOpts The logger options that will be passed to the child logger
+   * @param rawReq The raw request
+   * @this The fastify instance
+   * @returns The child logger instance
+   */
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    logger: Logger,
+    bindings: Bindings,
+    childLoggerOpts: ChildLoggerOptions,
+    rawReq: RawRequest
+  ): Logger
+}

@@ -113,13 +113,6 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
     }
   }
 }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({
-  childLoggerFactory: function (logger, bindings, opts, req) {
-    bindings.traceContext = req.headers['x-cloud-trace-context']
-    this.log.debug(bindings, 'creating child logger')
-    return logger.child(bindings, opts)
-  }
-}))
 const customLogger = {
   level: 'info',
   info: () => { },

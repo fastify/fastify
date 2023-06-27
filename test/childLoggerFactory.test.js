@@ -6,13 +6,12 @@ const Fastify = require('..')
 test('Should accept a custom childLoggerFactory function', t => {
   t.plan(4)
 
-  const fastify = Fastify({
-    childLoggerFactory: function (logger, bindings, opts) {
-      t.ok(bindings.reqId)
-      t.ok(opts)
-      this.log.debug(bindings, 'created child logger')
-      return logger.child(bindings, opts)
-    }
+  const fastify = Fastify()
+  fastify.setChildLoggerFactory(function (logger, bindings, opts) {
+    t.ok(bindings.reqId)
+    t.ok(opts)
+    this.log.debug(bindings, 'created child logger')
+    return logger.child(bindings, opts)
   })
 
   fastify.get('/', (req, reply) => {
@@ -35,11 +34,10 @@ test('Should accept a custom childLoggerFactory function', t => {
 test('req.log should be the instance returned by the factory', t => {
   t.plan(3)
 
-  const fastify = Fastify({
-    childLoggerFactory: function (logger, bindings, opts) {
-      this.log.debug('using root logger')
-      return fastify.log
-    }
+  const fastify = Fastify()
+  fastify.setChildLoggerFactory(function (logger, bindings, opts) {
+    this.log.debug('using root logger')
+    return this.log
   })
 
   fastify.get('/', (req, reply) => {
@@ -63,11 +61,10 @@ test('req.log should be the instance returned by the factory', t => {
 test('should throw error if invalid logger is returned', t => {
   t.plan(2)
 
-  const fastify = Fastify({
-    childLoggerFactory: function () {
-      this.log.debug('returning an invalid logger, expect error')
-      return undefined
-    }
+  const fastify = Fastify()
+  fastify.setChildLoggerFactory(function () {
+    this.log.debug('returning an invalid logger, expect error')
+    return undefined
   })
 
   fastify.get('/', (req, reply) => {

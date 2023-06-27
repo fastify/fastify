@@ -114,7 +114,6 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const childLoggerFactory = options.childLoggerFactory || defaultChildLoggerFactory
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -145,7 +144,6 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-  options.childLoggerFactory = childLoggerFactory
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -233,7 +231,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
-    [kChildLoggerFactory]: childLoggerFactory,
+    [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,

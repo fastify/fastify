@@ -287,6 +287,7 @@ function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, b
   return logger.child(bindings, opts)
 }
 server.setChildLoggerFactory(childLoggerFactory)
+server.setChildLoggerFactory(server.childLoggerFactory)
 
 type InitialConfig = Readonly<{
   connectionTimeout?: number,

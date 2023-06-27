@@ -101,7 +101,10 @@ test('Request with undefined config', t => {
     },
     server: {
       [kReply]: {},
-      [kRequest]: Request
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
     }
   })
   req.connection = req.socket

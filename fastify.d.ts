@@ -159,37 +159,6 @@ declare namespace fastify {
      * listener to error events emitted by client connections
      */
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
-    /**
-     * Hook function that is called when creating a child logger instance for each request
-     * which allows for modifying or adding child logger bindings and logger options, or
-     * returning a completely custom child logger implementation.
-     *
-     * Child logger bindings have a performance advantage over per-log bindings, because
-     * they are pre-serialised by Pino when the child logger is created.
-     *
-     * For example:
-     * ```
-     * function childLoggerFactory(logger, bindings, opts, rawReq) {
-     *   // Calculate additional bindings from the request
-     *   bindings.traceContext = rawReq.headers['x-cloud-trace-context']
-     *   return logger.child(bindings, opts);
-     * }
-     * ```
-     *
-     * @param logger The parent logger
-     * @param bindings The bindings object that will be passed to the child logger
-     * @param childLoggerOpts The logger options that will be passed to the child logger
-     * @param rawReq The raw request
-     * @this {} The fastify instance
-     * @returns The child logger instance
-     */
-    childLoggerFactory?: (
-      this: FastifyInstance<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, Logger, FastifyTypeProviderDefault>,
-      logger: Logger,
-      bindings: Bindings,
-      childLoggerOpts: ChildLoggerOptions,
-      rawReq: RawRequestDefaultExpression<RawServer>
-    ) => Logger,
   }
 
   export interface ValidationResult {

@@ -550,9 +550,21 @@ export interface FastifyInstance<
   childLoggerFactory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
-   * Set the hook function that is called when creating a child logger instance for each request
+   * Hook function that is called when creating a child logger instance for each request
    * which allows for modifying or adding child logger bindings and logger options, or
    * returning a completely custom child logger implementation.
+   *
+   * Child logger bindings have a performance advantage over per-log bindings, because
+   * they are pre-serialised by Pino when the child logger is created.
+   *
+   * For example:
+   * ```
+   * function childLoggerFactory(logger, bindings, opts, rawReq) {
+   *   // Calculate additional bindings from the request
+   *   bindings.traceContext = rawReq.headers['x-cloud-trace-context']
+   *   return logger.child(bindings, opts);
+   * }
+   * ```
    */
   setChildLoggerFactory(factory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 

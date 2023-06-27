@@ -319,6 +319,30 @@ expectError(server.decorate<(myNumber: number) => number>('test', function (myNu
   return ''
 }))
 
+declare module '../../fastify' {
+  interface FastifyInstance {
+    typedTestProperty: boolean
+    typedTestMethod (x: string): string
+  }
+}
+server.decorate('typedTestProperty', true)
+expectError(server.decorate('typedTestProperty', 'foo'))
+server.decorate('typedTestMethod', function (x) {
+  expectType<string>(x)
+  expectType<FastifyInstance>(this)
+  return 'foo'
+})
+server.decorate('typedTestMethod', x => x)
+expectError(server.decorate('typedTestMethod', function (x: boolean) {
+  return 'foo'
+}))
+expectError(server.decorate('typedTestMethod', function (x) {
+  return true
+}))
+expectError(server.decorate('typedTestMethod', async function (x) {
+  return 'foo'
+}))
+
 const versionConstraintStrategy = {
   name: 'version',
   storage: () => ({

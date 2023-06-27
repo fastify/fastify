@@ -299,6 +299,22 @@ server.decorate<(x: string) => void>('test', function (x: string): void {
 server.decorate('test', function (x: string): void {
   expectType<FastifyInstance>(this)
 })
+server.decorate<string>('test', {
+  getter () {
+    expectType<FastifyInstance>(this)
+    return 'foo'
+  }
+})
+server.decorate<string>('test', {
+  getter () {
+    expectType<FastifyInstance>(this)
+    return 'foo'
+  },
+  setter (x) {
+    expectType<string>(x)
+    expectType<FastifyInstance>(this)
+  }
+})
 
 server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
@@ -318,15 +334,43 @@ expectError(server.decorate<string>('test', true))
 expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
   return ''
 }))
+expectError(server.decorate<string>('test', {
+  getter () {
+    return true
+  }
+}))
+expectError(server.decorate<string>('test', {
+  setter (x) {}
+}))
 
 declare module '../../fastify' {
   interface FastifyInstance {
     typedTestProperty: boolean
+    typedTestPropertyGetterSetter: string
     typedTestMethod (x: string): string
   }
 }
-server.decorate('typedTestProperty', true)
+server.decorate('typedTestProperty', false)
+server.decorate('typedTestProperty', {
+  getter () {
+    return false
+  }
+})
+server.decorate('typedTestProperty', {
+  getter (): boolean {
+    return true
+  },
+  setter (x) {
+    expectType<boolean>(x)
+    expectType<FastifyInstance>(this)
+  }
+})
 expectError(server.decorate('typedTestProperty', 'foo'))
+expectError(server.decorate('typedTestProperty', {
+  getter () {
+    return 'foo'
+  }
+}))
 server.decorate('typedTestMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyInstance>(this)

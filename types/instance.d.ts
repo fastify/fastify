@@ -85,6 +85,11 @@ export interface FastifyListenOptions {
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
+type GetterSetter<This, T> = T | {
+  getter: (this: This) => T,
+  setter?: (this: This, value: T) => void
+}
+
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
  */
@@ -121,9 +126,10 @@ export interface FastifyInstance<
     T extends (P extends keyof FastifyInstance ? FastifyInstance[P] : unknown),
     P extends string | symbol = string | symbol
   >(property: P,
-    value: T extends (...args: any[]) => any
+    value: GetterSetter<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, T extends (...args: any[]) => any
       ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, ...args: Parameters<T>) => ReturnType<T>
-      : T,
+      : T
+    >,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
@@ -133,9 +139,10 @@ export interface FastifyInstance<
     T extends (P extends keyof FastifyRequest ? FastifyRequest[P] : unknown),
     P extends string | symbol = string | symbol
   >(property: P,
-    value: T extends (...args: any[]) => any
+    value: GetterSetter<FastifyRequest, T extends (...args: any[]) => any
       ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
-      : T,
+      : T
+    >,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
@@ -145,9 +152,10 @@ export interface FastifyInstance<
     T extends (P extends keyof FastifyReply ? FastifyReply[P] : unknown),
     P extends string | symbol = string | symbol
   >(property: P,
-    value: T extends (...args: any[]) => any
+    value: GetterSetter<FastifyReply, T extends (...args: any[]) => any
       ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
-      : T,
+      : T
+    >,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 

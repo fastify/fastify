@@ -150,7 +150,7 @@
     "eslint-config-standard": "^17.0.0",
     "eslint-import-resolver-node": "^0.3.7",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-n": "^16.0.1",
     "eslint-plugin-promise": "^6.1.1",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^4.5.0",

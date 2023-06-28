@@ -1,25 +1,21 @@
-import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault, StatusCodeReply, HttpCodesCovered, CodeToReplyKey } from './utils'
-import { FastifyReplyType, ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { Buffer } from 'buffer'
 import { FastifyContext } from './context'
+import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
-import { FastifyInstance } from './instance'
 import { FastifySchema } from './schema'
-import { Buffer } from 'buffer'
+import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
+import { CodeToReplyKey, ContextConfigDefault, ReplyKeysToCodes, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
 
-type CodeConstrainer<RG extends RouteGenericInterface> =
-  RG['Reply'] extends StatusCodeReply ?
-    HttpCodesCovered<keyof RG['Reply']> : number;
-export type ReplyTypeConstrainer<RG extends RouteGenericInterface, Code extends CodeConstrainer<RG>> =
-  RG['Reply'] extends StatusCodeReply ?
-    RG['Reply'][Code extends keyof RG['Reply'] ? Code : Code extends keyof StatusCodeReply ? CodeToReplyKey<Code> : never] :
-    unknown;
-
+export type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
+  Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
+    CodeToReplyKey<Code> extends keyof RouteGenericReply ? RouteGenericReply[CodeToReplyKey<Code>] :
+      unknown;
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
@@ -39,8 +35,8 @@ export interface FastifyReply<
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
-  code<Code extends CodeConstrainer<RouteGeneric>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ReplyTypeConstrainer<RouteGeneric, Code>>;
-  status<Code extends CodeConstrainer<RouteGeneric>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ReplyTypeConstrainer<RouteGeneric, Code>>;
+  code<Code extends ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ReplyTypeConstrainer<RouteGeneric['Reply'], Code>>;
+  status<Code extends ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ReplyTypeConstrainer<RouteGeneric['Reply'], Code>>;
   statusCode: number;
   sent: boolean;
   send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

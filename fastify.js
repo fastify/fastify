@@ -653,6 +653,11 @@ function fastify (options) {
       errorStatus = http.STATUS_CODES[errorCode]
       body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
       errorLabel = 'timeout'
+    } else if (err.code === 'HPE_HEADER_OVERFLOW') {
+      errorCode = '431'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
+      errorLabel = 'header_overflow'
     } else {
       errorCode = '400'
       errorStatus = http.STATUS_CODES[errorCode]
@@ -692,10 +697,13 @@ function fastify (options) {
       const id = genReqId(req)
       const childLogger = logger.child({ reqId: id })
 
-      childLogger.info({ req }, 'incoming request')
-
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
+
+      if (disableRequestLogging === false) {
+        childLogger.info({ req: request }, 'incoming request')
+      }
+
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
     const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
@@ -714,10 +722,13 @@ function fastify (options) {
           const id = genReqId(req)
           const childLogger = logger.child({ reqId: id })
 
-          childLogger.info({ req }, 'incoming request')
-
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
+
+          if (disableRequestLogging === false) {
+            childLogger.info({ req: request }, 'incoming request')
+          }
+
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'

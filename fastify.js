@@ -426,9 +426,10 @@ function fastify (options) {
       router.closeRoutes()
 
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
-        // No new TCP connections are accepted
-        // we must call close on the server even if we are not listening
-        // otherwise memory will be leaked
+        // No new TCP connections are accepted.
+        // We must call close on the server even if we are not listening
+        // otherwise memory will be leaked.
+        // https://github.com/nodejs/node/issues/48604
         instance.server.close(done)
 
         if (fastify[kState].listening) {

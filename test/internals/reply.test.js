@@ -212,6 +212,34 @@ test('reply.serialize should serialize payload with Fastify instance', t => {
   })
 })
 
+test('reply should allow empty responses', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      response: {
+        204: {
+          description: 'Session Deleted'
+        }
+      }
+    },
+    handler: (_, reply) => {
+      reply.code(204).send()
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 204)
+    t.equal(res.payload, '')
+  })
+})
+
 test('within an instance', t => {
   const fastify = require('../..')()
   const test = t.test

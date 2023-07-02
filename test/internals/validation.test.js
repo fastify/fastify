@@ -79,6 +79,28 @@ test('build schema - payload schema', t => {
   t.equal(typeof opts[symbols.bodySchema], 'function')
 })
 
+test('build schema - 204 empty response', t => {
+  t.plan(1)
+  const serverConfig = {
+    jsonShorthand: true
+  }
+  const opts = {
+    schema: {
+      response: {
+        204: {
+          description: 'No Content'
+        }
+      }
+    }
+  }
+  opts.schema = normalizeSchema(opts.schema, serverConfig)
+  t.same(opts.schema.response, {
+    204: {
+      description: 'No Content'
+    }
+  })
+})
+
 test('build schema - avoid repeated normalize schema', t => {
   t.plan(3)
   const serverConfig = {

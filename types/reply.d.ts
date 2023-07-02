@@ -12,10 +12,11 @@ export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
 
-export type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
+export type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>, ReplyKey = CodeToReplyKey<Code>> =
   Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
-    CodeToReplyKey<Code> extends keyof RouteGenericReply ? RouteGenericReply[CodeToReplyKey<Code>] :
-      unknown;
+    [ReplyKey] extends [never] ? unknown :
+      ReplyKey extends keyof RouteGenericReply ? RouteGenericReply[ReplyKey] :
+        unknown;
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.

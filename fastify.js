@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.18.0'
+const VERSION = '4.19.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -426,10 +426,13 @@ function fastify (options) {
       router.closeRoutes()
 
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
-        if (fastify[kState].listening) {
-          // No new TCP connections are accepted
-          instance.server.close(done)
+        // No new TCP connections are accepted.
+        // We must call close on the server even if we are not listening
+        // otherwise memory will be leaked.
+        // https://github.com/nodejs/node/issues/48604
+        instance.server.close(done)
 
+        if (fastify[kState].listening) {
           /* istanbul ignore next: Cannot test this without Node.js core support */
           if (forceCloseConnections === 'idle') {
             // Not needed in Node 19

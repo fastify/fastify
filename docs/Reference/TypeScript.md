@@ -508,7 +508,7 @@ Fastify Plugin in a TypeScript Project.
    `"compilerOptions"` object.
    ```json
    {
-     "compileOptions": {
+     "compilerOptions": {
        "declaration": true
      }
    }

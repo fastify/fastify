@@ -28,7 +28,7 @@ snippet of code.
 - [Google Cloud Functions](#google-cloud-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
-- [Platformatic Cloud](#platformatic)
+- [Platformatic Cloud](#platformatic-cloud)
 - [Vercel](#vercel)
 
 ## AWS

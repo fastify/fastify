@@ -13,6 +13,11 @@ import {
 } from './type-provider'
 import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
 
+export interface FastifyRouteConfig {
+  url: string;
+  method: HTTPMethods | HTTPMethods[];
+}
+
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
 /**

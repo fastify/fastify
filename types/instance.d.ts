@@ -85,6 +85,26 @@ export interface FastifyListenOptions {
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
+type GetterSetter<This, T> = T | {
+  getter: (this: This) => T,
+  setter?: (this: This, value: T) => void
+}
+
+type DecorationMethod<This, Return = This> = {
+  <
+    // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorate<Foo> would suddenly mean something new
+    // eslint-disable-next-line no-use-before-define
+    T extends (P extends keyof This ? This[P] : unknown),
+    P extends string | symbol = string | symbol
+  >(property: P,
+    value: GetterSetter<This, T extends (...args: any[]) => any
+      ? (this: This, ...args: Parameters<T>) => ReturnType<T>
+      : T
+    >,
+    dependencies?: string[]
+  ): Return;
+}
+
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
  */
@@ -96,6 +116,7 @@ export interface FastifyInstance<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   server: RawServer;
+  pluginName: string;
   prefix: string;
   version: string;
   log: Logger;
@@ -114,26 +135,9 @@ export interface FastifyInstance<
   close(closeListener: () => void): undefined;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
-  decorate<T>(property: string | symbol,
-    value: T extends (...args: any[]) => any
-      ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, ...args: Parameters<T>) => ReturnType<T>
-      : T,
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-
-  decorateRequest<T>(property: string | symbol,
-    value: T extends (...args: any[]) => any
-      ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
-      : T,
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-
-  decorateReply<T>(property: string | symbol,
-    value: T extends (...args: any[]) => any
-      ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
-      : T,
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+  decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+  decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;

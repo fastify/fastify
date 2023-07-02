@@ -28,6 +28,8 @@ expectAssignable<FastifyInstance>(server.addSchema({
   schemas: []
 }))
 
+expectType<string>(server.pluginName)
+
 expectType<Record<string, unknown>>(server.getSchemas())
 expectType<AddressInfo[]>(server.addresses())
 expectType<unknown>(server.getSchema('SchemaId'))
@@ -330,6 +332,22 @@ server.decorate<(x: string) => void>('test', function (x: string): void {
 server.decorate('test', function (x: string): void {
   expectType<FastifyInstance>(this)
 })
+server.decorate<string>('test', {
+  getter () {
+    expectType<FastifyInstance>(this)
+    return 'foo'
+  }
+})
+server.decorate<string>('test', {
+  getter () {
+    expectType<FastifyInstance>(this)
+    return 'foo'
+  },
+  setter (x) {
+    expectType<string>(x)
+    expectType<FastifyInstance>(this)
+  }
+})
 
 server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
@@ -348,6 +366,58 @@ server.decorateReply('test', function (x: string): void {
 expectError(server.decorate<string>('test', true))
 expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
   return ''
+}))
+expectError(server.decorate<string>('test', {
+  getter () {
+    return true
+  }
+}))
+expectError(server.decorate<string>('test', {
+  setter (x) {}
+}))
+
+declare module '../../fastify' {
+  interface FastifyInstance {
+    typedTestProperty: boolean
+    typedTestPropertyGetterSetter: string
+    typedTestMethod (x: string): string
+  }
+}
+server.decorate('typedTestProperty', false)
+server.decorate('typedTestProperty', {
+  getter () {
+    return false
+  }
+})
+server.decorate('typedTestProperty', {
+  getter (): boolean {
+    return true
+  },
+  setter (x) {
+    expectType<boolean>(x)
+    expectType<FastifyInstance>(this)
+  }
+})
+expectError(server.decorate('typedTestProperty', 'foo'))
+expectError(server.decorate('typedTestProperty', {
+  getter () {
+    return 'foo'
+  }
+}))
+server.decorate('typedTestMethod', function (x) {
+  expectType<string>(x)
+  expectType<FastifyInstance>(this)
+  return 'foo'
+})
+server.decorate('typedTestMethod', x => x)
+expectError(server.decorate('typedTestMethod', function (x: boolean) {
+  return 'foo'
+}))
+expectError(server.decorate('typedTestMethod', function (x) {
+  return true
+}))
+expectError(server.decorate('typedTestMethod', async function (x) {
+  return 'foo'
 }))
 
 const versionConstraintStrategy = {

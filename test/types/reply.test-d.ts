@@ -1,11 +1,11 @@
-import { expectType, expectError, expectAssignable } from 'tsd'
-import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply, FastifySchema, FastifyTypeProviderDefault } from '../../fastify'
-import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from '../../types/utils'
-import { FastifyLoggerInstance } from '../../types/logger'
-import { RouteGenericInterface } from '../../types/route'
-import { FastifyInstance } from '../../types/instance'
 import { Buffer } from 'buffer'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyContext, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
+import { FastifyInstance } from '../../types/instance'
+import { FastifyLoggerInstance } from '../../types/logger'
 import { ReplyTypeConstrainer } from '../../types/reply'
+import { RouteGenericInterface } from '../../types/route'
+import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
 type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeConstrainer<RouteGenericInterface['Reply'], Code>>
@@ -13,7 +13,7 @@ type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RawServerDe
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
   expectType<FastifyContext<ContextConfigDefault>>(reply.context)
-  expectType<FastifyContextConfig>(reply.context.config)
+  expectType<FastifyContext<ContextConfigDefault>['config']>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.code)

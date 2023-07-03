@@ -315,6 +315,8 @@ server.decorate<string>('test', {
     expectType<FastifyInstance>(this)
   }
 })
+server.decorate('test')
+server.decorate('test', null, ['foo'])
 
 server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
@@ -322,6 +324,8 @@ server.decorateRequest<(x: string, y: number) => void>('test', function (x: stri
 server.decorateRequest('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
 })
+server.decorateRequest('test')
+server.decorateRequest('test', null, ['foo'])
 
 server.decorateReply<(x: string) => void>('test', function (x: string): void {
   expectType<FastifyReply>(this)
@@ -329,6 +333,8 @@ server.decorateReply<(x: string) => void>('test', function (x: string): void {
 server.decorateReply('test', function (x: string): void {
   expectType<FastifyReply>(this)
 })
+server.decorateReply('test')
+server.decorateReply('test', null, ['foo'])
 
 expectError(server.decorate<string>('test', true))
 expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
@@ -349,7 +355,20 @@ declare module '../../fastify' {
     typedTestPropertyGetterSetter: string
     typedTestMethod (x: string): string
   }
+
+  interface FastifyRequest {
+    typedTestRequestProperty: boolean
+    typedTestRequestPropertyGetterSetter: string
+    typedTestRequestMethod (x: string): string
+  }
+
+  interface FastifyReply {
+    typedTestReplyProperty: boolean
+    typedTestReplyPropertyGetterSetter: string
+    typedTestReplyMethod (x: string): string
+  }
 }
+
 server.decorate('typedTestProperty', false)
 server.decorate('typedTestProperty', {
   getter () {
@@ -365,6 +384,9 @@ server.decorate('typedTestProperty', {
     expectType<FastifyInstance>(this)
   }
 })
+server.decorate('typedTestProperty')
+server.decorate('typedTestProperty', null, ['foo'])
+server.decorate('typedTestProperty', null)
 expectError(server.decorate('typedTestProperty', 'foo'))
 expectError(server.decorate('typedTestProperty', {
   getter () {
@@ -384,6 +406,86 @@ expectError(server.decorate('typedTestMethod', function (x) {
   return true
 }))
 expectError(server.decorate('typedTestMethod', async function (x) {
+  return 'foo'
+}))
+
+server.decorateRequest('typedTestRequestProperty', false)
+server.decorateRequest('typedTestRequestProperty', {
+  getter () {
+    return false
+  }
+})
+server.decorateRequest('typedTestRequestProperty', {
+  getter (): boolean {
+    return true
+  },
+  setter (x) {
+    expectType<boolean>(x)
+    expectType<FastifyRequest>(this)
+  }
+})
+server.decorateRequest('typedTestRequestProperty')
+server.decorateRequest('typedTestRequestProperty', null, ['foo'])
+server.decorateRequest('typedTestRequestProperty', null)
+expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
+expectError(server.decorateRequest('typedTestRequestProperty', {
+  getter () {
+    return 'foo'
+  }
+}))
+server.decorateRequest('typedTestRequestMethod', function (x) {
+  expectType<string>(x)
+  expectType<FastifyRequest>(this)
+  return 'foo'
+})
+server.decorateRequest('typedTestRequestMethod', x => x)
+expectError(server.decorateRequest('typedTestRequestMethod', function (x: boolean) {
+  return 'foo'
+}))
+expectError(server.decorateRequest('typedTestRequestMethod', function (x) {
+  return true
+}))
+expectError(server.decorateRequest('typedTestRequestMethod', async function (x) {
+  return 'foo'
+}))
+
+server.decorateReply('typedTestReplyProperty', false)
+server.decorateReply('typedTestReplyProperty', {
+  getter () {
+    return false
+  }
+})
+server.decorateReply('typedTestReplyProperty', {
+  getter (): boolean {
+    return true
+  },
+  setter (x) {
+    expectType<boolean>(x)
+    expectType<FastifyReply>(this)
+  }
+})
+server.decorateReply('typedTestReplyProperty')
+server.decorateReply('typedTestReplyProperty', null, ['foo'])
+server.decorateReply('typedTestReplyProperty', null)
+expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
+expectError(server.decorateReply('typedTestReplyProperty', {
+  getter () {
+    return 'foo'
+  }
+}))
+server.decorateReply('typedTestReplyMethod', function (x) {
+  expectType<string>(x)
+  expectType<FastifyReply>(this)
+  return 'foo'
+})
+server.decorateReply('typedTestReplyMethod', x => x)
+expectError(server.decorateReply('typedTestReplyMethod', function (x: boolean) {
+  return 'foo'
+}))
+expectError(server.decorateReply('typedTestReplyMethod', function (x) {
+  return true
+}))
+expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
 

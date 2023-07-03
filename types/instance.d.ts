@@ -106,6 +106,8 @@ type DecorationMethod<This, Return = This> = {
 
   (property: string | symbol): Return;
 
+  (property: string | symbol, value: null): Return;
+
   (property: string | symbol, value: null|undefined, dependencies: string[]): Return;
 }
 

@@ -1,11 +1,11 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { FastifyBaseLogger } from './logger'
-import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
-import { RouteGenericInterface } from './route'
-import { FastifyInstance } from './instance'
-import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
-import { FastifySchema } from './schema'
 import { FastifyContext, FastifyContextConfig } from './context'
+import { FastifyInstance } from './instance'
+import { FastifyBaseLogger } from './logger'
+import { FastifyRouteConfig, RouteGenericInterface } from './route'
+import { FastifySchema } from './schema'
+import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
+import { ContextConfigDefault, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
 
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 export interface RequestGenericInterface {
@@ -58,8 +58,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   log: Logger;
   server: FastifyInstance;
   body: RequestType['body'];
-  context: FastifyContext<ContextConfig>;
-  routeConfig: FastifyContextConfig & ContextConfig;
+  context: Omit<FastifyContext<ContextConfig>, 'config'> & { config: FastifyContextConfig & ContextConfig & FastifyRouteConfig };
+  routeConfig: FastifyContextConfig & ContextConfig & FastifyRouteConfig;
   routeSchema: FastifySchema
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */

@@ -1,8 +1,7 @@
 import { ContextConfigDefault } from './utils'
-import { FastifyRouteConfig } from './route'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FastifyContextConfig extends FastifyRouteConfig {
+export interface FastifyContextConfig {
 }
 
 /**

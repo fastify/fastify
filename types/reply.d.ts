@@ -1,12 +1,12 @@
 import { Buffer } from 'buffer'
-import { FastifyContext } from './context'
+import { FastifyContext, FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
-import { RouteGenericInterface } from './route'
+import { FastifyRouteConfig, RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
 import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
-import { CodeToReplyKey, ContextConfigDefault, ReplyKeysToCodes, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault } from './utils'
+import { CodeToReplyKey, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -32,7 +32,7 @@ export interface FastifyReply<
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   raw: RawReply;
-  context: FastifyContext<ContextConfig>;
+  context: Omit<FastifyContext<ContextConfig>, 'config'> & { config: FastifyContextConfig & ContextConfig & FastifyRouteConfig };
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;

@@ -1,9 +1,9 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError, expectAssignable, printType } from 'tsd'
-import { HTTPMethods } from '../../types/utils'
-import * as http from 'http'
-import { RequestPayload } from '../../types/hooks'
 import { FastifyError } from '@fastify/error'
+import * as http from 'http'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
+import { RequestPayload } from '../../types/hooks'
+import { HTTPMethods } from '../../types/utils'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -74,7 +74,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     Headers: HeadersInterface;
   }
 
-  fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true, url: '/', method: lowerCaseMethod } }, (req, res) => {
+  fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
     expectType<BodyInterface>(req.body)
     expectType<QuerystringInterface>(req.query)
     expectType<ParamsInterface>(req.params)
@@ -94,7 +94,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   fastify().route<RouteGeneric>({
     url: '/',
     method: method as HTTPMethods,
-    config: { foo: 'bar', bar: 100, url: '/', method: method as HTTPMethods },
+    config: { foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
     onRequest: (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
       expectType<BodyInterface>(req.body)
@@ -231,7 +231,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   fastify().route<RouteGeneric>({
     url: '/',
     method: method as HTTPMethods,
-    config: { foo: 'bar', bar: 100, url: '/', method: method as HTTPMethods },
+    config: { foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
     onRequest: async (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
       expectType<BodyInterface>(req.body)

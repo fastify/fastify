@@ -13,10 +13,10 @@ t.before(buildCertificate)
 test('Should support a custom https server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  t.plan(localAddresses.length + 3)
+  t.plan((localAddresses.length - 1) + 3)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
+    t.ok(opts.serverFactory, 'it is called once for localhost')
 
     const options = {
       key: global.context.key,

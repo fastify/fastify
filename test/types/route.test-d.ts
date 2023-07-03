@@ -1,9 +1,9 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError, expectAssignable, printType } from 'tsd'
-import { HTTPMethods } from '../../types/utils'
-import * as http from 'http'
-import { RequestPayload } from '../../types/hooks'
 import { FastifyError } from '@fastify/error'
+import * as http from 'http'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
+import { RequestPayload } from '../../types/hooks'
+import { HTTPMethods } from '../../types/utils'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -86,9 +86,13 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
     expectType<string>(req.context.config.foo)
     expectType<number>(req.context.config.bar)
     expectType<boolean>(req.context.config.extra)
+    expectType<string>(req.context.config.url)
+    expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
     expectType<string>(res.context.config.foo)
     expectType<number>(res.context.config.bar)
     expectType<boolean>(res.context.config.extra)
+    expectType<string>(req.routeConfig.url)
+    expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
   })
 
   fastify().route<RouteGeneric>({
@@ -103,8 +107,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     preParsing: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -113,8 +121,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
       expectType<RequestPayload>(payload)
       expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
       expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
@@ -126,8 +138,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     preHandler: (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -136,8 +152,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     onResponse: (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -146,8 +166,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
       expectType<number>(res.statusCode)
     },
     onError: (req, res, error, done) => {
@@ -157,8 +181,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     preSerialization: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -167,8 +195,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     onSend: (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -177,8 +209,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     handler: (req, res) => {
       expectType<BodyInterface>(req.body)
@@ -187,8 +223,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     }
   })
 
@@ -204,8 +244,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     preParsing: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -214,8 +258,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
       expectType<RequestPayload>(payload)
       expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
       expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
@@ -227,8 +275,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     preHandler: async (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -237,8 +289,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     onResponse: async (req, res, done) => {
       expectType<BodyInterface>(req.body)
@@ -247,8 +303,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
       expectType<number>(res.statusCode)
     },
     onError: async (req, res, error, done) => {
@@ -258,8 +318,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     preSerialization: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -268,8 +332,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     onSend: async (req, res, payload, done) => {
       expectType<BodyInterface>(req.body)
@@ -278,8 +346,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
     handler: (req, res) => {
       expectType<BodyInterface>(req.body)
@@ -288,8 +360,12 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(req.context.config.foo)
       expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     }
   })
 })

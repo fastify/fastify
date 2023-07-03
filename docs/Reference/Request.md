@@ -27,6 +27,8 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
+- `originalUrl` - similar to `url`, this allows you to access the 
+  original `url` in case of internal re-routing 
 - `routerMethod` - the method defined for the router that is handling the
   request
 - `routerPath` - the path pattern defined for the router that is handling the

@@ -315,6 +315,8 @@ server.decorate<string>('test', {
     expectType<FastifyInstance>(this)
   }
 })
+server.decorate('test')
+server.decorate('test', null, ['foo'])
 
 server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
@@ -365,6 +367,9 @@ server.decorate('typedTestProperty', {
     expectType<FastifyInstance>(this)
   }
 })
+server.decorate('typedTestProperty')
+server.decorate('typedTestProperty', null, ['foo'])
+expectError(server.decorate('typedTestProperty', null))
 expectError(server.decorate('typedTestProperty', 'foo'))
 expectError(server.decorate('typedTestProperty', {
   getter () {

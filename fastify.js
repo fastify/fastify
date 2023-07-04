@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.19.1'
+const VERSION = '4.19.2'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -429,12 +429,6 @@ function fastify (options) {
       router.closeRoutes()
 
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
-        // No new TCP connections are accepted.
-        // We must call close on the server even if we are not listening
-        // otherwise memory will be leaked.
-        // https://github.com/nodejs/node/issues/48604
-        instance.server.close(done)
-
         if (fastify[kState].listening) {
           /* istanbul ignore next: Cannot test this without Node.js core support */
           if (forceCloseConnections === 'idle') {
@@ -453,8 +447,22 @@ function fastify (options) {
               fastify[kKeepAliveConnections].delete(conn)
             }
           }
+        }
+
+        // No new TCP connections are accepted.
+        // We must call close on the server even if we are not listening
+        // otherwise memory will be leaked.
+        // https://github.com/nodejs/node/issues/48604
+        if (!options.serverFactory || fastify[kState].listening) {
+          instance.server.close(function (err) {
+            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
+              done(null)
+            } else {
+              done()
+            }
+          })
         } else {
-          done(null)
+          process.nextTick(done, null)
         }
       })
     })

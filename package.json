@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "4.19.1",
+  "version": "4.19.2",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -134,7 +134,7 @@
   "homepage": "https://www.fastify.io/",
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
-    "@sinclair/typebox": "^0.28.9",
+    "@sinclair/typebox": "^0.29.1",
     "@sinonjs/fake-timers": "^11.0.0",
     "@types/node": "^20.1.0",
     "@typescript-eslint/eslint-plugin": "^5.59.2",

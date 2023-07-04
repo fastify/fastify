@@ -386,7 +386,7 @@ server.decorate('typedTestProperty', {
 })
 server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
-server.decorate('typedTestProperty', null)
+expectError(server.decorate('typedTestProperty', null))
 expectError(server.decorate('typedTestProperty', 'foo'))
 expectError(server.decorate('typedTestProperty', {
   getter () {
@@ -426,7 +426,7 @@ server.decorateRequest('typedTestRequestProperty', {
 })
 server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
-server.decorateRequest('typedTestRequestProperty', null)
+expectError(server.decorateRequest('typedTestRequestProperty', null))
 expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
 expectError(server.decorateRequest('typedTestRequestProperty', {
   getter () {
@@ -466,7 +466,7 @@ server.decorateReply('typedTestReplyProperty', {
 })
 server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
-server.decorateReply('typedTestReplyProperty', null)
+expectError(server.decorateReply('typedTestReplyProperty', null))
 expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
 expectError(server.decorateReply('typedTestReplyProperty', {
   getter () {

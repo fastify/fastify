@@ -465,7 +465,6 @@ test('Should not throw on access to routeConfig frameworkErrors handler - FST_ER
       t.ok(typeof req.id === 'string')
       t.ok(req.raw instanceof Readable)
       t.same(req.routerPath, undefined)
-      // t.same(req.routeConfig, undefined)
       res.send(`${err.message} - ${err.code}`)
     }
   })

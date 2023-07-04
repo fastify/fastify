@@ -91,7 +91,7 @@ fastify.route(options)
   that this will point to fastify's default `errorHandler` only if a plugin
   hasn't overridden it already.
 * `childLoggerFactory(logger, binding, opts, rawReq)`: a custom factory function
-  that will be called to product a child logger instance for every request.
+  that will be called to produce a child logger instance for every request.
   See [`childLoggerFactory`](./Server.md#childloggerfactory) for more info.
   Overrides the default logger factory, and anything set by 
   [`setChildLoggerFactory`](./Server.md#setchildloggerfactory), for requests to

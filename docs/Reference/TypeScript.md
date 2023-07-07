@@ -111,7 +111,7 @@ generic types for route schemas and the dynamic properties located on the
 route-level `request` object.
 
 1. If you did not complete the previous example, follow steps 1-4 to get set up.
-2. Inside `index.ts`, define two interfaces `IQuerystring` and `IHeaders`:
+2. Inside `index.ts`, define three interfaces `IQuerystring`,`IHeaders` and `IReply`:
    ```typescript
    interface IQuerystring {
      username: string;
@@ -121,8 +121,14 @@ route-level `request` object.
    interface IHeaders {
      'h-Custom': string;
    }
+
+   interface IReply {
+     200: { success: boolean };
+     302: { url: string };
+     '4xx': { error: string };
+   }
    ```
-3. Using the two interfaces, define a new API route and pass them as generics.
+3. Using the three interfaces, define a new API route and pass them as generics.
    The shorthand route methods (i.e. `.get`) accept a generic object
    `RouteGenericInterface` containing five named properties: `Body`,
    `Querystring`, `Params`, `Headers` and `Reply`. The interfaces `Body`,
@@ -132,12 +138,20 @@ route-level `request` object.
    ```typescript
    server.get<{
      Querystring: IQuerystring,
-     Headers: IHeaders
+     Headers: IHeaders,
+     Reply: IReply
    }>('/auth', async (request, reply) => {
      const { username, password } = request.query
      const customerHeader = request.headers['h-Custom']
      // do something with request data
 
+     // chaining .statusCode/.code calls with .send allows type narrowing. For example:
+     // this works
+     reply.code(200).send({ success: true });
+     // but this gives a type error
+     reply.code(200).send('uh-oh');
+     // it even works for wildcards
+     reply.code(404).send({ error: 'Not found' });
      return `logged in!`
    })
    ```
@@ -154,7 +168,8 @@ route-level `request` object.
    ```typescript
    server.get<{
      Querystring: IQuerystring,
-     Headers: IHeaders
+     Headers: IHeaders,
+     Reply: IReply
    }>('/auth', {
      preValidation: (request, reply, done) => {
        const { username, password } = request.query
@@ -172,7 +187,7 @@ route-level `request` object.
    admin"}`
 
 🎉 Good work, now you can define interfaces for each route and have strictly
-typed request and reply instances. Other parts of the Fastify type system rely
+typed request and reply instances. Other parts of the Fastify type system rely 
 on generic properties. Make sure to reference the detailed type system
 documentation below to learn more about what is available.
 
@@ -493,7 +508,7 @@ Fastify Plugin in a TypeScript Project.
    `"compilerOptions"` object.
    ```json
    {
-     "compileOptions": {
+     "compilerOptions": {
        "declaration": true
      }
    }

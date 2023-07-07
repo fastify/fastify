@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const sget = require('simple-get').concat
 
 test('listen should accept null port', t => {
   t.plan(1)
@@ -60,4 +61,19 @@ test('listen should reject string port', async (t) => {
   } catch (error) {
     t.equal(error.code, 'ERR_SOCKET_BAD_PORT')
   }
+})
+
+test('Test for hostname and port', t => {
+  const app = Fastify()
+  t.teardown(app.close.bind(app))
+  app.get('/host', (req, res) => {
+    const host = 'localhost:8000'
+    t.equal(req.host, host)
+    t.equal(req.hostname, req.host.split(':')[0])
+    t.equal(req.port, Number(req.host.split(':')[1]))
+    res.send('ok')
+  })
+  app.listen({ port: 8000 }, () => {
+    sget('http://localhost:8000/host', () => { t.end() })
+  })
 })

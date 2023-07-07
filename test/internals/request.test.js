@@ -56,7 +56,7 @@ test('Regular request', t => {
   t.equal(request.log, 'log')
   t.equal(request.ip, 'ip')
   t.equal(request.ips, undefined)
-  t.equal(request.hostname, 'hostname')
+  t.equal(request.host, 'hostname')
   t.equal(request.body, undefined)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
@@ -135,7 +135,7 @@ test('Request with undefined config', t => {
 })
 
 test('Regular request - hostname from authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     ':authority': 'authority'
   }
@@ -148,11 +148,12 @@ test('Regular request - hostname from authority', t => {
 
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
-  t.equal(request.hostname, 'authority')
+  t.equal(request.host, 'authority')
+  t.equal(request.port, null)
 })
 
 test('Regular request - host header has precedence over authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     host: 'hostname',
     ':authority': 'authority'
@@ -165,7 +166,8 @@ test('Regular request - host header has precedence over authority', t => {
   }
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
-  t.equal(request.hostname, 'hostname')
+  t.equal(request.host, 'hostname')
+  t.equal(request.port, null)
 })
 
 test('Request with trust proxy', t => {
@@ -212,7 +214,7 @@ test('Request with trust proxy', t => {
   t.equal(request.log, 'log')
   t.equal(request.ip, '2.2.2.2')
   t.same(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
-  t.equal(request.hostname, 'example.com')
+  t.equal(request.host, 'example.com')
   t.equal(request.body, undefined)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
@@ -262,7 +264,7 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.equal(request.hostname, 'hostname')
+  t.equal(request.host, 'hostname')
 })
 
 test('Request with trust proxy - no x-forwarded-host header and fallback to authority', t => {
@@ -281,7 +283,7 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.equal(request.hostname, 'authority')
+  t.equal(request.host, 'authority')
 })
 
 test('Request with trust proxy - x-forwarded-host header has precedence over host', t => {
@@ -301,7 +303,7 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.equal(request.hostname, 'example.com')
+  t.equal(request.host, 'example.com')
 })
 
 test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
@@ -320,7 +322,7 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.equal(request.hostname, 'example.com')
+  t.equal(request.host, 'example.com')
   t.equal(request.protocol, 'https')
 })
 
@@ -363,7 +365,7 @@ test('Request with undefined socket', t => {
   t.equal(request.log, 'log')
   t.equal(request.ip, undefined)
   t.equal(request.ips, undefined)
-  t.equal(request.hostname, 'hostname')
+  t.equal(request.host, 'hostname')
   t.same(request.body, null)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')

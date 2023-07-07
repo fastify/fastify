@@ -574,21 +574,21 @@ const fastify = Fastify({ trustProxy: true })
 For more examples, refer to the
 [`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
 
-You may access the `ip`, `ips`, `hostname` and `protocol` values on the
+You may access the `ip`, `ips`, `host` and `protocol` values on the
 [`request`](./Request.md) object.
 
 ```js
 fastify.get('/', (request, reply) => {
   console.log(request.ip)
   console.log(request.ips)
-  console.log(request.hostname)
+  console.log(request.host)
   console.log(request.protocol)
 })
 ```
 
 **Note: if a request contains multiple <code>x-forwarded-host</code> or
 <code>x-forwarded-proto</code> headers, it is only the last one that is used to
-derive <code>request.hostname</code> and <code>request.protocol</code>**
+derive <code>request.host</code> and <code>request.protocol</code>**
 
 ### `pluginTimeout`
 <a id="plugin-timeout"></a>

@@ -20,8 +20,12 @@ fastify.get('/', function (req, reply) {
   reply.code(200).send(msg)
 })
 
-fastify.get('/hostname', function (req, reply) {
-  reply.code(200).send(req.hostname)
+fastify.get('/host', function (req, reply) {
+  reply.code(200).send(req.host)
+})
+
+fastify.get('/hostname_port', function (req, reply) {
+  reply.code(200).send({ hostname: req.hostname, port: req.port })
 })
 
 fastify.listen({ port: 0 }, err => {
@@ -40,14 +44,25 @@ fastify.listen({ port: 0 }, err => {
     t.same(JSON.parse(res.body), msg)
   })
 
-  test('http hostname', async (t) => {
+  test('http host', async (t) => {
     t.plan(1)
 
-    const hostname = `localhost:${fastify.server.address().port}`
+    const host = `localhost:${fastify.server.address().port}`
 
-    const url = `http://${hostname}/hostname`
+    const url = `http://${host}/host`
     const res = await h2url.concat({ url })
 
-    t.equal(res.body, hostname)
+    t.equal(res.body, host)
+  })
+  test('http hostname and port', async (t) => {
+    t.plan(2)
+
+    const host = `localhost:${fastify.server.address().port}`
+
+    const url = `http://${host}/hostname_port`
+    const res = await h2url.concat({ url })
+
+    t.equal(JSON.parse(res.body).hostname, host.split(':')[0])
+    t.equal(JSON.parse(res.body).port, parseInt(host.split(':')[1]))
   })
 })

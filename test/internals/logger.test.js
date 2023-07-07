@@ -127,7 +127,7 @@ test('The serializer prevent fails if the request socket is undefined', t => {
     method: 'GET',
     url: '/',
     version: undefined,
-    hostname: undefined,
+    host: undefined,
     remoteAddress: undefined,
     remotePort: undefined
   })

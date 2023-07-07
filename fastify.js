@@ -452,6 +452,7 @@ function fastify (options) {
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
           instance.server.close(function (err) {
+            /* istanbul ignore next: hard to test */
             if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
               done(null)
             } else {

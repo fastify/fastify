@@ -53,6 +53,10 @@ interface ReplyPayload {
   };
 }
 
+interface ReplyArrayPayload {
+  Reply: string[]
+}
+
 interface ReplyUnion {
   Reply: {
     success: boolean;
@@ -137,3 +141,6 @@ expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', a
 expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
   reply.code(401).send({ foo: 123 })
 }))
+server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler (request, reply) {
+  reply.code(200).send([''])
+})

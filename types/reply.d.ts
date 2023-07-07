@@ -12,11 +12,10 @@ export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
 
-type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>, ReplyKey = CodeToReplyKey<Code>> =
-  Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
-    [ReplyKey] extends [never] ? unknown :
-      ReplyKey extends keyof RouteGenericReply ? RouteGenericReply[ReplyKey] :
-        RouteGenericReply;
+type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
+  RouteGenericReply extends Record<Code, unknown> ? RouteGenericReply[Code] :
+    RouteGenericReply extends Record<CodeToReplyKey<Code>, unknown> ? RouteGenericReply[CodeToReplyKey<Code>] :
+      RouteGenericReply;
 
 export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
   SchemaCompiler extends FastifySchema = FastifySchema,

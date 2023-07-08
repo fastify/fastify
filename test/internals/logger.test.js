@@ -73,6 +73,34 @@ test('The logger should not reuse request id header for req.id', t => {
   })
 })
 
+test('The logger should reuse request id header for req.id if requestIdHeader is set', t => {
+  const fastify = Fastify({
+    requestIdHeader: 'request-id'
+  })
+  fastify.get('/', (req, reply) => {
+    t.ok(req.id)
+    reply.send({ id: req.id })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'Request-Id': 'request-id-1'
+      }
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
+      fastify.close()
+      t.end()
+    })
+  })
+})
+
 function Queue () {
   this.q = []
   this.running = false

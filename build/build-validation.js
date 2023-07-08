@@ -97,7 +97,7 @@ const schema = {
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
-    requestIdHeader: { anyOf: [{ enum: [false] }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
+    requestIdHeader: { anyOf: [{ type: 'boolean' }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },

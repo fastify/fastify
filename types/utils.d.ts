@@ -45,3 +45,27 @@ export type RequestHeadersDefault = unknown
 
 export type ContextConfigDefault = unknown
 export type ReplyDefault = unknown
+
+/**
+ * Helpers for determining the type of the response payload based on the code
+ */
+
+type StringAsNumber<T extends string> = T extends `${infer N extends number}` ? N : never;
+type CodeClasses = 1 | 2 | 3 | 4 | 5;
+type Digit = 0 |1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+type HttpCodes = StringAsNumber<`${CodeClasses}${Digit}${Digit}`>;
+type HttpKeys = HttpCodes | `${Digit}xx`;
+export type StatusCodeReply = {
+  // eslint-disable-next-line no-unused-vars
+  [Key in HttpKeys]?: unknown;
+};
+
+// weird TS quirk: https://stackoverflow.com/questions/58977876/generic-conditional-type-resolves-to-never-when-the-generic-type-is-set-to-never
+export type ReplyKeysToCodes<Key> = [Key] extends [never] ? number :
+  Key extends HttpCodes ? Key :
+    Key extends `${infer X extends CodeClasses}xx` ?
+      StringAsNumber<`${X}${Digit}${Digit}`> : number;
+
+export type CodeToReplyKey<Code extends number> = `${Code}` extends `${infer FirstDigit extends CodeClasses}${number}`
+  ? `${FirstDigit}xx`
+  : never;

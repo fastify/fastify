@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'docs/**'
+      - '**.md'
   release:
     types:
       - released
@@ -19,8 +20,6 @@ jobs:
     steps:
       - name: Build website
         run: |
-          curl -X POST \
-            -H 'Content-Type: application/json' \
-            -H 'Circle-Token: ${{ secrets.circleci_token }}' \
-            -d '{"branch":"master"}' \
-            "https://circleci.com/api/v2/project/gh/fastify/website/pipeline"
+          gh workflow run ci-cd.yml -R fastify/website
+    env:
+      GH_TOKEN: ${{ secrets.GHA_WEBSITE_FINE_TOKEN }}

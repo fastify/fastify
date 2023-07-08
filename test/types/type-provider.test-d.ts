@@ -299,6 +299,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
+    expectType<(payload?: string | number | { error: string }) => typeof res>(res.code(200).send)
+    expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
 
@@ -527,6 +529,8 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
+    expectType<(payload?: string | number | { [x: string]: unknown, error?: string | undefined }) => typeof res>(res.code(200).send)
+    expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
 

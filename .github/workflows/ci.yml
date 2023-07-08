@@ -52,12 +52,13 @@ jobs:
           node-version: 'lts/*'
 
       - uses: actions/cache@v3
-        id: check-cache
+        id: npm-cache
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
 
       - name: Install
+        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -81,12 +82,13 @@ jobs:
           node-version: 'lts/*'
 
       - uses: actions/cache@v3
-        id: check-cache
+        id: npm-cache
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
 
       - name: Install
+        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -135,12 +137,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - uses: actions/cache@v3
-        id: check-cache
+        id: npm-cache
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
 
       - name: Install
+        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -155,7 +158,7 @@ jobs:
       - lint
       - coverage-nix
       - coverage-win
-    runs-on: 'ubuntu-latets'
+    runs-on: 'ubuntu-latest'
     permissions:
       contents: read
 
@@ -169,12 +172,13 @@ jobs:
           node-version: '20'
 
       - uses: actions/cache@v3
-        id: check-cache
+        id: npm-cache
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-20-${{ hashFiles('**/package.json') }}
 
       - name: Install
+        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -200,11 +204,12 @@ jobs:
         with:
           node-version: 'lts/*'
       - uses: actions/cache@v3
-        id: check-cache
+        id: npm-cache
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
       - name: install fastify
+        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
       - name: install webpack stack

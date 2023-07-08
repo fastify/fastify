@@ -6,16 +6,19 @@ import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
 import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
-import { CodeToReplyKey, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
+import { CodeToReplyKey, ContextConfigDefault, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
 
+type HttpCodesReplyType = Partial<Record<HttpKeys, unknown>>
+
 type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
-  RouteGenericReply extends Record<Code, unknown> ? RouteGenericReply[Code] :
-    RouteGenericReply extends Record<CodeToReplyKey<Code>, unknown> ? RouteGenericReply[CodeToReplyKey<Code>] :
-      RouteGenericReply;
+  RouteGenericReply extends HttpCodesReplyType & Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never> ?
+    Code extends keyof RouteGenericReply ? Required<RouteGenericReply[Code]> :
+      CodeToReplyKey<Code> extends keyof RouteGenericReply ? Required<RouteGenericReply[CodeToReplyKey<Code>]> : unknown :
+    RouteGenericReply;
 
 export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
   SchemaCompiler extends FastifySchema = FastifySchema,

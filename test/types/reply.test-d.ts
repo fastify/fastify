@@ -74,6 +74,14 @@ interface ReplyHttpCodes {
   }
 }
 
+interface InvalidReplyHttpCodes {
+  Reply: {
+    '1xx': number,
+    200: string,
+    999: boolean,
+  }
+}
+
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.code(100).send)
@@ -143,4 +151,14 @@ expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', a
 }))
 server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler (request, reply) {
   reply.code(200).send([''])
+})
+expectError(server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
+  reply.code(200).send('')
+}))
+server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
+  reply.code(200).send({
+    '1xx': 0,
+    200: '',
+    999: false
+  })
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.17.0'
+const VERSION = '4.19.2'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -427,9 +427,6 @@ function fastify (options) {
 
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
         if (fastify[kState].listening) {
-          // No new TCP connections are accepted
-          instance.server.close(done)
-
           /* istanbul ignore next: Cannot test this without Node.js core support */
           if (forceCloseConnections === 'idle') {
             // Not needed in Node 19
@@ -447,8 +444,22 @@ function fastify (options) {
               fastify[kKeepAliveConnections].delete(conn)
             }
           }
+        }
+
+        // No new TCP connections are accepted.
+        // We must call close on the server even if we are not listening
+        // otherwise memory will be leaked.
+        // https://github.com/nodejs/node/issues/48604
+        if (!options.serverFactory || fastify[kState].listening) {
+          instance.server.close(function (err) {
+            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
+              done(null)
+            } else {
+              done()
+            }
+          })
         } else {
-          done(null)
+          process.nextTick(done, null)
         }
       })
     })
@@ -616,7 +627,6 @@ function fastify (options) {
     } else if (name === 'onReady') {
       this[kHooks].add(name, fn)
     } else if (name === 'onRoute') {
-      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -654,6 +664,11 @@ function fastify (options) {
       errorStatus = http.STATUS_CODES[errorCode]
       body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
       errorLabel = 'timeout'
+    } else if (err.code === 'HPE_HEADER_OVERFLOW') {
+      errorCode = '431'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
+      errorLabel = 'header_overflow'
     } else {
       errorCode = '400'
       errorStatus = http.STATUS_CODES[errorCode]
@@ -693,10 +708,13 @@ function fastify (options) {
       const id = genReqId(req)
       const childLogger = logger.child({ reqId: id })
 
-      childLogger.info({ req }, 'incoming request')
-
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
+
+      if (disableRequestLogging === false) {
+        childLogger.info({ req: request }, 'incoming request')
+      }
+
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
     const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
@@ -715,10 +733,13 @@ function fastify (options) {
           const id = genReqId(req)
           const childLogger = logger.child({ reqId: id })
 
-          childLogger.info({ req }, 'incoming request')
-
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
+
+          if (disableRequestLogging === false) {
+            childLogger.info({ req: request }, 'incoming request')
+          }
+
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
@@ -794,6 +815,7 @@ function fastify (options) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
+        req.originalUrl = req.url
         const url = rewriteUrl.call(fastify, req)
         if (typeof url === 'string') {
           req.url = url

@@ -28,6 +28,7 @@ snippet of code.
 - [Google Cloud Functions](#google-cloud-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
+- [Platformatic Cloud](#platformatic-cloud)
 - [Vercel](#vercel)
 
 ## AWS
@@ -453,6 +454,47 @@ Add this command to your `package.json` *scripts*
 
 Then it should work fine
 
+## Platformatic Cloud
+
+[Platformatic](https://platformatic.dev) provides zero-configuration deployment
+for Node.js applications.
+To use it now, you should wrap your existing Fastify application inside a
+[Platformatic Service](https://oss.platformatic.dev/docs/reference/service/introduction),
+by running the following:
+
+
+```bash
+npm create platformatic@latest -- service
+```
+
+The wizard would ask you to fill in a few answers:
+
+```
+? Where would you like to create your project? .
+? Do you want to run npm install? yes
+? Do you want to use TypeScript? no
+? What port do you want to use? 3042
+[13:04:14] INFO: Configuration file platformatic.service.json successfully created.
+[13:04:14] INFO: Environment file .env successfully created.
+[13:04:14] INFO: Plugins folder "plugins" successfully created.
+[13:04:14] INFO: Routes folder "routes" successfully created.
+? Do you want to create the github action to deploy this application to Platformatic Cloud dynamic workspace? no
+? Do you want to create the github action to deploy this application to Platformatic Cloud static workspace? no
+```
+
+Then, head to [Platformatic Cloud](https://platformatic.cloud) and sign in
+with your GitHub account.
+Create your first application and a static workspace: be careful to download the
+API key as an env file, e.g. `yourworkspace.txt`.
+
+Then, you can easily deploy your application with the following commmand:
+
+```bash
+platformatic deploy --keys `yuourworkspace.txt`
+```
+
+Check out the [Full Guide](https://blog.platformatic.dev/how-to-migrate-a-fastify-app-to-platformatic-service)
+on how to wrap Fastify application in Platformatic.
 
 ## Vercel
 

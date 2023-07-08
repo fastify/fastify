@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const semver = require('semver')
 
 test('listen should accept null port', t => {
   t.plan(1)
@@ -70,7 +71,7 @@ test('listen should reject string port', async (t) => {
   }
 })
 
-test('listen should not start server if received abort signal', t => {
+test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '15.6.0') }, t => {
   t.plan(1)
 
   const controller = new AbortController()

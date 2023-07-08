@@ -100,7 +100,7 @@ test('Basic validation test', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: "body must have required property 'work'" })
+    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
     t.equal(res.statusCode, 400)
   })
 })
@@ -537,6 +537,7 @@ test('JSON Schema validation keywords', t => {
     t.equal(res.statusCode, 400)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'params/ip must match format "ipv4"'
     })
@@ -593,7 +594,8 @@ test('Nested id calls', t => {
     t.same(res.json(), {
       error: 'Bad Request',
       message: 'body/host/ip must match format "ipv4"',
-      statusCode: 400
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
   })
 })
@@ -695,7 +697,8 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     t.same(res.json(), {
       error: 'Bad Request',
       message: "body must have required property 'address'",
-      statusCode: 400
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
   })
 })
@@ -811,7 +814,8 @@ test('Use $ref to /definitions', t => {
     t.same(res.json(), {
       error: 'Bad Request',
       message: 'body/test/id must be number',
-      statusCode: 400
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
   })
 })
@@ -1016,4 +1020,23 @@ test("The same $id in route's schema must not overwrite others", t => {
     t.error(err)
     t.same(res.payload, 'ok')
   })
+})
+
+test('Custom validator compiler should not mutate schema', async t => {
+  t.plan(2)
+  class Headers {}
+  const fastify = Fastify()
+
+  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    t.type(schema, Headers)
+    return () => {}
+  })
+
+  fastify.get('/', {
+    schema: {
+      headers: new Headers()
+    }
+  }, () => {})
+
+  await fastify.ready()
 })

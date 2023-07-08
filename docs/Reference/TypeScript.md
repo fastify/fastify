@@ -61,6 +61,11 @@ in a blank http Fastify server.
 *Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
 [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
 
+*Note 2: Avoid using ```"moduleResolution": "NodeNext"``` in tsconfig.json with 
+```"type": "module"``` in package.json. This combination is currently not 
+supported by fastify typing system.
+[ts(2349)](https://github.com/fastify/fastify/issues/4241) warning.*
+
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
    ```typescript
@@ -106,7 +111,7 @@ generic types for route schemas and the dynamic properties located on the
 route-level `request` object.
 
 1. If you did not complete the previous example, follow steps 1-4 to get set up.
-2. Inside `index.ts`, define two interfaces `IQuerystring` and `IHeaders`:
+2. Inside `index.ts`, define three interfaces `IQuerystring`,`IHeaders` and `IReply`:
    ```typescript
    interface IQuerystring {
      username: string;
@@ -116,8 +121,14 @@ route-level `request` object.
    interface IHeaders {
      'h-Custom': string;
    }
+
+   interface IReply {
+     200: { success: boolean };
+     302: { url: string };
+     '4xx': { error: string };
+   }
    ```
-3. Using the two interfaces, define a new API route and pass them as generics.
+3. Using the three interfaces, define a new API route and pass them as generics.
    The shorthand route methods (i.e. `.get`) accept a generic object
    `RouteGenericInterface` containing five named properties: `Body`,
    `Querystring`, `Params`, `Headers` and `Reply`. The interfaces `Body`,
@@ -127,12 +138,20 @@ route-level `request` object.
    ```typescript
    server.get<{
      Querystring: IQuerystring,
-     Headers: IHeaders
+     Headers: IHeaders,
+     Reply: IReply
    }>('/auth', async (request, reply) => {
      const { username, password } = request.query
      const customerHeader = request.headers['h-Custom']
      // do something with request data
 
+     // chaining .statusCode/.code calls with .send allows type narrowing. For example:
+     // this works
+     reply.code(200).send({ success: true });
+     // but this gives a type error
+     reply.code(200).send('uh-oh');
+     // it even works for wildcards
+     reply.code(404).send({ error: 'Not found' });
      return `logged in!`
    })
    ```
@@ -149,7 +168,8 @@ route-level `request` object.
    ```typescript
    server.get<{
      Querystring: IQuerystring,
-     Headers: IHeaders
+     Headers: IHeaders,
+     Reply: IReply
    }>('/auth', {
      preValidation: (request, reply, done) => {
        const { username, password } = request.query
@@ -167,7 +187,7 @@ route-level `request` object.
    admin"}`
 
 🎉 Good work, now you can define interfaces for each route and have strictly
-typed request and reply instances. Other parts of the Fastify type system rely
+typed request and reply instances. Other parts of the Fastify type system rely 
 on generic properties. Make sure to reference the detailed type system
 documentation below to learn more about what is available.
 
@@ -181,7 +201,7 @@ Serialization](./Validation-and-Serialization.md) documentation for more info.
 Also it has the advantage to use the defined type within your handlers
 (including pre-validation, etc.).
 
-Here are some options how to achieve this.
+Here are some options on how to achieve this.
 
 #### Fastify Type Providers
 
@@ -254,18 +274,6 @@ can do it as follows:
     )
     ```
 
-     **Note** For Ajv version 7 and above is required to use the `ajvTypeBoxPlugin`:
-
-    ```typescript
-    import Fastify from 'fastify'
-    import { ajvTypeBoxPlugin, TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-
-    const fastify = Fastify({
-      ajv: {
-        plugins: [ajvTypeBoxPlugin]
-      }
-    }).withTypeProvider<TypeBoxTypeProvider>()
-    ```
 
 #### Schemas in JSON Files
 
@@ -500,7 +508,7 @@ Fastify Plugin in a TypeScript Project.
    `"compilerOptions"` object.
    ```json
    {
-     "compileOptions": {
+     "compilerOptions": {
        "declaration": true
      }
    }
@@ -850,7 +858,7 @@ const server = fastify()
 Check out the Learn By Example - [Getting Started](#getting-started) example for
 a more detailed http server walkthrough.
 
-###### Example 2: HTTPS sever
+###### Example 2: HTTPS server
 
 1. Create the following imports from `@types/node` and `fastify`
    ```typescript
@@ -1237,8 +1245,8 @@ const plugin: FastifyPlugin<{
   option2: boolean;
 }> = function (instance, opts, done) { }
 
-fastify().register(plugin, {}) // Error - options object is missing required properties
-fastify().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
+server().register(plugin, {}) // Error - options object is missing required properties
+server().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
 ```
 
 See the Learn By Example, [Plugins](#plugins) section for more detailed examples
@@ -1314,10 +1322,10 @@ types defined in this section are used under-the-hood by the Fastify instance
 [src](https://github.com/fastify/fastify/blob/main/types/route.d.ts#L105)
 
 A type declaration for the route handler methods. Has two arguments, `request`
-and `reply` which are typed by `FastifyRequest` and `FastifyReply` respectfully.
+and `reply` which are typed by `FastifyRequest` and `FastifyReply` respectively.
 The generics parameters are passed through to these arguments. The method
 returns either `void` or `Promise<any>` for synchronous and asynchronous
-handlers respectfully.
+handlers respectively.
 
 ##### fastify.RouteOptions<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
 

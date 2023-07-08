@@ -1,6 +1,7 @@
 'use strict'
 
 const { connect } = require('net')
+const sget = require('simple-get').concat
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
@@ -122,6 +123,7 @@ test('default clientError handler ignores ECONNRESET', t => {
 
     client.resume()
     client.write('GET / HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
     client.write('Connection: close\r\n')
     client.write('\r\n\r\n')
   })
@@ -307,9 +309,106 @@ test('default clientError replies with bad request on reused keep-alive connecti
 
     client.resume()
     client.write('GET / HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
     client.write('\r\n\r\n')
     client.write('GET /?a b HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
     client.write('Connection: close\r\n')
     client.write('\r\n\r\n')
+  })
+})
+
+test('request.routeOptions should be immutable', t => {
+  t.plan(14)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.equal('POST', req.routeOptions.method)
+    t.equal('/', req.routeOptions.url)
+    t.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
+    t.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
+
+    for (const key of Object.keys(req.routeOptions)) {
+      if (typeof req.routeOptions[key] === 'object' && req.routeOptions[key] !== null) {
+        t.fail('Object.freeze must run recursively on nested structures to ensure that routeOptions is immutable.')
+      }
+    }
+
+    res.send({})
+  }
+  fastify.post('/', {
+    bodyLimit: 1000,
+    handler
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('test request.routeOptions.version', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'POST',
+    url: '/version',
+    constraints: { version: '1.2.0' },
+    handler: function (request, reply) {
+      t.equal('1.2.0', request.routeOptions.version)
+      reply.send({})
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/version-undefined',
+    handler: function (request, reply) {
+      t.equal(undefined, request.routeOptions.version)
+      reply.send({})
+    }
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/version',
+      headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
   })
 })

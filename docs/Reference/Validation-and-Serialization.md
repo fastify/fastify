@@ -19,8 +19,9 @@ All the examples in this section are using the [JSON Schema Draft
 > use with user-provided schemas. See [Ajv](https://npm.im/ajv) and
 > [fast-json-stringify](https://npm.im/fast-json-stringify) for more details.
 >
-> Moreover, the [`$async` Ajv
-> feature](https://ajv.js.org/guide/async-validation.html) should not be used as
+> Regardless the [`$async` Ajv
+> feature](https://ajv.js.org/guide/async-validation.html) is supported
+> by Fastify, it should not be used as
 > part of the first validation strategy. This option is used to access Databases
 > and reading them during the validation process may lead to Denial of Service
 > Attacks to your application. If you need to run `async` tasks, use [Fastify's
@@ -268,7 +269,7 @@ fastify.listen({ port: 3000 }, (err) => {
 ```sh
 curl -X GET "http://localhost:3000/?ids=1
 
-{"params":{"hello":["1"]}}
+{"params":{"ids":["1"]}}
 ```
 
 You can also specify a custom schema validator for each parameter type (body,
@@ -394,9 +395,11 @@ configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 
 ```js
 {
-  coerceTypes: true, // change data type of data to match type keyword
+  coerceTypes: 'array', // change data type of data to match type keyword
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   removeAdditional: true, // remove additional properties
+  uriResolver: require('fast-uri'),
+  addUsedSchema: false,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false
@@ -611,6 +614,44 @@ const schema = {
 
 fastify.post('/the/url', { schema }, handler)
 ```
+You can even have a specific response schema for different content types.
+For example:
+```js
+const schema = {
+      response: {
+        200: {
+          description: 'Response schema that support different content types'
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            },
+            'application/vnd.v1+json': {
+              schema: {
+                type: 'array',
+                items: { $ref: 'test' }
+              }
+            }
+          }
+        },
+        '3xx': {
+          content: {
+            'application/vnd.v2+json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+
+fastify.post('/url', { schema }, handler)
+```
 
 #### Serializer Compiler
 <a id="schema-serializer"></a>
@@ -621,7 +662,7 @@ change the default serialization method by providing a function to serialize
 every route where you do.
 
 ```js
-fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
+fastify.setSerializerCompiler(({ schema, method, url, httpStatus, contentType }) => {
   return data => JSON.stringify(data)
 })
 

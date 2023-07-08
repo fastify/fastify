@@ -101,3 +101,46 @@ expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(async (
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(async (instance: ServerWithTypeProvider) => {
   expectAssignable<ServerWithTypeProvider>(instance)
 }))
+
+// With Type Provider and logger
+const customLogger = {
+  level: 'info',
+  info: () => { },
+  warn: () => { },
+  error: () => { },
+  fatal: () => { },
+  trace: () => { },
+  debug: () => { },
+  child: () => customLogger,
+  silent: () => { }
+}
+const serverWithTypeProviderAndLogger = fastify({
+  logger: customLogger
+}).withTypeProvider<TestTypeProvider>()
+type ServerWithTypeProviderAndLogger = FastifyInstance<Server, IncomingMessage, ServerResponse, typeof customLogger, TestTypeProvider>
+const testPluginWithTypeProviderAndLogger: FastifyPluginCallback<TestOptions, RawServerDefault, TestTypeProvider, typeof customLogger> = function (instance, opts, done) { }
+const testPluginWithTypeProviderAndLoggerAsync: FastifyPluginAsync<TestOptions, RawServerDefault, TestTypeProvider, typeof customLogger> = async function (instance, opts) { }
+const testPluginWithTypeProviderAndLoggerWithType = (instance: ServerWithTypeProviderAndLogger, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
+const testPluginWithTypeProviderAndLoggerWithTypeAsync = async (instance: ServerWithTypeProviderAndLogger, opts: FastifyPluginOptions) => { }
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginCallback))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginAsync))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOpts))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsAsync))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithType))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerWithType))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerWithTypeAsync))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register((instance) => {
+  expectAssignable<FastifyInstance>(instance)
+}))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register((instance: ServerWithTypeProviderAndLogger) => {
+  expectAssignable<ServerWithTypeProviderAndLogger>(instance)
+}))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(async (instance) => {
+  expectAssignable<FastifyInstance>(instance)
+}))
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(async (instance: ServerWithTypeProviderAndLogger) => {
+  expectAssignable<ServerWithTypeProviderAndLogger>(instance)
+}))

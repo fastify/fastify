@@ -8,6 +8,8 @@ This document contains a set of recommendations when using Fastify.
   - [HAProxy](#haproxy)
   - [Nginx](#nginx)
 - [Kubernetes](#kubernetes)
+- [Capacity Planning For Production](#capacity)
+- [Running Multiple Instances](#multiple)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
@@ -298,3 +300,52 @@ readinessProbe:
     timeoutSeconds: 3
     successThreshold: 1
     failureThreshold: 5
+```
+
+## Capacity Planning For Production
+<a id="capacity"></a>
+
+In order to rightsize the production environment for your Fastify application, 
+it is highly recommended that you perform your own measurements against 
+different configurations of the environment, which may
+use real CPU cores, virtual CPU cores (vCPU), or even fractional
+vCPU cores. We will use the term vCPU throughout this
+recommendation to represent any CPU type.
+
+Tools such as [k6](https://github.com/grafana/k6) 
+or [autocannon](https://github.com/mcollina/autocannon) can be used for
+conducting the necessary performance tests.
+
+That said, you may also consider the following as a rule of thumb:
+
+* To have the lowest possible latency, 2 vCPU are recommended per app 
+instance (e.g., a k8s pod). The second vCPU will mostly be used by the 
+garbage collector (GC) and libuv threadpool. This will minimize the latency 
+for your users, as well as the memory usage, as the GC will be run more
+frequently. Also, the main thread won't have to stop to let the GC run.
+
+* To optimize for throughput (handling the largest possible amount of
+requests per second per vCPU available), consider using a smaller amount of vCPUs
+per app instance. It is totally fine to run Node.js applications with 1 vCPU.
+
+* You may experiment with an even smaller amount of vCPU, which may provide 
+even better throughput in certain use-cases. There are reports of API gateway
+solutions working well with 100m-200m vCPU in Kubernetes.
+
+See [Node's Event Loop From the Inside Out ](https://www.youtube.com/watch?v=P9csgxBgaZ8)
+to understand the workings of Node.js in greater detail and make a
+better determination about what your specific application needs.
+
+## Running Multiple Instances
+<a id="multiple"></a>
+
+There are several use-cases where running multiple Fastify
+apps on the same server might be considered. A common example
+would be exposing metrics endpoints on a separate port,
+to prevent public access, when using a reverse proxy or an ingress
+firewall is not an option.
+
+It is perfectly fine to spin up several Fastify instances within the same 
+Node.js process and run them concurrently, even in high load systems. 
+Each Fastify instance only generates as much load as the traffic it receives,
+plus the memory used for that Fastify instance.

@@ -66,7 +66,7 @@ test('should throw on wrong parameters', t => {
   const hooks = new Hooks()
   t.plan(4)
   try {
-    hooks.add(null, noop)
+    hooks.add(null, () => {})
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
@@ -74,10 +74,10 @@ test('should throw on wrong parameters', t => {
   }
 
   try {
-    hooks.add('', null)
+    hooks.add('onSend', null)
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
-    t.equal(e.message, 'The hook callback must be a function')
+    t.equal(e.message, 'onSend hook should be a function, instead got [object Null]')
   }
 })

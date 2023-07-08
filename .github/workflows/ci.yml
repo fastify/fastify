@@ -2,6 +2,11 @@ name: ci
 
 on:
   push:
+    branches:
+     - main
+     - master
+     - next
+     - 'v*'
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -29,7 +34,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v2
+            uses: actions/dependency-review-action@v3
 
   linter:
     runs-on: ubuntu-latest
@@ -54,10 +59,12 @@ jobs:
           npm run lint
 
   coverage-nix:
+    needs: linter
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
   coverage-win:
+    needs: linter
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml
@@ -70,8 +77,12 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18]
+        node-version: [14, 16, 18, 20]
         os: [macos-latest, ubuntu-latest, windows-latest]
+        exclude:
+          # excludes node 14 on Windows
+          - os: windows-latest
+            node-version: 14
 
     steps:
       - uses: actions/checkout@v3
@@ -102,6 +113,8 @@ jobs:
       - name: Run tests
         run: |
           npm run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 
 
   automerge:
     if: >

@@ -1,15 +1,17 @@
-import { expectDeprecated, expectError, expectType } from 'tsd'
+import { expectAssignable, expectDeprecated, expectError, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   FastifyLogFn,
   LogLevel,
   FastifyLoggerInstance,
   FastifyRequest,
   FastifyReply,
-  FastifyBaseLogger
+  FastifyBaseLogger,
+  FastifyInstance
 } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
 import P from 'pino'
+import { ResSerializerReply } from '../../types/logger'
 
 expectType<FastifyLoggerInstance>(fastify().log)
 
@@ -123,34 +125,22 @@ const serverAutoInferredFileOption = fastify({
 
 expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 
-const serverAutoInferredPinoPrettyBooleanOption = fastify({
+const serverAutoInferredSerializerResponseObjectOption = fastify({
   logger: {
-    prettyPrint: true
-  }
-})
-
-expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyBooleanOption.log)
-
-const serverAutoInferredPinoPrettyObjectOption = fastify({
-  logger: {
-    prettyPrint: {
-      translateTime: true,
-      levelFirst: false,
-      messageKey: 'msg',
-      timestampKey: 'time',
-      messageFormat: false,
-      colorize: true,
-      crlf: false,
-      errorLikeObjectKeys: ['err', 'error'],
-      errorProps: '',
-      search: 'foo == `bar`',
-      ignore: 'pid,hostname',
-      suppressFlushSyncWarning: true
+    serializers: {
+      res (ServerResponse) {
+        expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
+        expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
+        expectNotAssignable<FastifyReply>(ServerResponse)
+        return {
+          status: '200'
+        }
+      }
     }
   }
 })
 
-expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyObjectOption.log)
+expectType<FastifyBaseLogger>(serverAutoInferredSerializerResponseObjectOption.log)
 
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
@@ -161,14 +151,16 @@ const serverAutoInferredSerializerObjectOption = fastify({
           method: 'method',
           url: 'url',
           version: 'version',
-          hostname: 'hostname',
+          host: 'hostname',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
           other: ''
         }
       },
       res (ServerResponse) {
-        expectType<FastifyReply>(ServerResponse)
+        expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
+        expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
+        expectNotAssignable<FastifyReply>(ServerResponse)
         return {
           statusCode: 'statusCode'
         }
@@ -200,9 +192,6 @@ const passPinoOption = fastify({
     redact: ['custom'],
     messageKey: 'msg',
     nestedKey: 'nested',
-    prettyPrint: {
-
-    },
     enabled: true
   }
 })
@@ -215,6 +204,7 @@ expectDeprecated({} as FastifyLoggerInstance)
 const childParent = fastify().log
 // we test different option variant here
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { redact: ['pass', 'pin'] }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { serializers: { key: () => {} } }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))

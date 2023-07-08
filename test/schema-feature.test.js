@@ -6,6 +6,7 @@ const fp = require('fastify-plugin')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
+const warning = require('../lib/warnings')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
@@ -250,6 +251,183 @@ test('Should not change the input schemas', t => {
     t.same(res.json(), { name: 'Foo' })
     t.ok(theSchema.$id, 'the $id is not removed')
     t.same(fastify.getSchema('helloSchema'), theSchema)
+  })
+})
+
+test('Should emit warning if the schema headers is undefined', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN001')
+  }
+
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTWRN001', false)
+  })
+
+  fastify.post('/:id', {
+    handler: echoParams,
+    schema: {
+      headers: undefined
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should emit warning if the schema body is undefined', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN001')
+  }
+
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTWRN001', false)
+  })
+
+  fastify.post('/:id', {
+    handler: echoParams,
+    schema: {
+      body: undefined
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should emit warning if the schema query is undefined', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN001')
+  }
+
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTWRN001', false)
+  })
+
+  fastify.post('/:id', {
+    handler: echoParams,
+    schema: {
+      querystring: undefined
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should emit warning if the schema params is undefined', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN001')
+  }
+
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTWRN001', false)
+  })
+
+  fastify.post('/:id', {
+    handler: echoParams,
+    schema: {
+      params: undefined
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should emit a warning for every route with undefined schema', t => {
+  t.plan(16)
+  const fastify = Fastify()
+
+  let runs = 0
+  const expectedWarningEmitted = [0, 1, 2, 3]
+  // It emits 4 warnings:
+  // - 2 - GET and HEAD for /undefinedParams/:id
+  // - 2 - GET and HEAD for /undefinedBody/:id
+  // => 3 x 4 assertions = 12 assertions
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN001')
+    t.equal(runs++, expectedWarningEmitted.shift())
+  }
+
+  process.on('warning', onWarning)
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    warning.emitted.set('FSTWRN001', false)
+  })
+
+  fastify.get('/undefinedParams/:id', {
+    handler: echoParams,
+    schema: {
+      params: undefined
+    }
+  })
+
+  fastify.get('/undefinedBody/:id', {
+    handler: echoParams,
+    schema: {
+      body: undefined
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/undefinedParams/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/undefinedBody/123'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -1778,4 +1956,29 @@ test('Should return a human-friendly error if response status codes are not spec
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
     t.match(err.message, 'Failed building the serialization schema for GET: /, due to error response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
   })
+})
+
+test('setSchemaController: custom validator instance should not mutate headers schema', async t => {
+  t.plan(2)
+  class Headers {}
+  const fastify = Fastify()
+
+  fastify.setSchemaController({
+    compilersFactory: {
+      buildValidator: function () {
+        return ({ schema, method, url, httpPart }) => {
+          t.type(schema, Headers)
+          return () => {}
+        }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      headers: new Headers()
+    }
+  }, () => {})
+
+  await fastify.ready()
 })

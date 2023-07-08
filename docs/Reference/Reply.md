@@ -7,22 +7,22 @@
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
-      - [set-cookie](#set-cookie)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
+    - [set-cookie](#set-cookie)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
-  - [.redirect([code,] dest)](#redirectcode--dest)
+  - [.redirect([code ,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
-  - [.getSerializationFunction(schema | httpStatus)](#getserializationfunction)
-  - [.compileSerializationSchema(schema, httpStatus)](#compileserializationschema)
-  - [.serializeInput(data, [schema | httpStatus], [httpStatus])](#serializeinput)
+  - [.getSerializationFunction(schema | httpStatus, [contentType])](#getserializationfunctionschema--httpstatus)
+  - [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschemaschema-httpstatus)
+  - [.serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])](#serializeinputdata-schema--httpstatus-httpstatus)
   - [.serializer(func)](#serializerfunc)
   - [.raw](#raw)
   - [.sent](#sent)
@@ -63,16 +63,17 @@ object that exposes the following functions and properties:
 - `.serialize(payload)` - Serializes the specified payload using the default
   JSON serializer or using the custom serializer (if one is set) and returns the
   serialized payload.
-- `.getSerializationFunction(schema | httpStatus)` - Returns the serialization
+- `.getSerializationFunction(schema | httpStatus, [contentType])` - Returns the serialization
   function for the specified schema or http status, if any of either are set.
-- `.compileSerializationSchema(schema, httpStatus)` - Compiles the specified
-  schema and returns a serialization function using the default (or customized)
-  `SerializerCompiler`. The optional `httpStatus` is forwarded to the
-  `SerializerCompiler` if provided, default to `undefined`.
-- `.serializeInput(data, schema, [,httpStatus])` - Serializes the specified data
-  using the specified schema and returns the serialized payload.
-  If the optional `httpStatus` is provided, the function will use the serializer
-  function given for that HTTP Status Code. Default to `undefined`.
+- `.compileSerializationSchema(schema, [httpStatus], [contentType])` - Compiles 
+  the specified schema and returns a serialization function using the default 
+  (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded 
+  to the `SerializerCompiler` if provided, default to `undefined`.
+- `.serializeInput(data, schema, [,httpStatus], [contentType])` - Serializes 
+  the specified data using the specified schema and returns the serialized payload.
+  If the optional `httpStatus`, and `contentType` are provided, the function 
+  will use the serializer function given for that specific content type and 
+  HTTP Status Code. Default to `undefined`.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a
   buffer, JSON, stream, or an Error object.
@@ -233,8 +234,8 @@ as soon as possible.
 *Note: The header `Transfer-Encoding: chunked` will be added once you use the
 trailer. It is a hard requirement for using trailer in Node.js.*
 
-*Note: Currently, the computation function only supports synchronous function.
-That means `async-await` and `promise` are not supported.*
+*Note: Any error passed to `done` callback will be ignored. If you interested
+in the error, you can turn on `debug` level logging.*
 
 ```js
 reply.trailer('server-timing', function() {
@@ -242,10 +243,18 @@ reply.trailer('server-timing', function() {
 })
 
 const { createHash } = require('crypto')
-// trailer function also recieve two argument
+// trailer function also receive two argument
 // @param {object} reply fastify reply
 // @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
-reply.trailer('content-md5', function(reply, payload) {
+// @param {function} done callback to set trailer value
+reply.trailer('content-md5', function(reply, payload, done) {
+  const hash = createHash('md5')
+  hash.update(payload)
+  done(null, hash.disgest('hex'))
+})
+
+// when you prefer async-await
+reply.trailer('content-md5', async function(reply, payload) {
   const hash = createHash('md5')
   hash.update(payload)
   return hash.disgest('hex')
@@ -339,12 +348,12 @@ reply.type('text/html')
 If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
 `utf-8` will be used as the charset by default.
 
-### .getSerializationFunction(schema | httpStatus)
+### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>
 
 By calling this function using a provided `schema` or `httpStatus`, 
-it will return a `serialzation` function that can be used to
-serialize diverse inputs. It returns `undefined` if no
+and the optional `contentType`, it will return a `serialzation` function 
+that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
 This heavily depends of the `schema#responses` attached to the route, or
@@ -367,12 +376,18 @@ serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 const serialize = reply
                   .getSerializationFunction(200)
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
+
+// or
+
+const serialize = reply
+                  .getSerializationFunction(200, 'application/json')
+serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 ```
 
-See [.compileSerializationSchema(schema, [httpStatus])](#compileserializationschema)
+See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
-### .compileSerializationSchema(schema, httpStatus)
+### .compileSerializationSchema(schema, [httpStatus], [contentType])
 <a id="compileserializationschema"></a>
 
 This function will compile a serialization schema and
@@ -381,9 +396,9 @@ The function returned (a.k.a. _serialization function_) returned is compiled
 by using the provided `SerializerCompiler`. Also this is cached by using
 a `WeakMap` for reducing compilation calls.
 
-The optional paramater `httpStatus`, if provided, is forwarded directly
-the `SerializerCompiler`, so it can be used to compile the serialization
-function if a custom `SerializerCompiler` is used.
+The optional parameters `httpStatus` and `contentType`, if provided, 
+are forwarded directly to the `SerializerCompiler`, so it can be used 
+to compile the serialization function if a custom `SerializerCompiler` is used.
 
 This heavily depends of the `schema#responses` attached to the route, or
 the serialization functions compiled by using `compileSerializationSchema`.
@@ -412,6 +427,23 @@ const serialize = reply
                     } 
                   }, 200)
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
+
+// or
+
+const serialize = reply
+                  .compileSerializationSchema({
+                        '3xx': {
+                          content: {
+                            'application/json': {
+                              schema: {
+                                name: { type: 'string' },
+                                phone: { type: 'number' }
+                              }
+                            }
+                          }
+                        }
+                  }, '3xx', 'application/json')
+serialize({ name: 'Jone', phone: 201090909090 }) // '{"name":"Jone", "phone":201090909090}'
 ```
 
 Note that you should be careful when using this function, as it will cache
@@ -461,14 +493,14 @@ const newSerialize = reply.compileSerializationSchema(newSchema)
 console.log(newSerialize === serialize) // false
 ```
 
-### .serializeInput(data, [schema | httpStatus], [httpStatus])
+### .serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])
 <a id="serializeinput"></a>
 
-This function will serialize the input data based on the provided schema,
-or http status code. If both provided, the `httpStatus` will take presedence.
+This function will serialize the input data based on the provided schema
+or HTTP status code. If both are provided the `httpStatus` will take precedence.
 
-If there is not a serialization function for a given `schema`, a new serialization
-function will be compiled forwarding the `httpStatus` if provided.
+If there is not a serialization function for a given `schema` a new serialization
+function will be compiled, forwarding the `httpStatus` and `contentType` if provided.
 
 ```js
 reply
@@ -497,9 +529,14 @@ reply
 
 reply
   .serializeInput({ foo: 'bar'}, 200) // '{"foo":"bar"}'
+
+// or
+
+reply
+  .serializeInput({ name: 'Jone', age: 18 }, '200', 'application/vnd.v1+json') // '{"name": "Jone", "age": 18}'
 ```
 
-See [.compileSerializationSchema(schema, [httpStatus])](#compileserializationschema)
+See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
 ### .serializer(func)
@@ -627,14 +664,23 @@ fastify.get('/json', options, function (request, reply) {
 #### Streams
 <a id="send-streams"></a>
 
-*send* can also handle streams out of the box. If you are sending a stream and
-you have not set a `'Content-Type'` header, *send* will set it at
+*send* can also handle streams by setting the `'Content-Type'` header to
 `'application/octet-stream'`.
 ```js
 fastify.get('/streams', function (request, reply) {
   const fs = require('fs')
   const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
   reply.send(stream)
+})
+```
+When using async-await you will need to return or await the reply object:
+```js
+fastify.get('/streams', async function (request, reply) {
+  const fs = require('fs')
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
+  return reply.send(stream)
 })
 ```
 
@@ -649,6 +695,30 @@ fastify.get('/streams', function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
   })
+})
+```
+
+When using async-await you will need to return or await the reply object:
+```js
+const fs = require('fs')
+fastify.get('/streams', async function (request, reply) {
+  fs.readFile('some-file', (err, fileBuffer) => {
+    reply.send(err || fileBuffer)
+  })
+  return reply
+})
+```
+
+#### TypedArrays
+<a id="send-typedarrays"></a>
+
+`send` manages TypedArray and sets the `'Content-Type'=application/octet-stream'`
+header if not already set.
+```js
+const fs = require('fs')
+fastify.get('/streams', function (request, reply) {
+  const typedArray = new Uint16Array(10)
+  reply.send(typedArray)
 })
 ```
 
@@ -732,6 +802,11 @@ fastify.setErrorHandler(function (error, request, reply) {
     .send(statusCode >= 500 ? 'Internal server error' : error.message)
 })
 ```
+
+Beware that calling `reply.send(error)` in your custom error handler will send
+the error to the default error handler.
+Check out the [Reply Lifecycle](./Lifecycle.md#reply-lifecycle)
+for more information.
 
 The not found errors generated by the router will use the
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler)

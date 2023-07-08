@@ -6,6 +6,7 @@ const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
 const split = require('split2')
+const FormData = require('form-data')
 const Fastify = require('..')
 
 function getUrl (app) {
@@ -18,7 +19,7 @@ function getUrl (app) {
 }
 
 test('default 404', t => {
-  t.plan(4)
+  t.plan(5)
 
   const test = t.test
   const fastify = Fastify()
@@ -68,6 +69,23 @@ test('default 404', t => {
         url: getUrl(fastify) + '/notSupported',
         body: {},
         json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      })
+    })
+
+    test('using post method and multipart/formdata', t => {
+      t.plan(3)
+      const form = FormData()
+      form.append('test-field', 'just some field')
+
+      sget({
+        method: 'POST',
+        url: getUrl(fastify) + '/notSupported',
+        body: form,
+        json: false
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 404)
@@ -1813,7 +1831,8 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
       t.same(JSON.parse(response.payload), {
         error: 'Bad Request',
         message: "'/hello/%world' is not a valid url component",
-        statusCode: 400
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
       })
     })
   })
@@ -1831,7 +1850,8 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
       t.same(JSON.parse(response.payload), {
         error: 'Bad Request',
         message: "'/hello/%world' is not a valid url component",
-        statusCode: 400
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
       })
     })
   })
@@ -1943,4 +1963,69 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
   })
 
   t.end()
+})
+
+test('hooks are applied to not found handlers /1', async ({ equal }) => {
+  const fastify = Fastify()
+
+  // adding await here is fundamental for this test
+  await fastify.register(async function (fastify) {
+  })
+
+  fastify.setErrorHandler(function (_, request, reply) {
+    return reply.code(401).send({ error: 'Unauthorized' })
+  })
+
+  fastify.addHook('preValidation', async function (request, reply) {
+    throw new Error('kaboom')
+  })
+
+  const { statusCode } = await fastify.inject('/')
+  equal(statusCode, 401)
+})
+
+test('hooks are applied to not found handlers /2', async ({ equal }) => {
+  const fastify = Fastify()
+
+  async function plugin (fastify) {
+    fastify.setErrorHandler(function (_, request, reply) {
+      return reply.code(401).send({ error: 'Unauthorized' })
+    })
+  }
+
+  plugin[Symbol.for('skip-override')] = true
+
+  fastify.register(plugin)
+
+  fastify.addHook('preValidation', async function (request, reply) {
+    throw new Error('kaboom')
+  })
+
+  const { statusCode } = await fastify.inject('/')
+  equal(statusCode, 401)
+})
+
+test('hooks are applied to not found handlers /3', async ({ equal, fail }) => {
+  const fastify = Fastify()
+
+  async function plugin (fastify) {
+    fastify.setNotFoundHandler({ errorHandler }, async () => {
+      fail('this should never be called')
+    })
+
+    function errorHandler (_, request, reply) {
+      return reply.code(401).send({ error: 'Unauthorized' })
+    }
+  }
+
+  plugin[Symbol.for('skip-override')] = true
+
+  fastify.register(plugin)
+
+  fastify.addHook('preValidation', async function (request, reply) {
+    throw new Error('kaboom')
+  })
+
+  const { statusCode } = await fastify.inject('/')
+  equal(statusCode, 401)
 })

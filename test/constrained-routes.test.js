@@ -660,3 +660,117 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
 
   t.ok(true)
 })
+
+test('allow async constraints', async (t) => {
+  t.plan(5)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx, done) => {
+      done(null, req.headers['x-secret'])
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({ constraints: { secret: constraint } })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'beta' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from beta' })
+    }
+  })
+
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
+    t.same(JSON.parse(payload), { hello: 'from alpha' })
+    t.equal(statusCode, 200)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
+    t.same(JSON.parse(payload), { hello: 'from beta' })
+    t.equal(statusCode, 200)
+  }
+  {
+    const { statusCode } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
+    t.equal(statusCode, 404)
+  }
+})
+
+test('error in async constraints', async (t) => {
+  t.plan(8)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx, done) => {
+      done(Error('kaboom'))
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({ constraints: { secret: constraint } })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'beta' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from beta' })
+    }
+  })
+
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.equal(statusCode, 500)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.equal(statusCode, 500)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.equal(statusCode, 500)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/' })
+    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.equal(statusCode, 500)
+  }
+})

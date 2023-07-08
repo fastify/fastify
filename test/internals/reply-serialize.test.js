@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
-const { kReplySerializeWeakMap } = require('../../lib/symbols')
+const { kReplyCacheSerializeFns, kRouteContext } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 function getDefaultSchema () {
@@ -43,6 +43,16 @@ function getResponseSchema () {
         },
         message: {
           type: 'string'
+        }
+      }
+    },
+    '3xx': {
+      content: {
+        'application/json': {
+          schema: {
+            fullName: { type: 'string' },
+            phone: { type: 'number' }
+          }
         }
       }
     }
@@ -141,7 +151,20 @@ test('Reply#compileSerializationSchema', t => {
         }
       }
 
-      t.plan(10)
+      const custom2 = ({ schema, httpStatus, url, method, contentType }) => {
+        t.equal(schema, schemaObj)
+        t.equal(url, '/user')
+        t.equal(method, 'GET')
+        t.equal(httpStatus, '3xx')
+        t.equal(contentType, 'application/json')
+
+        return input => {
+          t.same(input, { fullName: 'Jone', phone: 1090243795 })
+          return JSON.stringify(input)
+        }
+      }
+
+      t.plan(17)
       const schemaObj = getDefaultSchema()
 
       fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
@@ -157,8 +180,20 @@ test('Reply#compileSerializationSchema', t => {
         reply.send({ hello: 'world' })
       })
 
+      fastify.get('/user', { serializerCompiler: custom2 }, (req, reply) => {
+        const input = { fullName: 'Jone', phone: 1090243795 }
+        const first = reply.compileSerializationSchema(schemaObj, '3xx', 'application/json')
+        t.ok(first(input), JSON.stringify(input))
+        reply.send(input)
+      })
+
       await fastify.inject({
         path: '/',
+        method: 'GET'
+      })
+
+      await fastify.inject({
+        path: '/user',
         method: 'GET'
       })
     }
@@ -172,9 +207,9 @@ test('Reply#compileSerializationSchema', t => {
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
 
-      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
       t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
-      t.type(reply.context[kReplySerializeWeakMap], WeakMap)
+      t.type(reply[kRouteContext][kReplyCacheSerializeFns], WeakMap)
       t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
 
       reply.send({ hello: 'world' })
@@ -209,10 +244,19 @@ test('Reply#getSerializationFunction', t => {
         status: 'error',
         code: 'something'
       }
+      const okInput3xx = {
+        fullName: 'Jone',
+        phone: 0
+      }
+      const noOkInput3xx = {
+        fullName: 'Jone',
+        phone: 'phone'
+      }
       let cached4xx
       let cached201
+      let cachedJson3xx
 
-      t.plan(9)
+      t.plan(13)
 
       const responseSchema = getResponseSchema()
 
@@ -231,18 +275,22 @@ test('Reply#getSerializationFunction', t => {
         (req, reply) => {
           const { id } = req.params
 
-          if (parseInt(id) === 1) {
+          if (Number(id) === 1) {
             const serialize4xx = reply.getSerializationFunction('4xx')
             const serialize201 = reply.getSerializationFunction(201)
+            const serializeJson3xx = reply.getSerializationFunction('3xx', 'application/json')
             const serializeUndefined = reply.getSerializationFunction(undefined)
 
             cached4xx = serialize4xx
             cached201 = serialize201
+            cachedJson3xx = serializeJson3xx
 
             t.type(serialize4xx, Function)
             t.type(serialize201, Function)
+            t.type(serializeJson3xx, Function)
             t.equal(serialize4xx(okInput4xx), JSON.stringify(okInput4xx))
             t.equal(serialize201(okInput201), JSON.stringify(okInput201))
+            t.equal(serializeJson3xx(okInput3xx), JSON.stringify(okInput3xx))
             t.notOk(serializeUndefined)
 
             try {
@@ -260,13 +308,21 @@ test('Reply#getSerializationFunction', t => {
               t.equal(err.message, '"status" is required!')
             }
 
+            try {
+              serializeJson3xx(noOkInput3xx)
+            } catch (err) {
+              t.equal(err.message, 'The value "phone" cannot be converted to a number.')
+            }
+
             reply.status(201).send(okInput201)
           } else {
             const serialize201 = reply.getSerializationFunction(201)
             const serialize4xx = reply.getSerializationFunction('4xx')
+            const serializeJson3xx = reply.getSerializationFunction('3xx', 'application/json')
 
             t.equal(serialize4xx, cached4xx)
             t.equal(serialize201, cached201)
+            t.equal(serializeJson3xx, cachedJson3xx)
             reply.status(401).send(okInput4xx)
           }
         }
@@ -308,7 +364,7 @@ test('Reply#getSerializationFunction', t => {
         (req, reply) => {
           const { id } = req.params
 
-          if (parseInt(id) === 1) {
+          if (Number(id) === 1) {
             const serialize = reply.compileSerializationSchema(schemaObj)
 
             t.type(serialize, Function)
@@ -352,9 +408,9 @@ test('Reply#getSerializationFunction', t => {
 
     fastify.get('/', (req, reply) => {
       t.notOk(reply.getSerializationFunction(getDefaultSchema()))
-      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
       t.notOk(reply.getSerializationFunction('200'))
-      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
 
       reply.send({ hello: 'world' })
     })
@@ -367,7 +423,7 @@ test('Reply#getSerializationFunction', t => {
 })
 
 test('Reply#serializeInput', t => {
-  t.plan(5)
+  t.plan(6)
 
   t.test(
     'Should throw if missed serialization function from HTTP status',
@@ -395,6 +451,47 @@ test('Reply#serializeInput', t => {
     }
   )
 
+  t.test(
+    'Should throw if missed serialization function from HTTP status with specific content type',
+    async t => {
+      const fastify = Fastify()
+
+      t.plan(2)
+
+      fastify.get('/', {
+        schema: {
+          response: {
+            '3xx': {
+              content: {
+                'application/json': {
+                  schema: {
+                    fullName: { type: 'string' },
+                    phone: { type: 'number' }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }, (req, reply) => {
+        reply.serializeInput({}, '3xx', 'application/vnd.v1+json')
+      })
+
+      const result = await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+
+      t.equal(result.statusCode, 500)
+      t.same(result.json(), {
+        statusCode: 500,
+        code: 'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN',
+        error: 'Internal Server Error',
+        message: 'Missing serialization function. Key "3xx:application/vnd.v1+json"'
+      })
+    }
+  )
+
   t.test('Should use a serializer fn from HTTP status', async t => {
     const fastify = Fastify()
     const okInput201 = {
@@ -413,8 +510,16 @@ test('Reply#serializeInput', t => {
       status: 'error',
       code: 'something'
     }
+    const okInput3xx = {
+      fullName: 'Jone',
+      phone: 0
+    }
+    const noOkInput3xx = {
+      fullName: 'Jone',
+      phone: 'phone'
+    }
 
-    t.plan(4)
+    t.plan(6)
 
     fastify.get(
       '/',
@@ -437,6 +542,17 @@ test('Reply#serializeInput', t => {
           reply.serializeInput(okInput201, 201),
           JSON.stringify(okInput201)
         )
+
+        t.equal(
+          reply.serializeInput(okInput3xx, {}, '3xx', 'application/json'),
+          JSON.stringify(okInput3xx)
+        )
+
+        try {
+          reply.serializeInput(noOkInput3xx, '3xx', 'application/json')
+        } catch (err) {
+          t.equal(err.message, 'The value "phone" cannot be converted to a number.')
+        }
 
         try {
           reply.serializeInput(notOkInput4xx, '4xx')
@@ -568,9 +684,9 @@ test('Reply#serializeInput', t => {
 
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
-      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.equal(reply[kRouteContext][kReplyCacheSerializeFns], null)
       t.equal(reply.serializeInput(input, getDefaultSchema()), JSON.stringify(input))
-      t.type(reply.context[kReplySerializeWeakMap], WeakMap)
+      t.type(reply[kRouteContext][kReplyCacheSerializeFns], WeakMap)
 
       reply.send({ hello: 'world' })
     })

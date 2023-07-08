@@ -1,4 +1,3 @@
-
 'use strict'
 
 const sget = require('simple-get').concat
@@ -183,7 +182,8 @@ module.exports.payloadMethod = function (method, t) {
         t.same(body, {
           error: 'Bad Request',
           message: 'body/hello must be integer',
-          statusCode: 400
+          statusCode: 400,
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -252,7 +252,8 @@ module.exports.payloadMethod = function (method, t) {
         t.same(body, {
           error: 'Bad Request',
           message: '"hello" must be a string',
-          statusCode: 400
+          statusCode: 400,
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -288,7 +289,8 @@ module.exports.payloadMethod = function (method, t) {
         t.same(body, {
           error: 'Bad Request',
           message: 'hello must be a `string` type, but the final value was: `44`.',
-          statusCode: 400
+          statusCode: 400,
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -306,7 +308,8 @@ module.exports.payloadMethod = function (method, t) {
         t.same(body, {
           error: 'Bad Request',
           message: 'From custom schema compiler!',
-          statusCode: '400'
+          statusCode: '400',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -324,7 +327,8 @@ module.exports.payloadMethod = function (method, t) {
         t.same(body, {
           error: 'Bad Request',
           message: 'Always fail!',
-          statusCode: '400'
+          statusCode: '400',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })

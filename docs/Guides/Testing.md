@@ -1,11 +1,14 @@
-<h1 align="center">Fastify</h1>
+<h1 style="text-align: center;">Fastify</h1>
 
-## Testing
+# Testing
+<a id="testing"></a>
 
 Testing is one of the most important parts of developing an application. Fastify
 is very flexible when it comes to testing and is compatible with most testing
 frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in
 the examples below).
+
+## Application
 
 Let's `cd` into a fresh directory called 'testing-example' and type `npm init
 -y` in our terminal.
@@ -243,33 +246,66 @@ after initializing routes and plugins with `fastify.ready()`.
 
 Uses **app.js** from the previous example.
 
-**test-listen.js** (testing with
-[`Request`](https://www.npmjs.com/package/request))
+**test-listen.js** (testing with [`undici`](https://www.npmjs.com/package/undici))
 ```js
 const tap = require('tap')
-const request = require('request')
+const { Client } = require('undici')
 const buildFastify = require('./app')
 
-tap.test('GET `/` route', t => {
-  t.plan(5)
+tap.test('should work with undici', async t => {
+  t.plan(2)
+
+  const fastify = buildFastify()
+
+  await fastify.listen()
+
+   const client = new Client(
+    'http://localhost:' + fastify.server.address().port, {
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10
+    } 
+  )
+
+  t.teardown(() => {
+    fastify.close()
+    client.close()
+  })
+
+  const response = await client.request({ method: 'GET', path: '/' })
+
+  t.equal(await response.body.text(), '{"hello":"world"}')
+  t.equal(response.statusCode, 200)
+})
+```
+
+Alternatively, starting with Node.js 18, 
+[`fetch`](https://nodejs.org/docs/latest-v18.x/api/globals.html#fetch) 
+may be used without requiring any extra dependencies:
+
+**test-listen.js**
+```js
+const tap = require('tap')
+const buildFastify = require('./app')
+
+tap.test('should work with fetch', async t => {
+  t.plan(3)
 
   const fastify = buildFastify()
 
   t.teardown(() => fastify.close())
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.error(err)
+  await fastify.listen()
+  
+  const response = await fetch(
+    'http://localhost:' + fastify.server.address().port
+  )
 
-    request({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
-  })
+  t.equal(response.status, 200)
+  t.equal(
+    response.headers.get('content-type'),
+    'application/json; charset=utf-8'
+  )
+  t.has(await response.json(), { hello: 'world' })
 })
 ```
 
@@ -312,3 +348,133 @@ test('should ...', {only: true}, t => ...)
 
 Now you should be able to step through your test file (and the rest of
 `Fastify`) in your code editor.
+
+
+
+## Plugins
+Let's `cd` into a fresh directory called 'testing-plugin-example' and type `npm init
+-y` in our terminal.
+
+Run `npm i fastify fastify-plugin && npm i tap -D`
+
+**plugin/myFirstPlugin.js**:
+
+```js
+const fP = require("fastify-plugin")
+
+async function myPlugin(fastify, options) {
+    fastify.decorateRequest("helloRequest", "Hello World")
+    fastify.decorate("helloInstance", "Hello Fastify Instance")
+}
+
+module.exports = fP(myPlugin)
+```
+
+A basic example of a Plugin. See [Plugin Guide](./Plugins-Guide.md)
+
+**test/myFirstPlugin.test.js**:
+
+```js
+const Fastify = require("fastify");
+const tap = require("tap");
+const myPlugin = require("../plugin/myFirstPlugin");
+
+tap.test("Test the Plugin Route", async t => {
+    // Create a mock fastify application to test the plugin
+    const fastify = Fastify()
+
+    fastify.register(myPlugin)
+
+    // Add an endpoint of your choice 
+    fastify.get("/", async (request, reply) => {
+        return ({ message: request.helloRequest })
+    })
+
+    // Use fastify.inject to fake a HTTP Request
+    const fastifyResponse = await fastify.inject({
+        method: "GET",
+        url: "/"
+    })
+    
+  console.log('status code: ', fastifyResponse.statusCode)
+  console.log('body: ', fastifyResponse.body)
+})
+```
+Learn more about [```fastify.inject()```](#benefits-of-using-fastifyinject).
+Run the test file in your terminal `node test/myFirstPlugin.test.js`
+
+```sh
+status code:  200
+body:  {"message":"Hello World"}
+```
+
+Now we can replace our `console.log` calls with actual tests!
+
+In your `package.json` change the "test" script to:
+
+`"test": "tap --reporter=list --watch"`
+
+Create the tap test for the endpoint.
+
+**test/myFirstPlugin.test.js**:
+
+```js
+const Fastify = require("fastify");
+const tap = require("tap");
+const myPlugin = require("../plugin/myFirstPlugin");
+
+tap.test("Test the Plugin Route", async t => {
+    // Specifies the number of test
+    t.plan(2)
+
+    const fastify = Fastify()
+
+    fastify.register(myPlugin)
+
+    fastify.get("/", async (request, reply) => {
+        return ({ message: request.helloRequest })
+    })
+
+    const fastifyResponse = await fastify.inject({
+        method: "GET",
+        url: "/"
+    })
+    
+    t.equal(fastifyResponse.statusCode, 200)
+    t.same(JSON.parse(fastifyResponse.body), { message: "Hello World" })
+})
+```
+
+Finally, run `npm test` in the terminal and see your test results!
+
+Test the ```.decorate()``` and ```.decorateRequest()```.
+
+**test/myFirstPlugin.test.js**:
+
+```js
+const Fastify = require("fastify");
+const tap = require("tap");
+const myPlugin = require("../plugin/myFirstPlugin");
+
+tap.test("Test the Plugin Route", async t => {
+    t.plan(5)
+    const fastify = Fastify()
+
+    fastify.register(myPlugin)
+
+    fastify.get("/", async (request, reply) => {
+        // Testing the fastify decorators
+        t.not(request.helloRequest, null) 
+        t.ok(request.helloRequest, "Hello World")
+        t.ok(fastify.helloInstance, "Hello Fastify Instance")
+        return ({ message: request.helloRequest })
+    })
+
+    const fastifyResponse = await fastify.inject({
+        method: "GET",
+        url: "/"
+    })
+    t.equal(fastifyResponse.statusCode, 200)
+    t.same(JSON.parse(fastifyResponse.body), { message: "Hello World" })
+})
+```

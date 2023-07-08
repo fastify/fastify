@@ -1,4 +1,3 @@
-
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
 
@@ -60,10 +59,12 @@ export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvi
 // FastifyReplyType
 // -----------------------------------------------------------------------------------------------
 
-// Resolves the Reply type by taking a union of response status codes
+// Resolves the Reply type by taking a union of response status codes and content-types
 type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema> = {
-  [K in keyof SchemaCompiler['response']]: CallTypeProvider<TypeProvider, SchemaCompiler['response'][K]>
-} extends infer Result ? Result[keyof Result] : unknown
+  [K1 in keyof SchemaCompiler['response']]: SchemaCompiler['response'][K1] extends { content: { [keyof: string]: { schema: unknown } } } ? ({
+    [K2 in keyof SchemaCompiler['response'][K1]['content']]: CallTypeProvider<TypeProvider, SchemaCompiler['response'][K1]['content'][K2]['schema']>
+  } extends infer Result ? Result[keyof Result] : unknown) : CallTypeProvider<TypeProvider, SchemaCompiler['response'][K1]>
+} extends infer Result ? Result[keyof Result] : unknown;
 
 // The target reply type. This type is inferenced on fastify 'replies' via generic argument assignment
 export type FastifyReplyType<Reply = unknown> = Reply

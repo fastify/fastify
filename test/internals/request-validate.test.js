@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const Ajv = require('ajv')
-const { kRequestValidateWeakMap } = require('../../lib/symbols')
+const { kRequestCacheValidateFns, kRouteContext } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 const defaultSchema = {
@@ -36,7 +36,7 @@ const requestSchema = {
 }
 
 test('#compileValidationSchema', subtest => {
-  subtest.plan(5)
+  subtest.plan(7)
 
   subtest.test('Should return a function - Route without schema', async t => {
     const fastify = Fastify()
@@ -49,6 +49,49 @@ test('#compileValidationSchema', subtest => {
       t.type(validate, Function)
       t.ok(validate({ hello: 'world' }))
       t.notOk(validate({ world: 'foo' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Validate function errors property should be null after validation when input is valid', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    fastify.get('/', (req, reply) => {
+      const validate = req.compileValidationSchema(defaultSchema)
+
+      t.ok(validate({ hello: 'world' }))
+      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.equal(validate.errors, null)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Validate function errors property should be an array of errors after validation when input is valid', async t => {
+    const fastify = Fastify()
+
+    t.plan(4)
+
+    fastify.get('/', (req, reply) => {
+      const validate = req.compileValidationSchema(defaultSchema)
+
+      t.notOk(validate({ world: 'foo' }))
+      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.ok(Array.isArray(validate.errors))
+      t.ok(validate.errors.length > 0)
 
       reply.send({ hello: 'world' })
     })
@@ -188,11 +231,11 @@ test('#compileValidationSchema', subtest => {
       t.plan(5)
 
       fastify.get('/', (req, reply) => {
-        t.equal(req.context[kRequestValidateWeakMap], null)
+        t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
         t.type(req.compileValidationSchema(defaultSchema), Function)
-        t.type(req.context[kRequestValidateWeakMap], WeakMap)
+        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
         t.type(req.compileValidationSchema(Object.assign({}, defaultSchema)), Function)
-        t.type(req.context[kRequestValidateWeakMap], WeakMap)
+        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
 
         reply.send({ hello: 'world' })
       })
@@ -206,7 +249,7 @@ test('#compileValidationSchema', subtest => {
 })
 
 test('#getValidationFunction', subtest => {
-  subtest.plan(4)
+  subtest.plan(6)
 
   subtest.test('Should return a validation function', async t => {
     const fastify = Fastify()
@@ -218,6 +261,51 @@ test('#getValidationFunction', subtest => {
       const referenced = req.getValidationFunction(defaultSchema)
 
       t.equal(original, referenced)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Validate function errors property should be null after validation when input is valid', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    fastify.get('/', (req, reply) => {
+      req.compileValidationSchema(defaultSchema)
+      const validate = req.getValidationFunction(defaultSchema)
+
+      t.ok(validate({ hello: 'world' }))
+      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.equal(validate.errors, null)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Validate function errors property should be an array of errors after validation when input is valid', async t => {
+    const fastify = Fastify()
+
+    t.plan(4)
+
+    fastify.get('/', (req, reply) => {
+      req.compileValidationSchema(defaultSchema)
+      const validate = req.getValidationFunction(defaultSchema)
+
+      t.notOk(validate({ world: 'foo' }))
+      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.ok(Array.isArray(validate.errors))
+      t.ok(validate.errors.length > 0)
 
       reply.send({ hello: 'world' })
     })
@@ -336,7 +424,7 @@ test('#getValidationFunction', subtest => {
       req.getValidationFunction(defaultSchema)
       req.getValidationFunction('body')
 
-      t.equal(req.context[kRequestValidateWeakMap], null)
+      t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
       reply.send({ hello: 'world' })
     })
 
@@ -636,9 +724,9 @@ test('#validate', subtest => {
       t.plan(3)
 
       fastify.get('/', (req, reply) => {
-        t.equal(req.context[kRequestValidateWeakMap], null)
+        t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
         t.equal(req.validateInput({ hello: 'world' }, defaultSchema), true)
-        t.type(req.context[kRequestValidateWeakMap], WeakMap)
+        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
 
         reply.send({ hello: 'world' })
       })

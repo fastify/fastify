@@ -60,6 +60,236 @@ test('custom serializer options', t => {
   })
 })
 
+test('Different content types', t => {
+  t.plan(32)
+
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: 'test',
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      age: { type: 'number' },
+      verified: { type: 'boolean' }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            },
+            'application/vnd.v1+json': {
+              schema: {
+                type: 'array',
+                items: { $ref: 'test' }
+              }
+            }
+          }
+        },
+        201: {
+          content: { type: 'string' }
+        },
+        202: {
+          content: { const: 'Processing exclusive content' }
+        },
+        '3xx': {
+          content: {
+            'application/vnd.v2+json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              }
+            }
+          }
+        },
+        default: {
+          content: {
+            'application/json': {
+              schema: {
+                details: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    switch (req.headers.accept) {
+      case 'application/json':
+        reply.header('Content-Type', 'application/json')
+        reply.send({ id: 1, name: 'Foo', image: 'profile picture', address: 'New Node' })
+        break
+      case 'application/vnd.v1+json':
+        reply.header('Content-Type', 'application/vnd.v1+json')
+        reply.send([{ id: 2, name: 'Boo', age: 18, verified: false }, { id: 3, name: 'Woo', age: 30, verified: true }])
+        break
+      case 'application/vnd.v2+json':
+        reply.header('Content-Type', 'application/vnd.v2+json')
+        reply.code(300)
+        reply.send({ fullName: 'Jhon Smith', phone: '01090000000', authMethod: 'google' })
+        break
+      case 'application/vnd.v3+json':
+        reply.header('Content-Type', 'application/vnd.v3+json')
+        reply.code(300)
+        reply.send({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' })
+        break
+      case 'application/vnd.v4+json':
+        reply.header('Content-Type', 'application/vnd.v4+json')
+        reply.code(201)
+        reply.send({ boxId: 1, content: 'Games' })
+        break
+      case 'application/vnd.v5+json':
+        reply.header('Content-Type', 'application/vnd.v5+json')
+        reply.code(202)
+        reply.send({ content: 'interesting content' })
+        break
+      case 'application/vnd.v6+json':
+        reply.header('Content-Type', 'application/vnd.v6+json')
+        reply.code(400)
+        reply.send({ desc: 'age is missing', details: 'validation error' })
+        break
+      case 'application/vnd.v7+json':
+        reply.code(400)
+        reply.send({ details: 'validation error' })
+        break
+      default:
+        // to test if schema not found
+        reply.header('Content-Type', 'application/vnd.v3+json')
+        reply.code(200)
+        reply.send([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }])
+    }
+  })
+
+  fastify.get('/test', {
+    serializerCompiler: ({ contentType }) => {
+      t.equal(contentType, 'application/json')
+      return data => JSON.stringify(data)
+    },
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.header('Content-Type', 'application/json')
+    reply.send({ age: 18, city: 'AU' })
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ name: 'Foo', image: 'profile picture', address: 'New Node' }))
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify([{ name: 'Boo', age: 18, verified: false }, { name: 'Woo', age: 30, verified: true }]))
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }]))
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v2+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ fullName: 'Jhon Smith', phone: '01090000000' }))
+    t.equal(res.statusCode, 300)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v3+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' }))
+    t.equal(res.statusCode, 300)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ content: 'Games' }))
+    t.equal(res.statusCode, 201)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v5+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ content: 'Processing exclusive content' }))
+    t.equal(res.statusCode, 202)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v6+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ desc: 'age is missing', details: 'validation error' }))
+    t.equal(res.statusCode, 400)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v7+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.equal(res.statusCode, 400)
+  })
+
+  fastify.inject({ method: 'GET', url: '/test' }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ age: 18, city: 'AU' }))
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCHEMA error', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/testInvalid', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              },
+              example: {
+                fullName: 'John Doe',
+                phone: '201090243795'
+              }
+            },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.header('Content-Type', 'application/json')
+    reply.send({ fullName: 'Any name', phone: '0109001010' })
+  })
+
+  fastify.ready((err) => {
+    t.equal(err.message, "Schema is missing for the content type 'type'")
+    t.equal(err.statusCode, 500)
+    t.equal(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCHEMA')
+  })
+})
+
 test('Use the same schema id in different places', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -164,7 +394,8 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     t.same(res.json(), {
       error: 'Bad Request',
       message: "body must have required property 'address'",
-      statusCode: 400
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
   })
 })
@@ -273,7 +504,8 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       t.same(res.json(), {
         error: 'Bad Request',
         message: 'body/0/location/email must match format "email"',
-        statusCode: 400
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
   })
@@ -576,9 +808,9 @@ test('do not crash if status code serializer errors', async t => {
   const someUserErrorType2 = {
     type: 'object',
     properties: {
-      code: { type: 'number' }
+      customCode: { type: 'number' }
     },
-    required: ['code']
+    required: ['customCode']
   }
 
   fastify.get(
@@ -603,8 +835,9 @@ test('do not crash if status code serializer errors', async t => {
   t.equal(res.statusCode, 500)
   t.same(res.json(), {
     statusCode: 500,
-    error: 'Internal Server Error',
-    message: '"code" is required!'
+    code: 'FST_ERR_FAILED_ERROR_SERIALIZATION',
+    message: 'Failed to serialize an error. Error: "customCode" is required!. ' +
+      'Original error: querystring must have required property \'foo\''
   })
 })
 

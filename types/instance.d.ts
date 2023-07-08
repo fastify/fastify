@@ -3,26 +3,28 @@ import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import * as http from 'http'
 import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
-import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
-import { FastifyLoggerInstance } from './logger'
+import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, preCloseHookHandler, preCloseAsyncHookHandler } from './hooks'
+import { FastifyBaseLogger } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
-import { DefaultRoute, RouteGenericInterface, RouteOptions, RouteShorthandMethod } from './route'
+import { RouteGenericInterface, RouteOptions, RouteShorthandMethod } from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
   FastifySchemaControllerOptions,
-  FastifySchemaValidationError,
-  FastifySerializerCompiler
+  FastifySerializerCompiler,
+  SchemaErrorFormatter
 } from './schema'
 import {
   FastifyTypeProvider,
   FastifyTypeProviderDefault
 } from './type-provider'
-import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { HTTPMethods, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { AddressInfo } from 'net'
 
 export interface PrintRoutesOptions {
+  method?: HTTPMethods;
   includeMeta?: boolean | (string | symbol)[]
   commonPrefix?: boolean
   includeHooks?: boolean
@@ -72,10 +74,40 @@ export interface FastifyListenOptions {
    * @since This option is available only in Node.js v15.6.0 and greater
    */
   signal?: AbortSignal;
+
+  /**
+   * Function that resolves text to log after server has been successfully started
+   * @param address
+   */
+  listenTextResolver?: (address: string) => string;
 }
 
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+
+type GetterSetter<This, T> = T | {
+  getter: (this: This) => T,
+  setter?: (this: This, value: T) => void
+}
+
+type DecorationMethod<This, Return = This> = {
+  <
+    // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorate<Foo> would suddenly mean something new
+    // eslint-disable-next-line no-use-before-define
+    T extends (P extends keyof This ? This[P] : unknown),
+    P extends string | symbol = string | symbol
+  >(property: P,
+    value: GetterSetter<This, T extends (...args: any[]) => any
+      ? (this: This, ...args: Parameters<T>) => ReturnType<T>
+      : T
+    >,
+    dependencies?: string[]
+  ): Return;
+
+  (property: string | symbol): Return;
+
+  (property: string | symbol, value: null|undefined, dependencies: string[]): Return;
+}
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
@@ -84,14 +116,16 @@ export interface FastifyInstance<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   server: RawServer;
+  pluginName: string;
   prefix: string;
   version: string;
   log: Logger;
-
+  listeningOrigin: string;
+  addresses(): AddressInfo[]
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
@@ -105,30 +139,14 @@ export interface FastifyInstance<
   close(closeListener: () => void): undefined;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
-  decorate<T>(property: string | symbol,
-    value: T extends (...args: any[]) => any
-      ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, ...args: Parameters<T>) => ReturnType<T>
-      : T,
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-
-  decorateRequest<T>(property: string | symbol,
-    value: T extends (...args: any[]) => any
-      ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
-      : T,
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-
-  decorateReply<T>(property: string | symbol,
-    value: T extends (...args: any[]) => any
-      ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
-      : T,
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+  decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+  decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;
+  hasPlugin(name: string): boolean;
 
   addConstraintStrategy(strategy: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>): void;
   hasConstraintStrategy(strategyName: string): boolean;
@@ -168,23 +186,36 @@ export interface FastifyInstance<
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
 
   routing(req: RawRequest, res: RawReply): void;
-  getDefaultRoute(): DefaultRoute<RawRequest, RawReply>;
-  setDefaultRoute(defaultRoute: DefaultRoute<RawRequest, RawReply>): void;
 
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    SchemaCompiler = FastifySchema,
+    SchemaCompiler extends FastifySchema = FastifySchema,
   >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+
+  hasRoute<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
 
   // addHook: overloads
 
@@ -198,7 +229,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onRequest',
     hook: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -208,7 +239,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onRequest',
     hook: onRequestAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -222,7 +253,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preParsing',
     hook: preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -232,7 +263,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preParsing',
     hook: preParsingAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -245,7 +276,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preValidation',
     hook: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -255,7 +286,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preValidation',
     hook: preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -268,7 +299,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preHandler',
     hook: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -278,7 +309,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preHandler',
     hook: preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -293,7 +324,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preSerialization',
     hook: preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -304,7 +335,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'preSerialization',
     hook: preSerializationAsyncHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -319,7 +350,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onSend',
     hook: onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -330,7 +361,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onSend',
     hook: onSendAsyncHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -344,7 +375,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onResponse',
     hook: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -354,7 +385,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onResponse',
     hook: onResponseAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -368,7 +399,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onTimeout',
     hook: onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -378,10 +409,35 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onTimeout',
     hook: onTimeoutAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
+   * `onRequestAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
+   * The `onRequestAbort` hook is executed when a client closes the connection before the entire request has been received. Therefore, you will not be able to send data to the client.
+   * Notice: client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md
+  */
+  addHook<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
+  >(
+    name: 'onRequestAbort',
+    hook: onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  addHook<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
+  >(
+    name: 'onRequestAbort',
+    hook: onRequestAbortAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
@@ -394,7 +450,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onError',
     hook: onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError, SchemaCompiler, TypeProvider, Logger>
@@ -404,7 +460,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onError',
     hook: onErrorAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError, SchemaCompiler, TypeProvider, Logger>
@@ -419,7 +475,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
     name: 'onRoute',
     hook: onRouteHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
@@ -459,6 +515,19 @@ export interface FastifyInstance<
   addHook(
     name: 'onClose',
     hook: onCloseAsyncHookHandler<RawServer, RawRequest, RawReply, Logger>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  /**
+  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need to cancel some state to allow the server to close successfully.
+  */
+  addHook(
+    name: 'preClose',
+    hook: preCloseHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  addHook(
+    name: 'preClose',
+    hook: preCloseAsyncHookHandler<RawServer, RawRequest, RawReply, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
@@ -521,7 +590,7 @@ export interface FastifyInstance<
   /*
   * Set the schema error formatter for all routes.
   */
-  setSchemaErrorFormatter(errorFormatter: (errors: FastifySchemaValidationError[], dataVar: string) => Error): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  setSchemaErrorFormatter(errorFormatter: SchemaErrorFormatter): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   /**
    * Add a content type parser
    */

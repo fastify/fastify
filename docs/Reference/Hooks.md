@@ -19,11 +19,13 @@ are Request/Reply hooks and application hooks:
   - [onSend](#onsend)
   - [onResponse](#onresponse)
   - [onTimeout](#ontimeout)
+  - [onRequestAbort](#onrequestabort)
   - [Manage Errors from a hook](#manage-errors-from-a-hook)
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
   - [onReady](#onready)
   - [onClose](#onclose)
+  - [preClose](#preclose)
   - [onRoute](#onroute)
   - [onRegister](#onregister)
 - [Scope](#scope)
@@ -265,8 +267,28 @@ fastify.addHook('onTimeout', async (request, reply) => {
 `onTimeout` is useful if you need to monitor the request timed out in your
 service (if the `connectionTimeout` property is set on the Fastify instance).
 The `onTimeout` hook is executed when a request is timed out and the HTTP socket
-has been hanged up. Therefore, you will not be able to send data to the client.
+has been hung up. Therefore, you will not be able to send data to the client.
 
+### onRequestAbort
+
+```js
+fastify.addHook('onRequestAbort', (request, done) => {
+  // Some code
+  done()
+})
+```
+Or `async/await`:
+```js
+fastify.addHook('onRequestAbort', async (request) => {
+  // Some code
+  await asyncMethod()
+})
+```
+The `onRequestAbort` hook is executed when a client closes the connection before
+the entire request has been processed. Therefore, you will not be able to send
+data to the client.
+
+**Notice:** client abort detection is not completely reliable. See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)
 
 ### Manage Errors from a hook
 If you get an error during the execution of your hook, just pass it to `done()`
@@ -364,6 +386,7 @@ You can hook into the application-lifecycle as well.
 
 - [onReady](#onready)
 - [onClose](#onclose)
+- [preClose](#preclose)
 - [onRoute](#onroute)
 - [onRegister](#onregister)
 
@@ -393,9 +416,10 @@ fastify.addHook('onReady', async function () {
 ### onClose
 <a id="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server. It is useful
-when [plugins](./Plugins.md) need a "shutdown" event, for example, to close an
-open connection to a database.
+Triggered when `fastify.close()` is invoked to stop the server, after all in-flight
+HTTP requests have been completed.
+It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
+to close an open connection to a database.
 
 The hook function takes the Fastify instance as a first argument, 
 and a `done` callback for synchronous hook functions.
@@ -413,10 +437,34 @@ fastify.addHook('onClose', async (instance) => {
 })
 ```
 
+### preClose
+<a id="pre-close"></a>
+
+Triggered when `fastify.close()` is invoked to stop the server, before all in-flight
+HTTP requests have been completed.
+It is useful when [plugins](./Plugins.md) have set up some state attached
+to the HTTP server that would prevent the server to close.
+_It is unlikely you will need to use this hook_,
+use the [`onClose`](#onclose) for the most common case.
+
+```js
+// callback style
+fastify.addHook('preClose', (done) => {
+  // Some code
+  done()
+})
+
+// or async/await style
+fastify.addHook('preClose', async () => {
+  // Some async code
+  await removeSomeServerState()
+})
+```
+
 ### onRoute
 <a id="on-route"></a>
 
-Triggered when a new route is registered. Listeners are passed a `routeOptions`
+Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
 
@@ -448,6 +496,33 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.preSerialization = [...(routeOptions.preSerialization || []), onPreSerialization]
 })
 ```
+
+To add more routes within an onRoute hook, the routes must
+be tagged correctly. The hook will run into an infinite loop if
+not tagged. The recommended approach is shown below.
+
+```js
+const kRouteAlreadyProcessed = Symbol('route-already-processed')
+
+fastify.addHook('onRoute', function (routeOptions) {
+  const { url, method } = routeOptions
+
+  const isAlreadyProcessed = (routeOptions.custom && routeOptions.custom[kRouteAlreadyProcessed]) || false
+
+  if (!isAlreadyProcessed) {
+    this.route({
+      url,
+      method,
+      custom: {
+        [kRouteAlreadyProcessed]: true
+      },
+      handler: () => {}
+    })
+  }
+})
+```
+
+For more details, see this [issue](https://github.com/fastify/fastify/issues/4319).
 
 ### onRegister
 <a id="on-register"></a>
@@ -607,6 +682,12 @@ fastify.route({
     // This hook will always be executed after the shared `onRequest` hooks
     done()
   },
+  // // Example with an async hook. All hooks support this syntax
+  //
+  // onRequest: async function (request, reply) {
+  //  // This hook will always be executed after the shared `onRequest` hooks
+  //  await ...
+  // }
   onResponse: function (request, reply, done) {
     // this hook will always be executed after the shared `onResponse` hooks
     done()
@@ -680,7 +761,7 @@ fastify.get('/me/is-admin', async function (req, reply) {
 ```
 
 Note that `.authenticatedUser` could actually be any property name
-choosen by yourself. Using your own custom property prevents you
+chosen by yourself. Using your own custom property prevents you
 from mutating existing properties, which
 would be a dangerous and destructive operation. So be careful and
 make sure your property is entirely new, also using this approach
@@ -726,7 +807,7 @@ initialization of the tracking package, in the typical "require instrumentation
 tools first" fashion.
 
 ```js
-const tracer = /* retrieved from elsehwere in the package */
+const tracer = /* retrieved from elsewhere in the package */
 const dc = require('diagnostics_channel')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()

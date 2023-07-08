@@ -22,21 +22,24 @@ const fastify = require('fastify')({
 ```
 
 Enabling the logger with appropriate configuration for both local development
-and production environment requires bit more configuration:
+and production and test environment requires a bit more configuration:
+
 ```js
+const envToLogger = {
+  development: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
+      },
+    },
+  },
+  production: true,
+  test: false,
+}
 const fastify = require('fastify')({
-  logger: {
-      transport:
-        environment === 'development'
-          ? {
-              target: 'pino-pretty',
-              options: {
-                translateTime: 'HH:MM:ss Z',
-                ignore: 'pid,hostname'
-              }
-            }
-          : undefined
-    }
+  logger: envToLogger[environment] ?? true // defaults to true if no entry matches in the map
 })
 ```
 ⚠️ `pino-pretty` needs to be installed as a dev dependency, it is not included
@@ -105,6 +108,7 @@ serialize objects with `req`, `res`, and `err` properties. The object received
 by `req` is the Fastify [`Request`](./Request.md) object, while the object
 received by `res` is the Fastify [`Reply`](./Reply.md) object. This behaviour
 can be customized by specifying custom serializers.
+
 ```js
 const fastify = require('fastify')({
   logger: {
@@ -149,6 +153,34 @@ const fastify = require('fastify')({
   }
 });
 ```
+
+**Note**: In certain cases, the [`Reply`](./Reply.md) object passed to the `res`
+serializer cannot be fully constructed. When writing a custom `res` serializer,
+it is necessary to check for the existence of any properties on `reply` aside
+from `statusCode`, which is always present. For example, the existence of
+`getHeaders` must be verified before it can be called:
+
+```js
+const fastify = require('fastify')({
+  logger: {
+    transport: {
+      target: 'pino-pretty'
+    },
+    serializers: {
+      res (reply) {
+        // The default
+        return {
+          statusCode: reply.statusCode
+          headers: typeof reply.getHeaders === 'function'
+            ? reply.getHeaders()
+            : {}
+        }
+      },
+    }
+  }
+});
+```
+
 **Note**: The body cannot be serialized inside a `req` method because the
 request is serialized when we create the child logger. At that time, the body is
 not yet parsed.
@@ -164,6 +196,10 @@ app.addHook('preHandler', function (req, reply, done) {
 })
 ```
 
+**Note**: Care should be take to ensure serializers never throw, as an error
+thrown from a serializer has the potential to cause the Node process to exit.
+See the [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers)
+on serializers for more information.
 
 *Any logger other than Pino will ignore this option.*
 
@@ -207,7 +243,7 @@ const fastify = Fastify({
           method: request.method,
           url: request.url,
           headers: request.headers,
-          hostname: request.hostname,
+          host: request.host,
           remoteAddress: request.ip,
           remotePort: request.socket.remotePort
         }

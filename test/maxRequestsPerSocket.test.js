@@ -22,20 +22,20 @@ test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
           t.match(data.toString(), /Connection:\s*close/i)
           t.match(data.toString(), /200 OK/i)
 
-          client.write('GET / HTTP/1.1\r\n\r\n')
+          client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           client.once('data', data => {
             t.match(data.toString(), /Connection:\s*close/i)
@@ -63,21 +63,21 @@ test('maxRequestsPerSocket zero should behave same as null', { skip }, t => {
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
           t.match(data.toString(), /Connection:\s*keep-alive/i)
           t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
           t.match(data.toString(), /200 OK/i)
 
-          client.write('GET / HTTP/1.1\r\n\r\n')
+          client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           client.once('data', data => {
             t.match(data.toString(), /Connection:\s*keep-alive/i)

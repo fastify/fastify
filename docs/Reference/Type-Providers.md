@@ -11,15 +11,16 @@ keep associated types for each schema defined in your project.
 
 Type Providers are offered as additional packages you will need to install into
 your project. Each provider uses a different inference library under the hood;
-allowing you to select the library most appropriate for your needs. Type
+allowing you to select the library most appropriate for your needs. Official Type
 Provider packages follow a `@fastify/type-provider-{provider-name}` naming
-convention.
+convention, and there are several community ones available as well.
 
 The following inference packages are supported:
 
 - `json-schema-to-ts` -
   [github](https://github.com/ThomasAribart/json-schema-to-ts)
 - `typebox` - [github](https://github.com/sinclairzx81/typebox)
+- `zod` - [github](https://github.com/colinhacks/zod)
 
 ### Json Schema to Ts
 
@@ -91,6 +92,12 @@ See also the [TypeBox
 documentation](https://github.com/sinclairzx81/typebox#validation) on how to set
 up AJV to work with TypeBox.
 
+### Zod
+
+See [official documentation](https://github.com/turkerdev/fastify-type-provider-zod)
+for Zod type provider instructions.
+
+
 ### Scoped Type-Provider
 
 The provider types don't propagate globally. In encapsulated usage, one can
@@ -148,21 +155,14 @@ fastify.register(pluginWithTypebox)
 
 It's also important to mention that once the types don't propagate globally,
 _currently_ is not possible to avoid multiple registrations on routes when
-dealing with several scopes, see bellow:
+dealing with several scopes, see below:
 
 ```ts
 import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
 
-const server = Fastify({
-    ajv: {
-        customOptions: {
-            strict: 'log',
-            keywords: ['kind', 'modifier'],
-        },
-    },
-}).withTypeProvider<TypeBoxTypeProvider>()
+const server = Fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 server.register(plugin1) // wrong
 server.register(plugin2) // correct
@@ -177,7 +177,7 @@ function plugin1(fastify: FastifyInstance, _opts, done): void {
       })
     }
   }, (req) => {
-    // it doesn't works! in a new scope needs to call `withTypeProvider` again
+    // it doesn't work! in a new scope needs to call `withTypeProvider` again
     const { x, y, z } = req.body
   });
   done()
@@ -213,14 +213,7 @@ import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { registerRoutes } from './routes'
 
-const server = Fastify({
-    ajv: {
-        customOptions: {
-            strict: 'log',
-            keywords: ['kind', 'modifier'],
-        },
-    },
-}).withTypeProvider<TypeBoxTypeProvider>()
+const server = Fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 registerRoutes(server)
 
@@ -232,7 +225,7 @@ server.listen({ port: 3000 })
 import { Type } from '@sinclair/typebox'
 import {
   FastifyInstance,
-  FastifyLoggerInstance,
+  FastifyBaseLogger,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault
@@ -243,7 +236,7 @@ type FastifyTypebox = FastifyInstance<
   RawServerDefault,
   RawRequestDefaultExpression<RawServerDefault>,
   RawReplyDefaultExpression<RawServerDefault>,
-  FastifyLoggerInstance,
+  FastifyBaseLogger,
   TypeBoxTypeProvider
 >;
 

@@ -41,8 +41,8 @@ fastify.route(options)
   need to be in [JSON Schema](https://json-schema.org/) format, check
   [here](./Validation-and-Serialization.md) for more info.
 
-  * `body`: validates the body of the request if it is a POST, PUT, or PATCH
-    method.
+  * `body`: validates the body of the request if it is a POST, PUT, PATCH,
+    TRACE, or SEARCH method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -78,7 +78,7 @@ fastify.route(options)
   when a response has been sent, so you will not be able to send more data to
   the client. It could also be an array of functions.
 * `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called
-  when a request is timed out and the HTTP socket has been hanged up.
+  when a request is timed out and the HTTP socket has been hung up.
 * `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror)
   called when an Error is thrown or sent to the client by the route handler.
 * `handler(request, reply)`: the function that will handle this request. The
@@ -94,8 +94,8 @@ fastify.route(options)
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that
-  builds schemas for response serialization. See the [Validation and
+* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`: 
+  function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.
 * `schemaErrorFormatter(errors, dataVar)`: function that formats the errors from
@@ -112,6 +112,11 @@ fastify.route(options)
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
   version of the endpoint. [Example](#version-constraints).
+* `constraints`: defines route restrictions based on request properties or
+  values, enabling customized matching using 
+  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes 
+  built-in `version` and `host` constraints, with support for custom constraint
+  strategies.
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
   route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
@@ -176,6 +181,24 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 
 `fastify.patch(path, [options], handler)`
 
+`fastify.propfind(path, [options], handler)`
+
+`fastify.proppatch(path, [options], handler)`
+
+`fastify.mkcol(path, [options], handler)`
+
+`fastify.copy(path, [options], handler)`
+
+`fastify.move(path, [options], handler)`
+
+`fastify.lock(path, [options], handler)`
+
+`fastify.unlock(path, [options], handler)`
+
+`fastify.trace(path, [options], handler)`
+
+`fastify.search(path, [options], handler)`
+
 Example:
 ```js
 const opts = {
@@ -219,7 +242,7 @@ fastify.get('/', opts)
 ```
 
 > Note: if the handler is specified in both the `options` and as the third
-> parameter to the shortcut method then throws duplicate `handler` error.
+> parameter to the shortcut method then throws a duplicate `handler` error.
 
 ### Url building
 <a id="url-building"></a>
@@ -289,6 +312,17 @@ fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, r
 ```
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
+
+The last parameter can be made optional if you add a question mark ("?") to the
+end of the parameters name.
+```js
+fastify.get('/example/posts/:id?', function (request, reply) {
+  const { id } = request.params;
+  // your code here
+})
+```
+In this case you can request `/example/posts` as well as `/example/posts/1`.
+The optional param will be undefined if not specified.
 
 Having a route with multiple parameters may negatively affect performance, so
 prefer a single parameter approach whenever possible, especially on routes that
@@ -553,7 +587,7 @@ const fastify = Fastify({
           method: req.method,
           url: req.url,
           headers: req.headers,
-          hostname: req.hostname,
+          host: req.host,
           remoteAddress: req.ip,
           remotePort: req.socket.remotePort
         }
@@ -731,6 +765,60 @@ fastify.route({
   }
 })
 ```
+
+#### Asynchronous Custom Constraints
+
+Custom constraints can be provided and the `constraint` criteria can be
+fetched from another source such as `database`. The use of asynchronous
+custom constraints should be a last resort as it impacts router
+performance.
+
+```js
+function databaseOperation(field, done) {
+  done(null, field)
+}
+
+const secret = {
+  // strategy name for referencing in the route handler `constraints` options
+  name: 'secret',
+  // storage factory for storing routes in the find-my-way route tree
+  storage: function () {
+    let handlers = {}
+    return {
+      get: (type) => { return handlers[type] || null },
+      set: (type, store) => { handlers[type] = store }
+    }
+  },
+  // function to get the value of the constraint from each incoming request
+  deriveConstraint: (req, ctx, done) => {
+    databaseOperation(req.headers['secret'], done)
+  },
+  // optional flag marking if handlers without constraints can match requests that have a value for this constraint
+  mustMatchWhenDerived: true
+}
+```
+
+> ## ⚠  Security Notice
+> When using with asynchronous constraint. It is highly recommend never return error
+> inside the callback. If the error is not preventable, it is recommended to provide
+> a custom `frameworkErrors` handler to deal with it. Otherwise, you route selection
+> may break or expose sensitive information to attackers.
+> 
+> ```js
+> const Fastify = require('fastify')
+> 
+> const fastify = Fastify({
+>   frameworkErrors: function(err, res, res) {
+>     if(err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
+>       res.code(400)
+>       return res.send("Invalid header provided")
+>     } else {
+>       res.send(err)
+>     }
+>   }
+> })
+> ```
+
 
 ### ⚠  HTTP version check
 

@@ -20,13 +20,17 @@ Request is a core Fastify object containing the following fields:
 - `ips` - an array of the IP addresses, ordered from closest to furthest, in the
   `X-Forwarded-For` header of the incoming request (only when the
   [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled)
-- `hostname` - the host of the incoming request (derived from `X-Forwarded-Host`
+- `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
   exists.
+- `hostname` - the host of the incoming request without the port
+- `port` - the port that the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
+- `originalUrl` - similar to `url`, this allows you to access the 
+  original `url` in case of internal re-routing 
 - `routerMethod` - the method defined for the router that is handling the
   request
 - `routerPath` - the path pattern defined for the router that is handling the
@@ -35,6 +39,24 @@ Request is a core Fastify object containing the following fields:
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
 - `socket` - the underlying connection of the incoming request
+- `context` - A Fastify internal object. You should not use it directly or
+  modify it. It is useful to access one special key:	
+  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
+- `routeSchema` - the scheme definition set for the router that is
+  handling the request
+- `routeConfig` - The route [`config`](./Routes.md#routes-config) 
+  object.
+- `routeOptions` - The route [`option`](./Routes.md#routes-options) object
+  - `bodyLimit` - either server limit or route limit
+  - `method` - the http method for the route
+  - `url` - the path of the URL to match this route
+  - `attachValidation` - attach `validationError` to request 
+    (if there is a schema defined)
+  - `logLevel` - log level defined for this route
+  - `version` -  a semver compatible string that defines the version of the endpoint
+  - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
+  - `prefixTrailingSlash` - string used to determine how to handle passing / 
+    as a route with a prefix.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.
@@ -48,9 +70,6 @@ Request is a core Fastify object containing the following fields:
   schema and returns the serialized payload. If the optional
   `httpPart` is provided, the function will use the serializer
   function given for that HTTP Status Code. Defaults to `null`.
-- `context` - A Fastify internal object. You should not use it directly or
-  modify it. It is useful to access one special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 
 ### Headers
 
@@ -82,11 +101,21 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.id)
   console.log(request.ip)
   console.log(request.ips)
+  console.log(request.host)
   console.log(request.hostname)
+  console.log(request.port)
   console.log(request.protocol)
   console.log(request.url)
   console.log(request.routerMethod)
-  console.log(request.routerPath)
+  console.log(request.routeOptions.bodyLimit)
+  console.log(request.routeOptions.method)
+  console.log(request.routeOptions.url)
+  console.log(request.routeOptions.attachValidation)
+  console.log(request.routeOptions.logLevel)
+  console.log(request.routeOptions.version)
+  console.log(request.routeOptions.exposeHeadRoute)
+  console.log(request.routeOptions.prefixTrailingSlash)
+  console.log(request.routerPath.logLevel)
   request.log.info('some info')
 })
 ```
@@ -98,6 +127,9 @@ it will return a `validation` function that can be used to
 validate diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
+
 ```js
 const validate = request
                   .getValidationFunction({
@@ -108,16 +140,18 @@ const validate = request
                       } 
                     } 
                   })
-validate({ foo: 'bar' }) // true
+console.log(validate({ foo: 'bar' })) // true
+console.log(validate.errors) // null
 
 // or
 
 const validate = request
                   .getValidationFunction('body')
-validate({ foo: 0.5 }) // false
+console.log(validate({ foo: 0.5 })) // false
+console.log(validate.errors) // validation errors
 ```
 
-See [.compilaValidationSchema(schema, [httpStatus])](#compilevalidationschema)
+See [.compileValidationSchema(schema, [httpStatus])](#compilevalidationschema)
 for more information on how to compile validation function.
 
 ### .compileValidationSchema(schema, [httpPart])
@@ -133,6 +167,8 @@ The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation
 function if a custom `ValidationCompiler` is provided for the route.
 
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
 
 ```js
 const validate = request
@@ -145,6 +181,7 @@ const validate = request
                     } 
                   })
 console.log(validate({ foo: 'bar' })) // true
+console.log(validate.errors) // null
 
 // or
 
@@ -158,6 +195,7 @@ const validate = request
                     } 
                   }, 200)
 console.log(validate({ hello: 'world' })) // false
+console.log(validate.errors) // validation errors
 ```
 
 Note that you should be careful when using this function, as it will cache

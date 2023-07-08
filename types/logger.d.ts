@@ -13,17 +13,17 @@ import pino from 'pino'
  */
 export type FastifyLogFn = pino.LogFn
 
-export type LogLevel = pino.Level
+export type LogLevel = pino.LevelWithSilent
 
 export type Bindings = pino.Bindings
 
 export type ChildLoggerOptions = pino.ChildLoggerOptions
 
-export type FastifyBaseLogger = pino.BaseLogger & {
+export interface FastifyBaseLogger extends pino.BaseLogger {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
-// TODO delete FastifyLoggerInstance in the next major release. It seems that it is enough to have only FastifyBaseLogger.
+// TODO delete FastifyBaseLogger in the next major release. It seems that it is enough to have only FastifyBaseLogger.
 /**
  * @deprecated Use FastifyBaseLogger instead
  */
@@ -34,6 +34,15 @@ export interface FastifyLoggerStreamDestination {
 }
 
 export type PinoLoggerOptions = pino.LoggerOptions
+
+// TODO: once node 18 is EOL, this type can be replaced with plain FastifyReply.
+/**
+ * Specialized reply type used for the `res` log serializer, since only `statusCode` is passed in certain cases.
+ */
+export type ResSerializerReply<
+  RawServer extends RawServerBase,
+  RawReply extends FastifyReply<RawServer>
+> = Partial<RawReply> & Pick<RawReply, 'statusCode'>;
 
 /**
  * Fastify Custom Logger options.
@@ -48,7 +57,7 @@ export interface FastifyLoggerOptions<
       method?: string;
       url?: string;
       version?: string;
-      hostname?: string;
+      host?: string;
       remoteAddress?: string;
       remotePort?: number;
       [key: string]: unknown;
@@ -59,8 +68,8 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: RawReply) => {
-      statusCode: string | number;
+    res?: (res: ResSerializerReply<RawServer, RawReply>) => {
+      statusCode?: string | number;
       [key: string]: unknown;
     };
   };

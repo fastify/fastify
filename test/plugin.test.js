@@ -885,7 +885,7 @@ test('pluginTimeout', t => {
   })
 })
 
-test('pluginTimeout - named function', { only: true }, t => {
+test('pluginTimeout - named function', t => {
   t.plan(5)
   const fastify = Fastify({
     pluginTimeout: 10

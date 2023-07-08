@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const { kRouteContext } = require('../lib/symbols')
 const Fastify = require('..')
 
 const schema = {
@@ -13,7 +14,7 @@ const schema = {
 }
 
 function handler (req, reply) {
-  reply.send(reply.context.config)
+  reply.send(reply[kRouteContext].config)
 }
 
 test('config', t => {

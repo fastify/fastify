@@ -394,7 +394,7 @@ test('Bad accept version (inject)', t => {
   })
 })
 
-test('Bas accept version (server)', t => {
+test('Bad accept version (server)', t => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -454,7 +454,7 @@ test('test log stream', t => {
     t.teardown(() => { fastify.close() })
 
     http.get({
-      hostname: fastify.server.address().hostname,
+      host: fastify.server.address().hostname,
       port: fastify.server.address().port,
       path: '/',
       method: 'GET',

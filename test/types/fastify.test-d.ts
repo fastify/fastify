@@ -8,7 +8,11 @@ import fastify, {
   LightMyRequestResponse,
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
-  ValidationResult
+  RawRequestDefaultExpression,
+  RouteGenericInterface,
+  ValidationResult,
+  FastifyErrorCodes,
+  FastifyError
 } from '../../fastify'
 import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
@@ -22,8 +26,10 @@ import { Socket } from 'net'
 // http server
 expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
 expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({}))
+expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ http: {} }))
 // https server
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
+expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: null }))
 // http2 server
 expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
 expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
@@ -87,7 +93,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
           method: 'GET',
           url: '/',
           version: '1.0.0',
-          hostname: 'localhost',
+          host: 'localhost',
           remoteAddress: '127.0.0.1',
           remotePort: 3000
         }
@@ -122,7 +128,12 @@ expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServ
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: false }))
-expectAssignable<FastifyInstance>(fastify({ genReqId: () => 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({
+  genReqId: (req) => {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))
@@ -193,7 +204,10 @@ expectAssignable<FastifyInstance>(fastify({
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
-  rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
+  rewriteUrl: function (req) {
+    this.log.debug('rewrite url')
+    return req.url === '/hi' ? '/hello' : req.url!
+  }
 }))
 expectAssignable<FastifyInstance>(fastify({
   schemaErrorFormatter: (errors, dataVar) => {
@@ -231,3 +245,19 @@ const ajvErrorObject: AjvErrorObject = {
   message: ''
 }
 expectAssignable<ValidationResult>(ajvErrorObject)
+
+expectAssignable<FastifyError['validation']>([ajvErrorObject])
+expectAssignable<FastifyError['validationContext']>('body')
+expectAssignable<FastifyError['validationContext']>('headers')
+expectAssignable<FastifyError['validationContext']>('params')
+expectAssignable<FastifyError['validationContext']>('querystring')
+
+const routeGeneric: RouteGenericInterface = {}
+expectType<unknown>(routeGeneric.Body)
+expectType<unknown>(routeGeneric.Headers)
+expectType<unknown>(routeGeneric.Params)
+expectType<unknown>(routeGeneric.Querystring)
+expectType<unknown>(routeGeneric.Reply)
+
+// ErrorCodes
+expectType<FastifyErrorCodes>(fastify.errorCodes)

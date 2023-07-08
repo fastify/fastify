@@ -504,3 +504,9 @@ Plugin did not start in time. Default timeout (in millis): `10000`
 #### FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE
 
 The decorator is not present in the instance.
+
+<a name="FST_ERR_VALIDATION"></a>
+
+#### FST_ERR_VALIDATION
+
+The Request failed the payload validation.

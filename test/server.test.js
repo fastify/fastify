@@ -73,16 +73,12 @@ test('listen should reject string port', async (t) => {
 test('listen should not start server if received abort signal', t => {
   t.plan(1)
 
-  let abortCallback
   const controller = new AbortController()
-  controller.signal.addEventListener = (event, callback) => {
-    abortCallback = callback
-  }
 
   const fastify = Fastify()
   fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
     t.error(err)
   })
-  abortCallback()
+  controller.abort()
   t.equal(fastify.server.listening, false)
 })

@@ -429,6 +429,11 @@ Handler for the route must be a function.
 
 Missing handler function for the route.
 
+#### FST_ERR_ROUTE_METHOD_INVALID
+<a id="FST_ERR_ROUTE_METHOD_INVALID"></a>
+
+Method is not a valid value.
+
 #### FST_ERR_ROUTE_METHOD_NOT_SUPPORTED
 <a id="FST_ERR_ROUTE_METHOD_NOT_SUPPORTED"></a>
 
@@ -499,3 +504,9 @@ Plugin did not start in time. Default timeout (in millis): `10000`
 #### FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE
 
 The decorator is not present in the instance.
+
+<a name="FST_ERR_VALIDATION"></a>
+
+#### FST_ERR_VALIDATION
+
+The Request failed the payload validation.

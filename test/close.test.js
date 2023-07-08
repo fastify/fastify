@@ -2,8 +2,7 @@
 
 const net = require('net')
 const http = require('http')
-const t = require('tap')
-const test = t.test
+const { test } = require('tap')
 const Fastify = require('..')
 const { Client } = require('undici')
 const semver = require('semver')
@@ -205,7 +204,7 @@ test('Should return error while closing (callback) - injection', t => {
 })
 
 const isV19plus = semver.gte(process.version, '19.0.0')
-t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
+test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -243,7 +242,7 @@ t.test('Current opened connection should continue to work after closing and retu
   })
 })
 
-t.test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, t => {
+test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, t => {
   t.plan(4)
   const fastify = Fastify({
     return503OnClosing: false,
@@ -282,7 +281,7 @@ t.test('Current opened connection should NOT continue to work after closing and 
   })
 })
 
-t.test('Current opened connection should not accept new incoming connections', t => {
+test('Current opened connection should not accept new incoming connections', t => {
   t.plan(3)
   const fastify = Fastify({ forceCloseConnections: false })
   fastify.get('/', (req, reply) => {
@@ -304,7 +303,7 @@ t.test('Current opened connection should not accept new incoming connections', t
   })
 })
 
-t.test('rejected incoming connections should be logged', t => {
+test('rejected incoming connections should be logged', t => {
   t.plan(2)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -446,6 +445,149 @@ test('shutsdown while keep-alive connections are active (non-async, idle, native
         t.equal(client.closed, false)
       })
     })
+  })
+})
+
+test('triggers on-close hook in the right order with multiple bindings', async t => {
+  const expectedOrder = [1, 2, 3]
+  const order = []
+  const fastify = Fastify()
+
+  t.plan(1)
+
+  // Follows LIFO
+  fastify.addHook('onClose', () => {
+    order.push(2)
+  })
+
+  fastify.addHook('onClose', () => {
+    order.push(1)
+  })
+
+  await fastify.listen({ port: 0 })
+
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      fastify.close(err => {
+        order.push(3)
+        t.match(order, expectedOrder)
+
+        if (err) t.error(err)
+        else resolve()
+      })
+    }, 2000)
+  })
+})
+
+test('triggers on-close hook in the right order with multiple bindings (forceCloseConnections - idle)', { skip: noSupport }, async t => {
+  const expectedPayload = { hello: 'world' }
+  const timeoutTime = 2 * 60 * 1000
+  const expectedOrder = [1, 2]
+  const order = []
+  const fastify = Fastify({ forceCloseConnections: 'idle' })
+
+  fastify.server.setTimeout(timeoutTime)
+  fastify.server.keepAliveTimeout = timeoutTime
+
+  fastify.get('/', async (req, reply) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000)
+    })
+
+    return expectedPayload
+  })
+
+  fastify.addHook('onClose', () => {
+    order.push(1)
+  })
+
+  await fastify.listen({ port: 0 })
+  const addresses = fastify.addresses()
+  const testPlan = (addresses.length * 2) + 1
+
+  t.plan(testPlan)
+
+  for (const addr of addresses) {
+    const { family, address, port } = addr
+    const host = family === 'IPv6' ? `[${address}]` : address
+    const client = new Client(`http://${host}:${port}`, {
+      keepAliveTimeout: 1 * 60 * 1000
+    })
+
+    client.request({ path: '/', method: 'GET' })
+      .then((res) => res.body.json(), err => t.error(err))
+      .then(json => {
+        t.match(json, expectedPayload, 'should payload match')
+        t.notOk(client.closed, 'should client not be closed')
+      }, err => t.error(err))
+  }
+
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      fastify.close(err => {
+        order.push(2)
+        t.match(order, expectedOrder)
+
+        if (err) t.error(err)
+        else resolve()
+      })
+    }, 2000)
+  })
+})
+
+test('triggers on-close hook in the right order with multiple bindings (forceCloseConnections - true)', { skip: noSupport }, async t => {
+  const expectedPayload = { hello: 'world' }
+  const timeoutTime = 2 * 60 * 1000
+  const expectedOrder = [1, 2]
+  const order = []
+  const fastify = Fastify({ forceCloseConnections: true })
+
+  fastify.server.setTimeout(timeoutTime)
+  fastify.server.keepAliveTimeout = timeoutTime
+
+  fastify.get('/', async (req, reply) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000)
+    })
+
+    return expectedPayload
+  })
+
+  fastify.addHook('onClose', () => {
+    order.push(1)
+  })
+
+  await fastify.listen({ port: 0 })
+  const addresses = fastify.addresses()
+  const testPlan = (addresses.length * 2) + 1
+
+  t.plan(testPlan)
+
+  for (const addr of addresses) {
+    const { family, address, port } = addr
+    const host = family === 'IPv6' ? `[${address}]` : address
+    const client = new Client(`http://${host}:${port}`, {
+      keepAliveTimeout: 1 * 60 * 1000
+    })
+
+    client.request({ path: '/', method: 'GET' })
+      .then((res) => res.body.json(), err => t.error(err))
+      .then(json => {
+        t.match(json, expectedPayload, 'should payload match')
+        t.notOk(client.closed, 'should client not be closed')
+      }, err => t.error(err))
+  }
+
+  await new Promise((resolve, reject) => {
+    setTimeout(() => {
+      fastify.close(err => {
+        order.push(2)
+        t.match(order, expectedOrder)
+
+        if (err) t.error(err)
+        else resolve()
+      })
+    }, 2000)
   })
 })
 

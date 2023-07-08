@@ -109,7 +109,7 @@ declare namespace fastify {
     requestIdHeader?: string | false,
     requestIdLogLabel?: string;
     jsonShorthand?: boolean;
-    genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>) => string,
+    genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: unknown },
     /**
@@ -148,7 +148,12 @@ declare namespace fastify {
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,
       res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RequestGeneric, FastifyContextConfig, SchemaCompiler, TypeProvider>
     ) => void,
-    rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
+    rewriteUrl?: (
+      // The RawRequestDefaultExpression, RawReplyDefaultExpression, and FastifyTypeProviderDefault parameters
+      // should be narrowed further but those generic parameters are not passed to this FastifyServerOptions type 
+      this: FastifyInstance<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, Logger, FastifyTypeProviderDefault>,
+      req: RawRequestDefaultExpression<RawServer>
+    ) => string,
     schemaErrorFormatter?: SchemaErrorFormatter,
     /**
      * listener to error events emitted by client connections

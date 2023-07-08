@@ -248,6 +248,8 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
+- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3) 
+  Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify
@@ -258,6 +260,9 @@ section.
   to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
+- [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
+  Small and efficient cache provider for Node.JS with In-memory, File, Redis
+   and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
   for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest)
@@ -310,6 +315,9 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
+  plugin for instantiating and encapsulating the 
+  [Evervault](https://evervault.com/) client.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of
   your decorators across all the encapsulated contexts.
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon)

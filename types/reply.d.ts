@@ -1,17 +1,27 @@
-import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault } from './utils'
-import { FastifyReplyType, ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { Buffer } from 'buffer'
 import { FastifyContext } from './context'
+import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
-import { FastifyInstance } from './instance'
 import { FastifySchema } from './schema'
-import { Buffer } from 'buffer'
+import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
+import { CodeToReplyKey, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
 }
 
+type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>, ReplyKey = CodeToReplyKey<Code>> =
+  Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
+    [ReplyKey] extends [never] ? unknown :
+      ReplyKey extends keyof RouteGenericReply ? RouteGenericReply[ReplyKey] :
+        RouteGenericReply;
+
+export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault> =
+  ResolveFastifyReplyType<TypeProvider, SchemaCompiler, { Reply: ReplyTypeConstrainer<RouteGenericReply, Code> }>
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
@@ -31,8 +41,8 @@ export interface FastifyReply<
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
-  code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  code<Code extends ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ResolveReplyTypeWithRouteGeneric<RouteGeneric['Reply'], Code, SchemaCompiler, TypeProvider>>;
+  status<Code extends ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ResolveReplyTypeWithRouteGeneric<RouteGeneric['Reply'], Code, SchemaCompiler, TypeProvider>>;
   statusCode: number;
   sent: boolean;
   send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
@@ -43,7 +53,7 @@ export interface FastifyReply<
     // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
     [key: string]: number | string | string[] | undefined;
   };
-  removeHeader(key: string): void;
+  removeHeader(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hasHeader(key: string): boolean;
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
@@ -61,4 +71,10 @@ export interface FastifyReply<
   serializeInput(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): string;
   serializeInput(input: {[key: string]: unknown}, httpStatus: string, contentType?: string): unknown;
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
+  trailer: (
+    key: string,
+    fn: ((reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, payload: string | Buffer | null) => Promise<string>) | ((reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, payload: string | Buffer | null, done: (err: Error | null, value?: string) => void) => void)
+  ) => FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  hasTrailer(key: string): boolean;
+  removeTrailer(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
 }

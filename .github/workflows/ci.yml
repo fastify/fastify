@@ -50,12 +50,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
+          cache: 'npm'
+          cache-dependency-path: package.json
 
       - name: Install
         run: |
@@ -79,12 +75,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
+          cache: 'npm'
+          cache-dependency-path: package.json
 
       - name: Install
         run: |
@@ -133,12 +125,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
+          cache: 'npm'
+          cache-dependency-path: package.json
 
       - name: Install
         run: |
@@ -167,12 +155,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-20-${{ hashFiles('**/package.json') }}
+          cache: 'npm'
+          cache-dependency-path: package.json
 
       - name: Install
         run: |
@@ -199,11 +183,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - uses: actions/cache@v3
-        id: npm-cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
+          cache: 'npm'
+          cache-dependency-path: package.json
       - name: install fastify
         run: |
           npm install --ignore-scripts

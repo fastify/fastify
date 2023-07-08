@@ -34,6 +34,24 @@ test('listen should accept stringified number port', t => {
   })
 })
 
+test('listen should accept log text resolution function', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  fastify.listen({
+    host: '127.0.0.1',
+    port: '1234',
+    listenTextResolver: (address) => {
+      t.equal(address, 'http://127.0.0.1:1234')
+      t.pass('executed')
+      return 'hardcoded text'
+    }
+  }, (err) => {
+    t.error(err)
+  })
+})
+
 test('listen should reject string port', async (t) => {
   t.plan(2)
   const fastify = Fastify()

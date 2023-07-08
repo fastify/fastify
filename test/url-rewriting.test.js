@@ -10,6 +10,7 @@ test('Should rewrite url', t => {
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      this.log.info('rewriting url')
       return '/'
     }
   })
@@ -43,6 +44,7 @@ test('Should not rewrite if the url is the same', t => {
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      this.log.info('rewriting url')
       return req.url
     }
   })
@@ -74,6 +76,7 @@ test('Should throw an error', t => {
   const fastify = Fastify({
     rewriteUrl (req) {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
+      this.log.info('rewriting url')
       return undefined
     }
   })
@@ -96,6 +99,41 @@ test('Should throw an error', t => {
       t.equal(err.code, 'ECONNRESET')
       t.equal(response, undefined)
       t.equal(body, undefined)
+    })
+  })
+
+  t.teardown(() => fastify.close())
+})
+
+test('Should rewrite url but keep originalUrl unchanged', t => {
+  t.plan(7)
+  const fastify = Fastify({
+    rewriteUrl (req) {
+      t.equal(req.url, '/this-would-404-without-url-rewrite')
+      t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
+      return '/'
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
+    }, (err, response, body) => {
+      t.error(err)
+      t.same(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
     })
   })
 

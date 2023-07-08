@@ -19,8 +19,9 @@ All the examples in this section are using the [JSON Schema Draft
 > use with user-provided schemas. See [Ajv](https://npm.im/ajv) and
 > [fast-json-stringify](https://npm.im/fast-json-stringify) for more details.
 >
-> Moreover, the [`$async` Ajv
-> feature](https://ajv.js.org/guide/async-validation.html) should not be used as
+> Regardless the [`$async` Ajv
+> feature](https://ajv.js.org/guide/async-validation.html) is supported
+> by Fastify, it should not be used as
 > part of the first validation strategy. This option is used to access Databases
 > and reading them during the validation process may lead to Denial of Service
 > Attacks to your application. If you need to run `async` tasks, use [Fastify's
@@ -394,9 +395,11 @@ configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 
 ```js
 {
-  coerceTypes: true, // change data type of data to match type keyword
+  coerceTypes: 'array', // change data type of data to match type keyword
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   removeAdditional: true, // remove additional properties
+  uriResolver: require('fast-uri'),
+  addUsedSchema: false,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false

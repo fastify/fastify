@@ -78,7 +78,7 @@ fastify.route(options)
   when a response has been sent, so you will not be able to send more data to
   the client. It could also be an array of functions.
 * `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called
-  when a request is timed out and the HTTP socket has been hanged up.
+  when a request is timed out and the HTTP socket has been hung up.
 * `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror)
   called when an Error is thrown or sent to the client by the route handler.
 * `handler(request, reply)`: the function that will handle this request. The
@@ -112,6 +112,11 @@ fastify.route(options)
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
   version of the endpoint. [Example](#version-constraints).
+* `constraints`: defines route restrictions based on request properties or
+  values, enabling customized matching using 
+  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes 
+  built-in `version` and `host` constraints, with support for custom constraint
+  strategies.
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
   route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
@@ -219,7 +224,7 @@ fastify.get('/', opts)
 ```
 
 > Note: if the handler is specified in both the `options` and as the third
-> parameter to the shortcut method then throws duplicate `handler` error.
+> parameter to the shortcut method then throws a duplicate `handler` error.
 
 ### Url building
 <a id="url-building"></a>
@@ -289,6 +294,17 @@ fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, r
 ```
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
+
+The last parameter can be made optional if you add a question mark ("?") to the
+end of the parameters name.
+```js
+fastify.get('/example/posts/:id?', function (request, reply) {
+  const { id } = request.params;
+  // your code here
+})
+```
+In this case you can request `/example/posts` as well as `/example/posts/1`.
+The optional param will be undefined if not specified.
 
 Having a route with multiple parameters may negatively affect performance, so
 prefer a single parameter approach whenever possible, especially on routes that

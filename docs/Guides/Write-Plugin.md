@@ -1,4 +1,4 @@
-<h1 align="center">Fastify</h1>
+<h1 style="text-align: center;">Fastify</h1>
 
 # How to write a good plugin
 First, thank you for deciding to write a plugin for Fastify. Fastify is a
@@ -63,6 +63,8 @@ among different versions of its dependencies.
 We do not enforce any testing library. We use [`tap`](https://www.node-tap.org/)
 since it offers out-of-the-box parallel testing and code coverage, but it is up
 to you to choose your library of preference.
+We highly recommend you read the [Plugin Testing](./Testing.md#plugins) to 
+learn about how to test your plugins.
 
 ## Code Linter
 It is not mandatory, but we highly recommend you use a code linter in your

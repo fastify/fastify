@@ -82,3 +82,45 @@ test('Should accept user defined serverFactory and ignore secondary server creat
     await app.listen({ port: 0 })
   })
 })
+
+test('Should not call close on the server if it has not created it', async t => {
+  const server = http.createServer()
+
+  const serverFactory = (handler, opts) => {
+    server.on('request', handler)
+    return server
+  }
+
+  const fastify = Fastify({ serverFactory })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  await fastify.ready()
+
+  await new Promise((resolve, reject) => {
+    server.listen(0)
+    server.on('listening', resolve)
+    server.on('error', reject)
+  })
+
+  const address = server.address()
+  t.equal(server.listening, true)
+  await fastify.close()
+
+  t.equal(server.listening, true)
+  t.same(server.address(), address)
+  t.same(fastify.addresses(), [address])
+
+  await new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) {
+        return reject(err)
+      }
+      resolve()
+    })
+  })
+  t.equal(server.listening, false)
+  t.same(server.address(), null)
+})

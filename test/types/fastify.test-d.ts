@@ -255,3 +255,7 @@ expectType<unknown>(routeGeneric.Reply)
 
 // ErrorCodes
 expectType<FastifyErrorCodes>(fastify.errorCodes)
+
+fastify({ allowUnsafeRegex: true })
+fastify({ allowUnsafeRegex: false })
+expectError(fastify({ allowUnsafeRegex: 'invalid' }))

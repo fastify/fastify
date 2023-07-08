@@ -58,7 +58,6 @@ jobs:
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
 
       - name: Install
-        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -88,7 +87,6 @@ jobs:
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
 
       - name: Install
-        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -143,7 +141,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
 
       - name: Install
-        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -178,7 +175,6 @@ jobs:
           key: ${{ runner.os }}-node-20-${{ hashFiles('**/package.json') }}
 
       - name: Install
-        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
 
@@ -209,7 +205,6 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-node-lts-${{ hashFiles('**/package.json') }}
       - name: install fastify
-        if: ${{ steps.npm-cache.outputs.cache-hit != 'true' }}
         run: |
           npm install --ignore-scripts
       - name: install webpack stack

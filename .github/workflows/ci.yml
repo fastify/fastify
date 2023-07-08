@@ -185,7 +185,9 @@ jobs:
           NODE_OPTIONS: no-network-family-autoselection
 
   package:
-    needs: test
+    needs:
+      - test-typescript
+      - test-unit
     runs-on: ubuntu-latest
     permissions:
       contents: read

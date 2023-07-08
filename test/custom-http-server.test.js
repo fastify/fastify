@@ -11,10 +11,10 @@ const dns = require('dns').promises
 test('Should support a custom http server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  t.plan(localAddresses.length + 3)
+  t.plan((localAddresses.length - 1) + 3)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
+    t.ok(opts.serverFactory, 'it is called once for localhost')
 
     const server = http.createServer((req, res) => {
       req.custom = true
@@ -70,4 +70,57 @@ test('Should not allow forceCloseConnection=idle if the server does not support 
     FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
     "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
   )
+})
+
+test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
+  const server = http.createServer(() => {})
+  t.teardown(() => new Promise(resolve => server.close(resolve)))
+  const app = await Fastify({
+    serverFactory: () => server
+  })
+  t.resolves(async () => {
+    await app.listen({ port: 0 })
+  })
+})
+
+test('Should not call close on the server if it has not created it', async t => {
+  const server = http.createServer()
+
+  const serverFactory = (handler, opts) => {
+    server.on('request', handler)
+    return server
+  }
+
+  const fastify = Fastify({ serverFactory })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  await fastify.ready()
+
+  await new Promise((resolve, reject) => {
+    server.listen(0)
+    server.on('listening', resolve)
+    server.on('error', reject)
+  })
+
+  const address = server.address()
+  t.equal(server.listening, true)
+  await fastify.close()
+
+  t.equal(server.listening, true)
+  t.same(server.address(), address)
+  t.same(fastify.addresses(), [address])
+
+  await new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) {
+        return reject(err)
+      }
+      resolve()
+    })
+  })
+  t.equal(server.listening, false)
+  t.same(server.address(), null)
 })

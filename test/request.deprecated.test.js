@@ -3,6 +3,8 @@
 // Tests for some deprecated `request.*` keys. This file should be
 // removed when the deprecation is complete.
 
+process.removeAllListeners('warning')
+
 const test = require('tap').test
 const Fastify = require('../')
 

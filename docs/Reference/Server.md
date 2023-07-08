@@ -527,8 +527,8 @@ Defines the label used for the request identifier when logging the request.
 ### `genReqId`
 <a id="factory-gen-request-id"></a>
 
-Function for generating the request-id. It will receive the incoming request as
-a parameter. This function is expected to be error-free.
+Function for generating the request-id. It will receive the _raw_ incoming
+request as a parameter. This function is expected to be error-free.
 
 + Default: `value of 'request-id' header if provided or monotonically increasing
   integers`
@@ -855,6 +855,9 @@ is an instance-wide configuration.
 `fastify.server`: The Node core
 [server](https://nodejs.org/api/http.html#http_class_http_server) object as
 returned by the [**`Fastify factory function`**](#factory).
+
+>__Warning__: If utilized improperly, certain Fastify features could be disrupted.
+>It is recommended to only use it for attaching listeners.
 
 #### after
 <a id="after"></a>

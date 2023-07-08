@@ -1,0 +1,25 @@
+name: Sync next-branch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 8 * * 1' # every monday at 8 am
+
+permissions:
+  pull-requests: write
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: octokit/request-action@v2.x
+        id: create-pull-request
+        with:
+          route: POST /repos/{owner}/{repo}/pulls
+          owner: fastify
+          repo: fastify
+          title: Sync next-branch
+          body: Sync next-branch with latest changes of the main-branch
+          head: main
+          base: next
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

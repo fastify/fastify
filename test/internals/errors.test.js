@@ -2,6 +2,8 @@
 
 const { test } = require('tap')
 const errors = require('../../lib/errors')
+const { readFileSync } = require('fs')
+const { resolve } = require('path')
 
 test('should expose 77 errors', t => {
   t.plan(1)
@@ -52,7 +54,7 @@ test('FST_ERR_QSP_NOT_FN', t => {
   t.equal(error.code, 'FST_ERR_QSP_NOT_FN')
   t.equal(error.message, "querystringParser option should be a function, instead got '%s'")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN', t => {
@@ -62,7 +64,7 @@ test('FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN', t => {
   t.equal(error.code, 'FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN')
   t.equal(error.message, "schemaController.bucket option should be a function, instead got '%s'")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN', t => {
@@ -72,7 +74,7 @@ test('FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN', t => {
   t.equal(error.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   t.equal(error.message, "schemaErrorFormatter option should be a non async function. Instead got '%s'.")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ', t => {
@@ -80,9 +82,9 @@ test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ', t => {
   const error = new errors.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ')
-  t.equal(error.message, "sajv.customOptions option should be an object, instead got '%s'")
+  t.equal(error.message, "ajv.customOptions option should be an object, instead got '%s'")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR', t => {
@@ -90,9 +92,9 @@ test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR', t => {
   const error = new errors.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR')
-  t.equal(error.message, "sajv.plugins option should be an array, instead got '%s'")
+  t.equal(error.message, "ajv.plugins option should be an array, instead got '%s'")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_VERSION_CONSTRAINT_NOT_STR', t => {
@@ -102,7 +104,7 @@ test('FST_ERR_VERSION_CONSTRAINT_NOT_STR', t => {
   t.equal(error.code, 'FST_ERR_VERSION_CONSTRAINT_NOT_STR')
   t.equal(error.message, 'Version constraint should be a string.')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_CTP_ALREADY_PRESENT', t => {
@@ -162,7 +164,7 @@ test('FST_ERR_CTP_BODY_TOO_LARGE', t => {
   t.equal(error.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
   t.equal(error.message, 'Request body is too large')
   t.equal(error.statusCode, 413)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof RangeError)
 })
 
 test('FST_ERR_CTP_INVALID_MEDIA_TYPE', t => {
@@ -182,7 +184,7 @@ test('FST_ERR_CTP_INVALID_CONTENT_LENGTH', t => {
   t.equal(error.code, 'FST_ERR_CTP_INVALID_CONTENT_LENGTH')
   t.equal(error.message, 'Request body size did not match Content-Length')
   t.equal(error.statusCode, 400)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof RangeError)
 })
 
 test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
@@ -222,7 +224,7 @@ test('FST_ERR_DEC_DEPENDENCY_INVALID_TYPE', t => {
   t.equal(error.code, 'FST_ERR_DEC_DEPENDENCY_INVALID_TYPE')
   t.equal(error.message, "The dependencies of decorator '%s' must be of type Array.")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_DEC_MISSING_DEPENDENCY', t => {
@@ -322,7 +324,7 @@ test('FST_ERR_LOG_INVALID_LOGGER', t => {
   t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER')
   t.equal(error.message, "Invalid logger object provided. The logger instance should have these functions(s): '%s'.")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
@@ -352,7 +354,7 @@ test('FST_ERR_REP_SENT_VALUE', t => {
   t.equal(error.code, 'FST_ERR_REP_SENT_VALUE')
   t.equal(error.message, 'The only possible value for reply.sent is true.')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_SEND_INSIDE_ONERR', t => {
@@ -591,8 +593,8 @@ test('FST_ERR_INVALID_URL', t => {
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_INVALID_URL')
   t.equal(error.message, "URL must be a string. Received '%s'")
-  t.equal(error.statusCode, 400)
-  t.ok(error instanceof Error)
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_ROUTE_OPTIONS_NOT_OBJ', t => {
@@ -602,7 +604,7 @@ test('FST_ERR_ROUTE_OPTIONS_NOT_OBJ', t => {
   t.equal(error.code, 'FST_ERR_ROUTE_OPTIONS_NOT_OBJ')
   t.equal(error.message, 'Options for "%s:%s" route must be an object')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_ROUTE_DUPLICATED_HANDLER', t => {
@@ -622,7 +624,7 @@ test('FST_ERR_ROUTE_HANDLER_NOT_FN', t => {
   t.equal(error.code, 'FST_ERR_ROUTE_HANDLER_NOT_FN')
   t.equal(error.message, 'Error Handler for %s:%s route, if defined, must be a function')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_ROUTE_MISSING_HANDLER', t => {
@@ -642,7 +644,7 @@ test('FST_ERR_ROUTE_METHOD_INVALID', t => {
   t.equal(error.code, 'FST_ERR_ROUTE_METHOD_INVALID')
   t.equal(error.message, 'Provided method is invalid!')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
@@ -682,7 +684,7 @@ test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', t => {
   t.equal(error.code, 'FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT')
   t.equal(error.message, "'bodyLimit' option must be an integer > 0. Got '%s'")
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
@@ -692,7 +694,7 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
   t.equal(error.code, 'FST_ERR_ROUTE_REWRITE_NOT_STR')
   t.equal(error.message, 'Rewrite url for "%s" needs to be of type "string" but received "%s"')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
@@ -752,7 +754,7 @@ test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {
   t.equal(error.code, 'FST_ERR_PLUGIN_CALLBACK_NOT_FN')
   t.equal(error.message, 'fastify-plugin: %s')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_PLUGIN_NOT_VALID', t => {
@@ -803,4 +805,29 @@ test('FST_ERR_VALIDATION', t => {
   t.equal(error.message, '%s')
   t.equal(error.statusCode, 400)
   t.ok(error instanceof Error)
+})
+
+test('Ensure that all errors are in Errors.md documented', t => {
+  t.plan(77)
+  const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
+
+  const exportedKeys = Object.keys(errors)
+  for (const key of exportedKeys) {
+    if (errors[key].name === 'FastifyError') {
+      t.ok(errorsMd.includes(`#### ${key}\n`), key)
+    }
+  }
+})
+
+test('Ensure that non-existing errors are not in Errors.md documented', t => {
+  t.plan(77)
+  const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
+
+  const matchRE = /#### ([0-9a-zA-Z_]+)\n/g
+  const matches = errorsMd.matchAll(matchRE)
+  const exportedKeys = Object.keys(errors)
+
+  for (const match of matches) {
+    t.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
+  }
 })

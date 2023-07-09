@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const errors = require('../../lib/errors')
 
-test('should expose 77 errors', t => {
+test('should expose 78 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -12,11 +12,11 @@ test('should expose 77 errors', t => {
       counter++
     }
   }
-  t.equal(counter, 77)
+  t.equal(counter, 78)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(77)
+  t.plan(78)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -802,5 +802,14 @@ test('FST_ERR_VALIDATION', t => {
   t.equal(error.code, 'FST_ERR_VALIDATION')
   t.equal(error.message, '%s')
   t.equal(error.statusCode, 400)
+  t.ok(error instanceof Error)
+})
+
+test('FST_ERR_SERVER_OPTIONS_INVALID', t => {
+  t.plan(4)
+  const error = new errors.FST_ERR_SERVER_OPTIONS_INVALID()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_SERVER_OPTIONS_INVALID')
+  t.equal(error.message, "Invalid server options: '%s'")
   t.ok(error instanceof Error)
 })

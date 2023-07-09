@@ -71,7 +71,7 @@ test('listen should reject string port', async (t) => {
   }
 })
 
-test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '16') }, t => {
+test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '15.6.0') }, t => {
   t.plan(1)
 
   const controller = new AbortController()
@@ -82,4 +82,30 @@ test('listen should not start server if received abort signal', { skip: semver.l
   })
   controller.abort()
   t.equal(fastify.server.listening, false)
+})
+
+test('listen should not start server if signal was already aborted', { skip: semver.lt(process.version, '15.6.0') }, t => {
+  t.plan(1)
+  const controller = new AbortController()
+  controller.abort()
+  const fastify = Fastify()
+  fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
+    t.error(err)
+  })
+  t.equal(fastify.server.listening, false)
+})
+
+test('listen should throw if received invalid signal', { skip: semver.lt(process.version, '15.6.0') }, t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.listen({ port: 1234, signal: {} }, (err) => {
+      t.error(err)
+    })
+    t.fail()
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_SERVER_OPTIONS_INVALID')
+    t.equal(e.message, 'Invalid server options: \'Invalid options.signal\'')
+  }
 })

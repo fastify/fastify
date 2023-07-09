@@ -27,6 +27,15 @@ reported vulnerabilities:
   validity of the report. In any case, the report should follow the same process
   as outlined below of inviting the maintainers to review and accept the
   vulnerability.
+* ***Do not*** attempt to show CI/CD vulnerabilities by creating new pull
+  requests to any of the Fastify organization's repositories. Doing so will
+  result in a [content report][cr] to GitHub as an unsolicited exploit.
+  The proper way to provide such reports is by creating a new repository,
+  configured in the same manner as the repository you would like to submit
+  a report about, and with a pull request to your own repository showing
+  the proof of concept.
+
+[cr]: https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam#reporting-an-issue-or-pull-request
 
 ### Vulnerabilities found outside this process
 

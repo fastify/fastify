@@ -805,11 +805,11 @@ test('FST_ERR_VALIDATION', t => {
   t.ok(error instanceof Error)
 })
 
-test('FST_ERR_SERVER_OPTIONS_INVALID', t => {
+test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
   t.plan(4)
-  const error = new errors.FST_ERR_SERVER_OPTIONS_INVALID()
+  const error = new errors.FST_ERR_LISTEN_OPTIONS_INVALID()
   t.equal(error.name, 'FastifyError')
-  t.equal(error.code, 'FST_ERR_SERVER_OPTIONS_INVALID')
-  t.equal(error.message, "Invalid server options: '%s'")
+  t.equal(error.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
+  t.equal(error.message, "Invalid listen options: '%s'")
   t.ok(error instanceof Error)
 })

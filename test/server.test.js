@@ -71,7 +71,7 @@ test('listen should reject string port', async (t) => {
   }
 })
 
-test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '15.6.0') }, t => {
+test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '16') }, t => {
   t.plan(1)
 
   const controller = new AbortController()

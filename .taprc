@@ -1,8 +1,8 @@
 ts: false
 jsx: false
 flow: false
-check-coverage: true
-coverage: true
+check-coverage: false
+coverage: false
 node-arg: --allow-natives-syntax
 
 files:

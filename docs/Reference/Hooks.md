@@ -24,6 +24,7 @@ are Request/Reply hooks and application hooks:
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
   - [onReady](#onready)
+  - [onListen](#onlisten)
   - [onClose](#onclose)
   - [preClose](#preclose)
   - [onRoute](#onroute)
@@ -385,6 +386,7 @@ fastify.addHook('preHandler', async (request, reply) => {
 You can hook into the application-lifecycle as well.
 
 - [onReady](#onready)
+- [onListen](#onlisten)
 - [onClose](#onclose)
 - [preClose](#preclose)
 - [onRoute](#onroute)
@@ -410,6 +412,24 @@ fastify.addHook('onReady', function (done) {
 fastify.addHook('onReady', async function () {
   // Some async code
   await loadCacheFromDatabase()
+})
+```
+### onListen
+
+Triggered after the server starts listening for requests.
+It is useful if you have code that needs to be executed directly
+after the server starts listening for requests.
+This is another way of doing `fastify.server.on('listening', () => {})`.
+
+```js
+// callback style
+fastify.addHook('onListen', function () {
+  // Some code
+})
+
+// or async/await style
+fastify.addHook('onListen', async function () {
+  // Some async code
 })
 ```
 

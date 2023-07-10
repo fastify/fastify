@@ -302,6 +302,9 @@ async function setup(fastify) {
   // As soon as we're listening for requests, let's work our magic
   fastify.server.on('listening', doMagic)
 
+  // You could also use the associated application hook for that
+  // fastify.addHook('onListen', doMagic)
+  
   // Set up the placeholder for the magicKey
   fastify.decorate('magicKey', null)
 

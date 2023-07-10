@@ -168,8 +168,6 @@ ajv.plugins option should be an array.
 
 Version constraint should be a string.
 
-<a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
-
 #### FST_ERR_CTP_ALREADY_PRESENT
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>
 
@@ -260,6 +258,11 @@ The hook name must be a string.
 
 The hook callback must be a function.
 
+#### FST_ERR_HOOK_INVALID_ASYNC_HANDLER
+<a id="FST_ERR_HOOK_INVALID_ASYNC_HANDLER"></a>
+
+Async function has too many arguments. Async hooks should not use the `done` argument.
+
 #### FST_ERR_HOOK_NOT_SUPPORTED
 <a id="FST_ERR_HOOK_NOT_SUPPORTED"></a>
 
@@ -271,8 +274,8 @@ The hook is not supported.
 You must register a plugin for handling middlewares,
 visit [`Middleware`](./Middleware.md) for more info.
 
-<a name="FST_ERR_HOOK_TIMEOUT"></a>
 #### FST_ERR_HOOK_TIMEOUT
+<a id="FST_ERR_HOOK_TIMEOUT"></a>
 
 A callback for a hook timed out
 
@@ -327,8 +330,18 @@ Called `reply.trailer` with an invalid header name.
 
 Called `reply.trailer` with an invalid type. Expected a function.
 
+#### FST_ERR_FAILED_ERROR_SERIALIZATION
+<a id="FST_ERR_FAILED_ERROR_SERIALIZATION"></a>
+
+Failed to serialize an error.
+
 #### FST_ERR_MISSING_SERIALIZATION_FN
 <a id="FST_ERR_MISSING_SERIALIZATION_FN"></a>
+
+Missing serialization function.
+
+#### FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN
+<a id="FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN"></a>
 
 Missing serialization function.
 
@@ -347,6 +360,11 @@ The schema provided does not have `$id` property.
 <a id="FST_ERR_SCH_ALREADY_PRESENT"></a>
 
 A schema with the same `$id` already exists.
+
+#### FST_ERR_SCH_CONTENT_MISSING_SCHEMA
+<a id="FST_ERR_SCH_CONTENT_MISSING_SCHEMA"></a>
+
+A schema is missing for the corresponding content type.
 
 #### FST_ERR_SCH_DUPLICATE
 <a id="FST_ERR_SCH_DUPLICATE"></a>
@@ -384,8 +402,8 @@ Invalid initialization options.
 Cannot set forceCloseConnections to `idle` as your HTTP server
 does not support `closeIdleConnections` method.
 
-<a name="FST_ERR_DUPLICATED_ROUTE"></a>
 #### FST_ERR_DUPLICATED_ROUTE
+<a id="FST_ERR_DUPLICATED_ROUTE"></a>
 
 The HTTP method already has a registered controller for that URL
 
@@ -469,45 +487,38 @@ Fastify is already listening.
 
 Installed Fastify plugin mismatched expected version.
 
-<a name="FST_ERR_PLUGIN_CALLBACK_NOT_FN"></a>
-
 #### FST_ERR_PLUGIN_CALLBACK_NOT_FN
+<a id="FST_ERR_PLUGIN_CALLBACK_NOT_FN"></a>
 
 Callback for a hook is not a function (mapped directly from `avvio`)
 
-<a name="FST_ERR_PLUGIN_NOT_VALID"></a>
-
 #### FST_ERR_PLUGIN_NOT_VALID
+<a id="FST_ERR_PLUGIN_NOT_VALID"></a>
 
 Plugin must be a function or a promise.
 
-<a name="FST_ERR_ROOT_PLG_BOOTED"></a>
-
 #### FST_ERR_ROOT_PLG_BOOTED
+<a id="FST_ERR_ROOT_PLG_BOOTED"></a>
 
 Root plugin has already booted (mapped directly from `avvio`)
 
-<a name="FST_ERR_PARENT_PLUGIN_BOOTED"></a>
-
 #### FST_ERR_PARENT_PLUGIN_BOOTED
+<a id="FST_ERR_PARENT_PLUGIN_BOOTED"></a>
 
 Impossible to load plugin because the parent (mapped directly from `avvio`)
 
-<a name="FST_ERR_PLUGIN_TIMEOUT"></a>
-
 #### FST_ERR_PLUGIN_TIMEOUT
+<a id="FST_ERR_PLUGIN_TIMEOUT"></a>
 
 Plugin did not start in time. Default timeout (in millis): `10000`
 
-<a name="FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE"></a>
-
 #### FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE
+<a id="FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE"></a>
 
 The decorator is not present in the instance.
 
-<a name="FST_ERR_VALIDATION"></a>
-
 #### FST_ERR_VALIDATION
+<a id="FST_ERR_VALIDATION"></a>
 
 The Request failed the payload validation.
 

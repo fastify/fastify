@@ -593,7 +593,7 @@ test('FST_ERR_INVALID_URL', t => {
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_INVALID_URL')
   t.equal(error.message, "URL must be a string. Received '%s'")
-  t.equal(error.statusCode, 500)
+  t.equal(error.statusCode, 400)
   t.ok(error instanceof TypeError)
 })
 

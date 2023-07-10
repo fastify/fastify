@@ -16,7 +16,7 @@ type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof
   Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
     [ReplyKey] extends [never] ? unknown :
       ReplyKey extends keyof RouteGenericReply ? RouteGenericReply[ReplyKey] :
-        unknown;
+        RouteGenericReply;
 
 export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
   SchemaCompiler extends FastifySchema = FastifySchema,

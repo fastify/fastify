@@ -7,7 +7,8 @@ const os = require('os')
 
 const {
   kOptions,
-  kErrorHandler
+  kErrorHandler,
+  kChildLoggerFactory
 } = require('../lib/symbols')
 
 test('root fastify instance is an object', t => {
@@ -98,6 +99,37 @@ test('errorHandler in plugin should be separate from the external one', async t 
 
   t.ok(fastify[kErrorHandler].func instanceof Function)
   t.same(fastify.errorHandler, fastify[kErrorHandler].func)
+})
+
+test('fastify instance should contain default childLoggerFactory', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.ok(fastify[kChildLoggerFactory] instanceof Function)
+  t.same(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
+  t.same(Object.getOwnPropertyDescriptor(fastify, 'childLoggerFactory').set, undefined)
+})
+
+test('childLoggerFactory in plugin should be separate from the external one', async t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, done) => {
+    const inPluginLoggerFactory = function (logger, bindings, opts) {
+      return logger.child(bindings, opts)
+    }
+
+    instance.setChildLoggerFactory(inPluginLoggerFactory)
+
+    t.notSame(instance.childLoggerFactory, fastify.childLoggerFactory)
+    t.equal(instance.childLoggerFactory.name, 'inPluginLoggerFactory')
+
+    done()
+  })
+
+  await fastify.ready()
+
+  t.ok(fastify[kChildLoggerFactory] instanceof Function)
+  t.same(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
 })
 
 test('fastify instance should contains listeningOrigin property (with port and host)', async t => {

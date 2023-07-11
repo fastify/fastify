@@ -1,5 +1,6 @@
 import { expectAssignable, expectDeprecated, expectError, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
+  FastifyBaseLogger,
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
@@ -13,6 +14,7 @@ import { FastifyRequest } from '../../types/request'
 import { DefaultRoute } from '../../types/route'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'net'
+import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 const server = fastify()
 
@@ -257,6 +259,37 @@ expectType<FastifyInstance>(fastify().get('/', {
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }
 }))
+
+expectType<FastifyInstance>(fastify().get('/', {
+  handler: () => {},
+  childLoggerFactory: (logger, bindings, opts, req) => {
+    expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
+    return server.childLoggerFactory(logger, bindings, opts, req)
+  }
+}))
+
+expectAssignable<FastifyInstance>(
+  server.setChildLoggerFactory(function (logger, bindings, opts, req) {
+    expectType<FastifyBaseLogger>(logger)
+    expectType<Bindings>(bindings)
+    expectType<ChildLoggerOptions>(opts)
+    expectType<RawRequestDefaultExpression>(req)
+    expectAssignable<FastifyInstance>(this)
+    return logger.child(bindings, opts)
+  })
+)
+
+expectAssignable<FastifyInstance>(
+  server.setErrorHandler<FastifyError>(function (error, request, reply) {
+    expectType<FastifyError>(error)
+  })
+)
+
+function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+  return logger.child(bindings, opts)
+}
+server.setChildLoggerFactory(childLoggerFactory)
+server.setChildLoggerFactory(server.childLoggerFactory)
 
 type InitialConfig = Readonly<{
   connectionTimeout?: number,

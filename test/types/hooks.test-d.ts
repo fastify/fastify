@@ -142,6 +142,12 @@ server.addHook('onReady', function (done) {
   expectType<void>(done(new Error()))
 })
 
+server.addHook('onListen', function () {
+  expectType<FastifyInstance>(this)
+  expectAssignable<(err?: FastifyError) => void>
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>
+})
+
 server.addHook('onClose', (instance, done) => {
   expectType<FastifyInstance>(instance)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -220,6 +226,10 @@ server.addHook('onRegister', async (instance, opts) => {
 })
 
 server.addHook('onReady', async function () {
+  expectType<FastifyInstance>(this)
+})
+
+server.addHook('onListen', async function () {
   expectType<FastifyInstance>(this)
 })
 

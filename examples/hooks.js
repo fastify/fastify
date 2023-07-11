@@ -68,6 +68,9 @@ fastify
   .addHook('onRoute', function (routeOptions) {
     console.log('onRoute')
   })
+  .addHook('onListen', function () {
+    console.log('onListen')
+  })
   .addHook('onClose', function (instance, done) {
     console.log('onClose')
     done()

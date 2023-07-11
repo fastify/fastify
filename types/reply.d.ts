@@ -16,8 +16,8 @@ type HttpCodesReplyType = Partial<Record<HttpKeys, unknown>>
 
 type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
   RouteGenericReply extends HttpCodesReplyType & Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never> ?
-    Code extends keyof RouteGenericReply ? Required<RouteGenericReply[Code]> :
-      CodeToReplyKey<Code> extends keyof RouteGenericReply ? Required<RouteGenericReply[CodeToReplyKey<Code>]> : unknown :
+    Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
+      CodeToReplyKey<Code> extends keyof RouteGenericReply ? RouteGenericReply[CodeToReplyKey<Code>] : unknown :
     RouteGenericReply;
 
 export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,

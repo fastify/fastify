@@ -2,12 +2,14 @@
 
 const t = require('tap')
 const test = t.test
-const { hookRunner, onSendHookRunner } = require('../../lib/hooks')
+const { hookRunnerGenerator, onSendHookRunner } = require('../../lib/hooks')
 
 test('hookRunner - Basic', t => {
   t.plan(9)
 
-  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+  const hookRunner = hookRunnerGenerator(iterator)
+
+  hookRunner([fn1, fn2, fn3], 'a', 'b', done)
 
   function iterator (fn, a, b, done) {
     return fn(a, b, done)
@@ -41,7 +43,9 @@ test('hookRunner - Basic', t => {
 test('hookRunner - In case of error should skip to done', t => {
   t.plan(7)
 
-  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+  const hookRunner = hookRunnerGenerator(iterator)
+
+  hookRunner([fn1, fn2, fn3], 'a', 'b', done)
 
   function iterator (fn, a, b, done) {
     return fn(a, b, done)
@@ -73,7 +77,9 @@ test('hookRunner - In case of error should skip to done', t => {
 test('hookRunner - Should handle throw', t => {
   t.plan(7)
 
-  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+  const hookRunner = hookRunnerGenerator(iterator)
+
+  hookRunner([fn1, fn2, fn3], 'a', 'b', done)
 
   function iterator (fn, a, b, done) {
     return fn(a, b, done)
@@ -105,7 +111,9 @@ test('hookRunner - Should handle throw', t => {
 test('hookRunner - Should handle promises', t => {
   t.plan(9)
 
-  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+  const hookRunner = hookRunnerGenerator(iterator)
+
+  hookRunner([fn1, fn2, fn3], 'a', 'b', done)
 
   function iterator (fn, a, b, done) {
     return fn(a, b, done)
@@ -139,7 +147,9 @@ test('hookRunner - Should handle promises', t => {
 test('hookRunner - In case of error should skip to done (with promises)', t => {
   t.plan(7)
 
-  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+  const hookRunner = hookRunnerGenerator(iterator)
+
+  hookRunner([fn1, fn2, fn3], 'a', 'b', done)
 
   function iterator (fn, a, b, done) {
     return fn(a, b, done)
@@ -171,8 +181,10 @@ test('hookRunner - In case of error should skip to done (with promises)', t => {
 test('hookRunner - Be able to exit before its natural end', t => {
   t.plan(4)
 
+  const hookRunner = hookRunnerGenerator(iterator)
+
   let shouldStop = false
-  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+  hookRunner([fn1, fn2, fn3], 'a', 'b', done)
 
   function iterator (fn, a, b, done) {
     if (shouldStop) {
@@ -208,7 +220,9 @@ test('hookRunner - Promises that resolve to a value do not change the state', t 
 
   const originalState = { a: 'a', b: 'b' }
 
-  hookRunner([fn1, fn2, fn3], iterator, originalState, 'b', done)
+  const hookRunner = hookRunnerGenerator(iterator)
+
+  hookRunner([fn1, fn2, fn3], originalState, 'b', done)
 
   function iterator (fn, state, b, done) {
     return fn(state, b, done)

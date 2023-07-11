@@ -72,6 +72,7 @@ interface ReplyHttpCodes {
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.code(100).send)
 }
 
 const server = fastify()

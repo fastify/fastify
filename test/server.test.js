@@ -71,51 +71,55 @@ test('listen should reject string port', async (t) => {
   }
 })
 
-test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
-  t.plan(2)
-  function onClose (instance, done) {
-    t.type(fastify, instance)
-    done()
-  }
+test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
+  t.test('listen should not start server', t => {
+    t.plan(2)
+    function onClose (instance, done) {
+      t.type(fastify, instance)
+      done()
+    }
+    const controller = new AbortController()
 
-  const controller = new AbortController()
-
-  const fastify = Fastify()
-  fastify.addHook('onClose', onClose)
-  fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
-    t.error(err)
-  })
-  controller.abort()
-  t.equal(fastify.server.listening, false)
-})
-
-test('listen should not start server if signal was already aborted', { skip: semver.lt(process.version, '16.0.0') }, t => {
-  t.plan(2)
-  function onClose (instance, done) {
-    t.type(fastify, instance)
-    done()
-  }
-  const controller = new AbortController()
-  controller.abort()
-  const fastify = Fastify()
-  fastify.addHook('onClose', onClose)
-  fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
-    t.error(err)
-  })
-  t.equal(fastify.server.listening, false)
-})
-
-test('listen should throw if received invalid signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
-  t.plan(2)
-  const fastify = Fastify()
-
-  try {
-    fastify.listen({ port: 1234, signal: {} }, (err) => {
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
       t.error(err)
     })
-    t.fail()
-  } catch (e) {
-    t.equal(e.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
-    t.equal(e.message, 'Invalid listen options: \'Invalid options.signal\'')
-  }
+    controller.abort()
+    t.equal(fastify.server.listening, false)
+  })
+
+  t.test('listen should not start server if already aborted', t => {
+    t.plan(2)
+    function onClose (instance, done) {
+      t.type(fastify, instance)
+      done()
+    }
+
+    const controller = new AbortController()
+    controller.abort()
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
+      t.error(err)
+    })
+    t.equal(fastify.server.listening, false)
+  })
+
+  t.test('listen should throw if received invalid signal', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    try {
+      fastify.listen({ port: 1234, signal: {} }, (err) => {
+        t.error(err)
+      })
+      t.fail()
+    } catch (e) {
+      t.equal(e.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
+      t.equal(e.message, 'Invalid listen options: \'Invalid options.signal\'')
+    }
+  })
+
+  t.end()
 })

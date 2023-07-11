@@ -72,11 +72,16 @@ test('listen should reject string port', async (t) => {
 })
 
 test('listen should not start server if received abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
-  t.plan(1)
+  t.plan(2)
+  function onClose (instance, done) {
+    t.type(fastify, instance)
+    done()
+  }
 
   const controller = new AbortController()
 
   const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
   fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
     t.error(err)
   })
@@ -85,10 +90,15 @@ test('listen should not start server if received abort signal', { skip: semver.l
 })
 
 test('listen should not start server if signal was already aborted', { skip: semver.lt(process.version, '16.0.0') }, t => {
-  t.plan(1)
+  t.plan(2)
+  function onClose (instance, done) {
+    t.type(fastify, instance)
+    done()
+  }
   const controller = new AbortController()
   controller.abort()
   const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
   fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
     t.error(err)
   })

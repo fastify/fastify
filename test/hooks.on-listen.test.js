@@ -3,6 +3,7 @@
 const t = require('tap')
 const Fastify = require('../fastify')
 
+// Sync test works but async test is current a work in progress
 t.test('***onListen should be called in order***', t => {
   t.plan(2)
 

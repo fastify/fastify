@@ -135,8 +135,6 @@ jobs:
       - name: Run tests
         run: |
           npm run unit
-        env:
-          NODE_OPTIONS: no-network-family-autoselection 
 
   test-typescript:
     needs: 

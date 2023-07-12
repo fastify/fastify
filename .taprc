@@ -1,8 +1,9 @@
 ts: false
 jsx: false
 flow: false
-check-coverage: true
-coverage: true
+# the coverage is performed by c8
+check-coverage: false
+coverage: false
 node-arg: --allow-natives-syntax
 
 files:

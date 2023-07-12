@@ -350,7 +350,8 @@ function fastify (options) {
     listeningOrigin: {
       get () {
         const address = this.addresses().slice(-1).pop()
-        /* istanbul ignore if windows: unix socket is not testable on Windows platform */
+        /* ignore if windows: unix socket is not testable on Windows platform */
+        /* c8 ignore next 3 */
         if (typeof address === 'string') {
           return address
         }
@@ -455,6 +456,7 @@ function fastify (options) {
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
           instance.server.close(function (err) {
+            /* c8 ignore next 6 */
             if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
               done(null)
             } else {

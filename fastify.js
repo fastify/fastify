@@ -351,7 +351,8 @@ function fastify (options) {
     listeningOrigin: {
       get () {
         const address = this.addresses().slice(-1).pop()
-        /* istanbul ignore if windows: unix socket is not testable on Windows platform */
+        /* ignore if windows: unix socket is not testable on Windows platform */
+        /* c8 ignore next 3 */
         if (typeof address === 'string') {
           return address
         }

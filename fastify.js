@@ -113,7 +113,7 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader)
+  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit

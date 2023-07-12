@@ -505,9 +505,15 @@ about safe regexp: [Safe-regex2](https://www.npmjs.com/package/safe-regex2)
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
-Setting `requestIdHeader` to `false` will always use [genReqId](#genreqid)
+Setting `requestIdHeader` to `true` will set the `requestIdHeader` to
+`"request-id"`.
+Setting `requestIdHeader` to a String other than empty string will set the
+`requestIdHeader` to `false`.
+By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
+Setting `requestIdHeader` to an empty String (`""`) will set the 
+requestIdHeader to `false`.
 
-+ Default: `'request-id'`
++ Default: `false`
 
 ```js
 const fastify = require('fastify')({

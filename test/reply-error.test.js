@@ -18,6 +18,7 @@ function helper (code) {
   test('Reply error handling - code: ' + code, t => {
     t.plan(4)
     const fastify = Fastify()
+    t.teardown(fastify.close.bind(fastify))
     const err = new Error('winter is coming')
 
     fastify.get('/', (req, reply) => {
@@ -48,6 +49,7 @@ function helper (code) {
 test('preHandler hook error handling with external code', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   const err = new Error('winter is coming')
 
   fastify.addHook('preHandler', (req, reply, done) => {
@@ -77,6 +79,7 @@ test('preHandler hook error handling with external code', t => {
 test('onRequest hook error handling with external done', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   const err = new Error('winter is coming')
 
   fastify.addHook('onRequest', (req, reply, done) => {
@@ -182,6 +185,7 @@ test('Should set the response from client error handler', t => {
 test('Error instance sets HTTP status code', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   const err = new Error('winter is coming')
   err.statusCode = 418
 
@@ -209,6 +213,7 @@ test('Error instance sets HTTP status code', t => {
 test('Error status code below 400 defaults to 500', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   const err = new Error('winter is coming')
   err.statusCode = 399
 
@@ -236,6 +241,7 @@ test('Error status code below 400 defaults to 500', t => {
 test('Error.status property support', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   const err = new Error('winter is coming')
   err.status = 418
 
@@ -279,6 +285,7 @@ test('Support rejection with values that are not Error instances', t => {
     t.test('Type: ' + typeof nonErr, t => {
       t.plan(4)
       const fastify = Fastify()
+      t.teardown(fastify.close.bind(fastify))
 
       fastify.get('/', () => {
         return Promise.reject(nonErr)
@@ -309,6 +316,7 @@ test('invalid schema - ajv', t => {
   t.plan(4)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   fastify.get('/', {
     schema: {
       querystring: {
@@ -340,6 +348,7 @@ test('invalid schema - ajv', t => {
 test('should set the status code and the headers from the error object (from route handler) (no custom error handler)', t => {
   t.plan(4)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     const error = new Error('kaboom')
@@ -366,6 +375,7 @@ test('should set the status code and the headers from the error object (from rou
 test('should set the status code and the headers from the error object (from custom error handler)', t => {
   t.plan(6)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     const error = new Error('ouch')
@@ -401,6 +411,7 @@ test('should set the status code and the headers from the error object (from cus
 test('\'*\' should throw an error due to serializer can not handle the payload type', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     reply.type('text/html')
@@ -424,6 +435,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
 test('should throw an error if the custom serializer does not serialize the payload to a valid type', t => {
   t.plan(3)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     try {
@@ -450,6 +462,7 @@ test('should not set headers or status code for custom error handler', t => {
   t.plan(7)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
   fastify.get('/', function (req, reply) {
     const err = new Error('kaboom')
     err.headers = {
@@ -480,6 +493,7 @@ test('error thrown by custom error handler routes to default error handler', t =
   t.plan(6)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   const error = new Error('kaboom')
   error.headers = {
@@ -518,6 +532,7 @@ test('error thrown by custom error handler routes to default error handler', t =
 test('allow re-thrown error to default error handler when route handler is async and error handler is sync', t => {
   t.plan(4)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.setErrorHandler(function (error) {
     t.equal(error.message, 'kaboom')
@@ -560,6 +575,7 @@ invalidErrorCodes.forEach((invalidCode) => {
   test(`should throw error if error code is ${invalidCode}`, t => {
     t.plan(2)
     const fastify = Fastify()
+    t.teardown(fastify.close.bind(fastify))
     fastify.get('/', (request, reply) => {
       try {
         return reply.code(invalidCode).send('You should not read this')
@@ -581,6 +597,7 @@ test('error handler is triggered when a string is thrown from sync handler', t =
   t.plan(3)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   const throwable = 'test'
   const payload = 'error'
@@ -608,6 +625,7 @@ test('error handler is triggered when a string is thrown from sync handler', t =
 test('status code should be set to 500 and return an error json payload if route handler throws any non Error object expression', async t => {
   t.plan(2)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', () => {
     /* eslint-disable-next-line */
@@ -623,6 +641,7 @@ test('status code should be set to 500 and return an error json payload if route
 test('should preserve the status code set by the user if an expression is thrown in a sync route', async t => {
   t.plan(2)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (_, rep) => {
     rep.status(501)
@@ -641,6 +660,7 @@ test('should trigger error handlers if a sync route throws any non-error object'
   t.plan(2)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   const throwable = 'test'
   const payload = 'error'
@@ -663,6 +683,7 @@ test('should trigger error handlers if a sync route throws undefined', async t =
   t.plan(1)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function async (req, reply) {
     // eslint-disable-next-line no-throw-literal
@@ -676,6 +697,7 @@ test('should trigger error handlers if a sync route throws undefined', async t =
 test('setting content-type on reply object should not hang the server case 1', t => {
   t.plan(2)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     reply
@@ -696,6 +718,7 @@ test('setting content-type on reply object should not hang the server case 1', t
 test('setting content-type on reply object should not hang the server case 2', async t => {
   t.plan(1)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     reply
@@ -727,6 +750,7 @@ test('setting content-type on reply object should not hang the server case 2', a
 test('setting content-type on reply object should not hang the server case 3', t => {
   t.plan(2)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', (req, reply) => {
     reply
@@ -750,6 +774,7 @@ test('pipe stream inside error handler should not cause error', t => {
   const json = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json')).toString('utf8'))
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.setErrorHandler((_error, _request, reply) => {
     const stream = fs.createReadStream(location)

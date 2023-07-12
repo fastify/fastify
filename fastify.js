@@ -28,18 +28,19 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kFourOhFourContext
+  kChildLoggerFactory
 } = require('./lib/symbols.js')
 
 const { createServer, compileValidateHTTPVersion } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
+const Context = require('./lib/context.js')
 const { supportedMethods } = require('./lib/httpMethods')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createLogger } = require('./lib/logger')
+const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const { reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
@@ -74,14 +75,6 @@ const {
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
 
-const onBadUrlContext = {
-  config: {
-  },
-  onSend: [],
-  onError: [],
-  [kFourOhFourContext]: null
-}
-
 function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
 
@@ -95,6 +88,9 @@ function defaultBuildPrettyMeta (route) {
   return Object.assign({}, cleanKeys)
 }
 
+/**
+ * @param {import('./fastify.js').FastifyServerOptions} options
+ */
 function fastify (options) {
   // Options validations
   options = options || {}
@@ -235,6 +231,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
+    [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -340,6 +337,8 @@ function fastify (options) {
     // custom error handling
     setNotFoundHandler,
     setErrorHandler,
+    // child logger
+    setChildLoggerFactory,
     // Set fastify initial configuration options read-only object
     initialConfig,
     // constraint strategies
@@ -379,6 +378,10 @@ function fastify (options) {
     serializerCompiler: {
       configurable: true,
       get () { return this[kSchemaController].getSerializerCompiler() }
+    },
+    childLoggerFactory: {
+      configurable: true,
+      get () { return this[kChildLoggerFactory] }
     },
     version: {
       configurable: true,
@@ -465,6 +468,12 @@ function fastify (options) {
         }
       })
     })
+  })
+
+  // Create bad URL context
+  const onBadUrlContext = new Context({
+    server: fastify,
+    config: {}
   })
 
   // Set the default 404 handler
@@ -708,7 +717,7 @@ function fastify (options) {
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = genReqId(req)
-      const childLogger = logger.child({ reqId: id })
+      const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
@@ -733,7 +742,7 @@ function fastify (options) {
       if (err) {
         if (frameworkErrors) {
           const id = genReqId(req)
-          const childLogger = logger.child({ reqId: id })
+          const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
@@ -802,6 +811,13 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
+    return this
+  }
+
+  function setChildLoggerFactory (factory) {
+    throwIfAlreadyStarted('Cannot call "setChildLoggerFactory"!')
+
+    this[kChildLoggerFactory] = factory
     return this
   }
 

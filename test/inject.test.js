@@ -458,14 +458,13 @@ test('should handle errors in builder-style injection correctly', async (t) => {
 })
 
 test('Should not throw on access to routeConfig frameworkErrors handler - FST_ERR_BAD_URL', t => {
-  t.plan(6)
+  t.plan(5)
 
   const fastify = Fastify({
     frameworkErrors: function (err, req, res) {
       t.ok(typeof req.id === 'string')
       t.ok(req.raw instanceof Readable)
       t.same(req.routerPath, undefined)
-      t.same(req.routeConfig, undefined)
       res.send(`${err.message} - ${err.code}`)
     }
   })

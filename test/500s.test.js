@@ -170,3 +170,21 @@ test('cannot set errorHandler after binding', t => {
     }
   })
 })
+
+test('cannot set childLoggerFactory after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    try {
+      fastify.setChildLoggerFactory(() => { })
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})

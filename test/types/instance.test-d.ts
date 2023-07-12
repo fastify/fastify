@@ -131,6 +131,10 @@ server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFo
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 
+server.setNotFoundHandler(function (_, reply) {
+  return reply.send('')
+})
+
 function invalidErrorHandler (error: number) {
   if (error) throw error
 }

@@ -55,7 +55,7 @@ const app = Fastify({
 
 app.addHook('onRequest', async (request, reply) => {
   request.raw.on('close', () => {
-    if (request.raw.aborted) {
+    if (request.raw.destroyed) {
       app.log.info('request closed')
     }
   })
@@ -85,7 +85,7 @@ functionality:
 of `{ ok: true }`.
 - An onRequest hook that triggers when every request is received.
 - Logic that triggers in the hook when the request is closed.
-- Logging that occurs when the closed request property `aborted` is true.
+- Logging that occurs when the closed request property `destroyed` is true.
 
 In the request close event, you should examine the diff between a successful 
 request and one aborted by the client to determine the best property for your 
@@ -97,7 +97,7 @@ You can also perform this logic outside of a hook, directly in a specific route.
 ```js
 app.get('/', async (request, reply) => {
   request.raw.on('close', () => {
-    if (request.raw.aborted) {
+    if (request.raw.destroyed) {
       app.log.info('request closed')
     }
   })
@@ -112,7 +112,7 @@ aborted and perform alternative actions.
 ```js
 app.get('/', async (request, reply) => {
   await sleep(3000)
-  if (request.raw.aborted) {
+  if (request.raw.destroyed) {
     // do something here
   }
   await sleep(3000)

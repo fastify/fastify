@@ -80,6 +80,7 @@ describes the properties available in that options object.
     - [schemaController](#schemacontroller)
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
+    - [setChildLoggerFactory](#setchildloggerfactory)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -91,6 +92,7 @@ describes the properties available in that options object.
     - [getDefaultJsonParser](#getdefaultjsonparser)
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
+    - [childLoggerFactory](#childloggerfactory)
     - [initialConfig](#initialconfig)
 
 ### `http`
@@ -1537,6 +1539,35 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+#### setChildLoggerFactory
+<a id="set-child-logger-factory"></a>
+
+`fastify.setChildLoggerFactory(factory(logger, bindings, opts, rawReq))`: Set a
+function that will be called when creating a child logger instance for each request
+which allows for modifying or adding child logger bindings and logger options, or
+returning a completely custom child logger implementation.
+
+Child logger bindings have a performance advantage over per-log bindings, because
+they are pre-serialised by Pino when the child logger is created.
+
+The first parameter is the parent logger instance, followed by the default bindings
+and logger options which should be passed to the child logger, and finally
+the raw request (not a Fastify request object). The function is bound with `this`
+being the Fastify instance.
+
+For example:
+```js
+const fastify = require('fastify')({
+  childLoggerFactory: function (logger, bindings, opts, rawReq) {
+    // Calculate additional bindings from the request if needed
+    bindings.traceContext = rawReq.headers['x-cloud-trace-context']
+    return logger.child(bindings, opts)
+  }
+})
+```
+
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set different logger factories.
 
 #### addConstraintStrategy
 <a id="addConstraintStrategy"></a>
@@ -1809,6 +1840,13 @@ fastify.get('/', {
   }
 }, handler)
 ```
+
+#### childLoggerFactory
+<a id="childLoggerFactory"></a>
+
+`fastify.childLoggerFactory` returns the custom logger factory function for the
+Fastify instance. See the [`childLoggerFactory` config option](#setchildloggerfactory)
+for more info.
 
 #### initialConfig
 <a id="initial-config"></a>

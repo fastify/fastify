@@ -2,7 +2,7 @@ import { FastifyError } from '@fastify/error'
 import { FastifyContext } from './context'
 import { onErrorHookHandler, onRequestAbortHookHandler, onRequestHookHandler, onResponseHookHandler, onSendHookHandler, onTimeoutHookHandler, preHandlerHookHandler, preParsingHookHandler, preSerializationHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyInstance } from './instance'
-import { FastifyBaseLogger, LogLevel } from './logger'
+import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
 import { FastifyReply, ReplyGenericInterface } from './reply'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifySchema, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorFormatter } from './schema'
@@ -46,6 +46,7 @@ export interface RouteShorthandOptions<
   constraints?: { [name: string]: any },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+  childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   schemaErrorFormatter?: SchemaErrorFormatter;
 
   // hooks

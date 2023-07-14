@@ -730,7 +730,8 @@ const fastify = require('fastify')({
 
 Set a default
 [timeout](https://nodejs.org/api/http2.html#http2sessionsettimeoutmsecs-callback)
-to every incoming HTTP/2 session in milliseconds. The session will be closed on the timeout.
+to every incoming HTTP/2 session in milliseconds. The session will be closed on
+the timeout.
 
 This option is needed to offer a graceful "close" experience when using
 HTTP/2. The low default has been chosen to mitigate denial of service attacks.

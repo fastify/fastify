@@ -3,7 +3,7 @@ const Fastify = require('../fastify')
 const fastify = Fastify()
 
 fastify.listen({
-  host: '::',
+  host: 'localhost',
   port: 3000
 })
 

@@ -194,6 +194,7 @@ function fastify (options) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
+  // hookRunnerApplication('Onlisten')
 
   const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
   const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
@@ -557,6 +558,7 @@ function fastify (options) {
     let resolveReady
     let rejectReady
 
+    console.log(' fastify file 1') //  comment
     // run the hooks after returning the promise
     process.nextTick(runHooks)
 
@@ -573,7 +575,10 @@ function fastify (options) {
         if (err || fastify[kState].started) {
           manageErr(err)
         } else {
+          console.log(' fastify file 2') //  comment
           hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
+
+          console.log(' fastify file 3') //  comment
         }
         done()
       })
@@ -602,6 +607,10 @@ function fastify (options) {
     }
   }
 
+  // listen function
+  // function onListenHook(){
+  //   console.log('we startin')
+  // }
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
   function withTypeProvider () {
     return this

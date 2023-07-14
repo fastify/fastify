@@ -204,7 +204,8 @@ to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
 It must be set to a non-zero value (e.g. 120 seconds) to protect against potential
-Denial-of-Service attacks in case the server is deployed without a reverse proxy in front.
+Denial-of-Service attacks in case the server is deployed without a reverse proxy
+in front.
 
 > **Note**
 >  At the time of writing, only node >= v14.11.0 supports this option
@@ -728,7 +729,7 @@ const fastify = require('fastify')({
 + Default: `72000`
 
 Set a default
-[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback)
+[timeout](https://nodejs.org/api/http2.html#http2sessionsettimeoutmsecs-callback)
 to every incoming HTTP/2 session in milliseconds. The session will be closed on the timeout.
 
 This option is needed to offer a graceful "close" experience when using

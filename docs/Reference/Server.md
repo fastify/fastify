@@ -168,7 +168,7 @@ sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerr
 
 Fastify will prefer the HTTP server's
 [`closeAllConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseallconnections)
-method if supported, otherwise it will use internal connection tracking.
+method if supported, otherwise, it will use internal connection tracking.
 
 When set to `"idle"`, upon [`close`](#close) the server will iterate the current
 persistent connections which are not sending a request or waiting for a response
@@ -648,9 +648,9 @@ define it before the `GET` route.
 ### `constraints`
 <a id="constraints"></a>
 
-Fastify's built in route constraints are provided by `find-my-way`, which allow
-constraining routes by `version` or `host`. You are able to add new constraint
-strategies, or override the built in strategies, by providing a `constraints`
+Fastify's built-in route constraints are provided by `find-my-way`, which
+allows constraining routes by `version` or `host`. You can add new constraint
+strategies, or override the built-in strategies, by providing a `constraints`
 object with strategies for `find-my-way`. You can find more information on
 constraint strategies in the
 [find-my-way](https://github.com/delvedor/find-my-way) documentation.
@@ -731,7 +731,7 @@ Set a default
 [timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback)
 to every incoming HTTP/2 session in milliseconds. The session will be closed on the timeout.
 
-This option is needed to offer the graceful "close" experience when using
+This option is needed to offer a graceful "close" experience when using
 HTTP/2. The low default has been chosen to mitigate denial of service attacks.
 When the server is behind a load balancer or can scale automatically this value
 can be increased to fit the use case. Node core defaults this to `0`.
@@ -1062,8 +1062,9 @@ Note that the array contains the `fastify.server.address()` too.
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
 
-**Notice**: this method is deprecated and should be removed in the next Fastify
-major version.
+> **Warning**
+> This method is deprecated and will be removed in the next Fastify
+> major version.
 
 The `defaultRoute` handler handles requests that do not match any URL specified
 by your Fastify application. This defaults to the 404 handler, but can be
@@ -1077,9 +1078,10 @@ const defaultRoute = fastify.getDefaultRoute()
 #### setDefaultRoute
 <a id="setDefaultRoute"></a>
 
-**Notice**: this method is deprecated and should be removed in the next Fastify
-major version. Please, consider to use `setNotFoundHandler` or a wildcard
-matching route.
+> **Warning**
+> This method is deprecated and will be removed in the next Fastify
+> major version. Please, consider using `setNotFoundHandler` or a wildcard
+> matching route.
 
 The default 404 handler, or one set using `setNotFoundHandler`, will
 never trigger if the default route is overridden. This sets the handler for the
@@ -1122,9 +1124,9 @@ Method to add routes to the server, it also has shorthand functions, check
 <a id="hasRoute"></a>
 
 Method to check if a route is already registered to the internal router. It
-expects an object as payload. `url` and `method` are mandatory fields. It is
-possible to also specify `constraints`. The method returns true if the route is
-registered, and false if it is not registered.
+expects an object as the payload. `url` and `method` are mandatory fields. It 
+is possible to also specify `constraints`. The method returns `true` if the
+route is registered or `false` if not.
 
 ```js
 const routeExists = fastify.hasRoute({
@@ -1370,9 +1372,7 @@ This property can be used to fully manage:
 - `compilersFactory`: what module must compile the JSON schemas
 
 It can be useful when your schemas are stored in another data structure that is
-unknown to Fastify. See [issue
-#2446](https://github.com/fastify/fastify/issues/2446) for an example of what
-this property helps to resolve.
+unknown to Fastify.
 
 Another use case is to tweak all the schemas processing. Doing so it is possible
 to use Ajv v8 JTD or Standalone feature. To use such as JTD or the Standalone
@@ -1412,7 +1412,7 @@ const fastify = Fastify({
     },
 
     /**
-     * The compilers factory let you fully control the validator and serializer
+     * The compilers factory lets you fully control the validator and serializer
      * in the Fastify's lifecycle, providing the encapsulation to your compilers.
      */
     compilersFactory: {
@@ -1507,7 +1507,7 @@ plugins.
 
 > **Note**
 > Some config properties from the request object will be
-> undefined inside the custom not found handler. E.g:
+> undefined inside the custom not found handler. E.g.:
 > `request.routerPath`, `routerMethod` and `context.config`.
 > This method design goal is to allow calling the common not found route.
 > To return a per-route customized 404 response, you can do it in
@@ -1557,10 +1557,10 @@ if (statusCode >= 500) {
 `fastify.setChildLoggerFactory(factory(logger, bindings, opts, rawReq))`: Set a
 function that will be called when creating a child logger instance for each request
 which allows for modifying or adding child logger bindings and logger options, or
-returning a completely custom child logger implementation.
+returning a custom child logger implementation.
 
-Child logger bindings have a performance advantage over per-log bindings, because
-they are pre-serialised by Pino when the child logger is created.
+Child logger bindings have a performance advantage over per-log bindings because
+they are pre-serialized by Pino when the child logger is created.
 
 The first parameter is the parent logger instance, followed by the default bindings
 and logger options which should be passed to the child logger, and finally
@@ -1628,7 +1628,7 @@ a custom constraint strategy with the same name.
 `fastify.printRoutes()`: Fastify router builds a tree of routes for each HTTP
 method. If you call the prettyPrint without specifying an HTTP method, it will
 merge all the trees into one and print it. The merged tree doesn't represent the
-internal router structure. **Don't use it for debugging.**
+internal router structure. **Do not use it for debugging.**
 
 *Remember to call it inside or after a `ready` call.*
 
@@ -1670,8 +1670,8 @@ param. Printed tree will represent the internal router structure.
 ```
 
 `fastify.printRoutes({ commonPrefix: false })` will print compressed trees. This
-might useful when you have a large number of routes with common prefixes.
-It doesn't represent the internal router structure. **Don't use it for debugging.**
+may be useful when you have a large number of routes with common prefixes.
+It doesn't represent the internal router structure. **Do not use it for debugging.**
 
 ```js
   console.log(fastify.printRoutes({ commonPrefix: false }))
@@ -1764,7 +1764,7 @@ fastify.ready(() => {
 <a id="addContentTypeParser"></a>
 
 `fastify.addContentTypeParser(content-type, options, parser)` is used to pass
-custom parser for a given content type. Useful for adding parsers for custom
+a custom parser for a given content type. Useful for adding parsers for custom
 content types, e.g. `text/json, application/vnd.oasis.opendocument.text`.
 `content-type` can be a string, string array or RegExp.
 
@@ -1866,7 +1866,7 @@ for more info.
 `fastify.initialConfig`: Exposes a frozen read-only object registering the
 initial options passed down by the user to the Fastify instance.
 
-Currently the properties that can be exposed are:
+The properties that can currently be exposed are:
 - connectionTimeout
 - keepAliveTimeout
 - bodyLimit

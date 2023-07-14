@@ -166,7 +166,7 @@ method if supported, otherwise it will use internal connection tracking.
 
 When set to `"idle"`, upon [`close`](#close) the server will iterate the current
 persistent connections which are not sending a request or waiting for a response
-and destroy their sockets. The value is supported only if the HTTP server
+and destroy their sockets. The value is only supported if the HTTP server
 supports the
 [`closeIdleConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseidleconnections)
 method, otherwise attempting to set it will throw an exception.
@@ -176,15 +176,13 @@ method, otherwise attempting to set it will throw an exception.
 ### `maxRequestsPerSocket`
 <a id="factory-max-requests-per-socket"></a>
 
-Defines the maximum number of requests socket can handle before closing keep
-alive connection. See documentation for [`server.maxRequestsPerSocket`
+Defines the maximum number of requests a socket can handle before closing keep
+alive connection. See [`server.maxRequestsPerSocket`
 property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_maxrequestspersocket)
 to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
->  At the time of this writing, only node version greater or equal to 16.10.0
->  support this option. Check the Node.js documentation for availability in the
->  version you are running.
+>  At the time of writing, only node >= v16.10.0 supports this option.
 
 + Default: `0` (no limit)
 
@@ -192,15 +190,13 @@ ignored.
 <a id="factory-request-timeout"></a>
 
 Defines the maximum number of milliseconds for receiving the entire request from
-the client. [`server.requestTimeout`
+the client. See [`server.requestTimeout`
 property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_requesttimeout)
 to understand the effect of this option. Also, when `serverFactory` option is
 specified, this option is ignored. It must be set to a non-zero value (e.g. 120
 seconds) to protect against potential Denial-of-Service attacks in case the
 server is deployed without a reverse proxy in front.
->  At the time of this writing, only node version greater or equal to 14.11.0
->  support this option. Check the Node.js documentation for availability in the
->  version you are running.
+>  At the time writing, only node >= v14.11.0 supports this option
 
 + Default: `0` (no limit)
 
@@ -208,8 +204,8 @@ server is deployed without a reverse proxy in front.
 <a id="factory-ignore-slash"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. By default, Fastify is set to take into account the trailing slashes.
-Paths like `/foo` and `/foo/` will be treated as different paths. If you want to
+routing. By default, Fastify will take into account the trailing slashes.
+Paths like `/foo` and `/foo/` are treated as different paths. If you want to
 change this, set this flag to `true`. That way, both `/foo` and `/foo/` will
 point to the same route. This option applies to *all* route registrations for
 the resulting server instance.
@@ -266,7 +262,7 @@ multi) routes by using `maxParamLength` option; the default value is 100
 characters.
 
 This can be useful especially if you have a regex-based route, protecting you
-against [DoS
+against [ReDoS
 attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
 
 *If the maximum length limit is reached, the not found route will be invoked.*
@@ -287,7 +283,7 @@ Defines what action the framework must take when parsing a JSON object with
 [Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more details about
 prototype poisoning attacks.
 
-Possible values are `'error'`, `'remove'` and `'ignore'`.
+Possible values are `'error'`, `'remove'`, and `'ignore'`.
 
 + Default: `'error'`
 
@@ -300,7 +296,7 @@ Defines what action the framework must take when parsing a JSON object with
 [Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more details about
 prototype poisoning attacks.
 
-Possible values are `'error'`, `'remove'` and `'ignore'`.
+Possible values are `'error'`, `'remove'`, and `'ignore'`.
 
 + Default: `'error'`
 

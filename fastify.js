@@ -355,7 +355,8 @@ function fastify (options) {
         if (typeof address === 'string') {
           return address
         }
-        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
+        const host = address.address === '::1' ? '[::1]' : address.address
+        return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
       }
     },
     pluginName: {

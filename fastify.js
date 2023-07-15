@@ -355,7 +355,8 @@ function fastify (options) {
         if (typeof address === 'string') {
           return address
         }
-        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
+        const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
+        return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
       }
     },
     pluginName: {

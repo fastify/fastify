@@ -194,7 +194,6 @@ function fastify (options) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
-  // hookRunnerApplication('Onlisten')
 
   const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
   const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
@@ -344,7 +343,8 @@ function fastify (options) {
     initialConfig,
     // constraint strategies
     addConstraintStrategy: router.addConstraintStrategy.bind(router),
-    hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
+    hasConstraintStrategy: router.hasConstraintStrategy.bind(router),
+    onListenBoot: null
   }
 
   Object.defineProperties(fastify, {
@@ -422,6 +422,7 @@ function fastify (options) {
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
   fastify.ready = ready // overwrite the avvio ready function
+  fastify.onListenBoot = onListenBoot
   fastify.printPlugins = avvio.prettyPrint.bind(avvio)
 
   // cache the closing value, since we are checking it in an hot path
@@ -558,7 +559,7 @@ function fastify (options) {
     let resolveReady
     let rejectReady
 
-    console.log(' fastify file 1') //  comment
+    console.log('ready function') //  comment
     // run the hooks after returning the promise
     process.nextTick(runHooks)
 
@@ -575,15 +576,11 @@ function fastify (options) {
         if (err || fastify[kState].started) {
           manageErr(err)
         } else {
-          console.log(' fastify file 2') //  comment
           hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
-
-          console.log(' fastify file 3') //  comment
         }
         done()
       })
     }
-
     function manageErr (err) {
       // If the error comes out of Avvio's Error codes
       // We create a make and preserve the previous error
@@ -607,10 +604,13 @@ function fastify (options) {
     }
   }
 
-  // listen function
-  // function onListenHook(){
-  //   console.log('we startin')
-  // }
+  //  listen function
+  function onListenBoot () {
+    console.log('onListen boot')
+    hookRunnerApplication('onListen', fastify.onListen, fastify, function () {
+      console.log('error fcn for onListen hook...WIP')
+    })
+  }
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
   function withTypeProvider () {
     return this

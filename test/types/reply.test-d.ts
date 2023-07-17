@@ -1,14 +1,14 @@
 import { Buffer } from 'buffer'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import fastify, { FastifyContext, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
+import fastify, { FastifyContext, FastifyReply, FastifyRequest, FastifySchema, FastifySchemaCompiler, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
-import { ReplyTypeConstrainer } from '../../types/reply'
+import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
 import { RouteGenericInterface } from '../../types/route'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
-type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ReplyTypeConstrainer<RouteGenericInterface['Reply'], Code>>
+type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ResolveReplyTypeWithRouteGeneric<RouteGenericInterface['Reply'], Code, FastifySchema, FastifyTypeProviderDefault>>
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
@@ -72,6 +72,7 @@ interface ReplyHttpCodes {
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.code(100).send)
 }
 
 const server = fastify()

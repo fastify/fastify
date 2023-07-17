@@ -61,6 +61,9 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
       reply.send('error')
+    },
+    childLoggerFactory: function (logger, bindings, opts) {
+      return logger.child(bindings, opts)
     }
   }))
 

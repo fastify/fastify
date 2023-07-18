@@ -7,7 +7,7 @@ const sget = require('simple-get').concat
 const fs = require('fs')
 const resolve = require('path').resolve
 const zlib = require('zlib')
-const pump = require('pump')
+const pipeline = require('stream').pipeline
 const Fastify = require('..')
 const errors = require('http-errors')
 const JSONStream = require('JSONStream')
@@ -139,7 +139,7 @@ test('onSend hook stream', t => {
     const gzStream = zlib.createGzip()
 
     reply.header('Content-Encoding', 'gzip')
-    pump(
+    pipeline(
       fs.createReadStream(resolve(process.cwd() + '/test/stream.test.js'), 'utf8'),
       gzStream,
       t.error
@@ -637,7 +637,7 @@ test('should destroy stream when response is ended', t => {
 
   fastify.get('/error', function (req, reply) {
     const reallyLongStream = new stream.Readable({
-      read: function () {},
+      read: function () { },
       destroy: function (err, callback) {
         t.ok('called')
         callback(err)
@@ -763,7 +763,7 @@ test('request terminated should not crash fastify', t => {
 
   fastify.get('/', async (req, reply) => {
     const stream = new Readable()
-    stream._read = () => {}
+    stream._read = () => { }
     reply.header('content-type', 'text/html; charset=utf-8')
     reply.header('transfer-encoding', 'chunked')
     stream.push('<h1>HTML</h1>')

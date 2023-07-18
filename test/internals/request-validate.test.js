@@ -745,7 +745,7 @@ test('Nested Context', subtest => {
   subtest.test('Level_1', tst => {
     tst.plan(3)
     tst.test('#compileValidationSchema', ntst => {
-      ntst.plan(4)
+      ntst.plan(5)
 
       ntst.test('Should return a function - Route without schema', async t => {
         const fastify = Fastify()
@@ -896,6 +896,45 @@ test('Nested Context', subtest => {
           await fastify.inject('/')
         }
       )
+
+      ntst.test('Should compile the custom validation - nested with schema.headers', async t => {
+        const fastify = Fastify()
+        let called = false
+
+        const schemaWithHeaders = {
+          headers: {
+            'x-foo': {
+              type: 'string'
+            }
+          }
+        }
+
+        const custom = ({ schema, httpPart, url, method }) => {
+          if (called) return () => true
+          // only custom validators keep the same headers object
+          t.equal(schema, schemaWithHeaders.headers)
+          t.equal(url, '/')
+          t.equal(httpPart, 'headers')
+          called = true
+          return () => true
+        }
+
+        t.plan(4)
+
+        fastify.setValidatorCompiler(custom)
+
+        fastify.register((instance, opts, next) => {
+          instance.get('/', { schema: schemaWithHeaders }, (req, reply) => {
+            t.equal(called, true)
+
+            reply.send({ hello: 'world' })
+          })
+
+          next()
+        })
+
+        await fastify.inject('/')
+      })
     })
 
     tst.test('#getValidationFunction', ntst => {

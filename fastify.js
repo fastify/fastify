@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.19.2'
+const VERSION = '4.20.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -109,7 +109,7 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader)
+  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader).toLowerCase()
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -355,7 +355,8 @@ function fastify (options) {
         if (typeof address === 'string') {
           return address
         }
-        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
+        const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
+        return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
       }
     },
     pluginName: {

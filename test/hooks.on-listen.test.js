@@ -2,8 +2,8 @@
 
 const t = require('tap')
 const Fastify = require('../fastify')
+const fp = require('fastify-plugin')
 
-// Sync test works but async test is current a work in progress
 t.test('***onListen should be called in order***', t => {
   t.plan(2)
 
@@ -39,6 +39,38 @@ t.test('***async onListen should be called in order***', async t => {
   })
 
   await fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})
+t.test('Register onListen hook after a plugin inside a plugin', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      done()
+    })
+    done()
+  }))
+
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      done()
+    })
+
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      done()
+    })
+
+    done()
+  }))
+
+  fastify.listen({
     host: 'localhost',
     port: 0
   })

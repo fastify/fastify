@@ -509,8 +509,8 @@ The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
 Setting `requestIdHeader` to `true` will set the `requestIdHeader` to
 `"request-id"`.
-Setting `requestIdHeader` to a String other than empty string will set the
-`requestIdHeader` to `false`.
+Setting `requestIdHeader` to a non-empty string will use
+the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
 Setting `requestIdHeader` to an empty String (`""`) will set the 
 requestIdHeader to `false`.

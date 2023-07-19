@@ -1947,6 +1947,7 @@ fastify.listen({ port: 3000 }, (err) => {
   }
 })
 ```
+
 #### `clearRoutes`
 <a id="clear-routes"></a>
 

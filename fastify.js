@@ -343,7 +343,8 @@ function fastify (options) {
     initialConfig,
     // constraint strategies
     addConstraintStrategy: router.addConstraintStrategy.bind(router),
-    hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
+    hasConstraintStrategy: router.hasConstraintStrategy.bind(router),
+    clearRoutes: router.clearRoutes.bind(router)
   }
 
   Object.defineProperties(fastify, {

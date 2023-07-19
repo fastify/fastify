@@ -80,6 +80,10 @@ t.test('onListen should manage error in async', async t => {
     throw new Error('FAIL ON LISTEN')
   })
 
+  fastify.addHook('onListen', async function () {
+    t.pass('called in root')
+  })
+
   await fastify.listen({
     host: 'localhost',
     port: 0

@@ -2,8 +2,8 @@
 
 const t = require('tap')
 const Fastify = require('../fastify')
+const fp = require('fastify-plugin')
 
-// Sync test works but async test is current a work in progress
 t.test('***onListen should be called in order***', t => {
   t.plan(2)
 
@@ -96,31 +96,36 @@ t.test('onListen should manage error in async', async t => {
     port: 0
   })
 })
-// t.test('onListen should be called in order', t => {
-//   t.plan(7)
-//   const fastify = Fastify()
 
-//   let order = 0
+t.test('Register onListen hook after a plugin inside a plugin', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
-//   fastify.addHook('onListen', function (done) {
-//     t.equal(order++, 0, 'called in root')
-//     t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
-//     done()
-//   })
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      done()
+    })
+    done()
+  }))
 
-//   fastify.register(async (childOne, o) => {
-//     childOne.addHook('onListen', function (done) {
-//       t.equal(order++, 1, 'called in childOne')
-//       t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
-//       done()
-//     })
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      done()
+    })
 
-//     childOne.register(async (childTwo, o) => {
-//       childTwo.addHook('onListen', async function () {
-//         await immediate()
-//         t.equal(order++, 2, 'called in childTwo')
-//         t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
-//       })
-//     })
-//   })
-// })
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      done()
+    })
+
+    done()
+  }))
+
+  fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})

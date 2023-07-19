@@ -94,6 +94,7 @@ describes the properties available in that options object.
     - [errorHandler](#errorhandler)
     - [childLoggerFactory](#childloggerfactory)
     - [initialConfig](#initialconfig)
+    - [clearRoutes](#clearroutes)
 
 ### `http`
 <a id="factory-http"></a>
@@ -1945,4 +1946,15 @@ fastify.listen({ port: 3000 }, (err) => {
     process.exit(1)
   }
 })
+```
+#### `clearRoutes`
+<a id="clear-routes"></a>
+
+`fastify.clearRoutes`: Deletes all routes from the current instance. Useful
+for dynamically updating controllers where old bindings must be removed.
+
+```js
+fastify.printRoutes() // route tree
+fastify.clearRoutes()
+fastify.printRoutes() // (empty tree)
 ```

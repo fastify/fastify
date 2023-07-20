@@ -2,22 +2,6 @@ const Fastify = require('../fastify')
 
 const fastify = Fastify()
 
-fastify.addHook('onListen', function () {
-  console.log('****onListen Hook Activated****')
-})
-
-fastify.addHook('onListen', function () {
-  console.log('****onListen Hook 2 Activated****')
-})
-
-// fastify.addHook('onReady', function () {
-//   console.log('***onReady Hook 1 Acivated***')
-// })
-
-// fastify.addHook('onReady', function () {
-//   console.log('***onReady Hook 2 Activated***')
-// })
-
 fastify.listen({
   host: 'localhost',
   port: 3000

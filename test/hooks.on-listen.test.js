@@ -129,3 +129,33 @@ t.test('Register onListen hook after a plugin inside a plugin', t => {
     port: 0
   })
 })
+
+t.test('onListen encapsulation should be called in order', t => {
+  t.plan(6)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  let order = 0
+
+  fastify.addHook('onListen', function () {
+    t.equal(order++, 0, 'called in root')
+    t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+  })
+
+  fastify.register(async (childOne, o) => {
+    childOne.addHook('onListen', function () {
+      t.equal(order++, 1, 'called in childOne')
+      t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+    })
+    childOne.register(async (childTwo, o) => {
+      childTwo.addHook('onListen', async function () {
+        t.equal(order++, 2, 'called in childTwo')
+        t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+      })
+    })
+  })
+  fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})

@@ -788,7 +788,7 @@ There are a couple supported import methods with the Fastify type system.
 Many type definitions share the same generic parameters; they are all
 documented, in detail, within this section.
 
-Most definitions depend on `@node/types` modules `http`, `https`, and `http2`
+Most definitions depend on `@types/node` modules `http`, `https`, and `http2`
 
 ##### RawServer
 Underlying Node.js server type

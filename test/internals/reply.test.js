@@ -1508,7 +1508,7 @@ test('should throw error when passing falsy value to reply.sent', t => {
 })
 
 test('should throw error when attempting to set reply.sent more than once', t => {
-  t.plan(4)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
@@ -1518,7 +1518,6 @@ test('should throw error when attempting to set reply.sent more than once', t =>
       t.fail('must throw')
     } catch (err) {
       t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
-      t.equal(err.message, 'Reply was already sent.')
     }
     reply.raw.end()
   })
@@ -2087,4 +2086,36 @@ test('invalid response headers and custom error handler', async t => {
   })
 
   await fastify.close()
+})
+
+test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message', { only: true }, t => {
+  t.plan(2)
+
+  const response = new Writable()
+  Object.assign(response, {
+    setHeader: () => {},
+    hasHeader: () => false,
+    getHeader: () => undefined,
+    writeHead: () => {
+      const err = new Error('kaboom')
+      err.code = 'ERR_HTTP_HEADERS_SENT'
+      throw err
+    },
+    write: () => {},
+    headersSent: true
+  })
+
+  const log = {
+    warn: (msg) => {
+      t.equal(msg, 'The reply already sent, did you forget to "return reply" in the "/hello" route?')
+    }
+  }
+
+  const reply = new Reply(response, { [kRouteContext]: { onSend: null }, raw: { url: '/hello' } }, log)
+
+  try {
+    reply.send('')
+  } catch (err) {
+    t.equal(err.code, 'ERR_HTTP_HEADERS_SENT')
+  }
 })

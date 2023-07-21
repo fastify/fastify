@@ -124,7 +124,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
 })
 
 test('server logs an error if reply.send is called and a value is returned via async/await', t => {
-  const lines = ['incoming request', 'request completed', 'Reply already sent']
+  const lines = ['incoming request', 'request completed', 'Reply was already sent, did you forget to "return reply" in "/"?']
   t.plan(lines.length + 2)
 
   const splitStream = split(JSON.parse)

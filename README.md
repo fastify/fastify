@@ -15,6 +15,7 @@ CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg?br
 [![Web
 SIte](https://github.com/fastify/fastify/workflows/website/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
 
 </div>
 
@@ -48,7 +49,7 @@ The `main` branch refers to the Fastify `v4` release. Check out the
 
 
 
-### Table of Contents 
+### Table of Contents
 
  - [Quick start](#quick-start)
  - [Install](#install)

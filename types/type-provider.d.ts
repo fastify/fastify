@@ -1,5 +1,6 @@
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
+import { RecordKeysToLowercase } from './utils'
 
 // -----------------------------------------------------------------------------------------------
 // TypeProvider
@@ -51,7 +52,7 @@ export interface FastifyRequestType<Params = unknown, Querystring = unknown, Hea
 export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> extends FastifyRequestType {
   params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>,
   query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>,
-  headers: ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>,
+  headers: RecordKeysToLowercase<ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>>,
   body: ResolveRequestBody<TypeProvider, SchemaCompiler, RouteGeneric>
 }
 

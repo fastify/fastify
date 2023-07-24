@@ -2088,7 +2088,7 @@ test('invalid response headers and custom error handler', async t => {
   await fastify.close()
 })
 
-test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message', { only: true }, t => {
+test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message', t => {
   t.plan(2)
 
   const response = new Writable()
@@ -2107,11 +2107,11 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
 
   const log = {
     warn: (msg) => {
-      t.equal(msg, 'The reply already sent, did you forget to "return reply" in the "/hello" route?')
+      t.equal(msg, 'Reply was already sent, did you forget to "return reply" in the "/hello" (GET) route?')
     }
   }
 
-  const reply = new Reply(response, { [kRouteContext]: { onSend: null }, raw: { url: '/hello' } }, log)
+  const reply = new Reply(response, { [kRouteContext]: { onSend: null }, raw: { url: '/hello', method: 'GET' } }, log)
 
   try {
     reply.send('')

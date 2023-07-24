@@ -522,8 +522,8 @@ t.test('test log stream', (t) => {
     const lines = [
       'incoming request',
       'request completed',
-      'Reply was already sent, did you forget to "return reply" in "/"?',
-      'Reply was already sent, did you forget to "return reply" in "/"?'
+      'Reply was already sent, did you forget to "return reply" in "/" (GET)?',
+      'Reply was already sent, did you forget to "return reply" in "/" (GET)?'
     ]
     t.plan(lines.length + 1)
 

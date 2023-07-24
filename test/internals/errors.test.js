@@ -339,10 +339,10 @@ test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
 
 test('FST_ERR_REP_ALREADY_SENT', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_REP_ALREADY_SENT('/hello')
+  const error = new errors.FST_ERR_REP_ALREADY_SENT('/hello', 'GET')
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_REP_ALREADY_SENT')
-  t.equal(error.message, 'Reply was already sent, did you forget to "return reply" in "/hello"?')
+  t.equal(error.message, 'Reply was already sent, did you forget to "return reply" in "/hello" (GET)?')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })

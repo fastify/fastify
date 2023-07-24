@@ -12,12 +12,8 @@ fastify.addHook('onListen', function () {
 
 fastify.listen({
   host: '::',
-  port: 3000
+  port: 0
 })
-
-setTimeout(() => {
-  fastify.close()
-}, 3000)
 
 fastify.get('/', async function (request, reply) {
   reply.code(200).send({ data: 'home page' })

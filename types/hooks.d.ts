@@ -512,7 +512,8 @@ export interface onListenHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
   ): void;
 }
 

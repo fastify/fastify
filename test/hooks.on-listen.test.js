@@ -4,7 +4,7 @@ const t = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
 
-t.test('***onListen should be called in order***', t => {
+t.test('onListen should be called in order', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -12,19 +12,21 @@ t.test('***onListen should be called in order***', t => {
 
   let order = 0
 
-  fastify.addHook('onListen', function () {
+  fastify.addHook('onListen', function (done) {
     t.equal(order++, 0, '1st called in root')
+    done()
   })
 
-  fastify.addHook('onListen', function () {
+  fastify.addHook('onListen', function (done) {
     t.equal(order++, 1, '2nd called in root')
+    done()
   })
   fastify.listen({
     host: 'localhost',
     port: 0
   })
 })
-t.test('***async onListen should be called in order***', async t => {
+t.test('async onListen should be called in order', async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -50,13 +52,14 @@ t.test('onListen should manage error in sync', t => {
   t.teardown(fastify.close.bind(fastify))
   let order = 0
 
-  fastify.addHook('onListen', function () {
+  fastify.addHook('onListen', function (done) {
     t.pass('called in root')
+    done()
   })
 
-  fastify.addHook('onListen', function () {
+  fastify.addHook('onListen', function (done) {
     t.equal(order++, 0, '1st sync called in root')
-    throw new Error('FAIL ON LISTEN')
+    done(new Error('FAIL ON LISTEN'))
   })
 
   fastify.listen({
@@ -130,15 +133,17 @@ t.test('onListen encapsulation should be called in order', t => {
 
   let order = 0
 
-  fastify.addHook('onListen', function () {
+  fastify.addHook('onListen', function (done) {
     t.equal(order++, 0, 'called in root')
     t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function () {
+    childOne.addHook('onListen', function (done) {
       t.equal(order++, 1, 'called in childOne')
       t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      done()
     })
     childOne.register(async (childTwo, o) => {
       childTwo.addHook('onListen', async function () {

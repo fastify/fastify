@@ -423,8 +423,9 @@ This is another way of doing `fastify.server.on('listening', () => {})`.
 
 ```js
 // callback style
-fastify.addHook('onListen', function () {
+fastify.addHook('onListen', function (done) {
   // Some code
+  done()
 })
 
 // or async/await style

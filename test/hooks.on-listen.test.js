@@ -62,14 +62,7 @@ t.test('onListen should manage error in sync', t => {
   fastify.listen({
     host: 'localhost',
     port: 0
-  }
-  // we would like to implement this similar to how onReady handles error and checks if the err message matches
-  // ,
-  // (err) => {
-  //   t.ok(err)
-  //   t.equal(err.message, 'FAIL ON LISTEN')
-  // }
-  )
+  })
 })
 
 t.test('onListen should manage error in async', async t => {

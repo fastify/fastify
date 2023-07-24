@@ -3,13 +3,9 @@ const Fastify = require('../fastify')
 const fastify = Fastify()
 
 fastify.listen({
-  host: 'localhost',
+  host: '::',
   port: 3000
 })
-
-setTimeout(() => {
-  fastify.close()
-}, 1000)
 
 fastify.get('/', async function (request, reply) {
   reply.code(200).send({ data: 'home page' })

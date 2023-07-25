@@ -2,17 +2,9 @@ const Fastify = require('../fastify')
 
 const fastify = Fastify()
 
-fastify.addHook('onReady', function () {
-  console.log('im ready')
-})
-
-fastify.addHook('onListen', function () {
-  console.log('im listening')
-})
-
 fastify.listen({
   host: '::',
-  port: 0
+  port: 3000
 })
 
 fastify.get('/', async function (request, reply) {

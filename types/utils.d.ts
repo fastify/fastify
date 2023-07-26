@@ -69,3 +69,12 @@ export type ReplyKeysToCodes<Key> = [Key] extends [never] ? number :
 export type CodeToReplyKey<Code extends number> = `${Code}` extends `${infer FirstDigit extends CodeClasses}${number}`
   ? `${FirstDigit}xx`
   : never;
+
+export type RecordKeysToLowercase<Input> = Input extends Record<string, unknown>
+  ? {
+    [Key in keyof Input as Key extends string
+      ? Lowercase<Key>
+      : Key
+    ]: Input[Key];
+  }
+  : Input;

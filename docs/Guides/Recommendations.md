@@ -10,6 +10,7 @@ This document contains a set of recommendations when using Fastify.
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
 - [Running Multiple Instances](#multiple)
+- [Causes Of Performance Degradation](#performance)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
@@ -349,3 +350,29 @@ It is perfectly fine to spin up several Fastify instances within the same
 Node.js process and run them concurrently, even in high load systems. 
 Each Fastify instance only generates as much load as the traffic it receives,
 plus the memory used for that Fastify instance.
+
+## Causes Of Performance Degradation
+<a id="performance"></a>
+
+### Routes
+
+Regular expression routes are supported, however RegExp is very expensive in
+terms of performance.
+```js
+// parametric with regexp
+fastify.get('/example/:file(^\\d+).png', function (request, reply) {
+  // curl ${app-url}/example/12345.png
+  // file === '12345'
+  const { file } = request.params;
+  // your code here
+})
+```
+
+Having a route with multiple parameters may negatively affect performance, so
+prefer a single parameter approach whenever possible.
+
+Using a [version constraint](../Reference/Routes.md#version-constraints) will
+cause a degradation of the overall performances of the router.
+
+The use of [asynchronous custom constraints](../Reference/Routes.md#asynchronous-custom-constraints)
+should be a last resort as it impacts router performance.

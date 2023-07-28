@@ -28,7 +28,7 @@ export interface FastifySchemaValidationError {
   keyword: string;
   instancePath: string;
   schemaPath: string;
-  params: Record<string, string | string[]>;
+  params: Record<string, unknown>;
   message?: string;
 }
 

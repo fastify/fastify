@@ -358,6 +358,8 @@ section.
   Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin
   that protects endpoints by checking authenticated user roles and/or scopes.
+- [`fastify-hashids`](https://github.com/andersonjoseph/fastify-hashids) A Fastify
+  plugin to encode/decode IDs using [hashids](https://github.com/niieani/hashids.js).
 - [`fastify-hasura`](https://github.com/ManUtopiK/fastify-hasura) A Fastify
   plugin to have fun with [Hasura](https://github.com/hasura/graphql-engine).
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck)

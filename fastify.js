@@ -241,7 +241,7 @@ function fastify (options) {
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
     [kFourOhFour]: fourOhFour,
-    [pluginUtils.registeredPlugins]: [],
+    [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
     // routing method
@@ -337,7 +337,7 @@ function fastify (options) {
     close: null,
     printPlugins: null,
     hasPlugin: function (name) {
-      return this[kPluginNameChain].includes(name)
+      return this[pluginUtils.kRegisteredPlugins].includes(name) || this[kPluginNameChain].includes(name)
     },
     // http server
     listen,

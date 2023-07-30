@@ -59,7 +59,7 @@ jobs:
 
       - name: Check licenses
         run: |
-          npm run license-checker
+          npx license-checker --production --summary --onlyAllow="0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;"
 
   lint:
     name: Lint

@@ -122,7 +122,7 @@ test('checkDependencies should check if the given dependency is present in the i
   }
 
   function context () {}
-  context[pluginUtilsPublic.registeredPlugins] = ['plugin']
+  context[pluginUtilsPublic.kRegisteredPlugins] = ['plugin']
 
   try {
     pluginUtils.checkDependencies.call(context, fn)
@@ -143,7 +143,7 @@ test('checkDependencies should check if the given dependency is present in the i
   }
 
   function context () {}
-  context[pluginUtilsPublic.registeredPlugins] = []
+  context[pluginUtilsPublic.kRegisteredPlugins] = []
 
   try {
     pluginUtils.checkDependencies.call(context, fn)

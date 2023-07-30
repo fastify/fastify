@@ -519,7 +519,12 @@ t.test('test log stream', (t) => {
   })
 
   t.test('reply.send logs an error if called twice in a row', async (t) => {
-    const lines = ['incoming request', 'request completed', 'Reply already sent', 'Reply already sent']
+    const lines = [
+      'incoming request',
+      'request completed',
+      'Reply was already sent, did you forget to "return reply" in "/" (GET)?',
+      'Reply was already sent, did you forget to "return reply" in "/" (GET)?'
+    ]
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)

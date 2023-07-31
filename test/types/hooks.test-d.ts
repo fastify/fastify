@@ -14,7 +14,7 @@ import fastify, {
   RegisterOptions,
   RouteOptions
 } from '../../fastify'
-import { RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
+import { HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 
 const server = fastify()
@@ -141,6 +141,12 @@ server.addHook('onReady', function (done) {
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
+
+server.addHook('onReady', async function () {
+  expectType<FastifyInstance>(this)
+})
+
+expectError(server.addHook('onReady', async function (done) {}))
 
 server.addHook('onClose', (instance, done) => {
   expectType<FastifyInstance>(instance)
@@ -392,3 +398,20 @@ server.addHook('preClose', function (done) {
 server.addHook('preClose', async function () {
   expectType<FastifyInstance>(this)
 })
+
+server.addHook('onRequest', function (request, reply, done) {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<FastifyInstance>(this)
+  expectType<HookHandlerDoneFunction>(done)
+})
+
+server.addHook('onRequest', async function (request, reply) {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<FastifyInstance>(this)
+})
+
+expectError(server.addHook('onRequest', async function (request, reply, done) {
+  expectType<FastifyInstance>(this)
+}))

@@ -196,7 +196,7 @@ app.addHook('preHandler', function (req, reply, done) {
 })
 ```
 
-**Note**: Care should be take to ensure serializers never throw, as an error
+**Note**: Care should be taken to ensure serializers never throw, as an error
 thrown from a serializer has the potential to cause the Node process to exit.
 See the [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers)
 on serializers for more information.

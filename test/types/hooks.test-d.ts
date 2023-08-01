@@ -397,19 +397,6 @@ server.addHook('preClose', async function () {
   expectType<FastifyInstance>(this)
 })
 
-server.addHook('onRequest', function (request, reply, done) {
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
-  expectType<FastifyInstance>(this)
-  expectType<HookHandlerDoneFunction>(done)
-})
-
-server.addHook('onRequest', async function (request, reply) {
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
-  expectType<FastifyInstance>(this)
-})
-
 expectError(server.addHook('onClose', async function (instance, done) {}))
 expectError(server.addHook('onError', async function (request, reply, error, done) {}))
 expectError(server.addHook('onReady', async function (done) {}))

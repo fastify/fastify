@@ -22,7 +22,7 @@ t.test('onListen should be called in order', t => {
     done()
   })
   fastify.listen({
-    host: 'localhost',
+    host: '::1',
     port: 0
   })
 })
@@ -41,7 +41,7 @@ t.test('async onListen should be called in order', async t => {
   })
 
   await fastify.listen({
-    host: 'localhost',
+    host: '::1',
     port: 0
   })
 })
@@ -63,7 +63,7 @@ t.test('onListen should manage error in sync', t => {
   })
 
   fastify.listen({
-    host: 'localhost',
+    host: '::1',
     port: 0
   })
 })
@@ -88,7 +88,7 @@ t.test('onListen should manage error in async', async t => {
   })
 
   await fastify.listen({
-    host: 'localhost',
+    host: '::1',
     port: 0
   })
 })
@@ -121,7 +121,7 @@ t.test('Register onListen hook after a plugin inside a plugin', t => {
   }))
 
   fastify.listen({
-    host: 'localhost',
+    host: '::1',
     port: 0
   })
 })
@@ -153,7 +153,7 @@ t.test('onListen encapsulation should be called in order', t => {
     })
   })
   fastify.listen({
-    host: 'localhost',
-    port: 3000
+    host: '::1',
+    port: 0
   })
 })

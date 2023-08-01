@@ -3,8 +3,7 @@
 const t = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
-//  TO-DO: Change names of '::1' tests, should we have all duplicates or just a couple?
-t.test('onListen should be called in order', t => {
+t.test('localhost onListen should be called in order', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -26,7 +25,7 @@ t.test('onListen should be called in order', t => {
     port: 0
   })
 })
-t.test('async onListen should be called in order', async t => {
+t.test('localhost async onListen should be called in order', async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -46,7 +45,7 @@ t.test('async onListen should be called in order', async t => {
   })
 })
 
-t.test('onListen should manage error in sync', t => {
+t.test('localhost onListen should manage error in sync', t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -68,7 +67,7 @@ t.test('onListen should manage error in sync', t => {
   })
 })
 
-t.test('onListen should manage error in async', async t => {
+t.test('localhost onListen should manage error in async', async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -93,7 +92,7 @@ t.test('onListen should manage error in async', async t => {
   })
 })
 
-t.test('Register onListen hook after a plugin inside a plugin', t => {
+t.test('localhost Register onListen hook after a plugin inside a plugin', t => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -126,7 +125,7 @@ t.test('Register onListen hook after a plugin inside a plugin', t => {
   })
 })
 
-t.test('onListen encapsulation should be called in order', t => {
+t.test('localhost onListen encapsulation should be called in order', t => {
   t.plan(6)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -157,7 +156,7 @@ t.test('onListen encapsulation should be called in order', t => {
     port: 0
   })
 })
-t.test('onListen should be called in order', t => {
+t.test('nonlocalhost onListen should be called in order', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -179,7 +178,7 @@ t.test('onListen should be called in order', t => {
     port: 0
   })
 })
-t.test('async onListen should be called in order', async t => {
+t.test('nonlocalhost async onListen should be called in order', async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -199,7 +198,7 @@ t.test('async onListen should be called in order', async t => {
   })
 })
 
-t.test('onListen should manage error in sync', t => {
+t.test('nonlocalhost onListen should manage error in sync', t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -221,7 +220,7 @@ t.test('onListen should manage error in sync', t => {
   })
 })
 
-t.test('onListen should manage error in async', async t => {
+t.test('nonlocalhost onListen should manage error in async', async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -246,7 +245,7 @@ t.test('onListen should manage error in async', async t => {
   })
 })
 
-t.test('Register onListen hook after a plugin inside a plugin', t => {
+t.test('nonlocalhost Register onListen hook after a plugin inside a plugin', t => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -279,7 +278,7 @@ t.test('Register onListen hook after a plugin inside a plugin', t => {
   })
 })
 
-t.test('onListen encapsulation should be called in order', t => {
+t.test('nonlocalhost onListen encapsulation should be called in order', t => {
   t.plan(6)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))

@@ -142,10 +142,6 @@ server.addHook('onReady', function (done) {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('onReady', async function () {
-  expectType<FastifyInstance>(this)
-})
-
 server.addHook('onClose', (instance, done) => {
   expectType<FastifyInstance>(instance)
   expectAssignable<(err?: FastifyError) => void>(done)

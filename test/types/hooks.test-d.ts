@@ -412,6 +412,4 @@ server.addHook('onRequest', async function (request, reply) {
   expectType<FastifyInstance>(this)
 })
 
-expectError(server.addHook('onRequest', async function (request, reply, done) {
-  expectType<FastifyInstance>(this)
-}))
+expectError(server.addHook('onRequest', async function (request, reply, done) {}))

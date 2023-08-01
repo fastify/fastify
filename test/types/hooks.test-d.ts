@@ -14,7 +14,7 @@ import fastify, {
   RegisterOptions,
   RouteOptions
 } from '../../fastify'
-import { HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
+import { RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 
 const server = fastify()

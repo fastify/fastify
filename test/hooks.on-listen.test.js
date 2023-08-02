@@ -329,6 +329,25 @@ t.test('onListen localhost should work in order with callback', t => {
     t.error(err)
   })
 })
+t.test('onListen localhost should work in order with callback in async', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  let order = 0
+
+  fastify.addHook('onListen', async function () {
+    t.equal(order++, 0, '1st called in root')
+  })
+
+  fastify.addHook('onListen', async function () {
+    t.equal(order++, 1, '2nd called in root')
+  })
+
+  fastify.listen({ host: 'localhost', port: 0 }, (err) => {
+    t.equal(fastify.server.address().address, localhost)
+    t.error(err)
+  })
+})
 t.test('onListen localhost with callback should manage error in sync', t => {
   t.plan(5)
   const fastify = Fastify()
@@ -343,6 +362,30 @@ t.test('onListen localhost with callback should manage error in sync', t => {
   fastify.addHook('onListen', function (done) {
     t.equal(order++, 0, 'error sync called in root')
     done(new Error('FAIL ON LISTEN'))
+  })
+
+  fastify.listen({ port: 0 }, (err) => {
+    if (err) {
+      t.ok(err, 'FAIL ON LISTEN')
+    } else {
+      t.equal(fastify.server.address().address, localhost)
+      t.error(err)
+    }
+  })
+})
+t.test('onListen localhost with callback should manage error in async', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  let order = 0
+
+  fastify.addHook('onListen', async function () {
+    t.pass('1st called in root')
+  })
+
+  fastify.addHook('onListen', async function () {
+    t.equal(order++, 0, 'error sync called in root')
+    throw new Error('FAIL ON LISTEN')
   })
 
   fastify.listen({ port: 0 }, (err) => {
@@ -417,7 +460,7 @@ t.test('onListen localhost with callback encapsulation should be called in order
     t.error(err)
   })
 })
-t.test('onListen nonlocalhost should work in order with callback', t => {
+t.test('onListen nonlocalhost should work in order with callback in sync', t => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -431,6 +474,25 @@ t.test('onListen nonlocalhost should work in order with callback', t => {
   fastify.addHook('onListen', function (done) {
     t.equal(order++, 1, '2nd called in root')
     done()
+  })
+
+  fastify.listen({ host: '::1', port: 0 }, (err) => {
+    t.equal(fastify.server.address().address, '::1')
+    t.error(err)
+  })
+})
+t.test('onListen nonlocalhost should work in order with callback in async', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  let order = 0
+
+  fastify.addHook('onListen', async function () {
+    t.equal(order++, 0, '1st called in root')
+  })
+
+  fastify.addHook('onListen', async function () {
+    t.equal(order++, 1, '2nd called in root')
   })
 
   fastify.listen({ host: '::1', port: 0 }, (err) => {
@@ -452,6 +514,30 @@ t.test('onListen nonlocalhost with callback should manage error in sync', t => {
   fastify.addHook('onListen', function (done) {
     t.equal(order++, 0, 'error sync called in root')
     done(new Error('FAIL ON LISTEN'))
+  })
+
+  fastify.listen({ host: '::1', port: 0 }, (err) => {
+    if (err) {
+      t.ok(err, 'FAIL ON LISTEN')
+    } else {
+      t.equal(fastify.server.address().address, '::1')
+      t.error(err)
+    }
+  })
+})
+t.test('onListen nonlocalhost with callback should manage error in async', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  let order = 0
+
+  fastify.addHook('onListen', async function () {
+    t.pass('1st called in root')
+  })
+
+  fastify.addHook('onListen', async function () {
+    t.equal(order++, 0, 'error sync called in root')
+    throw new Error('FAIL ON LISTEN')
   })
 
   fastify.listen({ host: '::1', port: 0 }, (err) => {

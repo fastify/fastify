@@ -44,6 +44,9 @@ section.
   Fastify.
 - [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel)
   Plugin to deal with `diagnostics_channel` on Fastify
+- [`@fastify/early-hints`](https://github.com/fastify/fastify-early-hints) Plugin
+  to add HTTP 103 feature based on [RFC
+  8297](https://httpwg.org/specs/rfc8297.html).
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check
@@ -304,9 +307,6 @@ section.
   object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin
   register for Fastify.
-- [`fastify-early-hints`](https://github.com/zekth/fastify-early-hints) Plugin
-  to add HTTP 103 feature based on [RFC
-  8297](https://httpwg.org/specs/rfc8297.html)
 - [`fastify-envalid`](https://github.com/alemagio/fastify-envalid) Fastify
   plugin to integrate [envalid](https://github.com/af/envalid) in your Fastify
   project.

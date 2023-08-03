@@ -194,6 +194,7 @@ function fastify (options) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
+
   const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
   const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
 

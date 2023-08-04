@@ -9,5 +9,5 @@ jobs:
     steps:
     - uses: fastify/action-pr-title@v0
       with:
-        regex: '/^(build|chore|ci|docs|feature|types|fix|perf|refactor|style|test){1}([ ]{0,1}[^\):]*\)){0,1}:/'
+        regex: '/^(build|chore|ci|docs|feature|types|fix|perf|refactor|style|test){1}([ ]{0,1}\([^\):]*\)){0,1}:/'
         github-token: ${{ github.token }}

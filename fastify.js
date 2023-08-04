@@ -114,6 +114,7 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const createRequestLogMessage = options.createRequestLogMessage
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -721,9 +722,12 @@ function fastify (options) {
       const reply = new Reply(res, request, childLogger)
 
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
+        if (createRequestLogMessage) {
+          childLogger.info(createRequestLogMessage(req))
+        } else {
+          childLogger.info({ req: request }, 'incoming request')
+        }
       }
-
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
     const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`

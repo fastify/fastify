@@ -22,66 +22,6 @@ interface RequestPayload extends Readable {
 
 // Lifecycle Hooks
 
-export type LifecycleHook = 'onRequest'
-  | 'preParsing'
-  | 'preValidation'
-  | 'preHandler'
-  | 'preSerialization'
-  | 'onSend'
-  | 'onResponse'
-  | 'onRequest'
-  | 'onError'
-  | 'onTimeout'
-  | 'onRequestAbort'
-
-  export type LifecycleHookLookup<K extends LifecycleHook> = K extends 'onRequest'
-  ? onRequestHookHandler
-  : K extends 'preParsing'
-  ? preParsingHookHandler
-  : K extends 'preValidation'
-  ? preValidationHookHandler
-  : K extends 'preHandler'
-  ? preHandlerHookHandler
-  : K extends 'preSerialization'
-  ? preSerializationHookHandler
-  : K extends 'onSend'
-  ? onSendHookHandler
-  : K extends 'onResponse'
-  ? onResponseHookHandler
-  : K extends 'onRequest'
-  ? onRequestHookHandler
-  : K extends 'onError'
-  ? onErrorHookHandler
-  : K extends 'onTimeout'
-  ? onTimeoutHookHandler
-  : K extends 'onRequestAbort'
-  ? onRequestAbortHookHandler
-  : never
-
-  export type LifecycleHookAsyncLookup<K extends LifecycleHook> = K extends 'onRequest'
-    ? onRequestAsyncHookHandler
-    : K extends 'preParsing'
-    ? preParsingAsyncHookHandler
-    : K extends 'preValidation'
-    ? preValidationAsyncHookHandler
-    : K extends 'preHandler'
-    ? preHandlerAsyncHookHandler
-    : K extends 'preSerialization'
-    ? preSerializationAsyncHookHandler
-    : K extends 'onSend'
-    ? onSendAsyncHookHandler
-    : K extends 'onResponse'
-    ? onResponseAsyncHookHandler
-    : K extends 'onRequest'
-    ? onRequestAsyncHookHandler
-    : K extends 'onError'
-    ? onErrorAsyncHookHandler
-    : K extends 'onTimeout'
-    ? onTimeoutAsyncHookHandler
-    : K extends 'onRequestAbort'
-    ? onRequestAbortAsyncHookHandler
-    : never
-
 /**
  * `onRequest` is the first hook to be executed in the request lifecycle. There was no previous hook, the next hook will be `preParsing`.
  *  Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
@@ -492,46 +432,67 @@ export interface onRequestAbortAsyncHookHandler<
   ): Promise<unknown>;
 }
 
+export type LifecycleHook = 'onRequest'
+| 'preParsing'
+| 'preValidation'
+| 'preHandler'
+| 'preSerialization'
+| 'onSend'
+| 'onResponse'
+| 'onRequest'
+| 'onError'
+| 'onTimeout'
+| 'onRequestAbort'
+
+export type LifecycleHookLookup<K extends LifecycleHook> = K extends 'onRequest'
+  ? onRequestHookHandler
+  : K extends 'preParsing'
+    ? preParsingHookHandler
+    : K extends 'preValidation'
+      ? preValidationHookHandler
+      : K extends 'preHandler'
+        ? preHandlerHookHandler
+        : K extends 'preSerialization'
+          ? preSerializationHookHandler
+          : K extends 'onSend'
+            ? onSendHookHandler
+            : K extends 'onResponse'
+              ? onResponseHookHandler
+              : K extends 'onRequest'
+                ? onRequestHookHandler
+                : K extends 'onError'
+                  ? onErrorHookHandler
+                  : K extends 'onTimeout'
+                    ? onTimeoutHookHandler
+                    : K extends 'onRequestAbort'
+                      ? onRequestAbortHookHandler
+                      : never
+
+export type LifecycleHookAsyncLookup<K extends LifecycleHook> = K extends 'onRequest'
+  ? onRequestAsyncHookHandler
+  : K extends 'preParsing'
+    ? preParsingAsyncHookHandler
+    : K extends 'preValidation'
+      ? preValidationAsyncHookHandler
+      : K extends 'preHandler'
+        ? preHandlerAsyncHookHandler
+        : K extends 'preSerialization'
+          ? preSerializationAsyncHookHandler
+          : K extends 'onSend'
+            ? onSendAsyncHookHandler
+            : K extends 'onResponse'
+              ? onResponseAsyncHookHandler
+              : K extends 'onRequest'
+                ? onRequestAsyncHookHandler
+                : K extends 'onError'
+                  ? onErrorAsyncHookHandler
+                  : K extends 'onTimeout'
+                    ? onTimeoutAsyncHookHandler
+                    : K extends 'onRequestAbort'
+                      ? onRequestAbortAsyncHookHandler
+                      : never
+
 // Application Hooks
-
-export type ApplicationHook = 'onRoute'
-  | 'onRegister'
-  | 'onReady'
-  | 'onClose'
-  | 'preClose'
-
-export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegister'
-  ? onRegisterHookHandler
-  : K extends 'onReady'
-  ? onReadyHookHandler
-  : K extends 'onClose'
-  ? onCloseHookHandler
-  : K extends 'preClose'
-  ? preCloseHookHandler
-  : never
-
-export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'onRegister'
-  ? onRegisterHookHandler
-  : K extends 'onReady'
-  ? onReadyAsyncHookHandler
-  : K extends 'onClose'
-  ? onCloseAsyncHookHandler
-  : K extends 'preClose'
-  ? preCloseAsyncHookHandler
-  : never
-
-  export type HookLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
-  ? ApplicationHookLookup<K>
-  : K extends LifecycleHook
-  ? LifecycleHookLookup<K>
-  : never
-
-  export type HookAsyncLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
-    ? ApplicationHookAsyncLookup<K>
-    : K extends LifecycleHook
-    ? LifecycleHookAsyncLookup<K>
-    : never
-
 
 /**
  * Triggered when a new route is registered. Listeners are passed a routeOptions object as the sole parameter. The interface is synchronous, and, as such, the listener does not get passed a callback
@@ -654,3 +615,41 @@ export interface preCloseAsyncHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   ): Promise<unknown>;
 }
+
+export type ApplicationHook = 'onRoute'
+| 'onRegister'
+| 'onReady'
+| 'onClose'
+| 'preClose'
+
+export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegister'
+  ? onRegisterHookHandler
+  : K extends 'onReady'
+    ? onReadyHookHandler
+    : K extends 'onClose'
+      ? onCloseHookHandler
+      : K extends 'preClose'
+        ? preCloseHookHandler
+        : never
+
+export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'onRegister'
+  ? onRegisterHookHandler
+  : K extends 'onReady'
+    ? onReadyAsyncHookHandler
+    : K extends 'onClose'
+      ? onCloseAsyncHookHandler
+      : K extends 'preClose'
+        ? preCloseAsyncHookHandler
+        : never
+
+export type HookLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
+  ? ApplicationHookLookup<K>
+  : K extends LifecycleHook
+    ? LifecycleHookLookup<K>
+    : never
+
+export type HookAsyncLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
+  ? ApplicationHookAsyncLookup<K>
+  : K extends LifecycleHook
+    ? LifecycleHookAsyncLookup<K>
+    : never

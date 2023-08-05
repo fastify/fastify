@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.19.2'
+const VERSION = '4.21.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -109,7 +109,7 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader)
+  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader).toLowerCase()
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -242,7 +242,7 @@ function fastify (options) {
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
     [kFourOhFour]: fourOhFour,
-    [pluginUtils.registeredPlugins]: [],
+    [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
     // routing method
@@ -313,7 +313,7 @@ function fastify (options) {
     close: null,
     printPlugins: null,
     hasPlugin: function (name) {
-      return this[kPluginNameChain].includes(name)
+      return this[pluginUtils.kRegisteredPlugins].includes(name) || this[kPluginNameChain].includes(name)
     },
     // http server
     listen,
@@ -351,11 +351,13 @@ function fastify (options) {
     listeningOrigin: {
       get () {
         const address = this.addresses().slice(-1).pop()
-        /* istanbul ignore if windows: unix socket is not testable on Windows platform */
+        /* ignore if windows: unix socket is not testable on Windows platform */
+        /* c8 ignore next 3 */
         if (typeof address === 'string') {
           return address
         }
-        return `${this[kOptions].https ? 'https' : 'http'}://${address.address}:${address.port}`
+        const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
+        return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
       }
     },
     pluginName: {
@@ -456,6 +458,7 @@ function fastify (options) {
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
           instance.server.close(function (err) {
+            /* c8 ignore next 6 */
             if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
               done(null)
             } else {

@@ -9,6 +9,7 @@ test('default 500', t => {
   t.plan(4)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -33,6 +34,7 @@ test('custom 500', t => {
   t.plan(6)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -62,6 +64,7 @@ test('encapsulated 500', t => {
   t.plan(10)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -113,6 +116,7 @@ test('custom 500 with hooks', t => {
   t.plan(7)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))

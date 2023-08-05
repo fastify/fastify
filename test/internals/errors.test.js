@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('fs')
 const { resolve } = require('path')
 
-test('should expose 77 errors', t => {
+test('should expose 78 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +14,11 @@ test('should expose 77 errors', t => {
       counter++
     }
   }
-  t.equal(counter, 77)
+  t.equal(counter, 78)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(77)
+  t.plan(78)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -339,10 +339,10 @@ test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
 
 test('FST_ERR_REP_ALREADY_SENT', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_REP_ALREADY_SENT()
+  const error = new errors.FST_ERR_REP_ALREADY_SENT('/hello', 'GET')
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_REP_ALREADY_SENT')
-  t.equal(error.message, 'Reply was already sent.')
+  t.equal(error.message, 'Reply was already sent, did you forget to "return reply" in "/hello" (GET)?')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -807,8 +807,18 @@ test('FST_ERR_VALIDATION', t => {
   t.ok(error instanceof Error)
 })
 
+test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LISTEN_OPTIONS_INVALID()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
+  t.equal(error.message, "Invalid listen options: '%s'")
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(77)
+  t.plan(78)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -820,7 +830,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(77)
+  t.plan(78)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /#### ([0-9a-zA-Z_]+)\n/g

@@ -1247,3 +1247,29 @@ test('hasPlugin returns true when using no encapsulation', async t => {
 
   await fastify.ready()
 })
+
+test('hasPlugin returns true when using encapsulation', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  const pluginCallback = function (server, options, done) {
+    done()
+  }
+  const pluginName = 'awesome-plugin'
+  const plugin = fp(pluginCallback, { name: pluginName })
+
+  fastify.register(plugin)
+
+  fastify.register(async (server) => {
+    t.ok(server.hasPlugin(pluginName))
+  })
+
+  fastify.register(async function foo (server) {
+    server.register(async function bar (server) {
+      t.ok(server.hasPlugin(pluginName))
+    })
+  })
+
+  await fastify.ready()
+})

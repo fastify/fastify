@@ -397,7 +397,7 @@ configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 {
   coerceTypes: 'array', // change data type of data to match type keyword
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
-  removeAdditional: true, // remove additional properties
+  removeAdditional: true, // remove additional properties if additionalProperties is set to false, see: https://ajv.js.org/guide/modifying-data.html#removing-additional-properties
   uriResolver: require('fast-uri'),
   addUsedSchema: false,
   // Explicitly set allErrors to `false`.

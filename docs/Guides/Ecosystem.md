@@ -9,59 +9,59 @@ section.
 #### [Core](#core)
 | Plugin | Description | Tags |
 | - | - | - |
-| [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) |  to have[accepts](https://www.npmjs.com/package/accepts) in your request object. | `HTTP` |
-| [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) | to serialize to output according to the `Accept` header. | `HTTP` |
+| [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) |  to have[accepts](https://www.npmjs.com/package/accepts) in your request object. | `http` |
+| [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) | to serialize to output according to the `Accept` header. | `http` |
 | [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) | Save multiple schemas and decide which one to use to serialize the payload. |    |
-| [`@fastify/auth`](https://github.com/fastify/fastify-auth) | Run multiple auth functions in Fastify. | `Authentication`   |
-| [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) | Require all plugins in a directory. | `Routing`    |
-| [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) | Dependency injection support for Fastify, based on[awilix](https://github.com/jeffijoe/awilix). | `Dependency Injection`   |
+| [`@fastify/auth`](https://github.com/fastify/fastify-auth) | Run multiple auth functions in Fastify. | `authentication`   |
+| [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) | Require all plugins in a directory. | `routing`    |
+| [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) | Dependency injection support for Fastify, based on[awilix](https://github.com/jeffijoe/awilix). | `dependency-injection`   |
 | [`@fastify/aws-lambda`](https://github.com/fastify/aws-lambda-fastify) | Allows you to easily build serverless web applications/services and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway. |    |
-| [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth) | Basic auth plugin for Fastify. | `Authentication`   |
-| [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth) | Bearer auth plugin for Fastify. | `Authentication`   |
-| [`@fastify/caching`](https://github.com/fastify/fastify-caching) | General server-side cache and ETag support. | `Caching`   |
-| [`@fastify/circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) | A low overhead circuit breaker for your routes. | `Routing`    |
-| [`@fastify/compress`](https://github.com/fastify/fastify-compress) | Fastify compression utils. | `HTTP`   |
-| [`@fastify/cookie`](https://github.com/fastify/fastify-cookie) | Parse and set cookie headers. | `HTTP`   |
-| [`@fastify/cors`](https://github.com/fastify/fastify-cors) | Enables the use of CORS in a Fastify application. | `HTTP`   |
-| [`@fastify/csrf-protection`](https://github.com/fastify/csrf-protection) | A plugin for adding[CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to Fastify. | `HTTP`   |
-| [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel) | Plugin to deal with `diagnostics_channel` on Fastify. | `Debugging`   |
-| [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch) | Plugin to share the same ES client. | `Searching`   |
-| [`@fastify/env`](https://github.com/fastify/fastify-env) | Load and check configuration. | `Configuration`   |
+| [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth) | Basic auth plugin for Fastify. | `authentication`   |
+| [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth) | Bearer auth plugin for Fastify. | `authentication`   |
+| [`@fastify/caching`](https://github.com/fastify/fastify-caching) | General server-side cache and ETag support. | `caching`   |
+| [`@fastify/circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) | A low overhead circuit breaker for your routes. | `routing`    |
+| [`@fastify/compress`](https://github.com/fastify/fastify-compress) | Fastify compression utils. | `http`   |
+| [`@fastify/cookie`](https://github.com/fastify/fastify-cookie) | Parse and set cookie headers. | `http`   |
+| [`@fastify/cors`](https://github.com/fastify/fastify-cors) | Enables the use of CORS in a Fastify application. | `http`   |
+| [`@fastify/csrf-protection`](https://github.com/fastify/csrf-protection) | A plugin for adding[CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to Fastify. | `http`   |
+| [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel) | Plugin to deal with `diagnostics_channel` on Fastify. | `debugging`   |
+| [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch) | Plugin to share the same ES client. | `searching`   |
+| [`@fastify/env`](https://github.com/fastify/fastify-env) | Load and check configuration. | `configuration`   |
 | [`@fastify/etag`](https://github.com/fastify/fastify-etag) | Automatically generate ETags for HTTP responses. |    |
 | [`@fastify/flash`](https://github.com/fastify/fastify-flash) | Set and get flash messages using the session. |    |
-| [`@fastify/formbody`](https://github.com/fastify/fastify-formbody) | Plugin to parse x-www-form-urlencoded bodies. | `HTTP`   |
-| [`@fastify/funky`](https://github.com/fastify/fastify-funky) | Makes functional programming in Fastify more convenient. Adds support for Fastify routes returning functional structures, such as Either, Task or plain parameterless function. | `Routing`   |
-| [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) | Important security headers for Fastify. | `HTTP`   |
+| [`@fastify/formbody`](https://github.com/fastify/fastify-formbody) | Plugin to parse x-www-form-urlencoded bodies. | `http`   |
+| [`@fastify/funky`](https://github.com/fastify/fastify-funky) | Makes functional programming in Fastify more convenient. Adds support for Fastify routes returning functional structures, such as Either, Task or plain parameterless function. | `routing`   |
+| [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) | Important security headers for Fastify. | `http`   |
 | [`@fastify/hotwire`](https://github.com/fastify/fastify-hotwire) | Use the Hotwire pattern with Fastify. |    |
-| [`@fastify/http-proxy`](https://github.com/fastify/fastify-http-proxy) | Proxy your HTTP requests to another server, with hooks. | `HTTP`   |
-| [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) | JWT utils for Fastify, internally uses [fast-jwt](https://github.com/nearform/fast-jwt). | `Authentication`   |
-| [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) | Plugin to share a common LevelDB connection across Fastify. | `Databases`   |
-| [`@fastify/middie`](https://github.com/fastify/middie) | Middleware engine for Fastify. | `Compatability`   |
-| [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) | Fastify MongoDB connection plugin, with which you can share the same MongoDB connection pool across every part of your server. | `Databases`    |
-| [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) | Multipart support for Fastify. | `HTTP`   |
+| [`@fastify/http-proxy`](https://github.com/fastify/fastify-http-proxy) | Proxy your HTTP requests to another server, with hooks. | `http`   |
+| [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) | JWT utils for Fastify, internally uses [fast-jwt](https://github.com/nearform/fast-jwt). | `authentication`   |
+| [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) | Plugin to share a common LevelDB connection across Fastify. | `databases`   |
+| [`@fastify/middie`](https://github.com/fastify/middie) | Middleware engine for Fastify. | `compatability`   |
+| [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) | Fastify MongoDB connection plugin, with which you can share the same MongoDB connection pool across every part of your server. | `databases`    |
+| [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) | Multipart support for Fastify. | `http`   |
 | [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) | React server-side rendering support for Fastify with[Next](https://github.com/zeit/next.js/). |    |
-| [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) | Wrap around[`simple-oauth2`](https://github.com/lelylan/simple-oauth2).    | `Authentication`   |
+| [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) | Wrap around[`simple-oauth2`](https://github.com/lelylan/simple-oauth2).    | `authentication`   |
 | [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) | Formats Fastify's logs into a nice one-line message.    |    |
-| [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) | Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server. | `Databases`   |
-| [`@fastify/rate-limit`](https://github.com/fastify/fastify-rate-limit) | A low overhead rate limiter for your routes. | `Scalability`   |
-| [`@fastify/redis`](https://github.com/fastify/fastify-redis) | Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server. | `Redis`    |
-| [`@fastify/reply-from`](https://github.com/fastify/fastify-reply-from) | Plugin to forward the current HTTP request to another server. | `Networking`   |
+| [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) | Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server. | `databases`   |
+| [`@fastify/rate-limit`](https://github.com/fastify/fastify-rate-limit) | A low overhead rate limiter for your routes. | `scalability`   |
+| [`@fastify/redis`](https://github.com/fastify/fastify-redis) | Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server. | `redis`    |
+| [`@fastify/reply-from`](https://github.com/fastify/fastify-reply-from) | Plugin to forward the current HTTP request to another server. | `networking`   |
 | [`@fastify/request-context`](https://github.com/fastify/fastify-request-context) | Request-scoped storage, based on[AsyncLocalStorage](https://nodejs.org/api/async_hooks.html#async_hooks_class_asynclocalstorage)(with fallback to [cls-hooked](https://github.com/Jeff-Lewis/cls-hooked)), providing functionality similar to thread-local storages. |    |
-| [`@fastify/response-validation`](https://github.com/fastify/fastify-response-validation) | A simple plugin that enables response validation for Fastify. | `Validation`   |
-| [`@fastify/routes`](https://github.com/fastify/fastify-routes) | Plugin that provides a `Map` of routes. | `Routing`    |
-| [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) | Plugin for scheduling periodic jobs, based on[toad-scheduler](https://github.com/kibertoad/toad-scheduler). | `Scheduling`   |
-| [`@fastify/secure-session`](https://github.com/fastify/fastify-secure-session) | Create a secure stateless cookie session for Fastify. | `Session`   |
-| [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) | Defaults for Fastify that everyone can agree on. It adds some useful decorators such as HTTP errors and assertions, but also more request and reply methods. | `Essentials`   |
-| [`@fastify/session`](https://github.com/fastify/session) | A session plugin for Fastify. | `Session`    |
-| [`@fastify/soap-client`](https://github.com/fastify/fastify-soap-client) | A SOAP client plugin for Fastify. | `XML`   |
-| [`@fastify/static`](https://github.com/fastify/fastify-static) | Plugin for serving static files as fast as possible. | `Essentials`   |
-| [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) | Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation. | `Documentation`   |
+| [`@fastify/response-validation`](https://github.com/fastify/fastify-response-validation) | A simple plugin that enables response validation for Fastify. | `validation`   |
+| [`@fastify/routes`](https://github.com/fastify/fastify-routes) | Plugin that provides a `Map` of routes. | `routing`    |
+| [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) | Plugin for scheduling periodic jobs, based on[toad-scheduler](https://github.com/kibertoad/toad-scheduler). | `scheduling`   |
+| [`@fastify/secure-session`](https://github.com/fastify/fastify-secure-session) | Create a secure stateless cookie session for Fastify. | `session`   |
+| [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) | Defaults for Fastify that everyone can agree on. It adds some useful decorators such as HTTP errors and assertions, but also more request and reply methods. | `essentials`   |
+| [`@fastify/session`](https://github.com/fastify/session) | A session plugin for Fastify. | `session`    |
+| [`@fastify/soap-client`](https://github.com/fastify/fastify-soap-client) | A SOAP client plugin for Fastify. | `xml`   |
+| [`@fastify/static`](https://github.com/fastify/fastify-static) | Plugin for serving static files as fast as possible. | `essentials`   |
+| [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) | Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation. | `documentation`   |
 | [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts) | Fastify[type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts). |    |
 | [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox) | Fastify[type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)for [Typebox](https://github.com/sinclairzx81/typebox). |    |
-| [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) | Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify. | `Scalability` |
-| [`@fastify/url-data`](https://github.com/fastify/fastify-url-data) | Decorate the `Request` object with a method to access raw URL components. | `HTTP`   |
-| [`@fastify/view`](https://github.com/fastify/point-of-view) | Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify. | `Frontend`    |
-| [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) | WebSocket support for Fastify. Built upon [ws](https://github.com/websockets/ws). | `WebSocket`   |
+| [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) | Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify. | `scalability` |
+| [`@fastify/url-data`](https://github.com/fastify/fastify-url-data) | Decorate the `Request` object with a method to access raw URL components. | `http`   |
+| [`@fastify/view`](https://github.com/fastify/point-of-view) | Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify. | `frontend`    |
+| [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) | WebSocket support for Fastify. Built upon [ws](https://github.com/websockets/ws). | `websocket`   |
 
 
 #### [Community](#community)

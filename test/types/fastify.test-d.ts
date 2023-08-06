@@ -8,8 +8,8 @@ import fastify, {
   LightMyRequestResponse,
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
+  RawRequestDefaultExpression,
   RouteGenericInterface,
-  ValidationResult,
   FastifyErrorCodes,
   FastifyError
 } from '../../fastify'
@@ -17,7 +17,7 @@ import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import { expectType, expectError, expectAssignable } from 'tsd'
+import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { Socket } from 'net'
 
@@ -127,7 +127,12 @@ expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServ
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: false }))
-expectAssignable<FastifyInstance>(fastify({ genReqId: () => 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({
+  genReqId: (req) => {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))
@@ -198,7 +203,10 @@ expectAssignable<FastifyInstance>(fastify({
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
-  rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
+  rewriteUrl: function (req) {
+    this.log.debug('rewrite url')
+    return req.url === '/hi' ? '/hello' : req.url!
+  }
 }))
 expectAssignable<FastifyInstance>(fastify({
   schemaErrorFormatter: (errors, dataVar) => {
@@ -235,7 +243,13 @@ const ajvErrorObject: AjvErrorObject = {
   params: {},
   message: ''
 }
-expectAssignable<ValidationResult>(ajvErrorObject)
+expectNotAssignable<AjvErrorObject>({
+  keyword: '',
+  instancePath: '',
+  schemaPath: '',
+  params: '',
+  message: ''
+})
 
 expectAssignable<FastifyError['validation']>([ajvErrorObject])
 expectAssignable<FastifyError['validationContext']>('body')
@@ -252,3 +266,7 @@ expectType<unknown>(routeGeneric.Reply)
 
 // ErrorCodes
 expectType<FastifyErrorCodes>(fastify.errorCodes)
+
+fastify({ allowUnsafeRegex: true })
+fastify({ allowUnsafeRegex: false })
+expectError(fastify({ allowUnsafeRegex: 'invalid' }))

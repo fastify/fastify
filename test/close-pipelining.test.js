@@ -89,11 +89,14 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false,
   const responses = await Promise.allSettled([
     instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' }),
+    instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' })
   ])
+
   t.equal(responses[0].status, 'fulfilled')
-  t.equal(responses[1].status, 'rejected')
+  t.equal(responses[1].status, 'fulfilled')
   t.equal(responses[2].status, 'rejected')
+  t.equal(responses[3].status, 'rejected')
 
   await instance.close()
 })

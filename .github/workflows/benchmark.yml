@@ -11,15 +11,15 @@ jobs:
     permissions:
       contents: read
     outputs:
-      PR-BENCH-14: ${{ steps.benchmark-pr.outputs.BENCH_RESULT14 }}
       PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
       PR-BENCH-18: ${{ steps.benchmark-pr.outputs.BENCH_RESULT18 }}
-      MAIN-BENCH-14: ${{ steps.benchmark-main.outputs.BENCH_RESULT14 }}
+      PR-BENCH-20: ${{ steps.benchmark-pr.outputs.BENCH_RESULT20 }}
       MAIN-BENCH-16: ${{ steps.benchmark-main.outputs.BENCH_RESULT16 }}
       MAIN-BENCH-18: ${{ steps.benchmark-main.outputs.BENCH_RESULT18 }}
+      MAIN-BENCH-20: ${{ steps.benchmark-main.outputs.BENCH_RESULT20 }}
     strategy:
       matrix:
-        node-version: [14, 16, 18]
+        node-version: [16, 18, 20]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -40,7 +40,9 @@ jobs:
         run: |
           npm run --silent benchmark > ./bench-result.md
           result=$(awk '/requests in/' ./bench-result.md)
-          echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
+          echo 'BENCH_RESULT${{matrix.node-version}}<<EOF' >> $GITHUB_OUTPUT
+          echo "$result" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
       # main benchmark
       - uses: actions/checkout@v3
@@ -57,7 +59,9 @@ jobs:
         run: |
           npm run --silent benchmark > ./bench-result.md
           result=$(awk '/requests in/' ./bench-result.md)
-          echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
+          echo 'BENCH_RESULT${{matrix.node-version}}<<EOF' >> $GITHUB_OUTPUT
+          echo "$result" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
   output-benchmark:
     needs: [benchmark]
@@ -70,12 +74,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
-            **Node**: 14
-            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-14 }}
-            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-14 }}
-            
-            ---
-            
             **Node**: 16
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-16 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-16 }}
@@ -86,8 +84,26 @@ jobs:
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-18 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-18 }}
             
-      - uses: actions-ecosystem/action-remove-labels@v1
+            ---
+            
+            **Node**: 20
+            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-20 }}
+            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-20 }}
+            
+  remove-label:
+    if: "always()"
+    needs: 
+      - benchmark
+      - output-benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove benchmark label
+        uses: octokit/request-action@v2.x
+        id: remove-label
         with:
-          labels: |
-            benchmark
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          issue_number: ${{ github.event.pull_request.number }}
+          name: benchmark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

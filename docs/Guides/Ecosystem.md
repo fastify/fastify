@@ -44,6 +44,9 @@ section.
   Fastify.
 - [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel)
   Plugin to deal with `diagnostics_channel` on Fastify
+- [`@fastify/early-hints`](https://github.com/fastify/fastify-early-hints) Plugin
+  to add HTTP 103 feature based on [RFC
+  8297](https://httpwg.org/specs/rfc8297.html).
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check
@@ -248,6 +251,8 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
+- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3) 
+  Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify
@@ -258,6 +263,9 @@ section.
   to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
+- [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
+  Small and efficient cache provider for Node.JS with In-memory, File, Redis
+   and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
   for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest)
@@ -299,9 +307,6 @@ section.
   object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin
   register for Fastify.
-- [`fastify-early-hints`](https://github.com/zekth/fastify-early-hints) Plugin
-  to add HTTP 103 feature based on [RFC
-  8297](https://httpwg.org/specs/rfc8297.html)
 - [`fastify-envalid`](https://github.com/alemagio/fastify-envalid) Fastify
   plugin to integrate [envalid](https://github.com/af/envalid) in your Fastify
   project.
@@ -310,6 +315,9 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
+  plugin for instantiating and encapsulating the 
+  [Evervault](https://evervault.com/) client.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of
   your decorators across all the encapsulated contexts.
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon)
@@ -350,6 +358,8 @@ section.
   Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin
   that protects endpoints by checking authenticated user roles and/or scopes.
+- [`fastify-hashids`](https://github.com/andersonjoseph/fastify-hashids) A Fastify
+  plugin to encode/decode IDs using [hashids](https://github.com/niieani/hashids.js).
 - [`fastify-hasura`](https://github.com/ManUtopiK/fastify-hasura) A Fastify
   plugin to have fun with [Hasura](https://github.com/hasura/graphql-engine).
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck)

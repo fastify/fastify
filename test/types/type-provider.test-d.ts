@@ -279,6 +279,62 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
 ))
 
 // -------------------------------------------------------------------
+// Request headers
+// -------------------------------------------------------------------
+
+// JsonSchemaToTsProvider
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: {
+          lowercase: { type: 'string' },
+          UPPERCASE: { type: 'number' },
+          camelCase: { type: 'boolean' },
+          'KEBAB-case': { type: 'boolean' },
+          PRESERVE_OPTIONAL: { type: 'number' }
+        },
+        required: ['lowercase', 'UPPERCASE', 'camelCase', 'KEBAB-case']
+      } as const
+    }
+  },
+  (req) => {
+    expectType<string>(req.headers.lowercase)
+    expectType<string | string[] | undefined>(req.headers.UPPERCASE)
+    expectType<number>(req.headers.uppercase)
+    expectType<boolean>(req.headers.camelcase)
+    expectType<boolean>(req.headers['kebab-case'])
+    expectType<number | undefined>(req.headers.preserve_optional)
+  }
+))
+
+// TypeBoxProvider
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      headers: Type.Object({
+        lowercase: Type.String(),
+        UPPERCASE: Type.Number(),
+        camelCase: Type.Boolean(),
+        'KEBAB-case': Type.Boolean(),
+        PRESERVE_OPTIONAL: Type.Optional(Type.Number())
+      })
+    }
+  },
+  (req) => {
+    expectType<string>(req.headers.lowercase)
+    expectType<string | string[] | undefined>(req.headers.UPPERCASE)
+    expectType<number>(req.headers.uppercase)
+    expectType<boolean>(req.headers.camelcase)
+    expectType<boolean>(req.headers['kebab-case'])
+    expectType<number | undefined>(req.headers.preserve_optional)
+  }
+))
+
+// -------------------------------------------------------------------
 // TypeBox Reply Type
 // -------------------------------------------------------------------
 
@@ -299,6 +355,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
+    expectType<(payload?: string | number | { error: string }) => typeof res>(res.code(200).send)
+    expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
 
@@ -527,6 +585,8 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
+    expectType<(payload?: string | number | { [x: string]: unknown, error?: string | undefined }) => typeof res>(res.code(200).send)
+    expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
 

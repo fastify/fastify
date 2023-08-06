@@ -57,6 +57,7 @@ test('should fail immediately with invalid payload', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: "body must have required property 'name'"
     })
@@ -244,6 +245,7 @@ test('should respect when attachValidation is explicitly set to false', t => {
     t.error(err)
     t.same(JSON.parse(res.payload), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: "body must have required property 'name'"
     })
@@ -368,7 +370,7 @@ test('should return a defined output message parsing AJV errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body must have required property \'name\'"}')
+    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body must have required property \'name\'"}')
   })
 })
 
@@ -398,7 +400,7 @@ test('should return a defined output message parsing JOI errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"\\"name\\" is required"}')
+    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"\\"name\\" is required"}')
   })
 })
 
@@ -431,7 +433,7 @@ test('should return a defined output message parsing JOI error details', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
+    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body \\"name\\" is required"}')
   })
 })
 
@@ -457,6 +459,7 @@ test('the custom error formatter context must be the server instance', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'my error'
     })
@@ -486,6 +489,7 @@ test('the custom error formatter context must be the server instance in options'
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'my error'
     })
@@ -522,6 +526,7 @@ test('should call custom error formatter', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'my error'
     })
@@ -609,6 +614,7 @@ test('should register a route based schema error formatter', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'abc'
     })
@@ -652,6 +658,7 @@ test('prefer route based error formatter over global one', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: '123'
     })
@@ -668,6 +675,7 @@ test('prefer route based error formatter over global one', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'abc'
     })
@@ -684,6 +692,7 @@ test('prefer route based error formatter over global one', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'abc123'
     })
@@ -712,6 +721,7 @@ test('adding schemaErrorFormatter', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'abc'
     })
@@ -772,6 +782,7 @@ test('plugin override', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'A'
     })
@@ -788,6 +799,7 @@ test('plugin override', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'B'
     })
@@ -804,6 +816,7 @@ test('plugin override', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'C'
     })
@@ -820,6 +833,7 @@ test('plugin override', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'D'
     })
@@ -836,6 +850,7 @@ test('plugin override', t => {
     t.error(err)
     t.same(res.json(), {
       statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'C'
     })

@@ -9,6 +9,7 @@ test('default 500', t => {
   t.plan(4)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -33,6 +34,7 @@ test('custom 500', t => {
   t.plan(6)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -62,6 +64,7 @@ test('encapsulated 500', t => {
   t.plan(10)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -113,6 +116,7 @@ test('custom 500 with hooks', t => {
   t.plan(7)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', function (req, reply) {
     reply.send(new Error('kaboom'))
@@ -160,6 +164,24 @@ test('cannot set errorHandler after binding', t => {
 
     try {
       fastify.setErrorHandler(() => { })
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})
+
+test('cannot set childLoggerFactory after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    try {
+      fastify.setChildLoggerFactory(() => { })
       t.fail()
     } catch (e) {
       t.pass()

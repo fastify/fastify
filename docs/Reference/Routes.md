@@ -90,6 +90,14 @@ fastify.route(options)
   To access the default handler, you can access `instance.errorHandler`. Note
   that this will point to fastify's default `errorHandler` only if a plugin
   hasn't overridden it already.
+* `childLoggerFactory(logger, binding, opts, rawReq)`: a custom factory function
+  that will be called to produce a child logger instance for every request.
+  See [`childLoggerFactory`](./Server.md#childloggerfactory) for more info.
+  Overrides the default logger factory, and anything set by 
+  [`setChildLoggerFactory`](./Server.md#setchildloggerfactory), for requests to
+  the route. To access the default factory, you can access 
+  `instance.childLoggerFactory`. Note that this will point to Fastify's default
+  `childLoggerFactory` only if a plugin hasn't overridden it already.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
@@ -112,6 +120,11 @@ fastify.route(options)
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
   version of the endpoint. [Example](#version-constraints).
+* `constraints`: defines route restrictions based on request properties or
+  values, enabling customized matching using 
+  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes 
+  built-in `version` and `host` constraints, with support for custom constraint
+  strategies.
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
   route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.

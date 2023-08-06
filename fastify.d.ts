@@ -14,21 +14,21 @@ import { FastifyContext, FastifyContextConfig } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler } from './types/hooks'
 import { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
-import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel } from './types/logger'
+import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel, Bindings, ChildLoggerOptions } from './types/logger'
 import { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
-import { FastifySchema, FastifySchemaCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 
 declare module '@fastify/error' {
   interface FastifyError {
-    validation?: fastify.ValidationResult[];
     validationContext?: SchemaErrorDataVar;
+    validation?: FastifySchemaValidationError[];
   }
 }
 
@@ -106,10 +106,11 @@ declare namespace fastify {
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
+    allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
     requestIdLogLabel?: string;
     jsonShorthand?: boolean;
-    genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>) => string,
+    genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: unknown },
     /**
@@ -148,21 +149,23 @@ declare namespace fastify {
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,
       res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RequestGeneric, FastifyContextConfig, SchemaCompiler, TypeProvider>
     ) => void,
-    rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
+    rewriteUrl?: (
+      // The RawRequestDefaultExpression, RawReplyDefaultExpression, and FastifyTypeProviderDefault parameters
+      // should be narrowed further but those generic parameters are not passed to this FastifyServerOptions type 
+      this: FastifyInstance<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, Logger, FastifyTypeProviderDefault>,
+      req: RawRequestDefaultExpression<RawServer>
+    ) => string,
     schemaErrorFormatter?: SchemaErrorFormatter,
     /**
      * listener to error events emitted by client connections
      */
-    clientErrorHandler?: (error: ConnectionError, socket: Socket) => void
+    clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
   }
 
-  export interface ValidationResult {
-    keyword: string;
-    instancePath: string;
-    schemaPath: string;
-    params: Record<string, string | string[]>;
-    message?: string;
-  }
+  /**
+   * @deprecated use {@link FastifySchemaValidationError}
+   */
+  export type ValidationResult = FastifySchemaValidationError;
 
   /* Export additional types */
   export type {

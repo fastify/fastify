@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.15.0'
+const VERSION = '4.21.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -28,20 +28,21 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kFourOhFourContext
+  kChildLoggerFactory
 } = require('./lib/symbols.js')
 
 const { createServer, compileValidateHTTPVersion } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
+const Context = require('./lib/context.js')
 const { supportedMethods } = require('./lib/httpMethods')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createLogger } = require('./lib/logger')
+const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const reqIdGenFactory = require('./lib/reqIdGenFactory')
+const { reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
@@ -74,14 +75,6 @@ const {
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
 
-const onBadUrlContext = {
-  config: {
-  },
-  onSend: [],
-  onError: [],
-  [kFourOhFourContext]: null
-}
-
 function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
 
@@ -95,6 +88,9 @@ function defaultBuildPrettyMeta (route) {
   return Object.assign({}, cleanKeys)
 }
 
+/**
+ * @param {import('./fastify.js').FastifyServerOptions} options
+ */
 function fastify (options) {
   // Options validations
   options = options || {}
@@ -113,7 +109,7 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader)
+  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader).toLowerCase()
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -235,6 +231,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
+    [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -244,7 +241,7 @@ function fastify (options) {
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
     [kFourOhFour]: fourOhFour,
-    [pluginUtils.registeredPlugins]: [],
+    [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
     // routing method
@@ -315,7 +312,7 @@ function fastify (options) {
     close: null,
     printPlugins: null,
     hasPlugin: function (name) {
-      return this[kPluginNameChain].includes(name)
+      return this[pluginUtils.kRegisteredPlugins].includes(name) || this[kPluginNameChain].includes(name)
     },
     // http server
     listen,
@@ -340,6 +337,8 @@ function fastify (options) {
     // custom error handling
     setNotFoundHandler,
     setErrorHandler,
+    // child logger
+    setChildLoggerFactory,
     // Set fastify initial configuration options read-only object
     initialConfig,
     // constraint strategies
@@ -348,6 +347,18 @@ function fastify (options) {
   }
 
   Object.defineProperties(fastify, {
+    listeningOrigin: {
+      get () {
+        const address = this.addresses().slice(-1).pop()
+        /* ignore if windows: unix socket is not testable on Windows platform */
+        /* c8 ignore next 3 */
+        if (typeof address === 'string') {
+          return address
+        }
+        const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
+        return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
+      }
+    },
     pluginName: {
       configurable: true,
       get () {
@@ -368,6 +379,10 @@ function fastify (options) {
     serializerCompiler: {
       configurable: true,
       get () { return this[kSchemaController].getSerializerCompiler() }
+    },
+    childLoggerFactory: {
+      configurable: true,
+      get () { return this[kChildLoggerFactory] }
     },
     version: {
       configurable: true,
@@ -414,31 +429,52 @@ function fastify (options) {
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
-      if (fastify[kState].listening) {
-        // No new TCP connections are accepted
-        instance.server.close(done)
 
-        /* istanbul ignore next: Cannot test this without Node.js core support */
-        if (forceCloseConnections === 'idle') {
-          // Not needed in Node 19
-          instance.server.closeIdleConnections()
-        /* istanbul ignore next: Cannot test this without Node.js core support */
-        } else if (serverHasCloseAllConnections && forceCloseConnections) {
-          instance.server.closeAllConnections()
-        } else if (forceCloseConnections === true) {
-          for (const conn of fastify[kKeepAliveConnections]) {
-            // We must invoke the destroy method instead of merely unreffing
-            // the sockets. If we only unref, then the callback passed to
-            // `fastify.close` will never be invoked; nor will any of the
-            // registered `onClose` hooks.
-            conn.destroy()
-            fastify[kKeepAliveConnections].delete(conn)
+      hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
+        if (fastify[kState].listening) {
+          /* istanbul ignore next: Cannot test this without Node.js core support */
+          if (forceCloseConnections === 'idle') {
+            // Not needed in Node 19
+            instance.server.closeIdleConnections()
+          /* istanbul ignore next: Cannot test this without Node.js core support */
+          } else if (serverHasCloseAllConnections && forceCloseConnections) {
+            instance.server.closeAllConnections()
+          } else if (forceCloseConnections === true) {
+            for (const conn of fastify[kKeepAliveConnections]) {
+              // We must invoke the destroy method instead of merely unreffing
+              // the sockets. If we only unref, then the callback passed to
+              // `fastify.close` will never be invoked; nor will any of the
+              // registered `onClose` hooks.
+              conn.destroy()
+              fastify[kKeepAliveConnections].delete(conn)
+            }
           }
         }
-      } else {
-        done(null)
-      }
+
+        // No new TCP connections are accepted.
+        // We must call close on the server even if we are not listening
+        // otherwise memory will be leaked.
+        // https://github.com/nodejs/node/issues/48604
+        if (!options.serverFactory || fastify[kState].listening) {
+          instance.server.close(function (err) {
+            /* c8 ignore next 6 */
+            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
+              done(null)
+            } else {
+              done()
+            }
+          })
+        } else {
+          process.nextTick(done, null)
+        }
+      })
     })
+  })
+
+  // Create bad URL context
+  const onBadUrlContext = new Context({
+    server: fastify,
+    config: {}
   })
 
   // Set the default 404 handler
@@ -603,7 +639,6 @@ function fastify (options) {
     } else if (name === 'onReady') {
       this[kHooks].add(name, fn)
     } else if (name === 'onRoute') {
-      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -641,6 +676,11 @@ function fastify (options) {
       errorStatus = http.STATUS_CODES[errorCode]
       body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
       errorLabel = 'timeout'
+    } else if (err.code === 'HPE_HEADER_OVERFLOW') {
+      errorCode = '431'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
+      errorLabel = 'header_overflow'
     } else {
       errorCode = '400'
       errorStatus = http.STATUS_CODES[errorCode]
@@ -678,15 +718,18 @@ function fastify (options) {
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = genReqId(req)
-      const childLogger = logger.child({ reqId: id })
-
-      childLogger.info({ req }, 'incoming request')
+      const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
+
+      if (disableRequestLogging === false) {
+        childLogger.info({ req: request }, 'incoming request')
+      }
+
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',
       'Content-Length': body.length
@@ -700,12 +743,15 @@ function fastify (options) {
       if (err) {
         if (frameworkErrors) {
           const id = genReqId(req)
-          const childLogger = logger.child({ reqId: id })
-
-          childLogger.info({ req }, 'incoming request')
+          const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
+
+          if (disableRequestLogging === false) {
+            childLogger.info({ req: request }, 'incoming request')
+          }
+
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
@@ -769,6 +815,13 @@ function fastify (options) {
     return this
   }
 
+  function setChildLoggerFactory (factory) {
+    throwIfAlreadyStarted('Cannot call "setChildLoggerFactory"!')
+
+    this[kChildLoggerFactory] = factory
+    return this
+  }
+
   function printRoutes (opts = {}) {
     // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
     opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
@@ -781,16 +834,13 @@ function fastify (options) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
-        const originalUrl = req.url
-        const url = rewriteUrl(req)
-        if (originalUrl !== url) {
-          logger.debug({ originalUrl, url }, 'rewrite url')
-          if (typeof url === 'string') {
-            req.url = url
-          } else {
-            const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
-            req.destroy(err)
-          }
+        req.originalUrl = req.url
+        const url = rewriteUrl.call(fastify, req)
+        if (typeof url === 'string') {
+          req.url = url
+        } else {
+          const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
+          req.destroy(err)
         }
       }
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))

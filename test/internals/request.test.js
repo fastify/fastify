@@ -7,7 +7,8 @@ const Context = require('../../lib/context')
 const {
   kPublicRouteContext,
   kReply,
-  kRequest
+  kRequest,
+  kOptions
 } = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
@@ -39,7 +40,10 @@ test('Regular request', t => {
     },
     server: {
       [kReply]: {},
-      [kRequest]: Request
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
     }
   })
   req.connection = req.socket
@@ -60,12 +64,75 @@ test('Regular request', t => {
   t.equal(request.body, undefined)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
+  t.equal(request.originalUrl, '/')
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
   t.equal(request.routerPath, context.config.url)
   t.equal(request.routerMethod, context.config.method)
   t.equal(request.routeConfig, context[kPublicRouteContext].config)
   t.equal(request.routeSchema, context[kPublicRouteContext].schema)
+  // Aim to not bad property keys (including Symbols)
+  t.notOk('undefined' in request)
+
+  // This will be removed, it's deprecated
+  t.equal(request.connection, req.connection)
+  t.end()
+})
+
+test('Request with undefined config', t => {
+  const headers = {
+    host: 'hostname'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: 'ip' },
+    headers
+  }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
+    }
+  })
+  req.connection = req.socket
+  const request = new Request('id', 'params', req, 'query', 'log', context)
+  t.type(request, Request)
+  t.type(request.validateInput, Function)
+  t.type(request.getValidationFunction, Function)
+  t.type(request.compileValidationSchema, Function)
+  t.equal(request.id, 'id')
+  t.equal(request.params, 'params')
+  t.equal(request.raw, req)
+  t.equal(request.query, 'query')
+  t.equal(request.headers, headers)
+  t.equal(request.log, 'log')
+  t.equal(request.ip, 'ip')
+  t.equal(request.ips, undefined)
+  t.equal(request.hostname, 'hostname')
+  t.equal(request.body, undefined)
+  t.equal(request.method, 'GET')
+  t.equal(request.url, '/')
+  t.equal(request.originalUrl, '/')
+  t.equal(request.socket, req.socket)
+  t.equal(request.protocol, 'http')
+  t.equal(request.routeSchema, context[kPublicRouteContext].schema)
+  t.equal(request.routerPath, undefined)
+  t.equal(request.routerMethod, undefined)
+  t.equal(request.routeConfig, undefined)
+
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in request)
 
@@ -137,7 +204,10 @@ test('Request with trust proxy', t => {
     },
     server: {
       [kReply]: {},
-      [kRequest]: Request
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
     }
   })
 

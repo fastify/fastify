@@ -15,8 +15,14 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [14, 16, 18]
+        node-version: [16, 18, 20]
         os: [ubuntu-latest]
+        pnpm-version: [8]
+        # pnpm@8 does not support Node.js 14 so include it separately
+        include:
+          - node-version: 14
+            os: ubuntu-latest
+            pnpm-version: 7
 
     steps:
       - uses: actions/checkout@v3
@@ -31,14 +37,15 @@ jobs:
       - name: Install with pnpm
         uses: pnpm/action-setup@v2
         with:
-          # pnpm@8 does not support Node.js 14
-          version: 7
+          version: ${{ matrix.pnpm-version }}
 
       - run: pnpm install
 
       - name: Run tests
         run: |
           pnpm run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 
 
   yarn:
     runs-on: ${{ matrix.os }}
@@ -46,7 +53,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [14, 16, 18]
+        node-version: [14, 16, 18, 20]
         os: [ubuntu-latest]
 
     steps:
@@ -69,3 +76,5 @@ jobs:
       - name: Run tests
         run: |
           yarn run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 

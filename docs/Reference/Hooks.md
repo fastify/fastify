@@ -417,8 +417,6 @@ fastify.addHook('onReady', async function () {
 ### onListen
 
 Triggered after the server starts listening for requests.
-It is useful if you have code that needs to be executed directly
-after the server starts listening for requests.
 This is another way of doing `fastify.server.on('listening', () => {})`.
 
 ```js

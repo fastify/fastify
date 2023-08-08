@@ -31,7 +31,7 @@ const {
   kChildLoggerFactory
 } = require('./lib/symbols.js')
 
-const { createServer, compileValidateHTTPVersion } = require('./lib/server')
+const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
@@ -513,7 +513,6 @@ function fastify (options) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
-    validateHTTPVersion: compileValidateHTTPVersion(options),
     keepAliveConnections
   })
 

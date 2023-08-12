@@ -181,48 +181,6 @@ function invalidSchemaErrorFormatter (err: Error) {
 }
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
-// test listen method callback
-expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectType<Error | null>(err)
-}))
-
-// test listen method callback types
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectAssignable<Error|null>(err)
-  expectAssignable<string>(address)
-}))
-
-// test listen method promise
-expectAssignable<PromiseLike<string>>(server.listen(3000))
-expectAssignable<PromiseLike<string>>(server.listen('3000'))
-expectAssignable<PromiseLike<string>>(server.listen(3000, '', 0))
-expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
-expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
-expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
-
-// Test variadic listen signatures Typescript deprecation
-expectDeprecated(server.listen(3000))
-expectDeprecated(server.listen('3000'))
-expectDeprecated(server.listen(3000, '', 0))
-expectDeprecated(server.listen('3000', '', 0))
-expectDeprecated(server.listen(3000, ''))
-expectDeprecated(server.listen('3000', ''))
-
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))

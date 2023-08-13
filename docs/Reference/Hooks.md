@@ -553,7 +553,7 @@ fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 }, { prefix: '/hello' })
 
-fastify.addHook('onRegister', (opts) => {
+fastify.addHook('onRegister', function (opts) {
   // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated

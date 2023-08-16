@@ -282,6 +282,10 @@ attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_
 + Default: `1048576` (1MiB)
 
 Defines the maximum payload, in bytes, the server is allowed to accept.
+The default body reader sends [`FST_ERR_CTP_BODY_TOO_LARGE`](./Errors.md#fst_err_ctp_body_too_large)
+reply, if the size of the body exceeds this limit.
+If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
+to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>

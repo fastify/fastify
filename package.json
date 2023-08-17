@@ -11,8 +11,8 @@
     "benchmark:parser": "npx concurrently -k -s first \"node ./examples/benchmark/parser.js\" \"npx autocannon -c 100 -d 30 -p 10 -i ./examples/benchmark/body.json -H \"content-type:application/jsoff\" -m POST localhost:3000/\"",
     "build:validation": "node build/build-error-serializer.js && node build/build-validation.js",
     "coverage": "npm run unit -- --coverage-report=html",
-    "coverage:ci": "c8 --reporter=lcov tap --coverage-report=html --no-browser --no-check-coverage",
-    "coverage:ci-check-coverage": "c8 check-coverage --branches 100 --functions 100 --lines 100 --statements 100",
+    "coverage:ci": "npm run unit -- --coverage --coverage-report=html --no-browser --no-check-coverage",
+    "coverage:ci-check-coverage": "npm run unit -- --cov --check-coverage",
     "lint": "npm run lint:standard && npm run lint:typescript && npm run lint:markdown",
     "lint:fix": "standard --fix && npm run lint:typescript:fix",
     "lint:markdown": "markdownlint-cli2",
@@ -26,7 +26,7 @@
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts && tsd",
     "test:watch": "npm run unit -- -w --no-coverage-report -R terse",
-    "unit": "c8 tap",
+    "unit": "tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "citgm": "tap --jobs=1 --timeout=120"
@@ -155,7 +155,6 @@
     "ajv-i18n": "^4.2.0",
     "ajv-merge-patch": "^5.0.1",
     "branch-comparer": "^1.1.0",
-    "c8": "^8.0.1",
     "cross-env": "^7.0.3",
     "eslint": "^8.51.0",
     "eslint-config-standard": "^17.1.0",
@@ -180,7 +179,7 @@
     "snazzy": "^9.0.0",
     "split2": "^4.2.0",
     "standard": "^17.1.0",
-    "tap": "^16.3.9",
+    "tap": "^18.5.2",
     "tsd": "^0.29.0",
     "typescript": "^5.2.2",
     "undici": "^5.26.0",
@@ -217,5 +216,8 @@
   },
   "tsd": {
     "directory": "test/types"
+  },
+  "tap": {
+    "extends": ".taprc.yaml"
   }
 }

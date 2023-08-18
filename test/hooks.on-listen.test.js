@@ -27,11 +27,13 @@ t.test('localhost onListen should be called in order', t => {
     t.equal(order++, 1, '2nd called in root')
     done()
   })
+
   fastify.listen({
     host: 'localhost',
     port: 0
   })
 })
+
 t.test('localhost async onListen should be called in order', async t => {
   t.plan(2)
   const fastify = Fastify()
@@ -51,11 +53,11 @@ t.test('localhost async onListen should be called in order', async t => {
     port: 0
   })
 })
-t.test('localhost onListen should manage error in sync', t => {
-  t.plan(2)
+
+t.test('localhost onListen sync should log errors as warnings and continue', t => {
+  t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  let order = 0
 
   fastify.addHook('onListen', function (done) {
     t.pass('called in root')
@@ -63,8 +65,13 @@ t.test('localhost onListen should manage error in sync', t => {
   })
 
   fastify.addHook('onListen', function (done) {
-    t.equal(order++, 0, '1st sync called in root')
-    done(new Error('FAIL ON LISTEN'))
+    t.pass('called onListen error')
+    throw new Error('FAIL ON LISTEN2')
+  })
+
+  fastify.addHook('onListen', function (done) {
+    t.pass('onListen hooks continue after error')
+    done()
   })
 
   fastify.listen({
@@ -72,23 +79,23 @@ t.test('localhost onListen should manage error in sync', t => {
     port: 0
   })
 })
-t.test('localhost onListen should manage error in async', async t => {
-  t.plan(2)
+
+t.test('localhost onListen async should log errors as warnings and continue', async t => {
+  t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  let order = 0
 
   fastify.addHook('onListen', async function () {
     t.pass('called in root')
   })
 
   fastify.addHook('onListen', async function () {
-    t.equal(order++, 0, '1st async called in root')
+    t.pass('called onListen error')
     throw new Error('FAIL ON LISTEN')
   })
 
   fastify.addHook('onListen', async function () {
-    t.pass('called in root')
+    t.pass('onListen hooks continue after error')
   })
 
   await fastify.listen({
@@ -96,6 +103,7 @@ t.test('localhost onListen should manage error in async', async t => {
     port: 0
   })
 })
+
 t.test('localhost Register onListen hook after a plugin inside a plugin', t => {
   t.plan(3)
   const fastify = Fastify()
@@ -128,6 +136,7 @@ t.test('localhost Register onListen hook after a plugin inside a plugin', t => {
     port: 0
   })
 })
+
 t.test('localhost onListen encapsulation should be called in order', t => {
   t.plan(6)
   const fastify = Fastify()
@@ -159,6 +168,7 @@ t.test('localhost onListen encapsulation should be called in order', t => {
     port: 0
   })
 })
+
 t.test('nonlocalhost onListen should be called in order', t => {
   t.plan(2)
 
@@ -200,8 +210,9 @@ t.test('nonlocalhost async onListen should be called in order', async t => {
     port: 0
   })
 })
-t.test('nonlocalhost onListen should manage error in sync', t => {
-  t.plan(2)
+
+t.test('nonlocalhost sync onListen should should log errors as warnings and continue', t => {
+  t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   let order = 0
@@ -216,13 +227,19 @@ t.test('nonlocalhost onListen should manage error in sync', t => {
     done(new Error('FAIL ON LISTEN'))
   })
 
+  fastify.addHook('onListen', function (done) {
+    t.pass('should still run')
+    done()
+  })
+
   fastify.listen({
     host: '::1',
     port: 0
   })
 })
-t.test('nonlocalhost onListen should manage error in async', async t => {
-  t.plan(2)
+
+t.test('nonlocalhost async onListen should log errors as warnings and continue', async t => {
+  t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   let order = 0
@@ -237,7 +254,7 @@ t.test('nonlocalhost onListen should manage error in async', async t => {
   })
 
   fastify.addHook('onListen', async function () {
-    t.pass('called in root')
+    t.pass('should still run')
   })
 
   await fastify.listen({
@@ -245,6 +262,7 @@ t.test('nonlocalhost onListen should manage error in async', async t => {
     port: 0
   })
 })
+
 t.test('nonlocalhost Register onListen hook after a plugin inside a plugin', t => {
   t.plan(3)
   const fastify = Fastify()
@@ -277,6 +295,7 @@ t.test('nonlocalhost Register onListen hook after a plugin inside a plugin', t =
     port: 0
   })
 })
+
 t.test('nonlocalhost onListen encapsulation should be called in order', t => {
   t.plan(6)
   const fastify = Fastify()
@@ -308,6 +327,7 @@ t.test('nonlocalhost onListen encapsulation should be called in order', t => {
     port: 0
   })
 })
+
 t.test('onListen localhost should work in order with callback', t => {
   t.plan(4)
   const fastify = Fastify()
@@ -329,6 +349,7 @@ t.test('onListen localhost should work in order with callback', t => {
     t.error(err)
   })
 })
+
 t.test('onListen localhost should work in order with callback in async', t => {
   t.plan(4)
   const fastify = Fastify()
@@ -348,7 +369,8 @@ t.test('onListen localhost should work in order with callback in async', t => {
     t.error(err)
   })
 })
-t.test('onListen localhost with callback should manage error in sync', t => {
+
+t.test('onListen localhost sync with callback should log errors as warnings and continue', t => {
   t.plan(5)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -364,16 +386,22 @@ t.test('onListen localhost with callback should manage error in sync', t => {
     done(new Error('FAIL ON LISTEN'))
   })
 
+  fastify.addHook('onListen', function (done) {
+    t.pass('3rd called in root')
+    done()
+  })
+
   fastify.listen({ port: 0 }, (err) => {
     if (err) {
-      t.ok(err, 'FAIL ON LISTEN')
+      t.fail('onListen error should not reach here')
     } else {
       t.equal(fastify.server.address().address, localhost)
       t.error(err)
     }
   })
 })
-t.test('onListen localhost with callback should manage error in async', t => {
+
+t.test('onListen localhost async with callback should log errors as warnings and continue', t => {
   t.plan(5)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -388,15 +416,20 @@ t.test('onListen localhost with callback should manage error in async', t => {
     throw new Error('FAIL ON LISTEN')
   })
 
+  fastify.addHook('onListen', async function () {
+    t.pass('3rd called in root')
+  })
+
   fastify.listen({ port: 0 }, (err) => {
     if (err) {
-      t.ok(err, 'FAIL ON LISTEN')
+      t.fail('onListen error should not reach here')
     } else {
       t.equal(fastify.server.address().address, localhost)
       t.error(err)
     }
   })
 })
+
 t.test('Register onListen hook localhost with callback after a plugin inside a plugin', t => {
   t.plan(5)
   const fastify = Fastify()
@@ -429,6 +462,7 @@ t.test('Register onListen hook localhost with callback after a plugin inside a p
     t.error(err)
   })
 })
+
 t.test('onListen localhost with callback encapsulation should be called in order', t => {
   t.plan(8)
   const fastify = Fastify()
@@ -460,6 +494,7 @@ t.test('onListen localhost with callback encapsulation should be called in order
     t.error(err)
   })
 })
+
 t.test('onListen nonlocalhost should work in order with callback in sync', t => {
   t.plan(4)
   const fastify = Fastify()
@@ -481,6 +516,7 @@ t.test('onListen nonlocalhost should work in order with callback in sync', t => 
     t.error(err)
   })
 })
+
 t.test('onListen nonlocalhost should work in order with callback in async', t => {
   t.plan(4)
   const fastify = Fastify()
@@ -500,7 +536,8 @@ t.test('onListen nonlocalhost should work in order with callback in async', t =>
     t.error(err)
   })
 })
-t.test('onListen nonlocalhost with callback should manage error in sync', t => {
+
+t.test('onListen nonlocalhost sync with callback should log errors as warnings and continue', t => {
   t.plan(5)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -516,16 +553,22 @@ t.test('onListen nonlocalhost with callback should manage error in sync', t => {
     done(new Error('FAIL ON LISTEN'))
   })
 
+  fastify.addHook('onListen', function (done) {
+    t.pass('3rd called in root')
+    done()
+  })
+
   fastify.listen({ host: '::1', port: 0 }, (err) => {
     if (err) {
-      t.ok(err, 'FAIL ON LISTEN')
+      t.fail('onListen error should not reach here')
     } else {
       t.equal(fastify.server.address().address, '::1')
       t.error(err)
     }
   })
 })
-t.test('onListen nonlocalhost with callback should manage error in async', t => {
+
+t.test('onListen nonlocalhost async with callback should log errors as warnings and continue', t => {
   t.plan(5)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -540,15 +583,20 @@ t.test('onListen nonlocalhost with callback should manage error in async', t => 
     throw new Error('FAIL ON LISTEN')
   })
 
+  fastify.addHook('onListen', async function () {
+    t.pass('3rd called in root')
+  })
+
   fastify.listen({ host: '::1', port: 0 }, (err) => {
     if (err) {
-      t.ok(err, 'FAIL ON LISTEN')
+      t.fail('onListen error should not reach here')
     } else {
       t.equal(fastify.server.address().address, '::1')
       t.error(err)
     }
   })
 })
+
 t.test('Register onListen hook nonlocalhost with callback after a plugin inside a plugin', t => {
   t.plan(5)
   const fastify = Fastify()
@@ -581,6 +629,7 @@ t.test('Register onListen hook nonlocalhost with callback after a plugin inside 
     t.error(err)
   })
 })
+
 t.test('onListen nonlocalhost with callback encapsulation should be called in order', t => {
   t.plan(8)
   const fastify = Fastify()
@@ -610,5 +659,21 @@ t.test('onListen nonlocalhost with callback encapsulation should be called in or
   fastify.listen({ host: '::1', port: 0 }, (err) => {
     t.equal(fastify.server.address().address, '::1')
     t.error(err)
+  })
+})
+
+t.test('onListen sync should work if user does not pass done', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  let order = 0
+
+  fastify.addHook('onListen', function () {
+    t.equal(order++, 0, '1st called in root')
+  })
+
+  fastify.listen({
+    host: 'localhost',
+    port: 0
   })
 })

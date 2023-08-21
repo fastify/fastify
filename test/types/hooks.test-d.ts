@@ -392,3 +392,16 @@ server.addHook('preClose', function (done) {
 server.addHook('preClose', async function () {
   expectType<FastifyInstance>(this)
 })
+
+expectError(server.addHook('onClose', async function (instance, done) {}))
+expectError(server.addHook('onError', async function (request, reply, error, done) {}))
+expectError(server.addHook('onReady', async function (done) {}))
+expectError(server.addHook('onRequest', async function (request, reply, done) {}))
+expectError(server.addHook('onRequestAbort', async function (request, done) {}))
+expectError(server.addHook('onResponse', async function (request, reply, done) {}))
+expectError(server.addHook('onSend', async function (request, reply, payload, done) {}))
+expectError(server.addHook('onTimeout', async function (request, reply, done) {}))
+expectError(server.addHook('preClose', async function (done) {}))
+expectError(server.addHook('preHandler', async function (request, reply, done) {}))
+expectError(server.addHook('preSerialization', async function (request, reply, payload, done) {}))
+expectError(server.addHook('preValidation', async function (request, reply, done) {}))

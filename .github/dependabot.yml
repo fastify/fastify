@@ -17,3 +17,18 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    groups:
+      # Production dependencies without breaking changes
+      dependencies:
+        dependency-type: "production"
+        update-types:
+        - "minor"
+        - "patch"
+      # Production dependencies with breaking changes
+      dependencies-major:
+        dependency-type: "production"
+        update-types:
+        - "major"
+      # Development dependencies
+      dev-dependencies:
+        dependency-type: "development"

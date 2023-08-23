@@ -54,7 +54,7 @@ Request is a core Fastify object containing the following fields:
   - `attachValidation` - attach `validationError` to request 
     (if there is a schema defined)
   - `logLevel` - log level defined for this route
-  - `schema` - the scheme definition for this route
+  - `schema` - the JSON schemas definition for this route
   - `version` -  a semver compatible string that defines the version of the endpoint
   - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
   - `prefixTrailingSlash` - string used to determine how to handle passing / 

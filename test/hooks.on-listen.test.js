@@ -165,6 +165,52 @@ t.test('localhost Register onListen hook after a plugin inside a plugin', t => {
   })
 })
 
+t.test('localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', t => {
+  t.plan(6)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  stream.on('data', message => {
+    if (message.msg.includes('Plugin Error')) {
+      t.pass('Logged Error Message')
+    }
+  })
+
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      throw new Error('Plugin Error')
+    })
+    done()
+  }))
+
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      throw new Error('Plugin Error')
+    })
+
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      throw new Error('Plugin Error')
+    })
+
+    done()
+  }))
+
+  fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})
+
 t.test('localhost onListen encapsulation should be called in order', t => {
   t.plan(6)
   const fastify = Fastify()
@@ -239,7 +285,7 @@ t.test('nonlocalhost async onListen should be called in order', async t => {
   })
 })
 
-t.test('nonlocalhost sync onListen should should log errors as warnings and continue', t => {
+t.test('nonlocalhost sync onListen should log errors as warnings and continue', t => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -313,6 +359,52 @@ t.test('nonlocalhost Register onListen hook after a plugin inside a plugin', t =
     instance.addHook('onListen', function (done) {
       t.ok('called')
       done()
+    })
+
+    done()
+  }))
+
+  fastify.listen({
+    host: '::1',
+    port: 0
+  })
+})
+
+t.test('nonlocalhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', t => {
+  t.plan(6)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  stream.on('data', message => {
+    if (message.msg.includes('Plugin Error')) {
+      t.pass('Logged Error Message')
+    }
+  })
+
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      throw new Error('Plugin Error')
+    })
+    done()
+  }))
+
+  fastify.register(fp(function (instance, opts, done) {
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      throw new Error('Plugin Error')
+    })
+
+    instance.addHook('onListen', function (done) {
+      t.ok('called')
+      throw new Error('Plugin Error')
     })
 
     done()

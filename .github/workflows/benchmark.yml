@@ -91,7 +91,7 @@ jobs:
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-20 }}
             
   remove-label:
-    if: "always()"
+    if: ${{ github.event.label.name == 'benchmark' }}
     needs: 
       - benchmark
       - output-benchmark

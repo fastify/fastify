@@ -6,7 +6,9 @@ import fastify, {
   FastifyInstance,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
-  RawServerDefault
+  RawServerDefaultsion,
+  RawServerDefault,
+  RouteGenericInterface
 } from '../../fastify'
 import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'

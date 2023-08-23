@@ -561,7 +561,7 @@ test('Should allow registering a constrained GET route after an unconstrained HE
     url: '/',
     handler: (req, reply) => {
       reply.header('content-type', 'text/plain')
-      reply.send('custom HEAD response')
+      reply.send('HEAD response: length is about 33')
     }
   })
 
@@ -570,7 +570,8 @@ test('Should allow registering a constrained GET route after an unconstrained HE
     url: '/',
     constraints: { host: 'fastify.io' },
     handler: (req, reply) => {
-      reply.send({ hello: 'from any other domain' })
+      reply.header('content-type', 'text/plain')
+      reply.send('Hello from constrains: length is about 41')
     }
   })
 
@@ -582,7 +583,7 @@ test('Should allow registering a constrained GET route after an unconstrained HE
     }
   }, (err, res) => {
     t.error(err)
-    t.same(res.payload, 'custom HEAD response')
+    t.same(res.headers['content-length'], '41')
     t.equal(res.statusCode, 200)
   })
 })

@@ -29,6 +29,21 @@ test('getPluginName should return plugin name if the file is cached', t => {
   t.equal(pluginName, expectedPluginName)
 })
 
+test('getPluginName should not throw when require.cache is undefined', t => {
+  t.plan(1)
+  function example () {
+    console.log('is just an example')
+  }
+  const cache = require.cache
+  require.cache = undefined
+  t.teardown(() => {
+    require.cache = cache
+  })
+  const pluginName = pluginUtilsPublic.getPluginName(example)
+
+  t.equal(pluginName, 'example')
+})
+
 test("getMeta should return the object stored with the 'plugin-meta' symbol", t => {
   t.plan(1)
 

@@ -4,6 +4,7 @@ const { t, before } = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
 const dns = require('dns').promises
+const split = require('split2')
 
 let localhost
 
@@ -81,9 +82,21 @@ t.test('localhost onListen sync should log errors as warnings and continue', t =
 })
 
 t.test('localhost onListen async should log errors as warnings and continue', async t => {
-  t.plan(3)
-  const fastify = Fastify()
+  t.plan(4)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
   t.teardown(fastify.close.bind(fastify))
+
+  const messages = []
+  stream.on('data', message => {
+    messages.push(message)
+  })
 
   fastify.addHook('onListen', async function () {
     t.pass('called in root')
@@ -102,6 +115,8 @@ t.test('localhost onListen async should log errors as warnings and continue', as
     host: 'localhost',
     port: 0
   })
+
+  t.ok(messages.find(message => message.msg.includes('FAIL ON LISTEN')))
 })
 
 t.test('localhost Register onListen hook after a plugin inside a plugin', t => {

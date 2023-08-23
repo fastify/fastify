@@ -106,9 +106,10 @@ t.test('localhost onListen async should log errors as warnings and continue', as
   })
   t.teardown(fastify.close.bind(fastify))
 
-  const messages = []
   stream.on('data', message => {
-    messages.push(message)
+    if (message.msg.includes('FAIL ON LISTEN')) {
+      t.pass('Logged Error Message')
+    }
   })
 
   fastify.addHook('onListen', async function () {
@@ -128,8 +129,6 @@ t.test('localhost onListen async should log errors as warnings and continue', as
     host: 'localhost',
     port: 0
   })
-
-  t.ok(messages.find(message => message.msg.includes('FAIL ON LISTEN')))
 })
 
 t.test('localhost Register onListen hook after a plugin inside a plugin', t => {
@@ -234,6 +233,52 @@ t.test('localhost onListen encapsulation should be called in order', t => {
       childTwo.addHook('onListen', async function () {
         t.equal(order++, 2, 'called in childTwo')
         t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+      })
+    })
+  })
+  fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})
+
+t.test('localhost onListen encapsulation should be called in order and should log errors as warnings and continue', t => {
+  t.plan(7)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  stream.on('data', message => {
+    if (message.msg.includes('Error in onListen hook of childTwo')) {
+      t.pass('Logged Error Message')
+    }
+  })
+
+  let order = 0
+
+  fastify.addHook('onListen', function (done) {
+    t.equal(order++, 0, 'called in root')
+    t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    done()
+  })
+
+  fastify.register(async (childOne, o) => {
+    childOne.addHook('onListen', function (done) {
+      t.equal(order++, 1, 'called in childOne')
+      t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      done()
+    })
+    childOne.register(async (childTwo, o) => {
+      childTwo.addHook('onListen', async function () {
+        t.equal(order++, 2, 'called in childTwo')
+        t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        throw new Error('Error in onListen hook of childTwo')
       })
     })
   })
@@ -439,6 +484,53 @@ t.test('nonlocalhost onListen encapsulation should be called in order', t => {
       childTwo.addHook('onListen', async function () {
         t.equal(order++, 2, 'called in childTwo')
         t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+      })
+    })
+  })
+  fastify.listen({
+    host: '::1',
+    port: 0
+  })
+})
+
+t.test('nonlocalhost onListen encapsulation should be called in order and should log errors as warnings and continue', t => {
+  t.plan(7)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  stream.on('data', message => {
+    if (message.msg.includes('Error in onListen hook of childTwo')) {
+      t.pass('Logged Error Message')
+    }
+  })
+
+  let order = 0
+
+  fastify.addHook('onListen', function (done) {
+    t.equal(order++, 0, 'called in root')
+
+    t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    done()
+  })
+
+  fastify.register(async (childOne, o) => {
+    childOne.addHook('onListen', function (done) {
+      t.equal(order++, 1, 'called in childOne')
+      t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      done()
+    })
+    childOne.register(async (childTwo, o) => {
+      childTwo.addHook('onListen', async function () {
+        t.equal(order++, 2, 'called in childTwo')
+        t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        throw new Error('Error in onListen hook of childTwo')
       })
     })
   })

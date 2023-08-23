@@ -6,7 +6,6 @@ import fastify, {
   FastifyInstance,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
-  RawServerDefaultsion,
   RawServerDefault,
   RouteGenericInterface
 } from '../../fastify'

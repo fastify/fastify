@@ -56,9 +56,22 @@ t.test('localhost async onListen should be called in order', async t => {
 })
 
 t.test('localhost onListen sync should log errors as warnings and continue', t => {
-  t.plan(3)
-  const fastify = Fastify()
+  t.plan(4)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    forceCloseConnections: false,
+    logger: {
+      stream,
+      level: 'info'
+    }
+  })
   t.teardown(fastify.close.bind(fastify))
+
+  stream.on('data', message => {
+    if (message.msg.includes('FAIL ON LISTEN')) {
+      t.pass('Logged Error Message')
+    }
+  })
 
   fastify.addHook('onListen', function (done) {
     t.pass('called in root')

@@ -775,3 +775,41 @@ test('error in async constraints', async (t) => {
     t.equal(statusCode, 500)
   }
 })
+
+test('Allow regex constraints in routes', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { host: /.*\.fastify\.io/ },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from fastify dev domain' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      host: 'dev.fastify.io'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'from fastify dev domain' })
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      host: 'google.com'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
+})

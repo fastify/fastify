@@ -83,7 +83,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   request.headers = {}
 
   expectType<RequestQuerystringDefault>(request.query)
-  expectType<any>(request.id)
+  expectType<string>(request.id)
   expectType<FastifyLoggerInstance>(request.log)
   expectType<RawRequestDefaultExpression['socket']>(request.socket)
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)

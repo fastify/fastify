@@ -630,7 +630,9 @@ export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegi
       ? onCloseHookHandler
       : K extends 'preClose'
         ? preCloseHookHandler
-        : never
+        : K extends 'onRoute'
+          ? onRouteHookHandler
+          : never
 
 export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'onRegister'
   ? onRegisterHookHandler

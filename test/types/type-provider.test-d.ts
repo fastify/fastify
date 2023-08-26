@@ -3,7 +3,8 @@ import fastify, {
   HookHandlerDoneFunction,
   FastifyRequest,
   FastifyReply,
-  FastifyInstance
+  FastifyInstance,
+  FastifyError
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
@@ -79,6 +80,14 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         y: Type.Number(),
         z: Type.Number()
       })
+    },
+    errorHandler: (error, request, reply) => {
+      expectType<FastifyError>(error)
+      expectAssignable<FastifyRequest>(request)
+      expectType<number>(request.body.x)
+      expectType<number>(request.body.y)
+      expectType<number>(request.body.z)
+      expectAssignable<FastifyReply>(reply)
     }
   },
   (req) => {
@@ -108,6 +117,14 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
           z: { type: 'boolean' }
         }
       } as const
+    },
+    errorHandler: (error, request, reply) => {
+      expectType<FastifyError>(error)
+      expectAssignable<FastifyRequest>(request)
+      expectType<number | undefined>(request.body.x)
+      expectType<string | undefined>(request.body.y)
+      expectType<boolean | undefined>(request.body.z)
+      expectAssignable<FastifyReply>(reply)
     }
   },
   (req) => {
@@ -135,6 +152,14 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<Jso
           z: { type: 'boolean' }
         }
       } as const
+    },
+    errorHandler: (error, request, reply) => {
+      expectType<FastifyError>(error)
+      expectAssignable<FastifyRequest>(request)
+      expectType<number | undefined>(request.body.x)
+      expectType<string | undefined>(request.body.y)
+      expectType<boolean | undefined>(request.body.z)
+      expectAssignable<FastifyReply>(reply)
     }
   },
   (req) => {

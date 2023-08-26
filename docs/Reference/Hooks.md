@@ -416,7 +416,7 @@ fastify.addHook('onReady', async function () {
 ```
 ### onListen
 
-Triggered after the server starts listening for requests.
+Triggered when the server starts listening for requests. The hooks run one after another. If a hook function causes an error, it is handled and ignored, allowing the queue of hooks to continue.
 This is another way of doing `fastify.server.on('listening', () => {})`.
 
 ```js

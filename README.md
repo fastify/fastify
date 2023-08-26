@@ -67,24 +67,42 @@ The `main` branch refers to the Fastify `v4` release. Check out the
 
 ### Quick start
 
-Create a folder and make it your current working directory:
+This section gives a quick and friendly introduction to how you can build your application with Fastify. Follow the steps below and code along.
+
+#### Directory Creation
+
+Open your machine, create a folder and name it "my-app" for example. Alternatively, you can make a directory via the CLI with this command:
 
 ```sh
 mkdir my-app
+```
+
+#### Changing Directory
+
+You will have to switch into the `my-app` directory so you can build in it. Use this command to change the directory:
+
+```sh
 cd my-app
 ```
 
-Generate a fastify project with `npm init`:
+#### Project Generation and Initialization
+
+You must initialize your project to get all the files necessary to build with Fastify. You can initialize the node package manager of your Fastify project with:
 
 ```sh
 npm init fastify
 ```
 
-Install dependencies:
+This command generates and initializes the Fastify-provided plugins, tests, and routes into your project.
+
+#### Install dependencies:
 
 ```sh
 npm i
 ```
+This command installs the necessary packages needed to keep your app running. It also audit a great number of the packages for security enhancement.
+
+#### Starting The App
 
 To start the app in dev mode:
 
@@ -103,15 +121,18 @@ Create](https://github.com/fastify/create-fastify), which in turn uses the
 generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
 
 
-### Install
+### Installation As A Dependency
 
 To install Fastify in an existing project as a dependency:
 
 Install with npm:
+
 ```sh
 npm i fastify
 ```
+
 Install with yarn:
+
 ```sh
 yarn add fastify
 ```

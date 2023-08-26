@@ -647,6 +647,7 @@ export interface preCloseAsyncHookHandler<
 export type ApplicationHook = 'onRoute'
 | 'onRegister'
 | 'onReady'
+| 'onListen'
 | 'onClose'
 | 'preClose'
 
@@ -654,23 +655,27 @@ export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegi
   ? onRegisterHookHandler
   : K extends 'onReady'
     ? onReadyHookHandler
-    : K extends 'onClose'
-      ? onCloseHookHandler
-      : K extends 'preClose'
-        ? preCloseHookHandler
-        : K extends 'onRoute'
-          ? onRouteHookHandler
-          : never
+    : K extends 'onListen'
+      ? onListenHookHandler
+      : K extends 'onClose'
+        ? onCloseHookHandler
+        : K extends 'preClose'
+          ? preCloseHookHandler
+          : K extends 'onRoute'
+            ? onRouteHookHandler
+            : never
 
 export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'onRegister'
   ? onRegisterHookHandler
   : K extends 'onReady'
     ? onReadyAsyncHookHandler
-    : K extends 'onClose'
-      ? onCloseAsyncHookHandler
-      : K extends 'preClose'
-        ? preCloseAsyncHookHandler
-        : never
+    : K extends 'onListen'
+      ? onListenAsyncHookHandler
+      : K extends 'onClose'
+        ? onCloseAsyncHookHandler
+        : K extends 'preClose'
+          ? preCloseAsyncHookHandler
+          : never
 
 export type HookLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
   ? ApplicationHookLookup<K>

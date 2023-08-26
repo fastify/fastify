@@ -12,8 +12,9 @@ t.before(buildCertificate)
 
 test('Should support a custom https server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
+  const minPlan = localAddresses.length - 1 || 1
 
-  t.plan((localAddresses.length - 1) + 3)
+  t.plan(minPlan + 3)
 
   const serverFactory = (handler, opts) => {
     t.ok(opts.serverFactory, 'it is called once for localhost')

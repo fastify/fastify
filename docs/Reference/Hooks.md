@@ -107,6 +107,9 @@ returned stream. This property is used to correctly match the request payload
 with the `Content-Length` header value. Ideally, this property should be updated
 on each received chunk.
 
+**Notice:** The size of the returned stream is checked to not exceed the limit 
+set in [`bodyLimit`](./Server.md#bodylimit) option.
+
 ### preValidation
 
 If you are using the `preValidation` hook, you can change the payload before it

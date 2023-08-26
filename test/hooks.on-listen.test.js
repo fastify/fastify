@@ -36,7 +36,7 @@ t.test('localhost onListen should be called in order', t => {
 })
 
 t.test('localhost async onListen should be called in order', async t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   let order = 0
@@ -53,6 +53,7 @@ t.test('localhost async onListen should be called in order', async t => {
     host: 'localhost',
     port: 0
   })
+  t.equal(order, 2, 'the onListen hooks are awaited')
 })
 
 t.test('localhost onListen sync should log errors as warnings and continue', t => {

@@ -1047,3 +1047,39 @@ test('async onListen does not need to be awaited', t => {
     port: 0
   })
 })
+
+test('onListen hooks do not block /1', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.addHook('onListen', function (done) {
+    setTimeout(done, 500)
+  })
+
+  const startDate = new Date()
+  fastify.listen({
+    host: 'localhost',
+    port: 0
+  }, err => {
+    t.error(err)
+    t.ok(new Date() - startDate < 50)
+  })
+})
+
+test('onListen hooks do not block /2', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.addHook('onListen', async function () {
+    await new Promise(resolve => setTimeout(resolve, 500))
+  })
+
+  const startDate = new Date()
+  await fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+  t.ok(new Date() - startDate < 50)
+})

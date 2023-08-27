@@ -401,17 +401,17 @@ test('non-localhost sync onListen should log errors as warnings and continue', t
   let order = 0
 
   fastify.addHook('onListen', function (done) {
-    t.pass('called in root')
+    t.equal(++order, 1)
     done()
   })
 
   fastify.addHook('onListen', function () {
-    t.equal(++order, 1, '1st sync called in root')
+    t.equal(++order, 2)
     throw new Error('FAIL ON LISTEN')
   })
 
   fastify.addHook('onListen', function (done) {
-    t.pass('should still run')
+    t.equal(++order, 3, 'should still run')
     done()
   })
 
@@ -422,7 +422,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', t
 })
 
 test('non-localhost async onListen should log errors as warnings and continue', async t => {
-  t.plan(4)
+  t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
     forceCloseConnections: false,
@@ -442,15 +442,17 @@ test('non-localhost async onListen should log errors as warnings and continue', 
   let order = 0
 
   fastify.addHook('onListen', async function () {
+    t.equal(++order, 1)
     t.pass('called in root')
   })
 
   fastify.addHook('onListen', async function () {
-    t.equal(++order, 1, '1st async called in root')
+    t.equal(++order, 2, '2nd async failed in root')
     throw new Error('FAIL ON LISTEN')
   })
 
   fastify.addHook('onListen', async function () {
+    t.equal(++order, 3)
     t.pass('should still run')
   })
 
@@ -681,17 +683,17 @@ test('onListen localhost sync with callback should log errors as warnings and co
   let order = 0
 
   fastify.addHook('onListen', function (done) {
-    t.pass('1st called in root')
+    t.equal(++order, 1, '1st called in root')
     done()
   })
 
   fastify.addHook('onListen', function () {
-    t.equal(++order, 1, 'error sync called in root')
+    t.equal(++order, 2, 'error sync called in root')
     throw new Error('FAIL ON LISTEN')
   })
 
   fastify.addHook('onListen', function (done) {
-    t.pass('3rd called in root')
+    t.equal(++order, 3, '1st called in root')
     done()
   })
 
@@ -848,7 +850,8 @@ test('onListen non-localhost should work in order with callback in async', t => 
 })
 
 test('onListen non-localhost sync with callback should log errors as warnings and continue', t => {
-  t.plan(6)
+  t.plan(8)
+
   const stream = split(JSON.parse)
   const fastify = Fastify({
     forceCloseConnections: false,
@@ -868,16 +871,18 @@ test('onListen non-localhost sync with callback should log errors as warnings an
   let order = 0
 
   fastify.addHook('onListen', function (done) {
+    t.equal(++order, 1)
     t.pass('1st called in root')
     done()
   })
 
   fastify.addHook('onListen', function () {
-    t.equal(++order, 1, 'error sync called in root')
+    t.equal(++order, 2)
     throw new Error('FAIL ON LISTEN')
   })
 
   fastify.addHook('onListen', function (done) {
+    t.equal(++order, 3)
     t.pass('3rd called in root')
     done()
   })
@@ -889,7 +894,8 @@ test('onListen non-localhost sync with callback should log errors as warnings an
 })
 
 test('onListen non-localhost async with callback should log errors as warnings and continue', t => {
-  t.plan(6)
+  t.plan(8)
+
   const stream = split(JSON.parse)
   const fastify = Fastify({
     forceCloseConnections: false,
@@ -909,15 +915,17 @@ test('onListen non-localhost async with callback should log errors as warnings a
   let order = 0
 
   fastify.addHook('onListen', async function () {
+    t.equal(++order, 1)
     t.pass('1st called in root')
   })
 
   fastify.addHook('onListen', async function () {
-    t.equal(++order, 1, 'error sync called in root')
+    t.equal(++order, 2, 'error sync called in root')
     throw new Error('FAIL ON LISTEN')
   })
 
   fastify.addHook('onListen', async function () {
+    t.equal(++order, 3)
     t.pass('3rd called in root')
   })
 

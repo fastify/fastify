@@ -696,12 +696,8 @@ test('onListen localhost sync with callback should log errors as warnings and co
   })
 
   fastify.listen({ port: 0 }, (err) => {
-    if (err) {
-      t.fail('onListen error should not reach here')
-    } else {
-      t.equal(fastify.server.address().address, localhost)
-      t.error(err)
-    }
+    t.error(err)
+    t.equal(fastify.server.address().address, localhost)
   })
 })
 
@@ -739,12 +735,8 @@ test('onListen localhost async with callback should log errors as warnings and c
   })
 
   fastify.listen({ port: 0 }, (err) => {
-    if (err) {
-      t.fail('onListen error should not reach here')
-    } else {
-      t.equal(fastify.server.address().address, localhost)
-      t.error(err)
-    }
+    t.error(err)
+    t.equal(fastify.server.address().address, localhost)
   })
 })
 
@@ -891,12 +883,8 @@ test('onListen non-localhost sync with callback should log errors as warnings an
   })
 
   fastify.listen({ host: '::1', port: 0 }, (err) => {
-    if (err) {
-      t.fail('onListen error should not reach here')
-    } else {
-      t.equal(fastify.server.address().address, '::1')
-      t.error(err)
-    }
+    t.error(err)
+    t.equal(fastify.server.address().address, '::1')
   })
 })
 
@@ -934,12 +922,8 @@ test('onListen non-localhost async with callback should log errors as warnings a
   })
 
   fastify.listen({ host: '::1', port: 0 }, (err) => {
-    if (err) {
-      t.fail('onListen error should not reach here')
-    } else {
-      t.equal(fastify.server.address().address, '::1')
-      t.error(err)
-    }
+    t.error(err)
+    t.equal(fastify.server.address().address, '::1')
   })
 })
 

@@ -1027,3 +1027,23 @@ test('onListen sync should work if user does not pass done', t => {
     port: 0
   })
 })
+
+test('async onListen does not need to be awaited', t => {
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  let order = 0
+
+  fastify.addHook('onListen', async function () {
+    t.equal(++order, 1, '1st async called in root')
+  })
+
+  fastify.addHook('onListen', async function () {
+    t.equal(++order, 2, '2nd async called in root')
+    t.end()
+  })
+
+  fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})

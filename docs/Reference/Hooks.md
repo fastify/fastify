@@ -417,18 +417,24 @@ fastify.addHook('onReady', async function () {
   await loadCacheFromDatabase()
 })
 ```
+
 ### onListen
 
 Triggered when the server starts listening for requests. The hooks run one 
-after another. If a hook function causes an error, it is handled and 
-ignored, allowing the queue of hooks to continue.
+after another. If a hook function causes an error, it is logged and 
+ignored, allowing the queue of hooks to continue. Hook functions accept one
+argument: a callback, `done`, to be invoked after the hook function is
+complete. Hook functions are invoked with `this` bound to the associated
+Fastify instance.
+
 This is another way of doing `fastify.server.on('listening', () => {})`.
 
 ```js
 // callback style
 fastify.addHook('onListen', function (done) {
   // Some code
-  done()
+  const err = null;
+  done(err)
 })
 
 // or async/await style

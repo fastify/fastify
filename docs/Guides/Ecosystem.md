@@ -218,7 +218,6 @@ section.
 - [`fastify-amqp-async`](https://github.com/kffl/fastify-amqp-async) Fastify
   AMQP plugin with a Promise-based API provided by
   [`amqplib-as-promised`](https://github.com/twawszczak/amqplib-as-promised).
-- [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify RabbitMQ plugin that uses [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager) plugin as a wrapper. (TypeScript Only)
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal)
   Angular server-side rendering support using
   [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server)
@@ -521,6 +520,10 @@ middlewares into Fastify plugins
 - [`fastify-qs`](https://github.com/vanodevium/fastify-qs) A plugin for Fastify
   that adds support for parsing URL query parameters with
   [qs](https://github.com/ljharb/qs).
+- [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify
+  RabbitMQ plugin that uses
+  [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager)
+  plugin as a wrapper.
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
 - [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB

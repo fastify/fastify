@@ -218,6 +218,7 @@ section.
 - [`fastify-amqp-async`](https://github.com/kffl/fastify-amqp-async) Fastify
   AMQP plugin with a Promise-based API provided by
   [`amqplib-as-promised`](https://github.com/twawszczak/amqplib-as-promised).
+- [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify RabbitMQ plugin that uses [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager) plugin as a wrapper. (TypeScript Only)
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal)
   Angular server-side rendering support using
   [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server)

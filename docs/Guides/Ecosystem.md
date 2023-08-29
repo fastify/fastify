@@ -520,6 +520,10 @@ middlewares into Fastify plugins
 - [`fastify-qs`](https://github.com/vanodevium/fastify-qs) A plugin for Fastify
   that adds support for parsing URL query parameters with
   [qs](https://github.com/ljharb/qs).
+- [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify
+  RabbitMQ plugin that uses
+  [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager)
+  plugin as a wrapper.
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
 - [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB

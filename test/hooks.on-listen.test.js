@@ -13,6 +13,19 @@ before(async function () {
   localhost = lookup.address
 })
 
+test('onListen should not be processed when .ready() is called', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.addHook('onListen', function (done) {
+    t.fail()
+    done()
+  })
+
+  fastify.ready(err => t.error(err))
+})
+
 test('localhost onListen should be called in order', t => {
   t.plan(2)
   const fastify = Fastify()

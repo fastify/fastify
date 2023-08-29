@@ -427,7 +427,7 @@ argument: a callback, `done`, to be invoked after the hook function is
 complete. Hook functions are invoked with `this` bound to the associated
 Fastify instance.
 
-This is another way of doing `fastify.server.on('listening', () => {})`.
+This is an alternative to `fastify.server.on('listening', () => {})`.
 
 ```js
 // callback style

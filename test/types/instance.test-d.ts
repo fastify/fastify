@@ -6,7 +6,8 @@ import fastify, {
   FastifyInstance,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
-  RawServerDefault
+  RawServerDefault,
+  RouteGenericInterface
 } from '../../fastify'
 import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
@@ -215,9 +216,13 @@ expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, 
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
-expectType<FastifyInstance>(fastify().get('/', {
+expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
+    expectAssignable<FastifyError>(error)
+    expectAssignable<FastifyRequest>(request)
+    expectAssignable<{ contextKey: string }>(request.routeConfig)
+    expectAssignable<FastifyReply>(reply)
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }
 }))

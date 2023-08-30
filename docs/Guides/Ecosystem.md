@@ -46,7 +46,7 @@ section.
   Plugin to deal with `diagnostics_channel` on Fastify
 - [`@fastify/early-hints`](https://github.com/fastify/fastify-early-hints) Plugin
   to add HTTP 103 feature based on [RFC
-  8297](https://httpwg.org/specs/rfc8297.html).
+  8297](https://datatracker.ietf.org/doc/html/rfc8297).
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check

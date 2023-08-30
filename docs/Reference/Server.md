@@ -480,7 +480,7 @@ is not equal to `/Foo`.
 When `false` then routes are case-insensitive.
 
 Please note that setting this option to `false` goes against
-[RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
+[RFC3986](https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1).
 
 By setting `caseSensitive` to `false`, all paths will be matched as lowercase,
 but the route parameters or wildcards will maintain their original letter

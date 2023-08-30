@@ -510,7 +510,7 @@ Impossible to load plugin because the parent (mapped directly from `avvio`)
 #### FST_ERR_PLUGIN_TIMEOUT
 <a id="FST_ERR_PLUGIN_TIMEOUT"></a>
 
-Plugin did not start in time. Default timeout (in millis): `10000`
+Plugin did not start in time. Default timeout (in milliseconds): `10000`
 
 #### FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE
 <a id="FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE"></a>

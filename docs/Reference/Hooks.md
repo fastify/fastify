@@ -81,7 +81,7 @@ hooks, and a stream with the current request payload.
 If it returns a value (via `return` or via the callback function), it must
 return a stream.
 
-For instance, you can uncompress the request body:
+For instance, you can decompress the request body:
 
 ```js
 fastify.addHook('preParsing', (request, reply, payload, done) => {

@@ -487,10 +487,10 @@ with your GitHub account.
 Create your first application and a static workspace: be careful to download the
 API key as an env file, e.g. `yourworkspace.txt`.
 
-Then, you can easily deploy your application with the following commmand:
+Then, you can easily deploy your application with the following command:
 
 ```bash
-platformatic deploy --keys `yuourworkspace.txt`
+platformatic deploy --keys `yourworkspace.txt`
 ```
 
 Check out the [Full Guide](https://blog.platformatic.dev/how-to-migrate-a-fastify-app-to-platformatic-service)

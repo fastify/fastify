@@ -2,7 +2,12 @@
 
 const { test } = require('tap')
 const fastify = require('../')
-const { request } = require('undici')
+const { request, setGlobalDispatcher, Agent } = require('undici')
+
+setGlobalDispatcher(new Agent({
+  keepAliveTimeout: 10,
+  keepAliveMaxTimeout: 10
+}))
 
 test('post empty body', async t => {
   const app = fastify()

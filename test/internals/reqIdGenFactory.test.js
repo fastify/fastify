@@ -4,12 +4,16 @@ const { test } = require('tap')
 const { reqIdGenFactory } = require('../../lib/reqIdGenFactory')
 
 test('should create incremental ids deterministically', t => {
-  t.plan(9999)
+  t.plan(1)
   const reqIdGen = reqIdGenFactory()
 
   for (let i = 1; i < 1e4; ++i) {
-    t.equal(reqIdGen(), 'req-' + i.toString(36))
+    if (reqIdGen() !== 'req-' + i.toString(36)) {
+      t.fail()
+      break
+    }
   }
+  t.pass()
 })
 
 test('should have prefix "req-"', t => {

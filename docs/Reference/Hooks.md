@@ -24,6 +24,7 @@ are Request/Reply hooks and application hooks:
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
   - [onReady](#onready)
+  - [onListen](#onlisten)
   - [onClose](#onclose)
   - [preClose](#preclose)
   - [onRoute](#onroute)
@@ -80,7 +81,7 @@ hooks, and a stream with the current request payload.
 If it returns a value (via `return` or via the callback function), it must
 return a stream.
 
-For instance, you can uncompress the request body:
+For instance, you can decompress the request body:
 
 ```js
 fastify.addHook('preParsing', (request, reply, payload, done) => {
@@ -388,6 +389,7 @@ fastify.addHook('preHandler', async (request, reply) => {
 You can hook into the application-lifecycle as well.
 
 - [onReady](#onready)
+- [onListen](#onlisten)
 - [onClose](#onclose)
 - [preClose](#preclose)
 - [onRoute](#onroute)
@@ -416,6 +418,33 @@ fastify.addHook('onReady', async function () {
 })
 ```
 
+### onListen
+
+Triggered when the server starts listening for requests. The hooks run one 
+after another. If a hook function causes an error, it is logged and 
+ignored, allowing the queue of hooks to continue. Hook functions accept one
+argument: a callback, `done`, to be invoked after the hook function is
+complete. Hook functions are invoked with `this` bound to the associated
+Fastify instance.
+
+This is an alternative to `fastify.server.on('listening', () => {})`.
+
+```js
+// callback style
+fastify.addHook('onListen', function (done) {
+  // Some code
+  const err = null;
+  done(err)
+})
+
+// or async/await style
+fastify.addHook('onListen', async function () {
+  // Some async code
+})
+```
+
+> **Note**  
+> This hook will not run when the server is started using `fastify.inject()` or `fastify.ready()`
 ### onClose
 <a id="on-close"></a>
 

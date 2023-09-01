@@ -46,7 +46,7 @@ section.
   Plugin to deal with `diagnostics_channel` on Fastify
 - [`@fastify/early-hints`](https://github.com/fastify/fastify-early-hints) Plugin
   to add HTTP 103 feature based on [RFC
-  8297](https://httpwg.org/specs/rfc8297.html).
+  8297](https://datatracker.ietf.org/doc/html/rfc8297).
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check
@@ -121,6 +121,8 @@ section.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
+- [`@fastify/throttle`](https://github.com/fastify/fastify-throttle) Plugin for
+- throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
@@ -520,6 +522,10 @@ middlewares into Fastify plugins
 - [`fastify-qs`](https://github.com/vanodevium/fastify-qs) A plugin for Fastify
   that adds support for parsing URL query parameters with
   [qs](https://github.com/ljharb/qs).
+- [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify
+  RabbitMQ plugin that uses
+  [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager)
+  plugin as a wrapper.
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
 - [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB

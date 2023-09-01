@@ -50,7 +50,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   //   the RequestType (preferred) or swap Logger and RequestType arguments when
   //   creating custom types of FastifyRequest. Related issue #4123
 > {
-  id: any;
+  id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;
   query: RequestType['query'];

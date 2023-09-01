@@ -230,39 +230,32 @@ The overhead that each framework has on your application depends on your
 application, you should __always__ benchmark if performance matters to you.
 
 ## Documentation
-* <a href="./docs/Guides/Getting-Started.md"><code><b>Getting
-  Started</b></code></a>
-* <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
-* <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
-* <a href="./docs/Reference/Routes.md"><code><b>Routes</b></code></a>
-* <a
-  href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
-* <a href="./docs/Reference/Logging.md"><code><b>Logging</b></code></a>
-* <a href="./docs/Reference/Middleware.md"><code><b>Middleware</b></code></a>
-* <a href="./docs/Reference/Hooks.md"><code><b>Hooks</b></code></a>
-* <a href="./docs/Reference/Decorators.md"><code><b>Decorators</b></code></a>
-* <a href="./docs/Reference/Validation-and-Serialization.md"><code><b>Validation
-  and Serialization</b></code></a>
-* <a href="./docs/Guides/Fluent-Schema.md"><code><b>Fluent Schema</b></code></a>
-* <a href="./docs/Reference/Lifecycle.md"><code><b>Lifecycle</b></code></a>
-* <a href="./docs/Reference/Reply.md"><code><b>Reply</b></code></a>
-* <a href="./docs/Reference/Request.md"><code><b>Request</b></code></a>
-* <a href="./docs/Reference/Errors.md"><code><b>Errors</b></code></a>
-* <a href="./docs/Reference/ContentTypeParser.md"><code><b>Content Type
-  Parser</b></code></a>
-* <a href="./docs/Reference/Plugins.md"><code><b>Plugins</b></code></a>
-* <a href="./docs/Guides/Testing.md"><code><b>Testing</b></code></a>
-* <a href="./docs/Guides/Benchmarking.md"><code><b>Benchmarking</b></code></a>
-* <a href="./docs/Guides/Write-Plugin.md"><code><b>How to write a good
-  plugin</b></code></a>
-* <a href="./docs/Guides/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
-* <a href="./docs/Reference/HTTP2.md"><code><b>HTTP2</b></code></a>
-* <a href="./docs/Reference/LTS.md"><code><b>Long Term Support</b></code></a>
-* <a href="./docs/Reference/TypeScript.md"><code><b>TypeScript and types
-  support</b></code></a>
-* <a href="./docs/Guides/Serverless.md"><code><b>Serverless</b></code></a>
-* <a
-  href="./docs/Guides/Recommendations.md"><code><b>Recommendations</b></code></a>
+* [__`Getting Started`__](./docs/Guides/Getting-Started.md)
+* [__`Guides`__](./docs/Guides/Index.md)
+* [__`Server`__](./docs/Reference/Server.md)
+* [__`Routes`__](./docs/Reference/Routes.md)
+* [__`Encapsulation`__](./docs/Reference/Encapsulation.md)
+* [__`Logging`__](./docs/Reference/Logging.md)
+* [__`Middleware`__](./docs/Reference/Middleware.md)
+* [__`Hooks`__](./docs/Reference/Hooks.md)
+* [__`Decorators`__](./docs/Reference/Decorators.md)
+* [__`Validation and Serialization`__](./docs/Reference/Validation-and-Serialization.md)
+* [__`Fluent Schema`__](./docs/Guides/Fluent-Schema.md)
+* [__`Lifecycle`__](./docs/Reference/Lifecycle.md)
+* [__`Reply`__](./docs/Reference/Reply.md)
+* [__`Request`__](./docs/Reference/Request.md)
+* [__`Errors`__](./docs/Reference/Errors.md)
+* [__`Content Type Parser`__](./docs/Reference/ContentTypeParser.md)
+* [__`Plugins`__](./docs/Reference/Plugins.md)
+* [__`Testing`__](./docs/Guides/Testing.md)
+* [__`Benchmarking`__](./docs/Guides/Benchmarking.md)
+* [__`How to write a good plugin`__](./docs/Guides/Write-Plugin.md)
+* [__`Plugins Guide`__](./docs/Guides/Plugins-Guide.md)
+* [__`HTTP2`__](./docs/Reference/HTTP2.md)
+* [__`Long Term Support`__](./docs/Reference/LTS.md)
+* [__`TypeScript and types support`__](./docs/Reference/TypeScript.md)
+* [__`Serverless`__](./docs/Guides/Serverless.md)
+* [__`Recommendations`__](./docs/Guides/Recommendations.md)
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/HEAD/README.md)
 

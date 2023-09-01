@@ -620,7 +620,7 @@ function fastify (options) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
-    } else if (name === 'onReady') {
+    } else if (name === 'onReady' || name === 'onListen') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
@@ -636,9 +636,7 @@ function fastify (options) {
 
     if (name === 'onClose') {
       this.onClose(fn)
-    } else if (name === 'onReady') {
-      this[kHooks].add(name, fn)
-    } else if (name === 'onRoute') {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {

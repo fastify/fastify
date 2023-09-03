@@ -560,6 +560,34 @@ export interface onReadyAsyncHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   ): Promise<unknown>;
 }
+
+/**
+ * Triggered when fastify.listen() is invoked to start the server. It is useful when plugins need a "onListen" event, for example to run logics after the server start listening for requests.
+ */
+export interface onListenHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
+}
+
+export interface onListenAsyncHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  ): Promise<unknown>;
+}
 /**
  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
  */
@@ -619,6 +647,7 @@ export interface preCloseAsyncHookHandler<
 export type ApplicationHook = 'onRoute'
 | 'onRegister'
 | 'onReady'
+| 'onListen'
 | 'onClose'
 | 'preClose'
 
@@ -626,23 +655,27 @@ export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegi
   ? onRegisterHookHandler
   : K extends 'onReady'
     ? onReadyHookHandler
-    : K extends 'onClose'
-      ? onCloseHookHandler
-      : K extends 'preClose'
-        ? preCloseHookHandler
-        : K extends 'onRoute'
-          ? onRouteHookHandler
-          : never
+    : K extends 'onListen'
+      ? onListenHookHandler
+      : K extends 'onClose'
+        ? onCloseHookHandler
+        : K extends 'preClose'
+          ? preCloseHookHandler
+          : K extends 'onRoute'
+            ? onRouteHookHandler
+            : never
 
 export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'onRegister'
   ? onRegisterHookHandler
   : K extends 'onReady'
     ? onReadyAsyncHookHandler
-    : K extends 'onClose'
-      ? onCloseAsyncHookHandler
-      : K extends 'preClose'
-        ? preCloseAsyncHookHandler
-        : never
+    : K extends 'onListen'
+      ? onListenAsyncHookHandler
+      : K extends 'onClose'
+        ? onCloseAsyncHookHandler
+        : K extends 'preClose'
+          ? preCloseAsyncHookHandler
+          : never
 
 export type HookLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
   ? ApplicationHookLookup<K>

@@ -13,6 +13,8 @@ fastify
   })
 
 fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) throw err
+  if (err) {
+    throw err
+  }
   fastify.log.info(`server listening on ${address}`)
 })

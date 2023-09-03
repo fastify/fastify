@@ -156,6 +156,20 @@ test('double listen errors callback with (err, address)', t => {
   })
 })
 
+test('nonlocalhost double listen errors callback with (err, address)', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  fastify.listen({ host: '::1', port: 0 }, (err, address) => {
+    t.equal(address, `http://${'[::1]'}:${fastify.server.address().port}`)
+    t.error(err)
+    fastify.listen({ host: '::1', port: fastify.server.address().port }, (err2, address2) => {
+      t.equal(address2, null)
+      t.ok(err2)
+    })
+  })
+})
+
 test('listen twice on the same port', t => {
   t.plan(4)
   const fastify = Fastify()

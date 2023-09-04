@@ -97,7 +97,6 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
 }
 ```
 
-=======
 #### removeContentTypeParser
 
 With `removeContentTypeParser` a single or an array of content types can be

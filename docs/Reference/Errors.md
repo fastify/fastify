@@ -290,6 +290,11 @@ The logger accepts either a `'stream'` or a `'file'` as the destination.
 The logger should have all these methods: `'info'`, `'error'`,
 `'debug'`, `'fatal'`, `'warn'`, `'trace'`, `'child'`.
 
+#### FST_ERR_LOG_INVALID_LOGGER_INSTANCE
+<a id="FST_ERR_LOG_INVALID_LOGGER_INSTANCE"></a>
+
+The loggerInstance only accepts a logger object, not config. See ([#4624](https://github.com/fastify/fastify/issues/4624))
+
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 

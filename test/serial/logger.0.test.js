@@ -164,7 +164,7 @@ t.test('test log stream', (t) => {
 
     const logger = require('pino')(stream)
 
-    const fastify = Fastify({ logger })
+    const fastify = Fastify({ loggerInstance: logger })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.get('/foo', function (req, reply) {
@@ -202,7 +202,7 @@ t.test('test log stream', (t) => {
     }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -238,7 +238,7 @@ t.test('test log stream', (t) => {
     }
 
     try {
-      const fastify = Fastify({ logger: loggerInstance })
+      const fastify = Fastify({ loggerInstance })
       await fastify.ready()
     } catch (err) {
       t.equal(
@@ -253,7 +253,7 @@ t.test('test log stream', (t) => {
     t.plan(1)
 
     try {
-      const fastify = Fastify({ logger: console })
+      const fastify = Fastify({ loggerInstance: console })
       await fastify.ready()
     } catch (err) {
       t.equal(
@@ -634,7 +634,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -670,7 +670,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -732,7 +732,7 @@ t.test('test log stream', (t) => {
 
     const logger = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -791,7 +791,7 @@ t.test('test log stream', (t) => {
 
     const logger = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -829,7 +829,7 @@ t.test('test log stream', (t) => {
 
     const logger = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 

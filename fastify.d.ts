@@ -102,7 +102,8 @@ declare namespace fastify {
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
-    logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions | Logger,
+    logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions,
+    loggerInstance?: boolean | Logger
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,

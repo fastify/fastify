@@ -108,7 +108,7 @@ const serverAutoInferringTypes = fastify({
 expectType<FastifyBaseLogger>(serverAutoInferringTypes.log)
 
 const serverWithAutoInferredPino = fastify({
-  logger: P({
+  loggerInstance: P({
     level: 'info',
     redact: ['x-userinfo']
   })

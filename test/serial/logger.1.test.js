@@ -56,7 +56,7 @@ t.test('test log stream', (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(24)
+  t.plan(26)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -74,7 +74,7 @@ t.test('test log stream', (t) => {
 
     const logger = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -126,7 +126,7 @@ t.test('test log stream', (t) => {
       }
     }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -170,7 +170,7 @@ t.test('test log stream', (t) => {
       }
     }, stream)
 
-    const fastify = Fastify({ logger })
+    const fastify = Fastify({ loggerInstance: logger })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.register(context1, { logSerializers: { test2: value => 'Y' + value } })
@@ -210,7 +210,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'info' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -246,7 +246,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'warn' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -281,7 +281,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'warn' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -321,7 +321,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -364,7 +364,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'trace' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -811,7 +811,7 @@ t.test('test log stream', (t) => {
       child: () => logger
     }
 
-    const fastify = Fastify({ logger })
+    const fastify = Fastify({ loggerInstance: logger })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.log.fatal('fatal')
@@ -858,5 +858,33 @@ t.test('test log stream', (t) => {
     fastify.log.info({ req: {} })
 
     t.same(lines[0].req, {})
+  })
+
+  t.test('Should warn if logger instance is passed to `logger`', async (t) => {
+    t.plan(1)
+    const onWarning = (warning) => {
+      t.equal(warning.code, 'FSTDEP015')
+    }
+    process.on('warning', onWarning)
+    const stream = split(JSON.parse)
+
+    const logger = require('pino')(stream)
+
+    const fastify = Fastify({ logger })
+    t.teardown(fastify.close.bind(fastify))
+    await fastify.listen()
+    setImmediate(function () {
+      process.removeListener('warning', onWarning)
+      t.end()
+    })
+  })
+  t.test('Should throw an error if options are passed to `loggerInstance`', async (t) => {
+    t.plan(2)
+    try {
+      Fastify({ loggerInstance: { level: 'log' } })
+    } catch (err) {
+      t.ok(err)
+      t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
+    }
   })
 })

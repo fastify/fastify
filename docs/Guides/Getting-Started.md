@@ -14,11 +14,12 @@ Let's start!
 <a id="install"></a>
 
 Install with npm:
-```
+```sh
 npm i fastify
 ```
+
 Install with yarn:
-```
+```sh
 yarn add fastify
 ```
 
@@ -208,7 +209,7 @@ Let's rewrite the above example with a database connection.
 
 First, install `fastify-plugin` and `@fastify/mongodb`:
 
-```
+```sh
 npm i fastify-plugin @fastify/mongodb
 ```
 
@@ -550,7 +551,7 @@ Fastify also has CLI integration thanks to
 
 First, install `fastify-cli`:
 
-```
+```sh
 npm i fastify-cli
 ```
 

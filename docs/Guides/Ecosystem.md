@@ -671,7 +671,9 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
+
 #### [Community Tools](#community-tools)
+
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
   Reusable workflows for use in the Fastify plugin
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration

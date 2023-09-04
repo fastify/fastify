@@ -8,7 +8,7 @@ import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
-import { DefaultRoute, RouteGenericInterface, RouteOptions, RouteShorthandMethod, RouteHandlerMethod } from './route'
+import { RouteGenericInterface, RouteOptions, RouteShorthandMethod, RouteHandlerMethod } from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
@@ -108,8 +108,6 @@ type DecorationMethod<This, Return = This> = {
 
   (property: string | symbol): Return;
 
-  (property: string | symbol, value: null): Return;
-
   (property: string | symbol, value: null|undefined, dependencies: string[]): Return;
 }
 
@@ -163,35 +161,12 @@ export interface FastifyInstance<
   listen(opts?: FastifyListenOptions): Promise<string>;
   listen(callback: (err: Error | null, address: string) => void): void;
 
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address?: string, backlog?: number): Promise<string>;
-
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
 
   routing(req: RawRequest, res: RawReply): void;
-  getDefaultRoute(): DefaultRoute<RawRequest, RawReply>;
-  setDefaultRoute(defaultRoute: DefaultRoute<RawRequest, RawReply>): void;
 
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
@@ -199,13 +174,22 @@ export interface FastifyInstance<
     SchemaCompiler extends FastifySchema = FastifySchema,
   >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
 
   hasRoute<

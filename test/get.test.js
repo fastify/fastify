@@ -203,6 +203,18 @@ test('send a falsy boolean', t => {
   }
 })
 
+test('shorthand - get, set port', t => {
+  t.plan(1)
+  try {
+    fastify.get('/port', headersSchema, function (req, reply) {
+      reply.code(200).send({ port: req.port })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => { fastify.close() })
@@ -378,6 +390,22 @@ fastify.listen({ port: 0 }, err => {
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(body.toString(), 'null')
+    })
+  })
+
+  test('shorthand - request get headers - test fall back port', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      headers: {
+        host: 'example.com'
+      },
+      json: true,
+      url: 'http://localhost:' + fastify.server.address().port + '/port'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(body.port, null)
     })
   })
 })

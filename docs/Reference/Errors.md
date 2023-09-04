@@ -422,11 +422,6 @@ The router received an invalid url.
 
 The router received an error when using asynchronous constraints.
 
-#### FST_ERR_DEFAULT_ROUTE_INVALID_TYPE
-<a id="FST_ERR_DEFAULT_ROUTE_INVALID_TYPE"></a>
-
-The `defaultRoute` type should be a function.
-
 #### FST_ERR_INVALID_URL
 <a id="FST_ERR_INVALID_URL"></a>
 

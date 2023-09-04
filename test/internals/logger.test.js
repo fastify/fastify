@@ -46,8 +46,37 @@ test('The logger should add a unique id for every request', t => {
   }
 })
 
-test('The logger should reuse request id header for req.id', t => {
+test('The logger should not reuse request id header for req.id', t => {
   const fastify = Fastify()
+  fastify.get('/', (req, reply) => {
+    t.ok(req.id)
+    reply.send({ id: req.id })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'Request-Id': 'request-id-1'
+      }
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.ok(payload.id !== 'request-id-1', 'the request id from the header should not be returned with default configuration')
+      t.ok(payload.id === 'req-1') // first request id when using the default configuration
+      fastify.close()
+      t.end()
+    })
+  })
+})
+
+test('The logger should reuse request id header for req.id if requestIdHeader is set', t => {
+  const fastify = Fastify({
+    requestIdHeader: 'request-id'
+  })
   fastify.get('/', (req, reply) => {
     t.ok(req.id)
     reply.send({ id: req.id })
@@ -127,7 +156,7 @@ test('The serializer prevent fails if the request socket is undefined', t => {
     method: 'GET',
     url: '/',
     version: undefined,
-    hostname: undefined,
+    host: undefined,
     remoteAddress: undefined,
     remotePort: undefined
   })

@@ -32,5 +32,7 @@ fastify
   })
 
 fastify.listen({ port: 3000 }, err => {
-  if (err) throw err
+  if (err) {
+    throw err
+  }
 })

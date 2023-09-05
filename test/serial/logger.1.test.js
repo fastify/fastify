@@ -56,7 +56,7 @@ t.test('test log stream', (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(26)
+  t.plan(27)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -878,6 +878,7 @@ t.test('test log stream', (t) => {
       t.end()
     })
   })
+
   t.test('Should throw an error if options are passed to `loggerInstance`', async (t) => {
     t.plan(2)
     try {
@@ -885,6 +886,38 @@ t.test('test log stream', (t) => {
     } catch (err) {
       t.ok(err)
       t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
+    }
+  })
+
+  t.test('`loggerInstance` should take precendence over `logger` options', async (t) => {
+    const lines = ['Hello']
+    t.plan(2 * lines.length + 1)
+    const loggerInstanceStream = split(JSON.parse)
+    const loggerInstance = pino({ level: 'error' }, loggerInstanceStream)
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'info'
+      },
+      loggerInstance
+    })
+    t.teardown(fastify.close.bind(fastify))
+    fastify.get('/404', (req, reply) => {
+      req.log.error('Hello')
+      reply.code(404).send()
+    })
+
+    await fastify.ready()
+    {
+      const response = await fastify.inject({ method: 'GET', url: '/404' })
+      t.equal(response.statusCode, 404)
+    }
+
+    for await (const [line] of on(loggerInstanceStream, 'data')) {
+      t.equal(line.level, 50)
+      t.equal(line.msg, lines.shift())
+      if (lines.length === 0) break
     }
   })
 })

@@ -332,7 +332,7 @@ test('FST_ERR_LOG_INVALID_LOGGER_INSTANCE', t => {
   const error = new errors.FST_ERR_LOG_INVALID_LOGGER_INSTANCE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
-  t.equal(error.message, 'loggerInstance only accepts a logger not pino options.')
+  t.equal(error.message, 'loggerInstance only accepts a logger not a configuration object.')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof TypeError)
 })

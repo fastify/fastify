@@ -29,10 +29,10 @@ Request is a core Fastify object containing the following fields:
 - `url` - the URL of the incoming request
 - `originalUrl` - similar to `url`, this allows you to access the 
   original `url` in case of internal re-routing 
-- `routerMethod` - the method defined for the router that is handling the
-  request
-- `routerPath` - the path pattern defined for the router that is handling the
-  request
+- `routerMethod` - Deprecated, use `request.routeOptions.method` instead. The
+  method defined for the router that is handling the request
+- `routerPath` - Deprecated, use `request.routeOptions.config.url` instead. The
+  path pattern defined for the router that is handling the request
 - `is404` - true if request is being handled by 404 handler, false if it is not
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
@@ -40,17 +40,21 @@ Request is a core Fastify object containing the following fields:
 - `context` - A Fastify internal object. You should not use it directly or
   modify it. It is useful to access one special key:	
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
-- `routeSchema` - the scheme definition set for the router that is
-  handling the request
-- `routeConfig` - The route [`config`](./Routes.md#routes-config) 
+- `routeSchema` - Deprecated, use `request.routeOptions.schema` instead. The
+  scheme definition set for the router that is handling the request
+- `routeConfig` - Deprecated, use `request.routeOptions.config` instead. The
+  route [`config`](./Routes.md#routes-config) 
   object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object
   - `bodyLimit` - either server limit or route limit
+  - `config` - the [`config`](./Routes.md#routes-config) object for this route
   - `method` - the http method for the route
   - `url` - the path of the URL to match this route
+  - `handler` - the handler for this route
   - `attachValidation` - attach `validationError` to request 
     (if there is a schema defined)
   - `logLevel` - log level defined for this route
+  - `schema` - the JSON schemas definition for this route
   - `version` -  a semver compatible string that defines the version of the endpoint
   - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
   - `prefixTrailingSlash` - string used to determine how to handle passing / 

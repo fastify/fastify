@@ -293,7 +293,14 @@ The logger should have all these methods: `'info'`, `'error'`,
 #### FST_ERR_LOG_INVALID_LOGGER_INSTANCE
 <a id="FST_ERR_LOG_INVALID_LOGGER_INSTANCE"></a>
 
-The loggerInstance only accepts a logger object, not config. See ([#4624](https://github.com/fastify/fastify/issues/4624))
+The loggerInstance only accepts a logger instance, not configuration object. 
+See ([#4624](https://github.com/fastify/fastify/issues/4624))
+
+#### FST_ERR_LOG_INVALID_LOGGER_CONFIG
+<a id="FST_ERR_LOG_INVALID_LOGGER_CONFIG"></a>
+
+The logger option only accepts a configuration object, not a logger instance. 
+To pass an instance, use `'loggerInstance'` instead.
 
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>

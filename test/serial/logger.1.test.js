@@ -860,23 +860,18 @@ t.test('test log stream', (t) => {
     t.same(lines[0].req, {})
   })
 
-  t.test('Should warn if logger instance is passed to `logger`', async (t) => {
-    t.plan(1)
-    const onWarning = (warning) => {
-      t.equal(warning.code, 'FSTDEP015')
-    }
-    process.on('warning', onWarning)
+  t.test('Should throw an error if logger instance is passed to `logger`', async (t) => {
+    t.plan(2)
     const stream = split(JSON.parse)
 
     const logger = require('pino')(stream)
 
-    const fastify = Fastify({ logger })
-    t.teardown(fastify.close.bind(fastify))
-    await fastify.listen()
-    setImmediate(function () {
-      process.removeListener('warning', onWarning)
-      t.end()
-    })
+    try {
+      Fastify({ logger })
+    } catch (err) {
+      t.ok(err)
+      t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER_CONFIG')
+    }
   })
 
   t.test('Should throw an error if options are passed to `loggerInstance`', async (t) => {

@@ -179,7 +179,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   const logger = pino(splitStream)
 
   const fastify = Fastify({
-    logger
+    loggerInstance: logger
   })
 
   fastify.get('/', async (req, reply) => {

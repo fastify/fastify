@@ -531,7 +531,7 @@ t.test('test log stream', (t) => {
     const logger = pino(stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -588,7 +588,7 @@ t.test('test log stream', (t) => {
     const logger = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance: logger
     })
     t.teardown(fastify.close.bind(fastify))
 

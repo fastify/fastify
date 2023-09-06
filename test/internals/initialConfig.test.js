@@ -103,7 +103,7 @@ test('Fastify.initialConfig should expose all options', t => {
     genReqId: function (req) {
       return reqId++
     },
-    logger: pino({ level: 'info' }),
+    loggerInstance: pino({ level: 'info' }),
     constraints: {
       version: versionStrategy
     },

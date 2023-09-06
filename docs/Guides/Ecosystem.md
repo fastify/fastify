@@ -122,7 +122,7 @@ section.
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
 - [`@fastify/throttle`](https://github.com/fastify/fastify-throttle) Plugin for
-- throttling the download speed of a request.
+  throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)

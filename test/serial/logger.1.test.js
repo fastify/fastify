@@ -56,7 +56,7 @@ t.test('test log stream', (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(27)
+  t.plan(28)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -910,6 +910,44 @@ t.test('test log stream', (t) => {
     }
 
     for await (const [line] of on(loggerInstanceStream, 'data')) {
+      t.equal(line.level, 50)
+      t.equal(line.msg, lines.shift())
+      if (lines.length === 0) break
+    }
+  })
+
+  t.test('`logger` should take pino configuration and create a pino logger', async (t) => {
+    const lines = ['hello', 'world']
+    t.plan(2 * lines.length + 2)
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'error'
+      }
+    })
+    t.teardown(fastify.close.bind(fastify))
+    fastify.get('/hello', (req, reply) => {
+      req.log.error('hello')
+      reply.code(404).send()
+    })
+
+    fastify.get('/world', (req, reply) => {
+      req.log.error('world')
+      reply.code(201).send()
+    })
+
+    await fastify.ready()
+    {
+      const response = await fastify.inject({ method: 'GET', url: '/hello' })
+      t.equal(response.statusCode, 404)
+    }
+    {
+      const response = await fastify.inject({ method: 'GET', url: '/world' })
+      t.equal(response.statusCode, 201)
+    }
+
+    for await (const [line] of on(loggerStream, 'data')) {
       t.equal(line.level, 50)
       t.equal(line.msg, lines.shift())
       if (lines.length === 0) break

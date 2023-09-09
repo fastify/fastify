@@ -294,7 +294,6 @@ The logger should have all these methods: `'info'`, `'error'`,
 <a id="FST_ERR_LOG_INVALID_LOGGER_INSTANCE"></a>
 
 The loggerInstance only accepts a logger instance, not configuration object. 
-See ([#4624](https://github.com/fastify/fastify/issues/4624))
 
 #### FST_ERR_LOG_INVALID_LOGGER_CONFIG
 <a id="FST_ERR_LOG_INVALID_LOGGER_CONFIG"></a>

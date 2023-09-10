@@ -840,7 +840,7 @@ tools first" fashion.
 
 ```js
 const tracer = /* retrieved from elsewhere in the package */
-const dc = require('diagnostics_channel')
+const dc = require('node:diagnostics_channel')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()
 

@@ -3,7 +3,7 @@
 const { test, before } = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
-const dns = require('dns').promises
+const dns = require('node:dns').promises
 const split = require('split2')
 
 let localhost

@@ -1,8 +1,8 @@
 'use strict'
 
-const path = require('path')
-const fs = require('fs')
-const readline = require('readline')
+const path = require('node:path')
+const fs = require('node:fs')
+const readline = require('node:readline')
 
 const basePathEcosystemDocFile = path.join('docs', 'Guides', 'Ecosystem.md')
 const ecosystemDocFile = path.join(__dirname, '..', '..', basePathEcosystemDocFile)

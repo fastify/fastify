@@ -2,11 +2,11 @@
 
 const t = require('tap')
 const test = t.test
-const Stream = require('stream')
-const util = require('util')
+const Stream = require('node:stream')
+const util = require('node:util')
 const Fastify = require('..')
 const FormData = require('form-data')
-const { Readable } = require('stream')
+const { Readable } = require('node:stream')
 
 test('inject should exist', t => {
   t.plan(2)

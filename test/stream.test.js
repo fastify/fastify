@@ -4,15 +4,15 @@ const t = require('tap')
 const test = t.test
 const proxyquire = require('proxyquire')
 const sget = require('simple-get').concat
-const fs = require('fs')
-const resolve = require('path').resolve
-const zlib = require('zlib')
-const pipeline = require('stream').pipeline
+const fs = require('node:fs')
+const resolve = require('node:path').resolve
+const zlib = require('node:zlib')
+const pipeline = require('node:stream').pipeline
 const Fastify = require('..')
 const errors = require('http-errors')
 const JSONStream = require('JSONStream')
 const send = require('send')
-const Readable = require('stream').Readable
+const Readable = require('node:stream').Readable
 const split = require('split2')
 const semver = require('semver')
 const { kDisableRequestLogging } = require('../lib/symbols.js')
@@ -251,8 +251,8 @@ test('Destroying streams prematurely', t => {
   } catch (e) {
     t.fail()
   }
-  const stream = require('stream')
-  const http = require('http')
+  const stream = require('node:stream')
+  const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
   logStream.on('data', line => {
@@ -313,8 +313,8 @@ test('Destroying streams prematurely should call close method', t => {
   } catch (e) {
     t.fail()
   }
-  const stream = require('stream')
-  const http = require('http')
+  const stream = require('node:stream')
+  const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
   logStream.on('data', line => {
@@ -375,8 +375,8 @@ test('Destroying streams prematurely should call close method when destroy is no
   } catch (e) {
     t.fail()
   }
-  const stream = require('stream')
-  const http = require('http')
+  const stream = require('node:stream')
+  const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
   logStream.on('data', line => {
@@ -437,8 +437,8 @@ test('Destroying streams prematurely should call abort method', t => {
   } catch (e) {
     t.fail()
   }
-  const stream = require('stream')
-  const http = require('http')
+  const stream = require('node:stream')
+  const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
   logStream.on('data', line => {
@@ -496,8 +496,8 @@ test('Destroying streams prematurely, log is disabled', t => {
   } catch (e) {
     t.fail()
   }
-  const stream = require('stream')
-  const http = require('http')
+  const stream = require('node:stream')
+  const http = require('node:http')
 
   fastify.get('/', function (request, reply) {
     reply.log[kDisableRequestLogging] = true
@@ -632,7 +632,7 @@ test('should support send module 200 and 404', { skip: semver.gte(process.versio
 
 test('should destroy stream when response is ended', t => {
   t.plan(4)
-  const stream = require('stream')
+  const stream = require('node:stream')
   const fastify = Fastify()
 
   fastify.get('/error', function (req, reply) {
@@ -729,7 +729,7 @@ test('reply.send handles aborted requests', t => {
     t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
-    const http = require('http')
+    const http = require('node:http')
     const req = http.get(`http://localhost:${port}`)
       .on('error', (err) => {
         t.equal(err.code, 'ECONNRESET')
@@ -782,7 +782,7 @@ test('request terminated should not crash fastify', t => {
     t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
-    const http = require('http')
+    const http = require('node:http')
     const req = http.get(`http://localhost:${port}`, function (res) {
       const { statusCode, headers } = res
       t.equal(statusCode, 200)

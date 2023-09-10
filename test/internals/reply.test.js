@@ -3,11 +3,11 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const http = require('http')
+const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
 const Fastify = require('../..')
-const { Readable, Writable } = require('stream')
+const { Readable, Writable } = require('node:stream')
 const {
   kReplyErrorHandlerCalled,
   kReplyHeaders,
@@ -16,8 +16,8 @@ const {
   kReplySerializerDefault,
   kRouteContext
 } = require('../../lib/symbols')
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const warning = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
@@ -262,7 +262,7 @@ test('within an instance', t => {
     reply.code(200)
     reply.type('text/plain')
     reply.serializer(function (body) {
-      return require('querystring').stringify(body)
+      return require('node:querystring').stringify(body)
     })
     reply.send({ hello: 'world!' })
   })
@@ -612,8 +612,8 @@ test('stream using reply.raw.writeHead should return customize headers', t => {
   t.plan(6)
 
   const fastify = Fastify()
-  const fs = require('fs')
-  const path = require('path')
+  const fs = require('node:fs')
+  const path = require('node:path')
 
   const streamPath = path.join(__dirname, '..', '..', 'package.json')
   const stream = fs.createReadStream(streamPath)

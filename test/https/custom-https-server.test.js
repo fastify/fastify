@@ -3,9 +3,9 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
-const https = require('https')
+const https = require('node:https')
 const sget = require('simple-get').concat
-const dns = require('dns').promises
+const dns = require('node:dns').promises
 
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)

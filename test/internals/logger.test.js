@@ -97,7 +97,7 @@ Queue.prototype.run = function run () {
 test('The logger should error if both stream and file destination are given', t => {
   t.plan(2)
 
-  const stream = require('stream').Writable
+  const stream = require('node:stream').Writable
 
   try {
     Fastify({

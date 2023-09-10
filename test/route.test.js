@@ -1,6 +1,6 @@
 'use strict'
 
-const stream = require('stream')
+const stream = require('node:stream')
 const split = require('split2')
 const t = require('tap')
 const test = t.test

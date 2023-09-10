@@ -1,6 +1,6 @@
 'use strict'
 
-const assert = require('assert')
+const assert = require('node:assert')
 
 module.exports = function (fastify, opts, done) {
   assert.strictEqual(fastify.pluginName, 'test-plugin')

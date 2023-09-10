@@ -65,7 +65,7 @@ Testing Fastify applications should be a first-class concern.
 
 ## Do not monkeypatch core
 
-Moonkeypatch Node.js APIs or installing globals that alter the behavior of the
+Monkeypatch Node.js APIs or installing globals that alter the behavior of the
 runtime makes building modular applications harder, and limit the use cases of Fastify.
 Other frameworks do this and we do not.
 

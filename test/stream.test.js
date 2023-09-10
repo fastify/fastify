@@ -164,7 +164,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
   t.plan(1)
 
   const reply = proxyquire('../lib/reply', {
-    stream: {
+    'node:stream': {
       finished: (...args) => {
         if (args.length === 2) { args[1](new Error('test-error')) }
       }
@@ -205,7 +205,7 @@ test('onSend hook stream should work on payload with "close" ending function', t
   t.plan(1)
 
   const reply = proxyquire('../lib/reply', {
-    stream: {
+    'node:stream': {
       finished: (...args) => {
         if (args.length === 2) { args[1](new Error('test-error')) }
       }

@@ -15,8 +15,8 @@ HTTP2 is supported in all modern browsers __only over a secure connection__:
 ```js
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('fastify')({
   http2: true,
   https: {
@@ -42,8 +42,8 @@ box:
 ```js
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('fastify')({
   http2: true,
   https: {

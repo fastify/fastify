@@ -54,7 +54,7 @@ the first parameter to `use` and you are done!
 `/user/:id/comments`) and wildcards are not supported in multiple paths.*
 
 ```js
-const path = require('path')
+const path = require('node:path')
 const serveStatic = require('serve-static')
 
 // Single path

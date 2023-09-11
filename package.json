@@ -131,7 +131,7 @@
   "bugs": {
     "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://www.fastify.io/",
+  "homepage": "https://www.fastify.dev/",
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
     "@sinclair/typebox": "^0.31.1",

@@ -884,35 +884,22 @@ t.test('test log stream', (t) => {
     }
   })
 
-  t.test('`loggerInstance` should take precendence over `logger` options', async (t) => {
-    const lines = ['Hello']
-    t.plan(2 * lines.length + 1)
+  t.test('If both `loggerInstance` and `logger` are provided, an error should be thrown', async (t) => {
+    t.plan(2)
     const loggerInstanceStream = split(JSON.parse)
     const loggerInstance = pino({ level: 'error' }, loggerInstanceStream)
     const loggerStream = split(JSON.parse)
-    const fastify = Fastify({
-      logger: {
-        stream: loggerStream,
-        level: 'info'
-      },
-      loggerInstance
-    })
-    t.teardown(fastify.close.bind(fastify))
-    fastify.get('/404', (req, reply) => {
-      req.log.error('Hello')
-      reply.code(404).send()
-    })
-
-    await fastify.ready()
-    {
-      const response = await fastify.inject({ method: 'GET', url: '/404' })
-      t.equal(response.statusCode, 404)
-    }
-
-    for await (const [line] of on(loggerInstanceStream, 'data')) {
-      t.equal(line.level, 50)
-      t.equal(line.msg, lines.shift())
-      if (lines.length === 0) break
+    try {
+      Fastify({
+        logger: {
+          stream: loggerStream,
+          level: 'info'
+        },
+        loggerInstance
+      })
+    } catch (err) {
+      t.ok(err)
+      t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER_CONFIG_AND_LOGGER_INSTANCE')
     }
   })
 

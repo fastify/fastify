@@ -125,6 +125,15 @@
       "name": "Carlos Fuentes",
       "email": "me@metcoder.dev",
       "url": "https://metcoder.dev"
+    },
+    {
+      "name": "Gürgün Dayıoğlu",
+      "email": "gurgun.dayioglu@icloud.com",
+      "url": "https://heyhey.to/G"
+    },
+    {
+      "name": "Aras Abbasi",
+      "email": "aras.abbasi@gmail.com"
     }
   ],
   "license": "MIT",

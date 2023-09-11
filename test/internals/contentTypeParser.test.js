@@ -3,7 +3,7 @@
 const t = require('tap')
 const proxyquire = require('proxyquire')
 const test = t.test
-const { Readable } = require('stream')
+const { Readable } = require('node:stream')
 const { kTestInternals, kRouteContext } = require('../../lib/symbols')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')

@@ -242,7 +242,7 @@ reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'
 })
 
-const { createHash } = require('crypto')
+const { createHash } = require('node:crypto')
 // trailer function also receive two argument
 // @param {object} reply fastify reply
 // @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
@@ -668,7 +668,7 @@ fastify.get('/json', options, function (request, reply) {
 `'application/octet-stream'`.
 ```js
 fastify.get('/streams', function (request, reply) {
-  const fs = require('fs')
+  const fs = require('node:fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.header('Content-Type', 'application/octet-stream')
   reply.send(stream)
@@ -677,7 +677,7 @@ fastify.get('/streams', function (request, reply) {
 When using async-await you will need to return or await the reply object:
 ```js
 fastify.get('/streams', async function (request, reply) {
-  const fs = require('fs')
+  const fs = require('node:fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.header('Content-Type', 'application/octet-stream')
   return reply.send(stream)
@@ -690,7 +690,7 @@ fastify.get('/streams', async function (request, reply) {
 If you are sending a buffer and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
 ```js
-const fs = require('fs')
+const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
@@ -700,7 +700,7 @@ fastify.get('/streams', function (request, reply) {
 
 When using async-await you will need to return or await the reply object:
 ```js
-const fs = require('fs')
+const fs = require('node:fs')
 fastify.get('/streams', async function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
@@ -715,7 +715,7 @@ fastify.get('/streams', async function (request, reply) {
 `send` manages TypedArray and sets the `'Content-Type'=application/octet-stream'`
 header if not already set.
 ```js
-const fs = require('fs')
+const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {
   const typedArray = new Uint16Array(10)
   reply.send(typedArray)
@@ -842,7 +842,7 @@ Fastify natively handles promises and supports async-await.
 
 *Note that in the following examples we are not using reply.send.*
 ```js
-const { promisify } = require('util')
+const { promisify } = require('node:util')
 const delay = promisify(setTimeout)
 
 fastify.get('/promises', options, function (request, reply) {

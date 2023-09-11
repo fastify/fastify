@@ -4,7 +4,7 @@ const t = require('tap')
 const { test, before } = t
 const sget = require('simple-get').concat
 const fastify = require('..')
-const dns = require('dns').promises
+const dns = require('node:dns').promises
 
 const sgetForwardedRequest = (app, forHeader, path, protoHeader) => {
   const headers = {

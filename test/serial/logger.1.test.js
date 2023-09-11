@@ -1,14 +1,14 @@
 'use strict'
 
-const http = require('http')
-const stream = require('stream')
-const os = require('os')
-const fs = require('fs')
+const http = require('node:http')
+const stream = require('node:stream')
+const os = require('node:os')
+const fs = require('node:fs')
 
 const t = require('tap')
 const split = require('split2')
 const pino = require('pino')
-const path = require('path')
+const path = require('node:path')
 const { streamSym } = require('pino/lib/symbols')
 
 const Fastify = require('../../fastify')

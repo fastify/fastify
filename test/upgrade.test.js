@@ -1,10 +1,10 @@
 'use strict'
 
 const { test, skip } = require('tap')
-const { lookup } = require('dns').promises
+const { lookup } = require('node:dns').promises
 const Fastify = require('..')
-const { connect } = require('net')
-const { once } = require('events')
+const { connect } = require('node:net')
+const { once } = require('node:events')
 
 async function setup () {
   const results = await lookup('localhost', { all: true })

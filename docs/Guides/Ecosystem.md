@@ -122,7 +122,7 @@ section.
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
 - [`@fastify/throttle`](https://github.com/fastify/fastify-throttle) Plugin for
-- throttling the download speed of a request.
+  throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
@@ -671,7 +671,9 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
+
 #### [Community Tools](#community-tools)
+
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
   Reusable workflows for use in the Fastify plugin
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration

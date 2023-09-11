@@ -2,8 +2,8 @@
 'use strict'
 
 const FJS = require('fast-json-stringify')
-const path = require('path')
-const fs = require('fs')
+const path = require('node:path')
+const fs = require('node:fs')
 
 const code = FJS({
   type: 'object',

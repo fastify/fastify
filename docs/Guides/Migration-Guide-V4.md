@@ -184,25 +184,28 @@ strict mode: use allowUnionTypes to allow union type keyword at "#/properties/im
 ```
 
 As such, schemas like below will need to be changed from:
-```
-type: 'object',
-properties: {
-  api_key: { type: 'string' },
-  image: { type: ['object', 'array'] }
-  }
+```js
+{
+  type: 'object',
+  properties: {
+    api_key: { type: 'string' },
+    image: { type: ['object', 'array'] }
+  } 
 }
 ```
 
 Into:
-```
-type: 'object',
-properties: {
-  api_key: { type: 'string' },
-  image: {
-    anyOf: [
-      { type: 'array' },
-      { type: 'object' }
-    ]
+```js
+{
+  type: 'object',
+  properties: {
+    api_key: { type: 'string' },
+    image: {
+      anyOf: [
+        { type: 'array' },
+        { type: 'object' }
+      ]
+    }
   }
 }
 ```

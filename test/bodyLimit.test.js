@@ -2,7 +2,7 @@
 
 const Fastify = require('..')
 const sget = require('simple-get').concat
-const zlib = require('zlib')
+const zlib = require('node:zlib')
 const t = require('tap')
 const test = t.test
 

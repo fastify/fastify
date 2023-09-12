@@ -899,7 +899,7 @@ t.test('test log stream', (t) => {
       })
     } catch (err) {
       t.ok(err)
-      t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER_CONFIG_AND_LOGGER_INSTANCE')
+      t.equal(err.code, 'FST_ERR_LOGGER_AND_LOGGER_INSTANCE_PROVIDED')
     }
   })
 

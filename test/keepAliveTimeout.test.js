@@ -1,7 +1,7 @@
 'use strict'
 
 const Fastify = require('..')
-const http = require('http')
+const http = require('node:http')
 const t = require('tap')
 const test = t.test
 

@@ -3,16 +3,16 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const stream = require('stream')
+const stream = require('node:stream')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
-const fs = require('fs')
+const fs = require('node:fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
-const { promisify } = require('util')
-const { connect } = require('net')
+const { promisify } = require('node:util')
+const { connect } = require('node:net')
 
 const sleep = promisify(setTimeout)
 

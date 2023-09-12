@@ -24,7 +24,7 @@ test('diagnostics_channel when present and subscribers', t => {
   }
 
   const fastify = proxyquire('../fastify', {
-    diagnostics_channel: dc
+    'node:diagnostics_channel': dc
   })()
   t.equal(fastifyInHook, fastify)
 })
@@ -46,7 +46,7 @@ test('diagnostics_channel when present and no subscribers', t => {
   }
 
   proxyquire('../fastify', {
-    diagnostics_channel: dc
+    'node:diagnostics_channel': dc
   })()
 })
 
@@ -55,7 +55,7 @@ test('diagnostics_channel when not present', t => {
 
   t.doesNotThrow(() => {
     proxyquire('../fastify', {
-      diagnostics_channel: null
+      'node:diagnostics_channel': null
     })()
   })
 })

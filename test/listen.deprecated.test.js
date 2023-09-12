@@ -4,7 +4,7 @@
 // removed when the deprecation is complete.
 
 const { test, before } = require('tap')
-const dns = require('dns').promises
+const dns = require('node:dns').promises
 const Fastify = require('..')
 
 let localhost

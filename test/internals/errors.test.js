@@ -2,8 +2,8 @@
 
 const { test } = require('tap')
 const errors = require('../../lib/errors')
-const { readFileSync } = require('fs')
-const { resolve } = require('path')
+const { readFileSync } = require('node:fs')
+const { resolve } = require('node:path')
 
 test('should expose 78 errors', t => {
   t.plan(1)

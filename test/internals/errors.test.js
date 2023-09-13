@@ -347,12 +347,12 @@ test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', t => {
   t.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
+test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_LOGGER_AND_LOGGER_INSTANCE_PROVIDED()
+  const error = new errors.FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED()
   t.equal(error.name, 'FastifyError')
-  t.equal(error.code, 'FST_ERR_LOGGER_AND_LOGGER_INSTANCE_PROVIDED')
-  t.equal(error.message, 'You cannot provide both logger and loggerInstance. Please provide any one.')
+  t.equal(error.code, 'FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED')
+  t.equal(error.message, 'You cannot provide both logger and loggerInstance. Please provide only one.')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof TypeError)
 })

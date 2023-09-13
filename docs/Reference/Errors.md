@@ -301,10 +301,10 @@ The loggerInstance only accepts a logger instance, not configuration object.
 The logger option only accepts a configuration object, not a logger instance. 
 To pass an instance, use `'loggerInstance'` instead.
 
-#### FST_ERR_LOGGER_AND_LOGGER_INSTANCE_PROVIDED
-<a id="FST_ERR_LOGGER_AND_LOGGER_INSTANCE_PROVIDED"></a>
+#### FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED
+<a id="FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED"></a>
 
-You cannot provide `'logger'` and `'loggerInstance'`. Only provide one option.
+You cannot provide both `'logger'` and `'loggerInstance'`. Please provide only one
 
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>

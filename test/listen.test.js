@@ -1,11 +1,11 @@
 'use strict'
 
-const os = require('os')
-const path = require('path')
-const fs = require('fs')
+const os = require('node:os')
+const path = require('node:path')
+const fs = require('node:fs')
 const { test, before } = require('tap')
-const dns = require('dns').promises
-const dnsCb = require('dns')
+const dns = require('node:dns').promises
+const dnsCb = require('node:dns')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 

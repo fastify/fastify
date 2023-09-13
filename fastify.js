@@ -3,7 +3,7 @@
 const VERSION = '5.0.0-dev'
 
 const Avvio = require('avvio')
-const http = require('http')
+const http = require('node:http')
 let lightMyRequest
 
 const {
@@ -520,7 +520,7 @@ function fastify (options) {
   server.on('clientError', options.clientErrorHandler.bind(fastify))
 
   try {
-    const dc = require('diagnostics_channel')
+    const dc = require('node:diagnostics_channel')
     const initChannel = dc.channel('fastify.initialization')
     if (initChannel.hasSubscribers) {
       initChannel.publish({ fastify })

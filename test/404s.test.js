@@ -1031,7 +1031,7 @@ test('setNotFoundHandler should not suppress duplicated routes checking', t => {
 test('log debug for 404', t => {
   t.plan(1)
 
-  const Writable = require('stream').Writable
+  const Writable = require('node:stream').Writable
 
   const logStream = new Writable()
   logStream.logs = []

@@ -135,7 +135,7 @@ follows:
 
 ```js
 const { fetch } = require('undici')
-const { setTimeout } = require('timers/promises')
+const { setTimeout } = require('node:timers/promises')
 
 const MAGIC_KEY = '12345'
 
@@ -249,7 +249,7 @@ server.listen({ port: '1234' })
 
 ```js
 const { fetch } = require('undici')
-const { setTimeout } = require('timers/promises')
+const { setTimeout } = require('node:timers/promises')
 
 const MAGIC_KEY = '12345'
 

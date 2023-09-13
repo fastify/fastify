@@ -1,6 +1,6 @@
 'use strict'
 
-const { AsyncLocalStorage } = require('async_hooks')
+const { AsyncLocalStorage } = require('node:async_hooks')
 const t = require('tap')
 const Fastify = require('..')
 const sget = require('simple-get').concat

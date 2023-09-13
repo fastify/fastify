@@ -1,6 +1,6 @@
 'use strict'
 
-const { connect } = require('net')
+const { connect } = require('node:net')
 const sget = require('simple-get').concat
 const t = require('tap')
 const test = t.test

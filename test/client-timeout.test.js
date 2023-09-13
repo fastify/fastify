@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const fastify = require('..')({ requestTimeout: 5, http: { connectionsCheckingInterval: 1000 } })
-const { connect } = require('net')
+const { connect } = require('node:net')
 
 test('requestTimeout should return 408', t => {
   t.plan(1)

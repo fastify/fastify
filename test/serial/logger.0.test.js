@@ -1,7 +1,7 @@
 'use strict'
 
-const http = require('http')
-const stream = require('stream')
+const http = require('node:http')
+const stream = require('node:stream')
 
 const t = require('tap')
 const split = require('split2')

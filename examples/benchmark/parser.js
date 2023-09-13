@@ -5,7 +5,7 @@ const fastify = require('../../fastify')({
 })
 
 const jsonParser = require('fast-json-body')
-const querystring = require('querystring')
+const querystring = require('node:querystring')
 
 // Handled by fastify
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/json' http://localhost:3000/

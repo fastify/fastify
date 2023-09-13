@@ -2,8 +2,8 @@
 
 const AjvStandaloneCompiler = require('@fastify/ajv-compiler/standalone')
 const { _ } = require('ajv')
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const factory = AjvStandaloneCompiler({
   readMode: false,

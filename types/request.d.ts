@@ -20,16 +20,17 @@ export interface ValidationFunction {
   errors?: null | ErrorObject[];
 }
 
-export interface RequestRouteOptions<ContextConfig = ContextConfigDefault> {
-  method: string,
-  url: string,
-  bodyLimit:number,
-  attachValidation:boolean,
-  logLevel:string,
-  version: string | undefined,
-  exposeHeadRoute: boolean,
-  prefixTrailingSlash: string,
-  config: FastifyContextConfig & FastifyRouteConfig & ContextConfig
+export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema> {
+  method: string;
+  url: string;
+  bodyLimit:number;
+  attachValidation:boolean;
+  logLevel:string;
+  version: string | undefined;
+  exposeHeadRoute: boolean;
+  prefixTrailingSlash: string;
+  config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
+  schema: SchemaCompiler;
 }
 
 /**
@@ -79,7 +80,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routerPath: string;
   readonly routerMethod: string;
-  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig>>
+  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 

@@ -81,6 +81,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeOptions.config)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
   expectType<FastifySchema>(request.routeSchema)
+  expectType<FastifySchema>(request.routeOptions.schema)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}

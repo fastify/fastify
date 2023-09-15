@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "4.22.2",
+  "version": "4.23.2",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -28,7 +28,8 @@
     "test:watch": "npm run unit -- -w --no-coverage-report -R terse",
     "unit": "c8 tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
-    "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap"
+    "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
+    "citgm": "tap"
   },
   "repository": {
     "type": "git",
@@ -125,13 +126,22 @@
       "name": "Carlos Fuentes",
       "email": "me@metcoder.dev",
       "url": "https://metcoder.dev"
+    },
+    {
+      "name": "Gürgün Dayıoğlu",
+      "email": "gurgun.dayioglu@icloud.com",
+      "url": "https://heyhey.to/G"
+    },
+    {
+      "name": "Aras Abbasi",
+      "email": "aras.abbasi@gmail.com"
     }
   ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://www.fastify.io/",
+  "homepage": "https://www.fastify.dev/",
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
     "@sinclair/typebox": "^0.31.1",

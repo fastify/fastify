@@ -3,9 +3,9 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const { Readable } = require('stream')
-const { createHash } = require('crypto')
-const { promisify } = require('util')
+const { Readable } = require('node:stream')
+const { createHash } = require('node:crypto')
+const { promisify } = require('node:util')
 const sleep = promisify(setTimeout)
 
 test('send trailers when payload is empty string', t => {

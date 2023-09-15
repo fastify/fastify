@@ -318,6 +318,8 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners),
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+* [__Aras Abbasi__](https://github.com/uzlopak),
+  <https://www.npmjs.com/~uzlopak>
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina),
@@ -340,6 +342,8 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Simone Busoli__](https://github.com/simoneb),
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited

@@ -636,7 +636,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('querystring')
+const querystring = require('node:querystring')
 const fastify = require('fastify')({
   querystringParser: str => querystring.parse(str.toLowerCase())
 })
@@ -1894,7 +1894,7 @@ The properties that can currently be exposed are:
 - http2SessionTimeout
 
 ```js
-const { readFileSync } = require('fs')
+const { readFileSync } = require('node:fs')
 const Fastify = require('fastify')
 
 const fastify = Fastify({

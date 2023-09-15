@@ -1,7 +1,7 @@
 'use strict'
 
-const net = require('net')
-const http = require('http')
+const net = require('node:net')
+const http = require('node:http')
 const { test } = require('tap')
 const Fastify = require('..')
 const { Client } = require('undici')

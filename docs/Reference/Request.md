@@ -31,7 +31,7 @@ Request is a core Fastify object containing the following fields:
   original `url` in case of internal re-routing 
 - `routerMethod` - Deprecated, use `request.routeOptions.method` instead. The
   method defined for the router that is handling the request
-- `routerPath` - Deprecated, use `request.routeOptions.config.url` instead. The
+- `routerPath` - Deprecated, use `request.routeOptions.url` instead. The
   path pattern defined for the router that is handling the request
 - `is404` - true if request is being handled by 404 handler, false if it is not
 - `connection` - Deprecated, use `socket` instead. The underlying connection of

@@ -1,8 +1,8 @@
 'use strict'
 
 const sget = require('simple-get').concat
-const dns = require('dns').promises
-const stream = require('stream')
+const dns = require('node:dns').promises
+const stream = require('node:stream')
 const symbols = require('../lib/symbols')
 
 /**

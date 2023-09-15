@@ -1,11 +1,11 @@
 'use strict'
 
-const { Readable } = require('stream')
+const { Readable } = require('node:stream')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
-const fs = require('fs')
+const fs = require('node:fs')
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 process.removeAllListeners('warning')

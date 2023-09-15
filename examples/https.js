@@ -1,7 +1,7 @@
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('../fastify')({
   https: {
     key: fs.readFileSync(path.join(__dirname, '../test/https/fastify.key')),

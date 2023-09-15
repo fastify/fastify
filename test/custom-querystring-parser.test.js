@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const querystring = require('querystring')
+const querystring = require('node:querystring')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 

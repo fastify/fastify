@@ -1040,8 +1040,9 @@ test('Custom validator compiler should not mutate schema', async t => {
 
   await fastify.ready()
 })
+
 test('Validates string response', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', {

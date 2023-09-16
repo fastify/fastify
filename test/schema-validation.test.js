@@ -1040,3 +1040,29 @@ test('Custom validator compiler should not mutate schema', async t => {
 
   await fastify.ready()
 })
+test('Validates string response', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    handler (req, reply) { return req.query.test },
+    schema: {
+      response: {
+        200: {
+          type: 'string',
+          const: 'known'
+        }
+      }
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    query: { test: 'unknown' }
+  }, (err, res) => {
+    t.error(err)
+    t.notEqual(res.body, 'unknown')
+    t.equal(res.statusCode, 400)
+  })
+})

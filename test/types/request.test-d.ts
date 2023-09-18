@@ -3,6 +3,7 @@ import { expectAssignable, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
   FastifyContext,
+  FastifyContextConfig,
   FastifyLogFn,
   FastifySchema,
   FastifyTypeProviderDefault,
@@ -18,7 +19,7 @@ import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest, RequestRouteOptions } from '../../types/request'
-import { RouteGenericInterface } from '../../types/route'
+import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 import { RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from '../../types/utils'
 
 interface RequestBody {
@@ -77,7 +78,10 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyContext<ContextConfigDefault>>(request.context)
   expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
   expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeConfig)
+  expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeOptions.config)
+  expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
   expectType<FastifySchema>(request.routeSchema)
+  expectType<FastifySchema>(request.routeOptions.schema)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}

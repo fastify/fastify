@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const os = require('os')
+const os = require('node:os')
 
 const {
   kOptions,

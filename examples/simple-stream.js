@@ -4,7 +4,7 @@ const fastify = require('../fastify')({
   logger: false
 })
 
-const Readable = require('stream').Readable
+const Readable = require('node:stream').Readable
 
 fastify
   .get('/', function (req, reply) {

@@ -1,9 +1,9 @@
 'use strict'
 
-const VERSION = '4.22.2'
+const VERSION = '4.23.2'
 
 const Avvio = require('avvio')
-const http = require('http')
+const http = require('node:http')
 let lightMyRequest
 
 const {
@@ -496,7 +496,7 @@ function fastify (options) {
   server.on('clientError', options.clientErrorHandler.bind(fastify))
 
   try {
-    const dc = require('diagnostics_channel')
+    const dc = require('node:diagnostics_channel')
     const initChannel = dc.channel('fastify.initialization')
     if (initChannel.hasSubscribers) {
       initChannel.publish({ fastify })

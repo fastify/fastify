@@ -2,10 +2,10 @@
 
 const t = require('tap')
 const Fastify = require('../..')
-const http2 = require('http2')
-const { promisify } = require('util')
+const http2 = require('node:http2')
+const { promisify } = require('node:util')
 const connect = promisify(http2.connect)
-const { once } = require('events')
+const { once } = require('node:events')
 
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)

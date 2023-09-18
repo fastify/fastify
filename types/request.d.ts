@@ -1,8 +1,8 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { FastifyContext } from './context'
+import { FastifyContext, FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
-import { RouteGenericInterface } from './route'
+import { RouteGenericInterface, FastifyRouteConfig } from './route'
 import { FastifySchema } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
 import { ContextConfigDefault, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
@@ -20,15 +20,17 @@ export interface ValidationFunction {
   errors?: null | ErrorObject[];
 }
 
-export interface RequestRouteOptions {
-  method: string,
-  url: string,
-  bodyLimit:number,
-  attachValidation:boolean,
-  logLevel:string,
-  version: string | undefined,
-  exposeHeadRoute: boolean,
-  prefixTrailingSlash: string
+export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema> {
+  method: string;
+  url: string;
+  bodyLimit:number;
+  attachValidation:boolean;
+  logLevel:string;
+  version: string | undefined;
+  exposeHeadRoute: boolean;
+  prefixTrailingSlash: string;
+  config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
+  schema: SchemaCompiler;
 }
 
 /**
@@ -78,7 +80,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routerPath: string;
   readonly routerMethod: string;
-  readonly routeOptions: Readonly<RequestRouteOptions>
+  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 

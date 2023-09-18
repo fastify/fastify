@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const Fastify = require('../fastify')
-const immediate = require('util').promisify(setImmediate)
+const immediate = require('node:util').promisify(setImmediate)
 
 t.test('onReady should be called in order', t => {
   t.plan(7)

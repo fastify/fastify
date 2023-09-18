@@ -1,6 +1,6 @@
 'use strict'
 
-const { Readable } = require('stream')
+const { Readable } = require('node:stream')
 const test = require('tap').test
 const sget = require('simple-get').concat
 const Fastify = require('../')

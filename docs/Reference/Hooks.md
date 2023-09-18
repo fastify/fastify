@@ -445,6 +445,7 @@ fastify.addHook('onListen', async function () {
 
 > **Note**  
 > This hook will not run when the server is started using `fastify.inject()` or `fastify.ready()`
+
 ### onClose
 <a id="on-close"></a>
 

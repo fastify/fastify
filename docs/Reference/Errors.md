@@ -293,7 +293,7 @@ The logger should have all these methods: `'info'`, `'error'`,
 #### FST_ERR_LOG_INVALID_LOGGER_INSTANCE
 <a id="FST_ERR_LOG_INVALID_LOGGER_INSTANCE"></a>
 
-The loggerInstance only accepts a logger instance, not configuration object. 
+The loggerInstance only accepts a logger instance, not a configuration object. 
 
 #### FST_ERR_LOG_INVALID_LOGGER_CONFIG
 <a id="FST_ERR_LOG_INVALID_LOGGER_CONFIG"></a>
@@ -304,7 +304,8 @@ To pass an instance, use `'loggerInstance'` instead.
 #### FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED
 <a id="FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED"></a>
 
-You cannot provide both `'logger'` and `'loggerInstance'`. Please provide only one
+You cannot provide both `'logger'` and `'loggerInstance'`. Please provide 
+only one option.
 
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>

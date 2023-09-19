@@ -21,7 +21,7 @@ jobs:
       matrix:
         node-version: [16, 18, 20]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: ${{github.event.pull_request.head.sha}}
@@ -45,7 +45,7 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
       # main benchmark
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: 'main'

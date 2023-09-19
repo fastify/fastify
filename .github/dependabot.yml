@@ -32,3 +32,6 @@ updates:
       # Development dependencies
       dev-dependencies:
         dependency-type: "development"
+    ignore:
+        - dependency-name: tap
+          update-types: ["version-update:semver-major"]

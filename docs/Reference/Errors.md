@@ -290,6 +290,23 @@ The logger accepts either a `'stream'` or a `'file'` as the destination.
 The logger should have all these methods: `'info'`, `'error'`,
 `'debug'`, `'fatal'`, `'warn'`, `'trace'`, `'child'`.
 
+#### FST_ERR_LOG_INVALID_LOGGER_INSTANCE
+<a id="FST_ERR_LOG_INVALID_LOGGER_INSTANCE"></a>
+
+The loggerInstance only accepts a logger instance, not a configuration object. 
+
+#### FST_ERR_LOG_INVALID_LOGGER_CONFIG
+<a id="FST_ERR_LOG_INVALID_LOGGER_CONFIG"></a>
+
+The logger option only accepts a configuration object, not a logger instance. 
+To pass an instance, use `'loggerInstance'` instead.
+
+#### FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED
+<a id="FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED"></a>
+
+You cannot provide both `'logger'` and `'loggerInstance'`. Please provide 
+only one option.
+
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 

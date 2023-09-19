@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 77 errors', t => {
+test('should expose 80 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +14,11 @@ test('should expose 77 errors', t => {
       counter++
     }
   }
-  t.equal(counter, 77)
+  t.equal(counter, 80)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(77)
+  t.plan(80)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -323,6 +323,36 @@ test('FST_ERR_LOG_INVALID_LOGGER', t => {
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER')
   t.equal(error.message, "Invalid logger object provided. The logger instance should have these functions(s): '%s'.")
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_INVALID_LOGGER_INSTANCE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_INVALID_LOGGER_INSTANCE()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
+  t.equal(error.message, 'loggerInstance only accepts a logger instance.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_INVALID_LOGGER_CONFIG()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER_CONFIG')
+  t.equal(error.message, 'logger options only accepts a configuration object.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED')
+  t.equal(error.message, 'You cannot provide both logger and loggerInstance. Please provide only one.')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof TypeError)
 })
@@ -808,7 +838,7 @@ test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
 })
 
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(77)
+  t.plan(80)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -820,7 +850,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(77)
+  t.plan(80)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /#### ([0-9a-zA-Z_]+)\n/g

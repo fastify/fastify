@@ -217,7 +217,9 @@ function fastify (options) {
     [kState]: {
       listening: false,
       closing: false,
-      started: false
+      started: false,
+      ready: false,
+      booting: false
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
@@ -578,9 +580,10 @@ function fastify (options) {
     function runHooks () {
       // start loading
       fastify[kAvvioBoot]((err, done) => {
-        if (err || fastify[kState].started) {
+        if (err || fastify[kState].started || fastify[kState].ready || fastify[kState].booting) {
           manageErr(err)
         } else {
+          fastify[kState].booting = true
           hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
         }
         done()
@@ -606,6 +609,8 @@ function fastify (options) {
           return rejectReady(err)
         }
         resolveReady(fastify)
+        fastify[kState].booting = false
+        fastify[kState].ready = true
       }
     }
   }

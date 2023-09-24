@@ -72,7 +72,7 @@ module.exports.payloadMethod = function (method, t) {
           const result = schema.validateSync(data, yupOptions)
           return { value: result }
         } catch (e) {
-          return { error: e }
+          return { error: [e] }
         }
       }
     }
@@ -286,9 +286,9 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
-        t.same(body, {
+        t.match(body, {
           error: 'Bad Request',
-          message: 'hello must be a `string` type, but the final value was: `44`.',
+          message: /body hello must be a `string` type, but the final value was: `44`./,
           statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })

@@ -47,7 +47,7 @@ server.get('/route', {
             },
             required: ['foo', 'bar']
         }
-    } as const // don't forget to use const !
+    }
 
 }, (request, reply) => {
 
@@ -141,7 +141,7 @@ function pluginWithJsonSchema(fastify: FastifyInstance, _opts, done): void {
             y: { type: 'number' },
             z: { type: 'boolean' }
           },
-        } as const
+        }
       }
     }, (req) => {
       const { x, y, z } = req.body // type safe

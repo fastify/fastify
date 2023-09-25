@@ -116,7 +116,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
           y: { type: 'string' },
           z: { type: 'boolean' }
         }
-      } as const
+      }
     },
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
@@ -133,6 +133,34 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     expectType<boolean | undefined>(req.body.z)
   }
 ))
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
+  url: '/',
+  method: 'POST',
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'string' },
+        z: { type: 'boolean' }
+      }
+    }
+  },
+  errorHandler: (error, request, reply) => {
+    expectType<FastifyError>(error)
+    expectAssignable<FastifyRequest>(request)
+    expectType<number | undefined>(request.body.x)
+    expectType<string | undefined>(request.body.y)
+    expectType<boolean | undefined>(request.body.z)
+    expectAssignable<FastifyReply>(reply)
+  },
+  handler: (req) => {
+    expectType<number | undefined>(req.body.x)
+    expectType<string | undefined>(req.body.y)
+    expectType<boolean | undefined>(req.body.z)
+  }
+}))
 
 expectAssignable<FastifyInstance>(server.withTypeProvider<JsonSchemaToTsProvider>())
 

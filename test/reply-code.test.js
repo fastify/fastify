@@ -57,3 +57,24 @@ test('code should handle null/undefined/float', t => {
     t.equal(res.statusCode, 404)
   })
 })
+
+test('code should handle 204', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/204', function (request, reply) {
+    reply.status(204)
+    return null
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/204'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 204)
+    t.equal(res.payload, '')
+    t.equal(res.headers['content-length'], undefined)
+  })
+})

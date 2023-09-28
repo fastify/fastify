@@ -67,6 +67,7 @@ test('code should handle 204', t => {
     reply.status(204)
     return null
   })
+
   fastify.get('/undefined/204', function (request, reply) {
     reply.status(204).send({ message: 'hello' })
   })
@@ -89,5 +90,34 @@ test('code should handle 204', t => {
     t.equal(res.statusCode, 204)
     t.equal(res.payload, '')
     t.equal(res.headers['content-length'], undefined)
+  })
+})
+
+test('code should handle onSend hook on 204', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  fastify.addHook('onSend', async function (request, reply, payload) {
+    return {
+      ...payload,
+      world: 'hello'
+    }
+  })
+
+  fastify.get('/204', function (request, reply) {
+    reply.status(204).send({
+      hello: 'world'
+    })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/204'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 204)
+    t.equal(res.payload, '')
+    t.equal(res.headers['content-length'], undefined)
+    t.equal(res.headers['content-type'], undefined)
   })
 })

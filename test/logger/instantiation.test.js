@@ -43,7 +43,6 @@ t.test('logger instantiation', (t) => {
       reply.send({ hello: 'world' })
     })
 
-    await fastify.ready()
     await fastify.listen({ port: 0, host: localhost })
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/foo')

@@ -9,7 +9,7 @@ const pino = require('pino')
 const Fastify = require('../../fastify')
 const helper = require('../helper')
 const { once, on } = stream
-const { request } = require('./loggerTestUtils')
+const { request } = require('./logger-test-utils')
 
 t.test('logging', (t) => {
   t.setTimeout(60000)

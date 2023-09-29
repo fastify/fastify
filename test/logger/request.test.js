@@ -8,7 +8,7 @@ const split = require('split2')
 const Fastify = require('../../fastify')
 const helper = require('../helper')
 const { on } = stream
-const { request } = require('./loggerTestUtils')
+const { request } = require('./logger-test-utils')
 
 t.test('request', (t) => {
   t.setTimeout(60000)

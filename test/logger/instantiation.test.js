@@ -13,7 +13,7 @@ const Fastify = require('../../fastify')
 const helper = require('../helper')
 const { FST_ERR_LOG_INVALID_LOGGER } = require('../../lib/errors')
 const { once, on } = stream
-const { createTempFile, request } = require('./loggerTestUtils')
+const { createTempFile, request } = require('./logger-test-utils')
 
 t.test('logger instantiation', (t) => {
   t.setTimeout(60000)

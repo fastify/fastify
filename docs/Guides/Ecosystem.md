@@ -278,6 +278,8 @@ section.
   [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like
   protection of endpoints via either a preSerialization & preHandler hook,
   sanitizing the inputs and outputs of your application based on user rights.
+- [`fastify-cf-turnstile`](https://github.com/112RG/fastify-cf-turnstile)
+  Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
   Fastify plugin to generate and forward Fastify events in the Cloudevents
   format.
@@ -285,8 +287,6 @@ section.
   The Cloudinary Fastify SDK allows you to quickly and easily integrate your
   application with Cloudinary. Effortlessly optimize and transform your cloud's
   assets.
-- [`fastify-cf-turnstile`](https://github.com/112RG/fastify-cf-turnstile)
-  Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
   Sequelize ORM.

@@ -673,7 +673,7 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`fastify-cf-turnstile`]([https://github.com/qwertyforce/fastify-recaptcha](https://github.com/112RG/fastify-cf-turnstile))
+- [`fastify-cf-turnstile`](https://github.com/112RG/fastify-cf-turnstile)
   Fastify plugin for CloudFlare Turnstile.
 #### [Community Tools](#community-tools)
 

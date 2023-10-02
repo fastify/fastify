@@ -924,7 +924,7 @@ t.test('nested hooks to do not crash on 404', t => {
   })
 })
 
-test('Register an hook after a plugin inside a plugin (with preHandler option) should fail if mixing async and callback style', t => {
+test('Register an hook (preHandler) as route option should fail if mixing async and callback style', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -943,6 +943,131 @@ test('Register an hook after a plugin inside a plugin (with preHandler option) s
       }
     )
     t.fail('preHandler mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (onSend) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        onSend: [
+          async (request, reply, payload, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('onSend mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (preSerialization) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        preSerialization: [
+          async (request, reply, payload, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('preSerialization mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (onError) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        onError: [
+          async (request, reply, error, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('onError mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (preParsing) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        preParsing: [
+          async (request, reply, payload, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('preParsing mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (onRequestAbort) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        onRequestAbort: [
+          async (request, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('onRequestAbort mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
     t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')

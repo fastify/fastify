@@ -745,8 +745,8 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onRequestAbort', async (req, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -757,8 +757,8 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onRequest', async (req, reply, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -769,20 +769,20 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('onError', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -922,4 +922,29 @@ t.test('nested hooks to do not crash on 404', t => {
     t.error(err)
     t.equal(res.statusCode, 404)
   })
+})
+
+test('Register an hook after a plugin inside a plugin (with preHandler option) should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        preHandler: [
+          async (request, reply, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('preHandler mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
 })

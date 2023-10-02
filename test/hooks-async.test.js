@@ -924,7 +924,7 @@ t.test('nested hooks to do not crash on 404', t => {
   })
 })
 
-test('Register an hook after a plugin inside a plugin (with preHandler option) should fail if mixing async and callback style', t => {
+test('Register an hook as route option should fail if mixing async and callback style', t => {
   t.plan(2)
   const fastify = Fastify()
 

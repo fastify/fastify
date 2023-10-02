@@ -606,7 +606,7 @@ your plugin.
    ```
 5. Open `index.d.ts` and add the following code:
    ```typescript
-   import { FastifyPlugin } from 'fastify'
+   import { FastifyPluginCallback } from 'fastify'
 
    interface PluginOptions {
      //...
@@ -627,7 +627,7 @@ your plugin.
 
    // fastify-plugin automatically adds named export, so be sure to add also this type
    // the variable name is derived from `options.name` property if `module.exports.myPlugin` is missing
-   export const myPlugin: FastifyPlugin<PluginOptions>
+   export const myPlugin: FastifyPluginCallback<PluginOptions>
 
    // fastify-plugin automatically adds `.default` property to the exported plugin. See the note below
    export default myPlugin
@@ -1233,15 +1233,16 @@ a function signature with an underlying generic `Options` which is defaulted to
 FastifyPlugin parameter when calling this function so there is no need to
 specify the underlying generic. The options parameter is the intersection of the
 plugin's options and two additional optional properties: `prefix: string` and
-`logLevel`: [LogLevel][LogLevel].
+`logLevel`: [LogLevel][LogLevel]. `FastifyPlugin` is deprecated use
+`FastifyPluginCallback` and `FastifyPluginAsync` instead.
 
 Below is an example of the options inference in action:
 
 ```typescript
 const server = fastify()
 
-const plugin: FastifyPlugin<{
-  option1: string;
+const plugin: FastifyPluginCallback<{
+:  option1: string;
   option2: boolean;
 }> = function (instance, opts, done) { }
 

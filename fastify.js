@@ -74,7 +74,6 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { validateAsyncHooks } = require('./lib/validation.js')
 
 function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
@@ -617,8 +616,22 @@ function fastify (options) {
       throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
     }
 
-    if (!validateAsyncHooks(name, fn)) {
-      throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+    if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    } else if (name === 'onReady' || name === 'onListen') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    } else if (name === 'onRequestAbort') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 1) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    } else {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
     }
 
     if (name === 'onClose') {

@@ -278,7 +278,7 @@ section.
   [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like
   protection of endpoints via either a preSerialization & preHandler hook,
   sanitizing the inputs and outputs of your application based on user rights.
-- [`fastify-cf-turnstile`](https://github.com/112RG/fastify-cf-turnstile)
+- [`fastify-cloudflare-turnstile`](https://github.com/112RG/fastify-cloudflare-turnstile)
   Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
   Fastify plugin to generate and forward Fastify events in the Cloudevents

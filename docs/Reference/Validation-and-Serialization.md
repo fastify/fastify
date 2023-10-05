@@ -390,6 +390,11 @@ body, URL  parameters, headers, and query string. The default
 [ajv](https://ajv.js.org/) validation interface. Fastify uses it internally to
 speed the validation up.
 
+> Since `validatorCompiler` is loaded on the first schema validation it's possible
+> that its value is falsey. If you need to validate some schema at runtime
+> (in contexts not covered by Fastify by default)
+> take a look a [these helpers](https://fastify.dev/docs/latest/Reference/Request/#validateinputdata-schema--httpstatus-httpstatus)
+
 Fastify's [baseline ajv
 configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 

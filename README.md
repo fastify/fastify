@@ -388,7 +388,7 @@ Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
 
 This list includes all companies that support one or more of the team members
-in the maintainance of this project.
+in the maintenance of this project.
 
 ## License
 

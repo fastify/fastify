@@ -892,6 +892,5 @@ For more details, see:
 
 - https://github.com/fastify/fastify/issues/1864 for the discussion about this
   feature
-- https://promisesaplus.com/ for the definition of thenables
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
   for the signature

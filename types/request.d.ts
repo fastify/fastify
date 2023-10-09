@@ -1,5 +1,5 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { FastifyContext, FastifyContextConfig } from './context'
+import { FastifyRequestContext, FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { RouteGenericInterface, FastifyRouteConfig } from './route'
@@ -60,8 +60,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   log: Logger;
   server: FastifyInstance;
   body: RequestType['body'];
-  context: FastifyContext<ContextConfig>;
-  routeConfig: FastifyContext<ContextConfig>['config'];
+  context: FastifyRequestContext<ContextConfig>;
+  routeConfig: FastifyRequestContext<ContextConfig>['config'];
   routeSchema: FastifySchema
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */

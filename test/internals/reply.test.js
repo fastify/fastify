@@ -1487,6 +1487,32 @@ test('should emit deprecation warning when trying to modify the reply.sent prope
   })
 })
 
+test('should emit deprecation warning when trying to use the reply.context.config property', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  const deprecationCode = 'FSTDEP019'
+  warning.emitted.delete(deprecationCode)
+
+  process.removeAllListeners('warning')
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, deprecationCode)
+  }
+
+  fastify.get('/', (req, reply) => {
+    req.log(reply.context.config)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.pass()
+
+    process.removeListener('warning', onWarning)
+  })
+})
+
 test('should throw error when passing falsy value to reply.sent', t => {
   t.plan(4)
   const fastify = Fastify()

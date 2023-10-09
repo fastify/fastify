@@ -1,5 +1,5 @@
 import { FastifyError } from '@fastify/error'
-import { FastifyContext } from './context'
+import { FastifyRequestContext } from './context'
 import { onErrorHookHandler, onRequestAbortHookHandler, onRequestHookHandler, onResponseHookHandler, onSendHookHandler, onTimeoutHookHandler, preHandlerHookHandler, preParsingHookHandler, preSerializationHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
@@ -41,7 +41,7 @@ export interface RouteShorthandOptions<
   serializerCompiler?: FastifySerializerCompiler<SchemaCompiler>;
   bodyLimit?: number;
   logLevel?: LogLevel;
-  config?: Omit<FastifyContext<ContextConfig>['config'], 'url' | 'method'>;
+  config?: Omit<FastifyRequestContext<ContextConfig>['config'], 'url' | 'method'>;
   version?: string;
   constraints?: { [name: string]: any },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';

@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import { FastifyContext } from './context'
+import { FastifyReplyContext } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
@@ -39,7 +39,7 @@ export interface FastifyReply<
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   raw: RawReply;
-  context: FastifyContext<ContextConfig>;
+  context: FastifyReplyContext<ContextConfig>;
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;

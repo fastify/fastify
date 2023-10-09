@@ -4,6 +4,13 @@ const t = require('tap')
 const Fastify = require('../fastify')
 
 t.test('async dispose should close fastify', async t => {
+  // skip test if asyncDispose is not supported
+  // Node <= 16
+  if (!('asyncDispose' in Symbol)) {
+    t.plan(0)
+    return
+  }
+
   t.plan(1)
 
   const fastify = Fastify()

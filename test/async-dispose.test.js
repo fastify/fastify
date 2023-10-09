@@ -3,14 +3,8 @@
 const t = require('tap')
 const Fastify = require('../fastify')
 
-t.test('async dispose should close fastify', async t => {
-  // skip test if asyncDispose is not supported
-  // Node <= 16
-  if (!('asyncDispose' in Symbol)) {
-    t.plan(0)
-    return
-  }
-
+// asyncDispose doesn't exist in node <= 16
+t.test('async dispose should close fastify', { skip: !('asyncDispose' in Symbol) }, async t => {
   t.plan(1)
 
   const fastify = Fastify()

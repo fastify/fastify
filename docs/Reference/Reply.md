@@ -85,7 +85,8 @@ object that exposes the following functions and properties:
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Access the [Request's context](./Request.md) property.
+- `.context` - Deprecated, access the [Request's context](./Request.md) property.
+- `.routeOptions` - Access the [Request's routeOptions](./Request.md) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {

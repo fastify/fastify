@@ -5,7 +5,7 @@ const Fastify = require('../fastify')
 
 // asyncDispose doesn't exist in node <= 16
 t.test('async dispose should close fastify', { skip: !('asyncDispose' in Symbol) }, async t => {
-  t.plan(1)
+  t.plan(2)
 
   const fastify = Fastify()
 

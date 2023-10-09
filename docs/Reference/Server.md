@@ -1874,25 +1874,25 @@ for more info.
 `fastify[Symbol.asyncDispose]` is a symbol that can be used to define an
 asynchronous function that will be called when the Fastify instance is closed.
 
-Its commonly used alongside the `using` typescript keyword to ensure that
+It's commonly used alongside the `using` TypeScript keyword to ensure that
 resources are cleaned up when the Fastify instance is closed.
 
 This combines perfectly inside short lived processes or unit tests, where you must
-close all fastify resources after returning from inside the function.
+close all Fastify resources after returning from inside the function.
 
 ```ts
-it('Uses app and closes it afterwards', async () => {
+test('Uses app and closes it afterwards', async () => {
   await using app = fastify();
   // do something with app.
 })
 ```
 
-In the above example, fastify is closed automatically after the test finishes.
+In the above example, Fastify is closed automatically after the test finishes.
 
 Read more about the
 [ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management)
 and the [using keyword](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/)
-introduced in typescript 5.2.
+introduced in TypeScript 5.2.
 
 #### initialConfig
 <a id="initial-config"></a>

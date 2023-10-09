@@ -5,13 +5,13 @@ const test = t.test
 const Fastify = require('../..')
 const https = require('node:https')
 const sget = require('simple-get').concat
-const dns = require('node:dns').promises
+const helper = require('../helper')
 
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
 test('Should support a custom https server', async t => {
-  const localAddresses = await dns.lookup('localhost', { all: true })
+  const localAddresses = await helper.dnsLookup('localhost', { all: true })
   const minPlan = localAddresses.length - 1 || 1
 
   t.plan(minPlan + 3)

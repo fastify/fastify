@@ -29,7 +29,7 @@
     "unit": "c8 tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
-    "citgm": "tap -R min"
+    "citgm": "tap --bail"
   },
   "repository": {
     "type": "git",

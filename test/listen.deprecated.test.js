@@ -4,22 +4,16 @@
 // removed when the deprecation is complete.
 
 const { test, before } = require('tap')
-const dns = require('node:dns').promises
 const Fastify = require('..')
+const helper = require('./helper')
 
 let localhost
 let localhostForURL
 
 process.removeAllListeners('warning')
 
-before(async function (t) {
-  const lookup = await dns.lookup('localhost')
-  localhost = lookup.address
-  if (lookup.family === 6) {
-    localhostForURL = `[${lookup.address}]`
-  } else {
-    localhostForURL = localhost
-  }
+before(async () => {
+  [localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
 test('listen accepts a port and a callback', t => {

@@ -4,22 +4,16 @@ const os = require('node:os')
 const path = require('node:path')
 const fs = require('node:fs')
 const { test, before } = require('tap')
-const dns = require('node:dns').promises
 const dnsCb = require('node:dns')
 const sget = require('simple-get').concat
 const Fastify = require('..')
+const helper = require('./helper')
 
 let localhost
 let localhostForURL
 
 before(async function () {
-  const lookup = await dns.lookup('localhost')
-  localhost = lookup.address
-  if (lookup.family === 6) {
-    localhostForURL = `[${lookup.address}]`
-  } else {
-    localhostForURL = localhost
-  }
+  [localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
 test('listen works without arguments', async t => {
@@ -337,7 +331,7 @@ test('listen logs the port as info', t => {
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
-  const lookups = await dns.lookup('localhost', { all: true })
+  const lookups = await helper.dnsLookup('localhost', { all: true })
   t.plan(2 * lookups.length)
 
   const app = Fastify()
@@ -396,7 +390,7 @@ test('addresses getter', async t => {
   t.same(app.addresses(), [], 'after ready')
   await app.listen({ port: 0, host: 'localhost' })
   const { port } = app.server.address()
-  const localAddresses = await dns.lookup('localhost', { all: true })
+  const localAddresses = await helper.dnsLookup('localhost', { all: true })
   for (const address of localAddresses) {
     address.port = port
     if (typeof address.family === 'number') {

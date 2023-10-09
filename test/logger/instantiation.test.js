@@ -172,13 +172,20 @@ t.test('logger instantiation', (t) => {
       reply.send({ hello: 'world' })
     })
 
+    console.log('await fastify.ready ...')
     await fastify.ready()
+    console.log('await fastify.ready ok')
+
+    console.log('await fastify.listen ...')
     await fastify.listen({ port: 0, host: localhost })
+    console.log('fastify.listen ok')
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port)
 
     // we already own the full log
+    console.log('fs.createReadStream ...')
     const stream = fs.createReadStream(file).pipe(split(JSON.parse))
+    console.log('fs.createReadStream ok')
     t.teardown(stream.resume.bind(stream))
 
     let id

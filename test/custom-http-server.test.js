@@ -6,10 +6,14 @@ const Fastify = require('..')
 const http = require('node:http')
 const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 const sget = require('simple-get').concat
-const dns = require('node:dns').promises
+const helper = require('./helper')
+
+let localAddresses
+t.before(async () => {
+  localAddresses = await helper.dnsLookup('localhost', { all: true })
+})
 
 test('Should support a custom http server', async t => {
-  const localAddresses = await dns.lookup('localhost', { all: true })
   const minPlan = localAddresses.length - 1 || 1
 
   t.plan(minPlan + 3)
@@ -74,7 +78,7 @@ test('Should not allow forceCloseConnection=idle if the server does not support 
 })
 
 test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
-  const server = http.createServer(() => {})
+  const server = http.createServer(() => { })
   t.teardown(() => new Promise(resolve => server.close(resolve)))
   const app = await Fastify({
     serverFactory: () => server

@@ -3,14 +3,12 @@
 const { test, before } = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
-const dns = require('node:dns').promises
 const split = require('split2')
+const helper = require('./helper')
 
 let localhost
-
 before(async function () {
-  const lookup = await dns.lookup('localhost')
-  localhost = lookup.address
+  [localhost] = await helper.getLoopbackHost()
 })
 
 test('onListen should not be processed when .ready() is called', t => {

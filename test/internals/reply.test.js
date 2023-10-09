@@ -14,7 +14,8 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext
+  kRouteContext,
+  kPublicRouteContext
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -35,10 +36,10 @@ const doGet = function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(14)
+  t.plan(16)
   const response = { res: 'res' }
-  const context = {}
-  const request = { [kRouteContext]: context }
+  const context = { config: { onSend: [] }, schema: {} }
+  const request = { [kRouteContext]: context, [kPublicRouteContext]: { config: context.config, schema: context.schema } }
   const reply = new Reply(response, request)
   t.equal(typeof reply, 'object')
   t.equal(typeof reply[kReplyIsError], 'boolean')
@@ -52,6 +53,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
+  t.equal(reply[kPublicRouteContext].config, context.config)
+  t.equal(reply[kPublicRouteContext].schema, context.schema)
   t.equal(reply.request, request)
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in reply)

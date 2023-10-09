@@ -1869,6 +1869,7 @@ Fastify instance. See the [`childLoggerFactory` config option](#setchildloggerfa
 for more info.
 
 #### Symbol.asyncDispose
+<a id="symbolAsyncDispose"></a>
 
 `fastify[Symbol.asyncDispose]` is a symbol that can be used to define an
 asynchronous function that will be called when the Fastify instance is closed.
@@ -1882,7 +1883,6 @@ close all fastify resources after returning from inside the function.
 ```ts
 it('Uses app and closes it afterwards', async () => {
   await using app = fastify();
-
   // do something with app.
 })
 ```

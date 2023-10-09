@@ -142,6 +142,9 @@ export interface FastifyInstance<
   close(): Promise<undefined>;
   close(closeListener: () => void): undefined;
 
+  /** Alias for {@linkcode FastifyInstance.close()} */
+  [Symbol.asyncDispose](): Promise<undefined>;
+
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;

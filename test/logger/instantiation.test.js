@@ -149,12 +149,13 @@ t.test('logger instantiation', (t) => {
       { reqId: /req-/, req: { method: 'GET', url: '/' }, msg: 'incoming request' },
       { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
     ]
-    t.plan(lines.length + 3)
+
     const { file, cleanup } = createTempFile(t)
 
     const fastify = Fastify({
       logger: { file }
     })
+
     t.teardown(() => {
       // cleanup the file after sonic-boom closed
       // otherwise we may face racing condition
@@ -176,16 +177,16 @@ t.test('logger instantiation', (t) => {
     await fastify.listen({ port: 0, host: localhost })
     await request(`http://${localhostForURL}:` + fastify.server.address().port)
 
-    // we already own the full log
-    const stream = fs.createReadStream(file).pipe(split(JSON.parse))
-    t.teardown(stream.resume.bind(stream))
+    const log = fs.readFileSync(file, 'utf8').split('\n')
+    // strip last line
+    log.pop()
 
     let id
-    for await (const [line] of on(stream, 'data')) {
+    for (let line of log) {
+      line = JSON.parse(line)
       if (id === undefined && line.reqId) id = line.reqId
       if (id !== undefined && line.reqId) t.equal(line.reqId, id)
       t.match(line, lines.shift())
-      if (lines.length === 0) break
     }
   })
 

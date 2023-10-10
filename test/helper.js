@@ -421,28 +421,27 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
   })
 }
 
-const DNS_LOOKUP_LOCALHOST = { address: '127.0.0.1', family: 4 }
-async function dnsLookup (host, options) {
-  // since dns.lookup goes to timeout running on citgm env, get a static lookup
-  // note host is always localhost
-  if (process.env.CITGM) {
-    if (options?.all) {
-      return [DNS_LOOKUP_LOCALHOST]
-    }
-    return DNS_LOOKUP_LOCALHOST
-  }
+// const DNS_LOOKUP_LOCALHOST_IPV4 = { address: '127.0.0.1', family: 4 }
+// const DNS_LOOKUP_LOCALHOST_IPV6 = { address: '::1', family: 6 }
+
+function dnsLookup (host, options) {
+  // 10/10 dns lookup works on CITGM
+  // TODO remove at the end
+  // if (process.env.CITGM) {
+  //   if (options?.all) {
+  //     return [DNS_LOOKUP_LOCALHOST_IPV4, DNS_LOOKUP_LOCALHOST_IPV6]
+  //   }
+  //   return DNS_LOOKUP_LOCALHOST_IPV6
+  // }
 
   return dns.lookup(host, options)
 }
 
 function lookupToIp (lookup) {
-  return lookup.family === 6
-    ? `[${lookup.address}]`
-    : lookup.address
+  return lookup.family === 6 ? `[${lookup.address}]` : lookup.address
 }
 
 module.exports.dnsLookup = dnsLookup
-module.exports.lookupToIp = lookupToIp
 
 module.exports.getLoopbackHost = async () => {
   const lookup = await dnsLookup('localhost')

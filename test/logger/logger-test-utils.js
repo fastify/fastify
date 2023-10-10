@@ -16,7 +16,7 @@ function createDeferredPromise () {
 
 let count = 0
 function createTempFile () {
-  const file = path.join(os.tmpdir(), `sonic-boom-${process.pid}-${process.hrtime().toString()}-${count++}`)
+  const file = path.join(os.tmpdir(), `sonic-boom-${process.pid}-${count++}`)
   function cleanup () {
     try {
       fs.unlinkSync(file)

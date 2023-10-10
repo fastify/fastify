@@ -151,20 +151,23 @@ t.test('logger instantiation', (t) => {
     ]
 
     const { file, cleanup } = createTempFile(t)
+    if (process.env.CITGM) { fs.writeFileSync(file, '') }
 
     const fastify = Fastify({
       logger: { file }
     })
 
     t.teardown(() => {
-      // cleanup the file after sonic-boom closed
-      // otherwise we may face racing condition
-      fastify.log[streamSym].once('close', cleanup)
-      // we must flush the stream ourself
-      // otherwise buffer may whole sonic-boom
-      fastify.log[streamSym].flushSync()
-      // end after flushing to actually close file
-      fastify.log[streamSym].end()
+      if (!process.env.CITGM) {
+        // cleanup the file after sonic-boom closed
+        // otherwise we may face racing condition
+        fastify.log[streamSym].once('close', cleanup)
+        // we must flush the stream ourself
+        // otherwise buffer may whole sonic-boom
+        fastify.log[streamSym].flushSync()
+        // end after flushing to actually close file
+        fastify.log[streamSym].end()
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 

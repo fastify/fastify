@@ -38,6 +38,7 @@ export type FastifyPluginAsync<
 
 /**
  * Generic plugin type.
- * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. See FastifyRegister.
+ * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. Use `FastifyPluginCallback` or `FastifyPluginAsync` instead. To activate
+ * plugins use `FastifyRegister`. https://fastify.dev/docs/latest/Reference/TypeScript/#register
  */
 export type FastifyPlugin<Options extends FastifyPluginOptions = Record<never, never>> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>

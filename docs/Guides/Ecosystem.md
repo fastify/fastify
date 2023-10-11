@@ -321,6 +321,8 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-event-bus`](https://github.com/Shiva127/fastify-event-bus) Event bus
+  support for Fastify. Built upon [js-event-bus](https://github.com/bcerati/js-event-bus).
 - [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
   plugin for instantiating and encapsulating the 
   [Evervault](https://evervault.com/) client.

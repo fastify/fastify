@@ -421,19 +421,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
   })
 }
 
-// const DNS_LOOKUP_LOCALHOST_IPV4 = { address: '127.0.0.1', family: 4 }
-// const DNS_LOOKUP_LOCALHOST_IPV6 = { address: '::1', family: 6 }
-
 function dnsLookup (host, options) {
-  // 10/10 dns lookup works on CITGM
-  // TODO remove at the end
-  // if (process.env.CITGM) {
-  //   if (options?.all) {
-  //     return [DNS_LOOKUP_LOCALHOST_IPV4, DNS_LOOKUP_LOCALHOST_IPV6]
-  //   }
-  //   return DNS_LOOKUP_LOCALHOST_IPV6
-  // }
-
+  // TODO memoize
   return dns.lookup(host, options)
 }
 

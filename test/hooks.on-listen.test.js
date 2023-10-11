@@ -6,6 +6,9 @@ const fp = require('fastify-plugin')
 const split = require('split2')
 const helper = require('./helper')
 
+// fix citgm @aix72-ppc64
+const LISTEN_READYNESS = process.env.CITGM ? 250 : 50
+
 let localhost
 before(async function () {
   [localhost] = await helper.getLoopbackHost()
@@ -1066,12 +1069,7 @@ test('onListen hooks do not block /1', t => {
     port: 0
   }, err => {
     t.error(err)
-    if (!process.env.CITGM) {
-      t.ok(new Date() - startDate < 50)
-    } else {
-      console.log('*** DEBUG aix72-ppc64 ***', new Date() - startDate)
-      t.ok(true)
-    }
+    t.ok(new Date() - startDate < LISTEN_READYNESS)
   })
 })
 
@@ -1089,10 +1087,5 @@ test('onListen hooks do not block /2', async t => {
     host: 'localhost',
     port: 0
   })
-  if (!process.env.CITGM) {
-    t.ok(new Date() - startDate < 50)
-  } else {
-    console.log('*** DEBUG aix72-ppc64 ***', new Date() - startDate)
-    t.ok(true)
-  }
+  t.ok(new Date() - startDate < LISTEN_READYNESS)
 })

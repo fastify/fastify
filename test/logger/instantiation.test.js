@@ -158,16 +158,21 @@ t.test('logger instantiation', (t) => {
     })
 
     t.teardown(() => {
-      if (!process.env.CITGM) {
-        // cleanup the file after sonic-boom closed
-        // otherwise we may face racing condition
-        fastify.log[streamSym].once('close', cleanup)
-        // we must flush the stream ourself
-        // otherwise buffer may whole sonic-boom
-        fastify.log[streamSym].flushSync()
-        // end after flushing to actually close file
-        fastify.log[streamSym].end()
-      }
+      setTimeout(() => {
+        // may fail on win
+        try {
+          // cleanup the file after sonic-boom closed
+          // otherwise we may face racing condition
+          fastify.log[streamSym].once('close', cleanup)
+          // we must flush the stream ourself
+          // otherwise buffer may whole sonic-boom
+          fastify.log[streamSym].flushSync()
+          // end after flushing to actually close file
+          fastify.log[streamSym].end()
+        } catch (err) {
+          console.warn(err)
+        }
+      }, 500)
     })
     t.teardown(fastify.close.bind(fastify))
 

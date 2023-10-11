@@ -149,15 +149,15 @@ test('listen logs the port as info', t => {
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
-  const lookups = await helper.dnsLookup('localhost', { all: true })
-  t.plan(2 * lookups.length)
+  const localAddresses = await helper.dnsLookup('localhost', { all: true })
+  t.plan(2 * localAddresses.length)
 
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
   t.teardown(app.close.bind(app))
   await app.listen({ port: 0, host: 'localhost' })
 
-  for (const lookup of lookups) {
+  for (const lookup of localAddresses) {
     await new Promise((resolve, reject) => {
       sget({
         method: 'GET',
@@ -198,6 +198,8 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
 })
 
 test('addresses getter', async t => {
+  const localAddresses = await helper.dnsLookup('localhost', { all: true })
+
   t.plan(4)
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
@@ -208,7 +210,6 @@ test('addresses getter', async t => {
   t.same(app.addresses(), [], 'after ready')
   await app.listen({ port: 0, host: 'localhost' })
   const { port } = app.server.address()
-  const localAddresses = await helper.dnsLookup('localhost', { all: true })
   for (const address of localAddresses) {
     address.port = port
     if (typeof address.family === 'number') {
@@ -221,8 +222,17 @@ test('addresses getter', async t => {
       address.family = 'IPv' + address.family
     }
   }
+
   localAddresses.sort((a, b) => a.address.localeCompare(b.address))
   appAddresses.sort((a, b) => a.address.localeCompare(b.address))
+
+  // citgm flaky @ rhel8-s390x rhel8-ppc64le debian10-x64
+  console.log('*** DEBUG ***')
+  console.log('localAddresses')
+  console.log(localAddresses)
+  console.log('appAddresses')
+  console.log(appAddresses)
+
   t.same(appAddresses, localAddresses, 'after listen')
 
   await app.close()

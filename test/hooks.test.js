@@ -11,21 +11,10 @@ const split = require('split2')
 const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
-const { promisify } = require('node:util')
 const { connect } = require('node:net')
-
-const sleep = promisify(setTimeout)
+const { sleep, getServerUrl } = require('./helper')
 
 process.removeAllListeners('warning')
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
 
 test('hooks', t => {
   t.plan(49)
@@ -760,7 +749,7 @@ test('onRoute hook should able to change the route url', t => {
 
     sget({
       method: 'GET',
-      url: getUrl(fastify) + encodeURI('/foo')
+      url: getServerUrl(fastify) + encodeURI('/foo')
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

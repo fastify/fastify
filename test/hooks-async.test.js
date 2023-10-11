@@ -6,7 +6,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('node:fs')
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const { sleep } = require('./helper')
 
 process.removeAllListeners('warning')
 

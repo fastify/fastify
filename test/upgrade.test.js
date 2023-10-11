@@ -4,10 +4,10 @@ const { test, skip } = require('tap')
 const Fastify = require('..')
 const { connect } = require('node:net')
 const { once } = require('node:events')
-const helper = require('./helper')
+const dns = require('node:dns').promises
 
 async function setup () {
-  const localAddresses = await helper.dnsLookup('localhost', { all: true })
+  const localAddresses = await dns.lookup('localhost', { all: true })
   if (localAddresses.length === 1) {
     skip('requires both IPv4 and IPv6')
     return

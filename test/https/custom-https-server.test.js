@@ -4,17 +4,17 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
 const https = require('node:https')
+const dns = require('node:dns').promises
 const sget = require('simple-get').concat
-const helper = require('../helper')
 const { buildCertificate } = require('../build-certificate')
 
 async function setup () {
   await buildCertificate()
 
-  const localAddresses = await helper.dnsLookup('localhost', { all: true })
+  const localAddresses = await dns.lookup('localhost', { all: true })
 
-  // citgm flaky @ rhel8-s390x rhel8-ppc64le debian10-x64
-  console.log('*** DEBUG dnsLookup(localhost, { all: true }) ***')
+  // citgm flaky @ rhel8-s390x rhel8-ppc64le
+  console.log('*** DEBUG dns.lookup(localhost, { all: true }) ***')
   console.log(localAddresses)
 
   test('Should support a custom https server', { skip: localAddresses.length < 1 }, async t => {

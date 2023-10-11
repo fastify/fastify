@@ -157,22 +157,21 @@ t.test('logger instantiation', (t) => {
       logger: { file }
     })
 
-    t.teardown(() => {
-      setTimeout(() => {
-        // may fail on win
-        try {
-          // cleanup the file after sonic-boom closed
-          // otherwise we may face racing condition
-          fastify.log[streamSym].once('close', cleanup)
-          // we must flush the stream ourself
-          // otherwise buffer may whole sonic-boom
-          fastify.log[streamSym].flushSync()
-          // end after flushing to actually close file
-          fastify.log[streamSym].end()
-        } catch (err) {
-          console.warn(err)
-        }
-      }, 500)
+    t.teardown(async () => {
+      await helper.sleep(250)
+      // may fail on win
+      try {
+        // cleanup the file after sonic-boom closed
+        // otherwise we may face racing condition
+        fastify.log[streamSym].once('close', cleanup)
+        // we must flush the stream ourself
+        // otherwise buffer may whole sonic-boom
+        fastify.log[streamSym].flushSync()
+        // end after flushing to actually close file
+        fastify.log[streamSym].end()
+      } catch (err) {
+        console.warn(err)
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -184,6 +183,8 @@ t.test('logger instantiation', (t) => {
     await fastify.ready()
     await fastify.listen({ port: 0, host: localhost })
     await request(`http://${localhostForURL}:` + fastify.server.address().port)
+
+    await helper.sleep(250)
 
     const log = fs.readFileSync(file, 'utf8').split('\n')
     // strip last line

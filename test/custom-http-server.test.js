@@ -2,17 +2,17 @@
 
 const t = require('tap')
 const test = t.test
-const Fastify = require('..')
 const http = require('node:http')
-const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
+const dns = require('node:dns').promises
 const sget = require('simple-get').concat
-const helper = require('./helper')
+const Fastify = require('..')
+const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 
 async function setup () {
-  const localAddresses = await helper.dnsLookup('localhost', { all: true })
+  const localAddresses = await dns.lookup('localhost', { all: true })
 
-  // citgm flaky @ rhel8-s390x rhel8-ppc64le debian10-x64
-  console.log('*** DEBUG dnsLookup(localhost, { all: true }) ***')
+  // citgm flaky @ rhel8-s390x rhel8-ppc64le
+  console.log('*** DEBUG dns.lookup(localhost, { all: true }) ***')
   console.log(localAddresses)
 
   test('Should support a custom http server', { skip: localAddresses.length < 1 }, async t => {

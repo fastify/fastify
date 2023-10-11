@@ -16,15 +16,7 @@ const Readable = require('node:stream').Readable
 const split = require('split2')
 const semver = require('semver')
 const { kDisableRequestLogging } = require('../lib/symbols.js')
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
+const { getServerUrl } = require('./helper')
 
 test('should respond with a stream', t => {
   t.plan(6)
@@ -610,7 +602,7 @@ test('should support send module 200 and 404', { skip: semver.gte(process.versio
     t.error(err)
     t.teardown(() => { fastify.close() })
 
-    const url = getUrl(fastify)
+    const url = getServerUrl(fastify)
 
     sget(url, function (err, response, data) {
       t.error(err)

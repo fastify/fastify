@@ -13,15 +13,7 @@ const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
   FST_ERR_ROUTE_METHOD_INVALID
 } = require('../lib/errors')
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
+const { getServerUrl } = require('./helper')
 
 test('route', t => {
   t.plan(10)
@@ -58,7 +50,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getUrl(fastify) + '/'
+        url: getServerUrl(fastify) + '/'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -86,7 +78,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getUrl(fastify) + '/missing'
+        url: getServerUrl(fastify) + '/missing'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -120,7 +112,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getUrl(fastify) + '/multiple'
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -129,7 +121,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getUrl(fastify) + '/multiple'
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -156,7 +148,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getUrl(fastify) + '/multiple'
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -165,7 +157,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getUrl(fastify) + '/multiple'
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -192,7 +184,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getUrl(fastify) + '/multiple'
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -201,7 +193,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getUrl(fastify) + '/multiple'
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -260,7 +252,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'PUT',
-        url: getUrl(fastify) + '/add-multiple'
+        url: getServerUrl(fastify) + '/add-multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -269,7 +261,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getUrl(fastify) + '/add-multiple'
+        url: getServerUrl(fastify) + '/add-multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -1698,7 +1690,7 @@ test('route with non-english characters', t => {
 
     sget({
       method: 'GET',
-      url: getUrl(fastify) + encodeURI('/föö')
+      url: getServerUrl(fastify) + encodeURI('/föö')
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

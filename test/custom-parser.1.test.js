@@ -4,34 +4,8 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
-
 const jsonParser = require('fast-json-body')
-
-function plainTextParser (request, callback) {
-  let body = ''
-  request.setEncoding('utf8')
-  request.on('error', onError)
-  request.on('data', onData)
-  request.on('end', onEnd)
-  function onError (err) {
-    callback(err, null)
-  }
-  function onData (chunk) {
-    body += chunk
-  }
-  function onEnd () {
-    callback(null, body)
-  }
-}
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
+const { getServerUrl, plainTextParser } = require('./helper')
 
 process.removeAllListeners('warning')
 
@@ -48,7 +22,7 @@ test('Should have typeof body object with no custom parser defined, null body an
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: null,
       headers: {
         'Content-Type': 'text/plain'
@@ -75,7 +49,7 @@ test('Should have typeof body object with no custom parser defined, undefined bo
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: undefined,
       headers: {
         'Content-Type': 'text/plain'
@@ -114,7 +88,7 @@ test('Should get the body as string', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
         'Content-Type': 'text/plain'
@@ -153,7 +127,7 @@ test('Should get the body as buffer', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/json'
@@ -192,7 +166,7 @@ test('Should get the body as buffer', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
         'Content-Type': 'text/plain'
@@ -229,7 +203,7 @@ test('Should parse empty bodies as a string', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '',
       headers: {
         'Content-Type': 'text/plain'
@@ -242,7 +216,7 @@ test('Should parse empty bodies as a string', t => {
 
     sget({
       method: 'DELETE',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '',
       headers: {
         'Content-Type': 'text/plain',
@@ -275,7 +249,7 @@ test('Should parse empty bodies as a buffer', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '',
       headers: {
         'Content-Type': 'text/plain'
@@ -309,7 +283,7 @@ test('The charset should not interfere with the content type handling', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
@@ -359,7 +333,7 @@ test('Should allow defining the bodyLimit per parser', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '1234567890',
       headers: {
         'Content-Type': 'x/foo'
@@ -400,7 +374,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '1234567890',
       headers: { 'Content-Type': 'x/foo' }
     }, (err, response, body) => {
@@ -432,7 +406,7 @@ test('should be able to use default parser for extra content type', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'text/json'
@@ -475,7 +449,7 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
 
       sget({
         method: 'POST',
-        url: getUrl(fastify),
+        url: getServerUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
           'Content-Type': 'application/vnd.test+json'
@@ -492,7 +466,7 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
 
       sget({
         method: 'OPTIONS',
-        url: getUrl(fastify),
+        url: getServerUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
           'Content-Type': 'weird/content-type+json'
@@ -612,7 +586,7 @@ test('catch all content type parser should not interfere with content type parse
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"myKey":"myValue"}',
       headers: {
         'Content-Type': 'application/json'
@@ -625,7 +599,7 @@ test('catch all content type parser should not interfere with content type parse
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'body',
       headers: {
         'Content-Type': 'very-weird-content-type'
@@ -638,7 +612,7 @@ test('catch all content type parser should not interfere with content type parse
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'my text',
       headers: {
         'Content-Type': 'text/html'
@@ -679,7 +653,7 @@ test('should prefer string content types over RegExp ones', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"k1":"myValue", "k2": "myValue"}',
       headers: {
         'Content-Type': 'application/json'
@@ -692,7 +666,7 @@ test('should prefer string content types over RegExp ones', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'javascript',
       headers: {
         'Content-Type': 'application/javascript'
@@ -736,7 +710,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '<?xml version="1.0">',
       headers: {
         'Content-Type': 'application/xml'
@@ -749,7 +723,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '',
       headers: {
         'Content-Type': 'image/png'
@@ -761,7 +735,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{test: "test"}',
       headers: {
         'Content-Type': 'application/json'
@@ -804,7 +778,7 @@ test('removeContentTypeParser should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify) + '/encapsulated',
+      url: getServerUrl(fastify) + '/encapsulated',
       body: '<?xml version="1.0">',
       headers: {
         'Content-Type': 'application/xml'
@@ -816,7 +790,7 @@ test('removeContentTypeParser should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '<?xml version="1.0">',
       headers: {
         'Content-Type': 'application/xml'
@@ -854,7 +828,7 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify) + '/encapsulated',
+      url: getServerUrl(fastify) + '/encapsulated',
       body: '{}',
       headers: {
         'Content-Type': 'application/json'
@@ -866,7 +840,7 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"test":1}',
       headers: {
         'Content-Type': 'application/json'
@@ -931,7 +905,7 @@ test('should be able to override the default json parser after removeAllContentT
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/json'
@@ -968,7 +942,7 @@ test('should be able to override the default plain text parser after removeAllCo
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
         'Content-Type': 'text/plain'
@@ -1005,7 +979,7 @@ test('should be able to add a custom content type parser after removeAllContentT
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'

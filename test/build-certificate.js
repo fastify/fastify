@@ -73,24 +73,9 @@ function selfCert (opts) {
         const interfaces = os.networkInterfaces()
 
         // fix citgm: skip invalid ips (aix72-ppc64)
-        // TODO memoize
         const ips = Object.values(interfaces).flat()
           .filter(i => !!forge.util.bytesFromIP(i.address))
           .map(i => ({ type: 7 /* IP */, ip: i.address }))
-
-        console.log('*** DEBUG ***')
-        console.log('os.networkInterfaces()')
-        console.log(interfaces)
-        console.log('ips')
-        console.log(ips)
-
-        // original
-        // const ips = []
-        // Object.keys(interfaces).forEach((k) => {
-        //   interfaces[k].forEach((i) => {
-        //     ips.push({ type: 7 /* IP */, ip: i.address })
-        //   })
-        // })
 
         return ips
       }()))

@@ -1,12 +1,22 @@
 'use strict'
 
 const { test, before } = require('tap')
+const dns = require('node:dns').promises
 const dnsCb = require('node:dns')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const helper = require('./helper')
 
 let localhostForURL
+
+function getUrl (fastify, lookup) {
+  const { port } = fastify.server.address()
+  if (lookup.family === 6) {
+    return `http://[${lookup.address}]:${port}/`
+  } else {
+    return `http://${lookup.address}:${port}/`
+  }
+}
 
 before(async function () {
   [, localhostForURL] = await helper.getLoopbackHost()
@@ -73,7 +83,7 @@ test('listen logs the port as info', t => {
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
-  const localAddresses = await helper.dnsLookup('localhost', { all: true })
+  const localAddresses = await dns.lookup('localhost', { all: true })
   t.plan(2 * localAddresses.length)
 
   const app = Fastify()
@@ -122,7 +132,7 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
 })
 
 test('addresses getter', async t => {
-  let localAddresses = await helper.dnsLookup('localhost', { all: true })
+  let localAddresses = await dns.lookup('localhost', { all: true })
 
   t.plan(4)
   const app = Fastify()
@@ -158,12 +168,3 @@ test('addresses getter', async t => {
   await app.close()
   t.same(app.addresses(), [], 'after close')
 })
-
-function getUrl (fastify, lookup) {
-  const { port } = fastify.server.address()
-  if (lookup.family === 6) {
-    return `http://[${lookup.address}]:${port}/`
-  } else {
-    return `http://${lookup.address}:${port}/`
-  }
-}

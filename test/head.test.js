@@ -56,6 +56,40 @@ test('shorthand - head', t => {
   }
 })
 
+test('shorthand - custom head', t => {
+  t.plan(1)
+  try {
+    fastify.get('/proxy/*', function (req, reply) {
+      reply.code(200).send(null)
+    })
+
+    fastify.head('/proxy/*', function (req, reply) {
+      reply.code(200).send(null)
+    })
+
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - custom head with constraints', t => {
+  t.plan(1)
+  try {
+    fastify.get('/proxy/*', { constraints: { version: '1.0.0' } }, function (req, reply) {
+      reply.code(200).send(null)
+    })
+
+    fastify.head('/proxy/*', { constraints: { version: '1.0.0' } }, function (req, reply) {
+      reply.code(200).send(null)
+    })
+
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 test('shorthand - head params', t => {
   t.plan(1)
   try {
@@ -156,6 +190,31 @@ fastify.listen({ port: 0 }, err => {
     sget({
       method: 'HEAD',
       url: 'http://localhost:' + fastify.server.address().port + '/missing'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  test('shorthand - request head custom head', t => {
+    t.plan(2)
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  test('shorthand - request head custom head with constraints', t => {
+    t.plan(2)
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
+      headers: {
+        version: '1.0.0'
+      }
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 200)

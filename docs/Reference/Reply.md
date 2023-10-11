@@ -605,8 +605,9 @@ low-level request and response. Moreover, hooks will not be invoked.
 *Modifying the `.sent` property directly is deprecated. Please use the
 aforementioned `.hijack()` method to achieve the same effect.*
 
-<a name="hijack"></a>
 ### .hijack()
+<a name="hijack"></a>
+
 Sometimes you might need to halt the execution of the normal request lifecycle
 and handle sending the response manually.
 

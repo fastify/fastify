@@ -1771,7 +1771,7 @@ test('onRequest respond with a stream', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', (req, reply, done) => {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     // stream.pipe(res)
     // res.once('finish', done)
     reply.send(stream)
@@ -1822,7 +1822,7 @@ test('preHandler respond with a stream', t => {
   const order = [1, 2]
 
   fastify.addHook('preHandler', (req, reply, done) => {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     reply.send(stream)
     reply.raw.once('finish', () => {
       t.equal(order.shift(), 2)

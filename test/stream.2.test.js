@@ -22,7 +22,7 @@ test('onSend hook stream', t => {
 
     reply.header('Content-Encoding', 'gzip')
     pipeline(
-      fs.createReadStream(resolve(process.cwd() + '/test/stream.test.js'), 'utf8'),
+      fs.createReadStream(resolve(__filename), 'utf8'),
       gzStream,
       t.error
     )
@@ -35,7 +35,7 @@ test('onSend hook stream', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.headers['content-encoding'], 'gzip')
-    const file = fs.readFileSync(resolve(process.cwd() + '/test/stream.test.js'), 'utf8')
+    const file = fs.readFileSync(resolve(__filename), 'utf8')
     const payload = zlib.gunzipSync(res.rawPayload)
     t.equal(payload.toString('utf-8'), file)
     fastify.close()

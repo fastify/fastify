@@ -157,12 +157,6 @@ test('addresses getter', async t => {
     family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
   })).sort()
 
-  console.log('*** DEBUG ***')
-  console.log('localAddresses')
-  console.log(localAddresses)
-  console.log('appAddresses')
-  console.log(appAddresses)
-
   t.same(appAddresses, localAddresses, 'after listen')
 
   await app.close()

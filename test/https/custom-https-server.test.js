@@ -13,10 +13,6 @@ async function setup () {
 
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  // citgm flaky @ rhel8-s390x rhel8-ppc64le
-  console.log('*** DEBUG dns.lookup(localhost, { all: true }) ***')
-  console.log(localAddresses)
-
   test('Should support a custom https server', { skip: localAddresses.length < 1 }, async t => {
     t.plan(4)
 

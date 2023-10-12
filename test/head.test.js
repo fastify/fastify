@@ -64,6 +64,7 @@ test('shorthand - custom head', t => {
     })
 
     fastify.head('/proxy/*', function (req, reply) {
+      reply.headers({ 'x-foo': 'bar' })
       reply.code(200).send(null)
     })
 
@@ -81,11 +82,104 @@ test('shorthand - custom head with constraints', t => {
     })
 
     fastify.head('/proxy/*', { constraints: { version: '1.0.0' } }, function (req, reply) {
+      reply.headers({ 'x-foo': 'bar' })
       reply.code(200).send(null)
     })
 
     t.pass()
   } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - should not reset a head route', t => {
+  t.plan(1)
+  try {
+    fastify.get('/query1', function (req, reply) {
+      reply.code(200).send(null)
+    })
+
+    fastify.put('/query1', function (req, reply) {
+      reply.code(200).send(null)
+    })
+
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - should override head route when setting multiple routes', t => {
+  t.plan(1)
+  try {
+    fastify.route({
+      method: 'GET',
+      url: '/query2',
+      handler: function (req, reply) {
+        reply.headers({ 'x-foo': 'bar' })
+        reply.code(200).send(null)
+      }
+    })
+
+    fastify.route({
+      method: ['POST', 'PUT', 'HEAD'],
+      url: '/query2',
+      handler: function (req, reply) {
+        reply.headers({ 'x-foo': 'bar' })
+        reply.code(200).send(null)
+      }
+    })
+
+    t.pass()
+  } catch (e) {
+    console.log(e)
+    t.fail()
+  }
+})
+
+test('shorthand - should override head route when setting multiple routes', t => {
+  t.plan(1)
+  try {
+    fastify.route({
+      method: ['GET'],
+      url: '/query3',
+      handler: function (req, reply) {
+        reply.headers({ 'x-foo': 'bar' })
+        reply.code(200).send(null)
+      }
+    })
+
+    fastify.route({
+      method: ['POST', 'PUT', 'HEAD'],
+      url: '/query3',
+      handler: function (req, reply) {
+        reply.headers({ 'x-foo': 'bar' })
+        reply.code(200).send(null)
+      }
+    })
+
+    t.pass()
+  } catch (e) {
+    console.log(e)
+    t.fail()
+  }
+})
+
+test('shorthand - should set get and head route in the same api call', t => {
+  t.plan(1)
+  try {
+    fastify.route({
+      method: ['HEAD', 'GET'],
+      url: '/query4',
+      handler: function (req, reply) {
+        reply.headers({ 'x-foo': 'bar' })
+        reply.code(200).send(null)
+      }
+    })
+
+    t.pass()
+  } catch (e) {
+    console.log(e)
     t.fail()
   }
 })
@@ -110,6 +204,7 @@ test('shorthand - head, querystring schema', t => {
     })
     t.pass()
   } catch (e) {
+    console.log(e)
     t.fail()
   }
 })
@@ -122,6 +217,7 @@ test('missing schema - head', t => {
     })
     t.pass()
   } catch (e) {
+    console.log(e)
     t.fail()
   }
 })
@@ -197,18 +293,19 @@ fastify.listen({ port: 0 }, err => {
   })
 
   test('shorthand - request head custom head', t => {
-    t.plan(2)
+    t.plan(3)
     sget({
       method: 'HEAD',
       url: 'http://localhost:' + fastify.server.address().port + '/proxy/test'
     }, (err, response) => {
       t.error(err)
+      t.equal(response.headers['x-foo'], 'bar')
       t.equal(response.statusCode, 200)
     })
   })
 
   test('shorthand - request head custom head with constraints', t => {
-    t.plan(2)
+    t.plan(3)
     sget({
       method: 'HEAD',
       url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
@@ -217,6 +314,54 @@ fastify.listen({ port: 0 }, err => {
       }
     }, (err, response) => {
       t.error(err)
+      t.equal(response.headers['x-foo'], 'bar')
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  test('shorthand - should not reset a head route', t => {
+    t.plan(2)
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port + '/query1'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  test('shorthand - should override head route when setting multiple routes', t => {
+    t.plan(3)
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port + '/query2'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.headers['x-foo'], 'bar')
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  test('shorthand - should override head route when setting multiple routes', t => {
+    t.plan(3)
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port + '/query3'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.headers['x-foo'], 'bar')
+      t.equal(response.statusCode, 200)
+    })
+  })
+
+  test('shorthand - should set get and head route in the same api call', t => {
+    t.plan(3)
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port + '/query4'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.headers['x-foo'], 'bar')
       t.equal(response.statusCode, 200)
     })
   })

@@ -3,14 +3,15 @@
 const { test, before } = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
-const dns = require('node:dns').promises
 const split = require('split2')
+const helper = require('./helper')
+
+// fix citgm @aix72-ppc64
+const LISTEN_READYNESS = process.env.CITGM ? 250 : 50
 
 let localhost
-
 before(async function () {
-  const lookup = await dns.lookup('localhost')
-  localhost = lookup.address
+  [localhost] = await helper.getLoopbackHost()
 })
 
 test('onListen should not be processed when .ready() is called', t => {
@@ -1068,7 +1069,7 @@ test('onListen hooks do not block /1', t => {
     port: 0
   }, err => {
     t.error(err)
-    t.ok(new Date() - startDate < 50)
+    t.ok(new Date() - startDate < LISTEN_READYNESS)
   })
 })
 
@@ -1086,5 +1087,5 @@ test('onListen hooks do not block /2', async t => {
     host: 'localhost',
     port: 0
   })
-  t.ok(new Date() - startDate < 50)
+  t.ok(new Date() - startDate < LISTEN_READYNESS)
 })

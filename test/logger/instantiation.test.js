@@ -149,21 +149,29 @@ t.test('logger instantiation', (t) => {
       { reqId: /req-/, req: { method: 'GET', url: '/' }, msg: 'incoming request' },
       { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
     ]
-    t.plan(lines.length + 3)
+
     const { file, cleanup } = createTempFile(t)
+    if (process.env.CITGM) { fs.writeFileSync(file, '') }
 
     const fastify = Fastify({
       logger: { file }
     })
-    t.teardown(() => {
-      // cleanup the file after sonic-boom closed
-      // otherwise we may face racing condition
-      fastify.log[streamSym].once('close', cleanup)
-      // we must flush the stream ourself
-      // otherwise buffer may whole sonic-boom
-      fastify.log[streamSym].flushSync()
-      // end after flushing to actually close file
-      fastify.log[streamSym].end()
+
+    t.teardown(async () => {
+      await helper.sleep(250)
+      // may fail on win
+      try {
+        // cleanup the file after sonic-boom closed
+        // otherwise we may face racing condition
+        fastify.log[streamSym].once('close', cleanup)
+        // we must flush the stream ourself
+        // otherwise buffer may whole sonic-boom
+        fastify.log[streamSym].flushSync()
+        // end after flushing to actually close file
+        fastify.log[streamSym].end()
+      } catch (err) {
+        console.warn(err)
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -174,19 +182,20 @@ t.test('logger instantiation', (t) => {
 
     await fastify.ready()
     await fastify.listen({ port: 0, host: localhost })
-
     await request(`http://${localhostForURL}:` + fastify.server.address().port)
 
-    // we already own the full log
-    const stream = fs.createReadStream(file).pipe(split(JSON.parse))
-    t.teardown(stream.resume.bind(stream))
+    await helper.sleep(250)
+
+    const log = fs.readFileSync(file, 'utf8').split('\n')
+    // strip last line
+    log.pop()
 
     let id
-    for await (const [line] of on(stream, 'data')) {
+    for (let line of log) {
+      line = JSON.parse(line)
       if (id === undefined && line.reqId) id = line.reqId
       if (id !== undefined && line.reqId) t.equal(line.reqId, id)
       t.match(line, lines.shift())
-      if (lines.length === 0) break
     }
   })
 

@@ -6,7 +6,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('node:fs')
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const { sleep } = require('./helper')
 
 process.removeAllListeners('warning')
 
@@ -653,7 +653,7 @@ test('onRequest respond with a stream', t => {
 
   fastify.addHook('onRequest', async (req, reply) => {
     return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+      const stream = fs.createReadStream(__filename, 'utf8')
       // stream.pipe(res)
       // res.once('finish', resolve)
       reply.send(stream).then(() => {
@@ -704,7 +704,7 @@ test('preHandler respond with a stream', t => {
   const order = [1, 2]
 
   fastify.addHook('preHandler', async (req, reply) => {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     reply.raw.once('finish', () => {
       t.equal(order.shift(), 2)
     })

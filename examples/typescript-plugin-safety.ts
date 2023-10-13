@@ -8,9 +8,6 @@ export type UnionToIntersection<U> = (
 ) extends (k: infer I) => void
   ? I
   : never;
-type Prettify<T> = {
-    [K in keyof T]: T[K];
-  } & {};
 
 // Plugin definition on the `fastify-plugin` library
 type PluginMetadata = {
@@ -42,14 +39,17 @@ declare function fastifyPlugin<
     Fn extends FastifyPluginCallback<Options, RawServer, TypeProvider, Logger,  Decorators["decorators"]> | FastifyPluginAsync<Options, RawServer, TypeProvider, Logger, Decorators["decorators"]> = FastifyPluginCallback<Options, RawServer, TypeProvider, Logger,  Decorators["decorators"]>
 >(
     fn: Fn extends unknown ? Fn extends (...args: any) => Promise<any> ? FastifyPluginAsync<
-        Options, RawServer, TypeProvider, Logger, Decorators["decorators"] & Prettify<ExtractSixGeneric<ExtractFirstFunctionParameter<Decorators["dependencies"][number] extends undefined ? {} : Decorators["dependencies"][number]>>>
+        Options, RawServer, TypeProvider, Logger, Decorators["decorators"] & ExtractSixGeneric<ExtractFirstFunctionParameter<Decorators["dependencies"][number] extends undefined ? {} : Decorators["dependencies"][number]>>
     > : FastifyPluginCallback<
-        Options, RawServer, TypeProvider, Logger, Decorators["decorators"] & Prettify<ExtractSixGeneric<ExtractFirstFunctionParameter<Decorators["dependencies"][number] extends undefined ? {} : Decorators["dependencies"][number]>>>
+        Options, RawServer, TypeProvider, Logger, Decorators["decorators"] & ExtractSixGeneric<ExtractFirstFunctionParameter<Decorators["dependencies"][number] extends undefined ? {} : Decorators["dependencies"][number]>>
     > : Fn,
     options?: PluginMetadata | string,
 ): Fn;
 
+// Used to type plugins written in javascript
+export type GetPluginTypes<Decorators extends FastifyPluginDecorators = { decorators: {}, dependencies: [] }> = FastifyPluginCallback<{}, RawServerBase, FastifyTypeProviderDefault, FastifyBaseLogger,  Decorators["decorators"] & ExtractSixGeneric<ExtractFirstFunctionParameter<Decorators["dependencies"][number] extends undefined ? {} : Decorators["dependencies"][number]>>>;
 
+// Testing types
 const a = fastifyPlugin<{
     decorators: {
         fastify: {

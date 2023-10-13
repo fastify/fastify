@@ -1,4 +1,4 @@
-import { FastifyInstance } from './instance'
+import { AppDecorators, FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyBaseLogger } from './logger'
@@ -15,8 +15,9 @@ export type FastifyPluginCallback<
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Decorators extends AppDecorators = object,
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators>,
   opts: Options,
   done: (err?: Error) => void
 ) => void
@@ -31,8 +32,9 @@ export type FastifyPluginAsync<
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Decorators extends AppDecorators = object
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators>,
   opts: Options
 ) => Promise<void>;
 

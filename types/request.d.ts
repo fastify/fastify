@@ -37,21 +37,16 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
  */
-export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+export type FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
-  // ^ Temporary Note: RequestType has been re-ordered to be the last argument in
-  //   generic list. This generic argument is now considered optional as it can be
-  //   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
-  //   arguments. Implementations that already pass this argument can either omit
-  //   the RequestType (preferred) or swap Logger and RequestType arguments when
-  //   creating custom types of FastifyRequest. Related issue #4123
-> {
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
+  Decorator extends object | undefined = object
+> = {
   id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;
@@ -93,4 +88,4 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   // Prefer `socket` over deprecated `connection` property in node 13.0.0 or higher
   // @deprecated
   readonly connection: RawRequest['socket'];
-}
+} & Decorator;

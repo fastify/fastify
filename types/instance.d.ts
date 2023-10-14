@@ -143,6 +143,8 @@ export interface FastifyInstance<
   close(closeListener: () => void): undefined;
 
   /** Alias for {@linkcode FastifyInstance.close()} */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - type only available for @types/node >=17 or typescript >= 5.2
   [Symbol.asyncDispose](): Promise<undefined>;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to

@@ -43,7 +43,7 @@ export interface RouteShorthandOptions<
   logLevel?: LogLevel;
   config?: Omit<FastifyRequestContext<ContextConfig>['config'], 'url' | 'method'>;
   version?: string;
-  constraints?: { [name: string]: any },
+  constraints?: Partial<{ version: any, host:any, [name: string]: any }>,
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,

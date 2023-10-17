@@ -113,7 +113,7 @@ type DecorationMethod<This, Return = This> = {
   (property: string | symbol, value: null|undefined, dependencies: string[]): Return;
 }
 
-export type AppDecorators = { fastify?: object, request?: object, reply?: object };
+export type FastifyDecorators = { fastify?: object, request?: object, reply?: object };
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
@@ -124,7 +124,7 @@ export type FastifyInstance<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Decorators extends AppDecorators = object
+  Decorators extends FastifyDecorators = object
 > = {
   server: RawServer;
   pluginName: string;

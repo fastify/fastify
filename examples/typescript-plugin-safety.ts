@@ -1,5 +1,5 @@
 import { FastifyBaseLogger, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions, FastifyTypeProvider, FastifyTypeProviderDefault, RawServerBase, RawServerDefault } from "../fastify";
-import { AppDecorators, FastifyInstance } from "../types/instance";
+import { FastifyDecorators, FastifyInstance } from "../types/instance";
 
 type ExtractSixGeneric<T> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : void;
 type ExtractFirstFunctionParameter<T> = T extends (...args: infer P) => any ? P[0] : void;
@@ -26,7 +26,7 @@ type PluginMetadata = {
 }
 
 type FastifyPluginDecorators = {
-    decorators: AppDecorators,
+    decorators: FastifyDecorators,
     dependencies: (FastifyPluginCallback<any, any, any, any, any> | FastifyPluginAsync<any, any, any, any, any>)[]
 }
 

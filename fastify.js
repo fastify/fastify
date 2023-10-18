@@ -4,6 +4,7 @@ const VERSION = '5.0.0-alpha.1'
 
 const Avvio = require('avvio')
 const http = require('node:http')
+const diagnostics = require('dc-polyfill')
 let lightMyRequest
 
 const {
@@ -76,6 +77,8 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+
+const initChannel = diagnostics.channel('fastify.initialization')
 
 function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
@@ -540,15 +543,8 @@ function fastify (options) {
   // Delay configuring clientError handler so that it can access fastify state.
   server.on('clientError', options.clientErrorHandler.bind(fastify))
 
-  try {
-    const dc = require('node:diagnostics_channel')
-    const initChannel = dc.channel('fastify.initialization')
-    if (initChannel.hasSubscribers) {
-      initChannel.publish({ fastify })
-    }
-  } catch (e) {
-    // This only happens if `diagnostics_channel` isn't available, i.e. earlier
-    // versions of Node.js. In that event, we don't care, so ignore the error.
+  if (initChannel.hasSubscribers) {
+    initChannel.publish({ fastify })
   }
 
   // Older nodejs versions may not have asyncDispose

@@ -94,7 +94,11 @@ test('handler function - reply', t => {
     preValidation: [],
     preHandler: [],
     onSend: [],
-    onError: []
+    onError: [],
+    config: {
+      url: '',
+      method: ''
+    }
   }
   buildSchema(context, schemaValidator)
   internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))

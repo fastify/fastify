@@ -519,15 +519,10 @@ function fastify (options) {
   // Delay configuring clientError handler so that it can access fastify state.
   server.on('clientError', options.clientErrorHandler.bind(fastify))
 
-  try {
-    const dc = require('node:diagnostics_channel')
-    const initChannel = dc.channel('fastify.initialization')
-    if (initChannel.hasSubscribers) {
-      initChannel.publish({ fastify })
-    }
-  } catch (e) {
-    // This only happens if `diagnostics_channel` isn't available, i.e. earlier
-    // versions of Node.js. In that event, we don't care, so ignore the error.
+  const dc = require('dc-polyfill')
+  const initChannel = dc.channel('fastify.initialization')
+  if (initChannel.hasSubscribers) {
+    initChannel.publish({ fastify })
   }
 
   return fastify

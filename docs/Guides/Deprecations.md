@@ -21,7 +21,7 @@ For more information see
 
 ## Fastify Deprecations in Migration Guides
 
-### V4 Deprecations ([Migration-Guide-V4](Migration-Guide-V34.md))
+### V4 Deprecations ([Migration-Guide-V4](Migration-Guide-V4.md))
  - Deprecation of variadic `.listen()` signature [Notes](Migration-Guide-V4.md#deprecation-of-variadic-listen-signature)
 
 

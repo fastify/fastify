@@ -284,6 +284,10 @@ listed in alphabetical order.
   <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Manuel Spigolon__](https://github.com/eomm),
+  <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+* [__James Sumners__](https://github.com/jsumners),
+  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),

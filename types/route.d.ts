@@ -12,6 +12,7 @@ import {
   ResolveFastifyReplyReturnType
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { ConstraintStrategy } from 'find-my-way'
 
 export interface FastifyRouteConfig {
   url: string;
@@ -19,6 +20,10 @@ export interface FastifyRouteConfig {
 }
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
+
+export type RouteConstraintType = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
+  deriveConstraint<Context>(req: RawRequestDefaultExpression<RawServerDefault>, ctx?: Context, done?: (err: Error, ...args: any) => any): any,
+}
 
 /**
  * Route shorthand options for the various shorthand methods
@@ -43,7 +48,7 @@ export interface RouteShorthandOptions<
   logLevel?: LogLevel;
   config?: Omit<FastifyRequestContext<ContextConfig>['config'], 'url' | 'method'>;
   version?: string;
-  constraints?: { [name: string]: any },
+  constraints?: { version: string } | {host: RegExp | string} | {[name: string]: RouteConstraintType },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,

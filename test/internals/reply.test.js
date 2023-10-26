@@ -2169,8 +2169,8 @@ test('Uint8Array view of ArrayBuffer returns correct byteLength', t => {
     }, (err, response) => {
       t.error(err)
       t.equal(response.headers['content-type'], 'application/octet-stream')
-      t.equal(response.headers['content-length'], '100')
-      t.same(response.rawPayload.byteLength, arrBuf.byteLength)
+      t.equal(response.headers['content-length'], '10')
+      t.same(response.rawPayload.byteLength, arrView.byteLength)
     })
   })
 })

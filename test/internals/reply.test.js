@@ -2148,3 +2148,29 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
     t.equal(err.code, 'ERR_HTTP_HEADERS_SENT')
   }
 })
+
+test('Uint8Array view of ArrayBuffer returns correct byteLength', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  const arrBuf = new ArrayBuffer(100)
+  const arrView = new Uint8Array(arrBuf, 0, 10)
+  fastify.get('/', function (req, reply) {
+    return reply.send(arrView)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-length'], '100')
+      t.same(response.rawPayload.byteLength, arrBuf.byteLength)
+    })
+  })
+})

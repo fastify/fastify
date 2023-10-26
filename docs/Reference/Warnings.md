@@ -4,11 +4,14 @@
 ## Warnings
 
 ### Warnings In Fastify
-Warnings are enabled by default, and you can disable it by:
+Warnings are enabled by default. They can be disabled by using any
+of the following methods:
 
 - setting the `NODE_NO_WARNINGS` environment variable to `1`
 - passing the `--no-warnings` flag to the node process
 - setting 'no-warnings' in the `NODE_OPTIONS` environment variable
+
+For more information on how to disable warnings, see [node's documentation](https://nodejs.org/api/cli.html).
 
 However, disabling warnings is not recommended as it may cause
 potential problems when upgrading Fastify versions.
@@ -16,21 +19,27 @@ Only experienced users should consider disabling warnings.
 
 ### Fastify Warning Codes
 
-| Code | Description | How to solve |
-| ---- | ----------- | ------------ |
-| **FSTWRN001** | The specified schema for a route is missing. This may indicate the schema is not well specified. | Check the schema for the route. |
-| **FSTDEP005** | You are accessing the deprecated `request.connection` property. | Use `request.socket`. |
-| **FSTDEP006** | You are decorating Request/Reply with a reference type. This reference is shared amongst all requests. | Do not use Arrays/Objects as values when decorating Request/Reply. |
-| **FSTDEP007** | You are trying to set a HEAD route using `exposeHeadRoute` route flag when a sibling route is already set. | Remove `exposeHeadRoutes` or explicitly set `exposeHeadRoutes` to `false` |
-| **FSTDEP008** | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  |
-| **FSTDEP009** | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  |
-| **FSTDEP010** | Modifying the `reply.sent` property is deprecated. | Use the `reply.hijack()` method. |
-| **FSTDEP011** | Variadic listen method is deprecated. | Use `.listen(optionsObject)`. |
-| **FSTDEP012** | You are trying to access the deprecated `request.context` property. | Use `request.routeOptions.config` or `request.routeOptions.schema`. |
-| **FSTDEP013** | Direct return of "trailers" function is deprecated. | Use "callback" or "async-await" for return value. |
-| **FSTDEP014** | You are trying to set/access the default route. This property is deprecated. | Use `setNotFoundHandler` if you want to custom a 404 handler or the wildcard (`*`) to match all routes. |
-| **FSTDEP015** | You are accessing the deprecated `request.routeSchema` property. | Use `request.routeOptions.schema`. |
-| **FSTDEP016** | You are accessing the deprecated `request.routeConfig` property. | Use `request.routeOptions.config`. |
-| **FSTDEP017** | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. |
-| **FSTDEP018** | You are accessing the deprecated `request.routerMethod` property. | Use `request.routeOptions.method`. |
-| **FSTDEP019** | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. |
+| Code | Description | How to solve | Discussion |
+| ---- | ----------- | ------------ | ---------- |
+| **FSTWRN001** | The specified schema for a route is missing. This may indicate the schema is not well specified. | Check the schema for the route. | [#4647](https://github.com/fastify/fastify/pull/4647) |
+
+
+### Fastify Deprecation Codes
+
+| Code | Description | How to solve | Discussion |
+| ---- | ----------- | ------------ | ---------- |
+| **FSTDEP005** | You are accessing the deprecated `request.connection` property. | Use `request.socket`. | [#2594](https://github.com/fastify/fastify/pull/2594) |
+| **FSTDEP006** | You are decorating Request/Reply with a reference type. This reference is shared amongst all requests. | Do not use Arrays/Objects as values when decorating Request/Reply. | [#2688](https://github.com/fastify/fastify/pull/2688) |
+| **FSTDEP007** | You are trying to set a HEAD route using `exposeHeadRoute` route flag when a sibling route is already set. | Remove `exposeHeadRoutes` or explicitly set `exposeHeadRoutes` to `false` | [#2700](https://github.com/fastify/fastify/pull/2700) |
+| **FSTDEP008** | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
+| **FSTDEP009** | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
+| **FSTDEP010** | Modifying the `reply.sent` property is deprecated. | Use the `reply.hijack()` method. | [#3140](https://github.com/fastify/fastify/pull/3140) |
+| **FSTDEP011** | Variadic listen method is deprecated. | Use `.listen(optionsObject)`. | [#3712](https://github.com/fastify/fastify/pull/3712) |
+| **FSTDEP012** | You are trying to access the deprecated `request.context` property. | Use `request.routeOptions.config` or `request.routeOptions.schema`. | [#4216](https://github.com/fastify/fastify/pull/4216) [#5084](https://github.com/fastify/fastify/pull/5084) |
+| **FSTDEP013** | Direct return of "trailers" function is deprecated. | Use "callback" or "async-await" for return value. | [#4380](https://github.com/fastify/fastify/pull/4380) |
+| **FSTDEP014** | You are trying to set/access the default route. This property is deprecated. | Use `setNotFoundHandler` if you want to custom a 404 handler or the wildcard (`*`) to match all routes. | [#4480](https://github.com/fastify/fastify/pull/4480) |
+| **FSTDEP015** | You are accessing the deprecated `request.routeSchema` property. | Use `request.routeOptions.schema`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
+| **FSTDEP016** | You are accessing the deprecated `request.routeConfig` property. | Use `request.routeOptions.config`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
+| **FSTDEP017** | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
+| **FSTDEP018** | You are accessing the deprecated `request.routerMethod` property. | Use `request.routeOptions.method`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
+| **FSTDEP019** | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. | [#5032](https://github.com/fastify/fastify/pull/5032) [#5084](https://github.com/fastify/fastify/pull/5084) |

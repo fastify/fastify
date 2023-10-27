@@ -1472,7 +1472,7 @@ test('should emit deprecation warning when trying to modify the reply.sent prope
   process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, deprecationCode)
   }
 
@@ -1500,7 +1500,7 @@ test('should emit deprecation warning when trying to use the reply.context.confi
   process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, deprecationCode)
   }
 

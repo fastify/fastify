@@ -200,7 +200,7 @@ test('should emit deprecation warning when using direct return', t => {
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, 'FSTDEP013')
   }
   t.teardown(() => process.removeListener('warning', onWarning))

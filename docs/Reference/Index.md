@@ -69,3 +69,5 @@ This table of contents is in alphabetical order.
 + [Validation and Serialization](./Validation-and-Serialization.md): Details
   Fastify's support for validating incoming data and how Fastify serializes data
   for responses.
++ [Warnings](./Warnings.md): Details the warnings Fastify emits and how to
+  solve them.

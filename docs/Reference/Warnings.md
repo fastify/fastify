@@ -26,6 +26,13 @@ Only experienced users should consider disabling warnings.
 
 ### Fastify Deprecation Codes
 
+Deprecation codes are further supported by the Node.js CLI options:
+
+- [--no-deprecation](https://nodejs.org/api/cli.html#--no-deprecation)
+- [--throw-deprecation](https://nodejs.org/api/cli.html#--throw-deprecation)
+- [--trace-deprecation](https://nodejs.org/api/cli.html#--trace-deprecation)
+
+
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
 | **FSTDEP005** | You are accessing the deprecated `request.connection` property. | Use `request.socket`. | [#2594](https://github.com/fastify/fastify/pull/2594) |

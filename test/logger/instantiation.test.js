@@ -151,7 +151,8 @@ t.test('logger instantiation', (t) => {
     ]
 
     const { file, cleanup } = createTempFile(t)
-    if (process.env.CITGM) { fs.writeFileSync(file, '') }
+    // 0600 permissions (read/write for owner only)
+    if (process.env.CITGM) { fs.writeFileSync(file, '', { mode: 0o600 }) }
 
     const fastify = Fastify({
       logger: { file }

@@ -121,7 +121,7 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystring>(request.query)
-  if (typeof request.body === 'undefined') {
+  if (request.body === undefined) {
     expectType<undefined>(request.body)
   } else {
     expectType<string>(request.body.content)

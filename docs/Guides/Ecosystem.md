@@ -125,11 +125,11 @@ section.
   throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts).
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
@@ -618,11 +618,11 @@ middlewares into Fastify plugins
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [@effect/schema](https://github.com/effect-ts/schema).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.

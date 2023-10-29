@@ -11,7 +11,7 @@ test('Should register a host constrained route', t => {
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
     }
@@ -21,7 +21,7 @@ test('Should register a host constrained route', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fastify.io'
+      host: 'fastify.dev'
     }
   }, (err, res) => {
     t.error(err)
@@ -56,9 +56,9 @@ test('Should register the same route with host constraints', t => {
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
-      reply.send('fastify.io')
+      reply.send('fastify.dev')
     }
   })
 
@@ -75,12 +75,12 @@ test('Should register the same route with host constraints', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fastify.io'
+      host: 'fastify.dev'
     }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'fastify.io')
+    t.equal(res.payload, 'fastify.dev')
   })
 
   fastify.inject({
@@ -479,7 +479,7 @@ test('The hasConstraintStrategy should return false for default constraints unti
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'from any other domain' })
     }
@@ -533,9 +533,9 @@ test('Should allow registering an unconstrained route after a constrained route'
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
-      reply.send({ hello: 'from fastify.io' })
+      reply.send({ hello: 'from fastify.dev' })
     }
   })
 
@@ -551,11 +551,11 @@ test('Should allow registering an unconstrained route after a constrained route'
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fastify.io'
+      host: 'fastify.dev'
     }
   }, (err, res) => {
     t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from fastify.io' })
+    t.same(JSON.parse(res.payload), { hello: 'from fastify.dev' })
     t.equal(res.statusCode, 200)
   })
 
@@ -580,7 +580,7 @@ test('Should allow registering constrained routes in a prefixed plugin', t => {
   fastify.register(async (scope, opts) => {
     scope.route({
       method: 'GET',
-      constraints: { host: 'fastify.io' },
+      constraints: { host: 'fastify.dev' },
       path: '/route',
       handler: (req, reply) => {
         reply.send({ ok: true })
@@ -592,7 +592,7 @@ test('Should allow registering constrained routes in a prefixed plugin', t => {
     method: 'GET',
     url: '/prefix/route',
     headers: {
-      host: 'fastify.io'
+      host: 'fastify.dev'
     }
   }, (err, res) => {
     t.error(err)
@@ -608,7 +608,7 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
   fastify.route({
     method: 'HEAD',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.header('content-type', 'text/plain')
       reply.send('custom HEAD response')
@@ -618,7 +618,7 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'from any other domain' })
     }
@@ -628,7 +628,7 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
     method: 'HEAD',
     url: '/',
     headers: {
-      host: 'fastify.io'
+      host: 'fastify.dev'
     }
   }, (err, res) => {
     t.error(err)
@@ -653,7 +653,7 @@ test('Should allow registering a constrained GET route after an unconstrained HE
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'fastify.io' },
+    constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.header('content-type', 'text/plain')
       reply.send('Hello from constrains: length is about 41')
@@ -664,7 +664,7 @@ test('Should allow registering a constrained GET route after an unconstrained HE
     method: 'HEAD',
     url: '/',
     headers: {
-      host: 'fastify.io'
+      host: 'fastify.dev'
     }
   }, (err, res) => {
     t.error(err)
@@ -682,7 +682,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
     scope.route({
       method: 'HEAD',
       path: '/route',
-      constraints: { host: 'fastify.io' },
+      constraints: { host: 'fastify.dev' },
       handler: (req, reply) => {
         reply.header('content-type', 'text/plain')
         reply.send('custom HEAD response')
@@ -691,7 +691,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
     scope.route({
       method: 'GET',
       path: '/route',
-      constraints: { host: 'fastify.io' },
+      constraints: { host: 'fastify.dev' },
       handler: (req, reply) => {
         reply.send({ ok: true })
       }
@@ -723,7 +723,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
     scope.route({
       method: 'HEAD',
       path: '/route',
-      constraints: { host: 'fastify.io' },
+      constraints: { host: 'fastify.dev' },
       handler: (req, reply) => {
         reply.header('content-type', 'text/plain')
         reply.send('constrained HEAD response')
@@ -733,7 +733,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
     scope.route({
       method: 'GET',
       path: '/route',
-      constraints: { host: 'fastify.io' },
+      constraints: { host: 'fastify.dev' },
       handler: (req, reply) => {
         reply.send({ ok: true })
       }
@@ -869,7 +869,7 @@ test('Allow regex constraints in routes', t => {
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: /.*\.fastify\.io/ },
+    constraints: { host: /.*\.fastify\.dev$/ },
     handler: (req, reply) => {
       reply.send({ hello: 'from fastify dev domain' })
     }
@@ -879,7 +879,7 @@ test('Allow regex constraints in routes', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'dev.fastify.io'
+      host: 'dev.fastify.dev'
     }
   }, (err, res) => {
     t.error(err)

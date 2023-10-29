@@ -178,7 +178,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 /**
  * Encapsulates the routes
  * @param {FastifyInstance} fastify  Encapsulated Fastify Instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://www.fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
@@ -293,7 +293,7 @@ const fastifyPlugin = require('fastify-plugin')
 /**
  * Connects to a MongoDB database
  * @param {FastifyInstance} fastify Encapsulated Fastify Instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://www.fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function dbConnector (fastify, options) {
   fastify.register(require('@fastify/mongodb'), {
@@ -312,7 +312,7 @@ module.exports = fastifyPlugin(dbConnector)
 /**
  * A plugin that provide encapsulated routes
  * @param {FastifyInstance} fastify encapsulated fastify instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://www.fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')

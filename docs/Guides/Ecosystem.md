@@ -142,7 +142,8 @@ section.
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 
 #### [Community](#community)
-
+- [`http-wizard`](https://github.com/flodlc/http-wizard)
+  Exports a typescript api client for your Fastify api and ensures fullstack type safety for your project.
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
 - [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)

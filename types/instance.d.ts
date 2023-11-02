@@ -201,7 +201,7 @@ export interface FastifyInstance<
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    const SchemaCompiler extends FastifySchema = FastifySchema,
+    SchemaCompiler extends FastifySchema = FastifySchema,
   >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;

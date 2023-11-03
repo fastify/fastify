@@ -392,6 +392,95 @@ server.route<RouteGenericInterface, CustomContextConfig>({
   }
 })
 
+server.route({
+  method: 'GET',
+  url: '/',
+  handler: (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onRequest: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preParsing: (request, reply, payload, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preValidation: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preHandler: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preSerialization: (request, reply, payload, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onSend: (request, reply, payload, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onResponse: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onTimeout: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onError: (request, reply, error, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<FastifyError>(error)
+  }
+})
+
+server.get('/', {
+  onRequest: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preParsing: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preValidation: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preHandler: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preSerialization: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onSend: async (request, reply, payload) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onResponse: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onTimeout: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onError: async (request, reply, error) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<FastifyError>(error)
+  }
+}, async (request, reply) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+})
+
 server.addHook('preClose', function (done) {
   expectType<FastifyInstance>(this)
   expectAssignable<(err?: FastifyError) => void>(done)

@@ -143,9 +143,6 @@ section.
 
 #### [Community](#community)
 
-- [`http-wizard`](https://github.com/flodlc/http-wizard)
-  Exports a typescript api client for your Fastify api and ensures fullstack type
-  safety for your project.
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
 - [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)
@@ -656,6 +653,9 @@ middlewares into Fastify plugins
   Parse XML payload / request body into JS / JSON object.
 - [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin
   for AWS XRay recording.
+- [`http-wizard`](https://github.com/flodlc/http-wizard)
+  Exports a typescript api client for your Fastify api and ensures fullstack type
+  safety for your project.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
   An [i18next](https://www.i18next.com) based i18n (internationalization)
   middleware to be used with Node.js web frameworks like Express or Fastify and

@@ -2,7 +2,7 @@ import { ErrorObject } from '@fastify/ajv-compiler'
 import { FastifyRequestContext, FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
-import { RouteGenericInterface, FastifyRouteConfig } from './route'
+import { RouteGenericInterface, FastifyRouteConfig, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
 import { ContextConfigDefault, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
@@ -31,6 +31,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   prefixTrailingSlash: string;
   config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
   schema: SchemaCompiler;
+  handler: RouteHandlerMethod;
 }
 
 /**

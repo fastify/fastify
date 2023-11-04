@@ -414,3 +414,21 @@ test('hasPlugin returns true when using encapsulation', async t => {
 
   await fastify.ready()
 })
+
+test('registering plugin with mixed style should return a warning', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyWarning')
+    t.equal(warning.code, 'FSTWRN002')
+  }
+
+  fastify.register(async function plugin (app, opts, done) {
+    done()
+  })
+
+  await fastify.ready()
+})

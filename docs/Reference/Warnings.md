@@ -22,6 +22,7 @@ Only experienced users should consider disabling warnings.
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
 | **FSTWRN001** | The specified schema for a route is missing. This may indicate the schema is not well specified. | Check the schema for the route. | [#4647](https://github.com/fastify/fastify/pull/4647) |
+| **FSTWRN002** | You are trying to register a plugin with mixing async and callback style. This will return error in `fastify@5`. | Do not mix async and callback style. | [TBD]() |
 
 
 ### Fastify Deprecation Codes

@@ -3469,7 +3469,7 @@ test('onRequestAbort should support encapsulation', t => {
     done()
   })
 
-  fastify.register(async function (_child, _, done) {
+  fastify.register(async function (_child, _) {
     child = _child
 
     fastify.addHook('onRequestAbort', async function (req) {
@@ -3488,8 +3488,6 @@ test('onRequestAbort should support encapsulation', t => {
         t.equal(++order, 3, 'called in route')
       }
     })
-
-    done()
   })
 
   fastify.listen({ port: 0 }, err => {

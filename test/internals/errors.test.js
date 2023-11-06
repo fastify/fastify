@@ -767,14 +767,14 @@ test('FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE', t => {
   t.ok(error instanceof Error)
 })
 
-test('FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE', t => {
+test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER()
+  const error = new errors.FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER('easter-egg')
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER')
-  t.equal(error.message, 'Async function has too many arguments. Async plugin should not use the \'done\' argument.')
+  t.equal(error.message, 'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
   t.equal(error.statusCode, 500)
-  t.ok(error instanceof Error)
+  t.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {

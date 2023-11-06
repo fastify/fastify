@@ -416,19 +416,45 @@ test('hasPlugin returns true when using encapsulation', async t => {
   await fastify.ready()
 })
 
-test('registering plugin with mixed style should throw', async t => {
+test('registering anonymous plugin with mixed style should throw', async t => {
   t.plan(2)
 
   const fastify = Fastify()
 
-  fastify.register(async function plugin (app, opts, done) {
+  const anonymousPlugin = async (app, opts, done) => {
     done()
-  })
+  }
+
+  fastify.register(anonymousPlugin)
+
   try {
     await fastify.ready()
     t.fail('should throw')
   } catch (error) {
     t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
-    t.equal(error.message, 'Async function has too many arguments. Async plugin should not use the \'done\' argument.')
+    t.equal(error.message, 'The anonymous plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  }
+})
+
+test('registering named plugin with mixed style should throw', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  const pluginName = 'error-plugin'
+  const errorPlugin = async (app, opts, done) => {
+    done()
+  }
+
+  const namedPlugin = fp(errorPlugin, { name: pluginName })
+
+  fastify.register(namedPlugin)
+
+  try {
+    await fastify.ready()
+    t.fail('should throw')
+  } catch (error) {
+    t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
+    t.equal(error.message, 'The error-plugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
   }
 })

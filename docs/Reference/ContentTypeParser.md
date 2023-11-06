@@ -1,11 +1,11 @@
 <h1 align="center">Fastify</h1>
 
 ## `Content-Type` Parser
-Natively, Fastify only supports `'application/json'`
-and `'text/plain'` content types and `'multipart'` through
-[plugin](https://github.com/fastify/fastify-multipart).
-If the content type is not one of these, an
+Natively, Fastify only supports `'application/json'` and `'text/plain'` content
+types. If the content type is not one of these, an
 `FST_ERR_CTP_INVALID_MEDIA_TYPE` error will be thrown.
+Other common content types are supported through the use of
+[community plugins](https://fastify.dev/ecosystem/).
 
 The default charset is `utf-8`. If you need to support different content types,
 you can use the `addContentTypeParser` API. *The default JSON and/or plain text

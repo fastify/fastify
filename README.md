@@ -1,4 +1,4 @@
-<div align="center"> <a href="https://fastify.io/">
+<div align="center"> <a href="https://fastify.dev/">
     <img
       src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg"
       width="650"
@@ -9,7 +9,7 @@
 
 <div align="center">
 
-[![CI](https://github.com/fastify/fastify/workflows/ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
+[![CI](https://github.com/fastify/fastify/actions/workflows/ci.yml/badge.svg)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
 [![Package Manager
 CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web
@@ -284,6 +284,10 @@ listed in alphabetical order.
   <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Manuel Spigolon__](https://github.com/eomm),
+  <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+* [__James Sumners__](https://github.com/jsumners),
+  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),
@@ -388,7 +392,7 @@ Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
 
 This list includes all companies that support one or more of the team members
-in the maintainance of this project.
+in the maintenance of this project.
 
 ## License
 

@@ -125,11 +125,11 @@ section.
   throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts).
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
@@ -181,6 +181,8 @@ section.
   to go!
   A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
+- [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
+  A plugin for accessing an instantiated PrismaClient on your server.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
@@ -279,6 +281,8 @@ section.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
   Fastify plugin to generate and forward Fastify events in the Cloudevents
   format.
+- [`fastify-cloudflare-turnstile`](https://github.com/112RG/fastify-cloudflare-turnstile)
+  Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cloudinary`](https://github.com/Vanilla-IceCream/fastify-cloudinary)
   The Cloudinary Fastify SDK allows you to quickly and easily integrate your
   application with Cloudinary. Effortlessly optimize and transform your cloud's
@@ -317,6 +321,8 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-event-bus`](https://github.com/Shiva127/fastify-event-bus) Event bus
+  support for Fastify. Built upon [js-event-bus](https://github.com/bcerati/js-event-bus).
 - [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
   plugin for instantiating and encapsulating the 
   [Evervault](https://evervault.com/) client.
@@ -612,11 +618,11 @@ middlewares into Fastify plugins
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [@effect/schema](https://github.com/effect-ts/schema).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.

@@ -3,7 +3,10 @@
 const sget = require('simple-get').concat
 const dns = require('node:dns').promises
 const stream = require('node:stream')
+const { promisify } = require('node:util')
 const symbols = require('../lib/symbols')
+
+module.exports.sleep = promisify(setTimeout)
 
 /**
  * @param method HTTP request method
@@ -421,16 +424,35 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
   })
 }
 
+function lookupToIp (lookup) {
+  return lookup.family === 6 ? `[${lookup.address}]` : lookup.address
+}
+
 module.exports.getLoopbackHost = async () => {
-  let localhostForURL
-
   const lookup = await dns.lookup('localhost')
-  const localhost = lookup.address
-  if (lookup.family === 6) {
-    localhostForURL = `[${lookup.address}]`
-  } else {
-    localhostForURL = localhost
-  }
+  return [lookup.address, lookupToIp(lookup)]
+}
 
-  return [localhost, localhostForURL]
+module.exports.plainTextParser = function (request, callback) {
+  let body = ''
+  request.setEncoding('utf8')
+  request.on('error', onError)
+  request.on('data', onData)
+  request.on('end', onEnd)
+  function onError (err) {
+    callback(err, null)
+  }
+  function onData (chunk) {
+    body += chunk
+  }
+  function onEnd () {
+    callback(null, body)
+  }
+}
+
+module.exports.getServerUrl = function (app) {
+  const { address, port } = app.server.address()
+  return address === '::1'
+    ? `http://[${address}]:${port}`
+    : `http://${address}:${port}`
 }

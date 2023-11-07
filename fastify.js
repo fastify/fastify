@@ -530,6 +530,13 @@ function fastify (options) {
     // versions of Node.js. In that event, we don't care, so ignore the error.
   }
 
+  // Older nodejs versions may not have asyncDispose
+  if ('asyncDispose' in Symbol) {
+    fastify[Symbol.asyncDispose] = function dispose () {
+      return fastify.close()
+    }
+  }
+
   return fastify
 
   function throwIfAlreadyStarted (msg) {

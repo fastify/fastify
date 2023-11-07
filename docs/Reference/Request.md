@@ -33,14 +33,15 @@ Request is a core Fastify object containing the following fields:
   original `url` in case of internal re-routing 
 - `routerMethod` - Deprecated, use `request.routeOptions.method` instead. The
   method defined for the router that is handling the request
-- `routerPath` - Deprecated, use `request.routeOptions.config.url` instead. The
+- `routerPath` - Deprecated, use `request.routeOptions.url` instead. The
   path pattern defined for the router that is handling the request
 - `is404` - true if request is being handled by 404 handler, false if it is not
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
 - `socket` - the underlying connection of the incoming request
-- `context` - A Fastify internal object. You should not use it directly or
-  modify it. It is useful to access one special key:	
+- `context` - Deprecated, use `request.routeOptions.config` instead.
+A Fastify internal object. You should not use
+it directly or modify it. It is useful to access one special key:	
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeSchema` - Deprecated, use `request.routeOptions.schema` instead. The
   scheme definition set for the router that is handling the request

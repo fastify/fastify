@@ -6,7 +6,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('node:fs')
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const { sleep } = require('./helper')
 
 process.removeAllListeners('warning')
 
@@ -653,7 +653,7 @@ test('onRequest respond with a stream', t => {
 
   fastify.addHook('onRequest', async (req, reply) => {
     return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+      const stream = fs.createReadStream(__filename, 'utf8')
       // stream.pipe(res)
       // res.once('finish', resolve)
       reply.send(stream).then(() => {
@@ -704,7 +704,7 @@ test('preHandler respond with a stream', t => {
   const order = [1, 2]
 
   fastify.addHook('preHandler', async (req, reply) => {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     reply.raw.once('finish', () => {
       t.equal(order.shift(), 2)
     })
@@ -745,8 +745,8 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onRequestAbort', async (req, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -757,8 +757,8 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onRequest', async (req, reply, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -769,20 +769,20 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('onError', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -922,4 +922,154 @@ t.test('nested hooks to do not crash on 404', t => {
     t.error(err)
     t.equal(res.statusCode, 404)
   })
+})
+
+test('Register an hook (preHandler) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        preHandler: [
+          async (request, reply, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('preHandler mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (onSend) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        onSend: [
+          async (request, reply, payload, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('onSend mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (preSerialization) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        preSerialization: [
+          async (request, reply, payload, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('preSerialization mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (onError) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        onError: [
+          async (request, reply, error, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('onError mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (preParsing) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        preParsing: [
+          async (request, reply, payload, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('preParsing mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
+})
+
+test('Register an hook (onRequestAbort) as route option should fail if mixing async and callback style', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(
+      '/',
+      {
+        onRequestAbort: [
+          async (request, done) => {
+            done()
+          }
+        ]
+      },
+      async (request, reply) => {
+        return { hello: 'world' }
+      }
+    )
+    t.fail('onRequestAbort mixing async and callback style')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+  }
 })

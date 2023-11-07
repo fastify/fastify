@@ -134,7 +134,7 @@ fastify.listen({ port: 3000 }, (err, address) => {
 <a id="async-await"></a>
 
 *async/await* is supported by `after`, `ready`, and `listen`, as well as
-`fastify` being a [Thenable](https://promisesaplus.com/).
+`fastify` being a Thenable.
 
 ```js
 await fastify.register(require('my-plugin'))

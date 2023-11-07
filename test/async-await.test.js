@@ -6,8 +6,8 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 const split = require('split2')
 const pino = require('pino')
+const { sleep } = require('./helper')
 const statusCodes = require('node:http').STATUS_CODES
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 const opts = {
   schema: {

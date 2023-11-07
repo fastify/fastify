@@ -14,7 +14,8 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext
+  kRouteContext,
+  kPublicRouteContext
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -35,10 +36,10 @@ const doGet = function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(14)
+  t.plan(16)
   const response = { res: 'res' }
-  const context = {}
-  const request = { [kRouteContext]: context }
+  const context = { config: { onSend: [] }, schema: {} }
+  const request = { [kRouteContext]: context, [kPublicRouteContext]: { config: context.config, schema: context.schema } }
   const reply = new Reply(response, request)
   t.equal(typeof reply, 'object')
   t.equal(typeof reply[kReplyIsError], 'boolean')
@@ -52,6 +53,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
+  t.equal(reply[kPublicRouteContext].config, context.config)
+  t.equal(reply[kPublicRouteContext].schema, context.schema)
   t.equal(reply.request, request)
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in reply)
@@ -1469,7 +1472,7 @@ test('should emit deprecation warning when trying to modify the reply.sent prope
   process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, deprecationCode)
   }
 
@@ -1477,6 +1480,32 @@ test('should emit deprecation warning when trying to modify the reply.sent prope
     reply.sent = true
 
     reply.raw.end()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.pass()
+
+    process.removeListener('warning', onWarning)
+  })
+})
+
+test('should emit deprecation warning when trying to use the reply.context.config property', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  const deprecationCode = 'FSTDEP019'
+  warning.emitted.delete(deprecationCode)
+
+  process.removeAllListeners('warning')
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'DeprecationWarning')
+    t.equal(warning.code, deprecationCode)
+  }
+
+  fastify.get('/', (req, reply) => {
+    req.log(reply.context.config)
   })
 
   fastify.inject('/', (err, res) => {
@@ -2118,4 +2147,30 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
   } catch (err) {
     t.equal(err.code, 'ERR_HTTP_HEADERS_SENT')
   }
+})
+
+test('Uint8Array view of ArrayBuffer returns correct byteLength', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  const arrBuf = new ArrayBuffer(100)
+  const arrView = new Uint8Array(arrBuf, 0, 10)
+  fastify.get('/', function (req, reply) {
+    return reply.send(arrView)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-length'], '10')
+      t.same(response.rawPayload.byteLength, arrView.byteLength)
+    })
+  })
 })

@@ -733,9 +733,9 @@ arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.io' },
+  constraints: { host: 'auth.fastify.dev' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.io')
+    reply.send('hello world from auth.fastify.dev')
   }
 })
 
@@ -753,10 +753,10 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'auth.fastify.io'
+    'Host': 'auth.fastify.dev'
   }
 }, (err, res) => {
-  // => 'hello world from auth.fastify.io'
+  // => 'hello world from auth.fastify.dev'
 })
 ```
 
@@ -767,7 +767,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.io
+  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

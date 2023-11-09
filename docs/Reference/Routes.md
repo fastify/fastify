@@ -58,29 +58,41 @@ fastify.route(options)
   validation error, instead of sending the error to the error handler. The
   default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv
   one.
-* `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) called
-  as soon as a request is received, it could also be an array of functions.
-* `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called
-  before parsing the request, it could also be an array of functions.
-* `preValidation(request, reply, done)`: a [function](./Hooks.md#prevalidation)
+* `onRequest(request, reply, done)` or `async onRequest(request, reply)`: a
+  [function](./Hooks.md#onrequest) called as soon as a request is received, it
+  could also be an array of functions.
+* `preParsing(request, reply, done)` or `async preParsing(request, reply)`: a
+  [function](./Hooks.md#preparsing) called before parsing the request, it could
+  also be an array of functions.
+* `preValidation(request, reply, done)` or
+  `async preValidation(request, reply)`: a [function](./Hooks.md#prevalidation)
   called after the shared `preValidation` hooks, useful if you need to perform
   authentication at route level for example, it could also be an array of
   functions.
-* `preHandler(request, reply, done)`: a [function](./Hooks.md#prehandler) called
-  just before the request handler, it could also be an array of functions.
-* `preSerialization(request, reply, payload, done)`: a
+* `preHandler(request, reply, done)` or `async preHandler(request, reply)`: a
+  [function](./Hooks.md#prehandler) called just before the request handler, it
+  could also be an array of functions.
+* `preSerialization(request, reply, payload, done)` or
+  `async preSerialization(request, reply, payload)`: a
   [function](./Hooks.md#preserialization) called just before the serialization,
   it could also be an array of functions.
-* `onSend(request, reply, payload, done)`: a [function](./Hooks.md#route-hooks)
-  called right before a response is sent, it could also be an array of
-  functions.
-* `onResponse(request, reply, done)`: a [function](./Hooks.md#onresponse) called
-  when a response has been sent, so you will not be able to send more data to
-  the client. It could also be an array of functions.
-* `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called
-  when a request is timed out and the HTTP socket has been hung up.
-* `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror)
+* `onSend(request, reply, payload, done)`
+  or `async onSend(request, reply, payload)`: a
+  [function](./Hooks.md#route-hooks) called right before a response is sent, it
+  could also be an array of functions.
+* `onResponse(request, reply, done)` or `async onResponse(request, reply)`: a
+  [function](./Hooks.md#onresponse) called when a response has been sent, so
+  you will not be able to send more data to the client. It could also be an
+  array of functions.
+* `onTimeout(request, reply, done)` or `async onTimeout(request, reply)`: a
+  [function](./Hooks.md#ontimeout) called when a request is timed out and the
+  HTTP socket has been hung up.
+* `onError(request, reply, error, done)` or
+  `async onError(request, reply, error)`: a [function](./Hooks.md#onerror)
   called when an Error is thrown or sent to the client by the route handler.
+* `onRequestAbort(request, done)` or `async onRequestAbort(request)`: a
+  [function](./Hooks.md#onrequestabort) called when a client closes the
+  connection before the entire request has been processed.
 * `handler(request, reply)`: the function that will handle this request. The
   [Fastify server](./Server.md) will be bound to `this` when the handler is
   called. Note: using an arrow function will break the binding of `this`.

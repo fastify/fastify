@@ -236,7 +236,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     method: method as HTTPMethods,
     config: { foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
-    onRequest: async (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
+    onRequest: async (req, res) => { // these handlers are tested in `hooks.test-d.ts`
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -250,7 +250,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
-    preParsing: async (req, res, payload, done) => {
+    preParsing: async (req, res, payload) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -264,10 +264,8 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
       expectType<RequestPayload>(payload)
-      expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
-      expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
     },
-    preValidation: async (req, res, done) => {
+    preValidation: async (req, res) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -281,7 +279,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
-    preHandler: async (req, res, done) => {
+    preHandler: async (req, res) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -295,7 +293,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
-    onResponse: async (req, res, done) => {
+    onResponse: async (req, res) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -310,7 +308,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
       expectType<number>(res.statusCode)
     },
-    onError: async (req, res, error, done) => {
+    onError: async (req, res, error) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -324,7 +322,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
-    preSerialization: async (req, res, payload, done) => {
+    preSerialization: async (req, res, payload) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -338,7 +336,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },
-    onSend: async (req, res, payload, done) => {
+    onSend: async (req, res, payload) => {
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
@@ -349,6 +347,32 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
+    },
+    onTimeout: async (req, res) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+      expectType<string>(req.routeConfig.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
+    },
+    onRequestAbort: async (req) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(req.context.config.foo)
+      expectType<number>(req.context.config.bar)
+      expectType<string>(req.context.config.url)
+      expectType<HTTPMethods | HTTPMethods[]>(req.context.config.method)
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
     },

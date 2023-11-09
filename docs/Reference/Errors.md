@@ -529,6 +529,11 @@ Plugin did not start in time. Default timeout (in milliseconds): `10000`
 
 The decorator is not present in the instance.
 
+#### FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER
+<a id="FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER"></a>
+
+The plugin being registered mixes async and callback styles.
+
 #### FST_ERR_VALIDATION
 <a id="FST_ERR_VALIDATION"></a>
 

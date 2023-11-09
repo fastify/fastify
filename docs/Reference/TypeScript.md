@@ -256,7 +256,7 @@ can do it as follows:
 
     const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>()
 
-    app.post<{ Body: UserType, Reply: UserType }>(
+    fastify.post<{ Body: UserType, Reply: UserType }>(
       '/',
       {
         schema: {

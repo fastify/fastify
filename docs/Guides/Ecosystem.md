@@ -197,6 +197,8 @@ section.
   Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
+- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/packages/fastify-api-reference)
+  Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)

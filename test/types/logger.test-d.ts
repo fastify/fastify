@@ -83,6 +83,11 @@ serverWithPino.route({
   }
 })
 
+serverWithPino.get('/', function (request) {
+  expectType<P.Logger>(this.log)
+  expectType<P.Logger>(request.log)
+})
+
 const serverWithLogOptions = fastify<
 Server,
 IncomingMessage,

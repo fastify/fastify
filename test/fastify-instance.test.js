@@ -132,6 +132,49 @@ test('childLoggerFactory in plugin should be separate from the external one', as
   t.same(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
 })
 
+test('ready should resolve in order when called multiply times (promises only)', async (t) => {
+  const app = Fastify()
+  const expectedOrder = [1, 2, 3, 4, 5]
+  const result = []
+
+  const promises = [1, 2, 3, 4, 5]
+    .map((id) => app.ready().then(() => result.push(id)))
+
+  await Promise.all(promises)
+
+  t.strictSame(result, expectedOrder, 'Should resolve in order')
+})
+
+test('ready should resolve in order when called multiply times (callbacks only)', async (t) => {
+  const app = Fastify()
+  const expectedOrder = [1, 2, 3, 4, 5]
+  const result = []
+
+  expectedOrder.map((id) => app.ready(() => result.push(id)))
+
+  await app.ready()
+
+  t.strictSame(result, expectedOrder, 'Should resolve in order')
+})
+
+test('ready should resolve in order when called multiply times (mixed)', async (t) => {
+  const app = Fastify()
+  const expectedOrder = [1, 2, 3, 4, 5, 6]
+  const result = []
+
+  for (const order of expectedOrder) {
+    if (order % 2) {
+      app.ready(() => result.push(order))
+    } else {
+      app.ready().then(() => result.push(order))
+    }
+  }
+
+  await app.ready()
+
+  t.strictSame(result, expectedOrder, 'Should resolve in order')
+})
+
 test('fastify instance should contains listeningOrigin property (with port and host)', async t => {
   t.plan(1)
   const port = 3000

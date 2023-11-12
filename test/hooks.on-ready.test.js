@@ -43,11 +43,12 @@ t.test('onReady should be called once', async (t) => {
     counter++
   })
 
-  await Promise.race([app.ready(), app.ready(), app.ready(), app.ready()])
+  const promises = [1, 2, 3, 4, 5].map((id) => app.ready().then(() => id))
 
-  await app.ready()
+  const result = await Promise.race(promises)
 
-  t.equal(counter, 1)
+  t.strictSame(result, 1, 'Should resolve in order')
+  t.equal(counter, 1, 'Should call onReady only once')
 })
 
 t.test('async onReady should be called in order', async t => {

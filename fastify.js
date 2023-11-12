@@ -219,7 +219,8 @@ function fastify (options) {
       closing: false,
       started: false,
       ready: false,
-      booting: false
+      booting: false,
+      readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
@@ -564,6 +565,15 @@ function fastify (options) {
   }
 
   function ready (cb) {
+    if (this[kState].readyPromise !== null) {
+      if (cb != null) {
+        this[kState].readyPromise.then(() => cb(null, fastify), cb)
+        return
+      }
+
+      return this[kState].readyPromise
+    }
+
     let resolveReady
     let rejectReady
 
@@ -571,10 +581,14 @@ function fastify (options) {
     process.nextTick(runHooks)
 
     if (!cb) {
-      return new Promise(function (resolve, reject) {
+      const promise = new Promise(function (resolve, reject) {
         resolveReady = resolve
         rejectReady = reject
       })
+
+      this[kState].readyPromise = promise
+
+      return promise
     }
 
     function runHooks () {
@@ -611,6 +625,7 @@ function fastify (options) {
         resolveReady(fastify)
         fastify[kState].booting = false
         fastify[kState].ready = true
+        fastify[kState].promise = null
       }
     }
   }

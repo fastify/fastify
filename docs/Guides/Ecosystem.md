@@ -138,6 +138,8 @@ section.
   the `Request` object with a method to access raw URL components.
 - [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
+- [`@fastify/vite`](https://github.com/fastify/fastify-vite) Integration with
+  [Vite](https://vitejs.dev/), allows for serving SPA/MPA/SSR Vite applications.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 
@@ -195,6 +197,8 @@ section.
   Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
+- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/packages/fastify-api-reference)
+  Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)

@@ -581,14 +581,12 @@ function fastify (options) {
     process.nextTick(runHooks)
 
     if (!cb) {
-      const promise = new Promise(function (resolve, reject) {
+      this[kState].readyPromise = new Promise(function (resolve, reject) {
         resolveReady = resolve
         rejectReady = reject
       })
 
-      this[kState].readyPromise = promise
-
-      return promise
+      return this[kState].readyPromise
     }
 
     function runHooks () {

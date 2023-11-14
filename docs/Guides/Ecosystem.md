@@ -632,6 +632,8 @@ middlewares into Fastify plugins
   Fastify plugin to work with TypeORM.
 - [`fastify-user-agent`](https://github.com/Eomm/fastify-user-agent) parses your
   request's `user-agent` header.
+- [`fastify-uws`](https://github.com/geut/fastify-uws) A Fastify plugin to
+  use the web server [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js).
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on
@@ -681,8 +683,6 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`fastify-uws`](https://github.com/geut/fastify-uws) A Fastify plugin to
-  use the web server [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js).
 
 #### [Community Tools](#community-tools)
 

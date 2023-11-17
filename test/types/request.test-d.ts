@@ -2,7 +2,7 @@ import pino from 'pino'
 import { expectAssignable, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
-  FastifyContext,
+  FastifyRequestContext,
   FastifyContextConfig,
   FastifyLogFn,
   FastifySchema,
@@ -75,13 +75,14 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<RawRequestDefaultExpression>(request.raw)
   expectType<RequestBodyDefault>(request.body)
   expectType<RequestParamsDefault>(request.params)
-  expectType<FastifyContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeConfig)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeOptions.config)
+  expectType<FastifyRequestContext<ContextConfigDefault>>(request.context)
+  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeConfig)
+  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeOptions.config)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
   expectType<FastifySchema>(request.routeSchema)
   expectType<FastifySchema>(request.routeOptions.schema)
+  expectType<RouteHandlerMethod>(request.routeOptions.handler)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}
@@ -112,8 +113,8 @@ const postHandler: Handler = function (request) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
-  expectType<FastifyContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<FastifyRequestContext<ContextConfigDefault>>(request.context)
+  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.context.config)
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
@@ -121,7 +122,7 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystring>(request.query)
-  if (typeof request.body === 'undefined') {
+  if (request.body === undefined) {
     expectType<undefined>(request.body)
   } else {
     expectType<string>(request.body.content)
@@ -130,8 +131,8 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
-  expectType<FastifyContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<FastifyRequestContext<ContextConfigDefault>>(request.context)
+  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.context.config)
 }
 
 const server = fastify()

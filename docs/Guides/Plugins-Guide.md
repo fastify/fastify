@@ -493,8 +493,8 @@ use case, you can use the
 
 ```js
 const warning = require('process-warning')()
-warning.create('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
-warning.emit('FST_ERROR_CODE')
+warning.create('MyPluginWarning', 'MP_ERROR_CODE', 'message')
+warning.emit('MP_ERROR_CODE')
 ```
 
 ## Let's start!

@@ -125,11 +125,11 @@ section.
   throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts).
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
@@ -138,6 +138,8 @@ section.
   the `Request` object with a method to access raw URL components.
 - [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
+- [`@fastify/vite`](https://github.com/fastify/fastify-vite) Integration with
+  [Vite](https://vitejs.dev/), allows for serving SPA/MPA/SSR Vite applications.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 
@@ -181,6 +183,8 @@ section.
   to go!
   A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
+- [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
+  A plugin for accessing an instantiated PrismaClient on your server.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
@@ -193,6 +197,8 @@ section.
   Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
+- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/packages/fastify-api-reference)
+  Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
@@ -279,6 +285,8 @@ section.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
   Fastify plugin to generate and forward Fastify events in the Cloudevents
   format.
+- [`fastify-cloudflare-turnstile`](https://github.com/112RG/fastify-cloudflare-turnstile)
+  Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cloudinary`](https://github.com/Vanilla-IceCream/fastify-cloudinary)
   The Cloudinary Fastify SDK allows you to quickly and easily integrate your
   application with Cloudinary. Effortlessly optimize and transform your cloud's
@@ -317,6 +325,8 @@ section.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest
   authentication plugin for Fastify, with built-in support for Single sign-on
   (and great documentation).
+- [`fastify-event-bus`](https://github.com/Shiva127/fastify-event-bus) Event bus
+  support for Fastify. Built upon [js-event-bus](https://github.com/bcerati/js-event-bus).
 - [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
   plugin for instantiating and encapsulating the 
   [Evervault](https://evervault.com/) client.
@@ -460,8 +470,6 @@ middlewares into Fastify plugins
   Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to
   eliminate thrown errors for `/favicon.ico` requests.
-- [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin
-  to share [nodemailer](https://nodemailer.com) transporter across Fastify.
 - [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply)
   Plugin to normalize the request and reply to the Express version 4.x request
   and response, which allows use of middleware, like swagger-stats, that was
@@ -612,16 +620,18 @@ middlewares into Fastify plugins
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [@effect/schema](https://github.com/effect-ts/schema).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.
 - [`fastify-user-agent`](https://github.com/Eomm/fastify-user-agent) parses your
   request's `user-agent` header.
+- [`fastify-uws`](https://github.com/geut/fastify-uws) A Fastify plugin to
+  use the web server [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js).
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on

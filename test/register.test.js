@@ -105,20 +105,20 @@ test('awaitable register and after', async t => {
   let second = false
   let third = false
 
-  await fastify.register(async (instance, opts, done) => {
+  await fastify.register(async (instance, opts) => {
     first = true
   })
 
   t.equal(first, true)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     second = true
   })
 
   await fastify.after()
   t.equal(second, true)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     third = true
   })
 
@@ -145,7 +145,7 @@ test('awaitable register error handling', async t => {
 
   await t.rejects(fastify.after(), e)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     t.fail('should not be executed')
   })
 
@@ -167,7 +167,7 @@ test('awaitable after error handling', async t => {
 
   await t.rejects(fastify.after(), e)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     t.fail('should not be executed')
   })
 

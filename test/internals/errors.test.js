@@ -292,7 +292,7 @@ test('FST_ERR_MISSING_MIDDLEWARE', t => {
   const error = new errors.FST_ERR_MISSING_MIDDLEWARE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_MISSING_MIDDLEWARE')
-  t.equal(error.message, 'You must register a plugin for handling middlewares, visit fastify.io/docs/latest/Reference/Middleware/ for more info.')
+  t.equal(error.message, 'You must register a plugin for handling middlewares, visit fastify.dev/docs/latest/Reference/Middleware/ for more info.')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })

@@ -422,6 +422,44 @@ expectType<boolean>(fastify().hasRoute({
   constraints: { version: '1.2.0' }
 }))
 
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: 'auth.fastify.dev' }
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: /.*\.fastify\.dev$/ }
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' }
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: {
+    something: {
+      name: 'secret',
+      storage: function () {
+        return {
+          get: (type) => {
+            return null
+          },
+          set: (type, store) => {}
+        }
+      },
+      deriveConstraint: (req, ctx, done) => {},
+      mustMatchWhenDerived: true
+    }
+  }
+}))
+
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'get',

@@ -4,7 +4,7 @@ const t = require('tap')
 const { test, before } = t
 const sget = require('simple-get').concat
 const fastify = require('..')
-const dns = require('node:dns').promises
+const helper = require('./helper')
 
 const sgetForwardedRequest = (app, forHeader, path, protoHeader) => {
   const headers = {
@@ -40,10 +40,8 @@ const testRequestValues = (t, req, options) => {
 }
 
 let localhost
-
 before(async function () {
-  const lookup = await dns.lookup('localhost')
-  localhost = lookup.address
+  [localhost] = await helper.getLoopbackHost()
 })
 
 test('trust proxy, not add properties to node req', (t) => {

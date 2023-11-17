@@ -217,45 +217,68 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
-#### FST_ERR_NOT_FOUND
-<a id="FST_ERR_NOT_FOUND"></a>
+Below is a table with all the error codes that Fastify uses.
 
-404 Not Found.
-
-#### FST_ERR_OPTIONS_NOT_OBJ
-<a id="FST_ERR_OPTIONS_NOT_OBJ"></a>
-
-Fastify options must be an object.
-
-#### FST_ERR_QSP_NOT_FN
-<a id="FST_ERR_QSP_NOT_FN"></a>
-
-QueryStringParser option should be a function.
-
-#### FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN
-<a id="FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN"></a>
-
-SchemaController.bucket option should be a function.
-
-#### FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
-<a id="FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN"></a>
-
-SchemaErrorFormatter option should be a non async function.
-
-#### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ
-<a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ"></a>
-
-ajv.customOptions option should be an object.
-
-#### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR
-<a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR"></a>
-
-ajv.plugins option should be an array.
-
-#### FST_ERR_VERSION_CONSTRAINT_NOT_STR
-<a id="FST_ERR_VERSION_CONSTRAINT_NOT_STR"></a>
-
-Version constraint should be a string.
+<table>
+<thead>
+  <tr>
+    <th>Code</th>
+    <th>Description</th>
+    <th>How to solve</th>
+    <th>Discussion</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>FST_ERR_NOT_FOUND<p id="fst_err_not_found" style="display: inline"></p></td>
+    <td>404 Not Found</td>
+    <td>-</td>
+    <td><a href="https://github.com/fastify/fastify/pull/1168">#1168</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_OPTIONS_NOT_OBJ<p id="fst_err_options_not_obj" style="display: inline"></p></td>
+    <td>Fastify options wrongly specified.</td>
+    <td>Fastify options should be an object.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_QSP_NOT_FN<p id="fst_err_qsp_not_fn" style="display: inline"></p></td>
+    <td>QueryStringParser wrongly specified.</td>
+    <td>QueryStringParser option should be a function.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN<p id="fst_err_schema_controller_bucket_opt_not_fn" style="display: inline"></p></td>
+    <td>SchemaController.bucket wrongly specified.</td>
+    <td>SchemaController.bucket option should be a function.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN<p id="fst_err_schema_error_formatter_not_fn" style="display: inline"></p></td>
+    <td>SchemaErrorFormatter option wrongly specified.</td>
+    <td>SchemaErrorFormatter option should be a non async function.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ<p id="fst_err_ajv_custom_options_opt_not_obj" style="display: inline"></p></td>
+    <td>ajv.customOptions wrongly specified.</td>
+    <td>ajv.customOptions option should be an object.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR<p id="fst_err_ajv_custom_options_opt_not_arr" style="display: inline"></p></td>
+    <td>ajv.plugins option wrongly specified.</td>
+    <td>ajv.plugins option should be an array.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+  <tr>
+    <td>FST_ERR_VERSION_CONSTRAINT_NOT_STR<p id="fst_err_version_constraint_not_str" style="display: inline"></p></td>
+    <td>Version constraint wrongly specified.</td>
+    <td>Version constraint should be a string.</td>
+    <td><a href="https://github.com/fastify/fastify/pull/4554">#4554</a></td>
+  </tr>
+</tbody>
+</table>
 
 #### FST_ERR_CTP_ALREADY_PRESENT
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>

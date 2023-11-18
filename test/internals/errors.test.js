@@ -824,7 +824,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
-      t.ok(errorsMd.includes(`<td>${key}`), key)
+      t.ok(errorsMd.includes(`| ${key}`), key)
     }
   }
 })

@@ -255,7 +255,7 @@ test('Should not change the input schemas', t => {
 })
 
 test('Should emit warning if the schema headers is undefined', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -286,7 +286,7 @@ test('Should emit warning if the schema headers is undefined', t => {
 })
 
 test('Should emit warning if the schema body is undefined', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -317,7 +317,7 @@ test('Should emit warning if the schema body is undefined', t => {
 })
 
 test('Should emit warning if the schema query is undefined', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
   process.on('warning', onWarning)
@@ -348,7 +348,7 @@ test('Should emit warning if the schema query is undefined', t => {
 })
 
 test('Should emit warning if the schema params is undefined', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
   process.on('warning', onWarning)

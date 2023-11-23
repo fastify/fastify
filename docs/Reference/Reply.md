@@ -721,7 +721,7 @@ fastify.get('/streams', async function (request, reply) {
 #### TypedArrays
 <a id="send-typedarrays"></a>
 
-`send` manages TypedArray like like a Buffer, and sets the `'Content-Type'` 
+`send` manages TypedArray like a Buffer, and sets the `'Content-Type'`
 header to `'application/octet-stream'` if not already set.
 
 As noted above, TypedArray/Buffers are considered to be pre-serialized, so they 

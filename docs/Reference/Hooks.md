@@ -132,7 +132,7 @@ fastify.addHook('preValidation', async (request, reply) => {
 ### preHandler
 
 The `preHandler` hook allows you to specify a function that is executed before
-routes' handler.
+a routes's handler.
 
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {

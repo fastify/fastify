@@ -1,6 +1,6 @@
 <div align="center"> <a href="https://fastify.dev/">
     <img
-      src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg"
+      src="https://avatars.githubusercontent.com/u/24939410?s=48&v="
       width="650"
       height="auto"
     />

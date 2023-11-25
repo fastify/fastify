@@ -1,5 +1,8 @@
 <div align="center"> <a href="https://fastify.dev/">
-    <img src="https://avatars.githubusercontent.com/u/24939410?s=48&v=" width="60" height="auto" style="border-radius: 10;" />
+    <img src="https://avatars.githubusercontent.com/u/24939410?s=48&v="
+      width="60" 
+      height="auto" 
+    />
 
   </a>
 </div>

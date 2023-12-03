@@ -201,6 +201,9 @@ section.
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`apitally`](https://github.com/apitally/nodejs-client) Fastify plugin to
+  integrate with [Apitally](https://apitally.io), a simple API monitoring &
+  API key management solution.
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
   Run an [Apollo Server](https://github.com/apollographql/apollo-server) to
   serve GraphQL with Fastify.

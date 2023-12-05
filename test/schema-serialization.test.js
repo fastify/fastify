@@ -593,6 +593,47 @@ test('Custom setSerializerCompiler returns bad serialized output', t => {
   })
 })
 
+test('Custom setSerializerCompiler with addSchema', t => {
+  t.plan(6)
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  const outSchema = {
+    $id: 'test',
+    type: 'object',
+    whatever: 'need to be parsed by the custom serializer'
+  }
+
+  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
+    t.equal(method, 'GET')
+    t.equal(url, '/foo/:id')
+    t.equal(httpStatus, '200')
+    t.same(schema, outSchema)
+    return _data => JSON.stringify({ id: 2 })
+  })
+
+  // provoke re-creation of serialization compiler in setupSerializer
+  fastify.addSchema({ $id: 'dummy', type: 'object' })
+
+  fastify.get('/foo/:id', {
+    handler (_req, reply) {
+      reply.send({ id: 1 })
+    },
+    schema: {
+      response: {
+        200: outSchema
+      }
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/foo/123'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ id: 2 }))
+  })
+})
+
 test('Custom serializer per route', async t => {
   const fastify = Fastify()
 

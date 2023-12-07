@@ -50,20 +50,21 @@ describes the properties available in that options object.
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
+  - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
     - [getDefaultRoute](#getdefaultroute)
     - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
     - [route](#route)
-    - [hasRoute](#hasRoute)
+    - [hasRoute](#hasroute)
     - [close](#close)
-    - [decorate*](#decorate)
+    - [decorate\*](#decorate)
     - [register](#register)
     - [addHook](#addhook)
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
-    - [listeningOrigin](#listeningOrigin)
+  - [listeningOrigin](#listeningorigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -93,6 +94,7 @@ describes the properties available in that options object.
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
     - [childLoggerFactory](#childloggerfactory)
+    - [Symbol.asyncDispose](#symbolasyncdispose)
     - [initialConfig](#initialconfig)
 
 ### `http`
@@ -1865,6 +1867,32 @@ fastify.get('/', {
 `fastify.childLoggerFactory` returns the custom logger factory function for the
 Fastify instance. See the [`childLoggerFactory` config option](#setchildloggerfactory)
 for more info.
+
+#### Symbol.asyncDispose
+<a id="symbolAsyncDispose"></a>
+
+`fastify[Symbol.asyncDispose]` is a symbol that can be used to define an
+asynchronous function that will be called when the Fastify instance is closed.
+
+It's commonly used alongside the `using` TypeScript keyword to ensure that
+resources are cleaned up when the Fastify instance is closed.
+
+This combines perfectly inside short lived processes or unit tests, where you must
+close all Fastify resources after returning from inside the function.
+
+```ts
+test('Uses app and closes it afterwards', async () => {
+  await using app = fastify();
+  // do something with app.
+})
+```
+
+In the above example, Fastify is closed automatically after the test finishes.
+
+Read more about the
+[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management)
+and the [using keyword](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/)
+introduced in TypeScript 5.2.
 
 #### initialConfig
 <a id="initial-config"></a>

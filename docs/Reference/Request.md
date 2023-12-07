@@ -37,8 +37,9 @@ Request is a core Fastify object containing the following fields:
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
 - `socket` - the underlying connection of the incoming request
-- `context` - A Fastify internal object. You should not use it directly or
-  modify it. It is useful to access one special key:	
+- `context` - Deprecated, use `request.routeOptions.config` instead.
+A Fastify internal object. You should not use
+it directly or modify it. It is useful to access one special key:	
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeSchema` - Deprecated, use `request.routeOptions.schema` instead. The
   scheme definition set for the router that is handling the request
@@ -160,7 +161,7 @@ for more information on how to compile validation function.
 This function will compile a validation schema and
 return a function that can be used to validate data.
 The function returned (a.k.a. _validation function_) is compiled
-by using the provided [`SchemaControler#ValidationCompiler`](./Server.md#schema-controller).
+by using the provided [`SchemaController#ValidationCompiler`](./Server.md#schema-controller).
 A `WeakMap` is used to cached this, reducing compilation calls.
 
 The optional parameter `httpPart`, if provided, is forwarded directly

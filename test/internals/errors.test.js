@@ -292,7 +292,7 @@ test('FST_ERR_MISSING_MIDDLEWARE', t => {
   const error = new errors.FST_ERR_MISSING_MIDDLEWARE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_MISSING_MIDDLEWARE')
-  t.equal(error.message, 'You must register a plugin for handling middlewares, visit fastify.io/docs/latest/Reference/Middleware/ for more info.')
+  t.equal(error.message, 'You must register a plugin for handling middlewares, visit fastify.dev/docs/latest/Reference/Middleware/ for more info.')
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -824,7 +824,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
-      t.ok(errorsMd.includes(`#### ${key}\n`), key)
+      t.ok(errorsMd.includes(`<a id="${key.toLowerCase()}">${key.toUpperCase()}</a>`), key)
     }
   }
 })
@@ -833,7 +833,7 @@ test('Ensure that non-existing errors are not in Errors.md documented', t => {
   t.plan(78)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
-  const matchRE = /#### ([0-9a-zA-Z_]+)\n/g
+  const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g
   const matches = errorsMd.matchAll(matchRE)
   const exportedKeys = Object.keys(errors)
 

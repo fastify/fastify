@@ -142,6 +142,11 @@ export interface FastifyInstance<
   close(): Promise<undefined>;
   close(closeListener: () => void): undefined;
 
+  /** Alias for {@linkcode FastifyInstance.close()} */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - type only available for @types/node >=17 or typescript >= 5.2
+  [Symbol.asyncDispose](): Promise<undefined>;
+
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
@@ -196,17 +201,17 @@ export interface FastifyInstance<
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema,
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+    const SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
 
   hasRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

@@ -5,34 +5,8 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
-
 const jsonParser = require('fast-json-body')
-
-function plainTextParser (request, callback) {
-  let body = ''
-  request.setEncoding('utf8')
-  request.on('error', onError)
-  request.on('data', onData)
-  request.on('end', onEnd)
-  function onError (err) {
-    callback(err, null)
-  }
-  function onData (chunk) {
-    body += chunk
-  }
-  function onEnd () {
-    callback(null, body)
-  }
-}
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
+const { getServerUrl, plainTextParser } = require('./helper')
 
 process.removeAllListeners('warning')
 
@@ -70,7 +44,7 @@ test('contentTypeParser should add a custom parser', t => {
 
       sget({
         method: 'POST',
-        url: getUrl(fastify),
+        url: getServerUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
           'Content-Type': 'application/jsoff'
@@ -87,7 +61,7 @@ test('contentTypeParser should add a custom parser', t => {
 
       sget({
         method: 'OPTIONS',
-        url: getUrl(fastify),
+        url: getServerUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
           'Content-Type': 'application/jsoff'
@@ -128,7 +102,7 @@ test('contentTypeParser should handle multiple custom parsers', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
@@ -141,7 +115,7 @@ test('contentTypeParser should handle multiple custom parsers', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify) + '/hello',
+      url: getServerUrl(fastify) + '/hello',
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/ffosj'
@@ -180,7 +154,7 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
@@ -193,7 +167,7 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify) + '/hello',
+      url: getServerUrl(fastify) + '/hello',
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/ffosj'
@@ -223,7 +197,7 @@ test('contentTypeParser should handle errors', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
@@ -284,7 +258,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
@@ -317,7 +291,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'unknown content type!',
       headers: {
         // 'Content-Type': undefined
@@ -390,7 +364,7 @@ test('catch all content type parser', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'hello',
       headers: {
         'Content-Type': 'application/jsoff'
@@ -402,7 +376,7 @@ test('catch all content type parser', t => {
 
       sget({
         method: 'POST',
-        url: getUrl(fastify),
+        url: getServerUrl(fastify),
         body: 'hello',
         headers: {
           'Content-Type': 'very-weird-content-type'
@@ -444,7 +418,7 @@ test('catch all content type parser should not interfere with other conte type p
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
@@ -456,7 +430,7 @@ test('catch all content type parser should not interfere with other conte type p
 
       sget({
         method: 'POST',
-        url: getUrl(fastify),
+        url: getServerUrl(fastify),
         body: 'hello',
         headers: {
           'Content-Type': 'very-weird-content-type'
@@ -499,7 +473,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify) + '/',
+      url: getServerUrl(fastify) + '/',
       body: fileStream
     }, (err, response, body) => {
       t.error(err)
@@ -552,7 +526,7 @@ test('Can override the default json parser', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/json'
@@ -586,7 +560,7 @@ test('Can override the default plain text parser', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
         'Content-Type': 'text/plain'
@@ -624,7 +598,7 @@ test('Can override the default json parser in a plugin', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/json'
@@ -709,7 +683,7 @@ test('Should get the body as string', t => {
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/json'
@@ -736,7 +710,7 @@ test('Should return defined body with no custom parser defined and content type 
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
         'Content-Type': 'text/plain'
@@ -763,7 +737,7 @@ test('Should have typeof body object with no custom parser defined, no body defi
 
     sget({
       method: 'POST',
-      url: getUrl(fastify),
+      url: getServerUrl(fastify),
       headers: {
         'Content-Type': 'text/plain'
       }

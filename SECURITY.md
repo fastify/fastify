@@ -130,3 +130,30 @@ work as a member of the Fastify Core team.
 * [__KaKa Ng__](https://github.com/climba03003)
 * [__James Sumners__](https://github.com/jsumners),
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+
+## OpenSSF CII Best Practices
+
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
+
+There are three “tiers”: passing, silver, and gold.
+
+### Passing
+We meet 100% of the “passing” criteria.
+
+### Silver
+We meet 87% of the “silver” criteria. The gaps are as follows:
+  - we do not have a DCO or a CLA process for contributions.
+  - we do not currently document
+    “what the user can and cannot expect in terms of security” for our project.
+  - we do not currently document ”the architecture (aka high-level design)”
+    for our project.
+
+### Gold
+We meet 70% of the “gold” criteria. The gaps are as follows:
+  - we do not yet have the “silver” badge; see all the gaps above.
+  - We do not include a copyright or license statement in each source file.
+    Efforts are underway to change this archaic practice into a
+    suggestion instead of a hard requirement.
+  - There are a few unanswered questions around cryptography that are
+    waiting for clarification.
+

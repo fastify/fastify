@@ -540,7 +540,7 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     method: 'POST',
     payload: {
       id: '254381a5-888c-4b41-8116-e3b1a54980bd',
-      email: 'info@fastify.io'
+      email: 'info@fastify.dev'
     },
     url: '/'
   }, (_err, res) => {
@@ -552,7 +552,7 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     method: 'POST',
     payload: {
       id: 'invalid',
-      email: 'info@fastify.io'
+      email: 'info@fastify.dev'
     },
     url: '/'
   }, (_err, res) => {

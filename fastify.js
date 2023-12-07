@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.23.2'
+const VERSION = '4.24.3'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -504,6 +504,13 @@ function fastify (options) {
   } catch (e) {
     // This only happens if `diagnostics_channel` isn't available, i.e. earlier
     // versions of Node.js. In that event, we don't care, so ignore the error.
+  }
+
+  // Older nodejs versions may not have asyncDispose
+  if ('asyncDispose' in Symbol) {
+    fastify[Symbol.asyncDispose] = function dispose () {
+      return fastify.close()
+    }
   }
 
   return fastify

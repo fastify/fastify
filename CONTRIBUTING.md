@@ -94,7 +94,7 @@ the following tasks:
     - Plugins team: maintains the Fastify's plugins and its ecosystem
 3. Open a pull request to
    [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) that adds
-   your name, username, and email to the team you have choosen in the
+   your name, username, and email to the team you have chosen in the
    [README.md](./README.md) and [package.json](./package.json) *(if you are part
    of the core team)* files. The members lists are sorted alphabetically; make
    sure to add your name in the proper order.

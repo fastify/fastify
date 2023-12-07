@@ -50,20 +50,21 @@ describes the properties available in that options object.
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
+  - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
     - [getDefaultRoute](#getdefaultroute)
     - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
     - [route](#route)
-    - [hasRoute](#hasRoute)
+    - [hasRoute](#hasroute)
     - [close](#close)
-    - [decorate*](#decorate)
+    - [decorate\*](#decorate)
     - [register](#register)
     - [addHook](#addhook)
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
-    - [listeningOrigin](#listeningOrigin)
+  - [listeningOrigin](#listeningorigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -93,6 +94,7 @@ describes the properties available in that options object.
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
     - [childLoggerFactory](#childloggerfactory)
+    - [Symbol.asyncDispose](#symbolasyncdispose)
     - [initialConfig](#initialconfig)
 
 ### `http`
@@ -282,6 +284,10 @@ attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_
 + Default: `1048576` (1MiB)
 
 Defines the maximum payload, in bytes, the server is allowed to accept.
+The default body reader sends [`FST_ERR_CTP_BODY_TOO_LARGE`](./Errors.md#fst_err_ctp_body_too_large)
+reply, if the size of the body exceeds this limit.
+If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
+to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>
@@ -476,7 +482,7 @@ is not equal to `/Foo`.
 When `false` then routes are case-insensitive.
 
 Please note that setting this option to `false` goes against
-[RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
+[RFC3986](https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1).
 
 By setting `caseSensitive` to `false`, all paths will be matched as lowercase,
 but the route parameters or wildcards will maintain their original letter
@@ -631,7 +637,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('querystring')
+const querystring = require('node:querystring')
 const fastify = require('fastify')({
   querystringParser: str => querystring.parse(str.toLowerCase())
 })
@@ -1862,6 +1868,32 @@ fastify.get('/', {
 Fastify instance. See the [`childLoggerFactory` config option](#setchildloggerfactory)
 for more info.
 
+#### Symbol.asyncDispose
+<a id="symbolAsyncDispose"></a>
+
+`fastify[Symbol.asyncDispose]` is a symbol that can be used to define an
+asynchronous function that will be called when the Fastify instance is closed.
+
+It's commonly used alongside the `using` TypeScript keyword to ensure that
+resources are cleaned up when the Fastify instance is closed.
+
+This combines perfectly inside short lived processes or unit tests, where you must
+close all Fastify resources after returning from inside the function.
+
+```ts
+test('Uses app and closes it afterwards', async () => {
+  await using app = fastify();
+  // do something with app.
+})
+```
+
+In the above example, Fastify is closed automatically after the test finishes.
+
+Read more about the
+[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management)
+and the [using keyword](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/)
+introduced in TypeScript 5.2.
+
 #### initialConfig
 <a id="initial-config"></a>
 
@@ -1888,7 +1920,7 @@ The properties that can currently be exposed are:
 - http2SessionTimeout
 
 ```js
-const { readFileSync } = require('fs')
+const { readFileSync } = require('node:fs')
 const Fastify = require('fastify')
 
 const fastify = Fastify({

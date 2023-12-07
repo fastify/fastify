@@ -1,6 +1,6 @@
 'use strict'
 
-const net = require('net')
+const net = require('node:net')
 const { test } = require('tap')
 const semver = require('semver')
 const Fastify = require('../fastify')

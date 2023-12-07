@@ -275,7 +275,7 @@ CREATE TABLE IF NOT EXISTS users (
 ```javascript
 const pg = require('pg')
 const Postgrator = require('postgrator')
-const path = require('path')
+const path = require('node:path')
 
 async function migrate() {
   const client = new pg.Client({
@@ -308,7 +308,7 @@ async function migrate() {
 
     process.exitCode = 0
   } catch(err) {
-    console.error(error)
+    console.error(err)
     process.exitCode = 1
   }
   

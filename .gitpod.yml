@@ -1,0 +1,10 @@
+# Gitpod Configuration File
+# SEE https://www.gitpod.io/docs/references/gitpod-yml
+
+tasks:
+  - init: npm install
+    name: Install Dependencies
+
+vscode:
+  extensions:
+    - "dbaeumer.vscode-eslint"

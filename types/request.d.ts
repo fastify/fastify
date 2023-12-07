@@ -1,8 +1,8 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { FastifyContext } from './context'
+import { FastifyRequestContext, FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
-import { RouteGenericInterface } from './route'
+import { RouteGenericInterface, FastifyRouteConfig, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
 import { ContextConfigDefault, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
@@ -20,15 +20,18 @@ export interface ValidationFunction {
   errors?: null | ErrorObject[];
 }
 
-export interface RequestRouteOptions {
-  method: string,
-  url: string,
-  bodyLimit:number,
-  attachValidation:boolean,
-  logLevel:string,
-  version: string | undefined,
-  exposeHeadRoute: boolean,
-  prefixTrailingSlash: string
+export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema> {
+  method: string;
+  url: string;
+  bodyLimit:number;
+  attachValidation:boolean;
+  logLevel:string;
+  version: string | undefined;
+  exposeHeadRoute: boolean;
+  prefixTrailingSlash: string;
+  config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
+  schema: SchemaCompiler;
+  handler: RouteHandlerMethod;
 }
 
 /**
@@ -50,7 +53,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   //   the RequestType (preferred) or swap Logger and RequestType arguments when
   //   creating custom types of FastifyRequest. Related issue #4123
 > {
-  id: any;
+  id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;
   query: RequestType['query'];
@@ -58,8 +61,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   log: Logger;
   server: FastifyInstance;
   body: RequestType['body'];
-  context: FastifyContext<ContextConfig>;
-  routeConfig: FastifyContext<ContextConfig>['config'];
+  context: FastifyRequestContext<ContextConfig>;
+  routeConfig: FastifyRequestContext<ContextConfig>['config'];
   routeSchema: FastifySchema
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
@@ -78,7 +81,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routerPath: string;
   readonly routerMethod: string;
-  readonly routeOptions: Readonly<RequestRouteOptions>
+  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 

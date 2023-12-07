@@ -2,8 +2,8 @@
 
 const t = require('tap')
 const test = t.test
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const { code } = require('../../build/build-error-serializer')
 
@@ -23,9 +23,9 @@ test('check generated code syntax', async (t) => {
   t.equal(result[0].fatalErrorCount, 0)
 })
 
-const isPrebublish = !!process.env.PREPUBLISH
+const isPrepublish = !!process.env.PREPUBLISH
 
-test('ensure the current error serializer is latest', { skip: !isPrebublish }, async (t) => {
+test('ensure the current error serializer is latest', { skip: !isPrepublish }, async (t) => {
   t.plan(1)
 
   const current = await fs.promises.readFile(path.resolve('lib/error-serializer.js'))

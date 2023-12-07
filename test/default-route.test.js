@@ -18,7 +18,7 @@ test('setDefaultRoute should emit a deprecation warning', t => {
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, 'FSTDEP014')
   }
 
@@ -37,7 +37,7 @@ test('getDefaultRoute should emit a deprecation warning', t => {
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, 'FSTDEP014')
   }
 

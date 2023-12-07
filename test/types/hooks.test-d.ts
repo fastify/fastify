@@ -142,6 +142,12 @@ server.addHook('onReady', function (done) {
   expectType<void>(done(new Error()))
 })
 
+server.addHook('onListen', function (done) {
+  expectType<FastifyInstance>(this)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+})
+
 server.addHook('onClose', (instance, done) => {
   expectType<FastifyInstance>(instance)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -220,6 +226,10 @@ server.addHook('onRegister', async (instance, opts) => {
 })
 
 server.addHook('onReady', async function () {
+  expectType<FastifyInstance>(this)
+})
+
+server.addHook('onListen', async function () {
   expectType<FastifyInstance>(this)
 })
 
@@ -392,3 +402,17 @@ server.addHook('preClose', function (done) {
 server.addHook('preClose', async function () {
   expectType<FastifyInstance>(this)
 })
+
+expectError(server.addHook('onClose', async function (instance, done) {}))
+expectError(server.addHook('onError', async function (request, reply, error, done) {}))
+expectError(server.addHook('onReady', async function (done) {}))
+expectError(server.addHook('onListen', async function (done) {}))
+expectError(server.addHook('onRequest', async function (request, reply, done) {}))
+expectError(server.addHook('onRequestAbort', async function (request, done) {}))
+expectError(server.addHook('onResponse', async function (request, reply, done) {}))
+expectError(server.addHook('onSend', async function (request, reply, payload, done) {}))
+expectError(server.addHook('onTimeout', async function (request, reply, done) {}))
+expectError(server.addHook('preClose', async function (done) {}))
+expectError(server.addHook('preHandler', async function (request, reply, done) {}))
+expectError(server.addHook('preSerialization', async function (request, reply, payload, done) {}))
+expectError(server.addHook('preValidation', async function (request, reply, done) {}))

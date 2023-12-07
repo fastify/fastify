@@ -190,7 +190,7 @@ interface DoneFuncWithErrOrRes {
  *  Note: the hook is NOT called if the payload is a string, a Buffer, a stream or null.
  */
 export interface preSerializationHookHandler<
-  PreSerializationPayload,
+  PreSerializationPayload = unknown,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -210,7 +210,7 @@ export interface preSerializationHookHandler<
 }
 
 export interface preSerializationAsyncHookHandler<
-  PreSerializationPayload,
+  PreSerializationPayload = unknown,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -233,7 +233,7 @@ export interface preSerializationAsyncHookHandler<
  * Note: If you change the payload, you may only change it to a string, a Buffer, a stream, or null.
  */
 export interface onSendHookHandler<
-  OnSendPayload,
+  OnSendPayload = unknown,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -253,7 +253,7 @@ export interface onSendHookHandler<
 }
 
 export interface onSendAsyncHookHandler<
-  OnSendPayload,
+  OnSendPayload = unknown,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -432,6 +432,66 @@ export interface onRequestAbortAsyncHookHandler<
   ): Promise<unknown>;
 }
 
+export type LifecycleHook = 'onRequest'
+| 'preParsing'
+| 'preValidation'
+| 'preHandler'
+| 'preSerialization'
+| 'onSend'
+| 'onResponse'
+| 'onRequest'
+| 'onError'
+| 'onTimeout'
+| 'onRequestAbort'
+
+export type LifecycleHookLookup<K extends LifecycleHook> = K extends 'onRequest'
+  ? onRequestHookHandler
+  : K extends 'preParsing'
+    ? preParsingHookHandler
+    : K extends 'preValidation'
+      ? preValidationHookHandler
+      : K extends 'preHandler'
+        ? preHandlerHookHandler
+        : K extends 'preSerialization'
+          ? preSerializationHookHandler
+          : K extends 'onSend'
+            ? onSendHookHandler
+            : K extends 'onResponse'
+              ? onResponseHookHandler
+              : K extends 'onRequest'
+                ? onRequestHookHandler
+                : K extends 'onError'
+                  ? onErrorHookHandler
+                  : K extends 'onTimeout'
+                    ? onTimeoutHookHandler
+                    : K extends 'onRequestAbort'
+                      ? onRequestAbortHookHandler
+                      : never
+
+export type LifecycleHookAsyncLookup<K extends LifecycleHook> = K extends 'onRequest'
+  ? onRequestAsyncHookHandler
+  : K extends 'preParsing'
+    ? preParsingAsyncHookHandler
+    : K extends 'preValidation'
+      ? preValidationAsyncHookHandler
+      : K extends 'preHandler'
+        ? preHandlerAsyncHookHandler
+        : K extends 'preSerialization'
+          ? preSerializationAsyncHookHandler
+          : K extends 'onSend'
+            ? onSendAsyncHookHandler
+            : K extends 'onResponse'
+              ? onResponseAsyncHookHandler
+              : K extends 'onRequest'
+                ? onRequestAsyncHookHandler
+                : K extends 'onError'
+                  ? onErrorAsyncHookHandler
+                  : K extends 'onTimeout'
+                    ? onTimeoutAsyncHookHandler
+                    : K extends 'onRequestAbort'
+                      ? onRequestAbortAsyncHookHandler
+                      : never
+
 // Application Hooks
 
 /**
@@ -500,6 +560,34 @@ export interface onReadyAsyncHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   ): Promise<unknown>;
 }
+
+/**
+ * Triggered when fastify.listen() is invoked to start the server. It is useful when plugins need a "onListen" event, for example to run logics after the server start listening for requests.
+ */
+export interface onListenHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
+}
+
+export interface onListenAsyncHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  ): Promise<unknown>;
+}
 /**
  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
  */
@@ -555,3 +643,48 @@ export interface preCloseAsyncHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   ): Promise<unknown>;
 }
+
+export type ApplicationHook = 'onRoute'
+| 'onRegister'
+| 'onReady'
+| 'onListen'
+| 'onClose'
+| 'preClose'
+
+export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegister'
+  ? onRegisterHookHandler
+  : K extends 'onReady'
+    ? onReadyHookHandler
+    : K extends 'onListen'
+      ? onListenHookHandler
+      : K extends 'onClose'
+        ? onCloseHookHandler
+        : K extends 'preClose'
+          ? preCloseHookHandler
+          : K extends 'onRoute'
+            ? onRouteHookHandler
+            : never
+
+export type ApplicationHookAsyncLookup<K extends ApplicationHook> = K extends 'onRegister'
+  ? onRegisterHookHandler
+  : K extends 'onReady'
+    ? onReadyAsyncHookHandler
+    : K extends 'onListen'
+      ? onListenAsyncHookHandler
+      : K extends 'onClose'
+        ? onCloseAsyncHookHandler
+        : K extends 'preClose'
+          ? preCloseAsyncHookHandler
+          : never
+
+export type HookLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
+  ? ApplicationHookLookup<K>
+  : K extends LifecycleHook
+    ? LifecycleHookLookup<K>
+    : never
+
+export type HookAsyncLookup <K extends ApplicationHook | LifecycleHook> = K extends ApplicationHook
+  ? ApplicationHookAsyncLookup<K>
+  : K extends LifecycleHook
+    ? LifecycleHookAsyncLookup<K>
+    : never

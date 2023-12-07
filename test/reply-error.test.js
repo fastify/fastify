@@ -2,12 +2,12 @@
 
 const t = require('tap')
 const test = t.test
-const net = require('net')
+const net = require('node:net')
 const Fastify = require('..')
-const statusCodes = require('http').STATUS_CODES
+const statusCodes = require('node:http').STATUS_CODES
 const split = require('split2')
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const codes = Object.keys(statusCodes)
 codes.forEach(code => {

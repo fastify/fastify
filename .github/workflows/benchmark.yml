@@ -21,13 +21,13 @@ jobs:
       matrix:
         node-version: [16, 18, 20]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: ${{github.event.pull_request.head.sha}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -40,10 +40,12 @@ jobs:
         run: |
           npm run --silent benchmark > ./bench-result.md
           result=$(awk '/requests in/' ./bench-result.md)
-          echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
+          echo 'BENCH_RESULT${{matrix.node-version}}<<EOF' >> $GITHUB_OUTPUT
+          echo "$result" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
       # main benchmark
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: 'main'
@@ -57,7 +59,9 @@ jobs:
         run: |
           npm run --silent benchmark > ./bench-result.md
           result=$(awk '/requests in/' ./bench-result.md)
-          echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
+          echo 'BENCH_RESULT${{matrix.node-version}}<<EOF' >> $GITHUB_OUTPUT
+          echo "$result" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
   output-benchmark:
     needs: [benchmark]
@@ -86,8 +90,20 @@ jobs:
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-20 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-20 }}
             
-      - uses: actions-ecosystem/action-remove-labels@v1
+  remove-label:
+    if: ${{ github.event.label.name == 'benchmark' }}
+    needs: 
+      - benchmark
+      - output-benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove benchmark label
+        uses: octokit/request-action@v2.x
+        id: remove-label
         with:
-          labels: |
-            benchmark
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          issue_number: ${{ github.event.pull_request.number }}
+          name: benchmark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

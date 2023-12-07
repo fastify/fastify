@@ -36,8 +36,8 @@ test('Should return 503 while closing - pipelining', async t => {
   await instance.close()
 })
 
-const isV19plus = semver.gte(process.version, '19.0.0')
-test('Should not return 503 while closing - pipelining - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, async t => {
+const isVgte19 = semver.gte(process.version, '19.0.0')
+test('Should not return 503 while closing - pipelining - return503OnClosing: false, skip Node >= v19.x', { skip: isVgte19 }, async t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -67,7 +67,7 @@ test('Should not return 503 while closing - pipelining - return503OnClosing: fal
   await instance.close()
 })
 
-test('Should close the socket abruptly - pipelining - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, async t => {
+test('Should close the socket abruptly - pipelining - return503OnClosing: false, skip Node < v19.x', { skip: !isVgte19 }, async t => {
   // Since Node v19, we will always invoke server.closeIdleConnections()
   // therefore our socket will be closed
   const fastify = Fastify({
@@ -75,9 +75,9 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false,
     forceCloseConnections: false
   })
 
-  fastify.get('/', (req, reply) => {
-    fastify.close()
+  fastify.get('/', async (req, reply) => {
     reply.send({ hello: 'world' })
+    fastify.close()
   })
 
   await fastify.listen({ port: 0 })

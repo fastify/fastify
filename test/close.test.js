@@ -1,12 +1,13 @@
 'use strict'
 
-const net = require('net')
-const http = require('http')
+const net = require('node:net')
+const http = require('node:http')
 const { test } = require('tap')
 const Fastify = require('..')
 const { Client } = require('undici')
 const semver = require('semver')
 const split = require('split2')
+const { sleep } = require('./helper')
 
 test('close callback', t => {
   t.plan(4)
@@ -687,11 +688,6 @@ test('preClose async', async t => {
 
 test('preClose execution order', t => {
   t.plan(4)
-  async function sleep (ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms)
-    })
-  }
   const fastify = Fastify()
   const order = []
   fastify.addHook('onClose', onClose)

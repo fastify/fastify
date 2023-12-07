@@ -20,7 +20,7 @@ test('start listening', async t => {
 
 test('DNS errors does not stop the main server on localhost - promise interface', async t => {
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(new Error('DNS error'))
       }
@@ -35,7 +35,7 @@ test('DNS errors does not stop the main server on localhost - promise interface'
 test('DNS errors does not stop the main server on localhost - callback interface', t => {
   t.plan(2)
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(new Error('DNS error'))
       }
@@ -52,7 +52,7 @@ test('DNS errors does not stop the main server on localhost - callback interface
 test('DNS returns empty binding', t => {
   t.plan(2)
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(null, [])
       }
@@ -69,7 +69,7 @@ test('DNS returns empty binding', t => {
 test('DNS returns more than two binding', t => {
   t.plan(2)
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(null, [
           { address: '::1', family: 6 },

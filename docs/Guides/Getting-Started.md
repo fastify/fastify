@@ -14,11 +14,12 @@ Let's start!
 <a id="install"></a>
 
 Install with npm:
-```
+```sh
 npm i fastify
 ```
+
 Install with yarn:
-```
+```sh
 yarn add fastify
 ```
 
@@ -177,7 +178,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 /**
  * Encapsulates the routes
  * @param {FastifyInstance} fastify  Encapsulated Fastify Instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://www.fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
@@ -208,7 +209,7 @@ Let's rewrite the above example with a database connection.
 
 First, install `fastify-plugin` and `@fastify/mongodb`:
 
-```
+```sh
 npm i fastify-plugin @fastify/mongodb
 ```
 
@@ -277,7 +278,7 @@ async function dbConnector (fastify, options) {
 
 // Wrapping a plugin function with fastify-plugin exposes the decorators
 // and hooks, declared inside the plugin to the parent scope.
-module.exports = fastifyPlugin(dbConnector)
+export default fastifyPlugin(dbConnector)
 
 ```
 
@@ -292,7 +293,7 @@ const fastifyPlugin = require('fastify-plugin')
 /**
  * Connects to a MongoDB database
  * @param {FastifyInstance} fastify Encapsulated Fastify Instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://www.fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function dbConnector (fastify, options) {
   fastify.register(require('@fastify/mongodb'), {
@@ -311,7 +312,7 @@ module.exports = fastifyPlugin(dbConnector)
 /**
  * A plugin that provide encapsulated routes
  * @param {FastifyInstance} fastify encapsulated fastify instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://www.fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')
@@ -550,7 +551,7 @@ Fastify also has CLI integration thanks to
 
 First, install `fastify-cli`:
 
-```
+```sh
 npm i fastify-cli
 ```
 

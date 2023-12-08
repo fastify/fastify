@@ -85,5 +85,6 @@ type OmitIndexSignature<T> = {
 
 /**
  * HTTP header strings
+ * Use this type only for input values, not for output values.
  */
-export type HttpHeader = keyof OmitIndexSignature<http.OutgoingHttpHeaders> | (string & {}); // eslint-disable-line @typescript-eslint/ban-types
+export type HttpHeader = keyof OmitIndexSignature<http.OutgoingHttpHeaders> | (string & Record<never, never>);

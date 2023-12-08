@@ -119,8 +119,8 @@ test('Should rewrite url but keep originalUrl unchanged', t => {
     method: 'GET',
     url: '/',
     handler: (req, reply) => {
+      reply.send({ hello: 'world', hostname: req.hostname, port: req.port })
       t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
-      reply.send({ hello: 'world' })
     }
   })
 
@@ -132,7 +132,8 @@ test('Should rewrite url but keep originalUrl unchanged', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.error(err)
-      t.same(JSON.parse(body), { hello: 'world' })
+      const parsedBody = JSON.parse(body)
+      t.same(parsedBody, { hello: 'world', hostname: 'localhost', port: fastify.server.address().port })
       t.equal(response.statusCode, 200)
     })
   })

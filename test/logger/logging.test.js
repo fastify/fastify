@@ -29,10 +29,10 @@ t.test('logging', (t) => {
 
     const stream = split(JSON.parse)
 
-    const logger = pino({ level: 'trace' }, stream)
+    const loggerInstance = pino({ level: 'trace' }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -229,10 +229,10 @@ t.test('logging', (t) => {
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
-    const logger = pino(stream)
+    const loggerInstance = pino(stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 

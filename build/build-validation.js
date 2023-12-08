@@ -38,7 +38,7 @@ const defaultInitOptions = {
   onProtoPoisoning: 'error',
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
-  requestIdHeader: 'request-id',
+  requestIdHeader: false,
   requestIdLogLabel: 'reqId',
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true
@@ -97,7 +97,7 @@ const schema = {
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
-    requestIdHeader: { anyOf: [{ enum: [false] }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
+    requestIdHeader: { anyOf: [{ type: 'boolean' }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },

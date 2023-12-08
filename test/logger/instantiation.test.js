@@ -32,9 +32,9 @@ t.test('logger instantiation', (t) => {
 
     const stream = split(JSON.parse)
 
-    const logger = require('pino')(stream)
+    const loggerInstance = require('pino')(stream)
 
-    const fastify = Fastify({ logger })
+    const fastify = Fastify({ loggerInstance })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.get('/foo', function (req, reply) {
@@ -203,17 +203,17 @@ t.test('logger instantiation', (t) => {
   t.test('should be able to use a custom logger', (t) => {
     t.plan(7)
 
-    const logger = {
+    const loggerInstance = {
       fatal: (msg) => { t.equal(msg, 'fatal') },
       error: (msg) => { t.equal(msg, 'error') },
       warn: (msg) => { t.equal(msg, 'warn') },
       info: (msg) => { t.equal(msg, 'info') },
       debug: (msg) => { t.equal(msg, 'debug') },
       trace: (msg) => { t.equal(msg, 'trace') },
-      child: () => logger
+      child: () => loggerInstance
     }
 
-    const fastify = Fastify({ logger })
+    const fastify = Fastify({ loggerInstance })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.log.fatal('fatal')
@@ -223,7 +223,7 @@ t.test('logger instantiation', (t) => {
     fastify.log.debug('debug')
     fastify.log.trace('trace')
     const child = fastify.log.child()
-    t.equal(child, logger)
+    t.equal(child, loggerInstance)
   })
 
   t.test('should throw in case a partially matching logger is provided', async (t) => {
@@ -246,7 +246,7 @@ t.test('logger instantiation', (t) => {
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
-    const logger = require('pino')({
+    const loggerInstance = require('pino')({
       level: 'info',
       serializers: {
         req: function (req) {
@@ -258,7 +258,7 @@ t.test('logger instantiation', (t) => {
     }, stream)
 
     const fastify = Fastify({
-      logger
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 

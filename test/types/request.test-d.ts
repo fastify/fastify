@@ -70,6 +70,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<Readonly<RequestRouteOptions>>(request.routeOptions)
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
+  expectType<string>(request.host)
+  expectType<number>(request.port)
   expectType<string>(request.ip)
   expectType<string[] | undefined>(request.ips)
   expectType<RawRequestDefaultExpression>(request.raw)
@@ -153,7 +155,7 @@ const customLogger: CustomLoggerInterface = {
   child: () => customLogger as pino.Logger<never>
 }
 
-const serverWithCustomLogger = fastify({ logger: customLogger })
+const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
 expectType<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>

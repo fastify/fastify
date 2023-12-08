@@ -454,7 +454,7 @@ test('test log stream', t => {
     t.teardown(() => { fastify.close() })
 
     http.get({
-      hostname: fastify.server.address().hostname,
+      host: fastify.server.address().hostname,
       port: fastify.server.address().port,
       path: '/',
       method: 'GET',

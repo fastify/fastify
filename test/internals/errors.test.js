@@ -848,7 +848,7 @@ test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
 })
 
 test('Ensure that all errors are in Errors.md TOC', t => {
-  t.plan(78)
+  t.plan(81)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -860,7 +860,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md TOC', t => {
-  t.plan(78)
+  t.plan(81)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g

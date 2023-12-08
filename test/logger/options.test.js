@@ -12,7 +12,7 @@ const { on } = stream
 t.test('logger options', (t) => {
   t.setTimeout(60000)
 
-  t.plan(12)
+  t.plan(16)
 
   t.test('logger can be silented', (t) => {
     t.plan(17)

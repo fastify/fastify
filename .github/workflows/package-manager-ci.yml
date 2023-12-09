@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [16, 18, 20]
+        node-version: [16, '18.18.2', 20]
         os: [ubuntu-latest]
         pnpm-version: [8]
         # pnpm@8 does not support Node.js 14 so include it separately
@@ -53,7 +53,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [14, 16, 18, 20]
+        node-version: [14, 16, '18.18.2', 20]
         os: [ubuntu-latest]
 
     steps:

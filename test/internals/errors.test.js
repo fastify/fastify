@@ -817,6 +817,31 @@ test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
   t.ok(error instanceof TypeError)
 })
 
+test('Ensure that all errors are in Errors.md TOC', t => {
+  t.plan(78)
+  const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
+
+  const exportedKeys = Object.keys(errors)
+  for (const key of exportedKeys) {
+    if (errors[key].name === 'FastifyError') {
+      t.ok(errorsMd.includes(`  - [${key.toUpperCase()}](#${key.toLowerCase()})`), key)
+    }
+  }
+})
+
+test('Ensure that non-existing errors are not in Errors.md TOC', t => {
+  t.plan(78)
+  const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
+
+  const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g
+  const matches = errorsMd.matchAll(matchRE)
+  const exportedKeys = Object.keys(errors)
+
+  for (const match of matches) {
+    t.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
+  }
+})
+
 test('Ensure that all errors are in Errors.md documented', t => {
   t.plan(78)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')

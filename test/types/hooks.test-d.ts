@@ -498,11 +498,11 @@ server.get('/', {
 
 expectError(server.get('/', { onRequest: async (request, reply, done) => {} }, async (request, reply) => {}))
 expectError(server.get('/', { preParsing: async (request, reply, payload, done) => {} }, async (request, reply) => {}))
-expectError(server.get('/', { preValidation: async (request, reply, done) => {}    }, async (request, reply) => {}))
+expectError(server.get('/', { preValidation: async (request, reply, done) => {} }, async (request, reply) => {}))
 expectError(server.get('/', { preHandler: async (request, reply, done) => {} }, async (request, reply) => {}))
 expectError(server.get('/', { preSerialization: async (request, reply, payload, done) => {} }, async (request, reply) => {}))
 expectError(server.get('/', { onSend: async (request, reply, payload, done) => {} }, async (request, reply) => {}))
-expectError(server.get('/', {onResponse: async (request, reply, done) => {} }, async (request, reply) => {}))
+expectError(server.get('/', { onResponse: async (request, reply, done) => {} }, async (request, reply) => {}))
 expectError(server.get('/', { onTimeout: async (request, reply, done) => {} }, async (request, reply) => {}))
 expectError(server.get('/', { onError: async (request, reply, error, done) => {} }, async (request, reply) => {}))
 

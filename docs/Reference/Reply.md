@@ -86,7 +86,6 @@ object that exposes the following functions and properties:
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
 - `.context` - Deprecated, access the [Request's context](./Request.md) property.
-- `.routeOptions` - Access the [Request's routeOptions](./Request.md) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -666,8 +665,12 @@ fastify.get('/json', options, function (request, reply) {
 #### Streams
 <a id="send-streams"></a>
 
-*send* can also handle streams by setting the `'Content-Type'` header to
-`'application/octet-stream'`.
+If you are sending a stream and you have not set a `'Content-Type'` header,
+*send* will set it to `'application/octet-stream'`.
+
+As noted above, streams are considered to be pre-serialized, so they will be
+sent unmodified without response validation.
+
 ```js
 fastify.get('/streams', function (request, reply) {
   const fs = require('node:fs')
@@ -691,6 +694,10 @@ fastify.get('/streams', async function (request, reply) {
 
 If you are sending a buffer and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
+
+As noted above, Buffers are considered to be pre-serialized, so they will be 
+sent unmodified without response validation.
+
 ```js
 const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {
@@ -714,8 +721,12 @@ fastify.get('/streams', async function (request, reply) {
 #### TypedArrays
 <a id="send-typedarrays"></a>
 
-`send` manages TypedArray and sets the `'Content-Type'=application/octet-stream'`
-header if not already set.
+`send` manages TypedArray like a Buffer, and sets the `'Content-Type'`
+header to `'application/octet-stream'` if not already set.
+
+As noted above, TypedArray/Buffers are considered to be pre-serialized, so they 
+will be sent unmodified without response validation.
+
 ```js
 const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {

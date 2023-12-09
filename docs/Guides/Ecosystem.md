@@ -147,6 +147,8 @@ section.
 
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
+- [`@blastorg/fastify-aws-dynamodb-cache`](https://github.com/blastorg/fastify-aws-dynamodb-cache)
+  A plugin to help with caching API responses using AWS DynamoDB.
 - [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)
   Add authentication and user management to your Fastify application with Clerk.
 - [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly
@@ -201,6 +203,9 @@ section.
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`apitally`](https://github.com/apitally/nodejs-client) Fastify plugin to
+  integrate with [Apitally](https://apitally.io), a simple API monitoring &
+  API key management solution.
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
   Run an [Apollo Server](https://github.com/apollographql/apollo-server) to
   serve GraphQL with Fastify.
@@ -470,8 +475,6 @@ middlewares into Fastify plugins
   Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to
   eliminate thrown errors for `/favicon.ico` requests.
-- [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin
-  to share [nodemailer](https://nodemailer.com) transporter across Fastify.
 - [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply)
   Plugin to normalize the request and reply to the Express version 4.x request
   and response, which allows use of middleware, like swagger-stats, that was
@@ -632,6 +635,8 @@ middlewares into Fastify plugins
   Fastify plugin to work with TypeORM.
 - [`fastify-user-agent`](https://github.com/Eomm/fastify-user-agent) parses your
   request's `user-agent` header.
+- [`fastify-uws`](https://github.com/geut/fastify-uws) A Fastify plugin to
+  use the web server [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js).
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on
@@ -657,6 +662,9 @@ middlewares into Fastify plugins
   Parse XML payload / request body into JS / JSON object.
 - [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin
   for AWS XRay recording.
+- [`http-wizard`](https://github.com/flodlc/http-wizard)
+  Exports a typescript api client for your Fastify api and ensures fullstack type
+  safety for your project.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
   An [i18next](https://www.i18next.com) based i18n (internationalization)
   middleware to be used with Node.js web frameworks like Express or Fastify and

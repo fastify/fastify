@@ -350,9 +350,11 @@ fastify.addHook('onRequest', (request, reply, done) => {
 
 // Works with async functions too
 fastify.addHook('preHandler', async (request, reply) => {
-  await something()
-  reply.send({ hello: 'world' })
+  setTimeout(() => {
+    reply.send({ hello: 'from prehandler' })
+  })
   return reply // mandatory, so the request is not executed further
+// Commenting the line above will allow the hooks to continue and fail with FST_ERR_REP_ALREADY_SENT
 })
 ```
 

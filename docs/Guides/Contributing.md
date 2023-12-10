@@ -82,6 +82,8 @@ that automatically "correct" code and documentation do not follow a style that
 conforms to the styles this project uses. Notably, this project uses
 [StandardJS](https://standardjs.com) for code formatting.
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/fastify/fastify)
+
 ### Using Visual Studio Code
 <a id="contributing-vscode"></a>
 

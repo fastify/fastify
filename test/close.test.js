@@ -204,8 +204,8 @@ test('Should return error while closing (callback) - injection', t => {
   })
 })
 
-const isV19plus = semver.gte(process.version, '19.0.0')
-test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
+const isNodeVersionGte1819 = semver.gte(process.version, '18.19.0')
+test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v18.19.x', { skip: isNodeVersionGte1819 }, t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -243,7 +243,7 @@ test('Current opened connection should continue to work after closing and return
   })
 })
 
-test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, t => {
+test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v18.19.x', { skip: !isNodeVersionGte1819 }, t => {
   t.plan(4)
   const fastify = Fastify({
     return503OnClosing: false,

@@ -22,12 +22,12 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)
-  expectType<(key: string, value: any) => FastifyReply>(reply.header)
-  expectType<(values: {[key: string]: any}) => FastifyReply>(reply.headers)
-  expectType<(key: string) => number | string | string[] | undefined>(reply.getHeader)
-  expectType<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
-  expectType<(key: string) => FastifyReply>(reply.removeHeader)
-  expectType<(key: string) => boolean>(reply.hasHeader)
+  expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
+  expectAssignable<(values: {[key: string]: any}) => FastifyReply>(reply.headers)
+  expectAssignable<(key: string) => number | string | string[] | undefined>(reply.getHeader)
+  expectAssignable<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
+  expectAssignable<(key: string) => FastifyReply>(reply.removeHeader)
+  expectAssignable<(key: string) => boolean>(reply.hasHeader)
   expectType<{(statusCode: number, url: string): FastifyReply; (url: string): FastifyReply }>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
@@ -162,3 +162,22 @@ server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async fu
     999: false
   })
 })
+
+const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
+  // accept is a header provided by @types/node
+  reply.getHeader('accept')
+  reply.getHeaders().accept // eslint-disable-line no-unused-expressions
+  reply.hasHeader('accept')
+  reply.header('accept', 'test')
+  reply.headers({ accept: 'test' })
+  reply.removeHeader('accept')
+
+  // x-fastify-test is not a header provided by @types/node
+  // and should not result in a typing error
+  reply.getHeader('x-fastify-test')
+  reply.getHeaders()['x-fastify-test'] // eslint-disable-line no-unused-expressions
+  reply.hasHeader('x-fastify-test')
+  reply.header('x-fastify-test', 'test')
+  reply.headers({ 'x-fastify-test': 'test' })
+  reply.removeHeader('x-fastify-test')
+}

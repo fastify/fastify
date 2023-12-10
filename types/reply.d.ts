@@ -6,7 +6,7 @@ import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
 import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
-import { CodeToReplyKey, ContextConfigDefault, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
+import { CodeToReplyKey, ContextConfigDefault, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes, HttpHeader } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -48,15 +48,12 @@ export interface FastifyReply<
   statusCode: number;
   sent: boolean;
   send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  getHeader(key: string): number | string | string[] | undefined;
-  getHeaders(): {
-    // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
-    [key: string]: number | string | string[] | undefined;
-  };
-  removeHeader(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  hasHeader(key: string): boolean;
+  header(key: HttpHeader, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  headers(values: Partial<Record<HttpHeader, number | string | string[] | undefined>>): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  getHeader(key: HttpHeader): number | string | string[] | undefined;
+  getHeaders(): Record<HttpHeader, number | string | string[] | undefined>;
+  removeHeader(key: HttpHeader): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  hasHeader(key: HttpHeader): boolean;
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

@@ -47,7 +47,7 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
-const warning = require('./lib/warnings')
+const { FSTDEP009 } = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
@@ -152,7 +152,7 @@ function fastify (options) {
 
   let constraints = options.constraints
   if (options.versioning) {
-    warning.emit('FSTDEP009')
+    FSTDEP009()
     constraints = {
       ...constraints,
       version: {

@@ -663,14 +663,15 @@ test('Vary header check (for documentation example)', t => {
 test('Should trigger a warning when a versioned route is registered via version option', t => {
   t.plan(4)
 
-  function onWarning (code) {
-    t.equal(code, 'FSTDEP008')
-  }
-  const warning = {
-    emit: onWarning
+  function onWarning () {
+    t.pass('FSTDEP008 has been emitted')
   }
 
-  const route = proxyquire('../lib/route', { './warnings': warning })
+  const route = proxyquire('../lib/route', {
+    './warnings': {
+      FSTDEP008: onWarning
+    }
+  })
   const fastify = proxyquire('..', { './lib/route.js': route })({ exposeHeadRoutes: false })
 
   fastify.route({

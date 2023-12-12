@@ -151,6 +151,9 @@ t.test('#5180 - preClose should be called before closing secondary server', t =>
     for (const addr of addresses) {
       if (addr.family !== mainServerAddress.family) {
         secondaryAddress = addr
+        secondaryAddress.address = secondaryAddress.family === 'IPv6'
+          ? `[${secondaryAddress.address}]`
+          : secondaryAddress.address
         break
       }
     }

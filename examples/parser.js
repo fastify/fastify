@@ -3,6 +3,11 @@
 const fastify = require('../fastify')({ logger: true })
 const jsonParser = require('fast-json-body')
 const querystring = require('node:querystring')
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const busboy = require('busboy');
+
 
 // Handled by fastify
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/json' http://localhost:3000/
@@ -18,7 +23,7 @@ fastify.addContentTypeParser('application/jsoff', function (request, payload, do
 fastify.addContentTypeParser('application/x-www-form-urlencoded', function (request, payload, done) {
   let body = ''
   payload.on('data', function (data) {
-    body += data
+    body += data.toString();
   })
   payload.on('end', function () {
     try {
@@ -30,6 +35,38 @@ fastify.addContentTypeParser('application/x-www-form-urlencoded', function (requ
   })
   payload.on('error', done)
 })
+
+// curl -X POST -F 'field1=value1' -F 'field2=value2' -F 'file=@/path/to/your/file' -H'Content-type: multipart/form-data' http://localhost:3000/
+// curl -X POST -F 'username=xxx' -F 'bio=xxxxxx' -F 'file_img=@/home/user/img.jpg' -H'Content-type: multipart/form-data' http://localhost:3000/
+fastify.addContentTypeParser('multipart/form-data', (request, payload, done) => {
+  const data = {};
+  const bb = busboy({ headers: request.headers });
+
+  bb.on('file', (fieldname, file, filename, encoding, mimetype) => {
+    console.log(`File [${fieldname}]: filename: ${filename}, encoding: ${encoding}, mimetype: ${mimetype}`);
+    const saveTo = path.join(os.tmpdir(), path.basename(filename));
+    file.pipe(fs.createWriteStream(saveTo));
+    data[fieldname] = {
+      filename,
+      encoding,
+      mimetype,
+      savedTo: saveTo
+    };
+  });
+
+  bb.on('field', (fieldname, val) => {
+    console.log(`Field [${fieldname}]: value: ${val}`);
+    data[fieldname] = val;
+  });
+
+  bb.on('finish', () => {
+    done(null, data);
+  });
+
+  bb.on('error', error => done(error));
+
+  payload.pipe(bb);
+});
 
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/vnd.custom+json' http://localhost:3000/
 fastify.addContentTypeParser(/^application\/.+\+json$/, { parseAs: 'string' }, fastify.getDefaultJsonParser('error', 'ignore'))

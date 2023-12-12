@@ -19,7 +19,7 @@ const {
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const warning = require('../../lib/warnings')
+const { FSTDEP019, FSTDEP010 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -1466,14 +1466,13 @@ test('should emit deprecation warning when trying to modify the reply.sent prope
   t.plan(4)
   const fastify = Fastify()
 
-  const deprecationCode = 'FSTDEP010'
-  warning.emitted.delete(deprecationCode)
+  FSTDEP010.emitted = false
 
   process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, deprecationCode)
+    t.equal(warning.code, FSTDEP010.code)
   }
 
   fastify.get('/', (req, reply) => {
@@ -1494,14 +1493,13 @@ test('should emit deprecation warning when trying to use the reply.context.confi
   t.plan(4)
   const fastify = Fastify()
 
-  const deprecationCode = 'FSTDEP019'
-  warning.emitted.delete(deprecationCode)
+  FSTDEP019.emitted = false
 
   process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, deprecationCode)
+    t.equal(warning.code, FSTDEP019.code)
   }
 
   fastify.get('/', (req, reply) => {

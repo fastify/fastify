@@ -60,7 +60,7 @@ fastify.addContentTypeParser('multipart/form-data', (request, payload, done) => 
 
   bb.on('finish', () => {
     done(null, data)
-  });
+  })
 
   bb.on('error', error => done(error))
 

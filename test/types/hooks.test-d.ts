@@ -14,7 +14,7 @@ import fastify, {
   RegisterOptions,
   RouteOptions
 } from '../../fastify'
-import { RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
+import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 
 const server = fastify()
@@ -391,6 +391,129 @@ server.route<RouteGenericInterface, CustomContextConfig>({
     expectType<CustomContextConfigWithDefault>(reply.context.config)
   }
 })
+
+server.route({
+  method: 'GET',
+  url: '/',
+  handler: (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onRequest: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<HookHandlerDoneFunction>(done)
+  },
+  onRequestAbort: (request, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<HookHandlerDoneFunction>(done)
+  },
+  preParsing: (request, reply, payload, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<RequestPayload>(payload)
+    expectType<<TError extends Error = FastifyError>(err?: TError | null | undefined, res?: RequestPayload | undefined) => void>(done)
+  },
+  preValidation: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<HookHandlerDoneFunction>(done)
+  },
+  preHandler: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<HookHandlerDoneFunction>(done)
+  },
+  preSerialization: (request, reply, payload, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<unknown>(payload)
+    expectType<DoneFuncWithErrOrRes>(done)
+  },
+  onSend: (request, reply, payload, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<unknown>(payload)
+    expectType<DoneFuncWithErrOrRes>(done)
+  },
+  onResponse: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<HookHandlerDoneFunction>(done)
+  },
+  onTimeout: (request, reply, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<HookHandlerDoneFunction>(done)
+  },
+  onError: (request, reply, error, done) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<FastifyError>(error)
+    expectType<() => void>(done)
+  }
+})
+
+server.get('/', {
+  onRequest: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onRequestAbort: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+  },
+  preParsing: async (request, reply, payload) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<RequestPayload>(payload)
+  },
+  preValidation: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preHandler: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  preSerialization: async (request, reply, payload) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<unknown>(payload)
+  },
+  onSend: async (request, reply, payload) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<unknown>(payload)
+  },
+  onResponse: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onTimeout: async (request, reply) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+  },
+  onError: async (request, reply, error) => {
+    expectType<FastifyRequest>(request)
+    expectType<FastifyReply>(reply)
+    expectType<FastifyError>(error)
+  }
+}, async (request, reply) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+})
+
+// TODO: Should throw errors
+// expectError(server.get('/', { onRequest: async (request, reply, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { onRequestAbort: async (request, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { preParsing: async (request, reply, payload, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { preValidation: async (request, reply, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { preHandler: async (request, reply, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { preSerialization: async (request, reply, payload, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { onSend: async (request, reply, payload, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { onResponse: async (request, reply, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { onTimeout: async (request, reply, done) => {} }, async (request, reply) => {}))
+// expectError(server.get('/', { onError: async (request, reply, error, done) => {} }, async (request, reply) => {}))
 
 server.addHook('preClose', function (done) {
   expectType<FastifyInstance>(this)

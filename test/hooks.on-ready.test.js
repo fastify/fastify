@@ -35,6 +35,22 @@ t.test('onReady should be called in order', t => {
   fastify.ready(err => t.error(err))
 })
 
+t.test('onReady should be called once', async (t) => {
+  const app = Fastify()
+  let counter = 0
+
+  app.addHook('onReady', async function () {
+    counter++
+  })
+
+  const promises = [1, 2, 3, 4, 5].map((id) => app.ready().then(() => id))
+
+  const result = await Promise.race(promises)
+
+  t.strictSame(result, 1, 'Should resolve in order')
+  t.equal(counter, 1, 'Should call onReady only once')
+})
+
 t.test('async onReady should be called in order', async t => {
   t.plan(7)
   const fastify = Fastify()

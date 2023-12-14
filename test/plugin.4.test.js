@@ -416,19 +416,26 @@ test('hasPlugin returns true when using encapsulation', async t => {
 })
 
 test('registering plugins with mixed style should return a warning', async t => {
-  t.plan(4)
+  t.plan(12)
 
+  const pluginNames = ['error-plugin', 'anonymous', 'anotherPlugin', 'anotherPluginNamed']
+
+  const oldWarnings = process.listeners('warning')
+  process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
+    t.match(warning.message, new RegExp(`.*${pluginNames.shift()} plugin being registered mixes async and callback styles.*`))
     t.equal(warning.name, 'FastifyWarning')
     t.equal(warning.code, 'FSTWRN002')
   }
+  t.teardown(() => {
+    process.removeListener('warning', onWarning)
+    for (const warning of oldWarnings) {
+      process.on('warning', warning)
+    }
+  })
 
   const fastify = Fastify()
-
-  const anonymousPlugin = async (app, opts, done) => {
-    done()
-  }
 
   const pluginName = 'error-plugin'
   const errorPlugin = async (app, opts, done) => {
@@ -437,8 +444,20 @@ test('registering plugins with mixed style should return a warning', async t => 
 
   const namedPlugin = fp(errorPlugin, { name: pluginName })
 
+  async function anotherPlugin (app, opts, done) {
+    done()
+  }
+
+  const anotherPluginNamed = async function (app, opts, done) {
+    done()
+  }
+
   fastify.register(namedPlugin)
-  fastify.register(anonymousPlugin)
+  fastify.register(async (app, opts, done) => {
+    done()
+  })
+  fastify.register(anotherPlugin)
+  fastify.register(anotherPluginNamed)
 
   await fastify.ready()
 })

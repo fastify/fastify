@@ -444,7 +444,7 @@ expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: {
-    // constraints value should accept any value 
+    // constraints value should accept any value
     number: 12,
     date: new Date(),
     boolean: true,

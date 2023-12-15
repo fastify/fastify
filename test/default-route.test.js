@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const warning = require('../lib/warnings')
+const { FSTDEP014 } = require('../lib/warnings')
 
 // Silence the standard warning logs. We will test the messages explicitly.
 process.removeAllListeners('warning')
@@ -19,12 +19,12 @@ test('setDefaultRoute should emit a deprecation warning', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, 'FSTDEP014')
+    t.equal(warning.code, FSTDEP014.code)
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTDEP014', false)
+    FSTDEP014.emitted = false
   })
 
   fastify.setDefaultRoute(defaultRoute)
@@ -38,12 +38,12 @@ test('getDefaultRoute should emit a deprecation warning', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, 'FSTDEP014')
+    t.equal(warning.code, FSTDEP014.code)
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTDEP014', false)
+    FSTDEP014.emitted = false
   })
 
   fastify.getDefaultRoute()

@@ -178,14 +178,15 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
 test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', t => {
   t.plan(7)
 
-  function onWarning (code) {
-    t.equal(code, 'FSTDEP007')
-  }
-  const warning = {
-    emit: onWarning
+  function onWarning () {
+    t.pass('warning emitted')
   }
 
-  const route = proxyquire('../lib/route', { './warnings': warning })
+  const route = proxyquire('../lib/route', {
+    './warnings': {
+      FSTDEP007: onWarning
+    }
+  })
   const fastify = proxyquire('..', { './lib/route.js': route })()
 
   const resBuffer = Buffer.from('I am a coffee!')

@@ -1,4 +1,5 @@
 import { FastifyError } from '@fastify/error'
+import { ConstraintStrategy } from 'find-my-way'
 import { FastifyRequestContext } from './context'
 import { onErrorMetaHookHandler, onRequestAbortMetaHookHandler, onRequestMetaHookHandler, onResponseMetaHookHandler, onSendMetaHookHandler, onTimeoutMetaHookHandler, preHandlerMetaHookHandler, preParsingMetaHookHandler, preSerializationMetaHookHandler, preValidationMetaHookHandler } from './hooks'
 import { FastifyInstance } from './instance'
@@ -12,7 +13,6 @@ import {
   ResolveFastifyReplyReturnType
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
-import { ConstraintStrategy } from 'find-my-way'
 
 export interface FastifyRouteConfig {
   url: string;
@@ -23,6 +23,12 @@ export interface RouteGenericInterface extends RequestGenericInterface, ReplyGen
 
 export type RouteConstraintType = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
   deriveConstraint<Context>(req: RawRequestDefaultExpression<RawServerDefault>, ctx?: Context, done?: (err: Error, ...args: any) => any): any,
+}
+
+export interface RouteConstraint {
+  version?: string
+  host?: RegExp | string
+  [name: string]: unknown
 }
 
 /**
@@ -48,7 +54,7 @@ export interface RouteShorthandOptions<
   logLevel?: LogLevel;
   config?: Omit<FastifyRequestContext<ContextConfig>['config'], 'url' | 'method'>;
   version?: string;
-  constraints?: { version: string } | {host: RegExp | string} | {[name: string]: RouteConstraintType },
+  constraints?: RouteConstraint,
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,

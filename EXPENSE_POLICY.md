@@ -3,6 +3,14 @@
 Fastify is an OpenJS Foundation project, and it accepts donations through the
 [Open Collective](https://opencollective.com/fastify/) platform to enhance the project and support the community.
 
+This Collective is run by and for the benefit of the independent contributors to the Fastify open source software project.
+This Collective is not endorsed or administered by OpenJS Foundation, Inc. (the “OpenJS Foundation”),
+the OpenJS Foundation does not receive and has no control over any funds contributed, the OpenJS Foundation
+does not direct or otherwise supervise the actions of any contributor to the Fastify project,
+and all donations made will be expended for the private benefit of or otherwise to reimburse individuals
+that do not have an employer/employee, contractor, or other agency relationship with the OpenJS Foundation.
+The Fastify marks used herein are used under license from the OpenJS Foundation for the benefit of the open source software community.
+
 This document outlines the process for requesting reimbursement or an invoice for expenses.
 
 ## Reimbursement

@@ -1,15 +1,20 @@
 # Expense Policy
 
 Fastify is an OpenJS Foundation project, and it accepts donations through the
-[Open Collective](https://opencollective.com/fastify/) platform to enhance the project and support the community.
+[Open Collective](https://opencollective.com/fastify/) platform to enhance the
+project and support the community.
 
-This Collective is run by and for the benefit of the independent contributors to the Fastify open source software project.
-This Collective is not endorsed or administered by OpenJS Foundation, Inc. (the “OpenJS Foundation”),
-the OpenJS Foundation does not receive and has no control over any funds contributed, the OpenJS Foundation
-does not direct or otherwise supervise the actions of any contributor to the Fastify project,
-and all donations made will be expended for the private benefit of or otherwise to reimburse individuals
-that do not have an employer/employee, contractor, or other agency relationship with the OpenJS Foundation.
-The Fastify marks used herein are used under license from the OpenJS Foundation for the benefit of the open source software community.
+This Collective is run by and for the benefit of the independent contributors to
+the Fastify open source software project.
+This Collective is not endorsed or administered by OpenJS Foundation, Inc.
+(the “OpenJS Foundation”), the OpenJS Foundation does not receive and has
+no control over any funds contributed, the OpenJS Foundation does not direct or
+otherwise supervise the actions of any contributor to the Fastify project,
+and all donations made will be expended for the private benefit of or otherwise
+to reimburse individuals that do not have an employer/employee, contractor, or
+other agency relationship with the OpenJS Foundation.
+The Fastify marks used herein are used under license from the OpenJS Foundation
+for the benefit of the open source software community.
 
 This document outlines the process for requesting reimbursement or an invoice for expenses.
 
@@ -21,14 +26,15 @@ Reimbursement is applicable for expenses already paid, such as:
 - Gadgets
 - Hosting
 
-**Before making any purchases**, initiate a [new discussion](https://github.com/orgs/fastify/discussions) in the `fastify` organization with the following information:
+**Before making any purchases**, initiate a [new discussion](https://github.com/orgs/fastify/discussions)
+in the `fastify` organization with the following information:
 
 - What is needed
 - Why it is needed
 - Cost
 - Deadline
 
-Once the discussion is approved by a Lead maintainer and with no unresolved objections,
+Once the discussion is approved by a lead maintainer and with no unresolved objections,
 the purchase can proceed, and an expense can be submitted to the [Open Collective][submit].
 This process takes a minimum of 3 business days from the request to allow time for discussion approval.
 
@@ -46,8 +52,8 @@ Refer to the [Open Collective documentation][openc_docs] for details.
 
 ### Adding a bounty to an issue
 
-Issues become eligible for a bounty when the Core Team adds the `bounty` label,
-with the amount determined by the Core Team based on `estimated hours * rate` (suggested $50 per hour).
+Issues become eligible for a bounty when the core team adds the `bounty` label,
+with the amount determined by the core team based on `estimated hours * rate` (suggested $50 per hour).
 
 > Example: If the estimated time to fix the issue is 2 hours, the bounty will be $100.
 
@@ -68,18 +74,18 @@ For discussions on bounties or determining amounts, open a [new discussion](http
 
 ### Outstanding contributions
 
-The Lead Team can decide to add a bounty to an issue or PR not labeled as `bounty` if the contribution is outstanding.
+The lead team can decide to add a bounty to an issue or PR not labeled as `bounty` if the contribution is outstanding.
 
 ### Claiming a bounty
 
 To claim a bounty:
 
 - Submit a PR that fixes the issue
-- If multiple submissions exist, a Core Member will choose the best solution
+- If multiple submissions exist, a core member will choose the best solution
 - Once merged, the PR author can claim the bounty by:
   - Submitting an expense to the [Open Collective][submit] with the PR link
   - Adding a comment on the PR with a link to their Open Collective expense to ensure the claimant is the issue resolver
-- The expense will be validated by a Lead maintainer and then the payment will be processed by Open Collective
+- The expense will be validated by a lead maintainer and then the payment will be processed by Open Collective
 
 If the Open Collective budget is insufficient, the expense will be rejected.  
 Unclaimed bounties are available for other issues.

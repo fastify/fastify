@@ -35,6 +35,7 @@ There are a few basic ground-rules for contributors:
 1. A lead maintainer must merge SemVer-major changes in this repository.
 1. In case it is not possible to reach consensus in a pull-request, the decision
    is left to the lead maintainer's team.
+1. Read and adhere to the [EXPENSE POLICY](./EXPENSE_POLICY.md).
 
 ### Fastify previous versions
 
@@ -101,12 +102,14 @@ the following tasks:
 4. Open a pull request to
    [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) adding
    yourself to the
-   [team.yml](https://github.com/fastify/website/blob/HEAD/src/website/data/team.yml)
+   [team.yml](https://github.com/fastify/website/blob/HEAD/static/data/team.yml)
    file. This list is also sorted alphabetically so make sure to add your name
    in the proper order. Use your GitHub profile icon for the `picture:` field.
 5. The person that does the onboarding must add you to the [npm
    org](https://www.npmjs.com/org/fastify), so that you can help maintaining the
    official plugins.
+6. Optionally, the person can ask to the Open Collective a admins (lead team) to
+   figure out as a collaborator in the Fastify's Open Collective page.
 
 ### Offboarding Collaborators
 
@@ -121,7 +124,7 @@ person that did the onboarding must:
   2. Open a pull request to
      [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) and move
      themselves to the *Past Collaborators* section in the
-     [team.yml](https://github.com/fastify/website/blob/HEAD/src/website/data/team.yml)
+     [team.yml](https://github.com/fastify/website/blob/HEAD/static/data/team.yml)
      file.
 
 The person that did the onboarding must:
@@ -131,6 +134,7 @@ The person that did the onboarding must:
 3. Remove the collaborator from the [npm
    org](https://www.npmjs.com/org/fastify).
 4. Remove the collaborator from the Azure team.
+5. Remove the collaborator from the Open Collective members.
 -----------------------------------------
 
 <a id="developers-certificate-of-origin"></a>

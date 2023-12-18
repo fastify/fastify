@@ -108,7 +108,7 @@ the following tasks:
 5. The person that does the onboarding must add you to the [npm
    org](https://www.npmjs.com/org/fastify), so that you can help maintaining the
    official plugins.
-6. Optionally, the person can ask to the Open Collective a admins (lead team) to
+6. Optionally, the person can ask to the Open Collective admins (lead team) to
    figure out as a collaborator in the Fastify's Open Collective page.
 
 ### Offboarding Collaborators

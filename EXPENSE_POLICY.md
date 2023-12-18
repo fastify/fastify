@@ -16,6 +16,8 @@ other agency relationship with the OpenJS Foundation.
 The Fastify marks used herein are used under license from the OpenJS Foundation
 for the benefit of the open source software community.
 
+The admins of the Fastify Collective are the [lead maintainers](./GOVERNANCE.md) of the project.
+
 This document outlines the process for requesting reimbursement or an invoice
 for expenses.
 

@@ -1,0 +1,9 @@
+node-arg:
+  - '--allow-natives-syntax'
+
+exclude:
+  - 'test/**/*.ts'
+  - 'test/bundler/**/*.js'
+
+files:
+  - 'test/**/*.test.js'

@@ -18,7 +18,7 @@ Fastify Lead Maintainers are the organization owners.
 They are the only members of the `@fastify/leads` team. The Lead
 Maintainers are the curator of the Fastify project and their key responsibility
 is to issue releases of Fastify and its dependencies.
-They manage the [Open Collective](./EXPENSE_POLICY.md) funs and are responsible
+They manage the [Open Collective](./EXPENSE_POLICY.md) funds and are responsible
 for approving expenses and invoices.
 
 ## Collaborators

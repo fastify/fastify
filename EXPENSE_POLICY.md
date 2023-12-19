@@ -7,8 +7,8 @@ project and support the community.
 This Collective is run by and for the benefit of the independent contributors to
 the Fastify open source software project.
 This Collective is not endorsed or administered by OpenJS Foundation, Inc.
-(the “OpenJS Foundation”), the OpenJS Foundation does not receive and has
-no control over any funds contributed, the OpenJS Foundation does not direct or
+(the “OpenJS Foundation”). The OpenJS Foundation does not receive or have
+control over any funds contributed. The OpenJS Foundation does not direct or
 otherwise supervise the actions of any contributor to the Fastify project,
 and all donations made will be expended for the private benefit of or otherwise
 to reimburse individuals that do not have an employer/employee, contractor, or
@@ -43,7 +43,7 @@ the purchase can proceed, and an expense can be submitted to the [Open Collectiv
 This process takes a minimum of 3 business days from the request to allow time for
 discussion approval.
 
-The discussion helps prevent misunderstandings and ensures the expense isn't rejected.
+The discussion helps prevent misunderstandings and ensures the expense is not rejected.
 As a project under the OpenJS Foundation, Fastify benefits from the Foundation's
 resources, including servers, domains, and [travel funds](https://github.com/openjs-foundation/community-fund/tree/main/programs/travel-fund).
 

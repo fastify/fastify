@@ -1536,6 +1536,10 @@ set it to 500 before calling the error handler.
 > `setErrorHandler` will ***not*** catch any error inside
 > an `onResponse` hook because the response has already been sent to the client.
 
+> **Note** 
+> `setErrorHandler` will ***not*** catch not found (404) errors. See
+> [`setNotFoundHandler`](#set-not-found-handler) instead.
+
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
   // Log error

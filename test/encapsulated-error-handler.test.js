@@ -48,3 +48,94 @@ test('onError hook nested', async t => {
   const res = await fastify.inject('/encapsulated')
   t.equal(res.json().message, 'wrapped')
 })
+
+// See https://github.com/fastify/fastify/issues/5220
+test('encapuslates an error handler, for errors thrown in hooks', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.register(async function (fastify) {
+    fastify.setErrorHandler(function a (err) {
+      t.equal(err.message, 'from_hook')
+      throw new Error('from_inner')
+    })
+    fastify.addHook('onRequest', async () => { throw new Error('from_hook') })
+    fastify.get('/encapsulated', async () => {})
+  })
+
+  fastify.setErrorHandler(function b (err) {
+    t.equal(err.message, 'from_inner')
+    throw new Error('from_outer')
+  })
+
+  const res = await fastify.inject('/encapsulated')
+  t.equal(res.json().message, 'from_outer')
+})
+
+// See https://github.com/fastify/fastify/issues/5220
+test('encapuslates many synchronous error handlers that rethrow errors', { only: true }, async t => {
+  const DEPTH = 100
+  t.plan(DEPTH + 2)
+
+  const createNestedRoutes = (fastify, depth) => {
+    if (depth < 0) {
+      throw new Error('Expected depth >= 0')
+    } else if (depth === 0) {
+      fastify.setErrorHandler(function a (err) {
+        t.equal(err.message, 'from_route')
+        throw new Error(`from_handler_${depth}`)
+      })
+      fastify.get('/encapsulated', async () => { throw new Error('from_route') })
+    } else {
+      fastify.setErrorHandler(function d (err) {
+        t.equal(err.message, `from_handler_${depth - 1}`)
+        throw new Error(`from_handler_${depth}`)
+      })
+
+      fastify.register(async function (fastify) {
+        createNestedRoutes(fastify, depth - 1)
+      })
+    }
+  }
+
+  const fastify = Fastify()
+  createNestedRoutes(fastify, DEPTH)
+
+  const res = await fastify.inject('/encapsulated')
+  t.equal(res.json().message, `from_handler_${DEPTH}`)
+})
+
+// See https://github.com/fastify/fastify/issues/5220
+// This was not failing previously, but we want to make sure the behavior continues to work in the same way across async and sync handlers
+// Plus, the current setup is somewhat fragile to tweaks to wrapThenable as that's what retries (by calling res.send(err) again)
+test('encapuslates many asynchronous error handlers that rethrow errors', { only: true }, async t => {
+  const DEPTH = 100
+  t.plan(DEPTH + 2)
+
+  const createNestedRoutes = (fastify, depth) => {
+    if (depth < 0) {
+      throw new Error('Expected depth >= 0')
+    } else if (depth === 0) {
+      fastify.setErrorHandler(async function a (err) {
+        t.equal(err.message, 'from_route')
+        throw new Error(`from_handler_${depth}`)
+      })
+      fastify.get('/encapsulated', async () => { throw new Error('from_route') })
+    } else {
+      fastify.setErrorHandler(async function m (err) {
+        t.equal(err.message, `from_handler_${depth - 1}`)
+        throw new Error(`from_handler_${depth}`)
+      })
+
+      fastify.register(async function (fastify) {
+        createNestedRoutes(fastify, depth - 1)
+      })
+    }
+  }
+
+  const fastify = Fastify()
+  createNestedRoutes(fastify, DEPTH)
+
+  const res = await fastify.inject('/encapsulated')
+  t.equal(res.json().message, `from_handler_${DEPTH}`)
+})

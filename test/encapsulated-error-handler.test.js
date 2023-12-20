@@ -73,7 +73,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
 })
 
 // See https://github.com/fastify/fastify/issues/5220
-test('encapuslates many synchronous error handlers that rethrow errors', { only: true }, async t => {
+test('encapuslates many synchronous error handlers that rethrow errors', async t => {
   const DEPTH = 100
   t.plan(DEPTH + 2)
 
@@ -108,7 +108,7 @@ test('encapuslates many synchronous error handlers that rethrow errors', { only:
 // See https://github.com/fastify/fastify/issues/5220
 // This was not failing previously, but we want to make sure the behavior continues to work in the same way across async and sync handlers
 // Plus, the current setup is somewhat fragile to tweaks to wrapThenable as that's what retries (by calling res.send(err) again)
-test('encapuslates many asynchronous error handlers that rethrow errors', { only: true }, async t => {
+test('encapuslates many asynchronous error handlers that rethrow errors', async t => {
   const DEPTH = 100
   t.plan(DEPTH + 2)
 

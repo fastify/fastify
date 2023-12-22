@@ -1,5 +1,5 @@
 import { FastifyError } from '@fastify/error'
-import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
+import { ConstraintStrategy, FindResult, HTTPVersion } from 'find-my-way'
 import * as http from 'http'
 import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
@@ -214,6 +214,18 @@ export interface FastifyInstance<
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
 
   hasRoute<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
+
+  findRoute<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): FindResult<FindMyWayVersion<RawServer>>;
+
+  validateRouteParams<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,

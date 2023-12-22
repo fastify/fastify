@@ -405,3 +405,11 @@ dependencies:
 - ISC
 - BSD-3-Clause
 - BSD-2-Clause
+
+<h2>🤝 Contributors</h2>
+
+Thanks go to these wonderful people:
+
+<a href="https://github.com/fastify/fastify/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=fastify/fastify" />
+</a>

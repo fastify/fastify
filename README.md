@@ -406,7 +406,7 @@ dependencies:
 - BSD-3-Clause
 - BSD-2-Clause
 
-<h2>🤝 Contributors</h2>
+## Contributors
 
 Thanks go to these wonderful people:
 

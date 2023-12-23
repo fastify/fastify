@@ -2,9 +2,10 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
+const split = require('split2')
 
 test('encapuslates an error handler', async t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {
@@ -17,6 +18,30 @@ test('encapuslates an error handler', async t => {
 
   fastify.setErrorHandler(async function b (err) {
     t.equal(err.message, 'caught')
+    t.notOk(err.cause)
+    throw new Error('wrapped')
+  })
+
+  const res = await fastify.inject('/encapsulated')
+  t.equal(res.json().message, 'wrapped')
+})
+
+// See discussion in https://github.com/fastify/fastify/pull/5222#discussion_r1432573655
+test('bubbles up cause if error handler is synchronous', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.register(async function (fastify) {
+    fastify.setErrorHandler(function a (err) {
+      t.equal(err.message, 'kaboom')
+      throw new Error('caught')
+    })
+    fastify.get('/encapsulated', async () => { throw new Error('kaboom') })
+  })
+
+  fastify.setErrorHandler(async function b (err) {
+    t.equal(err.message, 'caught')
+    t.equal(err.cause?.message, 'kaboom')
     throw new Error('wrapped')
   })
 
@@ -138,4 +163,39 @@ test('encapuslates many asynchronous error handlers that rethrow errors', async 
 
   const res = await fastify.inject('/encapsulated')
   t.equal(res.json().message, `from_handler_${DEPTH}`)
+})
+
+test('handles error handler throwing a frozen error', async t => {
+  t.plan(4)
+
+  const logStream = split(JSON.parse)
+  const messages = []
+  logStream.on('data', message => {
+    messages.push(message)
+  })
+
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'info'
+    }
+  })
+  fastify.register(async function (fastify) {
+    fastify.setErrorHandler(function a (err) {
+      t.equal(err.message, 'kaboom')
+      const e = new Error('caught')
+      Object.freeze(e)
+      throw e
+    })
+    fastify.get('/encapsulated', async () => { throw new Error('kaboom') })
+  })
+
+  fastify.setErrorHandler(async function b (err) {
+    t.equal(err.message, 'caught')
+    throw new Error('wrapped')
+  })
+
+  const res = await fastify.inject('/encapsulated')
+  t.equal(res.json().message, 'wrapped')
+  t.ok(messages.find(message => message.message?.includes('Failed to assign child error')))
 })

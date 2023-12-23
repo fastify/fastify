@@ -218,7 +218,9 @@ test('handles error handler throwing an error already with a cause', async t => 
   fastify.register(async function (fastify) {
     fastify.setErrorHandler(function a (err) {
       t.equal(err.message, 'kaboom')
-      throw new Error('caught', { cause: new Error('existing cause') })
+      const e = new Error('caught')
+      e.cause = new Error('existing cause')
+      return e
     })
     fastify.get('/encapsulated', async () => { throw new Error('kaboom') })
   })

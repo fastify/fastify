@@ -199,3 +199,37 @@ test('handles error handler throwing a frozen error', async t => {
   t.equal(res.json().message, 'wrapped')
   t.ok(messages.find(message => message.message?.includes('Failed to assign child error')))
 })
+
+test('handles error handler throwing an error already with a cause', async t => {
+  t.plan(5)
+
+  const logStream = split(JSON.parse)
+  const messages = []
+  logStream.on('data', message => {
+    messages.push(message)
+  })
+
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'info'
+    }
+  })
+  fastify.register(async function (fastify) {
+    fastify.setErrorHandler(function a (err) {
+      t.equal(err.message, 'kaboom')
+      throw new Error('caught', { cause: new Error('existing cause') })
+    })
+    fastify.get('/encapsulated', async () => { throw new Error('kaboom') })
+  })
+
+  fastify.setErrorHandler(async function b (err) {
+    t.equal(err.message, 'caught')
+    t.equal(err.cause.message, 'existing cause')
+    throw new Error('wrapped')
+  })
+
+  const res = await fastify.inject('/encapsulated')
+  t.equal(res.json().message, 'wrapped')
+  t.ok(messages.find(message => message.message?.includes('Failed to assign child error')))
+})

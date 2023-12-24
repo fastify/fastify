@@ -1,6 +1,7 @@
 'use strict'
 
 const t = require('tap')
+const { Readable } = require('stream')
 const test = t.test
 const Fastify = require('..')
 
@@ -59,7 +60,7 @@ test('code should handle null/undefined/float', t => {
 })
 
 test('code should handle 204', t => {
-  t.plan(8)
+  t.plan(13)
 
   const fastify = Fastify()
 
@@ -70,6 +71,18 @@ test('code should handle 204', t => {
 
   fastify.get('/undefined/204', function (request, reply) {
     reply.status(204).send({ message: 'hello' })
+  })
+
+  fastify.get('/stream/204', function (request, reply) {
+    const stream = new Readable({
+      read () {
+        this.push(null)
+      }
+    })
+    stream.on('end', () => {
+      t.pass('stream ended')
+    })
+    reply.status(204).send(stream)
   })
 
   fastify.inject({
@@ -85,6 +98,16 @@ test('code should handle 204', t => {
   fastify.inject({
     method: 'GET',
     url: '/undefined/204'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 204)
+    t.equal(res.payload, '')
+    t.equal(res.headers['content-length'], undefined)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/stream/204'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 204)

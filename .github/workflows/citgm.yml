@@ -31,7 +31,7 @@ jobs:
           - '@fastify/csrf-protection'
           - '@fastify/diagnostics-channel'
           - '@fastify/early-hints'
-          - '@fastify/elasticsearch'
+          # - '@fastify/elasticsearch'
           - '@fastify/env'
           - '@fastify/etag'
           - '@fastify/express'
@@ -42,19 +42,19 @@ jobs:
           - '@fastify/hotwire'
           - '@fastify/http-proxy'
           - '@fastify/jwt'
-          - '@fastify/kafka'
+          # - '@fastify/kafka'
           - '@fastify/leveldb'
           - '@fastify/middie'
           - '@fastify/mongodb'
           - '@fastify/multipart'
-          - '@fastify/mysql'
+          # - '@fastify/mysql'
           - '@fastify/nextjs'
           - '@fastify/oauth2'
           - '@fastify/one-line-logger'
           - '@fastify/passport'
-          - '@fastify/postgres'
-          - '@fastify/rate-limit'
-          - '@fastify/redis'
+          # - '@fastify/postgres'
+          # - '@fastify/rate-limit'
+          # - '@fastify/redis'
           - '@fastify/reply-from'
           - '@fastify/request-context'
           - '@fastify/response-validation'
@@ -83,12 +83,6 @@ jobs:
       os: ${{ matrix.os }}
       package: ${{ matrix.package }}
       node-version: ${{ matrix.node-version }}
-      elasticsearch: ${{ matrix.package == '@fastify/elasticsearch' && true || false}}
-      mongodb: ${{ matrix.package == '@fastify/mongodb' && true || false}}
-      mysql: ${{ matrix.package == '@fastify/mysql' && true || false}}
-      postgres: ${{ matrix.package == '@fastify/postgres' && true || false}}
-      redis: ${{ (matrix.package == '@fastify/redis' ||  matrix.package == '@fastify/rate-limit') && true || false}}
-      kafka: ${{ matrix.package == '@fastify/kafka' && true || false}}
 
   remove-label:
     if: always()

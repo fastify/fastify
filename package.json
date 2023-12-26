@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "4.25.1",
+  "version": "4.25.2",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -25,7 +25,7 @@
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts && tsd",
-    "test:watch": "npm run unit -- -w --no-coverage-report -R terse",
+    "test:watch": "npm run unit -- --watch --cov --no-coverage-report --reporter=terse",
     "unit": "c8 tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",

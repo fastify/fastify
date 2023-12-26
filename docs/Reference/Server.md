@@ -57,6 +57,7 @@ describes the properties available in that options object.
     - [routing](#routing)
     - [route](#route)
     - [hasRoute](#hasroute)
+    - [findRoute](#findroute)
     - [close](#close)
     - [decorate\*](#decorate)
     - [register](#register)
@@ -1147,6 +1148,28 @@ if (routeExists === false) {
   // add route
 }
 ```
+
+#### findRoute
+<a id="findRoute"></a>
+
+Method to retrieve a route already registered to the internal router. It
+expects an object as the payload. `url` and `method` are mandatory fields. It 
+is possible to also specify `constraints`. 
+The method returns a route object or `null` if the route cannot be found.
+
+```js
+const route = fastify.findRoute({
+  url: '/artists/:artistId',
+  method: 'GET',
+  constraints: { version: '1.0.0' } // optional
+})
+
+if (route !== null) {
+  // perform some route checks
+  console.log(route.params)   // `{artistId: ':artistId'}`
+}
+```
+
 
 #### close
 <a id="close"></a>

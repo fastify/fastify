@@ -589,6 +589,7 @@ export interface FastifyInstance<
     pluginTimeout?: number,
     requestIdHeader?: string | false,
     requestIdLogLabel?: string,
-    http2SessionTimeout?: number
+    http2SessionTimeout?: number,
+    useSemicolonDelimiter?: boolean,
   }>
 }

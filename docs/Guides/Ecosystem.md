@@ -112,8 +112,8 @@ section.
   A simple plugin that enables response validation for Fastify.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
-- [`@fastify/routes-stats`](https://github.com/fastify/fastify-routes-stats) Provide stats
-  for routes using `node:perf_hooks`.
+- [`@fastify/routes-stats`](https://github.com/fastify/fastify-routes-stats)
+  Provide stats for routes using `node:perf_hooks`.
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
   scheduling periodic jobs, based on
   [toad-scheduler](https://github.com/kibertoad/toad-scheduler).

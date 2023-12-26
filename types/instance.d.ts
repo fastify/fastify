@@ -225,12 +225,6 @@ export interface FastifyInstance<
     SchemaCompiler extends FastifySchema = FastifySchema,
   >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): FindResult<FindMyWayVersion<RawServer>>;
 
-  validateRouteParams<
-    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-    ContextConfig = ContextConfigDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema,
-  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
-
   // addHook: overloads
 
   // Lifecycle addHooks

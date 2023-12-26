@@ -288,9 +288,6 @@ function fastify (options) {
     findRoute: function _route (options) {
       return router.findRoute(options)
     },
-    validateRouteParams: function _route (options) {
-      return router.validateRouteParams(options)
-    },
     // expose logger instance
     log: logger,
     // type provider

@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
+const fastifyPlugin = require('fastify-plugin')
 
 test('findRoute should return null when route cannot be found due to a different method', t => {
   t.plan(1)
@@ -45,7 +46,7 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
     method: 'GET',
     url: '/artists/:artistId'
   })
-  t.deepEqual(route.params, { artistId: ':artistId' })
+  t.same(route.params, { artistId: ':artistId' })
 })
 
 test('findRoute should return null when route cannot be found due to a different path', t => {
@@ -83,6 +84,35 @@ test('findRoute should return the route when found', t => {
     url: '/artists/:artistId'
   })
 
-  t.deepEqual(route.params, { artistId: ':artistId' })
-  t.deepEqual(route.store.schema, { params: { artistId: { type: 'integer' } } })
+  t.same(route.params, { artistId: ':artistId' })
+  t.same(route.store.schema, { params: { artistId: { type: 'integer' } } })
+})
+
+test('findRoute should work correctly when used within plugins', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const handler = (req, reply) => reply.send(typeof req.params.artistId)
+  fastify.get('/artists/:artistId', {
+    schema: {
+      params: { artistId: { type: 'integer' } }
+    },
+    handler
+  })
+
+  function validateRoutePlugin (instance, opts, done) {
+    const validateParams = function () {
+      return instance.findRoute({
+        method: 'GET',
+        url: '/artists/:artistId'
+      }) !== null
+    }
+    instance.decorate('validateRoutes', { validateParams })
+    done()
+  }
+
+  fastify.register(fastifyPlugin(validateRoutePlugin))
+
+  fastify.ready(() => {
+    t.equal(fastify.validateRoutes.validateParams(), true)
+  })
 })

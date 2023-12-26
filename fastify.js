@@ -47,7 +47,7 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
-const warning = require('./lib/warnings')
+const { FSTDEP009 } = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
@@ -152,7 +152,7 @@ function fastify (options) {
 
   let constraints = options.constraints
   if (options.versioning) {
-    warning.emit('FSTDEP009')
+    FSTDEP009()
     constraints = {
       ...constraints,
       version: {
@@ -217,7 +217,10 @@ function fastify (options) {
     [kState]: {
       listening: false,
       closing: false,
-      started: false
+      started: false,
+      ready: false,
+      booting: false,
+      readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
@@ -586,25 +589,43 @@ function fastify (options) {
   }
 
   function ready (cb) {
+    if (this[kState].readyPromise !== null) {
+      if (cb != null) {
+        this[kState].readyPromise.then(() => cb(null, fastify), cb)
+        return
+      }
+
+      return this[kState].readyPromise
+    }
+
     let resolveReady
     let rejectReady
 
     // run the hooks after returning the promise
     process.nextTick(runHooks)
 
+    // Create a promise no matter what
+    // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
+    // as well as a flow control mechanism to chain cbs and further
+    // promises
+    this[kState].readyPromise = new Promise(function (resolve, reject) {
+      resolveReady = resolve
+      rejectReady = reject
+    })
+
     if (!cb) {
-      return new Promise(function (resolve, reject) {
-        resolveReady = resolve
-        rejectReady = reject
-      })
+      return this[kState].readyPromise
+    } else {
+      this[kState].readyPromise.then(() => cb(null, fastify), cb)
     }
 
     function runHooks () {
       // start loading
       fastify[kAvvioBoot]((err, done) => {
-        if (err || fastify[kState].started) {
+        if (err || fastify[kState].started || fastify[kState].ready || fastify[kState].booting) {
           manageErr(err)
         } else {
+          fastify[kState].booting = true
           hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
         }
         done()
@@ -619,18 +640,14 @@ function fastify (options) {
         ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
         : err
 
-      if (cb) {
-        if (err) {
-          cb(err)
-        } else {
-          cb(undefined, fastify)
-        }
-      } else {
-        if (err) {
-          return rejectReady(err)
-        }
-        resolveReady(fastify)
+      if (err) {
+        return rejectReady(err)
       }
+
+      resolveReady(fastify)
+      fastify[kState].booting = false
+      fastify[kState].ready = true
+      fastify[kState].promise = null
     }
   }
 

@@ -214,6 +214,18 @@ expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, 
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
+// test after method
+expectAssignable<FastifyInstance>(server.after())
+expectAssignable<FastifyInstance>(server.after((err) => {
+  expectType<Error | null>(err)
+}))
+
+// test ready method
+expectAssignable<FastifyInstance>(server.ready())
+expectAssignable<FastifyInstance>(server.ready((err) => {
+  expectType<Error | null>(err)
+}))
+
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {

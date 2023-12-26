@@ -74,6 +74,20 @@ P.Logger
 
 expectType<P.Logger>(serverWithPino.log)
 
+serverWithPino.route({
+  method: 'GET',
+  url: '/',
+  handler (request) {
+    expectType<P.Logger>(this.log)
+    expectType<P.Logger>(request.log)
+  }
+})
+
+serverWithPino.get('/', function (request) {
+  expectType<P.Logger>(this.log)
+  expectType<P.Logger>(request.log)
+})
+
 const serverWithLogOptions = fastify<
 Server,
 IncomingMessage,

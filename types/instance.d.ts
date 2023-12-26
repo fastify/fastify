@@ -135,7 +135,7 @@ export interface FastifyInstance<
   getSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>;
-  after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  after(afterListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   close(): Promise<undefined>;
   close(closeListener: () => void): undefined;
@@ -167,7 +167,7 @@ export interface FastifyInstance<
   listen(callback: (err: Error | null, address: string) => void): void;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>;
-  ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  ready(readyListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
 
@@ -177,25 +177,25 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     const SchemaCompiler extends FastifySchema = FastifySchema,
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
 
   hasRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

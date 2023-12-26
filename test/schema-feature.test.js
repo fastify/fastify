@@ -6,7 +6,7 @@ const fp = require('fastify-plugin')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
-const warning = require('../lib/warnings')
+const { FSTWRN001 } = require('../lib/warnings')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
@@ -261,12 +261,12 @@ test('Should emit warning if the schema headers is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN001')
+    t.equal(warning.code, FSTWRN001.code)
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTWRN001', false)
+    FSTWRN001.emitted = false
   })
 
   fastify.post('/:id', {
@@ -292,12 +292,12 @@ test('Should emit warning if the schema body is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN001')
+    t.equal(warning.code, FSTWRN001.code)
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTWRN001', false)
+    FSTWRN001.emitted = false
   })
 
   fastify.post('/:id', {
@@ -323,12 +323,12 @@ test('Should emit warning if the schema query is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN001')
+    t.equal(warning.code, FSTWRN001.code)
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTWRN001', false)
+    FSTWRN001.emitted = false
   })
 
   fastify.post('/:id', {
@@ -354,12 +354,12 @@ test('Should emit warning if the schema params is undefined', t => {
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN001')
+    t.equal(warning.code, FSTWRN001.code)
   }
 
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTWRN001', false)
+    FSTWRN001.emitted = false
   })
 
   fastify.post('/:id', {
@@ -390,14 +390,14 @@ test('Should emit a warning for every route with undefined schema', t => {
   // => 3 x 4 assertions = 12 assertions
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN001')
+    t.equal(warning.code, FSTWRN001.code)
     t.equal(runs++, expectedWarningEmitted.shift())
   }
 
   process.on('warning', onWarning)
   t.teardown(() => {
     process.removeListener('warning', onWarning)
-    warning.emitted.set('FSTWRN001', false)
+    FSTWRN001.emitted = false
   })
 
   fastify.get('/undefinedParams/:id', {

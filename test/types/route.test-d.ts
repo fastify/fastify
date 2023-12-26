@@ -448,19 +448,12 @@ expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: {
-    something: {
-      name: 'secret',
-      storage: function () {
-        return {
-          get: (type) => {
-            return null
-          },
-          set: (type, store) => {}
-        }
-      },
-      deriveConstraint: (req, ctx, done) => {},
-      mustMatchWhenDerived: true
-    }
+    // constraints value should accept any value
+    number: 12,
+    date: new Date(),
+    boolean: true,
+    function: () => {},
+    object: { foo: 'bar' }
   }
 }))
 

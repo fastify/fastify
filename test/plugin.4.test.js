@@ -432,7 +432,7 @@ test('registering anonymous plugin with mixed style should throw', async t => {
     t.fail('should throw')
   } catch (error) {
     t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
-    t.equal(error.message, 'The anonymous plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+    t.equal(error.message, 'The anonymousPlugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
   }
 })
 
@@ -445,7 +445,6 @@ test('registering named plugin with mixed style should throw', async t => {
   const errorPlugin = async (app, opts, done) => {
     done()
   }
-
   const namedPlugin = fp(errorPlugin, { name: pluginName })
 
   fastify.register(namedPlugin)

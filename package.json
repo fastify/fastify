@@ -195,7 +195,7 @@
     "avvio": "^8.2.1",
     "fast-content-type-parse": "^1.1.0",
     "fast-json-stringify": "^5.8.0",
-    "find-my-way": "^7.7.0",
+    "find-my-way": "^8.0.0",
     "light-my-request": "^5.11.0",
     "pino": "^8.17.0",
     "process-warning": "^3.0.0",

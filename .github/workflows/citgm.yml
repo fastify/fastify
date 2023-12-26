@@ -1,0 +1,217 @@
+name: CITGM
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  core-plugins:
+    name: CITGM
+    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      elasticsearch:
+        image: ${{ matrix.package == '@fastify/elasticsearch' && 'elasticsearch:8.3.2' || '' }}
+        ports:
+          - '9200:9200'
+          - '9300:9300'
+        env:
+          xpack.security.enabled: false
+          discovery.type: single-node
+        options: >-
+          --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+      zookeeper:
+        image: ${{ matrix.package == '@fastify/kafka' && 'confluentinc/cp-zookeeper:7.4.3' || '' }}
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+        ports:
+          - '2181:2181'
+      kafka:
+        image: ${{ matrix.package == '@fastify/kafka' && 'confluentinc/cp-kafka:7.4.3' || '' }}
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+          KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092'
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+        ports:
+          - '9092:9092'
+        options: >-
+          --link zookeeper
+      postgres:
+        image: ${{ matrix.package == '@fastify/postgres' && 'postgres:11-alpine' || '' }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+      mongo:
+        image: ${{ matrix.package == '@fastify/mongodb' && 'mongo:5' || '' }}
+        ports:
+          - '27017:27017'
+      mysql:
+        image: ${{ matrix.package == '@fastify/mysql' && 'mysql:8.0' || '' }}
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: mysql
+        ports:
+          - '3306:3306'
+        options: >-
+          --health-cmd="mysqladmin ping" --health-interval=10s
+          --health-timeout=5s --health-retries=3
+      redis:
+        image: ${{ (matrix.package == '@fastify/redis' || matrix.package == '@fastify/rate-limit') && 'redis:7' || '' }}
+        ports:
+          - '6379:6379'
+        options: '--entrypoint redis-server'
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - '@fastify/accepts'
+          - '@fastify/accepts-serializer'
+          - '@fastify/any-schema'
+          - '@fastify/auth'
+          - '@fastify/autoload'
+          - '@fastify/awilix'
+          - '@fastify/aws-lambda'
+          - '@fastify/basic-auth'
+          - '@fastify/bearer-auth'
+          - '@fastify/caching'
+          - '@fastify/circuit-breaker'
+          - '@fastify/compress'
+          - '@fastify/cookie'
+          - '@fastify/cors'
+          - '@fastify/csrf-protection'
+          - '@fastify/diagnostics-channel'
+          - '@fastify/early-hints'
+          - '@fastify/elasticsearch'
+          - '@fastify/env'
+          - '@fastify/etag'
+          - '@fastify/flash'
+          - '@fastify/formbody'
+          - '@fastify/funky'
+          - '@fastify/helmet'
+          - '@fastify/hotwire'
+          - '@fastify/http-proxy'
+          - '@fastify/jwt'
+          - '@fastify/kafka'
+          - '@fastify/leveldb'
+          - '@fastify/middie'
+          - '@fastify/mongodb'
+          - '@fastify/multipart'
+          - '@fastify/nextjs'
+          - '@fastify/oauth2'
+          - '@fastify/one-line-logger'
+          - '@fastify/postgres'
+          - '@fastify/rate-limit'
+          - '@fastify/redis'
+          - '@fastify/reply-from'
+          - '@fastify/request-context'
+          - '@fastify/response-validation'
+          - '@fastify/routes'
+          - '@fastify/schedule'
+          - '@fastify/secure-session'
+          - '@fastify/sensible'
+          - '@fastify/session'
+          - '@fastify/soap-client'
+          - '@fastify/static'
+          - '@fastify/swagger'
+          - '@fastify/throttle'
+          - '@fastify/type-provider-json-schema-to-ts'
+          - '@fastify/type-provider-typebox'
+          - '@fastify/under-pressure'
+          - '@fastify/url-data'
+          - '@fastify/view'
+          # - '@fastify/vite'
+          - '@fastify/websocket'
+        node-version: ['20']
+        os: [ubuntu-latest]
+      
+    steps:
+        - name: Check out Fastify
+          uses: actions/checkout@v4
+          with:
+            persist-credentials: false
+
+        - name: Use Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: 'npm'
+            cache-dependency-path: package.json
+
+        - name: Install Dependencies for Fastify
+          run: |
+            npm install --ignore-scripts
+        - name: Npm Link Fastify
+          run: |
+            npm link
+        - name: Determine repository URL of ${{matrix.package}}
+          uses: actions/github-script@v7
+          id: repository-url
+          with:
+            result-encoding: string
+            script: |
+              const response = await fetch('https://registry.npmjs.org/${{matrix.package}}')
+              const data = await response.json()
+              const repositoryUrl = data.repository.url
+              const result = repositoryUrl.match( /.*\/([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+)\.git/)[1]
+              return result
+        - name: Check out ${{matrix.package}}
+          uses: actions/checkout@v4
+          with:
+            repository: ${{ steps.repository-url.outputs.result }}
+            path: dependency
+            persist-credentials: false
+        - name: Install Dependencies for ${{matrix.package}}
+          working-directory: dependency
+          run: |
+            npm install
+        - name: Sym Link Fastify
+          working-directory: dependency
+          run: |
+            npm link fastify
+        - name: PostGres Setup
+          if: ${{ matrix.package == '@fastify/postgres' }}
+          working-directory: dependency
+          run: >
+            npm i node-gyp
+  
+            sudo apt-get install -yqq libpq-dev postgresql-client
+  
+            chmod 600 .pgpass
+  
+            PGPASSFILE=.pgpass psql -h localhost -p ${{
+            job.services.postgres.ports[5432] }} -d postgres -c 'CREATE TABLE
+            users(id serial PRIMARY KEY, username VARCHAR (50) NOT NULL);' -U
+            postgres
+        - name: Run Tests of ${{matrix.package}}
+          working-directory: dependency
+          run: |
+            npm test
+
+  remove-label:
+    if: always()
+    needs: 
+      - core-plugins
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove citgm-core-plugins label
+        uses: octokit/request-action@v2.x
+        id: remove-label
+        with:
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          issue_number: ${{ github.event.pull_request.number }}
+          name: citgm-core-plugins
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          

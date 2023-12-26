@@ -866,7 +866,7 @@ function rewriteUrl (req) {
 + Default `true`
 
 Enabled by default. Fastify uses [find-my-way](https://github.com/delvedor/find-my-way)
-to separates path and query string with ? character. According to
+to separates path and query string with `;` character. According to
 [RFC3986](https://www.rfc-editor.org/rfc/rfc3986#section-3.4), To disable, set
 `useSemicolonDelimiter` to `false`.
 

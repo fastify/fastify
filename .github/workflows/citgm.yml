@@ -45,7 +45,7 @@ jobs:
           # - '@fastify/kafka'
           - '@fastify/leveldb'
           - '@fastify/middie'
-          - '@fastify/mongodb'
+          # - '@fastify/mongodb'
           - '@fastify/multipart'
           # - '@fastify/mysql'
           - '@fastify/nextjs'

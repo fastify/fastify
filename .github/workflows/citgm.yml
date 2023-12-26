@@ -94,6 +94,7 @@ jobs:
     if: always()
     needs: 
       - core-plugins
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Remove citgm-core-plugins label
@@ -106,4 +107,6 @@ jobs:
           name: citgm-core-plugins
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+      - run: "echo Successfully removed label"
+      - run: "echo Could not remove label"
+        if: ${{ failure() }}

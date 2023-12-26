@@ -15,8 +15,12 @@ on:
       os:
         description: 'Operating System'
         required: false
-        type: string
+        type: choice
         default: 'ubuntu-latest'
+        options:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+          - 'macos-latest'
       mongodb:
         description: 'Mongodb'
         required: false

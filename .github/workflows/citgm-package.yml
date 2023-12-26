@@ -211,7 +211,7 @@ jobs:
           run: >
             npm i node-gyp
   
-            sudo apt-get install -yqq libpq-dev postgres-client
+            sudo apt-get install -yqq libpq-dev postgresql-client
   
             chmod 600 .pgpass
   

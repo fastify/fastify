@@ -3,7 +3,9 @@ import * as http from 'http'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
 import { RequestPayload } from '../../types/hooks'
-import { HTTPMethods } from '../../types/utils'
+import { HTTPMethods, RawServerBase, RawServerDefault } from '../../types/utils'
+import { FindResult, HTTPVersion } from 'find-my-way'
+import { FindMyWayFindResult, FindMyWayVersion } from '../../types/instance'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -452,6 +454,13 @@ expectType<boolean>(fastify().hasRoute({
     object: { foo: 'bar' }
   }
 }))
+
+expectType<FindMyWayFindResult<RawServerDefault>>(
+  fastify().findRoute({
+    url: '/',
+    method: 'get'
+  })
+)
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',

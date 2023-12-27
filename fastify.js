@@ -181,7 +181,8 @@ function fastify (options) {
       caseSensitive: options.caseSensitive,
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
-      querystringParser: options.querystringParser
+      querystringParser: options.querystringParser,
+      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
     }
   })
 

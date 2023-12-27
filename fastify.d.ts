@@ -109,6 +109,7 @@ declare namespace fastify {
     allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
     requestIdLogLabel?: string;
+    useSemicolonDelimiter?: boolean,
     jsonShorthand?: boolean;
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,

@@ -181,7 +181,8 @@ function fastify (options) {
       caseSensitive: options.caseSensitive,
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
-      querystringParser: options.querystringParser
+      querystringParser: options.querystringParser,
+      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
     }
   })
 
@@ -284,6 +285,9 @@ function fastify (options) {
     },
     hasRoute: function _route (options) {
       return router.hasRoute.call(this, { options })
+    },
+    findRoute: function _findRoute (options) {
+      return router.findRoute(options)
     },
     // expose logger instance
     log: logger,

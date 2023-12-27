@@ -182,7 +182,7 @@ function fastify (options) {
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
       querystringParser: options.querystringParser,
-      useSemicolonDelimiter: typeof options.useSemicolonDelimiter === 'boolean' ? options.useSemicolonDelimiter : defaultInitOptions.useSemicolonDelimiter
+      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
     }
   })
 

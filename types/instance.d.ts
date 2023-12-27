@@ -86,6 +86,7 @@ export interface FastifyListenOptions {
 
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+type FindMyWayFindResult<RawServer extends RawServerBase> = FindResult<FindMyWayVersion<RawServer>>
 
 type GetterSetter<This, T> = T | {
   getter: (this: This) => T,
@@ -223,7 +224,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
-  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): FindResult<FindMyWayVersion<RawServer>>;
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): FindMyWayFindResult<RawServer>;
 
   // addHook: overloads
 

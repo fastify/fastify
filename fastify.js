@@ -285,7 +285,7 @@ function fastify (options) {
     hasRoute: function _route (options) {
       return router.hasRoute.call(this, { options })
     },
-    findRoute: function _route (options) {
+    findRoute: function _findRoute (options) {
       return router.findRoute(options)
     },
     // expose logger instance

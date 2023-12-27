@@ -865,10 +865,25 @@ function rewriteUrl (req) {
 
 + Default `true`
 
-Enabled by default. Fastify uses [find-my-way](https://github.com/delvedor/find-my-way)
-to separates path and query string with `;` character. According to
-[RFC3986](https://www.rfc-editor.org/rfc/rfc3986#section-3.4), To disable, set
-`useSemicolonDelimiter` to `false`.
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
+This decision originated from [delvedor/find-my-way#76]
+(https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
+backwards compatiblilty for the need to split on `;`. To disable support for splitting
+on `;` set `useSemicolonDelimiter` to `false`.
+
+```js
+const fastify = require('fastify')({
+  useSemicolonDelimiter: true
+})
+
+fastify.get('/dev', async (request, reply) => {
+  // An example request such as `/dev;foo=bar`
+  // Will produce the following query params result `{ foo = 'bar' }`
+  return request.query
+})
+```
+
 
 ## Instance
 

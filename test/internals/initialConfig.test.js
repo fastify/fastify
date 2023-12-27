@@ -125,7 +125,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.bodyLimit, 1049600)
   t.equal(fastify.initialConfig.onProtoPoisoning, 'remove')
   t.equal(fastify.initialConfig.caseSensitive, true)
-  t.equal(fastify.initialConfig.useSemicolonDelimiter, true)
+  t.equal(fastify.initialConfig.useSemicolonDelimiter, false)
   t.equal(fastify.initialConfig.allowUnsafeRegex, false)
   t.equal(fastify.initialConfig.requestIdHeader, 'request-id-alt')
   t.equal(fastify.initialConfig.pluginTimeout, 20000)

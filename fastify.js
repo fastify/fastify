@@ -144,7 +144,6 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-  options.useSemicolonDelimiter = options.useSemicolonDelimiter || defaultInitOptions.useSemicolonDelimiter
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -183,7 +182,7 @@ function fastify (options) {
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
       querystringParser: options.querystringParser,
-      useSemicolonDelimiter: options.useSemicolonDelimiter || defaultInitOptions.useSemicolonDelimiter
+      useSemicolonDelimiter: typeof options.useSemicolonDelimiter === 'boolean' ? options.useSemicolonDelimiter : defaultInitOptions.useSemicolonDelimiter
     }
   })
 

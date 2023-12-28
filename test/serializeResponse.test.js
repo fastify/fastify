@@ -29,12 +29,6 @@ const options = {
         id: { type: 'string' }
       }
     },
-    body: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' }
-      }
-    },
     response: {
       200: {
         type: 'object',
@@ -107,7 +101,8 @@ const handler = (request, reply) => {
   }
 
   reply.send({
-    id: request.body.id
+    id: request.body.id,
+    extra: 'This should not be in the response'
   })
 }
 
@@ -194,6 +189,34 @@ test('serialize the response for a Internal Server Error error, as defined on th
         statusCode: 500,
         error: 'Internal Server Error',
         message: 'Custom Internal Server Error'
+      })
+      t.end()
+    })
+  })
+})
+
+test('serialize the response for a Internal Server Error error, as defined on the schema', t => {
+  const fastify = Fastify({})
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.post('/', options, handler)
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const url = `http://localhost:${fastify.server.address().port}/`
+
+    sget({
+      method: 'POST',
+      url,
+      json: true,
+      body: { id: 'teste' }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.same(body, {
+        id: 'teste'
       })
       t.end()
     })

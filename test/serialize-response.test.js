@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const { S } = require('fluent-json-schema')
 const Fastify = require('../fastify')
-const sget = require('simple-get').concat
+const sjson = require('secure-json-parse')
 
 const BadRequestSchema = S.object()
   .prop('statusCode', S.number())
@@ -106,119 +106,79 @@ const handler = (request, reply) => {
   })
 }
 
-test('serialize the response for a Bad Request error, as defined on the schema', t => {
+test('serialize the response for a Bad Request error, as defined on the schema', async t => {
   const fastify = Fastify({})
 
-  t.teardown(fastify.close.bind(fastify))
-
   fastify.post('/', options, handler)
-
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-
-    const url = `http://localhost:${fastify.server.address().port}/`
-
-    sget({
-      method: 'POST',
-      url,
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(body, {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body must be object'
-      })
-      t.end()
-    })
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/'
   })
+
+  t.equal(response.statusCode, 400)
+  t.same(sjson(response.body), {
+    statusCode: 400,
+    error: 'Bad Request',
+    message: 'body must be object'
+  })
+  t.end()
 })
 
-test('serialize the response for a Not Found error, as defined on the schema', t => {
+test('serialize the response for a Not Found error, as defined on the schema', async t => {
   const fastify = Fastify({})
-
-  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', options, handler)
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-
-    const url = `http://localhost:${fastify.server.address().port}/`
-
-    sget({
-      method: 'POST',
-      url,
-      json: true,
-      body: { id: '404' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.same(body, {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Custom Not Found'
-      })
-      t.end()
-    })
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    body: { id: '404' }
   })
+
+  t.equal(response.statusCode, 404)
+  t.same(sjson(response.body), {
+    statusCode: 404,
+    error: 'Not Found',
+    message: 'Custom Not Found'
+  })
+
+  t.end()
 })
 
-test('serialize the response for a Internal Server Error error, as defined on the schema', t => {
+test('serialize the response for a Internal Server Error error, as defined on the schema', async t => {
   const fastify = Fastify({})
-
-  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', options, handler)
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-
-    const url = `http://localhost:${fastify.server.address().port}/`
-
-    sget({
-      method: 'POST',
-      url,
-      json: true,
-      body: { id: '500' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-      t.same(body, {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'Custom Internal Server Error'
-      })
-      t.end()
-    })
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    body: { id: '500' }
   })
+
+  t.equal(response.statusCode, 500)
+  t.same(sjson(response.body), {
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: 'Custom Internal Server Error'
+  })
+  t.end()
 })
 
-test('serialize the success response, as defined on the schema', t => {
+test('serialize the success response, as defined on the schema', async t => {
   const fastify = Fastify({})
-
-  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', options, handler)
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-
-    const url = `http://localhost:${fastify.server.address().port}/`
-
-    sget({
-      method: 'POST',
-      url,
-      json: true,
-      body: { id: 'test' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body, {
-        id: 'test'
-      })
-      t.end()
-    })
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    body: { id: 'test' }
   })
+
+  t.equal(response.statusCode, 200)
+  t.same(sjson(response.body), {
+    id: 'test'
+  })
+  t.end()
 })

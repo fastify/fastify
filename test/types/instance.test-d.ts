@@ -16,6 +16,7 @@ import { DefaultRoute } from '../../types/route'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
+import pino from 'pino'
 
 const server = fastify()
 
@@ -311,6 +312,8 @@ function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, b
 }
 server.setChildLoggerFactory(childLoggerFactory)
 server.setChildLoggerFactory(server.childLoggerFactory)
+
+expectAssignable<FastifyInstance>(fastify({ logger: pino() as FastifyBaseLogger }))
 
 type InitialConfig = Readonly<{
   connectionTimeout?: number,

@@ -364,10 +364,10 @@ fastify.get('/', options, async function (request, reply) {
 })
 ```
 
-Returning reply also works:
+Returning reply also works (using `async` is unnecessary in this case):
 
 ```js
-fastify.get('/', options, async function (request, reply) {
+fastify.get('/', options, function (request, reply) {
   setImmediate(() => {
     reply.send({ hello: 'world' })
   })

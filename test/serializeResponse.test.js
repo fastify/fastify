@@ -211,12 +211,12 @@ test('serialize the response for a Internal Server Error error, as defined on th
       method: 'POST',
       url,
       json: true,
-      body: { id: 'teste' }
+      body: { id: 'test' }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(body, {
-        id: 'teste'
+        id: 'test'
       })
       t.end()
     })

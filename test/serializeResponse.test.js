@@ -23,7 +23,7 @@ const NotFoundSchema = S.object()
 
 const options = {
   schema: {
-    params: {
+    body: {
       type: 'object',
       properties: {
         id: { type: 'string' }

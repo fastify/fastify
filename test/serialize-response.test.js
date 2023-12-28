@@ -107,6 +107,8 @@ const handler = (request, reply) => {
 }
 
 test('serialize the response for a Bad Request error, as defined on the schema', async t => {
+  t.plan(2)
+
   const fastify = Fastify({})
 
   fastify.post('/', options, handler)
@@ -121,10 +123,11 @@ test('serialize the response for a Bad Request error, as defined on the schema',
     error: 'Bad Request',
     message: 'body must be object'
   })
-  t.end()
 })
 
 test('serialize the response for a Not Found error, as defined on the schema', async t => {
+  t.plan(2)
+
   const fastify = Fastify({})
 
   fastify.post('/', options, handler)
@@ -141,11 +144,11 @@ test('serialize the response for a Not Found error, as defined on the schema', a
     error: 'Not Found',
     message: 'Custom Not Found'
   })
-
-  t.end()
 })
 
 test('serialize the response for a Internal Server Error error, as defined on the schema', async t => {
+  t.plan(2)
+
   const fastify = Fastify({})
 
   fastify.post('/', options, handler)
@@ -162,10 +165,11 @@ test('serialize the response for a Internal Server Error error, as defined on th
     error: 'Internal Server Error',
     message: 'Custom Internal Server Error'
   })
-  t.end()
 })
 
 test('serialize the success response, as defined on the schema', async t => {
+  t.plan(2)
+
   const fastify = Fastify({})
 
   fastify.post('/', options, handler)
@@ -180,5 +184,4 @@ test('serialize the success response, as defined on the schema', async t => {
   t.same(sjson(response.body), {
     id: 'test'
   })
-  t.end()
 })

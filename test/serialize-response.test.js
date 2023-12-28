@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const { S } = require('fluent-json-schema')
-const Fastify = require('..')
+const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 
 const BadRequestSchema = S.object()

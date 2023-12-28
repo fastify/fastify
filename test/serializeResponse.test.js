@@ -195,7 +195,7 @@ test('serialize the response for a Internal Server Error error, as defined on th
   })
 })
 
-test('serialize the response for a Internal Server Error error, as defined on the schema', t => {
+test('serialize the success response, as defined on the schema', t => {
   const fastify = Fastify({})
 
   t.teardown(fastify.close.bind(fastify))

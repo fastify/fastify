@@ -556,7 +556,7 @@ middlewares into Fastify plugins
   [qs](https://github.com/ljharb/qs).
 - [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify
   RabbitMQ plugin that uses
-  [node-rabbitmq-client](https://github.com/cody-greene/node-rabbitmq-client))
+  [node-rabbitmq-client](https://github.com/cody-greene/node-rabbitmq-client)
   plugin as a wrapper.
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.

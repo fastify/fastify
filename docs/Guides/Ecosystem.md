@@ -398,8 +398,10 @@ section.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera
   plugin, for writing reliable & fault-tolerant microservices with
   [nats.io](https://nats.io/).
-- [`fastify-hl7`](https://github.com/Bugs5382/fastify-hl7) A Fastify Plugin to create a server, build, and send HL7
-  formatted Hl7 messages. Using [node-hl7-client](https://github.com/Bugs5382/node-hl7-client) and [node-hl7-server](https://github.com/Bugs5382/node-hl7-server) as the
+- [`fastify-hl7`](https://github.com/Bugs5382/fastify-hl7) A Fastify Plugin to
+  create a server, build, and send HL7 formatted Hl7 messages. Using
+  [node-hl7-client](https://github.com/Bugs5382/node-hl7-client) and
+  [node-hl7-server](https://github.com/Bugs5382/node-hl7-server) as the
   underlining technology to do this.
 - [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin
   to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).

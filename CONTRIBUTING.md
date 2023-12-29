@@ -35,7 +35,6 @@ There are a few basic ground-rules for contributors:
 1. A lead maintainer must merge SemVer-major changes in this repository.
 1. In case it is not possible to reach consensus in a pull-request, the decision
    is left to the lead maintainer's team.
-1. Read and adhere to the [EXPENSE POLICY](./EXPENSE_POLICY.md).
 
 ### Fastify previous versions
 

@@ -1,8 +1,7 @@
 # Expense Policy
 
-Fastify is an OpenJS Foundation project, and it accepts donations through the
-[Open Collective](https://opencollective.com/fastify/) platform to enhance the
-project and support the community.
+Fastify collaborators accept donations through the [Open Collective](https://opencollective.com/fastify/)
+platform to enhance the project and support the community.
 
 This Collective is run by and for the benefit of the independent contributors to
 the Fastify open source software project.

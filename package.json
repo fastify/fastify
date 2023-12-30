@@ -142,6 +142,10 @@
     "url": "https://github.com/fastify/fastify/issues"
   },
   "homepage": "https://www.fastify.dev/",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/fastify"
+  },
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
     "@sinclair/typebox": "^0.31.17",

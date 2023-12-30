@@ -1,6 +1,6 @@
 # Sponsors
 
-Here are listed all the active sponsors of the project, in order of contribution!
+All active sponsors of Fastify are listed here, in order of contribution!
 Our sponsors are the reason why we can work on some issues or features
 that otherwise would be impossible to do.
 

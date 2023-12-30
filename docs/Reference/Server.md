@@ -44,6 +44,7 @@ describes the properties available in that options object.
   - [`frameworkErrors`](#frameworkerrors)
   - [`clientErrorHandler`](#clienterrorhandler)
   - [`rewriteUrl`](#rewriteurl)
+  - [`useSemicolonDelimiter`](#usesemicolondelimiter)
 - [Instance](#instance)
   - [Server Methods](#server-methods)
     - [server](#server)
@@ -55,6 +56,7 @@ describes the properties available in that options object.
     - [routing](#routing)
     - [route](#route)
     - [hasRoute](#hasroute)
+    - [findRoute](#findroute)
     - [close](#close)
     - [decorate\*](#decorate)
     - [register](#register)
@@ -865,6 +867,31 @@ function rewriteUrl (req) {
 }
 ```
 
+### `useSemicolonDelimiter`
+<a id="use-semicolon-delimiter"></a>
+
++ Default `true`
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
+This decision originated from [delvedor/find-my-way#76]
+(https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
+backwards compatiblilty for the need to split on `;`. To disable support for splitting
+on `;` set `useSemicolonDelimiter` to `false`.
+
+```js
+const fastify = require('fastify')({
+  useSemicolonDelimiter: true
+})
+
+fastify.get('/dev', async (request, reply) => {
+  // An example request such as `/dev;foo=bar`
+  // Will produce the following query params result `{ foo = 'bar' }`
+  return request.query
+})
+```
+
+
 ## Instance
 
 ### Server Methods
@@ -1108,6 +1135,28 @@ if (routeExists === false) {
   // add route
 }
 ```
+
+#### findRoute
+<a id="findRoute"></a>
+
+Method to retrieve a route already registered to the internal router. It
+expects an object as the payload. `url` and `method` are mandatory fields. It 
+is possible to also specify `constraints`. 
+The method returns a route object or `null` if the route cannot be found.
+
+```js
+const route = fastify.findRoute({
+  url: '/artists/:artistId',
+  method: 'GET',
+  constraints: { version: '1.0.0' } // optional
+})
+
+if (route !== null) {
+  // perform some route checks
+  console.log(route.params)   // `{artistId: ':artistId'}`
+}
+```
+
 
 #### close
 <a id="close"></a>
@@ -1881,6 +1930,7 @@ The properties that can currently be exposed are:
 - requestIdHeader
 - requestIdLogLabel
 - http2SessionTimeout
+- useSemicolonDelimiter 
 
 ```js
 const { readFileSync } = require('node:fs')

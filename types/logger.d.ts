@@ -84,7 +84,7 @@ export interface FastifyChildLoggerFactory<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Logger = any,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   /**

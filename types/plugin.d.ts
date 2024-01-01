@@ -1,7 +1,6 @@
 import { FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
-import { FastifyBaseLogger } from './logger'
 
 export type FastifyPluginOptions = Record<string, any>
 
@@ -14,7 +13,7 @@ export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Logger = any,
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
   opts: Options,
@@ -30,7 +29,7 @@ export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Logger = any,
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
   opts: Options

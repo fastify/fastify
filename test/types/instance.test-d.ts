@@ -148,7 +148,7 @@ server.setSchemaController({
     return {
       add (schema: unknown) {
         expectType<unknown>(schema)
-        expectType<FastifyInstance>(server.addSchema({ type: 'null' }))
+        expectAssignable<FastifyInstance>(server.addSchema({ type: 'null' }))
         return server.addSchema({ type: 'null' })
       },
       getSchema (schemaId: string) {
@@ -271,7 +271,7 @@ expectAssignable<FastifyInstance>(server.ready((err) => {
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
-expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
+expectAssignable<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
     expectAssignable<FastifyError>(error)
@@ -282,7 +282,7 @@ expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: s
   }
 }))
 
-expectType<FastifyInstance>(fastify().get('/', {
+expectAssignable<FastifyInstance>(fastify().get('/', {
   handler: () => {},
   childLoggerFactory: (logger, bindings, opts, req) => {
     expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
@@ -313,7 +313,11 @@ function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, b
 server.setChildLoggerFactory(childLoggerFactory)
 server.setChildLoggerFactory(server.childLoggerFactory)
 
-expectAssignable<FastifyInstance>(fastify({ logger: pino() as FastifyBaseLogger }))
+expectAssignable<FastifyInstance>(fastify({ logger: pino() }).get('/', {
+  handler: (req) => {
+    expectType<pino.Logger<never>>(req.log)
+  }
+}))
 
 type InitialConfig = Readonly<{
   connectionTimeout?: number,
@@ -352,25 +356,25 @@ expectType<string>(server.printRoutes({ method: 'GET' }))
 expectType<string>(server.printRoutes())
 
 server.decorate<(x: string) => void>('test', function (x: string): void {
-  expectType<FastifyInstance>(this)
+  expectAssignable<FastifyInstance>(this)
 })
 server.decorate('test', function (x: string): void {
-  expectType<FastifyInstance>(this)
+  expectAssignable<FastifyInstance>(this)
 })
 server.decorate<string>('test', {
   getter () {
-    expectType<FastifyInstance>(this)
+    expectAssignable<FastifyInstance>(this)
     return 'foo'
   }
 })
 server.decorate<string>('test', {
   getter () {
-    expectType<FastifyInstance>(this)
+    expectAssignable<FastifyInstance>(this)
     return 'foo'
   },
   setter (x) {
     expectType<string>(x)
-    expectType<FastifyInstance>(this)
+    expectAssignable<FastifyInstance>(this)
   }
 })
 server.decorate('test')
@@ -439,7 +443,7 @@ server.decorate('typedTestProperty', {
   },
   setter (x) {
     expectType<boolean>(x)
-    expectType<FastifyInstance>(this)
+    expectAssignable<FastifyInstance>(this)
   }
 })
 server.decorate('typedTestProperty')
@@ -453,7 +457,7 @@ expectError(server.decorate('typedTestProperty', {
 }))
 server.decorate('typedTestMethod', function (x) {
   expectType<string>(x)
-  expectType<FastifyInstance>(this)
+  expectAssignable<FastifyInstance>(this)
   return 'foo'
 })
 server.decorate('typedTestMethod', x => x)

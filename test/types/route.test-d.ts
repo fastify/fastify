@@ -24,13 +24,13 @@ declare module '../../fastify' {
 }
 
 const routeHandler: RouteHandlerMethod = function (request, reply) {
-  expectType<FastifyInstance>(this)
+  expectAssignable<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 }
 
 const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply) {
-  expectType<FastifyInstance>(this)
+  expectAssignable<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 
@@ -41,7 +41,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
 
 ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
   // route method
-  expectType<FastifyInstance>(fastify().route({
+  expectAssignable<FastifyInstance>(fastify().route({
     method: method as HTTPMethods,
     url: '/',
     handler: routeHandler
@@ -50,11 +50,11 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   const lowerCaseMethod: LowerCaseHTTPMethods = method.toLowerCase() as LowerCaseHTTPMethods
 
   // method as method
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
+  expectAssignable<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
+  expectAssignable<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
+  expectAssignable<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
 
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {
+  expectAssignable<FastifyInstance>(fastify()[lowerCaseMethod]('/', {
     handler: routeHandler,
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
@@ -377,7 +377,7 @@ expectError(fastify().route({
   handler: routeHandler
 }))
 
-expectType<FastifyInstance>(fastify().route({
+expectAssignable<FastifyInstance>(fastify().route({
   url: '/',
   method: ['GET', 'POST'],
   handler: routeHandler
@@ -396,7 +396,7 @@ expectError(fastify().route({
   schemaErrorFormatter: 500 // Not a valid formatter
 }))
 
-expectType<FastifyInstance>(fastify().route({
+expectAssignable<FastifyInstance>(fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandler,
@@ -407,7 +407,7 @@ expectError(fastify().route({
   prefixTrailingSlash: true // Not a valid value
 }))
 
-expectType<FastifyInstance>(fastify().route({
+expectAssignable<FastifyInstance>(fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandlerWithReturnValue
@@ -462,13 +462,13 @@ expectType<FindMyWayFindResult<RawServerDefault>>(
   })
 )
 
-expectType<FastifyInstance>(fastify().route({
+expectAssignable<FastifyInstance>(fastify().route({
   url: '/',
   method: 'get',
   handler: routeHandlerWithReturnValue
 }))
 
-expectType<FastifyInstance>(fastify().route({
+expectAssignable<FastifyInstance>(fastify().route({
   url: '/',
   method: ['put', 'patch'],
   handler: routeHandlerWithReturnValue

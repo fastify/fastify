@@ -42,7 +42,7 @@ expectAssignable<FastifyInstance>(fastify().register(async function (instance, o
 expectError(fastify().register(function (instance, opts, done) { }, { logLevel: '' })) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
+expectAssignable<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
 
 // Chainable
 httpsServer

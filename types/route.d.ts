@@ -3,7 +3,7 @@ import { ConstraintStrategy } from 'find-my-way'
 import { FastifyRequestContext } from './context'
 import { onErrorMetaHookHandler, onRequestAbortMetaHookHandler, onRequestMetaHookHandler, onResponseMetaHookHandler, onSendMetaHookHandler, onTimeoutMetaHookHandler, preHandlerMetaHookHandler, preParsingMetaHookHandler, preSerializationMetaHookHandler, preValidationMetaHookHandler } from './hooks'
 import { FastifyInstance } from './instance'
-import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
+import { FastifyChildLoggerFactory, LogLevel } from './logger'
 import { FastifyReply, ReplyGenericInterface } from './reply'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifySchema, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorFormatter } from './schema'
@@ -42,7 +42,7 @@ export interface RouteShorthandOptions<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger = any
 > {
   schema?: SchemaCompiler, // originally FastifySchema
   attachValidation?: boolean;
@@ -98,7 +98,7 @@ export type RouteHandlerMethod<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger = any
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
@@ -117,7 +117,7 @@ export interface RouteShorthandOptionsWithHandler<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger = any
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger> {
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>;
 }
@@ -130,7 +130,7 @@ export interface RouteShorthandMethod<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger = any
 > {
   <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, const SchemaCompiler extends FastifySchema = FastifySchema>(
     path: string,
@@ -158,7 +158,7 @@ export interface RouteOptions<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger = any
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger> {
   method: HTTPMethods | HTTPMethods[];
   url: string;
@@ -173,7 +173,7 @@ export type RouteHandler<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger = any
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,

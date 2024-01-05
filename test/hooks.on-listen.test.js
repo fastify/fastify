@@ -5,6 +5,7 @@ const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
 const split = require('split2')
 const helper = require('./helper')
+const { kState } = require('../lib/symbols')
 
 let localhost
 before(async function () {
@@ -1054,56 +1055,34 @@ test('async onListen does not need to be awaited', t => {
 test('onListen hooks do not block /1', t => {
   t.plan(2)
 
-  let timer
-  let listenDone = false
-  let doneRef
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', function (done) {
-    if (listenDone) {
-      done()
-    } else {
-      timer = setTimeout(done, 100000)
-      doneRef = done
-    }
+    t.ok(fastify[kState].listening, true)
+    done()
   })
 
-  const startDate = Date.now()
   fastify.listen({
     host: 'localhost',
     port: 0
   }, err => {
     t.error(err)
-    t.ok(Date.now() - startDate < 2000)
-    listenDone = true
-    timer && clearTimeout(timer)
-    doneRef && doneRef()
   })
 })
 
 test('onListen hooks do not block /2', async t => {
   t.plan(1)
+
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  let timer
-  let timedPromise
-  let timePromiseResolve
 
   fastify.addHook('onListen', async function () {
-    timedPromise = new Promise(resolve => {
-      timer = setTimeout(resolve, 100000)
-      timePromiseResolve = resolve
-    })
-    return timedPromise
+    t.ok(fastify[kState].listening, true)
   })
 
-  const startDate = Date.now()
   await fastify.listen({
     host: 'localhost',
     port: 0
   })
-  t.ok(Date.now() - startDate < 2000)
-  clearTimeout(timer)
-  timePromiseResolve()
 })

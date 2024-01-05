@@ -1077,8 +1077,8 @@ test('onListen hooks do not block /1', t => {
     t.error(err)
     t.ok(Date.now() - startDate < 2000)
     listenDone = true
-    clearTimeout(timer)
-    if (doneRef) doneRef()
+    timer && clearTimeout(timer)
+    doneRef && doneRef()
   })
 })
 

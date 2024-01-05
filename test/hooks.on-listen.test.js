@@ -5,9 +5,7 @@ const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
 const split = require('split2')
 const helper = require('./helper')
-
-// fix citgm @aix72-ppc64
-const LISTEN_READYNESS = process.env.CITGM ? 250 : 50
+const { kState } = require('../lib/symbols')
 
 let localhost
 before(async function () {
@@ -1056,36 +1054,35 @@ test('async onListen does not need to be awaited', t => {
 
 test('onListen hooks do not block /1', t => {
   t.plan(2)
+
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', function (done) {
-    setTimeout(done, 500)
+    t.equal(fastify[kState].listening, true)
+    done()
   })
 
-  const startDate = new Date()
   fastify.listen({
     host: 'localhost',
     port: 0
   }, err => {
     t.error(err)
-    t.ok(new Date() - startDate < LISTEN_READYNESS)
   })
 })
 
 test('onListen hooks do not block /2', async t => {
   t.plan(1)
+
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', async function () {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    t.equal(fastify[kState].listening, true)
   })
 
-  const startDate = new Date()
   await fastify.listen({
     host: 'localhost',
     port: 0
   })
-  t.ok(new Date() - startDate < LISTEN_READYNESS)
 })

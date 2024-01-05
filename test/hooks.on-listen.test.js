@@ -1059,7 +1059,7 @@ test('onListen hooks do not block /1', t => {
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', function (done) {
-    t.ok(fastify[kState].listening, true)
+    t.equal(fastify[kState].listening, true)
     done()
   })
 
@@ -1078,7 +1078,7 @@ test('onListen hooks do not block /2', async t => {
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', async function () {
-    t.ok(fastify[kState].listening, true)
+    t.equal(fastify[kState].listening, true)
   })
 
   await fastify.listen({

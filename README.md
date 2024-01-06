@@ -29,6 +29,7 @@ downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.np
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/fastify/blob/main/SECURITY.md)
 [![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=blue)](https://gitpod.io/#https://github.com/fastify/fastify)
+![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)
 
 </div>
 
@@ -171,15 +172,6 @@ fastify.listen({ port: 3000 }, (err, address) => {
 Do you want to know more? Head to the <a
 href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 
-
-### Fastify v1.x and v2.x
-
-Code for Fastify's **v1.x** is in [**`branch
-1.x`**](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related
-changes should be based on **`branch 1.x`**. In a similar way, all Fastify
-**v2.x** related changes should be based on [**`branch
-2.x`**](https://github.com/fastify/fastify/tree/2.x).
-
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default
 > (`127.0.0.1` or `::1`, depending on the operating system configuration). If
@@ -274,6 +266,12 @@ application, you should __always__ benchmark if performance matters to you.
 ## Support
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
+
+## Contributing
+
+Whether reporting bugs, discussing improvements and new ideas or writing code,
+we welcome contributions from anyone and everyone. Please read the [CONTRIBUTING](./CONTRIBUTING.md)
+guidelines before submitting pull requests.
 
 ## Team
 
@@ -382,6 +380,12 @@ width="250px;"/>](https://openjsf.org/projects)
 We are a [At-Large
 Project](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#at-large-projects)
 in the [OpenJS Foundation](https://openjsf.org/).
+
+## Sponsors
+
+Support this project by becoming a [SPONSOR](./SPONSORS.md)!
+Fastify has an [Open Collective](https://opencollective.com/fastify)
+page where we accept and manage financial contributions.
 
 ## Acknowledgements
 

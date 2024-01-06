@@ -48,14 +48,15 @@ test('without options passed to Fastify, initialConfig should expose default val
     requestIdHeader: 'request-id',
     requestIdLogLabel: 'reqId',
     http2SessionTimeout: 72000,
-    exposeHeadRoutes: true
+    exposeHeadRoutes: true,
+    useSemicolonDelimiter: true
   }
 
   t.same(Fastify().initialConfig, fastifyDefaultOptions)
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(21)
+  t.plan(22)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -99,6 +100,7 @@ test('Fastify.initialConfig should expose all options', t => {
     allowUnsafeRegex: false,
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
+    useSemicolonDelimiter: false,
     querystringParser: str => str,
     genReqId: function (req) {
       return reqId++
@@ -123,6 +125,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.bodyLimit, 1049600)
   t.equal(fastify.initialConfig.onProtoPoisoning, 'remove')
   t.equal(fastify.initialConfig.caseSensitive, true)
+  t.equal(fastify.initialConfig.useSemicolonDelimiter, false)
   t.equal(fastify.initialConfig.allowUnsafeRegex, false)
   t.equal(fastify.initialConfig.requestIdHeader, 'request-id-alt')
   t.equal(fastify.initialConfig.pluginTimeout, 20000)
@@ -285,7 +288,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       requestIdHeader: 'request-id',
       requestIdLogLabel: 'reqId',
       http2SessionTimeout: 72000,
-      exposeHeadRoutes: true
+      exposeHeadRoutes: true,
+      useSemicolonDelimiter: true
     })
   } catch (error) {
     t.fail()

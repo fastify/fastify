@@ -41,7 +41,8 @@ const defaultInitOptions = {
   requestIdHeader: 'request-id',
   requestIdLogLabel: 'reqId',
   http2SessionTimeout: 72000, // 72 seconds
-  exposeHeadRoutes: true
+  exposeHeadRoutes: true,
+  useSemicolonDelimiter: true
 }
 
 const schema = {
@@ -101,6 +102,7 @@ const schema = {
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
+    useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
     // deprecated style of passing the versioning constraint
     versioning: {
       type: 'object',

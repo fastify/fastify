@@ -101,7 +101,7 @@ console.log(fastify.conf.db)
 ```
 
 The decorated [Fastify server](./Server.md) is bound to `this` in
-route [route](./Routes.md) handlers:
+[route](./Routes.md) handlers:
 
 ```js
 fastify.decorate('db', new DbConnection())

@@ -72,3 +72,74 @@ test('Custom genReqId function gets raw request as argument', t => {
     })
   })
 })
+
+test('Should accept option to set genReqId with setGenReqId option', t => {
+  t.plan(10)
+
+  const fastify = Fastify({
+    genReqId: function (req) {
+      return 'base'
+    }
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.setGenReqId(function (req) {
+      return 'foo'
+    })
+    instance.get('/', (req, reply) => {
+      t.ok(req.id)
+      reply.send({ id: req.id })
+    })
+    next()
+  }, { prefix: 'foo' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.setGenReqId(function (req) {
+      return 'bar'
+    })
+    instance.get('/', (req, reply) => {
+      t.ok(req.id)
+      reply.send({ id: req.id })
+    })
+    next()
+  }, { prefix: 'bar' })
+
+  fastify.get('/', (req, reply) => {
+    t.ok(req.id)
+    reply.send({ id: req.id })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'base')
+      fastify.close()
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/foo'
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/bar'
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'bar')
+      fastify.close()
+    })
+  })
+})

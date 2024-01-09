@@ -28,7 +28,8 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kChildLoggerFactory
+  kChildLoggerFactory,
+  kGenReqId
 } = require('./lib/symbols.js')
 
 const { createServer, compileValidateHTTPVersion } = require('./lib/server')
@@ -248,6 +249,7 @@ function fastify (options) {
     [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
+    [kGenReqId]: genReqId,
     // routing method
     routing: httpHandler,
     getDefaultRoute: router.getDefaultRoute.bind(router),
@@ -304,6 +306,8 @@ function fastify (options) {
     setSchemaController,
     setReplySerializer,
     setSchemaErrorFormatter,
+    // set generated request id
+    setGenReqId,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -871,6 +875,13 @@ function fastify (options) {
       }
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
     }
+  }
+
+  function setGenReqId (func) {
+    throwIfAlreadyStarted('Cannot call "setGenReqId"!')
+
+    this[kGenReqId] = reqIdGenFactory(options.requestIdHeader, func)
+    return this
   }
 }
 

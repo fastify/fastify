@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectDeprecated, expectError, expectType } from 'tsd'
 import fastify, { FastifyReplyContext, FastifyReply, FastifyRequest, FastifySchema, FastifySchemaCompiler, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -19,6 +19,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.code)
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.status)
   expectType<(payload?: unknown) => FastifyReply>(reply.code(100 as number).send)
+  expectType<number>(reply.elapsedTime)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)
@@ -31,7 +32,8 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<{(statusCode: number, url: string): FastifyReply; (url: string): FastifyReply }>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
-  expectType<() => number>(reply.getResponseTime)
+  // Test reply.getResponseTime() deprecation
+  expectDeprecated(reply.getResponseTime)
   expectType<(contentType: string) => FastifyReply>(reply.type)
   expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
   expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)

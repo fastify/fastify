@@ -4,6 +4,7 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
+  - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
@@ -46,6 +47,8 @@ object that exposes the following functions and properties:
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
+- `.elapsedTime` - Returns the amount of time passed
+since the request was received by Fastify.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -85,6 +88,8 @@ object that exposes the following functions and properties:
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
+- `.getResponseTime()` - Deprecated, returns the amount of time passed
+since the request was received by Fastify.
 - `.context` - Deprecated, access the [Request's context](./Request.md) property.
 
 ```js
@@ -109,6 +114,19 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 <a id="code"></a>
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
+
+### .elapsedTime
+<a id="elapsedTime"></a>
+
+Invokes the custom response time getter to calculate the amount of time passed
+since the request was received by Fastify.
+
+Note that unless this function is called in the [`onResponse`
+hook](./Hooks.md#onresponse) it will always return `0`.
+
+```js
+const milliseconds = reply.elapsedTime
+```
 
 ### .statusCode
 <a id="statusCode"></a>
@@ -327,7 +345,7 @@ reply.callNotFound()
 <a id="getResponseTime"></a>
 
 Invokes the custom response time getter to calculate the amount of time passed
-since the request was started.
+since the request was received by Fastify.
 
 Note that unless this function is called in the [`onResponse`
 hook](./Hooks.md#onresponse) it will always return `0`.
@@ -335,6 +353,9 @@ hook](./Hooks.md#onresponse) it will always return `0`.
 ```js
 const milliseconds = reply.getResponseTime()
 ```
+
+*Note: This method is deprecated and will be removed in `fastify@5`.
+Use the [.elapsedTime](#elapsedtime) property instead.*
 
 ### .type(contentType)
 <a id="type"></a>

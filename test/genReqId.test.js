@@ -2,6 +2,7 @@
 
 const { Readable } = require('node:stream')
 const { test } = require('tap')
+const fp = require('fastify-plugin')
 const Fastify = require('..')
 
 test('Should accept a custom genReqId function', t => {
@@ -418,6 +419,48 @@ test('Should have child instance user parent genReqId', t => {
     t.error(err)
     const payload = JSON.parse(res.payload)
     t.equal(payload.id, 'foo')
+    fastify.close()
+  })
+})
+
+test('genReqId set on root scope when using fastify-plugin', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.register(fp(function (fastify, options, done) {
+    fastify.setGenReqId(function (req) {
+      return 'not-encapsulated'
+    })
+    fastify.get('/not-encapsulated-1', (req, reply) => {
+      t.ok(req.id)
+      reply.send({ id: req.id })
+    })
+    done()
+  }))
+
+  fastify.get('/not-encapsulated-2', (req, reply) => {
+    t.ok(req.id)
+    reply.send({ id: req.id })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/not-encapsulated-1'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, 'not-encapsulated')
+    fastify.close()
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/not-encapsulated-2'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, 'not-encapsulated')
     fastify.close()
   })
 })

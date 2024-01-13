@@ -169,6 +169,71 @@ Some things to consider in your custom error handler:
     internally monitors the error invocation to avoid infinite loops for errors
     thrown in the reply phases of the lifecycle. (those after the route handler)
 
+**Important**: When utilizing Fastify's custom error handling through
+[`setErrorHandler`](./Server.md#seterrorhandler),
+it's crucial to be aware of how errors 
+are propagated between custom and default error handlers.
+
+For example:
+```js
+const Fastify = require('fastify')
+
+// Instantiate the framework
+const fastify = Fastify({
+  logger: true
+})
+
+// Register parent error handler
+fastify.setErrorHandler((error, request, reply) => {
+  reply.status(500).send({ ok: false })
+})
+
+fastify.register((app, options, next) => {
+  // Register child error handler
+  fastify.setErrorHandler((error, request, reply) => {
+    throw error
+  })
+
+  fastify.get('/bad', async () => {
+    // Throws a non-Error type, 'bar'
+    throw 'foo'
+  })
+
+  fastify.get('/good', async () => {
+    // Throws an Error instance, 'bar'
+    throw new Error('bar')
+  })
+
+  next()
+})
+
+// Run the server
+fastify.listen({ port: 3000 }, function (err, address) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  // Server is listening at ${address}
+})
+```
+
+If a plugin's error handler re-throws
+an error, and the error is not an instance of 
+[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+(as seen in the `/bad` route), it 
+won't propagate to the parent context error handler.
+Instead, it will be caught by the default error handler.
+
+To ensure consistent error handling, 
+it's recommended to throw instances of Error.
+For instance, replacing `throw 'foo'`
+with `throw new Error('foo')` in the
+`/bad` route would ensure that errors
+propagate through the custom error handling chain as intended.
+This practice helps to avoid potential
+pitfalls when working with custom
+error handling in Fastify.
+
 ### Fastify Error Codes
 <a id="fastify-error-codes"></a>
 
@@ -183,7 +248,7 @@ const errorCodes = require('fastify').errorCodes
 
 For example:
 ```js
-const Fastify = require('./fastify')
+const Fastify = require('fastify')
 
 // Instantiate the framework
 const fastify = Fastify({

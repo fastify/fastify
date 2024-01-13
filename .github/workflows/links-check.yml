@@ -1,0 +1,30 @@
+name: Internal Links Check
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # It will be possible to check only for the links in the changed files
+      # See: https://github.com/lycheeverse/lychee-action/issues/17
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@ec3ed119d4f44ad2673a7232460dc7dff59d2421
+        with:
+          fail: true
+          # As external links behaviour is not predictable, we check only internal links
+          # to ensure consistency.
+          # See: https://github.com/lycheeverse/lychee-action/issues/17#issuecomment-1162586751
+          args: --offline --verbose --no-progress './**/*.md'
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

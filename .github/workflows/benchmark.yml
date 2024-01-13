@@ -1,0 +1,109 @@
+name: Benchmark
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+jobs:
+  benchmark:
+    if: ${{ github.event.label.name == 'benchmark' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
+      PR-BENCH-18: ${{ steps.benchmark-pr.outputs.BENCH_RESULT18 }}
+      PR-BENCH-20: ${{ steps.benchmark-pr.outputs.BENCH_RESULT20 }}
+      MAIN-BENCH-16: ${{ steps.benchmark-main.outputs.BENCH_RESULT16 }}
+      MAIN-BENCH-18: ${{ steps.benchmark-main.outputs.BENCH_RESULT18 }}
+      MAIN-BENCH-20: ${{ steps.benchmark-main.outputs.BENCH_RESULT20 }}
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{github.event.pull_request.head.sha}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install
+        run: |
+          npm install --only=production --ignore-scripts
+
+      - name: Run benchmark
+        id: benchmark-pr
+        run: |
+          npm run --silent benchmark > ./bench-result.md
+          result=$(awk '/requests in/' ./bench-result.md)
+          echo 'BENCH_RESULT${{matrix.node-version}}<<EOF' >> $GITHUB_OUTPUT
+          echo "$result" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+      # main benchmark
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: 'main'
+
+      - name: Install
+        run: |
+          npm install --only=production --ignore-scripts
+
+      - name: Run benchmark
+        id: benchmark-main
+        run: |
+          npm run --silent benchmark > ./bench-result.md
+          result=$(awk '/requests in/' ./bench-result.md)
+          echo 'BENCH_RESULT${{matrix.node-version}}<<EOF' >> $GITHUB_OUTPUT
+          echo "$result" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+  output-benchmark:
+    needs: [benchmark]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: |
+            **Node**: 16
+            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-16 }}
+            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-16 }}
+            
+            ---
+            
+            **Node**: 18
+            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-18 }}
+            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-18 }}
+            
+            ---
+            
+            **Node**: 20
+            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-20 }}
+            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-20 }}
+            
+  remove-label:
+    if: ${{ github.event.label.name == 'benchmark' }}
+    needs: 
+      - benchmark
+      - output-benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove benchmark label
+        uses: octokit/request-action@v2.x
+        id: remove-label
+        with:
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          issue_number: ${{ github.event.pull_request.number }}
+          name: benchmark
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

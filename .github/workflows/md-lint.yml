@@ -1,0 +1,44 @@
+name: Lint Docs
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+    paths:
+       - "**/*.md"
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+       - "**/*.md"
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  build:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+        
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install Linter
+        run: npm install --ignore-scripts
+
+      - name: Add Matcher
+        uses: xt0rted/markdownlint-problem-matcher@98d94724052d20ca2e06c091f202e4c66c3c59fb
+
+      - name: Run Linter
+        run: ./node_modules/.bin/markdownlint-cli2
+

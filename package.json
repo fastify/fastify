@@ -1,0 +1,227 @@
+{
+  "name": "fastify",
+  "version": "4.25.2",
+  "description": "Fast and low overhead web framework, for Node.js",
+  "main": "fastify.js",
+  "type": "commonjs",
+  "types": "fastify.d.ts",
+  "scripts": {
+    "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
+    "benchmark": "concurrently -k -s first \"node ./examples/benchmark/simple.js\" \"autocannon -c 100 -d 30 -p 10 localhost:3000/\"",
+    "benchmark:parser": "concurrently -k -s first \"node ./examples/benchmark/parser.js\" \"autocannon -c 100 -d 30 -p 10 -i ./examples/benchmark/body.json -H \"content-type:application/jsoff\" -m POST localhost:3000/\"",
+    "build:validation": "node build/build-error-serializer.js && node build/build-validation.js",
+    "coverage": "npm run unit -- --coverage-report=html",
+    "coverage:ci": "c8 --reporter=lcov tap --coverage-report=html --no-browser --no-check-coverage",
+    "coverage:ci-check-coverage": "c8 check-coverage --branches 100 --functions 100 --lines 100 --statements 100",
+    "lint": "npm run lint:standard && npm run lint:typescript && npm run lint:markdown",
+    "lint:fix": "standard --fix && npm run lint:typescript:fix",
+    "lint:markdown": "markdownlint-cli2",
+    "lint:standard": "standard | snazzy",
+    "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
+    "lint:typescript:fix": "npm run lint:typescript -- --fix",
+    "prepublishOnly": "cross-env PREPUBLISH=true tap --no-check-coverage test/build/**.test.js && npm run test:validator:integrity",
+    "test": "npm run lint && npm run unit && npm run test:typescript",
+    "test:ci": "npm run unit -- --cov --coverage-report=lcovonly && npm run test:typescript",
+    "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
+    "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
+    "test:typescript": "tsc test/types/import.ts && tsd",
+    "test:watch": "npm run unit -- --watch --cov --no-coverage-report --reporter=terse",
+    "unit": "c8 tap",
+    "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
+    "unit:report": "tap --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
+    "citgm": "tap --jobs=1 --timeout=120"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fastify/fastify.git"
+  },
+  "keywords": [
+    "web",
+    "framework",
+    "json",
+    "schema",
+    "open",
+    "api"
+  ],
+  "author": "Matteo Collina <hello@matteocollina.com>",
+  "contributors": [
+    {
+      "name": "Tomas Della Vedova",
+      "url": "http://delved.org",
+      "author": true
+    },
+    {
+      "name": "Tommaso Allevi",
+      "email": "tomallevi@gmail.com"
+    },
+    {
+      "name": "Ethan Arrowood",
+      "url": "https://github.com/Ethan-Arrowood",
+      "email": "ethan.arrowood@gmail.com"
+    },
+    {
+      "name": "Dustin Deus",
+      "url": "http://starptech.de",
+      "email": "deusdustin@gmail.com"
+    },
+    {
+      "name": "Ayoub El Khattabi",
+      "url": "https://github.com/AyoubElk",
+      "email": "elkhattabi.ayoub@gmail.com"
+    },
+    {
+      "name": "Rafael Gonzaga",
+      "email": "rafael.nunu@hotmail.com",
+      "url": "https://github.com/rafaelgss"
+    },
+    {
+      "name": "Trivikram Kamat",
+      "url": "http://trivikr.github.io",
+      "email": "trivikr.dev@gmail.com"
+    },
+    {
+      "name": "Luciano Mammino",
+      "url": "https://loige.co"
+    },
+    {
+      "name": "Cemre Mengu",
+      "email": "cemremengu@gmail.com"
+    },
+    {
+      "name": "Evan Shortiss",
+      "email": "evanshortiss@gmail.com"
+    },
+    {
+      "name": "Maksim Sinik",
+      "url": "https://maksim.dev"
+    },
+    {
+      "name": "Manuel Spigolon",
+      "email": "behemoth89@gmail.com"
+    },
+    {
+      "name": "James Sumners",
+      "url": "https://james.sumners.info"
+    },
+    {
+      "name": "Denis Fäcke",
+      "url": "https://github.com/SerayaEryn"
+    },
+    {
+      "name": "Igor Savin",
+      "email": "kibertoad@gmail.com",
+      "url": "https://github.com/kibertoad"
+    },
+    {
+      "name": "Vincent Le Goff",
+      "email": "vince.legoff@gmail.com",
+      "url": "https://github.com/zekth"
+    },
+    {
+      "name": "Luis Orbaiceta",
+      "email": "luisorbaiceta@gmail.com",
+      "url": "https://luisorbaiceta.com"
+    },
+    {
+      "name": "Carlos Fuentes",
+      "email": "me@metcoder.dev",
+      "url": "https://metcoder.dev"
+    },
+    {
+      "name": "Gürgün Dayıoğlu",
+      "email": "gurgun.dayioglu@icloud.com",
+      "url": "https://heyhey.to/G"
+    },
+    {
+      "name": "Aras Abbasi",
+      "email": "aras.abbasi@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fastify/fastify/issues"
+  },
+  "homepage": "https://www.fastify.dev/",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/fastify"
+  },
+  "devDependencies": {
+    "@fastify/pre-commit": "^2.0.2",
+    "@sinclair/typebox": "^0.31.17",
+    "@sinonjs/fake-timers": "^11.1.0",
+    "@types/node": "^20.8.4",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "ajv": "^8.12.0",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^2.1.1",
+    "ajv-i18n": "^4.2.0",
+    "ajv-merge-patch": "^5.0.1",
+    "autocannon": "^7.14.0",
+    "branch-comparer": "^1.1.0",
+    "c8": "^8.0.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.51.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.2.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "fast-json-body": "^1.1.0",
+    "fastify-plugin": "^4.5.1",
+    "fluent-json-schema": "^4.1.2",
+    "form-data": "^4.0.0",
+    "h2url": "^0.2.0",
+    "http-errors": "^2.0.0",
+    "joi": "^17.11.0",
+    "json-schema-to-ts": "^2.9.2",
+    "JSONStream": "^1.3.5",
+    "markdownlint-cli2": "^0.10.0",
+    "node-forge": "^1.3.1",
+    "proxyquire": "^2.1.3",
+    "send": "^0.18.0",
+    "simple-get": "^4.0.1",
+    "snazzy": "^9.0.0",
+    "split2": "^4.2.0",
+    "standard": "^17.1.0",
+    "tap": "^16.3.9",
+    "tsd": "^0.29.0",
+    "typescript": "^5.2.2",
+    "undici": "^5.26.0",
+    "vary": "^1.1.2",
+    "yup": "^1.3.2"
+  },
+  "dependencies": {
+    "@fastify/ajv-compiler": "^3.5.0",
+    "@fastify/error": "^3.4.0",
+    "@fastify/fast-json-stringify-compiler": "^4.3.0",
+    "abstract-logging": "^2.0.1",
+    "avvio": "^8.2.1",
+    "fast-content-type-parse": "^1.1.0",
+    "fast-json-stringify": "^5.8.0",
+    "find-my-way": "^8.0.0",
+    "light-my-request": "^5.11.0",
+    "pino": "^8.17.0",
+    "process-warning": "^3.0.0",
+    "proxy-addr": "^2.0.7",
+    "rfdc": "^1.3.0",
+    "secure-json-parse": "^2.7.0",
+    "semver": "^7.5.4",
+    "toad-cache": "^3.3.0"
+  },
+  "standard": {
+    "ignore": [
+      "lib/configValidator.js",
+      "lib/error-serializer.js",
+      "fastify.d.ts",
+      "types/*",
+      "test/types/*",
+      "test/same-shape.test.js"
+    ]
+  },
+  "tsd": {
+    "directory": "test/types"
+  }
+}

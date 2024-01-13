@@ -1,0 +1,61 @@
+name: integration
+
+on:
+  push:
+    branches:
+     - main
+     - master
+     - next
+     - 'v*'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  install-production:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
+        os: [ubuntu-latest]
+        pnpm-version: [8]
+        # pnpm@8 does not support Node.js 14 so include it separately
+        include:
+          - node-version: 14
+            os: ubuntu-latest
+            pnpm-version: 7
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+      
+      - name: Install Production
+        run: |
+          pnpm install --prod
+
+      - name: Run server
+        run: |
+          node integration/server.js &
+
+      - name: Test
+        if: ${{ success() }}
+        run: |
+          bash integration/test.sh

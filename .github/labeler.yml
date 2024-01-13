@@ -1,0 +1,16 @@
+# PRs that only touch the docs folder
+documentation:
+- all: ["docs/**/*"]
+
+"github actions":
+- all: [".github/workflows/*"]
+
+# PRs that only touch type files
+typescript:
+- all: ["**/*[.|-]d.ts"]
+
+plugin:
+- all: ["docs/Guides/Ecosystem.md"]
+
+test:
+- all: ["test/**/*"]

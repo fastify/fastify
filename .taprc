@@ -1,0 +1,10 @@
+ts: false
+jsx: false
+flow: false
+# the coverage is performed by c8
+check-coverage: false
+coverage: false
+node-arg: --allow-natives-syntax
+
+files:
+  - 'test/**/*.test.js'

@@ -1,0 +1,80 @@
+name: package-manager-ci
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  pnpm:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # Maintenance and active LTS
+        node-version: [16, 18, 20]
+        os: [ubuntu-latest]
+        pnpm-version: [8]
+        # pnpm@8 does not support Node.js 14 so include it separately
+        include:
+          - node-version: 14
+            os: ubuntu-latest
+            pnpm-version: 7
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install with pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+
+      - run: pnpm install
+
+      - name: Run tests
+        run: |
+          pnpm run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 
+
+  yarn:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # Maintenance and active LTS
+        node-version: [14, 16, 18, 20]
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install with yarn
+        run: |
+          curl -o- -L https://yarnpkg.com/install.sh | bash
+          yarn install --ignore-engines
+
+      - run: yarn
+
+      - name: Run tests
+        run: |
+          yarn run test:ci
+        env:
+          NODE_OPTIONS: no-network-family-autoselection 

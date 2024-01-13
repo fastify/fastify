@@ -1,0 +1,25 @@
+name: website
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - '**.md'
+  release:
+    types:
+      - released
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build website
+        run: |
+          gh workflow run ci-cd.yml -R fastify/website
+    env:
+      GH_TOKEN: ${{ secrets.GHA_WEBSITE_FINE_TOKEN }}

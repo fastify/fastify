@@ -43,7 +43,7 @@ const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const { reqIdGenFactory } = require('./lib/reqIdGenFactory')
+const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
@@ -139,7 +139,6 @@ function fastify (options) {
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
-  options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
@@ -404,6 +403,10 @@ function fastify (options) {
       get () {
         return this[kErrorHandler].func
       }
+    },
+    genReqId: {
+      configurable: true,
+      get () { return this[kGenReqId] }
     }
   })
 
@@ -747,7 +750,7 @@ function fastify (options) {
 
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
-      const id = genReqId(req)
+      const id = getGenReqId(onBadUrlContext.server, req)
       const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -772,7 +775,7 @@ function fastify (options) {
     return function onAsyncConstraintError (err) {
       if (err) {
         if (frameworkErrors) {
-          const id = genReqId(req)
+          const id = getGenReqId(onBadUrlContext.server, req)
           const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -880,7 +883,7 @@ function fastify (options) {
   function setGenReqId (func) {
     throwIfAlreadyStarted('Cannot call "setGenReqId"!')
 
-    this[kGenReqId] = reqIdGenFactory(options.requestIdHeader, func)
+    this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
     return this
   }
 }

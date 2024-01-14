@@ -13,7 +13,7 @@ section.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to the `Accept` header.
 - [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save
-  multiple schemas and decide which one to use to serialize the payload
+  multiple schemas and decide which one to use to serialize the payload.
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
@@ -53,6 +53,8 @@ section.
   configuration.
 - [`@fastify/etag`](https://github.com/fastify/fastify-etag) Automatically
   generate ETags for HTTP responses.
+- [`@fastify/express`](https://github.com/fastify/fastify-express) Express
+  compatibility layer for Fastify.
 - [`@fastify/flash`](https://github.com/fastify/fastify-flash) Set and get flash
   messages using the session.
 - [`@fastify/formbody`](https://github.com/fastify/fastify-formbody) Plugin to
@@ -69,6 +71,8 @@ section.
   your HTTP requests to another server, with hooks.
 - [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) JWT utils for
   Fastify, internally uses [fast-jwt](https://github.com/nearform/fast-jwt).
+- [`@fastify/kafka`](https://github.com/fastify/fastify-kafka) Plugin to interact
+  with Apache Kafka.
 - [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to
   share a common LevelDB connection across Fastify.
 - [`@fastify/middie`](https://github.com/fastify/middie) Middleware engine for
@@ -78,6 +82,8 @@ section.
   connection pool across every part of your server.
 - [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart
   support for Fastify.
+- [`@fastify/mysql`](https://github.com/fastify/fastify-mysql) Fastify MySQL
+  connection plugin.
 - [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
   server-side rendering support for Fastify with
   [Next](https://github.com/zeit/next.js/).
@@ -85,6 +91,8 @@ section.
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Formats
   Fastify's logs into a nice one-line message.
+- [`@fastify/passport`](https://github.com/fastify/fastify-passport) Use Passport
+  strategies to authenticate requests and protect route.
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
   PostgreSQL connection plugin, with this you can share the same PostgreSQL
   connection pool in every part of your server.
@@ -104,6 +112,8 @@ section.
   A simple plugin that enables response validation for Fastify.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
+- [`@fastify/routes-stats`](https://github.com/fastify/fastify-routes-stats)
+  Provide stats for routes using `node:perf_hooks`.
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
   scheduling periodic jobs, based on
   [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
@@ -121,6 +131,8 @@ section.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
+- [`@fastify/swagger-ui`](https://github.com/fastify/fastify-swagger-ui) Plugin
+  for serving Swagger UI.
 - [`@fastify/throttle`](https://github.com/fastify/fastify-throttle) Plugin for
   throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
@@ -142,6 +154,8 @@ section.
   [Vite](https://vitejs.dev/), allows for serving SPA/MPA/SSR Vite applications.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
+- [`@fastify/zipkin`](https://github.com/fastify/fastify-zipkin) Plugin
+  for Zipkin distributed tracing system.
 
 #### [Community](#community)
 
@@ -384,6 +398,11 @@ section.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera
   plugin, for writing reliable & fault-tolerant microservices with
   [nats.io](https://nats.io/).
+- [`fastify-hl7`](https://github.com/Bugs5382/fastify-hl7) A Fastify Plugin to
+  create a server, build, and send HL7 formatted Hl7 messages. Using
+  [node-hl7-client](https://github.com/Bugs5382/node-hl7-client) and
+  [node-hl7-server](https://github.com/Bugs5382/node-hl7-server) as the
+  underlining technology to do this.
 - [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin
   to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context)
@@ -537,7 +556,7 @@ middlewares into Fastify plugins
   [qs](https://github.com/ljharb/qs).
 - [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify
   RabbitMQ plugin that uses
-  [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager)
+  [node-rabbitmq-client](https://github.com/cody-greene/node-rabbitmq-client)
   plugin as a wrapper.
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.

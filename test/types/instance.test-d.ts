@@ -51,6 +51,18 @@ expectAssignable<FastifyInstance>(
   })
 )
 
+expectAssignable<FastifyInstance>(
+  server.setGenReqId(function (req) {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  })
+)
+
+function fastifySetGenReqId (req: RawRequestDefaultExpression) {
+  return 'foo'
+}
+server.setGenReqId(fastifySetGenReqId)
+
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 

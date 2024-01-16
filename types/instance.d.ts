@@ -484,6 +484,11 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
+   * Set a function that will generate a request-ids
+   */
+  setGenReqId(fn: (req: RawRequestDefaultExpression<RawServer>) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
    * Hook function that is called when creating a child logger instance for each request
    * which allows for modifying or adding child logger bindings and logger options, or
    * returning a completely custom child logger implementation.

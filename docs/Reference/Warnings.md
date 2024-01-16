@@ -23,6 +23,7 @@
     - [FSTDEP017](#FSTDEP017)
     - [FSTDEP018](#FSTDEP018)
     - [FSTDEP019](#FSTDEP019)
+    - [FSTDEP020](#FSTDEP020)
 
 
 ## Warnings
@@ -75,3 +76,4 @@ Deprecation codes are further supported by the Node.js CLI options:
 | <a id="FSTDEP017">FSTDEP017</a> | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
 | <a id="FSTDEP018">FSTDEP018</a> | You are accessing the deprecated `request.routerMethod` property. | Use `request.routeOptions.method`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
 | <a id="FSTDEP019">FSTDEP019</a> | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. | [#5032](https://github.com/fastify/fastify/pull/5032) [#5084](https://github.com/fastify/fastify/pull/5084) |
+| <a id="FSTDEP020">FSTDEP020</a> | You are using the deprecated `reply.getReponseTime()` method. | Use the `reply.elapsedTime` property instead. | [#5263](https://github.com/fastify/fastify/pull/5263) |

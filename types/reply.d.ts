@@ -40,6 +40,7 @@ export interface FastifyReply<
 > {
   raw: RawReply;
   context: FastifyReplyContext<ContextConfig>;
+  elapsedTime: number;
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
@@ -59,6 +60,9 @@ export interface FastifyReply<
   redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   callNotFound(): void;
+  /**
+   * @deprecated Use the Reply#elapsedTime property instead
+   */
   getResponseTime(): number;
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

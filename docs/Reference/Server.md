@@ -84,6 +84,7 @@ describes the properties available in that options object.
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [setChildLoggerFactory](#setchildloggerfactory)
+    - [setGenReqId](#setGenReqId)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -1639,6 +1640,45 @@ const fastify = require('fastify')({
 
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
+
+#### setGenReqId
+<a id="set-gen-req-id"></a>
+
+`fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
+for additional Fastify instances. It will receive the _raw_ incoming request as a
+parameter. The provided function should not throw an Error in any case.
+
+Especially in distributed systems, you may want to override the default ID
+generation behavior to handle custom ways of generating different IDs in
+order to handle different use cases. Such as observability or webhooks plugins.
+
+For example:
+```js
+const fastify = require('fastify')({
+  genReqId: (req) => {
+    return 'base'
+  }
+})
+
+fastify.register((instance, opts, done) => {
+  instance.setGenReqId((req) => {
+    // custom request ID for `/webhooks`
+    return 'webhooks-id'
+  })
+  done()
+}, { prefix: '/webhooks' })
+
+fastify.register((instance, opts, done) => {
+  instance.setGenReqId((req) => {
+    // custom request ID for `/observability`
+    return 'observability-id'
+  })
+  done()
+}, { prefix: '/observability' })
+```
+
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set a different request ID.
 
 #### addConstraintStrategy
 <a id="addConstraintStrategy"></a>

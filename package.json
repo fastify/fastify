@@ -141,7 +141,7 @@
   "bugs": {
     "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://www.fastify.dev/",
+  "homepage": "https://fastify.dev/",
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/fastify"

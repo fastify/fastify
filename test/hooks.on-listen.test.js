@@ -304,6 +304,25 @@ test('localhost onListen encapsulation should be called in order', t => {
   })
 })
 
+test('localhost onListen encapsulation with only nested hook', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(async (child, o) => {
+    await child.register(async (child2, o) => {
+      child2.addHook('onListen', function (done) {
+        t.pass()
+        done()
+      })
+    })
+  })
+  await fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})
+
 test('localhost onListen encapsulation should be called in order and should log errors as warnings and continue', t => {
   t.plan(7)
   const stream = split(JSON.parse)

@@ -220,9 +220,6 @@ section.
 - [`apitally`](https://github.com/apitally/nodejs-client) Fastify plugin to
   integrate with [Apitally](https://apitally.io), a simple API monitoring &
   API key management solution.
-- [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
-  Run an [Apollo Server](https://github.com/apollographql/apollo-server) to
-  serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware

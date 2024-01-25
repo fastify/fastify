@@ -33,6 +33,8 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
+    - [ReadableStream](#send-readablestream)
+    - [Response](#send-response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)

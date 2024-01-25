@@ -9,6 +9,7 @@ const { ReadableStream } = require('node:stream/web')
 
 if (semver.lt(process.versions.node, '18.0.0')) {
   t.skip('Response or ReadableStream not available, skipping test')
+  process.exit(0)
 }
 
 test('should response with a ReadableStream', async (t) => {

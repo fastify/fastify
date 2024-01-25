@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('../fastify')
 const fs = require('node:fs')
 const semver = require('semver')
-const { ReadableStream } = require('node:stream/web')
+const { Readable } = require('node:stream')
 
 if (semver.lt(process.versions.node, '18.0.0')) {
   t.skip('Response or ReadableStream not available, skipping test')
@@ -18,8 +18,8 @@ test('should response with a ReadableStream', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(200).send(ReadableStream.from(stream))
+    const stream = fs.createReadStream(__filename)
+    reply.code(200).send(Readable.toWeb(stream))
   })
 
   const {
@@ -39,8 +39,8 @@ test('should response with a Response', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    const stream = fs.createReadStream(__filename, 'utf8')
-    reply.send(new Response(ReadableStream.from(stream), {
+    const stream = fs.createReadStream(__filename)
+    reply.send(new Response(Readable.toWeb(stream), {
       status: 200,
       headers: {
         hello: 'world'
@@ -67,8 +67,8 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(500).send(ReadableStream.from(stream))
+    const stream = fs.createReadStream(__filename)
+    reply.code(500).send(Readable.toWeb(stream))
   })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
@@ -100,8 +100,8 @@ test('able to use in onSend hook - Response', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    const stream = fs.createReadStream(__filename, 'utf8')
-    reply.send(new Response(ReadableStream.from(stream), {
+    const stream = fs.createReadStream(__filename)
+    reply.send(new Response(Readable.toWeb(stream), {
       status: 500,
       headers: {
         hello: 'world'
@@ -139,7 +139,7 @@ test('Error when Response.bodyUsed', async (t) => {
 
   fastify.get('/', async function (request, reply) {
     const stream = fs.createReadStream(__filename)
-    const response = new Response(ReadableStream.from(stream), {
+    const response = new Response(Readable.toWeb(stream), {
       status: 200,
       headers: {
         hello: 'world'

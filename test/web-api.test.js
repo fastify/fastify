@@ -4,7 +4,12 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('../fastify')
 const fs = require('node:fs')
+const semver = require('semver')
 const { ReadableStream } = require('node:stream/web')
+
+if (semver.lt(process.versions.node, '18.0.0')) {
+  t.skip('Response or ReadableStream not available, skipping test')
+}
 
 test('should response with a ReadableStream', async (t) => {
   t.plan(2)

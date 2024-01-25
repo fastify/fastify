@@ -6,6 +6,7 @@ const Fastify = require('../fastify')
 const fs = require('node:fs')
 const semver = require('semver')
 const { Readable } = require('node:stream')
+const { fetch: undiciFetch } = require('undici')
 
 if (semver.lt(process.versions.node, '18.0.0')) {
   t.skip('Response or ReadableStream not available, skipping test')
@@ -156,4 +157,52 @@ test('Error when Response.bodyUsed', async (t) => {
   t.equal(response.statusCode, 500)
   const body = response.json()
   t.equal(body.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
+})
+
+test('allow to pipe with fetch', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/', function (request, reply) {
+    return fetch(`${fastify.listeningOrigin}/fetch`, {
+      method: 'GET'
+    })
+  })
+
+  fastify.get('/fetch', function (request, reply) {
+    reply.code(200).send({ ok: true })
+  })
+
+  await fastify.listen()
+
+  const response = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.equal(response.statusCode, 200)
+  t.same(response.json(), { ok: true })
+})
+
+test('allow to pipe with undici.fetch', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/', function (request, reply) {
+    return undiciFetch(`${fastify.listeningOrigin}/fetch`, {
+      method: 'GET'
+    })
+  })
+
+  fastify.get('/fetch', function (request, reply) {
+    reply.code(200).send({ ok: true })
+  })
+
+  await fastify.listen()
+
+  const response = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.equal(response.statusCode, 200)
+  t.same(response.json(), { ok: true })
 })

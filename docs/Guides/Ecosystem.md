@@ -617,7 +617,7 @@ middlewares into Fastify plugins
 - [`fastify-sqlite`](https://github.com/Eomm/fastify-sqlite) connects your
   application to a sqlite3 database.
 - [`fastify-sqlite-typed`](https://github.com/yoav0gal/fastify-sqlite-typed) connects
-  your application to a SQLite database with full typescript support.
+  your application to a SQLite database with full Typescript support.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide

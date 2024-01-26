@@ -386,7 +386,7 @@ section.
   Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin
   that protects endpoints by checking authenticated user roles and/or scopes.
-- [`fastify-hana`](hhttps://github.com/yoav0gal/fastify-hana) connects your
+- [`fastify-hana`](https://github.com/yoav0gal/fastify-hana) connects your
   application to [`SAP-HANA`](https://help.sap.com/docs/SAP_HANA_CLIENT).
 - [`fastify-hashids`](https://github.com/andersonjoseph/fastify-hashids) A Fastify
   plugin to encode/decode IDs using [hashids](https://github.com/niieani/hashids.js).

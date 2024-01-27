@@ -55,7 +55,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
-> If you're using ECMAScript Modules (ESM) in your project, ensure to
+> If you are using ECMAScript Modules (ESM) in your project, be sure to
 > include "type": "module" in your package.json.
 >```js
 >{

@@ -52,6 +52,7 @@
     - [FST_ERR_BAD_STATUS_CODE](#fst_err_bad_status_code)
     - [FST_ERR_BAD_TRAILER_NAME](#fst_err_bad_trailer_name)
     - [FST_ERR_BAD_TRAILER_VALUE](#fst_err_bad_trailer_value)
+    - [FST_ERR_ERROR_CAUSE_ALREADY_PRESENT](#fst_err_error_cause_already_present)
     - [FST_ERR_FAILED_ERROR_SERIALIZATION](#fst_err_failed_error_serialization)
     - [FST_ERR_MISSING_SERIALIZATION_FN](#fst_err_missing_serialization_fn)
     - [FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN](#fst_err_missing_contenttype_serialization_fn)
@@ -319,6 +320,7 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_bad_status_code">FST_ERR_BAD_STATUS_CODE</a> | The status code is not valid. | Use a valid status code. | [#2082](https://github.com/fastify/fastify/pull/2082) |
 | <a id="fst_err_bad_trailer_name">FST_ERR_BAD_TRAILER_NAME</a> | Called `reply.trailer` with an invalid header name. | Use a valid header name. | [#3794](https://github.com/fastify/fastify/pull/3794) |
 | <a id="fst_err_bad_trailer_value">FST_ERR_BAD_TRAILER_VALUE</a> | Called `reply.trailer` with an invalid type. Expected a function. | Use a function. | [#3794](https://github.com/fastify/fastify/pull/3794) |
+| <a id="fst_err_error_cause_already_present">FST_ERR_ERROR_CAUSE_ALREADY_PRESENT</a> | An error handler threw an error with the `cause` property set, so Fastify will not set the cause to the original error. | If used, ensure the cause property is as expected. | [#5222](https://github.com/fastify/fastify/pull/5222) |
 | <a id="fst_err_failed_error_serialization">FST_ERR_FAILED_ERROR_SERIALIZATION</a> | Failed to serialize an error. | - | [#4601](https://github.com/fastify/fastify/pull/4601) |
 | <a id="fst_err_missing_serialization_fn">FST_ERR_MISSING_SERIALIZATION_FN</a> | Missing serialization function. | Add a serialization function. | [#3970](https://github.com/fastify/fastify/pull/3970) |
 | <a id="fst_err_missing_contenttype_serialization_fn">FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN</a> | Missing `Content-Type` serialization function. | Add a serialization function. | [#4264](https://github.com/fastify/fastify/pull/4264) |

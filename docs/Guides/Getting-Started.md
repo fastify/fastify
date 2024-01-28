@@ -55,6 +55,14 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
+> If you are using ECMAScript Modules (ESM) in your project, be sure to
+> include "type": "module" in your package.json.
+>```js
+>{
+>  "type": "module"
+>}
+>```
+
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.
 
 ```js
@@ -172,6 +180,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
+
 ```js
 // our-first-route.js
 
@@ -186,6 +195,10 @@ async function routes (fastify, options) {
   })
 }
 
+//ESM
+export default routes;
+
+// CommonJs
 module.exports = routes
 ```
 In this example, we used the `register` API, which is the core of the Fastify

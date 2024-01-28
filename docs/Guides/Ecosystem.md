@@ -220,9 +220,6 @@ section.
 - [`apitally`](https://github.com/apitally/nodejs-client) Fastify plugin to
   integrate with [Apitally](https://apitally.io), a simple API monitoring &
   API key management solution.
-- [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
-  Run an [Apollo Server](https://github.com/apollographql/apollo-server) to
-  serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
@@ -619,6 +616,8 @@ middlewares into Fastify plugins
   HTTP part of the request.
 - [`fastify-sqlite`](https://github.com/Eomm/fastify-sqlite) connects your
   application to a sqlite3 database.
+- [`fastify-sqlite-typed`](https://github.com/yoav0gal/fastify-sqlite-typed) connects
+  your application to a SQLite database with full Typescript support.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide

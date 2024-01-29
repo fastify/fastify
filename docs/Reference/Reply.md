@@ -33,6 +33,8 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
+    - [ReadableStream](#send-readablestream)
+    - [Response](#send-response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -755,6 +757,52 @@ fastify.get('/streams', function (request, reply) {
   reply.send(typedArray)
 })
 ```
+
+#### ReadableStream
+<a id="send-readablestream"></a>
+
+`ReadableStream` will be treated as a node stream mentioned above,
+the content is considered to be pre-serialized, so they will be 
+sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(ReadableStream.from(stream))
+})
+```
+
+#### Response
+<a id="send-response"></a>
+
+`Response` allows to manage the reply payload, status code and
+headers in one place. The payload provided inside `Response` is
+considered to be pre-serialized, so they will be sent unmodified 
+without response validation.
+
+Plese be aware when using `Response`, the status code and headers
+will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
+Such behavior is based on `Response` only allow `readonly` status
+code and headers. The data is not allow to be bi-direction editing,
+and may confuse when checking the `payload` in `onSend` hooks.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  const readableStream = ReadableStream.from(stream)
+  const response = new Response(readableStream, {
+    status: 200,
+    headers: { 'content-type': 'application/octet-stream' }
+  })
+  reply.send(response)
+})
+```
+
 
 #### Errors
 <a id="errors"></a>

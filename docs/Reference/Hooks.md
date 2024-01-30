@@ -232,7 +232,7 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > `null`.
 
 Note: If you change the payload, you may only change it to a `string`, a
-`Buffer`, a `stream`, or `null`.
+`Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
 ### onResponse

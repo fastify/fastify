@@ -339,6 +339,16 @@ test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
   t.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_REP_RESPONSE_BODY_CONSUMED()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
+  t.equal(error.message, 'Response.body is already consumed.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof Error)
+})
+
 test('FST_ERR_REP_ALREADY_SENT', t => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_ALREADY_SENT('/hello', 'GET')

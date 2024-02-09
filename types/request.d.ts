@@ -24,9 +24,9 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   method: string;
   // `url` can be `undefined` for instance when `request.is404` is true
   url: string | undefined;
-  bodyLimit:number;
-  attachValidation:boolean;
-  logLevel:string;
+  bodyLimit: number;
+  attachValidation: boolean;
+  logLevel: string;
   version: string | undefined;
   exposeHeadRoute: boolean;
   prefixTrailingSlash: string;

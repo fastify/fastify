@@ -196,8 +196,7 @@ documentation below to learn more about what is available.
 To validate your requests and responses you can use JSON Schema files. If you
 didn't know already, defining schemas for your Fastify routes can increase their
 throughput! Check out the [Validation and
-Serialization](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/)
-documentation for more info.
+Serialization](./Validation-and-Serialization.md) documentation for more info.
 
 Also it has the advantage to use the defined type within your handlers
 (including pre-validation, etc.).
@@ -212,7 +211,7 @@ Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 - `@fastify/type-provider-typebox`
 
 They simplify schema validation setup and you can read more about them in [Type
-Providers](https://fastify.dev/docs/latest/Reference/Type-Providers/) page.
+Providers](./Type-Providers.md) page.
 
 Below is how to setup schema validation using vanilla `typebox` and
 `json-schema-to-ts` packages.

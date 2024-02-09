@@ -204,7 +204,7 @@
     "@fastify/error": "^3.4.0",
     "@fastify/fast-json-stringify-compiler": "^4.3.0",
     "abstract-logging": "^2.0.1",
-    "avvio": "^8.2.1",
+    "avvio": "^8.3.0",
     "fast-content-type-parse": "^1.1.0",
     "fast-json-stringify": "^5.8.0",
     "find-my-way": "^8.0.0",

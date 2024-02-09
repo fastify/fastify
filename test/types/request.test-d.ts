@@ -1,4 +1,3 @@
-import pino from 'pino'
 import { expectAssignable, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
@@ -83,6 +82,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifySchema>(request.routeSchema)
   expectType<FastifySchema>(request.routeOptions.schema)
   expectType<RouteHandlerMethod>(request.routeOptions.handler)
+  expectType<string | undefined>(request.routeOptions.url)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}

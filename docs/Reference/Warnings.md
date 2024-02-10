@@ -29,8 +29,21 @@
 ## Warnings
 
 ### Warnings In Fastify
-Warnings are enabled by default. They can be disabled by using any
-of the following methods:
+
+Fastify utilizes Node.js's [warning event](https://nodejs.org/api/process.html#event-warning)
+API to notify users of deprecated features and known coding mistakes. Fastify's
+warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes on warning
+code. When encountering such a warning, it is highly recommended that the
+cause of the warning be determined through use of the
+[`--trace-warnings`](https://nodejs.org/api/cli.html#--trace-warnings) and
+[`--trace-deprecation`](https://nodejs.org/api/cli.html#--trace-deprecation)
+flags. These will produce stack traces pointing out where the issue occurs
+in the application's code. Issues opened about warnings without including
+this information may be closed due to lack of information.
+
+In addition to tracing, warnings can also be disabled. It is not recommended to
+disable warnings as a matter of course, but if necessary, they can be disabled
+by using any of the following methods:
 
 - setting the `NODE_NO_WARNINGS` environment variable to `1`
 - passing the `--no-warnings` flag to the node process

@@ -11,18 +11,18 @@ export interface FastifyTypeProvider {
   readonly output: unknown,
 }
 
-export interface FastifySeperatedTypeProvider {
+export interface FastifySeparatedTypeProvider {
   readonly validator: FastifyTypeProvider,
   readonly serializer: FastifyTypeProvider,
 }
 
-type AnyFastifyTypeProvider = FastifyTypeProvider | FastifySeperatedTypeProvider
+type AnyFastifyTypeProvider = FastifyTypeProvider | FastifySeparatedTypeProvider
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FastifyTypeProviderDefault extends FastifyTypeProvider {}
 
-export type CallTypeProvider<F extends AnyFastifyTypeProvider, I, T extends keyof FastifySeperatedTypeProvider>
-  = F extends FastifySeperatedTypeProvider ? (F[T] & { schema: I })['output']
+export type CallTypeProvider<F extends AnyFastifyTypeProvider, I, T extends keyof FastifySeparatedTypeProvider>
+  = F extends FastifySeparatedTypeProvider ? (F[T] & { schema: I })['output']
     : F extends FastifyTypeProvider ? (F & { input: I })['output']
       : never
 

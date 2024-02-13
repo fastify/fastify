@@ -22,7 +22,7 @@ type AnyFastifyTypeProvider = FastifyTypeProvider | FastifySeparatedTypeProvider
 export interface FastifyTypeProviderDefault extends FastifyTypeProvider {}
 
 export type CallTypeProvider<F extends AnyFastifyTypeProvider, I, T extends keyof FastifySeparatedTypeProvider>
-  = F extends FastifySeparatedTypeProvider ? (F[T] & { schema: I })['output']
+  = F extends FastifySeparatedTypeProvider ? (F[T] & { input: I })['output']
     : F extends FastifyTypeProvider ? (F & { input: I })['output']
       : never
 

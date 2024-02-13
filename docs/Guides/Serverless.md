@@ -203,7 +203,7 @@ const fastifyFunction = async (request, reply) => {
   fastify.server.emit('request', request, reply)
 }
 
-export.fastifyFunction = fastifyFunction;
+exports.fastifyFunction = fastifyFunction;
 ```
 
 ### Local test

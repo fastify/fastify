@@ -22,7 +22,7 @@ import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
 import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
-import { FastifyTypeProvider, FastifySeparatedTypeProvider, FastifyLegacyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
+import { FastifyTypeProvider, FastifyTypeProviderSpecs, FastifySeparatedTypeProvider, FastifyLegacyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 
 declare module '@fastify/error' {
@@ -185,7 +185,7 @@ declare namespace fastify {
     HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, // './types/utils'
     DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onListenAsyncHookHandler, onListenHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler, // './types/hooks'
     FastifyServerFactory, FastifyServerFactoryHandler, // './types/serverFactory'
-    FastifyLegacyTypeProvider as FastifyTypeProvider, FastifySeparatedTypeProvider, FastifyTypeProviderDefault, // './types/type-provider'
+    FastifyTypeProviderSpecs, FastifyLegacyTypeProvider as FastifyTypeProvider, FastifySeparatedTypeProvider, FastifyTypeProviderDefault, // './types/type-provider'
     FastifyErrorCodes, // './types/errors'
   }
   // named export

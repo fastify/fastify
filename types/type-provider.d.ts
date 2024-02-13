@@ -6,7 +6,7 @@ import { RecordKeysToLowercase } from './utils'
 // TypeProvider
 // -----------------------------------------------------------------------------------------------
 
-interface FastifyTypeProviderSpecs {
+export interface FastifyTypeProviderSpecs {
   readonly input: unknown,
   readonly output: unknown,
 }

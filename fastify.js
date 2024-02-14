@@ -71,7 +71,8 @@ const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
-  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
+  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -843,6 +844,10 @@ function fastify (options) {
   // wrapper that we expose to the user for configure the custom error handler
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
+
+    if (typeof func !== 'function') {
+      throw new FST_ERR_ERROR_HANDLER_NOT_FN()
+    }
 
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this

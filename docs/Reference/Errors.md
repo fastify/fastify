@@ -92,6 +92,7 @@
     - [FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE](#fst_err_plugin_not_present_in_instance)
     - [FST_ERR_VALIDATION](#fst_err_validation)
     - [FST_ERR_LISTEN_OPTIONS_INVALID](#fst_err_listen_options_invalid)
+    - [FST_ERR_ERROR_HANDLER_NOT_FN](#fst_err_error_handler_not_fn)
 
 ### Error Handling In Node.js
 <a id="error-handling"></a>
@@ -361,4 +362,5 @@ but the body is being consumed. | Make sure you don't consume the `Response.body
 | <a id="fst_err_plugin_not_present_in_instance">FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE</a> | The decorator is not present in the instance. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_validation">FST_ERR_VALIDATION</a> | The Request failed the payload validation. | Check the request payload. | [#4824](https://github.com/fastify/fastify/pull/4824) |
 | <a id="fst_err_listen_options_invalid">FST_ERR_LISTEN_OPTIONS_INVALID</a> | Invalid listen options. | Check the listen options. | [#4886](https://github.com/fastify/fastify/pull/4886) |
+| <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) |
 

@@ -332,7 +332,7 @@ Final step is to export the Fastify app instance to Firebase's own
 `onRequest()` function so it can pass the request and reply objects to it:
 
 ```js
-exports.app = onRequest(fastifyApp);
+exports.app = onRequest(fastifyApp)
 ```
 
 ### Local test

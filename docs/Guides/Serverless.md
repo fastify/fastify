@@ -286,13 +286,13 @@ plugins, hooks and other settings. As follows:
 ```js
 const fastify = require("fastify")({
   logger: true,
-});
+})
 
 const fastifyApp = async (request, reply) => {
-  await registerRoutes(fastify);
-  await fastify.ready();
-  fastify.server.emit("request", request, reply);
-};
+  await registerRoutes(fastify)
+  await fastify.ready()
+  fastify.server.emit("request", request, reply)
+}
 ```
 
 ### Add Custom `contentTypeParser` to Fastify instance and define endpoints

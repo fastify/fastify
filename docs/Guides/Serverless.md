@@ -305,17 +305,17 @@ request signatures to validate HTTP webhooks.
 Add as follows to the `registerRoutes()` function:
 
 ```js
-async function registerRoutes(fastify) {
+async function registerRoutes (fastify) {
   fastify.addContentTypeParser("application/json", {}, (req, payload, done) => {
     // useful to include the request's raw body on the `req` object that will
     // later be available in your other routes so you can calculate the HMAC
     // if needed
-    req.rawBody = payload.rawBody;
+    req.rawBody = payload.rawBody
 
     // payload.body is already the parsed JSON so we just fire the done callback
     // with it
-    done(null, payload.body);
-  });
+    done(null, payload.body)
+  })
 
   // define your endpoints here...
   fastify.post("/some-route-here", async (request, reply) => {}

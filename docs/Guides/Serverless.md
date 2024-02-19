@@ -274,7 +274,7 @@ We use the `onRequest` function to wrap our Fastify application instance.
 As such, we'll begin with importing it to the code:
 
 ```js
-const { onRequest } = require("firebase-functions/v2/https");
+const { onRequest } = require("firebase-functions/v2/https")
 ```
 
 ### Creation of Fastify instance

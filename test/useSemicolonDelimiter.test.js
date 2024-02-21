@@ -5,30 +5,27 @@ const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
-test('use semicolon delimiter default true', t => {
+test('use semicolon delimiter default false', t => {
   t.plan(4)
 
   const fastify = Fastify({})
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.get('/1234', (req, reply) => {
+  fastify.get('/1234;foo=bar', (req, reply) => {
     reply.send(req.query)
   })
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    console.log('http://localhost:' + fastify.server.address().port + '/1234;foo=bar')
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        foo: 'bar'
-      })
+      t.same(JSON.parse(body), {})
     })
   })
 })

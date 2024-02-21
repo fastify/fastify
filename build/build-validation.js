@@ -42,7 +42,7 @@ const defaultInitOptions = {
   requestIdLogLabel: 'reqId',
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
-  useSemicolonDelimiter: true
+  useSemicolonDelimiter: false
 }
 
 const schema = {

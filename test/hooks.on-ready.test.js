@@ -295,7 +295,7 @@ t.test('onReady cannot add lifecycle hooks', t => {
       t.ok(error)
       t.equal(error.message, 'Root plugin has already booted')
       // TODO: look where the error pops up
-      t.equal(error.code, 'AVV_ERR_PLUGIN_NOT_VALID')
+      t.equal(error.code, 'AVV_ERR_ROOT_PLG_BOOTED')
       done(error)
     }
   })

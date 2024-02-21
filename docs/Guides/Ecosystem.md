@@ -13,7 +13,7 @@ section.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to the `Accept` header.
 - [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save
-  multiple schemas and decide which one to use to serialize the payload
+  multiple schemas and decide which one to use to serialize the payload.
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
@@ -137,11 +137,11 @@ section.
   throttling the download speed of a request.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
-  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
+  [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)
   for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts).
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
   Fastify
-  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
+  [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)
   for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
@@ -220,9 +220,6 @@ section.
 - [`apitally`](https://github.com/apitally/nodejs-client) Fastify plugin to
   integrate with [Apitally](https://apitally.io), a simple API monitoring &
   API key management solution.
-- [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
-  Run an [Apollo Server](https://github.com/apollographql/apollo-server) to
-  serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
@@ -389,6 +386,8 @@ section.
   Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin
   that protects endpoints by checking authenticated user roles and/or scopes.
+- [`fastify-hana`](https://github.com/yoav0gal/fastify-hana) connects your
+  application to [`SAP-HANA`](https://help.sap.com/docs/SAP_HANA_CLIENT).
 - [`fastify-hashids`](https://github.com/andersonjoseph/fastify-hashids) A Fastify
   plugin to encode/decode IDs using [hashids](https://github.com/niieani/hashids.js).
 - [`fastify-hasura`](https://github.com/ManUtopiK/fastify-hasura) A Fastify
@@ -398,6 +397,11 @@ section.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera
   plugin, for writing reliable & fault-tolerant microservices with
   [nats.io](https://nats.io/).
+- [`fastify-hl7`](https://github.com/Bugs5382/fastify-hl7) A Fastify Plugin to
+  create a server, build, and send HL7 formatted Hl7 messages. Using
+  [node-hl7-client](https://github.com/Bugs5382/node-hl7-client) and
+  [node-hl7-server](https://github.com/Bugs5382/node-hl7-server) as the
+  underlining technology to do this.
 - [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin
   to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context)
@@ -551,7 +555,7 @@ middlewares into Fastify plugins
   [qs](https://github.com/ljharb/qs).
 - [`fastify-rabbitmq`](https://github.com/Bugs5382/fastify-rabbitmq) Fastify
   RabbitMQ plugin that uses
-  [node-amqp-connection-manager](https://github.com/jwalton/node-amqp-connection-manager)
+  [node-rabbitmq-client](https://github.com/cody-greene/node-rabbitmq-client)
   plugin as a wrapper.
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
@@ -614,6 +618,8 @@ middlewares into Fastify plugins
   HTTP part of the request.
 - [`fastify-sqlite`](https://github.com/Eomm/fastify-sqlite) connects your
   application to a sqlite3 database.
+- [`fastify-sqlite-typed`](https://github.com/yoav0gal/fastify-sqlite-typed) connects
+  your application to a SQLite database with full Typescript support.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
@@ -639,11 +645,11 @@ middlewares into Fastify plugins
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
   Fastify
-  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
+  [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)
   for [@effect/schema](https://github.com/effect-ts/schema).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
-  [type provider](https://www.fastify.dev/docs/latest/Reference/Type-Providers/)
+  [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.

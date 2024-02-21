@@ -1093,7 +1093,7 @@ server.get<requestGeneric>('/', async (request, reply) => {
 ```
 
 If you want to see a detailed example of using this interface check out the
-Learn by Example section: [JSON Schema](#jsonschema).
+Learn by Example section: [JSON Schema](#json-schema).
 
 ##### fastify.RawRequestDefaultExpression\<[RawServer][RawServerGeneric]\>
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L23)

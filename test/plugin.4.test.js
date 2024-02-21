@@ -23,7 +23,7 @@ test('pluginTimeout', t => {
       "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
-    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+    t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
   })
 })
 
@@ -41,7 +41,7 @@ test('pluginTimeout - named function', t => {
       "fastify-plugin: Plugin did not start in time: 'nameFunction'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
-    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+    t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
   })
 })
 
@@ -61,7 +61,7 @@ test('pluginTimeout default', t => {
       "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
-    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+    t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
   })
 
   t.teardown(clock.uninstall)

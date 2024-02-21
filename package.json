@@ -141,7 +141,17 @@
   "bugs": {
     "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://www.fastify.dev/",
+  "homepage": "https://fastify.dev/",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/fastify"
+    },
+    {
+      "type": "opencollective",
+      "url": "https://opencollective.com/fastify"
+    }
+  ],
   "devDependencies": {
     "@fastify/pre-commit": "^2.0.2",
     "@sinclair/typebox": "^0.31.17",
@@ -194,7 +204,7 @@
     "@fastify/error": "^3.4.0",
     "@fastify/fast-json-stringify-compiler": "^4.3.0",
     "abstract-logging": "^2.0.1",
-    "avvio": "^8.2.1",
+    "avvio": "^8.3.0",
     "fast-content-type-parse": "^1.1.0",
     "fast-json-stringify": "^5.8.0",
     "find-my-way": "^8.0.0",

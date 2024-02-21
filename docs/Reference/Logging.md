@@ -61,9 +61,9 @@ the Fastify instance:
 fastify.log.info('Something important happened!');
 ```
 
-If you want to pass some options to the logger, just pass them to Fastify. You
-can find all available options in the [Pino
-documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream).
+If you want to pass some options to the logger, just pass them to Fastify.
+You can find all available options in the
+[Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#options).
 If you want to specify a file destination, use:
 
 ```js

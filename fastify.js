@@ -28,7 +28,8 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kChildLoggerFactory
+  kChildLoggerFactory,
+  kGenReqId
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -42,7 +43,7 @@ const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const { reqIdGenFactory } = require('./lib/reqIdGenFactory')
+const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
@@ -70,7 +71,8 @@ const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
-  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
+  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -138,7 +140,6 @@ function fastify (options) {
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
-  options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
@@ -248,6 +249,7 @@ function fastify (options) {
     [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
+    [kGenReqId]: genReqId,
     // routing method
     routing: httpHandler,
     // routes shorthand methods
@@ -329,6 +331,8 @@ function fastify (options) {
     setSchemaController,
     setReplySerializer,
     setSchemaErrorFormatter,
+    // set generated request id
+    setGenReqId,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -425,6 +429,10 @@ function fastify (options) {
       get () {
         return this[kErrorHandler].func
       }
+    },
+    genReqId: {
+      configurable: true,
+      get () { return this[kGenReqId] }
     }
   })
 
@@ -767,7 +775,7 @@ function fastify (options) {
 
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
-      const id = genReqId(req)
+      const id = getGenReqId(onBadUrlContext.server, req)
       const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -792,7 +800,7 @@ function fastify (options) {
     return function onAsyncConstraintError (err) {
       if (err) {
         if (frameworkErrors) {
-          const id = genReqId(req)
+          const id = getGenReqId(onBadUrlContext.server, req)
           const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -861,6 +869,10 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
+    if (typeof func !== 'function') {
+      throw new FST_ERR_ERROR_HANDLER_NOT_FN()
+    }
+
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }
@@ -895,6 +907,13 @@ function fastify (options) {
       }
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
     }
+  }
+
+  function setGenReqId (func) {
+    throwIfAlreadyStarted('Cannot call "setGenReqId"!')
+
+    this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
+    return this
   }
 }
 

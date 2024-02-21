@@ -4,6 +4,7 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
+  - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
@@ -32,6 +33,8 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
+    - [ReadableStream](#send-readablestream)
+    - [Response](#send-response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -46,6 +49,8 @@ object that exposes the following functions and properties:
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
+- `.elapsedTime` - Returns the amount of time passed
+since the request was received by Fastify.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -85,6 +90,8 @@ object that exposes the following functions and properties:
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
+- `.getResponseTime()` - Deprecated, returns the amount of time passed
+since the request was received by Fastify.
 - `.context` - Deprecated, access the [Request's context](./Request.md) property.
 
 ```js
@@ -109,6 +116,19 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 <a id="code"></a>
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
+
+### .elapsedTime
+<a id="elapsedTime"></a>
+
+Invokes the custom response time getter to calculate the amount of time passed
+since the request was received by Fastify.
+
+Note that unless this function is called in the [`onResponse`
+hook](./Hooks.md#onresponse) it will always return `0`.
+
+```js
+const milliseconds = reply.elapsedTime
+```
 
 ### .statusCode
 <a id="statusCode"></a>
@@ -327,7 +347,7 @@ reply.callNotFound()
 <a id="getResponseTime"></a>
 
 Invokes the custom response time getter to calculate the amount of time passed
-since the request was started.
+since the request was received by Fastify.
 
 Note that unless this function is called in the [`onResponse`
 hook](./Hooks.md#onresponse) it will always return `0`.
@@ -335,6 +355,9 @@ hook](./Hooks.md#onresponse) it will always return `0`.
 ```js
 const milliseconds = reply.getResponseTime()
 ```
+
+*Note: This method is deprecated and will be removed in `fastify@5`.
+Use the [.elapsedTime](#elapsedtime) property instead.*
 
 ### .type(contentType)
 <a id="type"></a>
@@ -734,6 +757,52 @@ fastify.get('/streams', function (request, reply) {
   reply.send(typedArray)
 })
 ```
+
+#### ReadableStream
+<a id="send-readablestream"></a>
+
+`ReadableStream` will be treated as a node stream mentioned above,
+the content is considered to be pre-serialized, so they will be 
+sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(ReadableStream.from(stream))
+})
+```
+
+#### Response
+<a id="send-response"></a>
+
+`Response` allows to manage the reply payload, status code and
+headers in one place. The payload provided inside `Response` is
+considered to be pre-serialized, so they will be sent unmodified 
+without response validation.
+
+Plese be aware when using `Response`, the status code and headers
+will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
+Such behavior is based on `Response` only allow `readonly` status
+code and headers. The data is not allow to be bi-direction editing,
+and may confuse when checking the `payload` in `onSend` hooks.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  const readableStream = ReadableStream.from(stream)
+  const response = new Response(readableStream, {
+    status: 200,
+    headers: { 'content-type': 'application/octet-stream' }
+  })
+  reply.send(response)
+})
+```
+
 
 #### Errors
 <a id="errors"></a>

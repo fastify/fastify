@@ -21,13 +21,27 @@
     - [FSTDEP017](#FSTDEP017)
     - [FSTDEP018](#FSTDEP018)
     - [FSTDEP019](#FSTDEP019)
+    - [FSTDEP020](#FSTDEP020)
 
 
 ## Warnings
 
 ### Warnings In Fastify
-Warnings are enabled by default. They can be disabled by using any
-of the following methods:
+
+Fastify utilizes Node.js's [warning event](https://nodejs.org/api/process.html#event-warning)
+API to notify users of deprecated features and known coding mistakes. Fastify's
+warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes on warning
+code. When encountering such a warning, it is highly recommended that the
+cause of the warning be determined through use of the
+[`--trace-warnings`](https://nodejs.org/api/cli.html#--trace-warnings) and
+[`--trace-deprecation`](https://nodejs.org/api/cli.html#--trace-deprecation)
+flags. These will produce stack traces pointing out where the issue occurs
+in the application's code. Issues opened about warnings without including
+this information may be closed due to lack of information.
+
+In addition to tracing, warnings can also be disabled. It is not recommended to
+disable warnings as a matter of course, but if necessary, they can be disabled
+by using any of the following methods:
 
 - setting the `NODE_NO_WARNINGS` environment variable to `1`
 - passing the `--no-warnings` flag to the node process
@@ -71,3 +85,4 @@ Deprecation codes are further supported by the Node.js CLI options:
 | <a id="FSTDEP017">FSTDEP017</a> | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
 | <a id="FSTDEP018">FSTDEP018</a> | You are accessing the deprecated `request.routerMethod` property. | Use `request.routeOptions.method`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
 | <a id="FSTDEP019">FSTDEP019</a> | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. | [#5032](https://github.com/fastify/fastify/pull/5032) [#5084](https://github.com/fastify/fastify/pull/5084) |
+| <a id="FSTDEP020">FSTDEP020</a> | You are using the deprecated `reply.getReponseTime()` method. | Use the `reply.elapsedTime` property instead. | [#5263](https://github.com/fastify/fastify/pull/5263) |

@@ -34,7 +34,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v3
+            uses: actions/dependency-review-action@v4
 
   check-licenses:
     name: Check licenses

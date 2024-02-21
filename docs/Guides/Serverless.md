@@ -26,6 +26,7 @@ snippet of code.
 
 - [AWS](#aws)
 - [Google Cloud Functions](#google-cloud-functions)
+- [Google Firebase Functions](#google-firebase-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Platformatic Cloud](#platformatic-cloud)
@@ -203,7 +204,7 @@ const fastifyFunction = async (request, reply) => {
   fastify.server.emit('request', request, reply)
 }
 
-export.fastifyFunction = fastifyFunction;
+exports.fastifyFunction = fastifyFunction;
 ```
 
 ### Local test
@@ -259,6 +260,115 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 ### References
 - [Google Cloud Functions - Node.js Quickstart
   ](https://cloud.google.com/functions/docs/quickstart-nodejs)
+
+## Google Firebase Functions
+
+Follow this guide if you want to use Fastify as the HTTP framework for 
+Firebase Functions instead of the vanilla JavaScript router provided with
+`onRequest(async (req, res) => {}`.
+
+### The onRequest() handler
+
+We use the `onRequest` function to wrap our Fastify application instance.
+
+As such, we'll begin with importing it to the code:
+
+```js
+const { onRequest } = require("firebase-functions/v2/https")
+```
+
+### Creation of Fastify instance
+
+Create the Fastify instance and encapsulate the returned application instance
+in a function which will register routes, await the server's processing of 
+plugins, hooks and other settings. As follows:
+
+```js
+const fastify = require("fastify")({
+  logger: true,
+})
+
+const fastifyApp = async (request, reply) => {
+  await registerRoutes(fastify)
+  await fastify.ready()
+  fastify.server.emit("request", request, reply)
+}
+```
+
+### Add Custom `contentTypeParser` to Fastify instance and define endpoints
+
+Firebase Function's HTTP layer already parses the request
+and makes a JSON payload available. It also provides access
+to the raw body, unparsed, which is useful in order to calculate
+request signatures to validate HTTP webhooks.
+
+Add as follows to the `registerRoutes()` function:
+
+```js
+async function registerRoutes (fastify) {
+  fastify.addContentTypeParser("application/json", {}, (req, payload, done) => {
+    // useful to include the request's raw body on the `req` object that will
+    // later be available in your other routes so you can calculate the HMAC
+    // if needed
+    req.rawBody = payload.rawBody
+
+    // payload.body is already the parsed JSON so we just fire the done callback
+    // with it
+    done(null, payload.body)
+  })
+
+  // define your endpoints here...
+  fastify.post("/some-route-here", async (request, reply) => {}
+
+  fastify.get('/', async (request, reply) => {
+    reply.send({message: 'Hello World!'})
+  })
+}
+```
+
+### Export the function using Firebase onRequest
+
+Final step is to export the Fastify app instance to Firebase's own
+`onRequest()` function so it can pass the request and reply objects to it:
+
+```js
+exports.app = onRequest(fastifyApp)
+```
+
+### Local test
+
+Install the Firebase tools functions so you can use the CLI:
+
+```bash
+npm i -g firebase-tools
+```
+
+Then you can run your function locally with:
+
+```bash
+firebase emulators:start --only functions
+```
+
+### Deploy
+
+Deploy your Firebase Functions with:
+
+```bash
+firebase deploy --only functions
+```
+
+#### Read logs
+
+Use the Firebase tools CLI:
+
+```bash
+firebase functions:log
+```
+
+### References
+- [Fastify on Firebase Functions](https://github.com/lirantal/lemon-squeezy-firebase-webhook-fastify/blob/main/package.json)
+- [An article about HTTP webhooks on Firebase Functions and Fastify: A Practical Case Study with Lemon Squeezy](https://lirantal.com/blog/http-webhooks-firebase-functions-fastify-practical-case-study-lemon-squeezy)
+
 
 ## Google Cloud Run
 

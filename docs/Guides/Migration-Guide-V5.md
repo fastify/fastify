@@ -10,9 +10,11 @@ work after upgrading.
 
 ### `useSemicolonDelimiter` false by default
 
-Starting with v5, every Fastify instance will not support the use of semicolon
-delimiter by default in querystring. The behavior in v4 and eariler versions is
-non standard behavior and this change should have no effect on the standard
-implementation of Fastify. You can revert this behavior by setting
-`useSemicolonDelimiter: true` in the server options.
+Starting with v5, Fastify instances will no longer default to supporting the use
+of semicolon delimiters in the query string as they did in v4.
+This is due to it being non-standard
+behavior and not adhering to [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986#section-3.4).
+
+If you still wish to use semicolons as delimiters, you can do so by
+setting `useSemicolonDelimiter: true` in the server configuration.
 

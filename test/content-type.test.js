@@ -3,6 +3,24 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const {
+  FST_ERR_CTP_ALREADY_PRESENT
+} = require('../lib/errors')
+
+test('should trim contentTypeParser names', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.addContentTypeParser('text/html', function (req, done) {
+    done()
+  })
+  try {
+    fastify.addContentTypeParser('    text/html', function (req, done) {
+      done()
+    })
+  } catch (err) {
+    t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+  }
+})
 
 test('should remove content-type for setErrorHandler', async t => {
   t.plan(8)

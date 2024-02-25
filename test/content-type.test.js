@@ -7,6 +7,21 @@ const {
   FST_ERR_CTP_ALREADY_PRESENT
 } = require('../lib/errors')
 
+test('should lowercase contentTypeParser names', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.addContentTypeParser('text/html', function (req, done) {
+    done()
+  })
+  try {
+    fastify.addContentTypeParser('TEXT/html', function (req, done) {
+      done()
+    })
+  } catch (err) {
+    t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+  }
+})
+
 test('should trim contentTypeParser names', async t => {
   t.plan(1)
   const fastify = Fastify()

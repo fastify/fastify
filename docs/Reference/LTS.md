@@ -23,6 +23,12 @@ in this document:
    given Fastify release line. This implies that only the latest Node.js release
    of a given line is supported.
 
+4. Major releases will be tested and verified against all [N|solid](https://doc
+   s.nodesource.com/nsolid/5.0/docs) releases lines those released aligned with
+   the [Node.js LTS policy](https://github.com/nodejs/Release) within the LTS 
+   period of that given Fastify release line. This implies that only the latest
+   N|Solid release of a given line is supported.
+
 A "month" is defined as 30 consecutive days.
 
 > ## Security Releases and Semver
@@ -43,12 +49,12 @@ A "month" is defined as 30 consecutive days.
 ### Schedule
 <a id="lts-schedule"></a>
 
-| Version | Release Date | End Of LTS Date | Node.js              |
-| :------ | :----------- | :-------------- | :------------------- |
-| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11      |
-| 2.0.0   | 2019-02-25   | 2021-01-31      | 6, 8, 10, 12, 14     |
-| 3.0.0   | 2020-07-07   | 2023-06-30      | 10, 12, 14, 16, 18   |
-| 4.0.0   | 2022-06-08   | TBD             | 14, 16, 18, 20       |
+| Version | Release Date | End Of LTS Date | Node.js              | Nsolid(Node)   |
+| :------ | :----------- | :-------------- | :------------------- | :------------- |
+| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11      |                |
+| 2.0.0   | 2019-02-25   | 2021-01-31      | 6, 8, 10, 12, 14     |                |
+| 3.0.0   | 2020-07-07   | 2023-06-30      | 10, 12, 14, 16, 18   | v5(18)         |
+| 4.0.0   | 2022-06-08   | TBD             | 14, 16, 18, 20       | v5(18), v5(20) |
 
 ### CI tested operating systems
 <a id="supported-os"></a>
@@ -59,12 +65,12 @@ runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-gi
 for further details on what the latest virtual environment is in relation to the
 YAML workflow labels below:
 
-| OS      | YAML Workflow Label    | Package Manager           | Node.js      |
-|---------|------------------------|---------------------------|--------------|
-| Linux   | `ubuntu-latest`        | npm                       | 14,16,18,20  |
-| Linux   | `ubuntu-latest`        | yarn,pnpm                 | 14,16,18,20  |
-| Windows | `windows-latest`       | npm                       | 14,16,18,20  |
-| MacOS   | `macos-latest`         | npm                       | 14,16,18,20  |
+| OS      | YAML Workflow Label    | Package Manager           | Node.js      | Nsolid(Node)   |
+|---------|------------------------|---------------------------|--------------|----------------|
+| Linux   | `ubuntu-latest`        | npm                       | 14,16,18,20  | v5(18),v5(20)  |
+| Linux   | `ubuntu-latest`        | yarn,pnpm                 | 14,16,18,20  | v5(18),v5(20)  |
+| Windows | `windows-latest`       | npm                       | 14,16,18,20  | v5(18),v5(20)  |
+| MacOS   | `macos-latest`         | npm                       | 14,16,18,20  | v5(18),v5(20)  |
 
 Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines`
 flag.

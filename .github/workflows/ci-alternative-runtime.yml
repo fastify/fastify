@@ -1,4 +1,4 @@
-name: ci NSolid
+name: ci Alternative Runtimes
 
 on:
   push:
@@ -29,17 +29,19 @@ jobs:
         node-version: [18, 20]
         os: [macos-latest, ubuntu-latest, windows-latest]
         include:
-          - nsolid-version: 5
+          - runtime: nsolid
             node-version: 18
-          - nsolid-version: 5
+            nsolid-version: 5
+          - runtime: nsolid
             node-version: 20
-            
+            nsolid-version: 5
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       - uses: nodesource/setup-nsolid@v1
+        if: ${{ matrix.runtime == 'nsolid' }}
         with:
           node-version: ${{ matrix.node-version }}
           nsolid-version: ${{ matrix.nsolid-version }}

@@ -287,6 +287,8 @@ async function migrate() {
   });
 
   try {
+    await client.connect();
+
     const postgrator = new Postgrator({
       migrationPattern: path.join(__dirname, '/migrations/*'),
       driver: 'pg',

@@ -57,7 +57,7 @@ expectAssignable<InjectOptions>({ query: '' })
 fastify({ http2: true, https: {} }).inject().then((resp) => {
   expectAssignable<LightMyRequestResponse>(resp)
 })
-const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: LightMyRequestResponse) => {
+const lightMyRequestCallback: LightMyRequestCallback = (err: Error | undefined, response: LightMyRequestResponse | undefined) => {
   if (err) throw err
 }
 fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)

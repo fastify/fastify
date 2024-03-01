@@ -529,6 +529,8 @@ middlewares into Fastify plugins
   across every part of your server.
 - [`fastify-osm`](https://github.com/gzileni/fastify-osm) Fastify
   OSM plugin to run overpass queries by OpenStreetMap.
+- [`fastify-override`](https://github.com/matthyk/fastify-override)
+  Fastify plugin to override decorators, plugins and hooks for testing purposes
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker

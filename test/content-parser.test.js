@@ -45,7 +45,7 @@ test('hasContentTypeParser', t => {
 
 test('getParser', t => {
   test('should return matching parser', t => {
-    t.plan(3)
+    t.plan(4)
 
     const fastify = Fastify()
 
@@ -54,11 +54,12 @@ test('getParser', t => {
     fastify.addContentTypeParser('text/html', third)
 
     t.equal(fastify[keys.kContentTypeParser].getParser('application/t+xml').fn, second)
+    t.equal(fastify[keys.kContentTypeParser].getParser('  application/t+xml   ').fn, second)
     t.equal(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
     t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
   })
 
-  test('should return matching parser with caching', t => {
+  test('should return matching parser with caching /1', t => {
     t.plan(6)
 
     const fastify = Fastify()
@@ -67,10 +68,25 @@ test('getParser', t => {
 
     t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
     t.equal(fastify[keys.kContentTypeParser].cache.size, 0)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
     t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
     t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
+  })
+
+  test('should return matching parser with caching /2', t => {
+    t.plan(6)
+
+    const fastify = Fastify()
+
+    fastify.addContentTypeParser(/^text\/html(;\s*charset=[^;]+)?$/, first)
+
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
   })
 
   test('should prefer content type parser with string value', t => {
@@ -202,6 +218,36 @@ test('add', t => {
   t.end()
 })
 
+test('add, should lowercase contentTypeParser names', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.addContentTypeParser('text/html', function (req, done) {
+    done()
+  })
+  try {
+    fastify.addContentTypeParser('TEXT/html', function (req, done) {
+      done()
+    })
+  } catch (err) {
+    t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+  }
+})
+
+test('add, should trim contentTypeParser names', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.addContentTypeParser('text/html', function (req, done) {
+    done()
+  })
+  try {
+    fastify.addContentTypeParser('    text/html', function (req, done) {
+      done()
+    })
+  } catch (err) {
+    t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+  }
+})
+
 test('non-Error thrown from content parser is properly handled', t => {
   t.plan(3)
 
@@ -264,6 +310,19 @@ test('remove', t => {
     t.ok(contentTypeParser.remove('application/json'))
     t.notOk(contentTypeParser.customParsers['application/json'])
     t.notOk(contentTypeParser.parserList.find(parser => parser === 'application/json'))
+  })
+
+  test('should remove string parser', t => {
+    t.plan(3)
+
+    const fastify = Fastify()
+    fastify.addContentTypeParser('text/html', first)
+
+    const contentTypeParser = fastify[keys.kContentTypeParser]
+
+    t.ok(contentTypeParser.remove('text/html  '))
+    t.notOk(contentTypeParser.customParsers['text/html'])
+    t.notOk(contentTypeParser.parserList.includes('text/html'))
   })
 
   test('should remove RegExp parser', t => {

@@ -215,37 +215,37 @@ test('add', t => {
     t.equal(contentTypeParser.customParsers.get('').fn, first)
   })
 
+  test('should lowercase contentTypeParser name', async t => {
+    t.plan(1)
+    const fastify = Fastify()
+    fastify.addContentTypeParser('text/html', function (req, done) {
+      done()
+    })
+    try {
+      fastify.addContentTypeParser('TEXT/html', function (req, done) {
+        done()
+      })
+    } catch (err) {
+      t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+    }
+  })
+
+  test('should trim contentTypeParser name', async t => {
+    t.plan(1)
+    const fastify = Fastify()
+    fastify.addContentTypeParser('text/html', function (req, done) {
+      done()
+    })
+    try {
+      fastify.addContentTypeParser('    text/html', function (req, done) {
+        done()
+      })
+    } catch (err) {
+      t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+    }
+  })
+
   t.end()
-})
-
-test('add, should lowercase contentTypeParser names', async t => {
-  t.plan(1)
-  const fastify = Fastify()
-  fastify.addContentTypeParser('text/html', function (req, done) {
-    done()
-  })
-  try {
-    fastify.addContentTypeParser('TEXT/html', function (req, done) {
-      done()
-    })
-  } catch (err) {
-    t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
-  }
-})
-
-test('add, should trim contentTypeParser names', async t => {
-  t.plan(1)
-  const fastify = Fastify()
-  fastify.addContentTypeParser('text/html', function (req, done) {
-    done()
-  })
-  try {
-    fastify.addContentTypeParser('    text/html', function (req, done) {
-      done()
-    })
-  } catch (err) {
-    t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
-  }
 })
 
 test('non-Error thrown from content parser is properly handled', t => {
@@ -302,7 +302,7 @@ test('Error thrown 415 from content type is null and make post request to server
 
 test('remove', t => {
   test('should remove default parser', t => {
-    t.plan(3)
+    t.plan(6)
 
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
@@ -310,19 +310,9 @@ test('remove', t => {
     t.ok(contentTypeParser.remove('application/json'))
     t.notOk(contentTypeParser.customParsers['application/json'])
     t.notOk(contentTypeParser.parserList.find(parser => parser === 'application/json'))
-  })
-
-  test('should remove string parser', t => {
-    t.plan(3)
-
-    const fastify = Fastify()
-    fastify.addContentTypeParser('text/html', first)
-
-    const contentTypeParser = fastify[keys.kContentTypeParser]
-
-    t.ok(contentTypeParser.remove('text/html  '))
-    t.notOk(contentTypeParser.customParsers['text/html'])
-    t.notOk(contentTypeParser.parserList.includes('text/html'))
+    t.ok(contentTypeParser.remove('  text/plain  '))
+    t.notOk(contentTypeParser.customParsers['text/plain'])
+    t.notOk(contentTypeParser.parserList.find(parser => parser === 'text/plain'))
   })
 
   test('should remove RegExp parser', t => {

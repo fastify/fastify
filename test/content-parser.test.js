@@ -68,9 +68,9 @@ test('getParser', t => {
 
     t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
     t.equal(fastify[keys.kContentTypeParser].cache.size, 0)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
     t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
     t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
   })
 

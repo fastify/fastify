@@ -304,9 +304,7 @@ section.
 - [`fastify-cloudflare-turnstile`](https://github.com/112RG/fastify-cloudflare-turnstile)
   Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cloudinary`](https://github.com/Vanilla-IceCream/fastify-cloudinary)
-  The Cloudinary Fastify SDK allows you to quickly and easily integrate your
-  application with Cloudinary. Effortlessly optimize and transform your cloud's
-  assets.
+  Plugin to share a common Cloudinary connection across Fastify.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
   Sequelize ORM.
@@ -416,6 +414,8 @@ section.
   Lightweight, proxy-aware redirect plugin from HTTP to HTTPS.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
+- [`fastify-i18n`](https://github.com/Vanilla-IceCream/fastify-i18n)
+  Internationalization plugin for Fastify. Built upon node-polyglot.
 - [`fastify-impressions`](https://github.com/manju4ever/fastify-impressions)
   Fastify plugin to track impressions of all the routes.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
@@ -722,3 +722,7 @@ middlewares into Fastify plugins
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
   generate JSON Schema from TypeScript interfaces.
+- [`vite-plugin-fastify`](https://github.com/Vanilla-IceCream/vite-plugin-fastify)
+  Fastify plugin for Vite with Hot-module Replacement.
+- [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
+  File-based routing for Fastify applications using Vite.

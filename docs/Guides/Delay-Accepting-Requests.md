@@ -49,7 +49,7 @@ That will be achieved by wrapping into a custom plugin two main features:
 
 1. the mechanism for authenticating with the provider
 [decorating](../Reference/Decorators.md) the `fastify` object with the
-authentication key (`magicKey` from here onwards)
+authentication key (`magicKey` from here onward)
 1. the mechanism for denying requests that would, otherwise, fail
 
 ### Hands-on

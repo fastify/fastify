@@ -721,7 +721,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
   fastify.ready(err => {
     t.error(err)
     t.equal(onRouteCalled, 1) // onRoute hook was called once
-    t.equal(routePatched, 1) // and plugin acted once and avoided redundaunt route patching
+    t.equal(routePatched, 1) // and plugin acted once and avoided redundant route patching
   })
 })
 
@@ -2249,7 +2249,7 @@ test('onRequest, preHandler, and onResponse hooks that resolve to a value do not
   })
 })
 
-test('If a response header has been set inside an hook it shoulod not be overwritten by the final response handler', t => {
+test('If a response header has been set inside an hook it should not be overwritten by the final response handler', t => {
   t.plan(5)
   const fastify = Fastify()
 

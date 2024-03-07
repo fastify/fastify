@@ -185,7 +185,7 @@ section.
 - [`@fastify-userland/typeorm-query-runner`](https://github.com/fastify-userland/typeorm-query-runner)
   Fastify typeorm QueryRunner plugin
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
-  Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
+  Tiny (~5k), Fast, KISS, and dependency-free Node.js library to make your
   Fastify API graceful.
 - [`@h4ad/serverless-adapter`](https://github.com/H4ad/serverless-adapter)
   Run REST APIs and other web applications using your existing Node.js
@@ -247,7 +247,7 @@ section.
   [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server)
   for Fastify
 - [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Fastify
-  plugin to authenticate HTTP requests based on api key and signature
+  plugin to authenticate HTTP requests based on API key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
 - [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
@@ -288,7 +288,7 @@ section.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
 - [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
-  Small and efficient cache provider for Node.JS with In-memory, File, Redis
+  Small and efficient cache provider for Node.js with In-memory, File, Redis
    and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
   for Fastify.
@@ -569,7 +569,7 @@ middlewares into Fastify plugins
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based
   access control plugin.
 - [`fastify-recaptcha`](https://github.com/qwertyforce/fastify-recaptcha)
-  Fastify plugin for recaptcha verification.
+  Fastify plugin for reCAPTCHA verification.
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels)
   A plugin for fast, reliable, and scalable channels implementation based on
   Redis streams.
@@ -602,7 +602,7 @@ middlewares into Fastify plugins
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin
   to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify
-  plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql,
+  plugin work with Sequelize (adapter for Node.js -> Sqlite, Mysql, Mssql,
   Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session)
   A session plugin with support for arbitrary backing caches via
@@ -685,7 +685,7 @@ middlewares into Fastify plugins
 - [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin
   for AWS XRay recording.
 - [`http-wizard`](https://github.com/flodlc/http-wizard)
-  Exports a typescript api client for your Fastify api and ensures fullstack type
+  Exports a typescript API client for your Fastify API and ensures fullstack type
   safety for your project.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
   An [i18next](https://www.i18next.com) based i18n (internationalization)

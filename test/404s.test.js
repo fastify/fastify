@@ -1081,12 +1081,12 @@ test('Unknown method', t => {
     const handler = () => {}
     // See https://github.com/fastify/light-my-request/pull/20
     t.throws(() => fastify.inject({
-      method: 'UNKNWON_METHOD',
+      method: 'UNKNOWN_METHOD',
       url: '/'
     }, handler), Error)
 
     sget({
-      method: 'UNKNWON_METHOD',
+      method: 'UNKNOWN_METHOD',
       url: getServerUrl(fastify)
     }, (err, response, body) => {
       t.error(err)

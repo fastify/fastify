@@ -572,7 +572,7 @@ const fastify = require('fastify')({
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
 + `number`: Trust the nth hop from the front-facing proxy server as the client.
-+ `Function`: Custom trust function that takes `address` as first arg
++ `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
       return address === '1.2.3.4' || hop === 1
@@ -871,7 +871,7 @@ Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which suppor
 separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
 This decision originated from [delvedor/find-my-way#76]
 (https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
-backwards compatiblilty for the need to split on `;`. To disable support for splitting
+backwards compatibility for the need to split on `;`. To disable support for splitting
 on `;` set `useSemicolonDelimiter` to `false`.
 
 ```js

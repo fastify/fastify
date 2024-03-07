@@ -253,7 +253,7 @@ expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
-// test listen opts objects Typescript deprectation exclusion
+// test listen opts objects Typescript deprecation exclusion
 expectNotDeprecated(server.listen())
 expectNotDeprecated(server.listen({ port: 3000 }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))

@@ -785,7 +785,7 @@ without response validation.
 
 Please be aware when using `Response`, the status code and headers
 will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
-Such behaviour is based on `Response` only allow `readonly` status
+Such behavior is based on `Response` only allow `readonly` status
 code and headers. The data is not allow to be bi-direction editing,
 and may confuse when checking the `payload` in `onSend` hooks.
 
@@ -842,7 +842,7 @@ To customize the JSON error output you can do it by:
 - add the additional properties to the `Error` instance
 
 Notice that if the returned status code is not in the response schema list, the
-default behaviour will be applied.
+default behavior will be applied.
 
 ```js
 fastify.get('/', {

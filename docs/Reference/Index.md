@@ -12,7 +12,7 @@ order of most likely importance to the reader:
 + [Lifecycle](./Lifecycle.md): Explains the Fastify request lifecycle and
   illustrates where [Hooks](./Hooks.md) are available for integrating with it.
 + [Routes](./Routes.md): Details how to register routes with Fastify and how
-  Fastify builds and evaluates the routing tree.
+  Fastify builds and evaluates the routing trie.
 + [Request](./Request.md): Details Fastify's request object that is passed into
   each request handler.
 + [Reply](./Reply.md): Details Fastify's response object available to each
@@ -60,7 +60,7 @@ This table of contents is in alphabetical order.
 + [Request](./Request.md): Details Fastify's request object that is passed into
   each request handler.
 + [Routes](./Routes.md): Details how to register routes with Fastify and how
-  Fastify builds and evaluates the routing tree.
+  Fastify builds and evaluates the routing trie.
 + [Server](./Server.md): Documents the core Fastify API. Includes documentation
   for the factory function and the object returned by the factory function.
 + [TypeScript](./TypeScript.md): Documents Fastify's TypeScript support and

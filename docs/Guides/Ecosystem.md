@@ -682,8 +682,8 @@ middlewares into Fastify plugins
   [uws](https://github.com/uNetworking/uWebSockets).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser)
   Parse XML payload / request body into JS / JSON object.
-- [`fastify-xray`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify) Fastify plugin
-  for AWS XRay recording.
+- [`aws-xray-sdk-fastify`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify)
+  A Fastify plugin to log requests and subsegments through AWSXray.
 - [`http-wizard`](https://github.com/flodlc/http-wizard)
   Exports a typescript api client for your Fastify api and ensures fullstack type
   safety for your project.

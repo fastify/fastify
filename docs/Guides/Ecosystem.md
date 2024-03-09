@@ -222,6 +222,8 @@ section.
   API key management solution.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
+- [`aws-xray-sdk-fastify`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify)
+  A Fastify plugin to log requests and subsegments through AWSXray.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
   for CLS-based request ID generation. An out-of-the-box solution for adding
   request IDs into your logs.
@@ -682,8 +684,6 @@ middlewares into Fastify plugins
   [uws](https://github.com/uNetworking/uWebSockets).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser)
   Parse XML payload / request body into JS / JSON object.
-- [`aws-xray-sdk-fastify`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify)
-  A Fastify plugin to log requests and subsegments through AWSXray.
 - [`http-wizard`](https://github.com/flodlc/http-wizard)
   Exports a typescript api client for your Fastify api and ensures fullstack type
   safety for your project.

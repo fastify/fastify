@@ -49,7 +49,7 @@ t.test('logger instantiation', (t) => {
 
     for await (const [line] of on(stream, 'data')) {
       const regex = lines.shift()
-      t.ok(regex.test(line.msg), '"' + line.msg + '" dont match "' + regex + '"')
+      t.ok(regex.test(line.msg), '"' + line.msg + '" does not match "' + regex + '"')
       if (lines.length === 0) break
     }
   })

@@ -34,7 +34,7 @@ examples there is further, more detailed documentation for the type system.
 This example will get you up and running with Fastify and TypeScript. It results
 in a blank http Fastify server.
 
-1. Create a new npm project, install Fastify, and install typescript & node.js
+1. Create a new npm project, install Fastify, and install typescript & Node.js
    types as peer dependencies:
   ```bash
   npm init -y
@@ -157,7 +157,7 @@ route-level `request` object.
    ```
 
 4. Build and run the server code with `npm run build` and `npm run start`
-5. Query the api
+5. Query the API
    ```bash
    curl localhost:8080/auth?username=admin&password=Password123!
    ```
@@ -971,7 +971,7 @@ Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' |
 ##### fastify.RawServerBase
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L13)
 
-Dependant on `@types/node` modules `http`, `https`, `http2`
+Dependent on `@types/node` modules `http`, `https`, `http2`
 
 Union type of: `http.Server | https.Server | http2.Http2Server |
 http2.Http2SecureServer`
@@ -979,7 +979,7 @@ http2.Http2SecureServer`
 ##### fastify.RawServerDefault
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L18)
 
-Dependant on `@types/node` modules `http`
+Dependent on `@types/node` modules `http`
 
 Type alias for `http.Server`
 
@@ -1098,7 +1098,7 @@ Learn by Example section: [JSON Schema](#json-schema).
 ##### fastify.RawRequestDefaultExpression\<[RawServer][RawServerGeneric]\>
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L23)
 
-Dependant on `@types/node` modules `http`, `https`, `http2`
+Dependent on `@types/node` modules `http`, `https`, `http2`
 
 Generic parameter `RawServer` defaults to [`RawServerDefault`][RawServerDefault]
 
@@ -1158,7 +1158,7 @@ declare module 'fastify' {
 ##### fastify.RawReplyDefaultExpression<[RawServer][RawServerGeneric]>
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L27)
 
-Dependant on `@types/node` modules `http`, `https`, `http2`
+Dependent on `@types/node` modules `http`, `https`, `http2`
 
 Generic parameter `RawServer` defaults to [`RawServerDefault`][RawServerDefault]
 

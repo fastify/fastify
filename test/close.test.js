@@ -263,7 +263,7 @@ test('Current opened connection should NOT continue to work after closing and re
       client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.on('error', function () {
-        // Dependending on the Operating System
+        // Depending on the Operating System
         // the socket could error or not.
         // However, it will always be closed.
       })

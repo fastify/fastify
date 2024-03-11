@@ -164,7 +164,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
   }
 }))
 
-// infering schema `as const`
+// inferring schema `as const`
 
 expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',

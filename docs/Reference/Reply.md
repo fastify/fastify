@@ -62,7 +62,7 @@ since the request was received by Fastify.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] dest)` - Redirect to the specified url, the status code is
+- `.redirect([code,] dest)` - Redirect to the specified URL, the status code is
   optional (default to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default
@@ -783,7 +783,7 @@ headers in one place. The payload provided inside `Response` is
 considered to be pre-serialized, so they will be sent unmodified 
 without response validation.
 
-Plese be aware when using `Response`, the status code and headers
+Please be aware when using `Response`, the status code and headers
 will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
 Such behavior is based on `Response` only allow `readonly` status
 code and headers. The data is not allow to be bi-direction editing,
@@ -842,7 +842,7 @@ To customize the JSON error output you can do it by:
 - add the additional properties to the `Error` instance
 
 Notice that if the returned status code is not in the response schema list, the
-default behaviour will be applied.
+default behavior will be applied.
 
 ```js
 fastify.get('/', {

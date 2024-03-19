@@ -218,12 +218,12 @@ Providers](./Type-Providers.md) page.
 Below is how to setup schema validation using _vanilla_ `typebox` and
 `json-schema-to-ts` packages.
 
-#### typebox
+#### TypeBox
 
 A useful library for building types and a schema at once is
-[typebox](https://www.npmjs.com/package/@sinclair/typebox) along with 
+[TypeBox](https://www.npmjs.com/package/@sinclair/typebox) along with 
 [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox).
-With typebox you define your schema within your code and use them
+With TypeBox you define your schema within your code and use them
 directly as types or schemas as you need them.
 
 When you want to use it for validation of some payload in a fastify route you
@@ -275,7 +275,6 @@ can do it as follows:
       }
     )
     ```
-
 
 #### Schemas in JSON Files
 

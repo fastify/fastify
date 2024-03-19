@@ -207,13 +207,15 @@ Here are some options on how to achieve this.
 
 Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 
-- `@fastify/type-provider-json-schema-to-ts`
-- `@fastify/type-provider-typebox`
+- `@fastify/type-provider-json-schema-to-ts` - [GitHub](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
+- `@fastify/type-provider-typebox` - [GitHub](https://github.com/fastify/fastify-type-provider-typebox)
+
+And a `zod` wrapper by a third party called: `fastify-type-provider-zod` - [GitHub](https://github.com/turkerdev/fastify-type-provider-zod)
 
 They simplify schema validation setup and you can read more about them in [Type
 Providers](./Type-Providers.md) page.
 
-Below is how to setup schema validation using vanilla `typebox` and
+Below is how to setup schema validation using _vanilla_ `typebox` and
 `json-schema-to-ts` packages.
 
 #### typebox

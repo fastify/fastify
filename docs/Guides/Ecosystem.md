@@ -485,6 +485,9 @@ middlewares into Fastify plugins
   [mqtt](https://www.npmjs.com/package/mqtt) client across Fastify.
 - [`fastify-msgpack`](https://github.com/kenriortega/fastify-msgpack) Fastify
   and MessagePack, together at last. Uses @msgpack/msgpack by default.
+- [`fastify-msgraph-webhook`](https://github.com/flower-of-the-bridges/fastify-msgraph-change-notifications-webhook)
+  to manage
+  [MS Graph Change Notifications webhooks](https://learn.microsoft.com/it-it/graph/change-notifications-delivery-webhooks?tabs=http).
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin
   for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share

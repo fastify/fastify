@@ -205,7 +205,7 @@ Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
 
-And a `zod` wrapper by a third party called: [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+And a `zod` wrapper by a third party called [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
 
 They simplify schema validation setup and you can read more about them in [Type
 Providers](./Type-Providers.md) page.

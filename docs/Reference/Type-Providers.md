@@ -25,8 +25,8 @@ See also the Type Provider wrapper packages for each of the packages respectivel
 
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
-- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod) 
-(3rd party)
+- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+ (3rd party)
 
 ### Json Schema to Ts
 

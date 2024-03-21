@@ -19,7 +19,7 @@ The following inference packages are supported:
 
 - [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
 - [`typebox`](https://github.com/sinclairzx81/typebox)
-- [`zod`](https://github.com/colinhacks/zod)
+- [`zod`](https://github.com/colinhacks/zod) (3rd party package)
 
 See also the Type Provider wrapper packages for each of the packages respectively:
 

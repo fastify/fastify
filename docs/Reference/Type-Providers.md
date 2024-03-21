@@ -19,13 +19,13 @@ The following inference packages are supported:
 
 - [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
 - [`typebox`](https://github.com/sinclairzx81/typebox)
-- [`zod`](https://github.com/colinhacks/zod) (3rd party package)
+- [`zod`](https://github.com/colinhacks/zod)
 
 See also the Type Provider wrapper packages for each of the packages respectively:
 
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
-- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod) (3rd party package)
 
 ### Json Schema to Ts
 

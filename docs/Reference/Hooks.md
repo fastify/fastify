@@ -191,7 +191,8 @@ an exception.
 
 This hook will be executed only after
 the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler)
-has been executed, and only if the custom error handler sends an error back to the user
+has been executed, and only if the custom error handler sends an error back to the
+user
 *(Note that the default error handler always sends the error back to the
 user)*.
 

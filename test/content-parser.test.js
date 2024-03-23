@@ -46,7 +46,7 @@ test('hasContentTypeParser', t => {
 
 test('getParser', t => {
   test('should return matching parser', t => {
-    t.plan(5)
+    t.plan(6)
 
     const fastify = Fastify()
 
@@ -58,6 +58,7 @@ test('getParser', t => {
     t.equal(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
     t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
     t.equal(fastify[keys.kContentTypeParser].getParser('text/html; charset=utf-8').fn, third)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ; charset=utf-8').fn, third)
     t.equal(fastify[keys.kContentTypeParser].getParser('text/htmlINVALID')?.fn, undefined)
   })
 

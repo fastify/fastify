@@ -24,8 +24,8 @@ test('hasContentTypeParser', t => {
     })
   })
 
-  test('should work with string and RegExp', t => {
-    t.plan(7)
+  test('should only work with string and RegExp', t => {
+    t.plan(8)
 
     const fastify = Fastify()
     fastify.addContentTypeParser(/^image\/.*/, first)
@@ -39,6 +39,7 @@ test('hasContentTypeParser', t => {
     t.notOk(fastify.hasContentTypeParser(/^image\/.+\+xml/))
     t.notOk(fastify.hasContentTypeParser('image/png'))
     t.notOk(fastify.hasContentTypeParser('*'))
+    t.throws(() => fastify.hasContentTypeParser(123), FST_ERR_CTP_INVALID_TYPE)
   })
 
   t.end()

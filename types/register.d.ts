@@ -2,7 +2,8 @@ import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from 
 import { LogLevel } from './logger'
 import { FastifyInstance } from './instance'
 import { RawServerBase } from './utils'
-import { FastifyBaseLogger, FastifyTypeProvider, RawServerDefault } from '../fastify'
+import { FastifyTypeProvider } from './type-provider'
+import { FastifyBaseLogger, RawServerDefault } from '../fastify'
 
 export interface RegisterOptions {
   prefix?: string;

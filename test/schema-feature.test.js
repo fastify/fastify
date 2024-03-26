@@ -793,15 +793,15 @@ test('Get schema anyway should not add `properties` if allOf is present', t => {
           second: { type: 'number' }
         }
       },
-      fastify.getSchema('first')
+      { $ref: 'first' }
     ]
   })
 
   fastify.get('/', {
     handler: () => {},
     schema: {
-      querystring: fastify.getSchema('second'),
-      response: { 200: fastify.getSchema('second') }
+      querystring: { $ref: 'second' },
+      response: { 200: { $ref: 'second' } }
     }
   })
 
@@ -830,15 +830,15 @@ test('Get schema anyway should not add `properties` if oneOf is present', t => {
           second: { type: 'number' }
         }
       },
-      fastify.getSchema('first')
+      { $ref: 'first' }
     ]
   })
 
   fastify.get('/', {
     handler: () => {},
     schema: {
-      querystring: fastify.getSchema('second'),
-      response: { 200: fastify.getSchema('second') }
+      querystring: { $ref: 'second' },
+      response: { 200: { $ref: 'second' } }
     }
   })
 
@@ -867,15 +867,15 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
           second: { type: 'number' }
         }
       },
-      fastify.getSchema('first')
+      { $ref: 'first' }
     ]
   })
 
   fastify.get('/', {
     handler: () => {},
     schema: {
-      querystring: fastify.getSchema('second'),
-      response: { 200: fastify.getSchema('second') }
+      querystring: { $ref: 'second' },
+      response: { 200: { $ref: 'second' } }
     }
   })
 

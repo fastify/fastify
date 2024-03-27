@@ -112,6 +112,7 @@ declare namespace fastify {
     useSemicolonDelimiter?: boolean,
     jsonShorthand?: boolean;
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
+    createRequestLogMessage?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: unknown },
     /**

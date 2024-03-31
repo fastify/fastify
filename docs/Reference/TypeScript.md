@@ -717,8 +717,8 @@ constraint value(s). Read these articles for more information on TypeScript
 generics.
 - [Generic Parameter
   Default](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#generic-parameter-defaults)
-- [Generic
-  Constraints](https://www.typescriptlang.org/docs/handbook/generics.html#generic-constraints)
+- [Generic Constraints](https://www.typescriptlang.org/docs/handbook/2/generics.html#generic-constraints)
+
 
 #### How to import
 

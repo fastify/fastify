@@ -46,7 +46,7 @@ jobs:
           nsolid-version: ${{ matrix.nsolid-version }}
 
       - name: Install Pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v3
         with:
           version: ${{ matrix.pnpm-version }}
       

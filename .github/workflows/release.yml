@@ -1,0 +1,40 @@
+name: Release to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version number to tag and release'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment: release
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install -g npm@latest
+      - run: npm install
+      - name: Change version number and push
+        run: |
+          git config --global user.email "hello@matteocollina.com"
+          git config --global user.name "Matteo Collina"
+          npm version ${{ inputs.version }} --git-tag-version=false
+          git push origin HEAD:main
+      - run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: 'Create release notes'
+        run: |
+          npm i @matteo.collina/release-notes -g
+          release-notes -a ${{ secrets.GITHUB_TOKEN }} -t ${{ inputs.version }} -r fastify -o fastify

@@ -61,11 +61,6 @@ in a blank http Fastify server.
 *Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
 [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
 
-*Note 2: Avoid using ```"moduleResolution": "NodeNext"``` in tsconfig.json with 
-```"type": "module"``` in package.json. This combination is currently not 
-supported by fastify typing system.
-[ts(2349)](https://github.com/fastify/fastify/issues/4241) warning.*
-
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
    ```typescript
@@ -207,21 +202,23 @@ Here are some options on how to achieve this.
 
 Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 
-- `@fastify/type-provider-json-schema-to-ts`
-- `@fastify/type-provider-typebox`
+- [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
+- [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
+
+And a `zod` wrapper by a third party called [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
 
 They simplify schema validation setup and you can read more about them in [Type
 Providers](./Type-Providers.md) page.
 
-Below is how to setup schema validation using vanilla `typebox` and
+Below is how to setup schema validation using _vanilla_ `typebox` and
 `json-schema-to-ts` packages.
 
-#### typebox
+#### TypeBox
 
 A useful library for building types and a schema at once is
-[typebox](https://www.npmjs.com/package/@sinclair/typebox) along with 
+[TypeBox](https://www.npmjs.com/package/@sinclair/typebox) along with 
 [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox).
-With typebox you define your schema within your code and use them
+With TypeBox you define your schema within your code and use them
 directly as types or schemas as you need them.
 
 When you want to use it for validation of some payload in a fastify route you
@@ -273,7 +270,6 @@ can do it as follows:
       }
     )
     ```
-
 
 #### Schemas in JSON Files
 
@@ -721,8 +717,8 @@ constraint value(s). Read these articles for more information on TypeScript
 generics.
 - [Generic Parameter
   Default](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#generic-parameter-defaults)
-- [Generic
-  Constraints](https://www.typescriptlang.org/docs/handbook/generics.html#generic-constraints)
+- [Generic Constraints](https://www.typescriptlang.org/docs/handbook/2/generics.html#generic-constraints)
+
 
 #### How to import
 

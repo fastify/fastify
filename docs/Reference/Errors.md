@@ -236,7 +236,8 @@ fastify.listen({ port: 3000 }, function (err, address) {
 You can access `errorCodes` for mapping:
 ```js
 // ESM
-import { errorCodes } from 'fastify'
+import fastify from 'fastify'
+fastify.errorCodes
 
 // CommonJs
 const errorCodes = require('fastify').errorCodes

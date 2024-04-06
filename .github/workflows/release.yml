@@ -36,6 +36,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm install -g npm@latest
       - run: npm install
+      - run: npm run build:validation
       - name: Git Config
         run: |
           git config --global user.email "hello@matteocollina.com"

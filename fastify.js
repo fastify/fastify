@@ -893,8 +893,6 @@ function fastify (options) {
   }
 }
 
-fastify.errorCodes = errorCodes
-
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
     throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN(typeof schemaErrorFormatter)
@@ -915,5 +913,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
 module.exports = fastify
+module.exports.errorCodes = errorCodes
 module.exports.fastify = fastify
 module.exports.default = fastify

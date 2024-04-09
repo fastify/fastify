@@ -24,6 +24,8 @@ export interface FastifyBaseLogger extends pino.BaseLogger {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
+export interface FastifyDefaultLogger<CustomLevels extends string = never> extends pino.Logger<CustomLevels> {}
+
 // TODO delete FastifyBaseLogger in the next major release. It seems that it is enough to have only FastifyBaseLogger.
 /**
  * @deprecated Use FastifyBaseLogger instead

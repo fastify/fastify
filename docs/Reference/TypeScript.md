@@ -862,8 +862,8 @@ a more detailed http server walkthrough.
    import path from 'path'
    import fastify from 'fastify'
    ```
-2. Follow the following steps before setting up the Fastify https server 
-for create the `key.pem` and `cert.pem` files, as follows:
+2. Perform the following steps before setting up a Fastify HTTPS server 
+to create the `key.pem` and `cert.pem` files:
 ```sh
 openssl genrsa -out key.pem
 openssl req -new -key key.pem -out csr.pem

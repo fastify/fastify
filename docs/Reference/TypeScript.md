@@ -190,8 +190,9 @@ documentation below to learn more about what is available.
 
 To validate your requests and responses you can use JSON Schema files. If you
 didn't know already, defining schemas for your Fastify routes can increase their
-throughput! Check out the [Validation and
-Serialization](./Validation-and-Serialization.md) documentation for more info.
+throughput! Check out the 
+[Validation and Serialization](./Validation-and-Serialization.md)
+documentation for more info.
 
 Also it has the advantage to use the defined type within your handlers
 (including pre-validation, etc.).
@@ -205,10 +206,11 @@ Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
 
-And a `zod` wrapper by a third party called [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+And a `zod` wrapper by a third party called
+[`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
 
-They simplify schema validation setup and you can read more about them in [Type
-Providers](./Type-Providers.md) page.
+They simplify schema validation setup and you can read more about them in 
+[Type Providers](./Type-Providers.md) page.
 
 Below is how to setup schema validation using _vanilla_ `typebox` and
 `json-schema-to-ts` packages.
@@ -909,8 +911,8 @@ const secureServer = fastify({
 })
 ```
 
-For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md)
-documentation page.
+For more details on using HTTP2 check out the Fastify
+[HTTP2](./HTTP2.md) documentation page.
 
 ###### Example 4: Extended HTTP server
 
@@ -942,7 +944,7 @@ constructing Fastify's instance. If properties you need aren't exposed, please
 open an Issue to [`Pino`](https://github.com/pinojs/pino/issues) or pass a
 preconfigured external instance of Pino (or any other compatible logger) as
 temporary fix to Fastify via the same field. This allows creating custom
-serializers as well, see the [Logging](Logging.md) documentation for more info.
+serializers as well, see the [Logging](./Logging.md) documentation for more info.
 
 ```typescript
 import fastify from 'fastify'
@@ -1324,6 +1326,12 @@ to open an issue in the main
 [fastify/fastify](https://github.com/fastify/fastify) repository. Thank you in
 advanced!
 
+##### ContextConfigGeneric
+
+[src](https://github.com/fastify/fastify/blob/main/types/reply.d.ts#L38)
+
+
+
 ---
 
 #### Routing
@@ -1575,7 +1583,7 @@ database.
 [FastifyReply]: #fastifyfastifyreplyrawserver-rawreply-contextconfig
 [RawReplyDefaultExpression]: #fastifyrawreplydefaultexpression
 [FastifyServerOptions]: #fastifyfastifyserveroptions-rawserver-logger
-[FastifyInstance]: #fastifyfastifyinstance
+[FastifyInstance]: #fastifyfastifyinstancerawserver-rawrequest-requestgeneric-logger
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric
 [FastifyPlugin]:

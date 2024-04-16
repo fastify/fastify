@@ -1238,7 +1238,7 @@ Below is an example of the options inference in action:
 const server = fastify()
 
 const plugin: FastifyPluginCallback<{
-:  option1: string;
+  option1: string;
   option2: boolean;
 }> = function (instance, opts, done) { }
 

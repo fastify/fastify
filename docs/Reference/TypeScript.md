@@ -34,7 +34,7 @@ examples there is further, more detailed documentation for the type system.
 This example will get you up and running with Fastify and TypeScript. It results
 in a blank http Fastify server.
 
-1. Create a new npm project, install Fastify, and install typescript & node.js
+1. Create a new npm project, install Fastify, and install typescript & Node.js
    types as peer dependencies:
   ```bash
   npm init -y
@@ -60,11 +60,6 @@ in a blank http Fastify server.
 
 *Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
 [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
-
-*Note 2: Avoid using ```"moduleResolution": "NodeNext"``` in tsconfig.json with 
-```"type": "module"``` in package.json. This combination is currently not 
-supported by fastify typing system.
-[ts(2349)](https://github.com/fastify/fastify/issues/4241) warning.*
 
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
@@ -157,7 +152,7 @@ route-level `request` object.
    ```
 
 4. Build and run the server code with `npm run build` and `npm run start`
-5. Query the api
+5. Query the API
    ```bash
    curl localhost:8080/auth?username=admin&password=Password123!
    ```
@@ -207,21 +202,23 @@ Here are some options on how to achieve this.
 
 Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 
-- `@fastify/type-provider-json-schema-to-ts`
-- `@fastify/type-provider-typebox`
+- [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
+- [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
+
+And a `zod` wrapper by a third party called [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
 
 They simplify schema validation setup and you can read more about them in [Type
 Providers](./Type-Providers.md) page.
 
-Below is how to setup schema validation using vanilla `typebox` and
+Below is how to setup schema validation using _vanilla_ `typebox` and
 `json-schema-to-ts` packages.
 
-#### typebox
+#### TypeBox
 
 A useful library for building types and a schema at once is
-[typebox](https://www.npmjs.com/package/@sinclair/typebox) along with 
+[TypeBox](https://www.npmjs.com/package/@sinclair/typebox) along with 
 [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox).
-With typebox you define your schema within your code and use them
+With TypeBox you define your schema within your code and use them
 directly as types or schemas as you need them.
 
 When you want to use it for validation of some payload in a fastify route you
@@ -273,7 +270,6 @@ can do it as follows:
       }
     )
     ```
-
 
 #### Schemas in JSON Files
 
@@ -721,8 +717,8 @@ constraint value(s). Read these articles for more information on TypeScript
 generics.
 - [Generic Parameter
   Default](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#generic-parameter-defaults)
-- [Generic
-  Constraints](https://www.typescriptlang.org/docs/handbook/generics.html#generic-constraints)
+- [Generic Constraints](https://www.typescriptlang.org/docs/handbook/2/generics.html#generic-constraints)
+
 
 #### How to import
 
@@ -866,9 +862,14 @@ a more detailed http server walkthrough.
    import path from 'path'
    import fastify from 'fastify'
    ```
-2. Follow the steps in this official [Node.js https server
-   guide](https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/)
-   to create the `key.pem` and `cert.pem` files
+2. Perform the following steps before setting up a Fastify HTTPS server 
+to create the `key.pem` and `cert.pem` files:
+```sh
+openssl genrsa -out key.pem
+openssl req -new -key key.pem -out csr.pem
+openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+rm csr.pem
+```
 3. Instantiate a Fastify https server and add a route:
    ```typescript
    const server = fastify({
@@ -971,7 +972,7 @@ Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' |
 ##### fastify.RawServerBase
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L13)
 
-Dependant on `@types/node` modules `http`, `https`, `http2`
+Dependent on `@types/node` modules `http`, `https`, `http2`
 
 Union type of: `http.Server | https.Server | http2.Http2Server |
 http2.Http2SecureServer`
@@ -979,7 +980,7 @@ http2.Http2SecureServer`
 ##### fastify.RawServerDefault
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L18)
 
-Dependant on `@types/node` modules `http`
+Dependent on `@types/node` modules `http`
 
 Type alias for `http.Server`
 
@@ -1098,7 +1099,7 @@ Learn by Example section: [JSON Schema](#json-schema).
 ##### fastify.RawRequestDefaultExpression\<[RawServer][RawServerGeneric]\>
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L23)
 
-Dependant on `@types/node` modules `http`, `https`, `http2`
+Dependent on `@types/node` modules `http`, `https`, `http2`
 
 Generic parameter `RawServer` defaults to [`RawServerDefault`][RawServerDefault]
 
@@ -1158,7 +1159,7 @@ declare module 'fastify' {
 ##### fastify.RawReplyDefaultExpression<[RawServer][RawServerGeneric]>
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L27)
 
-Dependant on `@types/node` modules `http`, `https`, `http2`
+Dependent on `@types/node` modules `http`, `https`, `http2`
 
 Generic parameter `RawServer` defaults to [`RawServerDefault`][RawServerDefault]
 
@@ -1242,7 +1243,7 @@ Below is an example of the options inference in action:
 const server = fastify()
 
 const plugin: FastifyPluginCallback<{
-:  option1: string;
+  option1: string;
   option2: boolean;
 }> = function (instance, opts, done) { }
 

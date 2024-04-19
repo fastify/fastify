@@ -320,7 +320,7 @@ test('Example - serialization 2', t => {
         }
       },
       201: {
-        // the contract sintax
+        // the contract syntax
         value: { type: 'string' }
       }
     }

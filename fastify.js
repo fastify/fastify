@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.26.1'
+const VERSION = '4.26.2'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -726,7 +726,7 @@ function fastify (options) {
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the load balancer side.
     this.log.trace({ err }, `client ${errorLabel}`)
-    // Copying standard node behaviour
+    // Copying standard node behavior
     // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
@@ -893,8 +893,6 @@ function fastify (options) {
   }
 }
 
-fastify.errorCodes = errorCodes
-
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
     throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN(typeof schemaErrorFormatter)
@@ -915,5 +913,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
 module.exports = fastify
+module.exports.errorCodes = errorCodes
 module.exports.fastify = fastify
 module.exports.default = fastify

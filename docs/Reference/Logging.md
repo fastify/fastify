@@ -106,7 +106,7 @@ is generated. See Fastify Factory
 The default logger is configured with a set of standard serializers that
 serialize objects with `req`, `res`, and `err` properties. The object received
 by `req` is the Fastify [`Request`](./Request.md) object, while the object
-received by `res` is the Fastify [`Reply`](./Reply.md) object. This behaviour
+received by `res` is the Fastify [`Reply`](./Reply.md) object. This behavior
 can be customized by specifying custom serializers.
 
 ```js

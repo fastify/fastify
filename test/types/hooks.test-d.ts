@@ -12,7 +12,10 @@ import fastify, {
   RawRequestDefaultExpression,
   RawServerDefault,
   RegisterOptions,
-  RouteOptions
+  RouteOptions,
+  // preClose hook types should be exported correctly https://github.com/fastify/fastify/pull/5335
+  preCloseAsyncHookHandler,
+  preCloseHookHandler
 } from '../../fastify'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'

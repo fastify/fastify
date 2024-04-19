@@ -107,7 +107,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.hostname)
   console.log(request.protocol)
   console.log(request.url)
-  console.log(request.routerMethod)
+  console.log(request.routeOptions.method)
   console.log(request.routeOptions.bodyLimit)
   console.log(request.routeOptions.method)
   console.log(request.routeOptions.url)
@@ -116,7 +116,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.routeOptions.version)
   console.log(request.routeOptions.exposeHeadRoute)
   console.log(request.routeOptions.prefixTrailingSlash)
-  console.log(request.routerPath.logLevel)
+  console.log(request.routeOptions.logLevel)
   request.log.info('some info')
 })
 ```

@@ -14,7 +14,7 @@ t.test('logger options', (t) => {
 
   t.plan(12)
 
-  t.test('logger can be silented', (t) => {
+  t.test('logger can be silenced', (t) => {
     t.plan(17)
     const fastify = Fastify({
       logger: false

@@ -150,7 +150,7 @@ test('request terminated should not crash fastify', t => {
 
     await new Promise((resolve) => { setTimeout(resolve, 100).unref() })
 
-    stream.push('<h1>should disply on second stream</h1>')
+    stream.push('<h1>should display on second stream</h1>')
     stream.push(null)
     return reply
   })
@@ -184,7 +184,7 @@ test('request terminated should not crash fastify', t => {
             payload += chunk.toString()
           })
           res.on('end', function () {
-            t.equal(payload, '<h1>HTML</h1><h1>should disply on second stream</h1>')
+            t.equal(payload, '<h1>HTML</h1><h1>should display on second stream</h1>')
             t.pass('should end properly')
           })
         })

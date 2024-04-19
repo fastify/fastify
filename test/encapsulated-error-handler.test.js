@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('..')
 
-test('encapuslates an error handler', async t => {
+test('encapsulates an error handler', async t => {
   t.plan(3)
 
   const fastify = Fastify()

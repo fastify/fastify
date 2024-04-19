@@ -220,7 +220,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       })
     })
 
-    test('Throwing an error doesnt trigger any hooks', t => {
+    test('Throwing an error does not trigger any hooks', t => {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {

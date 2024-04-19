@@ -435,7 +435,7 @@ validator you are using._
 <a id="using-other-validation-libraries"></a>
 
 The `setValidatorCompiler` function makes it easy to substitute `ajv` with
-almost any Javascript validation library ([joi](https://github.com/hapijs/joi/),
+almost any JavaScript validation library ([joi](https://github.com/hapijs/joi/),
 [yup](https://github.com/jquense/yup/), ...) or a custom one:
 
 ```js

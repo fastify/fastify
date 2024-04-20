@@ -42,7 +42,7 @@ fastify.route(options)
   [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, PATCH,
-    TRACE, or SEARCH method.
+    TRACE, SEARCH, PROPFIND, PROPPATCH, LOCK or UNLOCK method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the

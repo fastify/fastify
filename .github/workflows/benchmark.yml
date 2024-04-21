@@ -101,9 +101,8 @@ jobs:
         uses: octokit/request-action@v2.x
         id: remove-label
         with:
-          route: DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}
-          owner: fastify
-          repo: fastify
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.repository }}
           issue_number: ${{ github.event.pull_request.number }}
           name: benchmark
         env:

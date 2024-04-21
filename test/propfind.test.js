@@ -87,10 +87,13 @@ fastify.listen({ port: 0 }, err => {
     })
   })
 
+  // the body test uses a text/plain content type instead of application/xml because it requires
+  // a specific content type parser
   test('request with body - propfind', t => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test`,
+      headers: { 'content-type': 'text/plain' },
       body: `<?xml version="1.0" encoding="utf-8" ?>
         <D:propfind xmlns:D="DAV:">
           <D:prop xmlns:R="http://ns.example.com/boxschema/">

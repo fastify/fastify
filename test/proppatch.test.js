@@ -47,10 +47,13 @@ fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => { fastify.close() })
 
+  // the body test uses a text/plain content type instead of application/xml because it requires
+  // a specific content type parser
   test('request - proppatch', t => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      headers: { 'content-type': 'text/plain' },
       body: `<?xml version="1.0" encoding="utf-8" ?>
         <D:propertyupdate xmlns:D="DAV:"
           xmlns:Z="http://ns.example.com/standards/z39.50/">

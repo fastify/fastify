@@ -85,8 +85,8 @@ jobs:
       node-version: ${{ matrix.node-version }}
 
   remove-label:
-    if: always()
-    needs: 
+    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    needs:
       - core-plugins
     continue-on-error: true
     runs-on: ubuntu-latest

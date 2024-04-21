@@ -85,18 +85,20 @@ jobs:
       node-version: ${{ matrix.node-version }}
 
   remove-label:
-    if: always()
-    needs: 
+    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    needs:
       - core-plugins
     continue-on-error: true
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Remove citgm-core-plugins label
         uses: octokit/request-action@v2.x
         id: remove-label
         with:
           route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
-          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          repo: ${{ github.repository }}
           issue_number: ${{ github.event.pull_request.number }}
           name: citgm-core-plugins
         env:

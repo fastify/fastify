@@ -95,8 +95,9 @@ jobs:
         uses: octokit/request-action@v2.x
         id: remove-label
         with:
-          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
-          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          route: DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}
+          owner: fastify
+          repo: fastify
           issue_number: ${{ github.event.pull_request.number }}
           name: citgm-core-plugins
         env:

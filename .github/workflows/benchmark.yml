@@ -64,7 +64,8 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   output-benchmark:
-    needs: [benchmark]
+    needs:
+      - benchmark
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

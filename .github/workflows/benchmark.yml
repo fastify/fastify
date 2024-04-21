@@ -96,6 +96,8 @@ jobs:
       - benchmark
       - output-benchmark
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Remove benchmark label
         uses: octokit/request-action@v2.x

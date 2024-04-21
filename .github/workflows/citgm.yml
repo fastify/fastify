@@ -90,6 +90,8 @@ jobs:
       - core-plugins
     continue-on-error: true
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Remove citgm-core-plugins label
         uses: octokit/request-action@v2.x

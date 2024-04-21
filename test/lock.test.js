@@ -55,6 +55,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      headers: { 'content-type': 'text/plain' },
       body: `<?xml version="1.0" encoding="utf-8" ?>
         <D:lockinfo xmlns:D='DAV:'>
           <D:lockscope> <D:exclusive/> </D:lockscope>

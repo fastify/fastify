@@ -79,7 +79,8 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test`,
-      method: 'PROPFIND'
+      method: 'PROPFIND',
+      headers: { 'content-type': 'text/plain' }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)
@@ -98,7 +99,8 @@ fastify.listen({ port: 0 }, err => {
           </D:prop>
         </D:propfind>
       `,
-      method: 'PROPFIND'
+      method: 'PROPFIND',
+      headers: { 'content-type': 'text/plain' }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)

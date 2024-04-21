@@ -51,6 +51,8 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      method: 'PROPPATCH',
+      headers: { 'content-type': 'text/plain' },
       body: `<?xml version="1.0" encoding="utf-8" ?>
         <D:propertyupdate xmlns:D="DAV:"
           xmlns:Z="http://ns.example.com/standards/z39.50/">
@@ -67,8 +69,7 @@ fastify.listen({ port: 0 }, err => {
               <Z:Copyright-Owner/>
             </D:prop>
           </D:remove>
-        </D:propertyupdate>`,
-      method: 'PROPPATCH'
+        </D:propertyupdate>`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)

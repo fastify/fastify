@@ -153,9 +153,7 @@
     }
   ],
   "devDependencies": {
-    "@eslint/eslintrc": "^3.0.2",
     "@eslint/js": "^9.1.1",
-    "@fastify/pre-commit": "^2.1.0",
     "@sinclair/typebox": "^0.32.22",
     "@sinonjs/fake-timers": "^11.2.2",
     "@types/node": "^20.12.7",
@@ -207,7 +205,6 @@
     "@fastify/fast-json-stringify-compiler": "^4.3.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.3.0",
-    "fast-content-type-parse": "^1.1.0",
     "fast-json-stringify": "^5.14.1",
     "find-my-way": "^8.1.0",
     "light-my-request": "^5.13.0",

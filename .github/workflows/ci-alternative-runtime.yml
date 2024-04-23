@@ -1,10 +1,9 @@
-name: ci
+name: ci Alternative Runtimes
 
 on:
   push:
     branches:
      - main
-     - master
      - next
      - 'v*'
     paths-ignore:
@@ -21,110 +20,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dependency-review:
-      name: Dependency Review
-      if: github.event_name == 'pull_request'
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-      steps:
-          - name: Check out repo
-            uses: actions/checkout@v4
-            with:
-              persist-credentials: false
-
-          - name: Dependency review
-            uses: actions/dependency-review-action@v4
-
-  check-licenses:
-    name: Check licenses
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
-
-      - name: Install
-        run: |
-          npm install --ignore-scripts
-
-      - name: Check licenses
-        run: |
-          npx license-checker --production --summary --onlyAllow="0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;"
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
-
-      - name: Install
-        run: |
-          npm install --ignore-scripts
-
-      - name: Lint code
-        run: |
-          npm run lint
-
-  coverage-nix:
-    needs:
-      - lint
-    permissions:
-      contents: read
-    uses: ./.github/workflows/coverage-nix.yml
-
-  coverage-win:
-    needs:
-      - lint
-    permissions:
-      contents: read
-    uses: ./.github/workflows/coverage-win.yml
-
   test-unit:
-    needs: 
-      - lint
-      - coverage-nix
-      - coverage-win
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
-
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20]
         os: [macos-latest, ubuntu-latest, windows-latest]
-
+        include:
+          - runtime: nsolid
+            node-version: 18
+            nsolid-version: 5
+          - runtime: nsolid
+            node-version: 20
+            nsolid-version: 5
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: nodesource/setup-nsolid@v1
+        if: ${{ matrix.runtime == 'nsolid' }}
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: package.json
+          nsolid-version: ${{ matrix.nsolid-version }}
 
       - name: Install
         run: |
@@ -135,10 +55,6 @@ jobs:
           npm run unit
 
   test-typescript:
-    needs: 
-      - lint
-      - coverage-nix
-      - coverage-win
     runs-on: 'ubuntu-latest'
     permissions:
       contents: read
@@ -148,11 +64,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: nodesource/setup-nsolid@v1
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: package.json
+          node-version: 20
+          nsolid-version: 5
 
       - name: Install
         run: |
@@ -175,12 +90,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: nodesource/setup-nsolid@v1
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
+          nsolid-version: 5 
       - name: install fastify
         run: |
           npm install --ignore-scripts

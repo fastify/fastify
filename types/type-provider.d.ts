@@ -72,7 +72,7 @@ export type FastifyReplyType<Reply = unknown> = Reply
 
 // Resolves the Reply type either via generic argument or from response schema. This type uses a different
 // resolution strategy to Requests where the Reply will infer a union of each status code type specified
-// by the user. The Reply can be explicitly overriden by users providing a generic Reply type on the route.
+// by the user. The Reply can be explicitly overridden by users providing a generic Reply type on the route.
 export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> = UndefinedToUnknown<KeysOf<RouteGeneric['Reply']> extends never ? ResolveReplyFromSchemaCompiler<TypeProvider, SchemaCompiler> : RouteGeneric['Reply']>
 
 // -----------------------------------------------------------------------------------------------

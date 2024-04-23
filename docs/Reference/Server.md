@@ -578,7 +578,7 @@ const fastify = require('fastify')({
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
 + `number`: Trust the nth hop from the front-facing proxy server as the client.
-+ `Function`: Custom trust function that takes `address` as first arg
++ `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
       return address === '1.2.3.4' || hop === 1

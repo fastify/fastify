@@ -5,6 +5,24 @@ const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')()
 
+const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
+        <D:propertyupdate xmlns:D="DAV:"
+          xmlns:Z="http://ns.example.com/standards/z39.50/">
+          <D:set>
+            <D:prop>
+              <Z:Authors>
+                <Z:Author>Jim Whitehead</Z:Author>
+                <Z:Author>Roy Fielding</Z:Author>
+              </Z:Authors>
+            </D:prop>
+          </D:set>
+          <D:remove>
+            <D:prop>
+              <Z:Copyright-Owner/>
+            </D:prop>
+          </D:remove>
+        </D:propertyupdate>`
+
 test('shorthand - proppatch', t => {
   t.plan(1)
   try {
@@ -47,27 +65,39 @@ fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => { fastify.close() })
 
-  test('request - proppatch', t => {
+  // the body test uses a text/plain content type instead of application/xml because it requires
+  // a specific content type parser
+  test('request with body - proppatch', t => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
-      body: `<?xml version="1.0" encoding="utf-8" ?>
-        <D:propertyupdate xmlns:D="DAV:"
-          xmlns:Z="http://ns.example.com/standards/z39.50/">
-          <D:set>
-            <D:prop>
-              <Z:Authors>
-                <Z:Author>Jim Whitehead</Z:Author>
-                <Z:Author>Roy Fielding</Z:Author>
-              </Z:Authors>
-            </D:prop>
-          </D:set>
-          <D:remove>
-            <D:prop>
-              <Z:Copyright-Owner/>
-            </D:prop>
-          </D:remove>
-        </D:propertyupdate>`,
+      headers: { 'content-type': 'text/plain' },
+      body: bodySample,
+      method: 'PROPPATCH'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 207)
+      t.equal(response.headers['content-length'], '' + body.length)
+    })
+  })
+
+  test('request with body and no content type (415 error) - proppatch', t => {
+    t.plan(3)
+    sget({
+      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      body: bodySample,
+      method: 'PROPPATCH'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+      t.equal(response.headers['content-length'], '' + body.length)
+    })
+  })
+
+  test('request without body - proppatch', t => {
+    t.plan(3)
+    sget({
+      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       method: 'PROPPATCH'
     }, (err, response, body) => {
       t.error(err)

@@ -185,7 +185,7 @@ section.
 - [`@fastify-userland/typeorm-query-runner`](https://github.com/fastify-userland/typeorm-query-runner)
   Fastify typeorm QueryRunner plugin
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
-  Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
+  Tiny (~5k), Fast, KISS, and dependency-free Node.js library to make your
   Fastify API graceful.
 - [`@h4ad/serverless-adapter`](https://github.com/H4ad/serverless-adapter)
   Run REST APIs and other web applications using your existing Node.js
@@ -222,6 +222,8 @@ section.
   API key management solution.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
+- [`aws-xray-sdk-fastify`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify)
+  A Fastify plugin to log requests and subsegments through AWSXray.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
   for CLS-based request ID generation. An out-of-the-box solution for adding
   request IDs into your logs.
@@ -247,7 +249,7 @@ section.
   [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server)
   for Fastify
 - [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Fastify
-  plugin to authenticate HTTP requests based on api key and signature
+  plugin to authenticate HTTP requests based on API key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
 - [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
@@ -288,7 +290,7 @@ section.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
 - [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
-  Small and efficient cache provider for Node.JS with In-memory, File, Redis
+  Small and efficient cache provider for Node.js with In-memory, File, Redis
    and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
   for Fastify.
@@ -304,9 +306,7 @@ section.
 - [`fastify-cloudflare-turnstile`](https://github.com/112RG/fastify-cloudflare-turnstile)
   Fastify plugin for CloudFlare Turnstile.
 - [`fastify-cloudinary`](https://github.com/Vanilla-IceCream/fastify-cloudinary)
-  The Cloudinary Fastify SDK allows you to quickly and easily integrate your
-  application with Cloudinary. Effortlessly optimize and transform your cloud's
-  assets.
+  Plugin to share a common Cloudinary connection across Fastify.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
   Sequelize ORM.
@@ -416,6 +416,8 @@ section.
   Lightweight, proxy-aware redirect plugin from HTTP to HTTPS.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
+- [`fastify-i18n`](https://github.com/Vanilla-IceCream/fastify-i18n)
+  Internationalization plugin for Fastify. Built upon node-polyglot.
 - [`fastify-impressions`](https://github.com/manju4ever/fastify-impressions)
   Fastify plugin to track impressions of all the routes.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
@@ -483,6 +485,9 @@ middlewares into Fastify plugins
   [mqtt](https://www.npmjs.com/package/mqtt) client across Fastify.
 - [`fastify-msgpack`](https://github.com/kenriortega/fastify-msgpack) Fastify
   and MessagePack, together at last. Uses @msgpack/msgpack by default.
+- [`fastify-msgraph-webhook`](https://github.com/flower-of-the-bridges/fastify-msgraph-change-notifications-webhook)
+  to manage
+  [MS Graph Change Notifications webhooks](https://learn.microsoft.com/it-it/graph/change-notifications-delivery-webhooks?tabs=http).
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin
   for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share
@@ -569,7 +574,7 @@ middlewares into Fastify plugins
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based
   access control plugin.
 - [`fastify-recaptcha`](https://github.com/qwertyforce/fastify-recaptcha)
-  Fastify plugin for recaptcha verification.
+  Fastify plugin for reCAPTCHA verification.
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels)
   A plugin for fast, reliable, and scalable channels implementation based on
   Redis streams.
@@ -602,7 +607,7 @@ middlewares into Fastify plugins
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin
   to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify
-  plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql,
+  plugin work with Sequelize (adapter for Node.js -> Sqlite, Mysql, Mssql,
   Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session)
   A session plugin with support for arbitrary backing caches via
@@ -682,10 +687,8 @@ middlewares into Fastify plugins
   [uws](https://github.com/uNetworking/uWebSockets).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser)
   Parse XML payload / request body into JS / JSON object.
-- [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin
-  for AWS XRay recording.
 - [`http-wizard`](https://github.com/flodlc/http-wizard)
-  Exports a typescript api client for your Fastify api and ensures fullstack type
+  Exports a typescript API client for your Fastify API and ensures fullstack type
   safety for your project.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
   An [i18next](https://www.i18next.com) based i18n (internationalization)
@@ -722,3 +725,7 @@ middlewares into Fastify plugins
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
   generate JSON Schema from TypeScript interfaces.
+- [`vite-plugin-fastify`](https://github.com/Vanilla-IceCream/vite-plugin-fastify)
+  Fastify plugin for Vite with Hot-module Replacement.
+- [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
+  File-based routing for Fastify applications using Vite.

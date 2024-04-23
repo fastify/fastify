@@ -87,13 +87,15 @@ jobs:
           npm run lint
 
   coverage-nix:
-    needs: lint
+    needs:
+      - lint
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
 
   coverage-win:
-    needs: lint
+    needs:
+      - lint
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml

@@ -862,9 +862,14 @@ a more detailed http server walkthrough.
    import path from 'path'
    import fastify from 'fastify'
    ```
-2. Follow the steps in this official [Node.js https server
-   guide](https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/)
-   to create the `key.pem` and `cert.pem` files
+2. Perform the following steps before setting up a Fastify HTTPS server 
+to create the `key.pem` and `cert.pem` files:
+```sh
+openssl genrsa -out key.pem
+openssl req -new -key key.pem -out csr.pem
+openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+rm csr.pem
+```
 3. Instantiate a Fastify https server and add a route:
    ```typescript
    const server = fastify({
@@ -1238,7 +1243,7 @@ Below is an example of the options inference in action:
 const server = fastify()
 
 const plugin: FastifyPluginCallback<{
-:  option1: string;
+  option1: string;
   option2: boolean;
 }> = function (instance, opts, done) { }
 

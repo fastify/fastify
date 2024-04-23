@@ -82,6 +82,22 @@ test('The schema should be accessible by id via getSchema', t => {
   fastify.ready(err => t.error(err))
 })
 
+test('The schema should not be undefined in hooks if route does not exist', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, _reply, done) {
+    t.not(req.routeSchema, undefined)
+    t.not(req.routeOptions.schema, undefined)
+    done()
+  })
+
+  fastify.inject('/not-found', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
+})
+
 test('Get validatorCompiler after setValidatorCompiler', t => {
   t.plan(2)
   const myCompiler = () => { }

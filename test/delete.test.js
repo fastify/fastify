@@ -299,3 +299,43 @@ fastify.listen({ port: 0 }, err => {
     })
   })
 })
+
+test('shorthand - delete with application/json Content-Type header and null body', t => {
+  t.plan(4)
+  const fastify = require('..')()
+  fastify.delete('/', {}, (req, reply) => {
+    t.equal(req.body, null)
+    reply.send(req.body)
+  })
+  fastify.inject({
+    method: 'DELETE',
+    url: '/',
+    headers: { 'Content-Type': 'application/json' },
+    body: 'null'
+  }, (err, response) => {
+    t.error(err)
+    t.equal(response.statusCode, 200)
+    t.same(response.payload.toString(), 'null')
+  })
+})
+
+// https://github.com/fastify/fastify/issues/936
+// Skip this test because this is an invalid request
+test('shorthand - delete with application/json Content-Type header and without body', { skip: true }, t => {
+  t.plan(4)
+  const fastify = require('..')()
+  fastify.delete('/', {}, (req, reply) => {
+    t.equal(req.body, undefined)
+    reply.send(req.body)
+  })
+  fastify.inject({
+    method: 'DELETE',
+    url: '/',
+    headers: { 'Content-Type': 'application/json' },
+    body: null
+  }, (err, response) => {
+    t.error(err)
+    t.equal(response.statusCode, 200)
+    t.same(response.payload.toString(), '')
+  })
+})

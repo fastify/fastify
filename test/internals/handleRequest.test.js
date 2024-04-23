@@ -13,9 +13,9 @@ const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
 function schemaValidator ({ schema, method, url, httpPart }) {
-  const validateFuncion = ajv.compile(schema)
+  const validateFunction = ajv.compile(schema)
   const fn = function (body) {
-    const isOk = validateFuncion(body)
+    const isOk = validateFunction(body)
     if (isOk) return
     return false
   }

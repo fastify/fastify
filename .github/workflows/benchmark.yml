@@ -33,7 +33,7 @@ jobs:
 
       - name: Install
         run: |
-          npm install --only=production --ignore-scripts
+          npm install --ignore-scripts
 
       - name: Run benchmark
         id: benchmark-pr
@@ -52,7 +52,7 @@ jobs:
 
       - name: Install
         run: |
-          npm install --only=production --ignore-scripts
+          npm install --ignore-scripts
 
       - name: Run benchmark
         id: benchmark-main
@@ -64,7 +64,8 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   output-benchmark:
-    needs: [benchmark]
+    needs:
+      - benchmark
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -96,13 +97,15 @@ jobs:
       - benchmark
       - output-benchmark
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Remove benchmark label
         uses: octokit/request-action@v2.x
         id: remove-label
         with:
           route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
-          repo: ${{ github.event.pull_request.head.repo.full_name }}
+          repo: ${{ github.repository }}
           issue_number: ${{ github.event.pull_request.number }}
           name: benchmark
         env:

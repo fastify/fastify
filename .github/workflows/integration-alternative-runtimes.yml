@@ -1,4 +1,4 @@
-name: integration
+name: integration Alternative Runtimes
 
 on:
   push:
@@ -23,24 +23,27 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [16, 18, 20]
         os: [ubuntu-latest]
+        runtime: [nsolid]
+        node-version: [18, 20]
         pnpm-version: [8]
-        # pnpm@8 does not support Node.js 14 so include it separately
         include:
-          - node-version: 14
-            os: ubuntu-latest
-            pnpm-version: 7
-
+          - nsolid-version: 5
+            node-version: 18
+            runtime: nsolid
+          - nsolid-version: 5
+            node-version: 20
+            runtime: nsolid
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+
+      - uses: nodesource/setup-nsolid@v1
+        if: ${{ matrix.runtime == 'nsolid' }}
         with:
           node-version: ${{ matrix.node-version }}
+          nsolid-version: ${{ matrix.nsolid-version }}
 
       - name: Install Pnpm
         uses: pnpm/action-setup@v3

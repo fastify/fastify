@@ -207,7 +207,7 @@ test('Should throw of the schema does not exists in output', t => {
 
   fastify.ready(err => {
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot find reference.*/) // error from fast-json-strinfigy
+    t.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot find reference.*/) // error from fast-json-stringify
   })
 })
 
@@ -1267,7 +1267,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
   fastify.register(function sibling3 (instance, opts, done) {
     addRandomRoute(instance)
 
-    // this trigger to dont't reuse the same compiler pool
+    // this trigger to don't reuse the same compiler pool
     instance.addSchema({ $id: 'diff', type: 'object' })
 
     t.notOk(instance.validatorCompiler, 'validator not initialized')
@@ -1555,7 +1555,7 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
 
   t.equal(json.message, 'querystring/msg must be array')
   t.equal(json.statusCode, 400)
-  t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  t.equal(res.statusCode, 400, 'Should not coerce the string into array')
 })
 
 test('setSchemaController: Inherits buildSerializer from parent if not present within the instance', async t => {
@@ -1785,7 +1785,7 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
   t.equal(rootSerializerCalled, 0, 'Should be called from the child')
   t.equal(rootValidatorCalled, 1, 'Should not be called from the child')
   t.equal(childSerializerCalled, 1, 'Should be called from the child')
-  t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  t.equal(res.statusCode, 400, 'Should not coerce the string into array')
 })
 
 test('Should throw if not default validator passed', async t => {
@@ -1867,7 +1867,7 @@ test('Should throw if not default validator passed', async t => {
     })
 
     t.equal(res.json().message, 'querystring/msg must be array')
-    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+    t.equal(res.statusCode, 400, 'Should not coerce the string into array')
   } catch (err) {
     t.error(err)
   }
@@ -1928,7 +1928,7 @@ test('Should coerce the array if the default validator is used', async t => {
     })
 
     t.equal(res.statusCode, 200)
-    t.same(res.json(), { msg: ['string'] }, 'Should coearce the string into array')
+    t.same(res.json(), { msg: ['string'] }, 'Should coerce the string into array')
   } catch (err) {
     t.error(err)
   }

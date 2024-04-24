@@ -1,32 +1,52 @@
-name: Publish package to npm
+name: Create release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'The version number to release (has priority over release_type)'
-        type: string
-      release_type:
-        description: Type of release 
-        type: choice
-        default: patch
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    branches:
+     - main
+    paths:
+      - package.json
+
+permissions:
+  contents: read
 
 jobs:
+  check-release-version:
+    runs-on: ubuntu-latest
+    outputs:
+      release-version: ${{ steps.set-release-version.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        id: set-release-version
+        with:
+          result-encoding: string
+          script: |
+            const { owner, repo } = context.repo
+            const version = require("./package.json").version
+            const versionTag = `v${version}`
+
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner,
+              repo
+            })
+
+            const previousRelease = releases.find((r) => r.tag_name.startsWith('v6'))
+
+            if (versionTag !== previousRelease?.tag_name) {
+              return versionTag
+            }
+
   release:
     runs-on: ubuntu-latest
+    needs: check-release-version
+    if: ${{ startsWith(needs.check-release-version.outputs.release-version, 'v') }}
 
     permissions:
       contents: write
       id-token: write
 
     environment: release
-
-    outputs:
-      version: ${{ steps.bump.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,45 +56,19 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm install -g npm@latest
       - run: npm install
-      - run: npm run build:validation
-      - name: Git Config
-        run: |
-          git config --global user.email "hello@matteocollina.com"
-          git config --global user.name "Matteo Collina"
-      - name: Change version number and push
-        id: bump
-        run: |
-          npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
-          node build/sync-version.js
-          VERSION=`jq -r ".version" package.json`
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          git add -u
-          git commit -m "Bumped v$VERSION"
-          git push origin HEAD:main
-      - run: npm publish --provenance --access public
+      - name: Create NPM release
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  releasenotes:
-    runs-on: ubuntu-latest
-    needs: release
-
-    permissions:
-      contents: write
-
-    env:
-      VERSION: ${{ needs.release.outputs.version }}
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - run: node scripts/generate-undici-types-package-json.js
+      - run: npm publish --provenance
+        working-directory: './types'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Create GitHub release
+        uses: actions/github-script@v7
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-      - name: 'Install release-notes'
-        run: npm i @matteo.collina/release-notes -g
-      - name: 'Create release notes'
-        run: |
-          NOTES=`release-notes -a ${{ secrets.GITHUB_TOKEN }} -t v$VERSION -r fastify -o fastify`
-          echo "# Released version $VERSION :rocket:" >> $GITHUB_STEP_SUMMARY
-          echo "url: $NOTES" >> $GITHUB_STEP_SUMMARY
+          script: |
+            const defaultBranch = "${{ github.event.repository.default_branch }}"
+            const versionTag = "${{ needs.check-release-version.outputs.release-version }}"
+            await require('./.github/scripts/release').release({ github, context, defaultBranch, versionTag })

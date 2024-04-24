@@ -1,0 +1,57 @@
+name: Create release PR
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version number to release (has priority over release_type)'
+        type: string
+      release_type:
+        description: Type of release
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Git Config
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+      - name: Change version number and push
+        id: bump
+        run: |
+          npm version ${{ inputs.version || inputs.release_type }} --git-tag-version=false
+          VERSION=`jq -r ".version" package.json`
+          RELEASE_BRANCH="release/v$VERSION"
+          git add -u
+          git commit -m "Bumped v$VERSION"
+          git push origin "HEAD:$RELEASE_BRANCH"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Create PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const defaultBranch = "${{ github.event.repository.default_branch }}"
+            const versionTag = "v${{ steps.bump.outputs.version }}"
+            await require('./scripts/release').generatePr({ github, context, defaultBranch, versionTag })

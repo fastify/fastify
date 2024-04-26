@@ -321,7 +321,7 @@ test('shorthand - delete with application/json Content-Type header and null body
 
 // https://github.com/fastify/fastify/issues/936
 // Skip this test because this is an invalid request
-test('shorthand - delete with application/json Content-Type header and without body', { skip: true }, t => {
+test('shorthand - delete with application/json Content-Type header and without body', { skip: 'https://github.com/fastify/fastify/pull/5419' }, t => {
   t.plan(4)
   const fastify = require('..')()
   fastify.delete('/', {}, (req, reply) => {

@@ -16,7 +16,6 @@ test('missing method from http client', t => {
       path: '/'
     }, (res) => {
       t.equal(res.statusCode, 404)
-      t.end()
       fastify.close()
     })
 

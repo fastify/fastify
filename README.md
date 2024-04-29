@@ -401,7 +401,7 @@ in the maintenance of this project.
 
 ## License
 
-Licensed under [MIT](./LICENSE).
+Licensed under [MIT](./LICENSE). 
 
 For your convenience, here is a list of all the licenses of our production
 dependencies:

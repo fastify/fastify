@@ -17,7 +17,7 @@ t.test('logging', (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(12)
+  t.plan(13)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -253,7 +253,7 @@ t.test('logging', (t) => {
   })
 
   t.test('should not log incoming request and outgoing response when disabled', async (t) => {
-    t.plan(3)
+    t.plan(1)
     const stream = split(JSON.parse)
     const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
     t.teardown(fastify.close.bind(fastify))
@@ -265,12 +265,6 @@ t.test('logging', (t) => {
     await fastify.ready()
 
     await fastify.inject({ method: 'GET', url: '/500' })
-
-    {
-      const [line] = await once(stream, 'data')
-      t.ok(line.reqId, 'reqId is defined')
-      t.equal(line.msg, '500 error', 'message is set')
-    }
 
     // no more readable data
     t.equal(stream.readableLength, 0)
@@ -402,5 +396,37 @@ t.test('logging', (t) => {
       t.match(line, lines.shift())
       if (lines.length === 0) break
     }
+  })
+
+  t.test('should not log the error if request logging is disabled', async (t) => {
+    t.plan(3)
+
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream,
+        level: 'info'
+      },
+      disableRequestLogging: true
+    })
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.get('/error', function (req, reply) {
+      t.ok(req.log)
+      reply.send(new Error('a generic error'))
+    })
+
+    await fastify.ready()
+    await fastify.listen({ port: 0, host: localhost })
+
+    await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
+
+    {
+      const [line] = await once(stream, 'data')
+      t.equal(line.msg, `Server listening at http://[::1]:${fastify.server.address().port}`, 'message is set')
+    }
+
+    // no more readable data
+    t.equal(stream.readableLength, 0)
   })
 })

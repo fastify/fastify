@@ -252,6 +252,9 @@ section.
   plugin to authenticate HTTP requests based on API key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
+- [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin 
+  to access Fastify instance, logger, request and reply from Node.js [Async
+  Local Storage](https://nodejs.org/api/async_context.html#class-asynclocalstorage).
 - [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
   MySQL plugin with auto SQL injection attack prevention.
 - [`fastify-at-postgres`](https://github.com/mateonunez/fastify-at-postgres) Fastify

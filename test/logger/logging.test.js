@@ -270,8 +270,8 @@ t.test('logging', (t) => {
     t.equal(stream.readableLength, 0)
   })
 
-  t.test('should not log incoming request and outgoing response for 404 onBadUrl when disabled', async (t) => {
-    t.plan(3)
+  t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {
+    t.plan(1)
     const stream = split(JSON.parse)
     const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
     t.teardown(fastify.close.bind(fastify))
@@ -279,12 +279,6 @@ t.test('logging', (t) => {
     await fastify.ready()
 
     await fastify.inject({ method: 'GET', url: '/%c0' })
-
-    {
-      const [line] = await once(stream, 'data')
-      t.ok(line.reqId, 'reqId is defined')
-      t.equal(line.msg, 'Route GET:/%c0 not found', 'message is set')
-    }
 
     // no more readable data
     t.equal(stream.readableLength, 0)

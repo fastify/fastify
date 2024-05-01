@@ -216,11 +216,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
 
       }, (err, response, body) => {
         t.error(err)
-        if (upMethod === 'OPTIONS') {
-          t.equal(response.statusCode, 200)
-        } else {
-          t.equal(response.statusCode, 415)
-        }
+        t.equal(response.statusCode, 415)
       })
     })
 

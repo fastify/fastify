@@ -1,4 +1,4 @@
-import { FastifyBaseLogger, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions, FastifyTypeProvider, FastifyTypeProviderDefault, RawServerBase, RawServerDefault } from "../fastify";
+import fastify, { FastifyBaseLogger, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions, FastifyTypeProvider, FastifyTypeProviderDefault, RawServerBase, RawServerDefault } from "../fastify";
 import { FastifyDecorators, FastifyInstance } from "../types/instance";
 
 type ExtractSixGeneric<T> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : void;
@@ -73,7 +73,7 @@ const a = fastifyPlugin<{
     })
 });
 
-fastifyPlugin<{ decorators: {}, dependencies: [typeof a] }>((fastify) => {
+const b = fastifyPlugin<{ decorators: { fastify: { other: string } }, dependencies: [typeof a] }>((fastify) => {
     fastify.someProperty;
     
     fastify.get("/", (req, res) => {
@@ -83,5 +83,17 @@ fastifyPlugin<{ decorators: {}, dependencies: [typeof a] }>((fastify) => {
     });
 }, {});
 
+const app = fastify()
+                .register(a, {})
+                .register(b, {});
 
+app.someProperty;
+app.other; // <- If we hover on the property it will have the correct type
 
+app.route({
+    method: "POST",
+    url: "/health",
+    handler: (req, res) => {
+        res.sendFile("./somefilepath") // <- Now the type works
+    }
+})

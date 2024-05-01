@@ -190,7 +190,7 @@ export type FastifyInstance<
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
-  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & PromiseLike<undefined>>;
+  register: FastifyRegister<RawServer, RawRequest, RawReply, Decorators>;
 
   routing(req: RawRequest, res: RawReply): void;
   getDefaultRoute(): DefaultRoute<RawRequest, RawReply>;

@@ -1,8 +1,8 @@
 import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from './plugin'
 import { LogLevel } from './logger'
-import { FastifyInstance } from './instance'
-import { RawServerBase } from './utils'
-import { FastifyBaseLogger, FastifyTypeProvider, RawServerDefault } from '../fastify'
+import { FastifyDecorators, FastifyInstance } from './instance'
+import { RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase } from './utils'
+import { FastifyBaseLogger, FastifyTypeProvider, FastifyTypeProviderDefault, RawServerDefault } from '../fastify'
 
 export interface RegisterOptions {
   prefix?: string;
@@ -17,17 +17,22 @@ export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | ((in
  *
  * Function for adding a plugin to fastify. The options are inferred from the passed in FastifyPlugin parameter.
  */
-export interface FastifyRegister<T = void, RawServer extends RawServerBase = RawServerDefault, TypeProviderDefault extends FastifyTypeProvider = FastifyTypeProvider, LoggerDefault extends FastifyBaseLogger = FastifyBaseLogger> {
-  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault, Logger extends FastifyBaseLogger = LoggerDefault>(
-    plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger>,
+export interface FastifyRegister<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  D extends FastifyDecorators = object,
+> {
+  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, Logger extends FastifyBaseLogger = FastifyBaseLogger, Decorators extends FastifyDecorators = object>(
+    plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators>,
     opts?: FastifyRegisterOptions<Options>
-  ): T;
-  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault, Logger extends FastifyBaseLogger = LoggerDefault>(
-    plugin: FastifyPluginAsync<Options, Server, TypeProvider, Logger>,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & PromiseLike<undefined>;
+  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, Logger extends FastifyBaseLogger = FastifyBaseLogger, Decorators extends FastifyDecorators = object>(
+    plugin: FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators>,
     opts?: FastifyRegisterOptions<Options>
-  ): T;
-  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault, Logger extends FastifyBaseLogger = LoggerDefault>(
-    plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger> | FastifyPluginAsync<Options, Server, TypeProvider, Logger> | Promise<{ default: FastifyPluginCallback<Options, Server, TypeProvider, Logger> }> | Promise<{ default: FastifyPluginAsync<Options, Server, TypeProvider, Logger> }>,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & PromiseLike<undefined>;
+  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, Logger extends FastifyBaseLogger = FastifyBaseLogger, Decorators extends FastifyDecorators = object>(
+    plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators> | FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators> | Promise<{ default: FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators> }> | Promise<{ default: FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators> }>,
     opts?: FastifyRegisterOptions<Options>
-  ): T;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & PromiseLike<undefined>;
 }

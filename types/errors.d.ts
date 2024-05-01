@@ -84,5 +84,5 @@ export type FastifyErrorCode = {
 }
 
 export type FastifyErrorCodes = {
-  [K in keyof FastifyErrorCode as K]: FastifyErrorConstructor<{ code: FastifyErrorCodes[keyof FastifyErrorCodes]; statusCode?: number | undefined }>
+  [K in keyof FastifyErrorCode as K]: FastifyErrorConstructor<{ code: FastifyErrorCode[keyof FastifyErrorCode]; statusCode?: number | undefined }>
 }

@@ -83,4 +83,6 @@ export type FastifyErrorCode = {
   FST_ERR_PLUGIN_TIMEOUT: 'FST_ERR_PLUGIN_TIMEOUT'
 }
 
-export type FastifyErrorCodes = Record<keyof FastifyErrorCode, FastifyErrorConstructor>
+export type FastifyErrorCodes = {
+  [K in keyof FastifyErrorCode as K]: FastifyErrorConstructor<{ code: FastifyErrorCodes[keyof FastifyErrorCodes]; statusCode?: number | undefined }>
+}

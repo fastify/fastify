@@ -53,6 +53,7 @@ const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
   AVVIO_ERRORS_MAP,
+  FastifyErrorCode,
   ...errorCodes
 } = require('./lib/errors')
 
@@ -914,5 +915,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  */
 module.exports = fastify
 module.exports.errorCodes = errorCodes
+module.exports.FastifyErrorCode = FastifyErrorCode
 module.exports.fastify = fastify
 module.exports.default = fastify

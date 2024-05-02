@@ -390,7 +390,7 @@ The other log entries that will be disabled are:
 - the error and info logs written by the `defaultErrorHandler` 
 on error management
 - the info log written by the `fourOhFour` handler when a 
-not existent route is requested
+non existent route is requested
 
 Other log messages emitted by Fastify will stay enabled, 
 like deprecation warnings and messages

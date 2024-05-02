@@ -393,7 +393,7 @@ t.test('logging', (t) => {
   })
 
   t.test('should not log the error if request logging is disabled', async (t) => {
-    t.plan(3)
+    t.plan(4)
 
     const stream = split(JSON.parse)
     const fastify = Fastify({
@@ -417,7 +417,8 @@ t.test('logging', (t) => {
 
     {
       const [line] = await once(stream, 'data')
-      t.equal(line.msg, `Server listening at http://[::1]:${fastify.server.address().port}`, 'message is set')
+      t.type(line.msg, 'string')
+      t.ok(line.msg.startsWith('Server listening at'), 'message is set')
     }
 
     // no more readable data

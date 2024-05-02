@@ -32,6 +32,7 @@ Let's write our first server:
 
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -68,6 +69,7 @@ Do you prefer to use `async/await`? Fastify supports it out-of-the-box.
 ```js
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })

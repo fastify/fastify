@@ -196,6 +196,8 @@ export interface FastifyInstance<
   unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
   trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
   search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  mkcalendar: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  report: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
 
   hasRoute<

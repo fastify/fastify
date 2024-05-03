@@ -208,6 +208,10 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 
 `fastify.search(path, [options], handler)`
 
+`fastify.mkcalendar(path, [options], handler)`
+
+`fastify.report(path, [options], handler)`
+
 Example:
 ```js
 const opts = {

@@ -38,10 +38,11 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
 
 type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put' |
 'options' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
-'unlock' | 'trace' | 'search'
+'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
 
 ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'PROPFIND',
-  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH'
+  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH',
+  'MKCALENDAR', 'REPORT'
 ].forEach(method => {
   // route method
   expectType<FastifyInstance>(fastify().route({

@@ -188,3 +188,35 @@ test('cannot set childLoggerFactory after binding', t => {
     }
   })
 })
+
+test('catch synchronous errors', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.setErrorHandler((_, req, reply) => {
+    throw new Error('kaboom2')
+  })
+
+  fastify.post('/', function (req, reply) {
+    reply.send(new Error('kaboom'))
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify({ hello: 'world' }).substring(0, 5)
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 500)
+    t.same(res.json(), {
+      error: 'Internal Server Error',
+      message: 'kaboom2',
+      statusCode: 500
+    })
+  })
+})

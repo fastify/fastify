@@ -70,8 +70,8 @@ export interface FastifyReply<
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serialize(payload: any): string | ArrayBuffer | Buffer;
   // Serialization Methods
-  getSerializationFunction(httpStatus: string, contentType?: string): (payload: {[key: string]: unknown}) => string;
-  getSerializationFunction(schema: {[key: string]: unknown}): (payload: {[key: string]: unknown}) => string;
+  getSerializationFunction(httpStatus: string, contentType?: string): ((payload: {[key: string]: unknown}) => string) | undefined;
+  getSerializationFunction(schema: {[key: string]: unknown}): ((payload: {[key: string]: unknown}) => string) | undefined;
   compileSerializationSchema(schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): (payload: {[key: string]: unknown}) => string;
   serializeInput(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): string;
   serializeInput(input: {[key: string]: unknown}, httpStatus: string, contentType?: string): unknown;

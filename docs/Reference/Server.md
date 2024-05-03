@@ -383,9 +383,15 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
-Please note that this option will also disable an error log written by the
-default `onResponse` hook on reply callback errors. Other log messages 
-emitted by Fastify will stay enabled, like deprecation warnings and messages
+The other log entries that will be disabled are:
+- an error log written by the default `onResponse` hook on reply callback errors
+- the error and info logs written by the `defaultErrorHandler` 
+on error management
+- the info log written by the `fourOhFour` handler when a 
+non existent route is requested
+
+Other log messages emitted by Fastify will stay enabled, 
+like deprecation warnings and messages
 emitted when requests are received while the server is closing.
 
 ```js

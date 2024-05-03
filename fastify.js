@@ -301,6 +301,12 @@ function fastify (options) {
     search: function _search (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
+    mkcalendar: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
+    },
+    report: function _report (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
+    },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
     },

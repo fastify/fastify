@@ -20,12 +20,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
-    
+
     strategy:
       matrix:
         os: [ubuntu-latest]
         runtime: [nsolid]
-        node-version: [18, 20]
+        node-version: [18, 20, 22]
         pnpm-version: [8]
         include:
           - nsolid-version: 5
@@ -49,7 +49,7 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: ${{ matrix.pnpm-version }}
-      
+
       - name: Install Production
         run: |
           pnpm install --prod

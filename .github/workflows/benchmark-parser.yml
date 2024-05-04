@@ -19,7 +19,7 @@ jobs:
       MAIN-BENCH-20: ${{ steps.benchmark-main.outputs.BENCH_RESULT20 }}
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20, 22]
     steps:
       - uses: actions/checkout@v4
         with:

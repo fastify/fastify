@@ -280,6 +280,9 @@ function fastify (options) {
     proppatch: function _proppatch (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
     },
+    mkcalendar: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
+    },
     mkcol: function _mkcol (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
     },
@@ -297,6 +300,9 @@ function fastify (options) {
     },
     trace: function _trace (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+    },
+    report: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
     },
     search: function _search (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })

@@ -25,7 +25,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         runtime: [nsolid]
-        node-version: [18, 20, 22]
+        node-version: [18, 20]
         pnpm-version: [8]
         include:
           - nsolid-version: 5

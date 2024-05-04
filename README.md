@@ -125,6 +125,7 @@ yarn add fastify
 
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -150,6 +151,7 @@ with async-await:
 ```js
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -323,6 +325,8 @@ listed in alphabetical order.
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 * [__Aras Abbasi__](https://github.com/uzlopak),
   <https://www.npmjs.com/~uzlopak>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina),

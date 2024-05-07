@@ -79,8 +79,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeConfig)
   expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeOptions.config)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
-  expectType<FastifySchema>(request.routeSchema)
-  expectType<FastifySchema>(request.routeOptions.schema)
+  expectType<FastifySchema | undefined>(request.routeSchema)
+  expectType<FastifySchema | undefined>(request.routeOptions.schema)
   expectType<RouteHandlerMethod>(request.routeOptions.handler)
   expectType<string | undefined>(request.routeOptions.url)
 

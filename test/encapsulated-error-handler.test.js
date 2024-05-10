@@ -37,7 +37,7 @@ test('encapsulates an asynchronous error handler', async t => {
 
 // See discussion in https://github.com/fastify/fastify/pull/5222#discussion_r1432573655
 test('encapsulates a synchronous error handler', async t => {
-  t.plan(4)
+  t.plan(3)
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {

@@ -45,11 +45,11 @@ test('without options passed to Fastify, initialConfig should expose default val
     onProtoPoisoning: 'error',
     onConstructorPoisoning: 'error',
     pluginTimeout: 10000,
-    requestIdHeader: 'request-id',
+    requestIdHeader: false,
     requestIdLogLabel: 'reqId',
     http2SessionTimeout: 72000,
     exposeHeadRoutes: true,
-    useSemicolonDelimiter: true
+    useSemicolonDelimiter: false
   }
 
   t.same(Fastify().initialConfig, fastifyDefaultOptions)
@@ -105,7 +105,7 @@ test('Fastify.initialConfig should expose all options', t => {
     genReqId: function (req) {
       return reqId++
     },
-    logger: pino({ level: 'info' }),
+    loggerInstance: pino({ level: 'info' }),
     constraints: {
       version: versionStrategy
     },
@@ -285,11 +285,11 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       onProtoPoisoning: 'error',
       onConstructorPoisoning: 'error',
       pluginTimeout: 10000,
-      requestIdHeader: 'request-id',
+      requestIdHeader: false,
       requestIdLogLabel: 'reqId',
       http2SessionTimeout: 72000,
       exposeHeadRoutes: true,
-      useSemicolonDelimiter: true
+      useSemicolonDelimiter: false
     })
   } catch (error) {
     t.fail()

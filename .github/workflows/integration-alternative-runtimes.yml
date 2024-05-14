@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
-    
+
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -49,7 +49,7 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: ${{ matrix.pnpm-version }}
-      
+
       - name: Install Production
         run: |
           pnpm install --prod

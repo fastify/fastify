@@ -24,9 +24,9 @@ t.test('response serialization', (t) => {
 
     const stream = split(JSON.parse)
 
-    const logger = pino({ level: 'info' }, stream)
+    const loggerInstance = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -70,7 +70,7 @@ t.test('response serialization', (t) => {
 
     const stream = split(JSON.parse)
 
-    const logger = pino({
+    const loggerInstance = pino({
       level: 'info',
       serializers: {
         test: value => 'X' + value,
@@ -78,7 +78,7 @@ t.test('response serialization', (t) => {
       }
     }, stream)
     const fastify = Fastify({
-      logger
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -115,14 +115,14 @@ t.test('response serialization', (t) => {
 
     const stream = split(JSON.parse)
 
-    const logger = pino({
+    const loggerInstance = pino({
       level: 'info',
       serializers: {
         test: value => 'X' + value
       }
     }, stream)
 
-    const fastify = Fastify({ logger })
+    const fastify = Fastify({ loggerInstance })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.register(context1, { logSerializers: { test2: value => 'Y' + value } })

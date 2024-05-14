@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.26.2'
+const VERSION = '5.0.0-alpha.1'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -32,7 +32,7 @@ const {
   kGenReqId
 } = require('./lib/symbols.js')
 
-const { createServer, compileValidateHTTPVersion } = require('./lib/server')
+const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
@@ -111,7 +111,7 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader).toLowerCase()
+  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -252,8 +252,6 @@ function fastify (options) {
     [kGenReqId]: genReqId,
     // routing method
     routing: httpHandler,
-    getDefaultRoute: router.getDefaultRoute.bind(router),
-    setDefaultRoute: router.setDefaultRoute.bind(router),
     // routes shorthand methods
     delete: function _delete (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
@@ -275,6 +273,39 @@ function fastify (options) {
     },
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+    },
+    propfind: function _propfind (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PROPFIND', url, options, handler })
+    },
+    proppatch: function _proppatch (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
+    },
+    mkcalendar: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
+    },
+    mkcol: function _mkcol (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
+    },
+    copy: function _copy (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'COPY', url, options, handler })
+    },
+    move: function _move (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MOVE', url, options, handler })
+    },
+    lock: function _lock (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'LOCK', url, options, handler })
+    },
+    unlock: function _unlock (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'UNLOCK', url, options, handler })
+    },
+    trace: function _trace (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+    },
+    report: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
+    },
+    search: function _search (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
@@ -503,7 +534,6 @@ function fastify (options) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
-    validateHTTPVersion: compileValidateHTTPVersion(options),
     keepAliveConnections
   })
 

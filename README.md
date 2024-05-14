@@ -46,10 +46,8 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-The `main` branch refers to the Fastify `v4` release. Check out the
-[`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.
-
-
+The `main` branch refers to the Fastify `v5` release, which is not released/LTS yet.
+Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v4`.
 
 ### Table of Contents
 

@@ -194,48 +194,6 @@ function invalidSchemaErrorFormatter (err: Error) {
 }
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
-// test listen method callback
-expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectType<Error | null>(err)
-}))
-
-// test listen method callback types
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectAssignable<Error|null>(err)
-  expectAssignable<string>(address)
-}))
-
-// test listen method promise
-expectAssignable<PromiseLike<string>>(server.listen(3000))
-expectAssignable<PromiseLike<string>>(server.listen('3000'))
-expectAssignable<PromiseLike<string>>(server.listen(3000, '', 0))
-expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
-expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
-expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
-
-// Test variadic listen signatures Typescript deprecation
-expectDeprecated(server.listen(3000))
-expectDeprecated(server.listen('3000'))
-expectDeprecated(server.listen(3000, '', 0))
-expectDeprecated(server.listen('3000', '', 0))
-expectDeprecated(server.listen(3000, ''))
-expectDeprecated(server.listen('3000', ''))
-
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
@@ -453,7 +411,7 @@ server.decorate('typedTestProperty', {
 })
 server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
-server.decorate('typedTestProperty', null)
+expectError(server.decorate('typedTestProperty', null))
 expectError(server.decorate('typedTestProperty', 'foo'))
 expectError(server.decorate('typedTestProperty', {
   getter () {
@@ -493,7 +451,7 @@ server.decorateRequest('typedTestRequestProperty', {
 })
 server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
-server.decorateRequest('typedTestRequestProperty', null)
+expectError(server.decorateRequest('typedTestRequestProperty', null))
 expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
 expectError(server.decorateRequest('typedTestRequestProperty', {
   getter () {
@@ -533,7 +491,7 @@ server.decorateReply('typedTestReplyProperty', {
 })
 server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
-server.decorateReply('typedTestReplyProperty', null)
+expectError(server.decorateReply('typedTestReplyProperty', null))
 expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
 expectError(server.decorateReply('typedTestReplyProperty', {
   getter () {
@@ -569,10 +527,6 @@ const versionConstraintStrategy = {
 }
 expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
 expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))
-
-expectType<boolean>(server.hasPlugin(''))
-
-expectAssignable<DefaultRoute<RawRequestDefaultExpression, RawReplyDefaultExpression>>(server.getDefaultRoute())
 
 expectType<FastifySchemaCompiler<any> | undefined>(server.validatorCompiler)
 expectType<FastifySerializerCompiler<any> | undefined>(server.serializerCompiler)

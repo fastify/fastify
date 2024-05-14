@@ -101,7 +101,7 @@ jobs:
     uses: ./.github/workflows/coverage-win.yml
 
   test-unit:
-    needs: 
+    needs:
       - lint
       - coverage-nix
       - coverage-win
@@ -111,14 +111,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18, 20]
+        node-version: [18, 20, 22]
         os: [macos-latest, ubuntu-latest, windows-latest]
         exclude:
-          # excludes node 14 on Windows
-          - os: windows-latest
-            node-version: 14
-          - os: macos-latest
-            node-version: 14
           - os: macos-latest
             node-version: 16
 
@@ -143,7 +138,7 @@ jobs:
           npm run unit
 
   test-typescript:
-    needs: 
+    needs:
       - lint
       - coverage-nix
       - coverage-win
@@ -209,7 +204,7 @@ jobs:
     if: >
         github.event_name == 'pull_request' &&
         github.event.pull_request.user.login == 'dependabot[bot]'
-    needs: 
+    needs:
       - test-typescript
       - test-unit
       - package

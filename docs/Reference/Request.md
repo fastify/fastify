@@ -20,10 +20,12 @@ Request is a core Fastify object containing the following fields:
 - `ips` - an array of the IP addresses, ordered from closest to furthest, in the
   `X-Forwarded-For` header of the incoming request (only when the
   [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled)
-- `hostname` - the host of the incoming request (derived from `X-Forwarded-Host`
+- `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
   exists.
+- `hostname` - the host of the incoming request without the port
+- `port` - the port that the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
@@ -104,7 +106,9 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.id)
   console.log(request.ip)
   console.log(request.ips)
+  console.log(request.host)
   console.log(request.hostname)
+  console.log(request.port)
   console.log(request.protocol)
   console.log(request.url)
   console.log(request.routeOptions.method)

@@ -88,7 +88,7 @@ test('reply.send handles aborted requests', t => {
     child: () => { return spyLogger }
   }
   const fastify = Fastify({
-    logger: spyLogger
+    loggerInstance: spyLogger
   })
 
   fastify.get('/', (req, reply) => {
@@ -136,7 +136,7 @@ test('request terminated should not crash fastify', t => {
     child: () => { return spyLogger }
   }
   const fastify = Fastify({
-    logger: spyLogger
+    loggerInstance: spyLogger
   })
 
   fastify.get('/', async (req, reply) => {

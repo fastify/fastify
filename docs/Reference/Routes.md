@@ -190,6 +190,24 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 
 `fastify.patch(path, [options], handler)`
 
+`fastify.propfind(path, [options], handler)`
+
+`fastify.proppatch(path, [options], handler)`
+
+`fastify.mkcol(path, [options], handler)`
+
+`fastify.copy(path, [options], handler)`
+
+`fastify.move(path, [options], handler)`
+
+`fastify.lock(path, [options], handler)`
+
+`fastify.unlock(path, [options], handler)`
+
+`fastify.trace(path, [options], handler)`
+
+`fastify.search(path, [options], handler)`
+
 Example:
 ```js
 const opts = {
@@ -578,7 +596,7 @@ const fastify = Fastify({
           method: req.method,
           url: req.url,
           headers: req.headers,
-          hostname: req.hostname,
+          host: req.host,
           remoteAddress: req.ip,
           remotePort: req.socket.remotePort
         }
@@ -809,25 +827,3 @@ const secret = {
 >   }
 > })
 > ```
-
-
-### ⚠  HTTP version check
-
-Fastify will check the HTTP version of every request, based on configuration
-options ([http2](./Server.md#http2), [https](./Server.md#https), and
-[serverFactory](./Server.md#serverfactory)), to determine if it matches one or
-all of the > following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a
-different HTTP version in the request it will return a `505 HTTP Version Not
-Supported` error.
-
-|                          | 2.0 | 1.1 | 1.0 | skip |
-|:------------------------:|:---:|:---:|:---:|:----:|
-| http2                    | ✓   |     |     |      |
-| http2 + https            | ✓   |     |     |      |
-| http2 + https.allowHTTP1 | ✓   | ✓   | ✓   |      |
-| https                    |     | ✓   | ✓   |      |
-| http                     |     | ✓   | ✓   |      |
-| serverFactory            |     |     |     | ✓    |
-
- Note: The internal HTTP version check will be removed in the future when Node
- implements [this feature](https://github.com/nodejs/node/issues/43115).

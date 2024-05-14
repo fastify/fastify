@@ -49,6 +49,22 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
   t.same(route.params, { artistId: ':artistId' })
 })
 
+test('findRoute should return null when when url is not passed', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/artists/:artistId', {
+    schema: {
+      params: { artistId: { type: 'integer' } }
+    },
+    handler: (req, reply) => reply.send(typeof req.params.artistId)
+  })
+
+  t.equal(fastify.findRoute({
+    method: 'POST'
+  }), null)
+})
+
 test('findRoute should return null when route cannot be found due to a different path', t => {
   t.plan(1)
   const fastify = Fastify()

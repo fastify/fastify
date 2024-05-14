@@ -74,6 +74,15 @@ test('Custom genReqId function gets raw request as argument', t => {
   })
 })
 
+test('Should handle properly requestIdHeader option', t => {
+  t.plan(4)
+
+  t.equal(Fastify({ requestIdHeader: '' }).initialConfig.requestIdHeader, false)
+  t.equal(Fastify({ requestIdHeader: false }).initialConfig.requestIdHeader, false)
+  t.equal(Fastify({ requestIdHeader: true }).initialConfig.requestIdHeader, 'request-id')
+  t.equal(Fastify({ requestIdHeader: 'x-request-id' }).initialConfig.requestIdHeader, 'x-request-id')
+})
+
 test('Should accept option to set genReqId with setGenReqId option', t => {
   t.plan(9)
 

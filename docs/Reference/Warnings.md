@@ -14,10 +14,8 @@
     - [FSTDEP008](#FSTDEP008)
     - [FSTDEP009](#FSTDEP009)
     - [FSTDEP010](#FSTDEP010)
-    - [FSTDEP011](#FSTDEP011)
     - [FSTDEP012](#FSTDEP012)
     - [FSTDEP013](#FSTDEP013)
-    - [FSTDEP014](#FSTDEP014)
     - [FSTDEP015](#FSTDEP015)
     - [FSTDEP016](#FSTDEP016)
     - [FSTDEP017](#FSTDEP017)
@@ -80,10 +78,8 @@ Deprecation codes are further supported by the Node.js CLI options:
 | <a id="FSTDEP008">FSTDEP008</a> | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | <a id="FSTDEP009">FSTDEP009</a> | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | <a id="FSTDEP010">FSTDEP010</a> | Modifying the `reply.sent` property is deprecated. | Use the `reply.hijack()` method. | [#3140](https://github.com/fastify/fastify/pull/3140) |
-| <a id="FSTDEP011">FSTDEP011</a> | Variadic listen method is deprecated. | Use `.listen(optionsObject)`. | [#3712](https://github.com/fastify/fastify/pull/3712) |
 | <a id="FSTDEP012">FSTDEP012</a> | You are trying to access the deprecated `request.context` property. | Use `request.routeOptions.config` or `request.routeOptions.schema`. | [#4216](https://github.com/fastify/fastify/pull/4216) [#5084](https://github.com/fastify/fastify/pull/5084) |
 | <a id="FSTDEP013">FSTDEP013</a> | Direct return of "trailers" function is deprecated. | Use "callback" or "async-await" for return value. | [#4380](https://github.com/fastify/fastify/pull/4380) |
-| <a id="FSTDEP014">FSTDEP014</a> | You are trying to set/access the default route. This property is deprecated. | Use `setNotFoundHandler` if you want to custom a 404 handler or the wildcard (`*`) to match all routes. | [#4480](https://github.com/fastify/fastify/pull/4480) |
 | <a id="FSTDEP015">FSTDEP015</a> | You are accessing the deprecated `request.routeSchema` property. | Use `request.routeOptions.schema`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
 | <a id="FSTDEP016">FSTDEP016</a> | You are accessing the deprecated `request.routeConfig` property. | Use `request.routeOptions.config`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
 | <a id="FSTDEP017">FSTDEP017</a> | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. | [#4470](https://github.com/fastify/fastify/pull/4470) |

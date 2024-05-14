@@ -103,7 +103,7 @@ server.get('/v1*', async function (request, reply) {
   }
 })
 
-server.decorate('magicKey', null)
+server.decorate('magicKey')
 
 server.listen({ port: '1234' }, () => {
   provider.thirdPartyMagicKeyGenerator(USUAL_WAIT_TIME_MS)
@@ -303,7 +303,7 @@ async function setup(fastify) {
   fastify.server.on('listening', doMagic)
 
   // Set up the placeholder for the magicKey
-  fastify.decorate('magicKey', null)
+  fastify.decorate('magicKey')
 
   // Our magic -- important to make sure errors are handled. Beware of async
   // functions outside `try/catch` blocks
@@ -406,7 +406,7 @@ https://nodejs.org/api/net.html#event-listening). We use that to reach out to
 our provider as soon as possible, with the `doMagic` function.
 
 ```js
-  fastify.decorate('magicKey', null)
+  fastify.decorate('magicKey')
 ```
 
 The `magicKey` decoration is also part of the plugin now. We initialize it with

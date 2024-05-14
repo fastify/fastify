@@ -7,6 +7,7 @@ const test = t.test
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
 const fakeTimer = require('@sinonjs/fake-timers')
+const { FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER } = require('../lib/errors')
 
 test('pluginTimeout', t => {
   t.plan(5)
@@ -415,25 +416,28 @@ test('hasPlugin returns true when using encapsulation', async t => {
   await fastify.ready()
 })
 
-test('registering plugins with mixed style should return a warning', async t => {
-  t.plan(12)
+test('registering anonymous plugin with mixed style should throw', async t => {
+  t.plan(2)
 
-  const pluginNames = ['error-plugin', 'anonymous', 'anotherPlugin', 'anotherPluginNamed']
+  const fastify = Fastify()
 
-  const oldWarnings = process.listeners('warning')
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.match(warning.message, new RegExp(`.*${pluginNames.shift()} plugin being registered mixes async and callback styles.*`))
-    t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN002')
+  const anonymousPlugin = async (app, opts, done) => {
+    done()
   }
-  t.teardown(() => {
-    process.removeListener('warning', onWarning)
-    for (const warning of oldWarnings) {
-      process.on('warning', warning)
-    }
-  })
+
+  fastify.register(anonymousPlugin)
+
+  try {
+    await fastify.ready()
+    t.fail('should throw')
+  } catch (error) {
+    t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
+    t.equal(error.message, 'The anonymousPlugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  }
+})
+
+test('registering named plugin with mixed style should throw', async t => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -441,23 +445,15 @@ test('registering plugins with mixed style should return a warning', async t => 
   const errorPlugin = async (app, opts, done) => {
     done()
   }
-
   const namedPlugin = fp(errorPlugin, { name: pluginName })
 
-  async function anotherPlugin (app, opts, done) {
-    done()
-  }
-
-  const anotherPluginNamed = async function (app, opts, done) {
-    done()
-  }
-
   fastify.register(namedPlugin)
-  fastify.register(async (app, opts, done) => {
-    done()
-  })
-  fastify.register(anotherPlugin)
-  fastify.register(anotherPluginNamed)
 
-  await fastify.ready()
+  try {
+    await fastify.ready()
+    t.fail('should throw')
+  } catch (error) {
+    t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
+    t.equal(error.message, 'The error-plugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  }
 })

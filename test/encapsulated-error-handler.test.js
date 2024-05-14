@@ -7,7 +7,7 @@ const Fastify = require('..')
 // In this test file numbered comments indicate the order statements are expected to execute
 
 test('encapsulates an asynchronous error handler', async t => {
-  t.plan(4)
+  t.plan(3)
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {

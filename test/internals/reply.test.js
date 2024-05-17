@@ -1415,9 +1415,9 @@ test('.statusCode is getter and setter', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    t.ok(reply.statusCode, 200, 'default status value')
+    t.equal(reply.statusCode, 200, 'default status value')
     reply.statusCode = 418
-    t.ok(reply.statusCode, 418)
+    t.equal(reply.statusCode, 418)
     reply.send()
   })
 

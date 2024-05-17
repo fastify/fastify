@@ -5,5 +5,5 @@ node-arg:
   - '--allow-natives-syntax'
 
 include:
-  - "test/**/*.test.js"
-  - "test/**/*.test.mjs"
+  - 'test/**/*.test.js'
+  - 'test/**/*.test.mjs'

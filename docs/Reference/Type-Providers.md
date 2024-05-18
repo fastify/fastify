@@ -17,10 +17,16 @@ convention, and there are several community ones available as well.
 
 The following inference packages are supported:
 
-- `json-schema-to-ts` -
-  [github](https://github.com/ThomasAribart/json-schema-to-ts)
-- `typebox` - [github](https://github.com/sinclairzx81/typebox)
-- `zod` - [github](https://github.com/colinhacks/zod)
+- [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [`typebox`](https://github.com/sinclairzx81/typebox)
+- [`zod`](https://github.com/colinhacks/zod)
+
+See also the Type Provider wrapper packages for each of the packages respectively:
+
+- [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
+- [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
+- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+ (3rd party)
 
 ### Json Schema to Ts
 
@@ -47,7 +53,7 @@ server.get('/route', {
             },
             required: ['foo', 'bar']
         }
-    } as const // don't forget to use const !
+    }
 
 }, (request, reply) => {
 
@@ -141,7 +147,7 @@ function pluginWithJsonSchema(fastify: FastifyInstance, _opts, done): void {
             y: { type: 'number' },
             z: { type: 'boolean' }
           },
-        } as const
+        }
       }
     }, (req) => {
       const { x, y, z } = req.body // type safe

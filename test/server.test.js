@@ -5,6 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const semver = require('semver')
+const undici = require('undici')
 
 test('listen should accept null port', t => {
   t.plan(1)
@@ -138,4 +139,54 @@ test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
   })
 
   t.end()
+})
+
+t.test('#5180 - preClose should be called before closing secondary server', t => {
+  t.plan(2)
+  const fastify = Fastify({ forceCloseConnections: true })
+  let flag = false
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.addHook('preClose', async () => {
+    flag = true
+  })
+
+  fastify.get('/', async (req, reply) => {
+    await new Promise((resolve) => {
+      setTimeout(() => resolve(1), 1000)
+    })
+
+    return { hello: 'world' }
+  })
+
+  fastify.listen({ port: 0 }, (err) => {
+    t.error(err)
+    const addresses = fastify.addresses()
+    const mainServerAddress = fastify.server.address()
+    let secondaryAddress
+    for (const addr of addresses) {
+      if (addr.family !== mainServerAddress.family) {
+        secondaryAddress = addr
+        secondaryAddress.address = secondaryAddress.family === 'IPv6'
+          ? `[${secondaryAddress.address}]`
+          : secondaryAddress.address
+        break
+      }
+    }
+
+    if (!secondaryAddress) {
+      t.pass('no secondary server')
+      return
+    }
+
+    undici.request(`http://${secondaryAddress.address}:${secondaryAddress.port}/`)
+      .then(
+        () => { t.fail('Request should not succeed') },
+        () => { t.ok(flag) }
+      )
+
+    setTimeout(() => {
+      fastify.close()
+    }, 250)
+  })
 })

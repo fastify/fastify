@@ -11,29 +11,29 @@ jobs:
     permissions:
       contents: read
     outputs:
-      PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
       PR-BENCH-18: ${{ steps.benchmark-pr.outputs.BENCH_RESULT18 }}
       PR-BENCH-20: ${{ steps.benchmark-pr.outputs.BENCH_RESULT20 }}
-      MAIN-BENCH-16: ${{ steps.benchmark-main.outputs.BENCH_RESULT16 }}
+      PR-BENCH-22: ${{ steps.benchmark-pr.outputs.BENCH_RESULT22 }}
       MAIN-BENCH-18: ${{ steps.benchmark-main.outputs.BENCH_RESULT18 }}
       MAIN-BENCH-20: ${{ steps.benchmark-main.outputs.BENCH_RESULT20 }}
+      MAIN-BENCH-22: ${{ steps.benchmark-main.outputs.BENCH_RESULT22 }}
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20, 22]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: ${{github.event.pull_request.head.sha}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Install
         run: |
-          npm install --only=production --ignore-scripts
+          npm install --ignore-scripts
 
       - name: Run benchmark
         id: benchmark-pr
@@ -45,14 +45,14 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
       # main benchmark
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           ref: 'main'
 
       - name: Install
         run: |
-          npm install --only=production --ignore-scripts
+          npm install --ignore-scripts
 
       - name: Run benchmark
         id: benchmark-main
@@ -64,7 +64,8 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   output-benchmark:
-    needs: [benchmark]
+    needs:
+      - benchmark
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -74,12 +75,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
-            **Node**: 16
-            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-16 }}
-            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-16 }}
-            
-            ---
-            
             **Node**: 18
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-18 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-18 }}
@@ -89,3 +84,9 @@ jobs:
             **Node**: 20
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-20 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-20 }}
+            
+            ---
+            
+            **Node**: 22
+            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-22 }}
+            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-22 }}

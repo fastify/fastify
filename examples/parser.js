@@ -2,7 +2,7 @@
 
 const fastify = require('../fastify')({ logger: true })
 const jsonParser = require('fast-json-body')
-const querystring = require('querystring')
+const querystring = require('node:querystring')
 
 // Handled by fastify
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/json' http://localhost:3000/
@@ -47,5 +47,7 @@ fastify
   })
 
 fastify.listen({ port: 3000 }, err => {
-  if (err) throw err
+  if (err) {
+    throw err
+  }
 })

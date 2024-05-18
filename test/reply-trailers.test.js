@@ -3,10 +3,9 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const { Readable } = require('stream')
-const { createHash } = require('crypto')
-const { promisify } = require('util')
-const sleep = promisify(setTimeout)
+const { Readable } = require('node:stream')
+const { createHash } = require('node:crypto')
+const { sleep } = require('./helper')
 
 test('send trailers when payload is empty string', t => {
   t.plan(5)
@@ -201,7 +200,7 @@ test('should emit deprecation warning when using direct return', t => {
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.name, 'DeprecationWarning')
     t.equal(warning.code, 'FSTDEP013')
   }
   t.teardown(() => process.removeListener('warning', onWarning))

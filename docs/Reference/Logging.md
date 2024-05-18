@@ -61,9 +61,9 @@ the Fastify instance:
 fastify.log.info('Something important happened!');
 ```
 
-If you want to pass some options to the logger, just pass them to Fastify. You
-can find all available options in the [Pino
-documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream).
+If you want to pass some options to the logger, just pass them to Fastify.
+You can find all available options in the
+[Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#options).
 If you want to specify a file destination, use:
 
 ```js
@@ -106,7 +106,7 @@ Factory [`genReqId`](./Server.md#genreqid) for customization options.
 The default logger is configured with a set of standard serializers that
 serialize objects with `req`, `res`, and `err` properties. The object received
 by `req` is the Fastify [`Request`](./Request.md) object, while the object
-received by `res` is the Fastify [`Reply`](./Reply.md) object. This behaviour
+received by `res` is the Fastify [`Reply`](./Reply.md) object. This behavior
 can be customized by specifying custom serializers.
 
 ```js

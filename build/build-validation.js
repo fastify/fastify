@@ -2,8 +2,8 @@
 
 const AjvStandaloneCompiler = require('@fastify/ajv-compiler/standalone')
 const { _ } = require('ajv')
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const factory = AjvStandaloneCompiler({
   readMode: false,
@@ -41,7 +41,8 @@ const defaultInitOptions = {
   requestIdHeader: false,
   requestIdLogLabel: 'reqId',
   http2SessionTimeout: 72000, // 72 seconds
-  exposeHeadRoutes: true
+  exposeHeadRoutes: true,
+  useSemicolonDelimiter: false
 }
 
 const schema = {
@@ -101,6 +102,7 @@ const schema = {
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
+    useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
     // deprecated style of passing the versioning constraint
     versioning: {
       type: 'object',

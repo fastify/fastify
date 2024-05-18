@@ -5,6 +5,14 @@ const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')()
 
+const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
+        <D:propfind xmlns:D="DAV:">
+          <D:prop xmlns:R="http://ns.example.com/boxschema/">
+            <R:bigbox/> <R:author/> <R:DingALing/> <R:Random/>
+          </D:prop>
+        </D:propfind>
+      `
+
 test('can be created - propfind', t => {
   t.plan(1)
   try {
@@ -61,7 +69,9 @@ test('can be created - propfind', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   test('request - propfind', t => {
     t.plan(3)
@@ -87,17 +97,39 @@ fastify.listen({ port: 0 }, err => {
     })
   })
 
+  // the body test uses a text/plain content type instead of application/xml because it requires
+  // a specific content type parser
   test('request with body - propfind', t => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test`,
-      body: `<?xml version="1.0" encoding="utf-8" ?>
-        <D:propfind xmlns:D="DAV:">
-          <D:prop xmlns:R="http://ns.example.com/boxschema/">
-            <R:bigbox/> <R:author/> <R:DingALing/> <R:Random/>
-          </D:prop>
-        </D:propfind>
-      `,
+      headers: { 'content-type': 'text/plain' },
+      body: bodySample,
+      method: 'PROPFIND'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 207)
+      t.equal(response.headers['content-length'], '' + body.length)
+    })
+  })
+
+  test('request with body and no content type (415 error) - propfind', t => {
+    t.plan(3)
+    sget({
+      url: `http://localhost:${fastify.server.address().port}/test`,
+      body: bodySample,
+      method: 'PROPFIND'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+      t.equal(response.headers['content-length'], '' + body.length)
+    })
+  })
+
+  test('request without body - propfind', t => {
+    t.plan(3)
+    sget({
+      url: `http://localhost:${fastify.server.address().port}/test`,
       method: 'PROPFIND'
     }, (err, response, body) => {
       t.error(err)

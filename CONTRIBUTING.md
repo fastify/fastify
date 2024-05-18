@@ -94,19 +94,21 @@ the following tasks:
     - Plugins team: maintains the Fastify's plugins and its ecosystem
 3. Open a pull request to
    [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) that adds
-   your name, username, and email to the team you have choosen in the
+   your name, username, and email to the team you have chosen in the
    [README.md](./README.md) and [package.json](./package.json) *(if you are part
    of the core team)* files. The members lists are sorted alphabetically; make
    sure to add your name in the proper order.
 4. Open a pull request to
    [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) adding
    yourself to the
-   [team.yml](https://github.com/fastify/website/blob/HEAD/src/website/data/team.yml)
+   [team.yml](https://github.com/fastify/website/blob/HEAD/static/data/team.yml)
    file. This list is also sorted alphabetically so make sure to add your name
    in the proper order. Use your GitHub profile icon for the `picture:` field.
 5. The person that does the onboarding must add you to the [npm
    org](https://www.npmjs.com/org/fastify), so that you can help maintaining the
    official plugins.
+6. Optionally, the person can be added as an Open Collective member 
+   by the lead team.
 
 ### Offboarding Collaborators
 
@@ -121,7 +123,7 @@ person that did the onboarding must:
   2. Open a pull request to
      [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) and move
      themselves to the *Past Collaborators* section in the
-     [team.yml](https://github.com/fastify/website/blob/HEAD/src/website/data/team.yml)
+     [team.yml](https://github.com/fastify/website/blob/HEAD/static/data/team.yml)
      file.
 
 The person that did the onboarding must:
@@ -131,6 +133,7 @@ The person that did the onboarding must:
 3. Remove the collaborator from the [npm
    org](https://www.npmjs.com/org/fastify).
 4. Remove the collaborator from the Azure team.
+5. Remove the collaborator from the Open Collective members.
 -----------------------------------------
 
 <a id="developers-certificate-of-origin"></a>

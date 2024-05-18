@@ -24,6 +24,7 @@ are Request/Reply hooks and application hooks:
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
   - [onReady](#onready)
+  - [onListen](#onlisten)
   - [onClose](#onclose)
   - [preClose](#preclose)
   - [onRoute](#onroute)
@@ -80,7 +81,7 @@ hooks, and a stream with the current request payload.
 If it returns a value (via `return` or via the callback function), it must
 return a stream.
 
-For instance, you can uncompress the request body:
+For instance, you can decompress the request body:
 
 ```js
 fastify.addHook('preParsing', (request, reply, payload, done) => {
@@ -106,6 +107,9 @@ returned stream. This property is used to correctly match the request payload
 with the `Content-Length` header value. Ideally, this property should be updated
 on each received chunk.
 
+**Notice:** The size of the returned stream is checked to not exceed the limit 
+set in [`bodyLimit`](./Server.md#bodylimit) option.
+
 ### preValidation
 
 If you are using the `preValidation` hook, you can change the payload before it
@@ -126,6 +130,10 @@ fastify.addHook('preValidation', async (request, reply) => {
 ```
 
 ### preHandler
+
+The `preHandler` hook allows you to specify a function that is executed before
+a routes's handler.
+
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {
   // some code
@@ -181,9 +189,11 @@ specific header in case of error.
 It is not intended for changing the error, and calling `reply.send` will throw
 an exception.
 
-This hook will be executed only after the `customErrorHandler` has been
-executed, and only if the `customErrorHandler` sends an error back to the user
-*(Note that the default `customErrorHandler` always sends the error back to the
+This hook will be executed only after
+the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler)
+has been executed, and only if the custom error handler sends an error back to the
+user
+*(Note that the default error handler always sends the error back to the
 user)*.
 
 **Notice:** unlike the other hooks, passing an error to the `done` function is not
@@ -224,7 +234,7 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > `null`.
 
 Note: If you change the payload, you may only change it to a `string`, a
-`Buffer`, a `stream`, or `null`.
+`Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
 ### onResponse
@@ -342,9 +352,11 @@ fastify.addHook('onRequest', (request, reply, done) => {
 
 // Works with async functions too
 fastify.addHook('preHandler', async (request, reply) => {
-  await something()
-  reply.send({ hello: 'world' })
+  setTimeout(() => {
+    reply.send({ hello: 'from prehandler' })
+  })
   return reply // mandatory, so the request is not executed further
+// Commenting the line above will allow the hooks to continue and fail with FST_ERR_REP_ALREADY_SENT
 })
 ```
 
@@ -385,6 +397,7 @@ fastify.addHook('preHandler', async (request, reply) => {
 You can hook into the application-lifecycle as well.
 
 - [onReady](#onready)
+- [onListen](#onlisten)
 - [onClose](#onclose)
 - [preClose](#preclose)
 - [onRoute](#onroute)
@@ -412,6 +425,34 @@ fastify.addHook('onReady', async function () {
   await loadCacheFromDatabase()
 })
 ```
+
+### onListen
+
+Triggered when the server starts listening for requests. The hooks run one 
+after another. If a hook function causes an error, it is logged and 
+ignored, allowing the queue of hooks to continue. Hook functions accept one
+argument: a callback, `done`, to be invoked after the hook function is
+complete. Hook functions are invoked with `this` bound to the associated
+Fastify instance.
+
+This is an alternative to `fastify.server.on('listening', () => {})`.
+
+```js
+// callback style
+fastify.addHook('onListen', function (done) {
+  // Some code
+  const err = null;
+  done(err)
+})
+
+// or async/await style
+fastify.addHook('onListen', async function () {
+  // Some async code
+})
+```
+
+> **Note**  
+> This hook will not run when the server is started using `fastify.inject()` or `fastify.ready()`
 
 ### onClose
 <a id="on-close"></a>
@@ -808,7 +849,7 @@ tools first" fashion.
 
 ```js
 const tracer = /* retrieved from elsewhere in the package */
-const dc = require('diagnostics_channel')
+const dc = require('node:diagnostics_channel')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()
 

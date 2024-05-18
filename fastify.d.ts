@@ -10,11 +10,11 @@ import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 
 import { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'
-import { FastifyContext, FastifyContextConfig } from './types/context'
+import { FastifyRequestContext, FastifyContextConfig, FastifyReplyContext } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
-import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler } from './types/hooks'
+import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onListenAsyncHookHandler, onListenHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler, preCloseAsyncHookHandler, preCloseHookHandler } from './types/hooks'
 import { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
-import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel, Bindings, ChildLoggerOptions } from './types/logger'
+import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel } from './types/logger'
 import { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
 import { FastifyReply } from './types/reply'
@@ -102,13 +102,15 @@ declare namespace fastify {
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
-    logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions | Logger,
+    logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions,
+    loggerInstance?: Logger
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
     requestIdLogLabel?: string;
+    useSemicolonDelimiter?: boolean,
     jsonShorthand?: boolean;
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
@@ -151,7 +153,7 @@ declare namespace fastify {
     ) => void,
     rewriteUrl?: (
       // The RawRequestDefaultExpression, RawReplyDefaultExpression, and FastifyTypeProviderDefault parameters
-      // should be narrowed further but those generic parameters are not passed to this FastifyServerOptions type 
+      // should be narrowed further but those generic parameters are not passed to this FastifyServerOptions type
       this: FastifyInstance<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, Logger, FastifyTypeProviderDefault>,
       req: RawRequestDefaultExpression<RawServer>
     ) => string,
@@ -175,14 +177,14 @@ declare namespace fastify {
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
     FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
-    FastifyContext, FastifyContextConfig, // './types/context'
+    FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
     FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'
     FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, // './types/content-type-parser'
     FastifyError, // '@fastify/error'
     FastifySchema, FastifySchemaCompiler, // './types/schema'
     HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, // './types/utils'
-    DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler, // './types/hooks'
+    DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onListenAsyncHookHandler, onListenHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, // './types/hooks'
     FastifyServerFactory, FastifyServerFactoryHandler, // './types/serverFactory'
     FastifyTypeProvider, FastifyTypeProviderDefault, // './types/type-provider'
     FastifyErrorCodes, // './types/errors'

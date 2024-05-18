@@ -1,14 +1,15 @@
 import { FastifyError } from '@fastify/error'
-import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
+import { ConstraintStrategy, FindResult, HTTPVersion } from 'find-my-way'
 import * as http from 'http'
-import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
-import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
-import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, preCloseHookHandler, preCloseAsyncHookHandler, LifecycleHook, ApplicationHook, HookAsyncLookup, HookLookup } from './hooks'
+import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
+import { AddressInfo } from 'net'
+import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
+import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
-import { RouteGenericInterface, RouteOptions, RouteShorthandMethod, RouteHandlerMethod } from './route'
+import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteShorthandMethod } from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
@@ -20,8 +21,7 @@ import {
   FastifyTypeProvider,
   FastifyTypeProviderDefault
 } from './type-provider'
-import { HTTPMethods, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
-import { AddressInfo } from 'net'
+import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -86,6 +86,7 @@ export interface FastifyListenOptions {
 
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+type FindMyWayFindResult<RawServer extends RawServerBase> = FindResult<FindMyWayVersion<RawServer>>
 
 type GetterSetter<This, T> = T | {
   getter: (this: This) => T,
@@ -135,10 +136,15 @@ export interface FastifyInstance<
   getSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>;
-  after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  after(afterListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   close(): Promise<undefined>;
   close(closeListener: () => void): undefined;
+
+  /** Alias for {@linkcode FastifyInstance.close()} */
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - type only available for @types/node >=17 or typescript >= 5.2
+  [Symbol.asyncDispose](): Promise<undefined>;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
@@ -161,29 +167,8 @@ export interface FastifyInstance<
   listen(opts?: FastifyListenOptions): Promise<string>;
   listen(callback: (err: Error | null, address: string) => void): void;
 
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address?: string, backlog?: number): Promise<string>;
-
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>;
-  ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  ready(readyListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
 
@@ -192,32 +177,40 @@ export interface FastifyInstance<
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema,
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+    const SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  mkcalendar: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  report: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+  all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
 
   hasRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler extends FastifySchema = FastifySchema,
   >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
+
+  findRoute<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): Omit<FindMyWayFindResult<RawServer>, 'store'>;
 
   // addHook: overloads
 
@@ -412,6 +405,16 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
+  * Triggered when fastify.listen() is invoked to start the server. It is useful when plugins need a "onListen" event, for example to run logics after the server start listening for requests.
+  */
+  addHook<
+    Fn extends onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> | onListenAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> = onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  >(
+    name: 'onListen',
+    hook: Fn extends unknown ? Fn extends AsyncFunction ? onListenAsyncHookHandler : onListenHookHandler : Fn,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
   */
   addHook<
@@ -448,8 +451,8 @@ export interface FastifyInstance<
 
   setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema> (
     opts: {
-      preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
-      preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
+      preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[] | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
+      preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[] | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
     },
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
@@ -465,6 +468,11 @@ export interface FastifyInstance<
   setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
     handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfigDefault, SchemaCompiler, TypeProvider>) => any | Promise<any>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
+   * Set a function that will generate a request-ids
+   */
+  setGenReqId(fn: (req: RawRequestDefaultExpression<RawServer>) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Hook function that is called when creating a child logger instance for each request
@@ -579,6 +587,7 @@ export interface FastifyInstance<
     pluginTimeout?: number,
     requestIdHeader?: string | false,
     requestIdLogLabel?: string,
-    http2SessionTimeout?: number
+    http2SessionTimeout?: number,
+    useSemicolonDelimiter?: boolean,
   }>
 }

@@ -1,12 +1,12 @@
 import { Buffer } from 'buffer'
-import { FastifyContext } from './context'
+import { FastifyReplyContext } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
-import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
-import { CodeToReplyKey, ContextConfigDefault, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
+import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType, CallTypeProvider } from './type-provider'
+import { CodeToReplyKey, ContextConfigDefault, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes, HttpHeader } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -23,7 +23,9 @@ type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof
 export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault> =
-  ResolveFastifyReplyType<TypeProvider, SchemaCompiler, { Reply: ReplyTypeConstrainer<RouteGenericReply, Code> }>
+  Code extends keyof SchemaCompiler['response'] ?
+    CallTypeProvider<TypeProvider, SchemaCompiler['response'][Code]> :
+    ResolveFastifyReplyType<TypeProvider, SchemaCompiler, { Reply: ReplyTypeConstrainer<RouteGenericReply, Code> }>
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
@@ -39,7 +41,8 @@ export interface FastifyReply<
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   raw: RawReply;
-  context: FastifyContext<ContextConfig>;
+  context: FastifyReplyContext<ContextConfig>;
+  elapsedTime: number;
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
@@ -48,27 +51,27 @@ export interface FastifyReply<
   statusCode: number;
   sent: boolean;
   send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  getHeader(key: string): number | string | string[] | undefined;
-  getHeaders(): {
-    // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
-    [key: string]: number | string | string[] | undefined;
-  };
-  removeHeader(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  hasHeader(key: string): boolean;
+  header(key: HttpHeader, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  headers(values: Partial<Record<HttpHeader, number | string | string[] | undefined>>): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  getHeader(key: HttpHeader): number | string | string[] | undefined;
+  getHeaders(): Record<HttpHeader, number | string | string[] | undefined>;
+  removeHeader(key: HttpHeader): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  hasHeader(key: HttpHeader): boolean;
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   callNotFound(): void;
+  /**
+   * @deprecated Use the Reply#elapsedTime property instead
+   */
   getResponseTime(): number;
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serialize(payload: any): string | ArrayBuffer | Buffer;
   // Serialization Methods
-  getSerializationFunction(httpStatus: string, contentType?: string): (payload: {[key: string]: unknown}) => string;
-  getSerializationFunction(schema: {[key: string]: unknown}): (payload: {[key: string]: unknown}) => string;
+  getSerializationFunction(httpStatus: string, contentType?: string): ((payload: {[key: string]: unknown}) => string) | undefined;
+  getSerializationFunction(schema: {[key: string]: unknown}): ((payload: {[key: string]: unknown}) => string) | undefined;
   compileSerializationSchema(schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): (payload: {[key: string]: unknown}) => string;
   serializeInput(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): string;
   serializeInput(input: {[key: string]: unknown}, httpStatus: string, contentType?: string): unknown;

@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const split = require('split2')
-const net = require('net')
+const net = require('node:net')
 const Fastify = require('../fastify')
 
 process.removeAllListeners('warning')
@@ -220,7 +220,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       })
     })
 
-    test('Throwing an error doesnt trigger any hooks', t => {
+    test('Throwing an error does not trigger any hooks', t => {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {

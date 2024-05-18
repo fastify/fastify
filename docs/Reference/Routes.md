@@ -34,7 +34,8 @@ fastify.route(options)
 
 * `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
   `'POST'`, `'PUT'`, `'OPTIONS'`, `'SEARCH'`, `'TRACE'`, `'PROPFIND'`,
-  `'PROPPATCH'`, `'MKCOL'`, `'COPY'`, `'MOVE'`, `'LOCK'`  and `'UNLOCK'`.
+  `'PROPPATCH'`, `'MKCOL'`, `'COPY'`, `'MOVE'`, `'LOCK'`, `'UNLOCK'`, 
+  `'REPORT'` and `'MKCALENDAR'`.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They
@@ -42,7 +43,7 @@ fastify.route(options)
   [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, PATCH,
-    TRACE, or SEARCH method.
+    TRACE, SEARCH, PROPFIND, PROPPATCH or LOCK method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -733,9 +734,9 @@ arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.io' },
+  constraints: { host: 'auth.fastify.dev' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.io')
+    reply.send('hello world from auth.fastify.dev')
   }
 })
 
@@ -753,10 +754,10 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'auth.fastify.io'
+    'Host': 'auth.fastify.dev'
   }
 }, (err, res) => {
-  // => 'hello world from auth.fastify.io'
+  // => 'hello world from auth.fastify.dev'
 })
 ```
 
@@ -767,7 +768,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.io
+  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }
@@ -826,25 +827,3 @@ const secret = {
 >   }
 > })
 > ```
-
-
-### ⚠  HTTP version check
-
-Fastify will check the HTTP version of every request, based on configuration
-options ([http2](./Server.md#http2), [https](./Server.md#https), and
-[serverFactory](./Server.md#serverfactory)), to determine if it matches one or
-all of the > following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a
-different HTTP version in the request it will return a `505 HTTP Version Not
-Supported` error.
-
-|                          | 2.0 | 1.1 | 1.0 | skip |
-|:------------------------:|:---:|:---:|:---:|:----:|
-| http2                    | ✓   |     |     |      |
-| http2 + https            | ✓   |     |     |      |
-| http2 + https.allowHTTP1 | ✓   | ✓   | ✓   |      |
-| https                    |     | ✓   | ✓   |      |
-| http                     |     | ✓   | ✓   |      |
-| serverFactory            |     |     |     | ✓    |
-
- Note: The internal HTTP version check will be removed in the future when Node
- implements [this feature](https://github.com/nodejs/node/issues/43115).

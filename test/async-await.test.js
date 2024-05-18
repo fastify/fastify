@@ -6,8 +6,8 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 const split = require('split2')
 const pino = require('pino')
-const statusCodes = require('http').STATUS_CODES
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const { sleep } = require('./helper')
+const statusCodes = require('node:http').STATUS_CODES
 
 const opts = {
   schema: {
@@ -179,7 +179,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   const logger = pino(splitStream)
 
   const fastify = Fastify({
-    logger
+    loggerInstance: logger
   })
 
   fastify.get('/', async (req, reply) => {

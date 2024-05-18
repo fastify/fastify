@@ -3,7 +3,8 @@ import * as http from 'http'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
 import { RequestPayload } from '../../types/hooks'
-import { HTTPMethods } from '../../types/utils'
+import { FindMyWayFindResult } from '../../types/instance'
+import { HTTPMethods, RawServerDefault } from '../../types/utils'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -18,6 +19,13 @@ declare module '../../fastify' {
   interface FastifyContextConfig {
     foo: string;
     bar: number;
+    includeMessage?: boolean;
+  }
+
+  interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
+    message: ContextConfig extends { includeMessage: true }
+      ? string
+      : null;
   }
 }
 
@@ -35,12 +43,28 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
   return reply.send()
 }
 
+fastify().get(
+  '/',
+  { config: { foo: 'bar', bar: 100, includeMessage: true } },
+  (req) => {
+    expectType<string>(req.message)
+  }
+)
+
+fastify().get(
+  '/',
+  { config: { foo: 'bar', bar: 100, includeMessage: false } },
+  (req) => {
+    expectType<null>(req.message)
+  }
+)
+
 type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put' |
 'options' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
-'unlock' | 'trace' | 'search'
+'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
 
 ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'PROPFIND',
-  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH'
+  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
 ].forEach(method => {
   // route method
   expectType<FastifyInstance>(fastify().route({
@@ -425,6 +449,50 @@ expectType<boolean>(fastify().hasRoute({
   method: 'GET',
   constraints: { version: '1.2.0' }
 }))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: 'auth.fastify.dev' }
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: /.*\.fastify\.dev$/ }
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' }
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: {
+    // constraints value should accept any value
+    number: 12,
+    date: new Date(),
+    boolean: true,
+    function: () => {},
+    object: { foo: 'bar' }
+  }
+}))
+
+expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>(
+  fastify().findRoute({
+    url: '/',
+    method: 'get'
+  })
+)
+
+// we should not expose store
+expectError(fastify().findRoute({
+  url: '/',
+  method: 'get'
+}).store)
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',

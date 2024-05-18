@@ -106,7 +106,7 @@ test('Basic validation test', t => {
 })
 
 test('External AJV instance', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
   const ajv = new AJV()
@@ -118,6 +118,7 @@ test('External AJV instance', t => {
   fastify.addSchema(schemaBRefToA)
 
   fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    t.pass('custom validator compiler called')
     return ajv.compile(schema)
   })
 
@@ -151,7 +152,7 @@ test('External AJV instance', t => {
 })
 
 test('Encapsulation', t => {
-  t.plan(19)
+  t.plan(21)
 
   const fastify = Fastify()
   const ajv = new AJV()
@@ -164,6 +165,7 @@ test('Encapsulation', t => {
 
   fastify.register((instance, opts, done) => {
     const validator = ({ schema, method, url, httpPart }) => {
+      t.pass('custom validator compiler called')
       return ajv.compile(schema)
     }
     instance.setValidatorCompiler(validator)
@@ -271,7 +273,7 @@ test('Encapsulation', t => {
 })
 
 test('Triple $ref with a simple $id', t => {
-  t.plan(6)
+  t.plan(7)
 
   const fastify = Fastify()
   const ajv = new AJV()
@@ -285,6 +287,7 @@ test('Triple $ref with a simple $id', t => {
   fastify.addSchema(schemaCRefToB)
 
   fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    t.pass('custom validator compiler called')
     return ajv.compile(schema)
   })
 
@@ -1024,19 +1027,125 @@ test("The same $id in route's schema must not overwrite others", t => {
 
 test('Custom validator compiler should not mutate schema', async t => {
   t.plan(2)
-  class Headers {}
+  class Headers { }
   const fastify = Fastify()
 
   fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
     t.type(schema, Headers)
-    return () => {}
+    return () => { }
   })
 
   fastify.get('/', {
     schema: {
       headers: new Headers()
     }
-  }, () => {})
+  }, () => { })
 
   await fastify.ready()
+})
+
+test('Custom validator builder override by custom validator compiler', async t => {
+  t.plan(3)
+  const ajvDefaults = {
+    removeAdditional: true,
+    coerceTypes: true,
+    allErrors: true
+  }
+  const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
+  const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
+  const fastify = Fastify({ schemaController: { compilersFactory: { buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema) } } })
+
+  fastify.setValidatorCompiler((routeSchemaDef) => ajv2.compile(routeSchemaDef.schema))
+
+  fastify.post('/two/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        extended_two: true,
+        properties: {
+          id: { type: 'number' }
+        },
+        required: ['id']
+      }
+    },
+    handler: (req, _reply) => {
+      t.same(typeof req.params.id, 'number')
+      t.same(req.params.id, 43)
+      return 'ok'
+    }
+  })
+
+  await fastify.ready()
+
+  const two = await fastify.inject({
+    method: 'POST',
+    url: '/two/43'
+  })
+  t.equal(two.statusCode, 200)
+})
+
+test('Custom validator builder override by custom validator compiler in child instance', async t => {
+  t.plan(6)
+  const ajvDefaults = {
+    removeAdditional: true,
+    coerceTypes: true,
+    allErrors: true
+  }
+  const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
+  const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
+  const fastify = Fastify({ schemaController: { compilersFactory: { buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema) } } })
+
+  fastify.register((embedded, _opts, done) => {
+    embedded.setValidatorCompiler((routeSchemaDef) => ajv2.compile(routeSchemaDef.schema))
+    embedded.post('/two/:id', {
+      schema: {
+        params: {
+          type: 'object',
+          extended_two: true,
+          properties: {
+            id: { type: 'number' }
+          },
+          required: ['id']
+        }
+      },
+      handler: (req, _reply) => {
+        t.same(typeof req.params.id, 'number')
+        t.same(req.params.id, 43)
+        return 'ok'
+      }
+    })
+    done()
+  })
+
+  fastify.post('/one/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        extended_one: true,
+        properties: {
+          id: { type: 'number' }
+        },
+        required: ['id']
+      }
+    },
+    handler: (req, _reply) => {
+      t.same(typeof req.params.id, 'number')
+      t.same(req.params.id, 42)
+      return 'ok'
+    }
+  })
+
+  await fastify.ready()
+
+  const one = await fastify.inject({
+    method: 'POST',
+    url: '/one/42'
+  })
+  t.equal(one.statusCode, 200)
+
+  const two = await fastify.inject({
+    method: 'POST',
+    url: '/two/43'
+  })
+  t.equal(two.statusCode, 200)
 })

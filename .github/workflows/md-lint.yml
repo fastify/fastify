@@ -24,12 +24,12 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
         
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
 
@@ -37,7 +37,7 @@ jobs:
         run: npm install --ignore-scripts
 
       - name: Add Matcher
-        uses: xt0rted/markdownlint-problem-matcher@98d94724052d20ca2e06c091f202e4c66c3c59fb
+        uses: xt0rted/markdownlint-problem-matcher@1a5fabfb577370cfdf5af944d418e4be3ea06f27
 
       - name: Run Linter
         run: ./node_modules/.bin/markdownlint-cli2

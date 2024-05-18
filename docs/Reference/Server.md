@@ -44,24 +44,27 @@ describes the properties available in that options object.
   - [`frameworkErrors`](#frameworkerrors)
   - [`clientErrorHandler`](#clienterrorhandler)
   - [`rewriteUrl`](#rewriteurl)
+  - [`useSemicolonDelimiter`](#usesemicolondelimiter)
 - [Instance](#instance)
   - [Server Methods](#server-methods)
     - [server](#server)
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
+  - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
     - [routing](#routing)
     - [route](#route)
-    - [hasRoute](#hasRoute)
+    - [hasRoute](#hasroute)
+    - [findRoute](#findroute)
     - [close](#close)
-    - [decorate*](#decorate)
+    - [decorate\*](#decorate)
     - [register](#register)
     - [addHook](#addhook)
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
-    - [listeningOrigin](#listeningOrigin)
+  - [listeningOrigin](#listeningorigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -79,6 +82,7 @@ describes the properties available in that options object.
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [setChildLoggerFactory](#setchildloggerfactory)
+    - [setGenReqId](#setGenReqId)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -91,6 +95,7 @@ describes the properties available in that options object.
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
     - [childLoggerFactory](#childloggerfactory)
+    - [Symbol.asyncDispose](#symbolasyncdispose)
     - [initialConfig](#initialconfig)
 
 ### `http`
@@ -280,6 +285,10 @@ attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_
 + Default: `1048576` (1MiB)
 
 Defines the maximum payload, in bytes, the server is allowed to accept.
+The default body reader sends [`FST_ERR_CTP_BODY_TOO_LARGE`](./Errors.md#fst_err_ctp_body_too_large)
+reply, if the size of the body exceeds this limit.
+If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
+to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>
@@ -374,9 +383,15 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
-Please note that this option will also disable an error log written by the
-default `onResponse` hook on reply callback errors. Other log messages 
-emitted by Fastify will stay enabled, like deprecation warnings and messages
+The other log entries that will be disabled are:
+- an error log written by the default `onResponse` hook on reply callback errors
+- the error and info logs written by the `defaultErrorHandler` 
+on error management
+- the info log written by the `fourOhFour` handler when a 
+non existent route is requested
+
+Other log messages emitted by Fastify will stay enabled, 
+like deprecation warnings and messages
 emitted when requests are received while the server is closing.
 
 ```js
@@ -474,7 +489,7 @@ is not equal to `/Foo`.
 When `false` then routes are case-insensitive.
 
 Please note that setting this option to `false` goes against
-[RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
+[RFC3986](https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1).
 
 By setting `caseSensitive` to `false`, all paths will be matched as lowercase,
 but the route parameters or wildcards will maintain their original letter
@@ -569,7 +584,7 @@ const fastify = require('fastify')({
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
 + `number`: Trust the nth hop from the front-facing proxy server as the client.
-+ `Function`: Custom trust function that takes `address` as first arg
++ `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
       return address === '1.2.3.4' || hop === 1
@@ -637,7 +652,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('querystring')
+const querystring = require('node:querystring')
 const fastify = require('fastify')({
   querystringParser: str => querystring.parse(str.toLowerCase())
 })
@@ -858,6 +873,31 @@ function rewriteUrl (req) {
   }
 }
 ```
+
+### `useSemicolonDelimiter`
+<a id="use-semicolon-delimiter"></a>
+
++ Default `false`
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
+This decision originated from [delvedor/find-my-way#76]
+(https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
+backwards compatiblilty for the need to split on `;`. To enable support for splitting
+on `;` set `useSemicolonDelimiter` to `true`.
+
+```js
+const fastify = require('fastify')({
+  useSemicolonDelimiter: true
+})
+
+fastify.get('/dev', async (request, reply) => {
+  // An example request such as `/dev;foo=bar`
+  // Will produce the following query params result `{ foo = 'bar' }`
+  return request.query
+})
+```
+
 
 ## Instance
 
@@ -1102,6 +1142,28 @@ if (routeExists === false) {
   // add route
 }
 ```
+
+#### findRoute
+<a id="findRoute"></a>
+
+Method to retrieve a route already registered to the internal router. It
+expects an object as the payload. `url` and `method` are mandatory fields. It 
+is possible to also specify `constraints`. 
+The method returns a route object or `null` if the route cannot be found.
+
+```js
+const route = fastify.findRoute({
+  url: '/artists/:artistId',
+  method: 'GET',
+  constraints: { version: '1.0.0' } // optional
+})
+
+if (route !== null) {
+  // perform some route checks
+  console.log(route.params)   // `{artistId: ':artistId'}`
+}
+```
+
 
 #### close
 <a id="close"></a>
@@ -1487,9 +1549,11 @@ handlers. *async-await* is supported as well.
 If the error `statusCode` is less than 400, Fastify will automatically
 set it to 500 before calling the error handler.
 
-> **Note** 
-> `setErrorHandler` will ***not*** catch any error inside
-> an `onResponse` hook because the response has already been sent to the client.
+`setErrorHandler` will ***not*** catch:
+- errors thrown in an `onResponse` hook because the response has already been
+  sent to the client. Use the `onSend` hook instead.
+- not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
+  instead.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
@@ -1543,6 +1607,45 @@ const fastify = require('fastify')({
 
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
+
+#### setGenReqId
+<a id="set-gen-req-id"></a>
+
+`fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
+for additional Fastify instances. It will receive the _raw_ incoming request as a
+parameter. The provided function should not throw an Error in any case.
+
+Especially in distributed systems, you may want to override the default ID
+generation behavior to handle custom ways of generating different IDs in
+order to handle different use cases. Such as observability or webhooks plugins.
+
+For example:
+```js
+const fastify = require('fastify')({
+  genReqId: (req) => {
+    return 'base'
+  }
+})
+
+fastify.register((instance, opts, done) => {
+  instance.setGenReqId((req) => {
+    // custom request ID for `/webhooks`
+    return 'webhooks-id'
+  })
+  done()
+}, { prefix: '/webhooks' })
+
+fastify.register((instance, opts, done) => {
+  instance.setGenReqId((req) => {
+    // custom request ID for `/observability`
+    return 'observability-id'
+  })
+  done()
+}, { prefix: '/observability' })
+```
+
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set a different request ID.
 
 #### addConstraintStrategy
 <a id="addConstraintStrategy"></a>
@@ -1823,6 +1926,32 @@ fastify.get('/', {
 Fastify instance. See the [`childLoggerFactory` config option](#setchildloggerfactory)
 for more info.
 
+#### Symbol.asyncDispose
+<a id="symbolAsyncDispose"></a>
+
+`fastify[Symbol.asyncDispose]` is a symbol that can be used to define an
+asynchronous function that will be called when the Fastify instance is closed.
+
+It's commonly used alongside the `using` TypeScript keyword to ensure that
+resources are cleaned up when the Fastify instance is closed.
+
+This combines perfectly inside short lived processes or unit tests, where you must
+close all Fastify resources after returning from inside the function.
+
+```ts
+test('Uses app and closes it afterwards', async () => {
+  await using app = fastify();
+  // do something with app.
+})
+```
+
+In the above example, Fastify is closed automatically after the test finishes.
+
+Read more about the
+[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management)
+and the [using keyword](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/)
+introduced in TypeScript 5.2.
+
 #### initialConfig
 <a id="initial-config"></a>
 
@@ -1847,9 +1976,10 @@ The properties that can currently be exposed are:
 - requestIdHeader
 - requestIdLogLabel
 - http2SessionTimeout
+- useSemicolonDelimiter 
 
 ```js
-const { readFileSync } = require('fs')
+const { readFileSync } = require('node:fs')
 const Fastify = require('fastify')
 
 const fastify = Fastify({

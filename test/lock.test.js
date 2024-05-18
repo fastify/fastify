@@ -5,6 +5,15 @@ const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')()
 
+const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
+        <D:lockinfo xmlns:D='DAV:'>
+          <D:lockscope> <D:exclusive/> </D:lockscope>
+          <D:locktype> <D:write/> </D:locktype>
+          <D:owner>
+            <D:href>http://example.org/~ejw/contact.html</D:href>
+          </D:owner>
+        </D:lockinfo> `
+
 test('can be created - lock', t => {
   t.plan(1)
   try {
@@ -49,20 +58,44 @@ test('can be created - lock', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
-  test('request - lock', t => {
+  // the body test uses a text/plain content type instead of application/xml because it requires
+  // a specific content type parser
+  test('request with body - lock', t => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
-      body: `<?xml version="1.0" encoding="utf-8" ?>
-        <D:lockinfo xmlns:D='DAV:'>
-          <D:lockscope> <D:exclusive/> </D:lockscope>
-          <D:locktype> <D:write/> </D:locktype>
-          <D:owner>
-            <D:href>http://example.org/~ejw/contact.html</D:href>
-          </D:owner>
-        </D:lockinfo> `,
+      headers: { 'content-type': 'text/plain' },
+      body: bodySample,
+      method: 'LOCK'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+    })
+  })
+
+  test('request with body and no content type (415 error) - lock', t => {
+    t.plan(3)
+    sget({
+      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      body: bodySample,
+      method: 'LOCK'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+      t.equal(response.headers['content-length'], '' + body.length)
+    })
+  })
+
+  test('request without body - lock', t => {
+    t.plan(3)
+    sget({
+      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      headers: { 'content-type': 'text/plain' },
       method: 'LOCK'
     }, (err, response, body) => {
       t.error(err)

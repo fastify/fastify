@@ -1,0 +1,108 @@
+name: CITGM
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  core-plugins:
+    name: CITGM
+    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - '@fastify/accepts'
+          - '@fastify/accepts-serializer'
+          - '@fastify/any-schema'
+          - '@fastify/auth'
+          - '@fastify/autoload'
+          - '@fastify/awilix'
+          - '@fastify/aws-lambda'
+          - '@fastify/basic-auth'
+          - '@fastify/bearer-auth'
+          - '@fastify/caching'
+          - '@fastify/circuit-breaker'
+          - '@fastify/compress'
+          - '@fastify/cookie'
+          - '@fastify/cors'
+          - '@fastify/csrf-protection'
+          - '@fastify/diagnostics-channel'
+          - '@fastify/early-hints'
+          # - '@fastify/elasticsearch'
+          - '@fastify/env'
+          - '@fastify/etag'
+          - '@fastify/express'
+          - '@fastify/flash'
+          - '@fastify/formbody'
+          - '@fastify/funky'
+          - '@fastify/helmet'
+          - '@fastify/hotwire'
+          - '@fastify/http-proxy'
+          - '@fastify/jwt'
+          # - '@fastify/kafka'
+          - '@fastify/leveldb'
+          - '@fastify/middie'
+          # - '@fastify/mongodb'
+          - '@fastify/multipart'
+          # - '@fastify/mysql'
+          - '@fastify/nextjs'
+          - '@fastify/oauth2'
+          - '@fastify/one-line-logger'
+          - '@fastify/passport'
+          # - '@fastify/postgres'
+          # - '@fastify/rate-limit'
+          # - '@fastify/redis'
+          - '@fastify/reply-from'
+          - '@fastify/request-context'
+          - '@fastify/response-validation'
+          - '@fastify/routes'
+          - '@fastify/schedule'
+          - '@fastify/secure-session'
+          - '@fastify/sensible'
+          - '@fastify/session'
+          - '@fastify/soap-client'
+          - '@fastify/static'
+          - '@fastify/swagger'
+          - '@fastify/swagger-ui'
+          - '@fastify/throttle'
+          - '@fastify/type-provider-json-schema-to-ts'
+          - '@fastify/type-provider-typebox'
+          - '@fastify/under-pressure'
+          - '@fastify/url-data'
+          - '@fastify/view'
+          # - '@fastify/vite'
+          - '@fastify/websocket'
+          - '@fastify/zipkin'
+        node-version: ['20']
+        os: [ubuntu-latest]
+    uses: './.github/workflows/citgm-package.yml'
+    with:
+      os: ${{ matrix.os }}
+      package: ${{ matrix.package }}
+      node-version: ${{ matrix.node-version }}
+
+  remove-label:
+    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    needs:
+      - core-plugins
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Remove citgm-core-plugins label
+        uses: octokit/request-action@v2.x
+        id: remove-label
+        with:
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.repository }}
+          issue_number: ${{ github.event.pull_request.number }}
+          name: citgm-core-plugins
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: "echo Successfully removed label"
+      - run: "echo Could not remove label"
+        if: ${{ failure() }}

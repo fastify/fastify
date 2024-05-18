@@ -4,6 +4,7 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
+  - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
@@ -32,6 +33,8 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
+    - [ReadableStream](#send-readablestream)
+    - [Response](#send-response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -46,6 +49,8 @@ object that exposes the following functions and properties:
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
+- `.elapsedTime` - Returns the amount of time passed
+since the request was received by Fastify.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -57,7 +62,7 @@ object that exposes the following functions and properties:
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] dest)` - Redirect to the specified url, the status code is
+- `.redirect([code,] dest)` - Redirect to the specified URL, the status code is
   optional (default to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default
@@ -85,7 +90,9 @@ object that exposes the following functions and properties:
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Access the [Request's context](./Request.md) property.
+- `.getResponseTime()` - Deprecated, returns the amount of time passed
+since the request was received by Fastify.
+- `.context` - Deprecated, access the [Request's context](./Request.md) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -109,6 +116,19 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 <a id="code"></a>
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
+
+### .elapsedTime
+<a id="elapsedTime"></a>
+
+Invokes the custom response time getter to calculate the amount of time passed
+since the request was received by Fastify.
+
+Note that unless this function is called in the [`onResponse`
+hook](./Hooks.md#onresponse) it will always return `0`.
+
+```js
+const milliseconds = reply.elapsedTime
+```
 
 ### .statusCode
 <a id="statusCode"></a>
@@ -242,7 +262,7 @@ reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'
 })
 
-const { createHash } = require('crypto')
+const { createHash } = require('node:crypto')
 // trailer function also receive two argument
 // @param {object} reply fastify reply
 // @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
@@ -327,7 +347,7 @@ reply.callNotFound()
 <a id="getResponseTime"></a>
 
 Invokes the custom response time getter to calculate the amount of time passed
-since the request was started.
+since the request was received by Fastify.
 
 Note that unless this function is called in the [`onResponse`
 hook](./Hooks.md#onresponse) it will always return `0`.
@@ -335,6 +355,9 @@ hook](./Hooks.md#onresponse) it will always return `0`.
 ```js
 const milliseconds = reply.getResponseTime()
 ```
+
+*Note: This method is deprecated and will be removed in `fastify@5`.
+Use the [.elapsedTime](#elapsedtime) property instead.*
 
 ### .type(contentType)
 <a id="type"></a>
@@ -605,8 +628,9 @@ low-level request and response. Moreover, hooks will not be invoked.
 *Modifying the `.sent` property directly is deprecated. Please use the
 aforementioned `.hijack()` method to achieve the same effect.*
 
-<a name="hijack"></a>
 ### .hijack()
+<a name="hijack"></a>
+
 Sometimes you might need to halt the execution of the normal request lifecycle
 and handle sending the response manually.
 
@@ -664,11 +688,15 @@ fastify.get('/json', options, function (request, reply) {
 #### Streams
 <a id="send-streams"></a>
 
-*send* can also handle streams by setting the `'Content-Type'` header to
-`'application/octet-stream'`.
+If you are sending a stream and you have not set a `'Content-Type'` header,
+*send* will set it to `'application/octet-stream'`.
+
+As noted above, streams are considered to be pre-serialized, so they will be
+sent unmodified without response validation.
+
 ```js
 fastify.get('/streams', function (request, reply) {
-  const fs = require('fs')
+  const fs = require('node:fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.header('Content-Type', 'application/octet-stream')
   reply.send(stream)
@@ -677,7 +705,7 @@ fastify.get('/streams', function (request, reply) {
 When using async-await you will need to return or await the reply object:
 ```js
 fastify.get('/streams', async function (request, reply) {
-  const fs = require('fs')
+  const fs = require('node:fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.header('Content-Type', 'application/octet-stream')
   return reply.send(stream)
@@ -689,8 +717,12 @@ fastify.get('/streams', async function (request, reply) {
 
 If you are sending a buffer and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
+
+As noted above, Buffers are considered to be pre-serialized, so they will be 
+sent unmodified without response validation.
+
 ```js
-const fs = require('fs')
+const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
@@ -700,7 +732,7 @@ fastify.get('/streams', function (request, reply) {
 
 When using async-await you will need to return or await the reply object:
 ```js
-const fs = require('fs')
+const fs = require('node:fs')
 fastify.get('/streams', async function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
@@ -712,15 +744,65 @@ fastify.get('/streams', async function (request, reply) {
 #### TypedArrays
 <a id="send-typedarrays"></a>
 
-`send` manages TypedArray and sets the `'Content-Type'=application/octet-stream'`
-header if not already set.
+`send` manages TypedArray like a Buffer, and sets the `'Content-Type'`
+header to `'application/octet-stream'` if not already set.
+
+As noted above, TypedArray/Buffers are considered to be pre-serialized, so they 
+will be sent unmodified without response validation.
+
 ```js
-const fs = require('fs')
+const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {
   const typedArray = new Uint16Array(10)
   reply.send(typedArray)
 })
 ```
+
+#### ReadableStream
+<a id="send-readablestream"></a>
+
+`ReadableStream` will be treated as a node stream mentioned above,
+the content is considered to be pre-serialized, so they will be 
+sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(ReadableStream.from(stream))
+})
+```
+
+#### Response
+<a id="send-response"></a>
+
+`Response` allows to manage the reply payload, status code and
+headers in one place. The payload provided inside `Response` is
+considered to be pre-serialized, so they will be sent unmodified 
+without response validation.
+
+Please be aware when using `Response`, the status code and headers
+will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
+Such behavior is based on `Response` only allow `readonly` status
+code and headers. The data is not allow to be bi-direction editing,
+and may confuse when checking the `payload` in `onSend` hooks.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  const readableStream = ReadableStream.from(stream)
+  const response = new Response(readableStream, {
+    status: 200,
+    headers: { 'content-type': 'application/octet-stream' }
+  })
+  reply.send(response)
+})
+```
+
 
 #### Errors
 <a id="errors"></a>
@@ -760,7 +842,7 @@ To customize the JSON error output you can do it by:
 - add the additional properties to the `Error` instance
 
 Notice that if the returned status code is not in the response schema list, the
-default behaviour will be applied.
+default behavior will be applied.
 
 ```js
 fastify.get('/', {
@@ -842,7 +924,7 @@ Fastify natively handles promises and supports async-await.
 
 *Note that in the following examples we are not using reply.send.*
 ```js
-const { promisify } = require('util')
+const { promisify } = require('node:util')
 const delay = promisify(setTimeout)
 
 fastify.get('/promises', options, function (request, reply) {
@@ -892,6 +974,5 @@ For more details, see:
 
 - https://github.com/fastify/fastify/issues/1864 for the discussion about this
   feature
-- https://promisesaplus.com/ for the definition of thenables
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
   for the signature

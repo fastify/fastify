@@ -1,4 +1,4 @@
-<div align="center"> <a href="https://fastify.io/">
+<div align="center"> <a href="https://fastify.dev/">
     <img
       src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg"
       width="650"
@@ -9,7 +9,7 @@
 
 <div align="center">
 
-[![CI](https://github.com/fastify/fastify/workflows/ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
+[![CI](https://github.com/fastify/fastify/actions/workflows/ci.yml/badge.svg)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
 [![Package Manager
 CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web
@@ -28,6 +28,8 @@ downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.np
 [![Security Responsible
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/fastify/blob/main/SECURITY.md)
 [![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
+[![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=blue)](https://gitpod.io/#https://github.com/fastify/fastify)
+![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)
 
 </div>
 
@@ -44,10 +46,8 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-The `main` branch refers to the Fastify `v4` release. Check out the
-[`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.
-
-
+The `main` branch refers to the Fastify `v5` release, which is not released/LTS yet.
+Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v4`.
 
 ### Table of Contents
 
@@ -123,6 +123,7 @@ yarn add fastify
 
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -148,6 +149,7 @@ with async-await:
 ```js
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -169,15 +171,6 @@ fastify.listen({ port: 3000 }, (err, address) => {
 
 Do you want to know more? Head to the <a
 href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
-
-
-### Fastify v1.x and v2.x
-
-Code for Fastify's **v1.x** is in [**`branch
-1.x`**](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related
-changes should be based on **`branch 1.x`**. In a similar way, all Fastify
-**v2.x** related changes should be based on [**`branch
-2.x`**](https://github.com/fastify/fastify/tree/2.x).
 
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default
@@ -230,39 +223,32 @@ The overhead that each framework has on your application depends on your
 application, you should __always__ benchmark if performance matters to you.
 
 ## Documentation
-* <a href="./docs/Guides/Getting-Started.md"><code><b>Getting
-  Started</b></code></a>
-* <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
-* <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
-* <a href="./docs/Reference/Routes.md"><code><b>Routes</b></code></a>
-* <a
-  href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
-* <a href="./docs/Reference/Logging.md"><code><b>Logging</b></code></a>
-* <a href="./docs/Reference/Middleware.md"><code><b>Middleware</b></code></a>
-* <a href="./docs/Reference/Hooks.md"><code><b>Hooks</b></code></a>
-* <a href="./docs/Reference/Decorators.md"><code><b>Decorators</b></code></a>
-* <a href="./docs/Reference/Validation-and-Serialization.md"><code><b>Validation
-  and Serialization</b></code></a>
-* <a href="./docs/Guides/Fluent-Schema.md"><code><b>Fluent Schema</b></code></a>
-* <a href="./docs/Reference/Lifecycle.md"><code><b>Lifecycle</b></code></a>
-* <a href="./docs/Reference/Reply.md"><code><b>Reply</b></code></a>
-* <a href="./docs/Reference/Request.md"><code><b>Request</b></code></a>
-* <a href="./docs/Reference/Errors.md"><code><b>Errors</b></code></a>
-* <a href="./docs/Reference/ContentTypeParser.md"><code><b>Content Type
-  Parser</b></code></a>
-* <a href="./docs/Reference/Plugins.md"><code><b>Plugins</b></code></a>
-* <a href="./docs/Guides/Testing.md"><code><b>Testing</b></code></a>
-* <a href="./docs/Guides/Benchmarking.md"><code><b>Benchmarking</b></code></a>
-* <a href="./docs/Guides/Write-Plugin.md"><code><b>How to write a good
-  plugin</b></code></a>
-* <a href="./docs/Guides/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
-* <a href="./docs/Reference/HTTP2.md"><code><b>HTTP2</b></code></a>
-* <a href="./docs/Reference/LTS.md"><code><b>Long Term Support</b></code></a>
-* <a href="./docs/Reference/TypeScript.md"><code><b>TypeScript and types
-  support</b></code></a>
-* <a href="./docs/Guides/Serverless.md"><code><b>Serverless</b></code></a>
-* <a
-  href="./docs/Guides/Recommendations.md"><code><b>Recommendations</b></code></a>
+* [__`Getting Started`__](./docs/Guides/Getting-Started.md)
+* [__`Guides`__](./docs/Guides/Index.md)
+* [__`Server`__](./docs/Reference/Server.md)
+* [__`Routes`__](./docs/Reference/Routes.md)
+* [__`Encapsulation`__](./docs/Reference/Encapsulation.md)
+* [__`Logging`__](./docs/Reference/Logging.md)
+* [__`Middleware`__](./docs/Reference/Middleware.md)
+* [__`Hooks`__](./docs/Reference/Hooks.md)
+* [__`Decorators`__](./docs/Reference/Decorators.md)
+* [__`Validation and Serialization`__](./docs/Reference/Validation-and-Serialization.md)
+* [__`Fluent Schema`__](./docs/Guides/Fluent-Schema.md)
+* [__`Lifecycle`__](./docs/Reference/Lifecycle.md)
+* [__`Reply`__](./docs/Reference/Reply.md)
+* [__`Request`__](./docs/Reference/Request.md)
+* [__`Errors`__](./docs/Reference/Errors.md)
+* [__`Content Type Parser`__](./docs/Reference/ContentTypeParser.md)
+* [__`Plugins`__](./docs/Reference/Plugins.md)
+* [__`Testing`__](./docs/Guides/Testing.md)
+* [__`Benchmarking`__](./docs/Guides/Benchmarking.md)
+* [__`How to write a good plugin`__](./docs/Guides/Write-Plugin.md)
+* [__`Plugins Guide`__](./docs/Guides/Plugins-Guide.md)
+* [__`HTTP2`__](./docs/Reference/HTTP2.md)
+* [__`Long Term Support`__](./docs/Reference/LTS.md)
+* [__`TypeScript and types support`__](./docs/Reference/TypeScript.md)
+* [__`Serverless`__](./docs/Guides/Serverless.md)
+* [__`Recommendations`__](./docs/Guides/Recommendations.md)
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/HEAD/README.md)
 
@@ -281,6 +267,12 @@ application, you should __always__ benchmark if performance matters to you.
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
 
+## Contributing
+
+Whether reporting bugs, discussing improvements and new ideas or writing code,
+we welcome contributions from anyone and everyone. Please read the [CONTRIBUTING](./CONTRIBUTING.md)
+guidelines before submitting pull requests.
+
 ## Team
 
 _Fastify_ is the result of the work of a great community. Team members are
@@ -291,6 +283,10 @@ listed in alphabetical order.
   <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Manuel Spigolon__](https://github.com/eomm),
+  <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+* [__James Sumners__](https://github.com/jsumners),
+  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),
@@ -325,6 +321,10 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners),
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+* [__Aras Abbasi__](https://github.com/uzlopak),
+  <https://www.npmjs.com/~uzlopak>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina),
@@ -347,6 +347,8 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Simone Busoli__](https://github.com/simoneb),
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -375,11 +377,17 @@ to join this group by Lead Maintainers.
 
 [<img
 src="https://github.com/openjs-foundation/artwork/blob/main/openjs_foundation/openjs_foundation-logo-horizontal-color.png?raw=true"
-width="250px;"/>](https://openjsf.org/projects/#growth)
+width="250px;"/>](https://openjsf.org/projects)
 
-We are a [Growth
-Project](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#growth-stage)
+We are a [At-Large
+Project](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#at-large-projects)
 in the [OpenJS Foundation](https://openjsf.org/).
+
+## Sponsors
+
+Support this project by becoming a [SPONSOR](./SPONSORS.md)!
+Fastify has an [Open Collective](https://opencollective.com/fastify)
+page where we accept and manage financial contributions.
 
 ## Acknowledgements
 
@@ -391,7 +399,7 @@ Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
 
 This list includes all companies that support one or more of the team members
-in the maintainance of this project.
+in the maintenance of this project.
 
 ## License
 

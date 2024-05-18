@@ -1,9 +1,9 @@
 'use strict'
 
-const VERSION = '5.0.0-dev'
+const VERSION = '5.0.0-alpha.1'
 
 const Avvio = require('avvio')
-const http = require('http')
+const http = require('node:http')
 let lightMyRequest
 
 const {
@@ -28,10 +28,11 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kChildLoggerFactory
+  kChildLoggerFactory,
+  kGenReqId
 } = require('./lib/symbols.js')
 
-const { createServer, compileValidateHTTPVersion } = require('./lib/server')
+const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
@@ -42,12 +43,12 @@ const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const { reqIdGenFactory } = require('./lib/reqIdGenFactory')
+const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
-const warning = require('./lib/warnings')
+const { FSTDEP009 } = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
@@ -70,7 +71,8 @@ const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
-  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
+  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -138,7 +140,6 @@ function fastify (options) {
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
-  options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
@@ -152,7 +153,7 @@ function fastify (options) {
 
   let constraints = options.constraints
   if (options.versioning) {
-    warning.emit('FSTDEP009')
+    FSTDEP009()
     constraints = {
       ...constraints,
       version: {
@@ -181,7 +182,8 @@ function fastify (options) {
       caseSensitive: options.caseSensitive,
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
-      querystringParser: options.querystringParser
+      querystringParser: options.querystringParser,
+      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
     }
   })
 
@@ -217,7 +219,10 @@ function fastify (options) {
     [kState]: {
       listening: false,
       closing: false,
-      started: false
+      started: false,
+      ready: false,
+      booting: false,
+      readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
@@ -244,6 +249,7 @@ function fastify (options) {
     [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
+    [kGenReqId]: genReqId,
     // routing method
     routing: httpHandler,
     // routes shorthand methods
@@ -274,6 +280,9 @@ function fastify (options) {
     proppatch: function _proppatch (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
     },
+    mkcalendar: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
+    },
     mkcol: function _mkcol (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
     },
@@ -292,6 +301,9 @@ function fastify (options) {
     trace: function _trace (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
     },
+    report: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
+    },
     search: function _search (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
@@ -306,6 +318,9 @@ function fastify (options) {
     },
     hasRoute: function _route (options) {
       return router.hasRoute.call(this, { options })
+    },
+    findRoute: function _findRoute (options) {
+      return router.findRoute(options)
     },
     // expose logger instance
     log: logger,
@@ -322,6 +337,8 @@ function fastify (options) {
     setSchemaController,
     setReplySerializer,
     setSchemaErrorFormatter,
+    // set generated request id
+    setGenReqId,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -418,6 +435,10 @@ function fastify (options) {
       get () {
         return this[kErrorHandler].func
       }
+    },
+    genReqId: {
+      configurable: true,
+      get () { return this[kGenReqId] }
     }
   })
 
@@ -513,7 +534,6 @@ function fastify (options) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
-    validateHTTPVersion: compileValidateHTTPVersion(options),
     keepAliveConnections
   })
 
@@ -521,7 +541,7 @@ function fastify (options) {
   server.on('clientError', options.clientErrorHandler.bind(fastify))
 
   try {
-    const dc = require('diagnostics_channel')
+    const dc = require('node:diagnostics_channel')
     const initChannel = dc.channel('fastify.initialization')
     if (initChannel.hasSubscribers) {
       initChannel.publish({ fastify })
@@ -529,6 +549,13 @@ function fastify (options) {
   } catch (e) {
     // This only happens if `diagnostics_channel` isn't available, i.e. earlier
     // versions of Node.js. In that event, we don't care, so ignore the error.
+  }
+
+  // Older nodejs versions may not have asyncDispose
+  if ('asyncDispose' in Symbol) {
+    fastify[Symbol.asyncDispose] = function dispose () {
+      return fastify.close()
+    }
   }
 
   return fastify
@@ -580,25 +607,43 @@ function fastify (options) {
   }
 
   function ready (cb) {
+    if (this[kState].readyPromise !== null) {
+      if (cb != null) {
+        this[kState].readyPromise.then(() => cb(null, fastify), cb)
+        return
+      }
+
+      return this[kState].readyPromise
+    }
+
     let resolveReady
     let rejectReady
 
     // run the hooks after returning the promise
     process.nextTick(runHooks)
 
+    // Create a promise no matter what
+    // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
+    // as well as a flow control mechanism to chain cbs and further
+    // promises
+    this[kState].readyPromise = new Promise(function (resolve, reject) {
+      resolveReady = resolve
+      rejectReady = reject
+    })
+
     if (!cb) {
-      return new Promise(function (resolve, reject) {
-        resolveReady = resolve
-        rejectReady = reject
-      })
+      return this[kState].readyPromise
+    } else {
+      this[kState].readyPromise.then(() => cb(null, fastify), cb)
     }
 
     function runHooks () {
       // start loading
       fastify[kAvvioBoot]((err, done) => {
-        if (err || fastify[kState].started) {
+        if (err || fastify[kState].started || fastify[kState].ready || fastify[kState].booting) {
           manageErr(err)
         } else {
+          fastify[kState].booting = true
           hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
         }
         done()
@@ -613,18 +658,14 @@ function fastify (options) {
         ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
         : err
 
-      if (cb) {
-        if (err) {
-          cb(err)
-        } else {
-          cb(undefined, fastify)
-        }
-      } else {
-        if (err) {
-          return rejectReady(err)
-        }
-        resolveReady(fastify)
+      if (err) {
+        return rejectReady(err)
       }
+
+      resolveReady(fastify)
+      fastify[kState].booting = false
+      fastify[kState].ready = true
+      fastify[kState].promise = null
     }
   }
 
@@ -645,7 +686,7 @@ function fastify (options) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
-    } else if (name === 'onReady') {
+    } else if (name === 'onReady' || name === 'onListen') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
@@ -661,9 +702,7 @@ function fastify (options) {
 
     if (name === 'onClose') {
       this.onClose(fn)
-    } else if (name === 'onReady') {
-      this[kHooks].add(name, fn)
-    } else if (name === 'onRoute') {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -717,7 +756,7 @@ function fastify (options) {
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the load balancer side.
     this.log.trace({ err }, `client ${errorLabel}`)
-    // Copying standard node behaviour
+    // Copying standard node behavior
     // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
@@ -742,7 +781,7 @@ function fastify (options) {
 
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
-      const id = genReqId(req)
+      const id = getGenReqId(onBadUrlContext.server, req)
       const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -767,7 +806,7 @@ function fastify (options) {
     return function onAsyncConstraintError (err) {
       if (err) {
         if (frameworkErrors) {
-          const id = genReqId(req)
+          const id = getGenReqId(onBadUrlContext.server, req)
           const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -836,6 +875,10 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
+    if (typeof func !== 'function') {
+      throw new FST_ERR_ERROR_HANDLER_NOT_FN()
+    }
+
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }
@@ -871,9 +914,14 @@ function fastify (options) {
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
     }
   }
-}
 
-fastify.errorCodes = errorCodes
+  function setGenReqId (func) {
+    throwIfAlreadyStarted('Cannot call "setGenReqId"!')
+
+    this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
+    return this
+  }
+}
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
@@ -895,5 +943,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
 module.exports = fastify
+module.exports.errorCodes = errorCodes
 module.exports.fastify = fastify
 module.exports.default = fastify

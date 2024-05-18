@@ -2,6 +2,7 @@
 
 const Fastify = require('..')
 const sget = require('simple-get').concat
+const zlib = require('node:zlib')
 const t = require('tap')
 const test = t.test
 
@@ -42,6 +43,74 @@ test('bodyLimit', t => {
       t.error(err)
       t.equal(response.statusCode, 413)
     })
+  })
+})
+
+test('bodyLimit is applied to decoded content', t => {
+  t.plan(9)
+
+  const body = { x: 'x'.repeat(30000) }
+  const json = JSON.stringify(body)
+  const encoded = zlib.gzipSync(json)
+
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    t.equal(req.headers['content-length'], `${encoded.length}`)
+    const unzip = zlib.createGunzip()
+    Object.defineProperty(unzip, 'receivedEncodedLength', {
+      get () {
+        return unzip.bytesWritten
+      }
+    })
+    payload.pipe(unzip)
+    return unzip
+  })
+
+  fastify.post('/body-limit-40k', {
+    bodyLimit: 40000,
+    onError: async (req, res, err) => {
+      t.fail('should not be called')
+    }
+  }, (request, reply) => {
+    reply.send({ x: request.body.x })
+  })
+
+  fastify.post('/body-limit-20k', {
+    bodyLimit: 20000,
+    onError: async (req, res, err) => {
+      t.equal(err.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
+      t.equal(err.statusCode, 413)
+    }
+  }, (request, reply) => {
+    reply.send({ x: 'handler should not be called' })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/body-limit-40k',
+    headers: {
+      'content-encoding': 'gzip',
+      'content-type': 'application/json'
+    },
+    payload: encoded
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/body-limit-20k',
+    headers: {
+      'content-encoding': 'gzip',
+      'content-type': 'application/json'
+    },
+    payload: encoded
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 413)
   })
 })
 

@@ -4,6 +4,8 @@
 Natively, Fastify only supports `'application/json'` and `'text/plain'` content
 types. If the content type is not one of these, an
 `FST_ERR_CTP_INVALID_MEDIA_TYPE` error will be thrown.
+Other common content types are supported through the use of
+[plugins](https://fastify.dev/ecosystem/).
 
 The default charset is `utf-8`. If you need to support different content types,
 you can use the `addContentTypeParser` API. *The default JSON and/or plain text
@@ -26,6 +28,13 @@ Note that for `GET` and `HEAD` requests the payload is never parsed. For
 is given in the content-type header. If it is not given, the
 [catch-all](#catch-all) parser is not executed as with `POST`, `PUT` and
 `PATCH`, but the payload is simply not parsed.
+
+> ## ⚠  Security Notice
+> When using with RegExp to detect `Content-Type`, you should beware of
+> how to properly detect the `Content-Type`. For example, if you need
+> `application/*`, you should use `/^application\/([\w-]+);?/` to match the
+> [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
+> only.
 
 ### Usage
 ```js
@@ -50,7 +59,7 @@ fastify.addContentTypeParser('application/jsoff', async function (request, paylo
 })
 
 // Handle all content types that matches RegExp
-fastify.addContentTypeParser(/^image\/.*/, function (request, payload, done) {
+fastify.addContentTypeParser(/^image\/([\w-]+);?/, function (request, payload, done) {
   imageParser(payload, function (err, body) {
     done(err, body)
   })
@@ -97,7 +106,6 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
 }
 ```
 
-=======
 #### removeContentTypeParser
 
 With `removeContentTypeParser` a single or an array of content types can be

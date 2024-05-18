@@ -28,7 +28,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
     t.fail('Key/cert loading failed', e)
   }
 
-  const constrain = 'fastify.io'
+  const constrain = 'fastify.dev'
 
   fastify.route({
     method: 'GET',

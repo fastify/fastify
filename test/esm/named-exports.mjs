@@ -1,6 +1,7 @@
 import t from 'tap'
 import { fastify } from '../../fastify.js'
 
+// This test is executed in index.test.js
 t.test('named exports support', async t => {
   const app = fastify()
 

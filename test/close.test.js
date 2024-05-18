@@ -1,12 +1,13 @@
 'use strict'
 
-const net = require('net')
-const http = require('http')
+const net = require('node:net')
+const http = require('node:http')
 const { test } = require('tap')
 const Fastify = require('..')
 const { Client } = require('undici')
 const semver = require('semver')
 const split = require('split2')
+const { sleep } = require('./helper')
 
 test('close callback', t => {
   t.plan(4)
@@ -203,8 +204,8 @@ test('Should return error while closing (callback) - injection', t => {
   })
 })
 
-const isV19plus = semver.gte(process.version, '19.0.0')
-test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
+const isNodeVersionGte1819 = semver.gte(process.version, '18.19.0')
+test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v18.19.x', { skip: isNodeVersionGte1819 }, t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -242,7 +243,7 @@ test('Current opened connection should continue to work after closing and return
   })
 })
 
-test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, t => {
+test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v18.19.x', { skip: !isNodeVersionGte1819 }, t => {
   t.plan(4)
   const fastify = Fastify({
     return503OnClosing: false,
@@ -262,7 +263,7 @@ test('Current opened connection should NOT continue to work after closing and re
       client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.on('error', function () {
-        // Dependending on the Operating System
+        // Depending on the Operating System
         // the socket could error or not.
         // However, it will always be closed.
       })
@@ -687,11 +688,6 @@ test('preClose async', async t => {
 
 test('preClose execution order', t => {
   t.plan(4)
-  async function sleep (ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms)
-    })
-  }
   const fastify = Fastify()
   const order = []
   fastify.addHook('onClose', onClose)

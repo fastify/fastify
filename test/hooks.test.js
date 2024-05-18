@@ -3,29 +3,18 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const stream = require('stream')
+const stream = require('node:stream')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
-const fs = require('fs')
+const fs = require('node:fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
-const { promisify } = require('util')
-const { connect } = require('net')
-
-const sleep = promisify(setTimeout)
+const { connect } = require('node:net')
+const { sleep, getServerUrl } = require('./helper')
 
 process.removeAllListeners('warning')
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
 
 test('hooks', t => {
   t.plan(49)
@@ -732,7 +721,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
   fastify.ready(err => {
     t.error(err)
     t.equal(onRouteCalled, 1) // onRoute hook was called once
-    t.equal(routePatched, 1) // and plugin acted once and avoided redundaunt route patching
+    t.equal(routePatched, 1) // and plugin acted once and avoided redundant route patching
   })
 })
 
@@ -760,7 +749,7 @@ test('onRoute hook should able to change the route url', t => {
 
     sget({
       method: 'GET',
-      url: getUrl(fastify) + encodeURI('/foo')
+      url: getServerUrl(fastify) + encodeURI('/foo')
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1782,7 +1771,7 @@ test('onRequest respond with a stream', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', (req, reply, done) => {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     // stream.pipe(res)
     // res.once('finish', done)
     reply.send(stream)
@@ -1833,7 +1822,7 @@ test('preHandler respond with a stream', t => {
   const order = [1, 2]
 
   fastify.addHook('preHandler', (req, reply, done) => {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     reply.send(stream)
     reply.raw.once('finish', () => {
       t.equal(order.shift(), 2)
@@ -2260,7 +2249,7 @@ test('onRequest, preHandler, and onResponse hooks that resolve to a value do not
   })
 })
 
-test('If a response header has been set inside an hook it shoulod not be overwritten by the final response handler', t => {
+test('If a response header has been set inside an hook it should not be overwritten by the final response handler', t => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -3480,7 +3469,7 @@ test('onRequestAbort should support encapsulation', t => {
     done()
   })
 
-  fastify.register(async function (_child, _, done) {
+  fastify.register(async function (_child, _) {
     child = _child
 
     fastify.addHook('onRequestAbort', async function (req) {
@@ -3499,8 +3488,6 @@ test('onRequestAbort should support encapsulation', t => {
         t.equal(++order, 3, 'called in route')
       }
     })
-
-    done()
   })
 
   fastify.listen({ port: 0 }, err => {

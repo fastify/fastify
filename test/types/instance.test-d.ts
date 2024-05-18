@@ -6,7 +6,8 @@ import fastify, {
   FastifyInstance,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
-  RawServerDefault
+  RawServerDefault,
+  RouteGenericInterface
 } from '../../fastify'
 import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
@@ -49,6 +50,18 @@ expectAssignable<FastifyInstance>(
     expectType<FastifyError>(error)
   })
 )
+
+expectAssignable<FastifyInstance>(
+  server.setGenReqId(function (req) {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  })
+)
+
+function fastifySetGenReqId (req: RawRequestDefaultExpression) {
+  return 'foo'
+}
+server.setGenReqId(fastifySetGenReqId)
 
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
@@ -181,48 +194,6 @@ function invalidSchemaErrorFormatter (err: Error) {
 }
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
-// test listen method callback
-expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectType<Error | null>(err)
-}))
-
-// test listen method callback types
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectAssignable<Error|null>(err)
-  expectAssignable<string>(address)
-}))
-
-// test listen method promise
-expectAssignable<PromiseLike<string>>(server.listen(3000))
-expectAssignable<PromiseLike<string>>(server.listen('3000'))
-expectAssignable<PromiseLike<string>>(server.listen(3000, '', 0))
-expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
-expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
-expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
-
-// Test variadic listen signatures Typescript deprecation
-expectDeprecated(server.listen(3000))
-expectDeprecated(server.listen('3000'))
-expectDeprecated(server.listen(3000, '', 0))
-expectDeprecated(server.listen('3000', '', 0))
-expectDeprecated(server.listen(3000, ''))
-expectDeprecated(server.listen('3000', ''))
-
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
@@ -240,7 +211,7 @@ expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
-// test listen opts objects Typescript deprectation exclusion
+// test listen opts objects Typescript deprecation exclusion
 expectNotDeprecated(server.listen())
 expectNotDeprecated(server.listen({ port: 3000 }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
@@ -255,11 +226,27 @@ expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, 
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
+// test after method
+expectAssignable<FastifyInstance>(server.after())
+expectAssignable<FastifyInstance>(server.after((err) => {
+  expectType<Error | null>(err)
+}))
+
+// test ready method
+expectAssignable<FastifyInstance>(server.ready())
+expectAssignable<FastifyInstance>(server.ready((err) => {
+  expectType<Error | null>(err)
+}))
+
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
-expectType<FastifyInstance>(fastify().get('/', {
+expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
+    expectAssignable<FastifyError>(error)
+    expectAssignable<FastifyRequest>(request)
+    expectAssignable<{ contextKey: string }>(request.routeConfig)
+    expectAssignable<FastifyReply>(reply)
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }
 }))
@@ -313,7 +300,8 @@ type InitialConfig = Readonly<{
   pluginTimeout?: number,
   requestIdHeader?: string | false,
   requestIdLogLabel?: string,
-  http2SessionTimeout?: number
+  http2SessionTimeout?: number,
+  useSemicolonDelimiter?: boolean
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)

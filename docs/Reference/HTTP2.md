@@ -15,8 +15,8 @@ HTTP2 is supported in all modern browsers __only over a secure connection__:
 ```js
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('fastify')({
   http2: true,
   https: {
@@ -32,7 +32,8 @@ fastify.get('/', function (request, reply) {
 fastify.listen({ port: 3000 })
 ```
 
-ALPN negotiation allows support for both HTTPS and HTTP/2 over the same socket.
+[ALPN negotiation](https://datatracker.ietf.org/doc/html/rfc7301) allows
+support for both HTTPS and HTTP/2 over the same socket.
 Node core `req` and `res` objects can be either
 [HTTP/1](https://nodejs.org/api/http.html) or
 [HTTP/2](https://nodejs.org/api/http2.html). _Fastify_ supports this out of the
@@ -41,8 +42,8 @@ box:
 ```js
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('fastify')({
   http2: true,
   https: {

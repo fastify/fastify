@@ -237,15 +237,15 @@ development. Migrations provide a repeatable and testable way to modify a
 database's schema and prevent data loss.
 
 As stated at the beginning of the guide, Fastify is database agnostic and any
-NodeJS database migration tool can be used with it. We will give an example of
+Node.js database migration tool can be used with it. We will give an example of
 using [Postgrator](https://www.npmjs.com/package/postgrator) which has support
 for Postgres, MySQL, SQL Server and SQLite. For MongoDB migrations, please check
 [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
 
 #### [Postgrator](https://www.npmjs.com/package/postgrator)
 
-Postgrator is NodeJS SQL migration tool that uses a directory of SQL scripts to
-alter the database schema. Each file an migrations folder need to follow the
+Postgrator is Node.js SQL migration tool that uses a directory of SQL scripts to
+alter the database schema. Each file in a migrations folder need to follow the
 pattern: ` [version].[action].[optional-description].sql`.
 
 **version:** must be an incrementing number (e.g. `001` or a timestamp).
@@ -275,7 +275,7 @@ CREATE TABLE IF NOT EXISTS users (
 ```javascript
 const pg = require('pg')
 const Postgrator = require('postgrator')
-const path = require('path')
+const path = require('node:path')
 
 async function migrate() {
   const client = new pg.Client({
@@ -287,6 +287,8 @@ async function migrate() {
   });
 
   try {
+    await client.connect();
+
     const postgrator = new Postgrator({
       migrationPattern: path.join(__dirname, '/migrations/*'),
       driver: 'pg',
@@ -308,7 +310,7 @@ async function migrate() {
 
     process.exitCode = 0
   } catch(err) {
-    console.error(error)
+    console.error(err)
     process.exitCode = 1
   }
   

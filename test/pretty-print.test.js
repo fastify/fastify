@@ -220,7 +220,7 @@ test('pretty print - empty plugins', t => {
   fastify.ready(() => {
     const tree = fastify.printPlugins()
     t.equal(typeof tree, 'string')
-    t.match(tree, 'bound root')
+    t.match(tree, /root \d+ ms\n└── bound _after \d+ ms/m)
   })
 })
 

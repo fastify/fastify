@@ -353,7 +353,7 @@ This variant becomes extremely useful if you plan to distribute your plugin, as
 described in the next section.
 
 As you probably noticed by now, `request` and `reply` are not the standard
-Nodejs *request* and *response* objects, but Fastify's objects.
+Node.js *request* and *response* objects, but Fastify's objects.
 
 
 ## How to handle encapsulation and distribution
@@ -493,8 +493,8 @@ use case, you can use the
 
 ```js
 const warning = require('process-warning')()
-warning.create('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
-warning.emit('FST_ERROR_CODE')
+warning.create('MyPluginWarning', 'MP_ERROR_CODE', 'message')
+warning.emit('MP_ERROR_CODE')
 ```
 
 ## Let's start!

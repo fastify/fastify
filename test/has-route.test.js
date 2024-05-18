@@ -71,7 +71,7 @@ test('hasRoute', t => {
 
     t.equal(fastify.hasRoute({
       method: 'GET',
-      url: '/example/12345.png'
+      url: '/example/:file(^\\d+).png'
     }), true)
   })
 })

@@ -6,7 +6,7 @@ import * as https from 'https'
  * Standard HTTP method strings
  */
 type _HTTPMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS' |
-'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' | 'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH'
+'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' | 'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH' | 'REPORT' | 'MKCALENDAR'
 
 export type HTTPMethods = Uppercase<_HTTPMethods> | Lowercase<_HTTPMethods>
 
@@ -78,3 +78,13 @@ export type RecordKeysToLowercase<Input> = Input extends Record<string, unknown>
     ]: Input[Key];
   }
   : Input;
+
+type OmitIndexSignature<T> = {
+  [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+};
+
+/**
+ * HTTP header strings
+ * Use this type only for input values, not for output values.
+ */
+export type HttpHeader = keyof OmitIndexSignature<http.OutgoingHttpHeaders> | (string & Record<never, never>);

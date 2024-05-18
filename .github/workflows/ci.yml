@@ -29,12 +29,12 @@ jobs:
         contents: read
       steps:
           - name: Check out repo
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
             with:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v3
+            uses: actions/dependency-review-action@v4
 
   check-licenses:
     name: Check licenses
@@ -42,12 +42,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -67,12 +67,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -87,19 +87,21 @@ jobs:
           npm run lint
 
   coverage-nix:
-    needs: lint
+    needs:
+      - lint
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
 
   coverage-win:
-    needs: lint
+    needs:
+      - lint
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml
 
   test-unit:
-    needs: 
+    needs:
       - lint
       - coverage-nix
       - coverage-win
@@ -109,16 +111,19 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20, 22]
         os: [macos-latest, ubuntu-latest, windows-latest]
+        exclude:
+          - os: macos-latest
+            node-version: 16
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -133,7 +138,7 @@ jobs:
           npm run unit
 
   test-typescript:
-    needs: 
+    needs:
       - lint
       - coverage-nix
       - coverage-win
@@ -142,11 +147,11 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -170,11 +175,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -199,7 +204,7 @@ jobs:
     if: >
         github.event_name == 'pull_request' &&
         github.event.pull_request.user.login == 'dependabot[bot]'
-    needs: 
+    needs:
       - test-typescript
       - test-unit
       - package

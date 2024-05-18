@@ -8,7 +8,6 @@ const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const symbols = require('../lib/symbols.js')
-const proxyquire = require('proxyquire')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -789,49 +788,44 @@ test('decorate* should throw if called after ready', async t => {
   await fastify.close()
 })
 
-test('decorate* should emit warning if an array is passed', { skip: true }, t => {
-  t.plan(1)
+test('decorate* should emit error if an array is passed', t => {
+  t.plan(2)
 
-  function onWarning (name) {
-    t.equal(name, 'test_array')
+  const fastify = Fastify()
+  try {
+    fastify.decorateRequest('test_array', [])
+    t.fail('should not decorate')
+  } catch (err) {
+    t.same(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.same(err.message, "The decorator 'test_array' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
   }
-
-  const decorate = proxyquire('../lib/decorate', {
-    './warnings': {
-      FSTDEP006: onWarning
-    }
-  })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
-  fastify.decorateRequest('test_array', [])
 })
 
-test('decorate* should emit warning if object type is passed', { skip: true }, t => {
+test('server.decorate should not emit error if reference type is passed', async t => {
   t.plan(1)
 
-  function onWarning (name) {
-    t.equal(name, 'test_object')
-  }
-
-  const decorate = proxyquire('../lib/decorate', {
-    './warnings': {
-      FSTDEP006: onWarning
-    }
-  })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
-  fastify.decorateRequest('test_object', { foo: 'bar' })
+  const fastify = Fastify()
+  fastify.decorate('test_array', [])
+  fastify.decorate('test_object', {})
+  await fastify.ready()
+  t.pass('Done')
 })
 
-test('decorate* should not emit warning if object with getter/setter is passed', { skip: true }, t => {
-  function onWarning (warning) {
-    t.fail('Should not call a warn')
-  }
+test('decorate* should emit warning if object type is passed', t => {
+  t.plan(2)
 
-  const decorate = proxyquire('../lib/decorate', {
-    './warnings': {
-      FSTDEP006: onWarning
-    }
-  })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+  const fastify = Fastify()
+  try {
+    fastify.decorateRequest('test_object', { foo: 'bar' })
+    t.fail('should not decorate')
+  } catch (err) {
+    t.same(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.same(err.message, "The decorator 'test_object' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+  }
+})
+
+test('decorate* should not emit warning if object with getter/setter is passed', t => {
+  const fastify = Fastify()
 
   fastify.decorateRequest('test_getter_setter', {
     setter (val) {
@@ -844,17 +838,8 @@ test('decorate* should not emit warning if object with getter/setter is passed',
   t.end('Done')
 })
 
-test('decorate* should not emit warning if string,bool,numbers are passed', { skip: true }, t => {
-  function onWarning (warning) {
-    t.fail('Should not call a warn')
-  }
-
-  const decorate = proxyquire('../lib/decorate', {
-    './warnings': {
-      FSTDEP006: onWarning
-    }
-  })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+test('decorate* should not emit error if string,bool,numbers are passed', t => {
+  const fastify = Fastify()
 
   fastify.decorateRequest('test_str', 'foo')
   fastify.decorateRequest('test_bool', true)

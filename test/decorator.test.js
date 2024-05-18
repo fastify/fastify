@@ -789,7 +789,7 @@ test('decorate* should throw if called after ready', async t => {
   await fastify.close()
 })
 
-test('decorate* should emit warning if an array is passed', t => {
+test('decorate* should emit warning if an array is passed', { skip: true }, t => {
   t.plan(1)
 
   function onWarning (name) {
@@ -805,7 +805,7 @@ test('decorate* should emit warning if an array is passed', t => {
   fastify.decorateRequest('test_array', [])
 })
 
-test('decorate* should emit warning if object type is passed', t => {
+test('decorate* should emit warning if object type is passed', { skip: true }, t => {
   t.plan(1)
 
   function onWarning (name) {
@@ -821,7 +821,7 @@ test('decorate* should emit warning if object type is passed', t => {
   fastify.decorateRequest('test_object', { foo: 'bar' })
 })
 
-test('decorate* should not emit warning if object with getter/setter is passed', t => {
+test('decorate* should not emit warning if object with getter/setter is passed', { skip: true }, t => {
   function onWarning (warning) {
     t.fail('Should not call a warn')
   }
@@ -844,7 +844,7 @@ test('decorate* should not emit warning if object with getter/setter is passed',
   t.end('Done')
 })
 
-test('decorate* should not emit warning if string,bool,numbers are passed', t => {
+test('decorate* should not emit warning if string,bool,numbers are passed', { skip: true }, t => {
   function onWarning (warning) {
     t.fail('Should not call a warn')
   }

@@ -838,6 +838,72 @@ test('decorate* should not emit warning if object with getter/setter is passed',
   t.end('Done')
 })
 
+test('decorateRequest with getter/setter can handle encapsulation', async t => {
+  t.plan(24)
+
+  const fastify = Fastify({ logger: true })
+
+  fastify.decorateRequest('test_getter_setter_holder')
+  fastify.decorateRequest('test_getter_setter', {
+    getter () {
+      this.test_getter_setter_holder ??= {}
+      return this.test_getter_setter_holder
+    }
+  })
+
+  fastify.get('/', async function (req, reply) {
+    t.same(req.test_getter_setter, {}, 'a getter')
+    req.test_getter_setter.a = req.id
+    t.same(req.test_getter_setter, { a: req.id })
+  })
+
+  fastify.addHook('onResponse', async function hook (req, reply) {
+    t.same(req.test_getter_setter, { a: req.id })
+  })
+
+  await Promise.all([
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200))
+  ])
+})
+
+test('decorateRequest with getter/setter can handle encapsulation with arrays', async t => {
+  t.plan(24)
+
+  const fastify = Fastify({ logger: true })
+
+  fastify.decorateRequest('array_holder')
+  fastify.decorateRequest('my_array', {
+    getter () {
+      this.array_holder ??= []
+      return this.array_holder
+    }
+  })
+
+  fastify.get('/', async function (req, reply) {
+    t.same(req.my_array, [])
+    req.my_array.push(req.id)
+    t.same(req.my_array, [req.id])
+  })
+
+  fastify.addHook('onResponse', async function hook (req, reply) {
+    t.same(req.my_array, [req.id])
+  })
+
+  await Promise.all([
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200))
+  ])
+})
+
 test('decorate* should not emit error if string,bool,numbers are passed', t => {
   const fastify = Fastify()
 

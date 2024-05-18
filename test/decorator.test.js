@@ -789,64 +789,36 @@ test('decorate* should throw if called after ready', async t => {
   await fastify.close()
 })
 
-test('decorate* should encapsulate the value if an array is passed', async t => {
-  t.plan(6)
+test('decorate* should emit warning if an array is passed', t => {
+  t.plan(1)
 
-  const fastify = Fastify()
+  function onWarning (name) {
+    t.equal(name, 'test_array')
+  }
+
+  const decorate = proxyquire('../lib/decorate', {
+    './warnings': {
+      FSTDEP006: onWarning
+    }
+  })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
   fastify.decorateRequest('test_array', [])
-  fastify.decorateReply('test_array', [])
-
-  fastify.get('/', async function (req, reply) {
-    t.same(req.test_array, [])
-    t.same(reply.test_array, [])
-
-    req.test_array.push(1)
-    reply.test_array.push(2)
-  })
-
-  await fastify.inject('/')
-  await fastify.inject('/')
-  await fastify.inject('/')
 })
 
-test('decorate* should encapsulate the value if an array is passed (deep clone)', async t => {
-  t.plan(6)
+test('decorate* should emit warning if object type is passed', t => {
+  t.plan(1)
 
-  const fastify = Fastify()
-  fastify.decorateRequest('test_array', [{ a: { b: { c: 1 } } }])
-  fastify.decorateReply('test_array', [{ a: { b: { c: 1 } } }])
+  function onWarning (name) {
+    t.equal(name, 'test_object')
+  }
 
-  fastify.get('/', async function (req, reply) {
-    t.same(req.test_array, [{ a: { b: { c: 1 } } }])
-    t.same(reply.test_array, [{ a: { b: { c: 1 } } }])
-
-    req.test_array[0].a.b.c = 99
-    reply.test_array[0].a.b.c = 99
+  const decorate = proxyquire('../lib/decorate', {
+    './warnings': {
+      FSTDEP006: onWarning
+    }
   })
-
-  await fastify.inject('/')
-  await fastify.inject('/')
-  await fastify.inject('/')
-})
-
-test('decorate* should encapsulate the value if object type is passed', { only: true }, async t => {
-  t.plan(6)
-
-  const fastify = Fastify()
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
   fastify.decorateRequest('test_object', { foo: 'bar' })
-  fastify.decorateReply('test_object', { foo: 'bar' })
-
-  fastify.get('/', async function (req, reply) {
-    t.same(req.test_object, { foo: 'bar' })
-    t.same(reply.test_object, { foo: 'bar' })
-
-    req.test_object.user = 'user'
-    reply.test_array.user = 'user'
-  })
-
-  await fastify.inject('/')
-  await fastify.inject('/')
-  await fastify.inject('/')
 })
 
 test('decorate* should not emit warning if object with getter/setter is passed', t => {

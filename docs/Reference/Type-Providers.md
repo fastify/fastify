@@ -37,9 +37,8 @@ $ npm i @fastify/type-provider-json-schema-to-ts
 ```
 
 ```typescript
-import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
-
 import fastify from 'fastify'
+import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
 
 const server = fastify().withTypeProvider<JsonSchemaToTsProvider>()
 
@@ -72,10 +71,9 @@ $ npm i @fastify/type-provider-typebox
 ```
 
 ```typescript
+import fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-
-import fastify from 'fastify'
 
 const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 

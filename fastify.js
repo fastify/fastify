@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.0.0-aplha.1'
+const VERSION = '5.0.0-alpha.1'
 
 
 const Avvio = require('avvio')

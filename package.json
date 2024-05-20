@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.0.0-aplha.1",
+  "version": "5.0.0-alpha.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -206,7 +206,6 @@
     "@fastify/fast-json-stringify-compiler": "^4.3.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.3.0",
-    "fast-content-type-parse": "^1.1.0",
     "fast-json-stringify": "^5.14.1",
     "find-my-way": "^8.1.0",
     "light-my-request": "^5.13.0",

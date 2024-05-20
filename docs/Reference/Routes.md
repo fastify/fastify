@@ -768,7 +768,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

@@ -439,6 +439,8 @@ section.
   that adds support for KafkaJS - a modern Apache Kafka client library.
 - [`fastify-keycloak-adapter`](https://github.com/yubinTW/fastify-keycloak-adapter)
   A keycloak adapter for a Fastify app.
+- [`fastify-kysely`](https://github.com/alenap93/fastify-kysely) Fastify
+  plugin for supporting Kysely type-safe query builder.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify
   plugin for supporting KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)

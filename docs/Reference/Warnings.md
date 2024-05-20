@@ -9,7 +9,6 @@
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP005](#FSTDEP005)
-    - [FSTDEP006](#FSTDEP006)
     - [FSTDEP007](#FSTDEP007)
     - [FSTDEP008](#FSTDEP008)
     - [FSTDEP009](#FSTDEP009)
@@ -73,7 +72,6 @@ Deprecation codes are further supported by the Node.js CLI options:
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTDEP005">FSTDEP005</a> | You are accessing the deprecated `request.connection` property. | Use `request.socket`. | [#2594](https://github.com/fastify/fastify/pull/2594) |
-| <a id="FSTDEP006">FSTDEP006</a> | You are decorating Request/Reply with a reference type. This reference is shared amongst all requests. | Do not use Arrays/Objects as values when decorating Request/Reply. | [#2688](https://github.com/fastify/fastify/pull/2688) |
 | <a id="FSTDEP007">FSTDEP007</a> | You are trying to set a HEAD route using `exposeHeadRoute` route flag when a sibling route is already set. | Remove `exposeHeadRoutes` or explicitly set `exposeHeadRoutes` to `false` | [#2700](https://github.com/fastify/fastify/pull/2700) |
 | <a id="FSTDEP008">FSTDEP008</a> | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | <a id="FSTDEP009">FSTDEP009</a> | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |

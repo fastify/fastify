@@ -2,7 +2,6 @@
 
 const VERSION = '5.0.0-alpha.1'
 
-
 const Avvio = require('avvio')
 const http = require('node:http')
 let lightMyRequest

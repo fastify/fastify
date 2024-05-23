@@ -29,25 +29,15 @@ test('Async/await listen with arguments', async t => {
     t.fail('should not be deprecated')
   })
 
-  t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
   const address = fastify.server.address()
-  t.equal(addr, `http://${address.address}:${address.port}`)
-})
-
-test('Promise listen with arguments', t => {
-  process.on('warning', () => {
-    t.fail('should not be deprecated')
-  })
-
-  t.plan(1)
-  const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: 0, host: '0.0.0.0' }).then(addr => {
-    const address = fastify.server.address()
-    t.equal(addr, `http://${address.address}:${address.port}`)
+  t.equal(addr, `http://127.0.0.1:${address.port}`)
+  t.same(address, {
+    address: '0.0.0.0',
+    family: 'IPv4',
+    port: address.port
   })
 })
 

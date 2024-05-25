@@ -58,6 +58,7 @@ since the request was received by Fastify.
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
+- `.writeEarlyHints(hints, callback)` - Sends Early Hints to the user while the response is being prepared.
 - `.trailer(key, function)` - Sets a response trailer.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
@@ -242,6 +243,27 @@ reply.getHeader('x-foo') // undefined
 <a id="hasHeader"></a>
 
 Returns a boolean indicating if the specified header has been set.
+
+### .writeEarlyHints(hints, callback)
+<a id="writeEarlyHints"></a>
+
+Sends early hints to the client. Early hints allow the client to
+start processing resources before the final response is sent.
+This can improve performance by allowing the client to preload
+or preconnect to resources while the server is still generating the response.
+
+The hints parameter is an object containing the early hint key-value pairs.
+
+Example:
+
+```js
+reply.writeEarlyHints({ 
+  Link: '</styles.css>; rel=preload; as=style'
+});
+```
+
+The optional callback parameter is a function that will be called
+once the early hints are sent or if an error occurs.
 
 ### .trailer(key, function)
 <a id="trailer"></a>

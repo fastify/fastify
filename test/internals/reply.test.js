@@ -258,7 +258,7 @@ test('within an instance', t => {
   })
 
   fastify.get('/redirect-code-before-call-overwrite', function (req, reply) {
-    reply.code(307).redirect(302, '/')
+    reply.code(307).redirect('/', 302)
   })
 
   fastify.get('/custom-serializer', function (req, reply) {

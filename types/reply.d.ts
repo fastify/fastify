@@ -57,7 +57,8 @@ export interface FastifyReply<
   getHeaders(): Record<HttpHeader, number | string | string[] | undefined>;
   removeHeader(key: HttpHeader): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hasHeader(key: HttpHeader): boolean;
-  // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
+  writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void;
+  // TODO: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

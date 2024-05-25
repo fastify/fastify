@@ -2,6 +2,7 @@
 
 const Fastify = require('..')
 const tap = require('tap')
+const http2 = require('http2')
 
 const testResBody = 'Hello, world!'
 
@@ -24,10 +25,8 @@ tap.test('Happy flow - string argument', (t) => {
   fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
 
-    const client = require('http2').connect(address)
-    const req = client.request({
-      ':path': '/'
-    })
+    const client = http2.connect(address)
+    const req = client.request()
 
     req.on('headers', (headers) => {
       t.not(headers, undefined)

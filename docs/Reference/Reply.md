@@ -58,7 +58,8 @@ since the request was received by Fastify.
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
-- `.writeEarlyHints(hints, callback)` - Sends Early Hints to the user while the response is being prepared.
+- `.writeEarlyHints(hints, callback)` - Sends Early Hints to the user
+  while the response is being prepared.
 - `.trailer(key, function)` - Sets a response trailer.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.

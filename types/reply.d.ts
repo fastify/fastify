@@ -57,9 +57,11 @@ export interface FastifyReply<
   getHeaders(): Record<HttpHeader, number | string | string[] | undefined>;
   removeHeader(key: HttpHeader): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hasHeader(key: HttpHeader): boolean;
-  // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
+  /**
+   * @deprecated The `reply.redirect()` method has a new signature: `reply.reply.redirect(url: string, code?: number)`.
+   */
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  redirect(url: string, statusCode?: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   callNotFound(): void;
   /**

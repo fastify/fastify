@@ -320,7 +320,7 @@ reply.redirect('/home')
 Example (no `reply.code()` call) sets status code to `303` and redirects to
 `/home`
 ```js
-reply.redirect(303, '/home')
+reply.redirect('/home', 303)
 ```
 
 Example (`reply.code()` call) sets status code to `303` and redirects to `/home`

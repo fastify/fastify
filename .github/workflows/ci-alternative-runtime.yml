@@ -26,12 +26,9 @@ jobs:
       contents: read
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [20]
         os: [macos-latest, ubuntu-latest, windows-latest]
         include:
-          - runtime: nsolid
-            node-version: 18
-            nsolid-version: 5
           - runtime: nsolid
             node-version: 20
             nsolid-version: 5

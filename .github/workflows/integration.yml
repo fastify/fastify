@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18, 20, 22]
+        node-version: [20, 22]
         os: [ubuntu-latest]
         pnpm-version: [8]
 

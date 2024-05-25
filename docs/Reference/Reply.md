@@ -58,7 +58,7 @@ since the request was received by Fastify.
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
-- `.writeEarlyHints(hints, callback)` - Sends Early Hints to the user
+- `.writeEarlyHints(hints, callback)` - Sends early hints to the user
   while the response is being prepared.
 - `.trailer(key, function)` - Sets a response trailer.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
@@ -264,7 +264,7 @@ reply.writeEarlyHints({
 ```
 
 The optional callback parameter is a function that will be called
-once the early hints are sent or if an error occurs.
+once the hint is sent or if an error occurs.
 
 ### .trailer(key, function)
 <a id="trailer"></a>

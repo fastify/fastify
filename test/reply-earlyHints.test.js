@@ -9,9 +9,7 @@ const testResBody = 'Hello, world!'
 tap.test('Happy flow - string argument', (t) => {
   const fastify = Fastify({
     http2: true,
-    logger: {
-      level: 'debug'
-    }
+    logger: false
   })
 
   fastify.get('/', async (request, reply) => {

@@ -17,7 +17,7 @@
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
-  - [.redirect([code ,] dest)](#redirectcode--dest)
+  - [.redirect(dest, [code ,])](#redirectdest--code)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
@@ -62,8 +62,8 @@ since the request was received by Fastify.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] dest)` - Redirect to the specified URL, the status code is
-  optional (default to `302`).
+- `.redirect(dest, [code,])` - Redirect to the specified URL, the status code is
+  optional (defaults to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default
   JSON serializer or using the custom serializer (if one is set) and returns the
@@ -299,7 +299,7 @@ reply.getTrailer('server-timing') // undefined
 ```
 
 
-### .redirect([code ,] dest)
+### .redirect(dest, [code ,])
 <a id="redirect"></a>
 
 Redirects a request to the specified URL, the status code is optional, default
@@ -330,7 +330,7 @@ reply.code(303).redirect('/home')
 
 Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
 ```js
-reply.code(303).redirect(302, '/home')
+reply.code(303).redirect('/home', 302)
 ```
 
 ### .callNotFound()

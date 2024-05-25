@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [18, 20, 22]
+        node-version: [20, 22]
         os: [ubuntu-latest]
         pnpm-version: [8]
 
@@ -48,7 +48,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [18, 20, 22]
+        node-version: [20, 22]
         os: [ubuntu-latest]
 
     steps:

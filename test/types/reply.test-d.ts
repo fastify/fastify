@@ -22,6 +22,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<number>(reply.elapsedTime)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
+  expectType<(hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void>(reply.writeEarlyHints)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)
   expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
   expectAssignable<(values: {[key: string]: any}) => FastifyReply>(reply.headers)

@@ -60,6 +60,7 @@ export interface FastifyReply<
   /**
    * @deprecated The `reply.redirect()` method has a new signature: `reply.reply.redirect(url: string, code?: number)`. It will be enforced in `fastify@v5`'.
    */
+  writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void;
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   redirect(url: string, statusCode?: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

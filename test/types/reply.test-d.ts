@@ -29,7 +29,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectAssignable<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
   expectAssignable<(key: string) => FastifyReply>(reply.removeHeader)
   expectAssignable<(key: string) => boolean>(reply.hasHeader)
-  expectType<{(statusCode: number, url: string): FastifyReply; (url: string): FastifyReply }>(reply.redirect)
+  expectType<{(statusCode: number, url: string): FastifyReply;(url: string, statusCode?: number): FastifyReply;}>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
   // Test reply.getResponseTime() deprecation

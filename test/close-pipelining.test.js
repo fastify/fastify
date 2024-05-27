@@ -36,7 +36,7 @@ test('Should return 503 while closing - pipelining', async t => {
   await instance.close()
 })
 
-// default enable of idle closing idle connection is backported to 18.19.0 and fixed in 18.20.3
+// default enable of idle closing idle connection is accidentally backported to 18.19.0 and fixed in 18.20.3
 // Refs: https://github.com/nodejs/node/releases/tag/v18.20.3
 const isNodeDefaultClosingIdleConnection =
   (
@@ -74,7 +74,7 @@ test('Should not return 503 while closing - pipelining - return503OnClosing: fal
   await instance.close()
 })
 
-test('Should close the socket abruptly - pipelining - return503OnClosing: false, skip skip when Node not default closing idle connection', { skip: !isNodeDefaultClosingIdleConnection }, async t => {
+test('Should close the socket abruptly - pipelining - return503OnClosing: false, skip when Node not default closing idle connection', { skip: !isNodeDefaultClosingIdleConnection }, async t => {
   // Since Node v19, we will always invoke server.closeIdleConnections()
   // therefore our socket will be closed
   const fastify = Fastify({

@@ -43,22 +43,20 @@ import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts
 const server = fastify().withTypeProvider<JsonSchemaToTsProvider>()
 
 server.get('/route', {
-    schema: {
-        querystring: {
-            type: 'object',
-            properties: {
-                foo: { type: 'number' },
-                bar: { type: 'string' },
-            },
-            required: ['foo', 'bar']
-        }
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        foo: { type: 'number' },
+        bar: { type: 'string' },
+      },
+      required: ['foo', 'bar']
     }
-
+  }
 }, (request, reply) => {
 
-    // type Query = { foo: number, bar: string }
-
-    const { foo, bar } = request.query // type safe!
+  // type Query = { foo: number, bar: string }
+  const { foo, bar } = request.query // type safe!
 })
 ```
 
@@ -78,17 +76,16 @@ import { Type } from '@sinclair/typebox'
 const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
-    schema: {
-        querystring: Type.Object({
-            foo: Type.Number(),
-            bar: Type.String()
-        })
-    }
+  schema: {
+    querystring: Type.Object({
+      foo: Type.Number(),
+      bar: Type.String()
+    })
+  }
 }, (request, reply) => {
 
-    // type Query = { foo: number, bar: string }
-
-    const { foo, bar } = request.query // type safe!
+  // type Query = { foo: number, bar: string }
+  const { foo, bar } = request.query // type safe!
 })
 ```
 

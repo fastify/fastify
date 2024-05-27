@@ -36,8 +36,15 @@ test('Should return 503 while closing - pipelining', async t => {
   await instance.close()
 })
 
-const isNodeVersionGte1819 = semver.gte(process.version, '18.19.0')
-test('Should not return 503 while closing - pipelining - return503OnClosing: false, skip Node >= v18.19.x', { skip: isNodeVersionGte1819 }, async t => {
+// default enable of idle closing idle connection is backported to 18.19.0 and fixed in 18.20.3
+// Refs: https://github.com/nodejs/node/releases/tag/v18.20.3
+const isNodeDefaultClosingIdleConnection =
+  (
+    semver.gte(process.version, '18.19.0') &&
+    semver.lt(process.version, '18.20.3')
+  ) ||
+  semver.gte(process.version, '19.0.0')
+test('Should not return 503 while closing - pipelining - return503OnClosing: false, skip when Node default closing idle connection', { skip: isNodeDefaultClosingIdleConnection }, async t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -67,8 +74,8 @@ test('Should not return 503 while closing - pipelining - return503OnClosing: fal
   await instance.close()
 })
 
-test('Should close the socket abruptly - pipelining - return503OnClosing: false, skip Node < v18.19.x', { skip: !isNodeVersionGte1819 }, async t => {
-  // Since Node v18, we will always invoke server.closeIdleConnections()
+test('Should close the socket abruptly - pipelining - return503OnClosing: false, skip skip when Node not default closing idle connection', { skip: !isNodeDefaultClosingIdleConnection }, async t => {
+  // Since Node v19, we will always invoke server.closeIdleConnections()
   // therefore our socket will be closed
   const fastify = Fastify({
     return503OnClosing: false,

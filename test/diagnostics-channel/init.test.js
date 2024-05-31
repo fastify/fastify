@@ -9,7 +9,7 @@ test('diagnostics_channel when present and subscribers', t => {
 
   let fastifyInHook
 
-  const dc = {
+  const diagnostics = {
     channel (name) {
       t.equal(name, 'fastify.initialization')
       return {
@@ -23,8 +23,8 @@ test('diagnostics_channel when present and subscribers', t => {
     '@noCallThru': true
   }
 
-  const fastify = proxyquire('../fastify', {
-    'node:diagnostics_channel': dc
+  const fastify = proxyquire('../../fastify', {
+    'dc-polyfill': diagnostics
   })()
   t.equal(fastifyInHook, fastify)
 })
@@ -32,7 +32,7 @@ test('diagnostics_channel when present and subscribers', t => {
 test('diagnostics_channel when present and no subscribers', t => {
   t.plan(1)
 
-  const dc = {
+  const diagnostics = {
     channel (name) {
       t.equal(name, 'fastify.initialization')
       return {
@@ -45,17 +45,7 @@ test('diagnostics_channel when present and no subscribers', t => {
     '@noCallThru': true
   }
 
-  proxyquire('../fastify', {
-    'node:diagnostics_channel': dc
+  proxyquire('../../fastify', {
+    'dc-polyfill': diagnostics
   })()
-})
-
-test('diagnostics_channel when not present', t => {
-  t.plan(1)
-
-  t.doesNotThrow(() => {
-    proxyquire('../fastify', {
-      'node:diagnostics_channel': null
-    })()
-  })
 })

@@ -486,14 +486,14 @@ const route = {
     schema: {},
 }
 
-fastify.register(function(app, _, done) {
+fastify.register(function (app, _, done) {
   app.get('/users', () => {})
   app.route(route)
 
   done()
 }, { prefix: '/v1' }) // global route prefix
 
-await fastify.listen({ port: 0 })
+await fastify.listen({ port: 3000 })
 ```
 
 ### Route Prefixing and fastify-plugin
@@ -817,8 +817,8 @@ const secret = {
 > const Fastify = require('fastify')
 > 
 > const fastify = Fastify({
->   frameworkErrors: function(err, res, res) {
->     if(err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
+>   frameworkErrors: function (err, res, res) {
+>     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")
 >     } else {

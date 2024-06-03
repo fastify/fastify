@@ -17,7 +17,7 @@
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
-  - [.redirect([code ,] dest)](#redirectcode--dest)
+  - [.redirect(dest, [code ,])](#redirectdest--code)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
@@ -58,12 +58,14 @@ since the request was received by Fastify.
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
+- `.writeEarlyHints(hints, callback)` - Sends early hints to the user
+  while the response is being prepared.
 - `.trailer(key, function)` - Sets a response trailer.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] dest)` - Redirect to the specified URL, the status code is
-  optional (default to `302`).
+- `.redirect(dest, [code,])` - Redirect to the specified URL, the status code is
+  optional (defaults to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default
   JSON serializer or using the custom serializer (if one is set) and returns the
@@ -243,6 +245,27 @@ reply.getHeader('x-foo') // undefined
 
 Returns a boolean indicating if the specified header has been set.
 
+### .writeEarlyHints(hints, callback)
+<a id="writeEarlyHints"></a>
+
+Sends early hints to the client. Early hints allow the client to
+start processing resources before the final response is sent.
+This can improve performance by allowing the client to preload
+or preconnect to resources while the server is still generating the response.
+
+The hints parameter is an object containing the early hint key-value pairs.
+
+Example:
+
+```js
+reply.writeEarlyHints({ 
+  Link: '</styles.css>; rel=preload; as=style'
+});
+```
+
+The optional callback parameter is a function that will be called
+once the hint is sent or if an error occurs.
+
 ### .trailer(key, function)
 <a id="trailer"></a>
 
@@ -299,7 +322,7 @@ reply.getTrailer('server-timing') // undefined
 ```
 
 
-### .redirect([code ,] dest)
+### .redirect(dest, [code ,])
 <a id="redirect"></a>
 
 Redirects a request to the specified URL, the status code is optional, default
@@ -320,7 +343,7 @@ reply.redirect('/home')
 Example (no `reply.code()` call) sets status code to `303` and redirects to
 `/home`
 ```js
-reply.redirect(303, '/home')
+reply.redirect('/home', 303)
 ```
 
 Example (`reply.code()` call) sets status code to `303` and redirects to `/home`
@@ -330,7 +353,7 @@ reply.code(303).redirect('/home')
 
 Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
 ```js
-reply.code(303).redirect(302, '/home')
+reply.code(303).redirect('/home', 302)
 ```
 
 ### .callNotFound()

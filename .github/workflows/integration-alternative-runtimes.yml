@@ -25,12 +25,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         runtime: [nsolid]
-        node-version: [18, 20]
+        node-version: [20]
         pnpm-version: [8]
         include:
-          - nsolid-version: 5
-            node-version: 18
-            runtime: nsolid
           - nsolid-version: 5
             node-version: 20
             runtime: nsolid
@@ -46,7 +43,7 @@ jobs:
           nsolid-version: ${{ matrix.nsolid-version }}
 
       - name: Install Pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           version: ${{ matrix.pnpm-version }}
 

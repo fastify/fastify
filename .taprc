@@ -1,6 +1,4 @@
 # vim: set filetype=yaml :
-disable-coverage: true
-allow-empty-coverage: true
 node-arg:
   - '--allow-natives-syntax'
 

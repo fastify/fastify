@@ -36,6 +36,9 @@ is given in the content-type header. If it is not given, the
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > only.
 
+## Important: Using addContentTypeParser with fastify.register
+When using `addContentTypeParser` in combination with `fastify.register`, you should not use `await` when registering routes. Using `await` causes the route registration to be asynchronous and can lead to routes being registered before the addContentTypeParser has been set.
+
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {

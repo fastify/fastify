@@ -237,11 +237,12 @@ expectAssignable<FastifyInstance>(server.ready())
 expectAssignable<FastifyInstance>(server.ready((err) => {
   expectType<Error | null>(err)
 }))
-var readyListener = async (err) => {
+expectAssignable<FastifyInstance>(server.ready(async (err) => {
   expectType<Error | null>(err)
-}
-expectAssignable<FastifyInstance>(server.ready(readyListener))
-expectType<Parameters<typeof server.ready>[0]>(readyListener)
+}))
+expectAssignable<Parameters<typeof server.ready>[0]>(async (err) => {
+  expectType<Error | null>(err)
+})
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 

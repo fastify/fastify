@@ -33,7 +33,7 @@ jobs:
         if: ${{ success() }}
         with:
           name: coverage-report-nix
-          path: ./coverage/lcov-report/
+          path: ./.tap/report/
 
       # Here, we verify the coverage thresholds so that this workflow can pass
       # or fail and stop further workflows if this one fails.

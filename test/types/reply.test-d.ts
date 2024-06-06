@@ -33,8 +33,6 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<{(statusCode: number, url: string): FastifyReply;(url: string, statusCode?: number): FastifyReply;}>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
-  // Test reply.getResponseTime() deprecation
-  expectDeprecated(reply.getResponseTime)
   expectType<(contentType: string) => FastifyReply>(reply.type)
   expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
   expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)

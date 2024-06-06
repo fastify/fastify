@@ -92,8 +92,6 @@ since the request was received by Fastify.
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.getResponseTime()` - Deprecated, returns the amount of time passed
-since the request was received by Fastify.
 - `.context` - Deprecated, access the [Request's context](./Request.md) property.
 
 ```js
@@ -365,22 +363,6 @@ hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 ```js
 reply.callNotFound()
 ```
-
-### .getResponseTime()
-<a id="getResponseTime"></a>
-
-Invokes the custom response time getter to calculate the amount of time passed
-since the request was received by Fastify.
-
-Note that unless this function is called in the [`onResponse`
-hook](./Hooks.md#onresponse) it will always return `0`.
-
-```js
-const milliseconds = reply.getResponseTime()
-```
-
-*Note: This method is deprecated and will be removed in `fastify@5`.
-Use the [.elapsedTime](#elapsedtime) property instead.*
 
 ### .type(contentType)
 <a id="type"></a>

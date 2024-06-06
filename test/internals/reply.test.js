@@ -19,7 +19,7 @@ const {
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const { FSTDEP010, FSTDEP019, FSTDEP020, FSTDEP021 } = require('../../lib/warnings')
+const { FSTDEP010, FSTDEP019, FSTDEP021 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -36,7 +36,7 @@ const doGet = function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(16)
+  t.plan(15)
   const response = { res: 'res' }
   const context = { config: { onSend: [] }, schema: {} }
   const request = { [kRouteContext]: context, [kPublicRouteContext]: { config: context.config, schema: context.schema } }
@@ -49,7 +49,6 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply.status, 'function')
   t.equal(typeof reply.header, 'function')
   t.equal(typeof reply.serialize, 'function')
-  t.equal(typeof reply.getResponseTime, 'function')
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
@@ -1415,9 +1414,9 @@ test('.statusCode is getter and setter', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    t.ok(reply.statusCode, 200, 'default status value')
+    t.equal(reply.statusCode, 200, 'default status value')
     reply.statusCode = 418
-    t.ok(reply.statusCode, 418)
+    t.equal(reply.statusCode, 418)
     reply.send()
   })
 
@@ -1572,82 +1571,11 @@ test('should not throw error when attempting to set reply.sent if the underlinin
   })
 })
 
-test('reply.getResponseTime() should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
+test('reply.elapsedTime should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const reply = new Reply(response, null)
-  t.equal(reply.getResponseTime(), 0)
-})
-
-test('reply.getResponseTime() should return a number greater than 0 after the timer is initialised on the reply by setting up response listeners', t => {
-  t.plan(1)
-  const fastify = Fastify()
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    handler: (req, reply) => {
-      reply.send('hello world')
-    }
-  })
-
-  fastify.addHook('onResponse', (req, reply) => {
-    t.ok(reply.getResponseTime() > 0)
-    t.end()
-  })
-
-  fastify.inject({ method: 'GET', url: '/' })
-})
-
-test('should emit deprecation warning when trying to use reply.getResponseTime() and should return the time since a request started while inflight', t => {
-  t.plan(5)
-  const fastify = Fastify()
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    handler: (req, reply) => {
-      reply.send('hello world')
-    }
-  })
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP020.code)
-  }
-
-  fastify.addHook('preValidation', (req, reply, done) => {
-    t.equal(reply.getResponseTime(), reply.getResponseTime())
-    done()
-  })
-
-  fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
-    t.error(err)
-    t.pass()
-
-    process.removeListener('warning', onWarning)
-  })
-
-  FSTDEP020.emitted = false
-})
-
-test('reply.getResponseTime() should return the same value after a request is finished', t => {
-  t.plan(1)
-  const fastify = Fastify()
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    handler: (req, reply) => {
-      reply.send('hello world')
-    }
-  })
-
-  fastify.addHook('onResponse', (req, reply) => {
-    t.equal(reply.getResponseTime(), reply.getResponseTime())
-    t.end()
-  })
-
-  fastify.inject({ method: 'GET', url: '/' })
+  t.equal(reply.elapsedTime, 0)
 })
 
 test('reply.elapsedTime should return a number greater than 0 after the timer is initialised on the reply by setting up response listeners', t => {

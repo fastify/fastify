@@ -65,10 +65,6 @@ export interface FastifyReply<
   writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void;
   hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   callNotFound(): void;
-  /**
-   * @deprecated Use the Reply#elapsedTime property instead
-   */
-  getResponseTime(): number;
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serialize(payload: any): string | ArrayBuffer | Buffer;

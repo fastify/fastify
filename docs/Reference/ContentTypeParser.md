@@ -36,9 +36,6 @@ is given in the content-type header. If it is not given, the
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > only.
 
-## Important: Using addContentTypeParser with fastify.register
-When using `addContentTypeParser` in combination with `fastify.register`, you should not use `await` when registering routes. Using `await` causes the route registration to be asynchronous and can lead to routes being registered before the addContentTypeParser has been set.
-
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {
@@ -89,6 +86,44 @@ fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => 
 fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
+
+### Important: Using addContentTypeParser with fastify.register
+When using `addContentTypeParser` in combination with `fastify.register`,
+you should not use `await` when registering routes. Using `await` causes
+the route registration to be asynchronous and can lead to routes being registered
+before the addContentTypeParser has been set.
+
+#### Correct Usage
+```js
+const fastify = require('fastify')();
+
+
+fastify.register((fastify, opts) => {
+  fastify.addContentTypeParser('application/json', function (request, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.get('/hello', async (req, res) => {});
+});
+```
+
+#### Incorrect Usage
+```js
+const fastify = require('fastify')();
+
+await fastify.register((fastify, opts) => {
+  fastify.get('/hello', async (req, res) => {});
+});
+
+fastify.addContentTypeParser('application/json', function (request, payload, done) {
+  jsonParser(payload, function (err, body) {
+    done(err, body)
+  })
+})
+```
+
 
 Besides the `addContentTypeParser` API there are further APIs that can be used.
 These are `hasContentTypeParser`, `removeContentTypeParser` and

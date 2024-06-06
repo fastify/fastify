@@ -4,7 +4,6 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const { Client } = require('undici')
-const semver = require('semver')
 
 test('Should return 503 while closing - pipelining', async t => {
   const fastify = Fastify({

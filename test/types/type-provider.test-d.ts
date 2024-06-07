@@ -1075,8 +1075,8 @@ expectAssignable(server.withTypeProvider<AuxiliaryHandlerProvider>().get(
 // SafePromiseLike
 // -------------------------------------------------------------------
 const safePromiseLike = {
-  then: new Promise<string>(res => res('')).then,
-  __linterBrands: "SafePromiseLike" as const
+  then: new Promise<string>(resolve => resolve('')).then,
+  __linterBrands: 'SafePromiseLike' as const
 }
 expectAssignable<SafePromiseLike<string>>(safePromiseLike)
 expectAssignable<PromiseLike<string>>(safePromiseLike)

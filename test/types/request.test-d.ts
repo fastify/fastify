@@ -1,4 +1,4 @@
-import { expectAssignable, expectType } from 'tsd'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
   FastifyRequestContext,
@@ -12,7 +12,8 @@ import fastify, {
   RequestBodyDefault,
   RequestGenericInterface,
   RouteHandler,
-  RouteHandlerMethod
+  RouteHandlerMethod,
+  SafePromiseLike
 } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -156,9 +157,17 @@ const customLogger: CustomLoggerInterface = {
 }
 
 const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
-expectType<
+expectError<
+FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
+& Promise<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
+>(serverWithCustomLogger)
+expectAssignable<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
+>(serverWithCustomLogger)
+expectType<
+FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
+& SafePromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
 >(serverWithCustomLogger)
 
 serverWithCustomLogger.get('/get', getHandlerWithCustomLogger)

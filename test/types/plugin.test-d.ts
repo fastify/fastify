@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyPluginOptions } from '../../fastify'
+import fastify, { FastifyInstance, FastifyPluginOptions, SafePromiseLike } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import { expectType, expectError, expectAssignable } from 'tsd'
@@ -42,7 +42,9 @@ expectAssignable<FastifyInstance>(fastify().register(async function (instance, o
 expectError(fastify().register(function (instance, opts, done) { }, { logLevel: '' })) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
+expectError<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & Promise<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
+expectAssignable<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
+expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
 
 // Chainable
 httpsServer

@@ -661,6 +661,21 @@ However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.
+- In case you've the `@typescript-eslint/no-floating-promises` enabled,
+please double-check that your `.eslintrc` includes `allowForKnownSafePromises`
+property as described [here](https://github.com/fastify/fastify/issues/5498):
+```
+{
+  "rules": {
+    "@typescript-eslint/no-floating-promises": ["error", {
+      "allowForKnownSafePromises": [
+        // { "from": "package", "name": "FastifySafePromiseOrSomeSuch", "package": "@fastify/etc" },
+        { "from": "file", "name": "SafePromise"}
+      ]
+    }]
+  }
+}
+```
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.

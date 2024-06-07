@@ -92,3 +92,11 @@ RouteGeneric
 // review: support both async and sync return types
 // (Promise<Return> | Return | Promise<void> | void)
   : unknown
+
+/**
+ * This branded type is needed to please `typescript-eslint`.
+ *
+ * Please refer to the following Github issue for more info:
+ * https://github.com/fastify/fastify/issues/5498
+ */
+export type SafePromiseLike<T> = PromiseLike<T> & { __brand: 'SafePromiseLike' }

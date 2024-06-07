@@ -663,7 +663,7 @@ However, there are a couple of suggestions to help improve this experience:
   are actually being loaded.
 - In case you've the `@typescript-eslint/no-floating-promises` enabled,
 please double-check that your `.eslintrc` includes `allowForKnownSafePromises`
-property as described [here](https://typescript-eslint.io/rules/no-floating-promises/#allowforknownsafepromises):
+property as described [here](https://typescript-eslint.io/rules/no-floating-promises/#allowforknownsafepromises "typescript-eslint no-floating-promises allowForKnownSafePromises documentation):
 ```
 {
   "rules": {

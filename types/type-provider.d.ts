@@ -94,7 +94,8 @@ RouteGeneric
   : unknown
 
 /**
- * This branded type is needed to please `typescript-eslint`.
+ * This branded type is needed to indicate APIs that return Promise-likes which can
+ * safely "float" (not have rejections handled by calling code).
  *
  * Please refer to the following Github issue for more info:
  * https://github.com/fastify/fastify/issues/5498

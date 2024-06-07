@@ -670,7 +670,8 @@ documentation`](https://typescript-eslint.io/rules/no-floating-promises/#allowfo
   "rules": {
     "@typescript-eslint/no-floating-promises": ["error", {
       "allowForKnownSafePromises": [
-        { "from": "package", "name": "SafePromiseLike", "package": "fastify" }
+        { "from": "package", "name": "FastifyReply", "package": "fastify" },
+        { "from": "package", "name": "SafePromiseLike", "package": "fastify" },
       ]
     }]
   }

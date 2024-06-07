@@ -4,7 +4,8 @@ import fastify, {
   FastifyRequest,
   FastifyReply,
   FastifyInstance,
-  FastifyError
+  FastifyError,
+  SafePromiseLike
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
@@ -1069,3 +1070,14 @@ expectAssignable(server.withTypeProvider<AuxiliaryHandlerProvider>().get(
     expectType<'handler-auxiliary'>(req.body)
   }
 ))
+
+// -------------------------------------------------------------------
+// SafePromiseLike
+// -------------------------------------------------------------------
+const safePromiseLike = {
+  then: new Promise<string>(res => res('')).then,
+  __linterBrands: "SafePromiseLike" as const
+}
+expectAssignable<SafePromiseLike<string>>(safePromiseLike)
+expectAssignable<PromiseLike<string>>(safePromiseLike)
+expectError<Promise<string>>(safePromiseLike)

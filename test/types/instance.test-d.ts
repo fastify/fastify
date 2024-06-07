@@ -237,6 +237,12 @@ expectAssignable<FastifyInstance>(server.ready())
 expectAssignable<FastifyInstance>(server.ready((err) => {
   expectType<Error | null>(err)
 }))
+expectAssignable<FastifyInstance>(server.ready(async (err) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<Parameters<typeof server.ready>[0]>(async (err) => {
+  expectType<Error | null>(err)
+})
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 

@@ -99,4 +99,4 @@ RouteGeneric
  * Please refer to the following Github issue for more info:
  * https://github.com/fastify/fastify/issues/5498
  */
-export type SafePromiseLike<T> = PromiseLike<T> & { __brand: 'SafePromiseLike' }
+export type SafePromiseLike<T> = PromiseLike<T> & { __linterBrands: 'SafePromiseLike' }

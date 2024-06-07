@@ -663,14 +663,13 @@ However, there are a couple of suggestions to help improve this experience:
   are actually being loaded.
 - In case you've the `@typescript-eslint/no-floating-promises` enabled,
 please double-check that your `.eslintrc` includes `allowForKnownSafePromises`
-property as described [here](https://github.com/fastify/fastify/issues/5498):
+property as described [here](https://typescript-eslint.io/rules/no-floating-promises/#allowforknownsafepromises):
 ```
 {
   "rules": {
     "@typescript-eslint/no-floating-promises": ["error", {
       "allowForKnownSafePromises": [
-        // { "from": "package", "name": "FastifySafePromiseOrSomeSuch", "package": "@fastify/etc" },
-        { "from": "file", "name": "SafePromise"}
+        { "from": "package", "name": "SafePromiseLike", "package": "fastify" }
       ]
     }]
   }

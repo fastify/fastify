@@ -37,7 +37,7 @@ test('Async/await listen with arguments', async t => {
   t.same(address, {
     address: '0.0.0.0',
     family: 'IPv4',
-    port: address.port
+    port: address.port,
   })
 })
 
@@ -70,7 +70,7 @@ test('listen accepts options and a callback', t => {
     exclusive: false,
     readableAll: false,
     writableAll: false,
-    ipv6Only: false
+    ipv6Only: false,
   }, (err) => {
     t.error(err)
   })

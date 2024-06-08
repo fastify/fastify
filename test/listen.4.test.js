@@ -95,7 +95,7 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
     await new Promise((resolve, reject) => {
       sget({
         method: 'GET',
-        url: getUrl(app, lookup)
+        url: getUrl(app, lookup),
       }, (err, response, body) => {
         if (err) { return reject(err) }
         t.equal(response.statusCode, 200)
@@ -120,7 +120,7 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
       for (const lookup of lookups) {
         sget({
           method: 'GET',
-          url: getUrl(app, lookup)
+          url: getUrl(app, lookup),
         }, (err, response, body) => {
           t.error(err)
           t.equal(response.statusCode, 200)
@@ -149,12 +149,12 @@ test('addresses getter', async t => {
 
   localAddresses = [...new Set([...localAddresses.map(a => JSON.stringify({
     address: a.address,
-    family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
+    family: typeof a.family === 'number' ? 'IPv' + a.family : a.family,
   }))])].sort()
 
   const appAddresses = app.addresses().map(a => JSON.stringify({
     address: a.address,
-    family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
+    family: typeof a.family === 'number' ? 'IPv' + a.family : a.family,
   })).sort()
 
   t.same(appAddresses, localAddresses, 'after listen')

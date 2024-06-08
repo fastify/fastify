@@ -6,7 +6,6 @@ import fastify, {
   FastifyRequest,
   FastifyReply,
   FastifyBaseLogger,
-  FastifyInstance
 } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
@@ -68,8 +67,8 @@ P.Logger
 >({
   logger: P({
     level: 'info',
-    redact: ['x-userinfo']
-  })
+    redact: ['x-userinfo'],
+  }),
 })
 
 expectType<P.Logger>(serverWithPino.log)
@@ -80,7 +79,7 @@ serverWithPino.route({
   handler (request) {
     expectType<P.Logger>(this.log)
     expectType<P.Logger>(request.log)
-  }
+  },
 })
 
 serverWithPino.get('/', function (request) {
@@ -94,8 +93,8 @@ IncomingMessage,
 ServerResponse
 >({
   logger: {
-    level: 'info'
-  }
+    level: 'info',
+  },
 })
 
 expectType<FastifyLoggerInstance>(serverWithLogOptions.log)
@@ -107,16 +106,16 @@ ServerResponse
 >({
   logger: {
     level: 'info',
-    file: '/path/to/file'
-  }
+    file: '/path/to/file',
+  },
 })
 
 expectType<FastifyLoggerInstance>(serverWithFileOption.log)
 
 const serverAutoInferringTypes = fastify({
   logger: {
-    level: 'info'
-  }
+    level: 'info',
+  },
 })
 
 expectType<FastifyBaseLogger>(serverAutoInferringTypes.log)
@@ -124,8 +123,8 @@ expectType<FastifyBaseLogger>(serverAutoInferringTypes.log)
 const serverWithLoggerInstance = fastify({
   loggerInstance: P({
     level: 'info',
-    redact: ['x-userinfo']
-  })
+    redact: ['x-userinfo'],
+  }),
 })
 
 expectType<P.Logger>(serverWithLoggerInstance.log)
@@ -143,7 +142,7 @@ const serverWithPinoConfig = fastify({
           host: 'hostname',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
-          other: ''
+          other: '',
         }
       },
       res (ServerResponse) {
@@ -151,7 +150,7 @@ const serverWithPinoConfig = fastify({
         expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
         expectNotAssignable<FastifyReply>(ServerResponse)
         return {
-          statusCode: 'statusCode'
+          statusCode: 'statusCode',
         }
       },
       err (FastifyError) {
@@ -159,11 +158,11 @@ const serverWithPinoConfig = fastify({
           other: '',
           type: 'type',
           message: 'msg',
-          stack: 'stack'
+          stack: 'stack',
         }
-      }
-    }
-  }
+      },
+    },
+  },
 })
 
 expectType<FastifyBaseLogger>(serverWithPinoConfig.log)
@@ -171,8 +170,8 @@ expectType<FastifyBaseLogger>(serverWithPinoConfig.log)
 const serverAutoInferredFileOption = fastify({
   logger: {
     level: 'info',
-    file: '/path/to/file'
-  }
+    file: '/path/to/file',
+  },
 })
 
 expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
@@ -185,11 +184,11 @@ const serverAutoInferredSerializerResponseObjectOption = fastify({
         expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
         expectNotAssignable<FastifyReply>(ServerResponse)
         return {
-          status: '200'
+          status: '200',
         }
-      }
-    }
-  }
+      },
+    },
+  },
 })
 
 expectType<FastifyBaseLogger>(serverAutoInferredSerializerResponseObjectOption.log)
@@ -206,7 +205,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
           host: 'hostname',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
-          other: ''
+          other: '',
         }
       },
       res (ServerResponse) {
@@ -214,7 +213,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
         expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
         expectNotAssignable<FastifyReply>(ServerResponse)
         return {
-          statusCode: 'statusCode'
+          statusCode: 'statusCode',
         }
       },
       err (FastifyError) {
@@ -222,19 +221,19 @@ const serverAutoInferredSerializerObjectOption = fastify({
           other: '',
           type: 'type',
           message: 'msg',
-          stack: 'stack'
+          stack: 'stack',
         }
-      }
-    }
-  }
+      },
+    },
+  },
 })
 
 expectType<FastifyBaseLogger>(serverAutoInferredSerializerObjectOption.log)
 
 const passStreamAsOption = fastify({
   logger: {
-    stream: fs.createWriteStream('/tmp/stream.out')
-  }
+    stream: fs.createWriteStream('/tmp/stream.out'),
+  },
 })
 
 expectType<FastifyBaseLogger>(passStreamAsOption.log)
@@ -244,8 +243,8 @@ const passPinoOption = fastify({
     redact: ['custom'],
     messageKey: 'msg',
     nestedKey: 'nested',
-    enabled: true
-  }
+    enabled: true,
+  },
 })
 
 expectType<FastifyBaseLogger>(passPinoOption.log)

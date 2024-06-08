@@ -10,14 +10,14 @@ test('findRoute should return null when route cannot be found due to a different
 
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler: (req, reply) => reply.send(typeof req.params.artistId)
+    handler: (req, reply) => reply.send(typeof req.params.artistId),
   })
 
   t.equal(fastify.findRoute({
     method: 'POST',
-    url: '/artists/:artistId'
+    url: '/artists/:artistId',
   }), null)
 })
 
@@ -27,24 +27,24 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
 
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler: (req, reply) => reply.send(typeof req.params.artistId)
+    handler: (req, reply) => reply.send(typeof req.params.artistId),
   })
 
   let route = fastify.findRoute({
     method: 'GET',
-    url: '/artists/:artistId'
+    url: '/artists/:artistId',
   })
 
   route.params = {
     ...route.params,
-    id: ':id'
+    id: ':id',
   }
 
   route = fastify.findRoute({
     method: 'GET',
-    url: '/artists/:artistId'
+    url: '/artists/:artistId',
   })
   t.same(route.params, { artistId: ':artistId' })
 })
@@ -55,13 +55,13 @@ test('findRoute should return null when when url is not passed', t => {
 
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler: (req, reply) => reply.send(typeof req.params.artistId)
+    handler: (req, reply) => reply.send(typeof req.params.artistId),
   })
 
   t.equal(fastify.findRoute({
-    method: 'POST'
+    method: 'POST',
   }), null)
 })
 
@@ -71,14 +71,14 @@ test('findRoute should return null when route cannot be found due to a different
 
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler: (req, reply) => reply.send(typeof req.params.artistId)
+    handler: (req, reply) => reply.send(typeof req.params.artistId),
   })
 
   t.equal(fastify.findRoute({
     method: 'GET',
-    url: '/books/:bookId'
+    url: '/books/:bookId',
   }), null)
 })
 
@@ -90,14 +90,14 @@ test('findRoute should return the route when found', t => {
 
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler
+    handler,
   })
 
   const route = fastify.findRoute({
     method: 'GET',
-    url: '/artists/:artistId'
+    url: '/artists/:artistId',
   })
 
   t.same(route.params, { artistId: ':artistId' })
@@ -109,16 +109,16 @@ test('findRoute should work correctly when used within plugins', t => {
   const handler = (req, reply) => reply.send(typeof req.params.artistId)
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler
+    handler,
   })
 
   function validateRoutePlugin (instance, opts, done) {
     const validateParams = function () {
       return instance.findRoute({
         method: 'GET',
-        url: '/artists/:artistId'
+        url: '/artists/:artistId',
       }) !== null
     }
     instance.decorate('validateRoutes', { validateParams })
@@ -138,14 +138,14 @@ test('findRoute should not expose store', t => {
 
   fastify.get('/artists/:artistId', {
     schema: {
-      params: { artistId: { type: 'integer' } }
+      params: { artistId: { type: 'integer' } },
     },
-    handler: (req, reply) => reply.send(typeof req.params.artistId)
+    handler: (req, reply) => reply.send(typeof req.params.artistId),
   })
 
   const route = fastify.findRoute({
     method: 'GET',
-    url: '/artists/:artistId'
+    url: '/artists/:artistId',
   })
   t.equal(route.store, undefined)
 })

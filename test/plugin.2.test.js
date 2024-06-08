@@ -50,7 +50,7 @@ test('check dependencies - should not throw', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -102,7 +102,7 @@ test('check dependencies - should throw', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -307,7 +307,7 @@ test('plugin encapsulation', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -317,7 +317,7 @@ test('plugin encapsulation', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://localhost:' + fastify.server.address().port + '/second',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

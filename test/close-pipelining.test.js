@@ -8,7 +8,7 @@ const { Client } = require('undici')
 test('Should return 503 while closing - pipelining', async t => {
   const fastify = Fastify({
     return503OnClosing: true,
-    forceCloseConnections: false
+    forceCloseConnections: false,
   })
 
   fastify.get('/', async (req, reply) => {
@@ -19,14 +19,14 @@ test('Should return 503 while closing - pipelining', async t => {
   await fastify.listen({ port: 0 })
 
   const instance = new Client('http://localhost:' + fastify.server.address().port, {
-    pipelining: 2
+    pipelining: 2,
   })
 
   const codes = [200, 200, 503]
   const responses = await Promise.all([
     instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' })
+    instance.request({ path: '/', method: 'GET' }),
   ])
   const actual = responses.map(r => r.statusCode)
 
@@ -40,7 +40,7 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
   // therefore our socket will be closed
   const fastify = Fastify({
     return503OnClosing: false,
-    forceCloseConnections: false
+    forceCloseConnections: false,
   })
 
   fastify.get('/', async (req, reply) => {
@@ -51,14 +51,14 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
   await fastify.listen({ port: 0 })
 
   const instance = new Client('http://localhost:' + fastify.server.address().port, {
-    pipelining: 2
+    pipelining: 2,
   })
 
   const responses = await Promise.allSettled([
     instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' })
+    instance.request({ path: '/', method: 'GET' }),
   ])
 
   t.equal(responses[0].status, 'fulfilled')

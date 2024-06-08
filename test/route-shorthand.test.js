@@ -23,7 +23,7 @@ test('route-shorthand', t => {
         t.teardown(() => { fastify.close() })
         sget({
           method,
-          url: 'http://localhost:' + fastify.server.address().port
+          url: 'http://localhost:' + fastify.server.address().port,
         }, (err, response, body) => {
           t.error(err)
           t.equal(response.statusCode, 200)
@@ -47,7 +47,7 @@ test('route-shorthand', t => {
         currentMethod = method
         await new Promise(resolve => sget({
           method,
-          url: 'http://localhost:' + fastify.server.address().port
+          url: 'http://localhost:' + fastify.server.address().port,
         }, (err, response, body) => {
           t.error(err)
           t.equal(response.statusCode, 200)

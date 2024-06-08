@@ -18,7 +18,7 @@ type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof
   RouteGenericReply extends HttpCodesReplyType & Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never> ?
     Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
       CodeToReplyKey<Code> extends keyof RouteGenericReply ? RouteGenericReply[CodeToReplyKey<Code>] : unknown :
-    RouteGenericReply;
+    RouteGenericReply
 
 export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
   SchemaCompiler extends FastifySchema = FastifySchema,
@@ -69,11 +69,11 @@ export interface FastifyReply<
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serialize(payload: any): string | ArrayBuffer | Buffer;
   // Serialization Methods
-  getSerializationFunction(httpStatus: string, contentType?: string): ((payload: {[key: string]: unknown}) => string) | undefined;
-  getSerializationFunction(schema: {[key: string]: unknown}): ((payload: {[key: string]: unknown}) => string) | undefined;
-  compileSerializationSchema(schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): (payload: {[key: string]: unknown}) => string;
-  serializeInput(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string, contentType?: string): string;
-  serializeInput(input: {[key: string]: unknown}, httpStatus: string, contentType?: string): unknown;
+  getSerializationFunction(httpStatus: string, contentType?: string): ((payload: { [key: string]: unknown }) => string) | undefined;
+  getSerializationFunction(schema: { [key: string]: unknown }): ((payload: { [key: string]: unknown }) => string) | undefined;
+  compileSerializationSchema(schema: { [key: string]: unknown }, httpStatus?: string, contentType?: string): (payload: { [key: string]: unknown }) => string;
+  serializeInput(input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string, contentType?: string): string;
+  serializeInput(input: { [key: string]: unknown }, httpStatus: string, contentType?: string): unknown;
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
   trailer: (
     key: string,

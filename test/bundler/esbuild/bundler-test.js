@@ -12,7 +12,7 @@ test('Bundled package should work', (t) => {
     fastifySuccess.inject(
       {
         method: 'GET',
-        url: '/'
+        url: '/',
       },
       (error, res) => {
         t.error(error)

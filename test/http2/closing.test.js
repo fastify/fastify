@@ -15,7 +15,7 @@ t.test('http/2 request while fastify closing', t => {
   let fastify
   try {
     fastify = Fastify({
-      http2: true
+      http2: true,
     })
     t.pass('http2 successfully loaded')
   } catch (e) {
@@ -33,7 +33,7 @@ t.test('http/2 request while fastify closing', t => {
       const session = http2.connect(url, function () {
         this.request({
           ':method': 'GET',
-          ':path': '/'
+          ':path': '/',
         }).on('response', headers => {
           t.equal(headers[':status'], 503)
           t.end()
@@ -62,7 +62,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
   try {
     fastify = Fastify({
       http2: true,
-      return503OnClosing: false
+      return503OnClosing: false,
     })
     t.pass('http2 successfully loaded')
   } catch (e) {
@@ -80,7 +80,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
       const session = http2.connect(url, function () {
         this.request({
           ':method': 'GET',
-          ':path': '/'
+          ':path': '/',
         }).on('response', headers => {
           t.equal(headers[':status'], 200)
           t.end()
@@ -107,7 +107,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
 t.test('http/2 closes successfully with async await', async t => {
   const fastify = Fastify({
     http2SessionTimeout: 100,
-    http2: true
+    http2: true,
   })
 
   await fastify.listen({ port: 0 })
@@ -125,8 +125,8 @@ t.test('https/2 closes successfully with async await', async t => {
     http2: true,
     https: {
       key: global.context.key,
-      cert: global.context.cert
-    }
+      cert: global.context.cert,
+    },
   })
 
   await fastify.listen({ port: 0 })
@@ -144,7 +144,7 @@ t.test('http/2 server side session emits a timeout event', async t => {
 
   const fastify = Fastify({
     http2SessionTimeout: 100,
-    http2: true
+    http2: true,
   })
 
   fastify.get('/', async (req) => {
@@ -158,7 +158,7 @@ t.test('http/2 server side session emits a timeout event', async t => {
   const session = await connect(url)
   const req = session.request({
     ':method': 'GET',
-    ':path': '/'
+    ':path': '/',
   }).end()
 
   const [headers] = await once(req, 'response')

@@ -54,7 +54,7 @@ test('diagnostics channel async events fire in expected order', t => {
     handler: async function (req, reply) {
       setImmediate(() => reply.send({ hello: 'world' }))
       return reply
-    }
+    },
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -64,7 +64,7 @@ test('diagnostics channel async events fire in expected order', t => {
 
     sget({
       method: 'GET',
-      url: getServerUrl(fastify) + '/'
+      url: getServerUrl(fastify) + '/',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

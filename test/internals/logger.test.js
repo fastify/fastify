@@ -35,7 +35,7 @@ test('The logger should add a unique id for every request', t => {
   function checkId (done) {
     fastify.inject({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -60,8 +60,8 @@ test('The logger should not reuse request id header for req.id', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Request-Id': 'request-id-1'
-      }
+        'Request-Id': 'request-id-1',
+      },
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -75,7 +75,7 @@ test('The logger should not reuse request id header for req.id', t => {
 
 test('The logger should reuse request id header for req.id if requestIdHeader is set', t => {
   const fastify = Fastify({
-    requestIdHeader: 'request-id'
+    requestIdHeader: 'request-id',
   })
   fastify.get('/', (req, reply) => {
     t.ok(req.id)
@@ -89,8 +89,8 @@ test('The logger should reuse request id header for req.id if requestIdHeader is
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Request-Id': 'request-id-1'
-      }
+        'Request-Id': 'request-id-1',
+      },
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -133,8 +133,8 @@ test('The logger should error if both stream and file destination are given', t 
       logger: {
         level: 'info',
         stream,
-        file: '/test'
-      }
+        file: '/test',
+      },
     })
   } catch (err) {
     t.equal(err.code, 'FST_ERR_LOG_INVALID_DESTINATION')
@@ -149,7 +149,7 @@ test('The serializer prevent fails if the request socket is undefined', t => {
     method: 'GET',
     url: '/',
     socket: undefined,
-    headers: {}
+    headers: {},
   })
 
   t.same(serialized, {
@@ -158,6 +158,6 @@ test('The serializer prevent fails if the request socket is undefined', t => {
     version: undefined,
     host: undefined,
     remoteAddress: undefined,
-    remotePort: undefined
+    remotePort: undefined,
   })
 })

@@ -43,7 +43,7 @@ test('localhost onListen should be called in order', t => {
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -63,7 +63,7 @@ test('localhost async onListen should be called in order', async t => {
 
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
   t.equal(order, 2, 'the onListen hooks are awaited')
 })
@@ -76,8 +76,8 @@ test('localhost onListen sync should log errors as warnings and continue /1', as
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -108,7 +108,7 @@ test('localhost onListen sync should log errors as warnings and continue /1', as
 
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -119,8 +119,8 @@ test('localhost onListen sync should log errors as warnings and continue /2', t 
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -152,7 +152,7 @@ test('localhost onListen sync should log errors as warnings and continue /2', t 
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -163,8 +163,8 @@ test('localhost onListen async should log errors as warnings and continue', asyn
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -189,7 +189,7 @@ test('localhost onListen async should log errors as warnings and continue', asyn
 
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -222,7 +222,7 @@ test('localhost Register onListen hook after a plugin inside a plugin', t => {
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -233,8 +233,8 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -268,7 +268,7 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -308,7 +308,7 @@ test('localhost onListen encapsulation should be called in order', async t => {
   })
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -328,7 +328,7 @@ test('localhost onListen encapsulation with only nested hook', async t => {
 
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -355,7 +355,7 @@ test('localhost onListen peer encapsulations with only nested hooks', async t =>
 
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -366,8 +366,8 @@ test('localhost onListen encapsulation should be called in order and should log 
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -401,7 +401,7 @@ test('localhost onListen encapsulation should be called in order and should log 
   })
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -424,7 +424,7 @@ test('non-localhost onListen should be called in order', t => {
   })
   fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -444,7 +444,7 @@ test('non-localhost async onListen should be called in order', async t => {
 
   await fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -455,8 +455,8 @@ test('non-localhost sync onListen should log errors as warnings and continue', t
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -484,7 +484,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', t
 
   fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -495,8 +495,8 @@ test('non-localhost async onListen should log errors as warnings and continue', 
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -525,7 +525,7 @@ test('non-localhost async onListen should log errors as warnings and continue', 
 
   await fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -558,7 +558,7 @@ test('non-localhost Register onListen hook after a plugin inside a plugin', t =>
 
   fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -569,8 +569,8 @@ test('non-localhost Register onListen hook after a plugin inside a plugin should
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -604,7 +604,7 @@ test('non-localhost Register onListen hook after a plugin inside a plugin should
 
   fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -636,7 +636,7 @@ test('non-localhost onListen encapsulation should be called in order', t => {
   })
   fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -647,8 +647,8 @@ test('non-localhost onListen encapsulation should be called in order and should 
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -683,7 +683,7 @@ test('non-localhost onListen encapsulation should be called in order and should 
   })
   fastify.listen({
     host: '::1',
-    port: 0
+    port: 0,
   })
 })
 
@@ -736,8 +736,8 @@ test('onListen localhost sync with callback should log errors as warnings and co
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -777,8 +777,8 @@ test('onListen localhost async with callback should log errors as warnings and c
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -924,8 +924,8 @@ test('onListen non-localhost sync with callback should log errors as warnings an
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -968,8 +968,8 @@ test('onListen non-localhost async with callback should log errors as warnings a
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -1083,7 +1083,7 @@ test('onListen sync should work if user does not pass done', t => {
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -1103,7 +1103,7 @@ test('async onListen does not need to be awaited', t => {
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })
 
@@ -1120,7 +1120,7 @@ test('onListen hooks do not block /1', t => {
 
   fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   }, err => {
     t.error(err)
   })
@@ -1138,6 +1138,6 @@ test('onListen hooks do not block /2', async t => {
 
   await fastify.listen({
     host: 'localhost',
-    port: 0
+    port: 0,
   })
 })

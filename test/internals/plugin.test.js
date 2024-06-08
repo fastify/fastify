@@ -62,8 +62,8 @@ test('checkDecorators should check if the given decorator is present in the inst
     decorators: {
       fastify: ['plugin'],
       reply: ['plugin'],
-      request: ['plugin']
-    }
+      request: ['plugin'],
+    },
   }
 
   function context () {}
@@ -88,8 +88,8 @@ test('checkDecorators should check if the given decorator is present in the inst
     decorators: {
       fastify: ['plugin'],
       reply: ['plugin'],
-      request: ['plugin']
-    }
+      request: ['plugin'],
+    },
   }
 
   function context () {}
@@ -111,7 +111,7 @@ test('checkDecorators should accept optional decorators', t => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
-    decorators: { }
+    decorators: { },
   }
 
   function context () {}
@@ -133,7 +133,7 @@ test('checkDependencies should check if the given dependency is present in the i
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
-    dependencies: ['plugin']
+    dependencies: ['plugin'],
   }
 
   function context () {}
@@ -154,7 +154,7 @@ test('checkDependencies should check if the given dependency is present in the i
 
   fn[Symbol.for('plugin-meta')] = {
     name: 'test-plugin',
-    dependencies: ['plugin']
+    dependencies: ['plugin'],
   }
 
   function context () {}

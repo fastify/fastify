@@ -9,8 +9,8 @@ const schema = {
   schema: { },
   config: {
     value1: 'foo',
-    value2: true
-  }
+    value2: true,
+  },
 }
 
 function handler (req, reply) {
@@ -23,7 +23,7 @@ test('config', t => {
 
   fastify.get('/get', {
     schema: schema.schema,
-    config: Object.assign({}, schema.config)
+    config: Object.assign({}, schema.config),
   }, handler)
 
   fastify.route({
@@ -31,19 +31,19 @@ test('config', t => {
     url: '/route',
     schema: schema.schema,
     handler,
-    config: Object.assign({}, schema.config)
+    config: Object.assign({}, schema.config),
   })
 
   fastify.route({
     method: 'GET',
     url: '/no-config',
     schema: schema.schema,
-    handler
+    handler,
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/get'
+    url: '/get',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -52,7 +52,7 @@ test('config', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/route'
+    url: '/route',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -61,7 +61,7 @@ test('config', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/no-config'
+    url: '/no-config',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -75,7 +75,7 @@ test('config with exposeHeadRoutes', t => {
 
   fastify.get('/get', {
     schema: schema.schema,
-    config: Object.assign({}, schema.config)
+    config: Object.assign({}, schema.config),
   }, handler)
 
   fastify.route({
@@ -83,19 +83,19 @@ test('config with exposeHeadRoutes', t => {
     url: '/route',
     schema: schema.schema,
     handler,
-    config: Object.assign({}, schema.config)
+    config: Object.assign({}, schema.config),
   })
 
   fastify.route({
     method: 'GET',
     url: '/no-config',
     schema: schema.schema,
-    handler
+    handler,
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/get'
+    url: '/get',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -104,7 +104,7 @@ test('config with exposeHeadRoutes', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/route'
+    url: '/route',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -113,7 +113,7 @@ test('config with exposeHeadRoutes', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/no-config'
+    url: '/no-config',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -127,7 +127,7 @@ test('config without exposeHeadRoutes', t => {
 
   fastify.get('/get', {
     schema: schema.schema,
-    config: Object.assign({}, schema.config)
+    config: Object.assign({}, schema.config),
   }, handler)
 
   fastify.route({
@@ -135,19 +135,19 @@ test('config without exposeHeadRoutes', t => {
     url: '/route',
     schema: schema.schema,
     handler,
-    config: Object.assign({}, schema.config)
+    config: Object.assign({}, schema.config),
   })
 
   fastify.route({
     method: 'GET',
     url: '/no-config',
     schema: schema.schema,
-    handler
+    handler,
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/get'
+    url: '/get',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -156,7 +156,7 @@ test('config without exposeHeadRoutes', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/route'
+    url: '/route',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -165,7 +165,7 @@ test('config without exposeHeadRoutes', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/no-config'
+    url: '/no-config',
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)

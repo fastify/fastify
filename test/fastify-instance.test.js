@@ -8,7 +8,7 @@ const os = require('node:os')
 const {
   kOptions,
   kErrorHandler,
-  kChildLoggerFactory
+  kChildLoggerFactory,
 } = require('../lib/symbols')
 
 test('root fastify instance is an object', t => {
@@ -21,15 +21,15 @@ test('fastify instance should contains ajv options', t => {
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        nullable: false
-      }
-    }
+        nullable: false,
+      },
+    },
   })
   t.same(fastify[kOptions].ajv, {
     customOptions: {
-      nullable: false
+      nullable: false,
     },
-    plugins: []
+    plugins: [],
   })
 })
 
@@ -38,16 +38,16 @@ test('fastify instance should contains ajv options.plugins nested arrays', t => 
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        nullable: false
+        nullable: false,
       },
-      plugins: [[]]
-    }
+      plugins: [[]],
+    },
   })
   t.same(fastify[kOptions].ajv, {
     customOptions: {
-      nullable: false
+      nullable: false,
     },
-    plugins: [[]]
+    plugins: [[]],
   })
 })
 
@@ -55,8 +55,8 @@ test('fastify instance get invalid ajv options', t => {
   t.plan(1)
   t.throws(() => Fastify({
     ajv: {
-      customOptions: 8
-    }
+      customOptions: 8,
+    },
   }))
 })
 
@@ -65,8 +65,8 @@ test('fastify instance get invalid ajv options.plugins', t => {
   t.throws(() => Fastify({
     ajv: {
       customOptions: {},
-      plugins: 8
-    }
+      plugins: 8,
+    },
   }))
 })
 

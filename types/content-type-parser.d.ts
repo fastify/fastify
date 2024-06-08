@@ -15,7 +15,7 @@ export type FastifyBodyParser<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > = ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, rawBody: RawBody, done: ContentTypeParserDoneFunction) => void)
 | ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, rawBody: RawBody) => Promise<any>)
 
@@ -27,7 +27,7 @@ export type FastifyContentTypeParser<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > = ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, payload: RawRequest) => Promise<any>)
 | ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, payload: RawRequest, done: ContentTypeParserDoneFunction) => void)
 
@@ -39,7 +39,7 @@ export interface AddContentTypeParser<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     contentType: string | string[] | RegExp,

@@ -20,11 +20,11 @@ test('default 400 on request error', t => {
     method: 'POST',
     url: '/',
     simulate: {
-      error: true
+      error: true,
     },
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -32,7 +32,7 @@ test('default 400 on request error', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -59,11 +59,11 @@ test('default 400 on request error with custom error handler', t => {
     method: 'POST',
     url: '/',
     simulate: {
-      error: true
+      error: true,
     },
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -71,7 +71,7 @@ test('default 400 on request error with custom error handler', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -90,9 +90,9 @@ test('default clientError handler ignores ECONNRESET', t => {
       stream: {
         write () {
           logs += JSON.stringify(arguments)
-        }
-      }
-    }
+        },
+      },
+    },
   })
 
   fastify.get('/', (request, reply) => {
@@ -134,7 +134,7 @@ test('default clientError handler ignores sockets in destroyed state', t => {
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100
+    keepAliveTimeout: 100,
   })
   fastify.server.on('clientError', () => {
     // this handler is called after default handler, so we can make sure end was not called
@@ -147,7 +147,7 @@ test('default clientError handler ignores sockets in destroyed state', t => {
     },
     destroy () {
       t.fail('destroy should not be called')
-    }
+    },
   })
 })
 
@@ -156,7 +156,7 @@ test('default clientError handler destroys sockets in writable state', t => {
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100
+    keepAliveTimeout: 100,
   })
 
   fastify.server.emit('clientError', new Error(), {
@@ -171,7 +171,7 @@ test('default clientError handler destroys sockets in writable state', t => {
     },
     write (response) {
       t.match(response, /^HTTP\/1.1 400 Bad Request/)
-    }
+    },
   })
 })
 
@@ -180,7 +180,7 @@ test('default clientError handler destroys http sockets in non-writable state', 
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100
+    keepAliveTimeout: 100,
   })
 
   fastify.server.emit('clientError', new Error(), {
@@ -194,7 +194,7 @@ test('default clientError handler destroys http sockets in non-writable state', 
     },
     write (response) {
       t.fail('write should not be called')
-    }
+    },
   })
 })
 
@@ -219,11 +219,11 @@ test('error handler binding', t => {
     method: 'POST',
     url: '/',
     simulate: {
-      error: true
+      error: true,
     },
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -231,7 +231,7 @@ test('error handler binding', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -261,11 +261,11 @@ test('encapsulated error handler binding', t => {
     method: 'POST',
     url: '/',
     simulate: {
-      error: true
+      error: true,
     },
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -273,7 +273,7 @@ test('encapsulated error handler binding', t => {
     t.same(res.json(), {
       error: 'Bad Request',
       message: 'Simulated',
-      statusCode: 400
+      statusCode: 400,
     })
     t.equal(fastify.hello, undefined)
   })
@@ -286,7 +286,7 @@ test('default clientError replies with bad request on reused keep-alive connecti
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100
+    keepAliveTimeout: 100,
   })
 
   fastify.get('/', (request, reply) => {
@@ -344,7 +344,7 @@ test('request.routeOptions should be immutable', t => {
   }
   fastify.post('/', {
     bodyLimit: 1000,
-    handler
+    handler,
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
@@ -355,7 +355,7 @@ test('request.routeOptions should be immutable', t => {
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
       body: [],
-      json: true
+      json: true,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -374,7 +374,7 @@ test('test request.routeOptions.version', t => {
     handler: function (request, reply) {
       t.equal('1.2.0', request.routeOptions.version)
       reply.send({})
-    }
+    },
   })
 
   fastify.route({
@@ -383,7 +383,7 @@ test('test request.routeOptions.version', t => {
     handler: function (request, reply) {
       t.equal(undefined, request.routeOptions.version)
       reply.send({})
-    }
+    },
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
@@ -394,7 +394,7 @@ test('test request.routeOptions.version', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/version',
       headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
       body: [],
-      json: true
+      json: true,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -405,7 +405,7 @@ test('test request.routeOptions.version', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
       headers: { 'Content-Type': 'application/json' },
       body: [],
-      json: true
+      json: true,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

@@ -17,7 +17,7 @@ t.test('logger options', (t) => {
   t.test('logger can be silenced', (t) => {
     t.plan(17)
     const fastify = Fastify({
-      logger: false
+      logger: false,
     })
     t.teardown(fastify.close.bind(fastify))
     t.ok(fastify.log)
@@ -51,7 +51,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -97,7 +97,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -133,7 +133,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -195,7 +195,7 @@ t.test('logger options', (t) => {
 
     const loggerInstance = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -254,15 +254,15 @@ t.test('logger options', (t) => {
 
     const loggerInstance = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.register(function (instance, opts, done) {
       instance.get('/', {
         logSerializers: {
-          test: value => 'Z' + value // should override
-        }
+          test: value => 'Z' + value, // should override
+        },
       }, (req, reply) => {
         req.log.info({ test: 'Hello' })
         reply.send({ hello: 'world' })
@@ -292,15 +292,15 @@ t.test('logger options', (t) => {
 
     const loggerInstance = pino({ level: 'info' }, stream)
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
     fastify.register(function (instance, opts, done) {
       instance.register(context1, {
         logSerializers: {
-          test: value => 'Z' + value // should override
-        }
+          test: value => 'Z' + value, // should override
+        },
       })
       done()
     }, { logSerializers: { test: value => 'X' + value } })
@@ -336,7 +336,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'info' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -372,7 +372,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'warn' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -407,7 +407,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'warn' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -447,7 +447,7 @@ t.test('logger options', (t) => {
     const loggerInstance = pino({ level: 'error' }, stream)
 
     const fastify = Fastify({
-      loggerInstance
+      loggerInstance,
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -484,7 +484,7 @@ t.test('logger options', (t) => {
   t.test('should pass when using unWritable props in the logger option', (t) => {
     t.plan(8)
     const fastify = Fastify({
-      logger: Object.defineProperty({}, 'level', { value: 'info' })
+      logger: Object.defineProperty({}, 'level', { value: 'info' }),
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -531,9 +531,9 @@ t.test('logger options', (t) => {
       Fastify({
         logger: {
           stream: loggerStream,
-          level: 'info'
+          level: 'info',
         },
-        loggerInstance
+        loggerInstance,
       })
     } catch (err) {
       t.ok(err)
@@ -548,8 +548,8 @@ t.test('logger options', (t) => {
     const fastify = Fastify({
       logger: {
         stream: loggerStream,
-        level: 'error'
-      }
+        level: 'error',
+      },
     })
     t.teardown(fastify.close.bind(fastify))
     fastify.get('/hello', (req, reply) => {

@@ -8,14 +8,14 @@ const Schema = require('fluent-json-schema')
 
 const customSchemaCompilers = {
   body: new AJV({
-    coerceTypes: false
+    coerceTypes: false,
   }),
   params: new AJV({
-    coerceTypes: true
+    coerceTypes: true,
   }),
   querystring: new AJV({
-    coerceTypes: true
-  })
+    coerceTypes: true,
+  }),
 }
 
 const customValidatorCompiler = req => {
@@ -36,19 +36,19 @@ const schemaA = {
   $id: 'urn:schema:foo',
   type: 'object',
   definitions: {
-    foo: { type: 'integer' }
+    foo: { type: 'integer' },
   },
   properties: {
-    foo: { $ref: '#/definitions/foo' }
-  }
+    foo: { $ref: '#/definitions/foo' },
+  },
 }
 const schemaBRefToA = {
   $id: 'urn:schema:response',
   type: 'object',
   required: ['foo'],
   properties: {
-    foo: { $ref: 'urn:schema:foo#/definitions/foo' }
-  }
+    foo: { $ref: 'urn:schema:foo#/definitions/foo' },
+  },
 }
 
 const schemaCRefToB = {
@@ -56,17 +56,17 @@ const schemaCRefToB = {
   type: 'object',
   required: ['foo'],
   properties: {
-    foo: { $ref: 'urn:schema:response#/properties/foo' }
-  }
+    foo: { $ref: 'urn:schema:response#/properties/foo' },
+  },
 }
 
 const schemaArtist = {
   type: 'object',
   properties: {
     name: { type: 'string' },
-    work: { type: 'string' }
+    work: { type: 'string' },
   },
-  required: ['name', 'work']
+  required: ['name', 'work'],
 }
 
 test('Basic validation test', t => {
@@ -75,8 +75,8 @@ test('Basic validation test', t => {
   const fastify = Fastify()
   fastify.post('/', {
     schema: {
-      body: schemaArtist
-    }
+      body: schemaArtist,
+    },
   }, function (req, reply) {
     reply.code(200).send(req.body.name)
   })
@@ -85,9 +85,9 @@ test('Basic validation test', t => {
     method: 'POST',
     payload: {
       name: 'michelangelo',
-      work: 'sculptor, painter, architect and poet'
+      work: 'sculptor, painter, architect and poet',
     },
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.same(res.payload, 'michelangelo')
@@ -97,7 +97,7 @@ test('Basic validation test', t => {
   fastify.inject({
     method: 'POST',
     payload: { name: 'michelangelo' },
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
@@ -127,15 +127,15 @@ test('External AJV instance', t => {
     schema: {
       body: schemaCRefToB,
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
-      }
-    }
+        '2xx': ajv.getSchema('urn:schema:response').schema,
+      },
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { foo: 42 }
+    payload: { foo: 42 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -144,7 +144,7 @@ test('External AJV instance', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { foo: 'not a number' }
+    payload: { foo: 'not a number' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -172,8 +172,8 @@ test('Encapsulation', t => {
     instance.post('/one', {
       handler (req, reply) { reply.send({ foo: 'one' }) },
       schema: {
-        body: ajv.getSchema('urn:schema:response').schema
-      }
+        body: ajv.getSchema('urn:schema:response').schema,
+      },
     })
 
     instance.register((instance, opts, done) => {
@@ -183,8 +183,8 @@ test('Encapsulation', t => {
           reply.send({ foo: 'two' })
         },
         schema: {
-          body: ajv.getSchema('urn:schema:response').schema
-        }
+          body: ajv.getSchema('urn:schema:response').schema,
+        },
       })
 
       const anotherValidator = ({ schema, method, url, httpPart }) => {
@@ -197,8 +197,8 @@ test('Encapsulation', t => {
           reply.send({ foo: 'three' })
         },
         schema: {
-          body: ajv.getSchema('urn:schema:response').schema
-        }
+          body: ajv.getSchema('urn:schema:response').schema,
+        },
       })
       done()
     })
@@ -216,7 +216,7 @@ test('Encapsulation', t => {
   fastify.inject({
     method: 'POST',
     url: '/one',
-    payload: { foo: 1 }
+    payload: { foo: 1 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -226,7 +226,7 @@ test('Encapsulation', t => {
   fastify.inject({
     method: 'POST',
     url: '/one',
-    payload: { wrongFoo: 'bar' }
+    payload: { wrongFoo: 'bar' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -235,7 +235,7 @@ test('Encapsulation', t => {
   fastify.inject({
     method: 'POST',
     url: '/two',
-    payload: { foo: 2 }
+    payload: { foo: 2 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -245,7 +245,7 @@ test('Encapsulation', t => {
   fastify.inject({
     method: 'POST',
     url: '/two',
-    payload: { wrongFoo: 'bar' }
+    payload: { wrongFoo: 'bar' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -254,7 +254,7 @@ test('Encapsulation', t => {
   fastify.inject({
     method: 'POST',
     url: '/three',
-    payload: { wrongFoo: 'but works' }
+    payload: { wrongFoo: 'but works' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -264,7 +264,7 @@ test('Encapsulation', t => {
   fastify.inject({
     method: 'POST',
     url: '/clean',
-    payload: { wrongFoo: 'bar' }
+    payload: { wrongFoo: 'bar' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -296,15 +296,15 @@ test('Triple $ref with a simple $id', t => {
     schema: {
       body: ajv.getSchema('urn:schema:request').schema,
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
-      }
-    }
+        '2xx': ajv.getSchema('urn:schema:response').schema,
+      },
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { foo: 43 }
+    payload: { foo: 43 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -314,7 +314,7 @@ test('Triple $ref with a simple $id', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { fool: 'bar' }
+    payload: { fool: 'bar' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -334,11 +334,11 @@ test('Extending schema', t => {
         type: 'object',
         properties: {
           city: { type: 'string' },
-          state: { type: 'string' }
+          state: { type: 'string' },
         },
-        required: ['city', 'state']
-      }
-    }
+        required: ['city', 'state'],
+      },
+    },
   })
 
   fastify.post('/', {
@@ -354,13 +354,13 @@ test('Extending schema', t => {
               {
                 type: 'object',
                 properties: { type: { enum: ['residential', 'business'] } },
-                required: ['type']
-              }
-            ]
-          }
-        }
-      }
-    }
+                required: ['type'],
+              },
+            ],
+          },
+        },
+      },
+    },
   })
 
   fastify.inject({
@@ -369,9 +369,9 @@ test('Extending schema', t => {
     payload: {
       shippingAddress: {
         city: 'Forlì',
-        state: 'FC'
-      }
-    }
+        state: 'FC',
+      },
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -384,9 +384,9 @@ test('Extending schema', t => {
       shippingAddress: {
         city: 'Forlì',
         state: 'FC',
-        type: 'business'
-      }
-    }
+        type: 'business',
+      },
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -401,13 +401,13 @@ test('Should work with nested ids', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' }
-    }
+      id: { type: 'number' },
+    },
   })
 
   fastify.addSchema({
     $id: 'greetings',
-    type: 'string'
+    type: 'string',
   })
 
   fastify.post('/:id', {
@@ -417,18 +417,18 @@ test('Should work with nested ids', t => {
       body: {
         type: 'object',
         properties: {
-          hello: { $ref: 'greetings#' }
-        }
-      }
-    }
+          hello: { $ref: 'greetings#' },
+        },
+      },
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/123',
     payload: {
-      hello: 'world'
-    }
+      hello: 'world',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -439,8 +439,8 @@ test('Should work with nested ids', t => {
     method: 'POST',
     url: '/abc',
     payload: {
-      hello: 'world'
-    }
+      hello: 'world',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -456,31 +456,31 @@ test('Use the same schema across multiple routes', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' }
-    }
+      id: { type: 'number' },
+    },
   })
 
   fastify.get('/first/:id', {
     handler (req, reply) { reply.send(typeof req.params.id) },
     schema: {
-      params: { $ref: 'test#' }
-    }
+      params: { $ref: 'test#' },
+    },
   })
 
   fastify.get('/second/:id', {
     handler (req, reply) { reply.send(typeof req.params.id) },
     schema: {
-      params: { $ref: 'test#' }
-    }
+      params: { $ref: 'test#' },
+    },
   })
 
   ;[
     '/first/123',
-    '/second/123'
+    '/second/123',
   ].forEach(url => {
     fastify.inject({
       url,
-      method: 'GET'
+      method: 'GET',
     }, (err, res) => {
       t.error(err)
       t.equal(res.payload, 'number')
@@ -489,11 +489,11 @@ test('Use the same schema across multiple routes', t => {
 
   ;[
     '/first/abc',
-    '/second/abc'
+    '/second/abc',
   ].forEach(url => {
     fastify.inject({
       url,
-      method: 'GET'
+      method: 'GET',
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 400)
@@ -511,21 +511,21 @@ test('JSON Schema validation keywords', t => {
     properties: {
       ip: {
         type: 'string',
-        format: 'ipv4'
-      }
-    }
+        format: 'ipv4',
+      },
+    },
   })
 
   fastify.get('/:ip', {
     handler (req, reply) { reply.send(typeof req.params.ip) },
     schema: {
-      params: { $ref: 'test#' }
-    }
+      params: { $ref: 'test#' },
+    },
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/127.0.0.1'
+    url: '/127.0.0.1',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -534,7 +534,7 @@ test('JSON Schema validation keywords', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/localhost'
+    url: '/localhost',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -542,7 +542,7 @@ test('JSON Schema validation keywords', t => {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'params/ip must match format "ipv4"'
+      message: 'params/ip must match format "ipv4"',
     })
   })
 })
@@ -557,30 +557,30 @@ test('Nested id calls', t => {
     properties: {
       ip: {
         type: 'string',
-        format: 'ipv4'
-      }
-    }
+        format: 'ipv4',
+      },
+    },
   })
 
   fastify.addSchema({
     $id: 'hello',
     type: 'object',
     properties: {
-      host: { $ref: 'test#' }
-    }
+      host: { $ref: 'test#' },
+    },
   })
 
   fastify.post('/', {
     handler (req, reply) { reply.send(typeof req.body.host.ip) },
     schema: {
-      body: { $ref: 'hello#' }
-    }
+      body: { $ref: 'hello#' },
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { host: { ip: '127.0.0.1' } }
+    payload: { host: { ip: '127.0.0.1' } },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -590,7 +590,7 @@ test('Nested id calls', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { host: { ip: 'localhost' } }
+    payload: { host: { ip: 'localhost' } },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -598,7 +598,7 @@ test('Nested id calls', t => {
       error: 'Bad Request',
       message: 'body/host/ip must match format "ipv4"',
       statusCode: 400,
-      code: 'FST_ERR_VALIDATION'
+      code: 'FST_ERR_VALIDATION',
     })
   })
 })
@@ -611,8 +611,8 @@ test('Use the same schema id in different places', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' }
-    }
+      id: { type: 'number' },
+    },
   })
 
   fastify.post('/', {
@@ -620,15 +620,15 @@ test('Use the same schema id in different places', t => {
     schema: {
       body: { $ref: 'test#' },
       response: {
-        200: { $ref: 'test#' }
-      }
-    }
+        200: { $ref: 'test#' },
+      },
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { id: 42 }
+    payload: { id: 42 },
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { id: 21 })
@@ -643,8 +643,8 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     $id: 'http://foo/test',
     type: 'object',
     properties: {
-      id: { type: 'number' }
-    }
+      id: { type: 'number' },
+    },
   })
 
   const body = {
@@ -656,15 +656,15 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { type: 'string' }
-        }
-      }
+          city: { type: 'string' },
+        },
+      },
     },
     required: ['address'],
     properties: {
       test: { $ref: 'http://foo/test#' }, // to external
-      address: { $ref: '#address' } // to local
-    }
+      address: { $ref: '#address' }, // to local
+    },
   }
 
   fastify.post('/', {
@@ -672,9 +672,9 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     schema: {
       body,
       response: {
-        200: { $ref: 'http://foo/test#' }
-      }
-    }
+        200: { $ref: 'http://foo/test#' },
+      },
+    },
   })
 
   const id = Date.now()
@@ -683,8 +683,8 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     url: '/',
     payload: {
       address: { city: 'New Node' },
-      test: { id }
-    }
+      test: { id },
+    },
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { id })
@@ -693,7 +693,7 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { test: { id } }
+    payload: { test: { id } },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -701,7 +701,7 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
       error: 'Bad Request',
       message: "body must have required property 'address'",
       statusCode: 400,
-      code: 'FST_ERR_VALIDATION'
+      code: 'FST_ERR_VALIDATION',
     })
   })
 })
@@ -714,24 +714,24 @@ test('Use items with $ref', t => {
     $id: 'http://example.com/ref-to-external-validator.json',
     type: 'object',
     properties: {
-      hello: { type: 'string' }
-    }
+      hello: { type: 'string' },
+    },
   })
 
   const body = {
     type: 'array',
-    items: { $ref: 'http://example.com/ref-to-external-validator.json#' }
+    items: { $ref: 'http://example.com/ref-to-external-validator.json#' },
   }
 
   fastify.post('/', {
     schema: { body },
-    handler: (_, r) => { r.send('ok') }
+    handler: (_, r) => { r.send('ok') },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: [{ hello: 'world' }]
+    payload: [{ hello: 'world' }],
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, 'ok')
@@ -740,7 +740,7 @@ test('Use items with $ref', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { hello: 'world' }
+    payload: { hello: 'world' },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -755,8 +755,8 @@ test('Use $ref to /definitions', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' }
-    }
+      id: { type: 'number' },
+    },
   })
 
   const body = {
@@ -766,38 +766,38 @@ test('Use $ref to /definitions', t => {
         $id: '#otherId',
         type: 'object',
         properties: {
-          city: { type: 'string' }
-        }
-      }
+          city: { type: 'string' },
+        },
+      },
     },
     properties: {
       test: { $ref: 'test#' },
-      address: { $ref: '#/definitions/address' }
+      address: { $ref: '#/definitions/address' },
     },
-    required: ['address', 'test']
+    required: ['address', 'test'],
   }
 
   fastify.post('/', {
     schema: {
       body,
       response: {
-        200: body
-      }
+        200: body,
+      },
     },
     handler: (req, reply) => {
       req.body.removeThis = 'it should not be serialized'
       reply.send(req.body)
-    }
+    },
   })
 
   const payload = {
     address: { city: 'New Node' },
-    test: { id: Date.now() }
+    test: { id: Date.now() },
   }
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload
+    payload,
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -809,8 +809,8 @@ test('Use $ref to /definitions', t => {
     url: '/',
     payload: {
       address: { city: 'New Node' },
-      test: { id: 'wrong' }
-    }
+      test: { id: 'wrong' },
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -818,7 +818,7 @@ test('Use $ref to /definitions', t => {
       error: 'Bad Request',
       message: 'body/test/id must be number',
       statusCode: 400,
-      code: 'FST_ERR_VALIDATION'
+      code: 'FST_ERR_VALIDATION',
     })
   })
 })
@@ -829,20 +829,20 @@ test('Custom AJV settings - pt1', t => {
 
   fastify.post('/', {
     schema: {
-      body: { num: { type: 'integer' } }
+      body: { num: { type: 'integer' } },
     },
     handler: (req, reply) => {
       t.equal(req.body.num, 12)
       reply.send(req.body)
-    }
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
     payload: {
-      num: '12'
-    }
+      num: '12',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -855,26 +855,26 @@ test('Custom AJV settings - pt2', t => {
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        coerceTypes: false
-      }
-    }
+        coerceTypes: false,
+      },
+    },
   })
 
   fastify.post('/', {
     schema: {
-      body: { num: { type: 'integer' } }
+      body: { num: { type: 'integer' } },
     },
     handler: (req, reply) => {
       t.fail('the handler is not called because the "12" is not coerced to number')
-    }
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
     payload: {
-      num: '12'
-    }
+      num: '12',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -893,22 +893,22 @@ test('Custom AJV settings on different parameters - pt1', t => {
       body: {
         type: 'object',
         properties: {
-          num: { type: 'number' }
+          num: { type: 'number' },
         },
-        required: ['num']
-      }
+        required: ['num'],
+      },
     },
     handler: (req, reply) => {
       t.fail('the handler is not called because the "12" is not coerced to number')
-    }
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/api/42',
     payload: {
-      num: '12'
-    }
+      num: '12',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -926,32 +926,32 @@ test('Custom AJV settings on different parameters - pt2', t => {
       params: {
         type: 'object',
         properties: {
-          id: { type: 'number' }
+          id: { type: 'number' },
         },
-        required: ['id']
+        required: ['id'],
       },
       body: {
         type: 'object',
         properties: {
-          num: { type: 'number' }
+          num: { type: 'number' },
         },
-        required: ['num']
-      }
+        required: ['num'],
+      },
     },
     handler: (req, reply) => {
       t.same(typeof req.params.id, 'number')
       t.same(typeof req.body.num, 'number')
       t.same(req.params.id, 42)
       t.same(req.body.num, 12)
-    }
+    },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/api/42',
     payload: {
-      num: 12
-    }
+      num: 12,
+    },
   })
 })
 
@@ -979,7 +979,7 @@ test("The same $id in route's schema must not overwrite others", t => {
     'email',
     'bio',
     'password',
-    'password_confirm'
+    'password_confirm',
   ])
     .required([
       'username',
@@ -987,29 +987,29 @@ test("The same $id in route's schema must not overwrite others", t => {
       'lastName',
       'email',
       'bio',
-      'password'
+      'password',
     ])
 
   const userPatchSchema = UserSchema.only([
     'firstName',
     'lastName',
-    'bio'
+    'bio',
   ])
 
   fastify
     .patch('/user/:id', {
       schema: { body: userPatchSchema },
-      handler: () => { return 'ok' }
+      handler: () => { return 'ok' },
     })
     .post('/user', {
       schema: { body: userCreateSchema },
-      handler: () => { return 'ok' }
+      handler: () => { return 'ok' },
     })
 
   fastify.inject({
     method: 'POST',
     url: '/user',
-    body: {}
+    body: {},
   }, (err, res) => {
     t.error(err)
     t.same(res.json().message, "body must have required property 'username'")
@@ -1018,7 +1018,7 @@ test("The same $id in route's schema must not overwrite others", t => {
   fastify.inject({
     url: '/user/1',
     method: 'PATCH',
-    body: {}
+    body: {},
   }, (err, res) => {
     t.error(err)
     t.same(res.payload, 'ok')
@@ -1037,8 +1037,8 @@ test('Custom validator compiler should not mutate schema', async t => {
 
   fastify.get('/', {
     schema: {
-      headers: new Headers()
-    }
+      headers: new Headers(),
+    },
   }, () => { })
 
   await fastify.ready()
@@ -1049,7 +1049,7 @@ test('Custom validator builder override by custom validator compiler', async t =
   const ajvDefaults = {
     removeAdditional: true,
     coerceTypes: true,
-    allErrors: true
+    allErrors: true,
   }
   const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
   const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
@@ -1063,23 +1063,23 @@ test('Custom validator builder override by custom validator compiler', async t =
         type: 'object',
         extended_two: true,
         properties: {
-          id: { type: 'number' }
+          id: { type: 'number' },
         },
-        required: ['id']
-      }
+        required: ['id'],
+      },
     },
     handler: (req, _reply) => {
       t.same(typeof req.params.id, 'number')
       t.same(req.params.id, 43)
       return 'ok'
-    }
+    },
   })
 
   await fastify.ready()
 
   const two = await fastify.inject({
     method: 'POST',
-    url: '/two/43'
+    url: '/two/43',
   })
   t.equal(two.statusCode, 200)
 })
@@ -1089,7 +1089,7 @@ test('Custom validator builder override by custom validator compiler in child in
   const ajvDefaults = {
     removeAdditional: true,
     coerceTypes: true,
-    allErrors: true
+    allErrors: true,
   }
   const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
   const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
@@ -1103,16 +1103,16 @@ test('Custom validator builder override by custom validator compiler in child in
           type: 'object',
           extended_two: true,
           properties: {
-            id: { type: 'number' }
+            id: { type: 'number' },
           },
-          required: ['id']
-        }
+          required: ['id'],
+        },
       },
       handler: (req, _reply) => {
         t.same(typeof req.params.id, 'number')
         t.same(req.params.id, 43)
         return 'ok'
-      }
+      },
     })
     done()
   })
@@ -1123,29 +1123,29 @@ test('Custom validator builder override by custom validator compiler in child in
         type: 'object',
         extended_one: true,
         properties: {
-          id: { type: 'number' }
+          id: { type: 'number' },
         },
-        required: ['id']
-      }
+        required: ['id'],
+      },
     },
     handler: (req, _reply) => {
       t.same(typeof req.params.id, 'number')
       t.same(req.params.id, 42)
       return 'ok'
-    }
+    },
   })
 
   await fastify.ready()
 
   const one = await fastify.inject({
     method: 'POST',
-    url: '/one/42'
+    url: '/one/42',
   })
   t.equal(one.statusCode, 200)
 
   const two = await fastify.inject({
     method: 'POST',
-    url: '/two/43'
+    url: '/two/43',
   })
   t.equal(two.statusCode, 200)
 })

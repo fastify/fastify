@@ -9,12 +9,12 @@ const schema = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 }
 
 function result () {

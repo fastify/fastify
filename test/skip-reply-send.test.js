@@ -16,15 +16,15 @@ const lifecycleHooks = [
   'onSend',
   'onTimeout',
   'onResponse',
-  'onError'
+  'onError',
 ]
 
 test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
-      stream
-    }
+      stream,
+    },
   })
 
   stream.on('data', (line) => {
@@ -41,7 +41,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
 
   return app.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }).then((res) => {
     t.equal(res.statusCode, 200)
     t.equal(res.body, 'hello world')
@@ -52,8 +52,8 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
-      stream
-    }
+      stream,
+    },
   })
 
   stream.on('data', (line) => {
@@ -70,7 +70,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
 
   return app.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }).then((res) => {
     t.equal(res.statusCode, 200)
     t.equal(res.body, 'hello world')
@@ -81,8 +81,8 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
-      stream
-    }
+      stream,
+    },
   })
 
   let errorSeen = false
@@ -104,7 +104,7 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
 
   return app.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }).then((res) => {
     t.equal(errorSeen, true)
     t.equal(res.statusCode, 200)
@@ -125,8 +125,8 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream
-        }
+          stream,
+        },
       })
 
       stream.on('data', (line) => {
@@ -159,7 +159,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
 
       return app.inject({
         method: 'GET',
-        url: '/'
+        url: '/',
       }).then((res) => {
         t.equal(res.statusCode, 200)
         t.equal(res.body, `hello from ${hookOrHandler}`)
@@ -170,8 +170,8 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream
-        }
+          stream,
+        },
       })
       t.teardown(() => app.close())
 
@@ -224,8 +224,8 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream
-        }
+          stream,
+        },
       })
       t.teardown(() => app.close())
 
@@ -261,7 +261,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
 
       return Promise.race([
         app.inject({ method: 'GET', url: '/' }),
-        new Promise((resolve, reject) => setTimeout(resolve, 1000))
+        new Promise((resolve, reject) => setTimeout(resolve, 1000)),
       ]).then((err, res) => {
         t.error(err)
         if (hookOrHandler === 'handler') {
@@ -274,8 +274,8 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream
-        }
+          stream,
+        },
       })
 
       let errorSeen = false
@@ -306,7 +306,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
 
       return Promise.race([
         app.inject({ method: 'GET', url: '/' }),
-        new Promise((resolve, reject) => setTimeout(resolve, 1000))
+        new Promise((resolve, reject) => setTimeout(resolve, 1000)),
       ]).then((err, res) => {
         t.error(err)
         t.equal(errorSeen, true)

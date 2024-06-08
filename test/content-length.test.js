@@ -8,7 +8,7 @@ test('default 413 with bodyLimit option', t => {
   t.plan(4)
 
   const fastify = Fastify({
-    bodyLimit: 10
+    bodyLimit: 10,
   })
 
   fastify.post('/', function (req, reply) {
@@ -19,8 +19,8 @@ test('default 413 with bodyLimit option', t => {
     method: 'POST',
     url: '/',
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 413)
@@ -29,7 +29,7 @@ test('default 413 with bodyLimit option', t => {
       error: 'Payload Too Large',
       code: 'FST_ERR_CTP_BODY_TOO_LARGE',
       message: 'Request body is too large',
-      statusCode: 413
+      statusCode: 413,
     })
   })
 })
@@ -47,11 +47,11 @@ test('default 400 with wrong content-length', t => {
     method: 'POST',
     url: '/',
     headers: {
-      'content-length': 20
+      'content-length': 20,
     },
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -60,7 +60,7 @@ test('default 400 with wrong content-length', t => {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
       message: 'Request body size did not match Content-Length',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -69,7 +69,7 @@ test('custom 413 with bodyLimit option', t => {
   t.plan(4)
 
   const fastify = Fastify({
-    bodyLimit: 10
+    bodyLimit: 10,
   })
 
   fastify.post('/', function (req, reply) {
@@ -87,8 +87,8 @@ test('custom 413 with bodyLimit option', t => {
     method: 'POST',
     url: '/',
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 413)
@@ -97,7 +97,7 @@ test('custom 413 with bodyLimit option', t => {
       error: 'Payload Too Large',
       code: 'FST_ERR_CTP_BODY_TOO_LARGE',
       message: 'Request body is too large',
-      statusCode: 413
+      statusCode: 413,
     })
   })
 })
@@ -122,11 +122,11 @@ test('custom 400 with wrong content-length', t => {
     method: 'POST',
     url: '/',
     headers: {
-      'content-length': 20
+      'content-length': 20,
     },
     body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
+      text: '12345678901234567890123456789012345678901234567890',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -135,7 +135,7 @@ test('custom 400 with wrong content-length', t => {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
       message: 'Request body size did not match Content-Length',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -146,14 +146,14 @@ test('#2214 - wrong content-length', t => {
   fastify.get('/', async () => {
     const error = new Error('MY_ERROR_MESSAGE')
     error.headers = {
-      'content-length': 2
+      'content-length': 2,
     }
     throw error
   })
 
   fastify.inject({
     method: 'GET',
-    path: '/'
+    path: '/',
   })
     .then(response => {
       t.equal(response.headers['content-length'], '' + response.rawPayload.length)
@@ -171,14 +171,14 @@ test('#2543 - wrong content-length with errorHandler', t => {
   fastify.get('/', async () => {
     const error = new Error('MY_ERROR_MESSAGE')
     error.headers = {
-      'content-length': 2
+      'content-length': 2,
     }
     throw error
   })
 
   fastify.inject({
     method: 'GET',
-    path: '/'
+    path: '/',
   })
     .then(res => {
       t.equal(res.statusCode, 500)

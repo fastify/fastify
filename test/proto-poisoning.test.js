@@ -22,7 +22,7 @@ test('proto-poisoning error', t => {
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 } }'
+      body: '{ "__proto__": { "a": 42 } }',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -48,7 +48,7 @@ test('proto-poisoning remove', t => {
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 }, "b": 42 }'
+      body: '{ "__proto__": { "a": 42 }, "b": 42 }',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -74,7 +74,7 @@ test('proto-poisoning ignore', t => {
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 }, "b": 42 }'
+      body: '{ "__proto__": { "a": 42 }, "b": 42 }',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -99,7 +99,7 @@ test('constructor-poisoning error (default in v3)', t => {
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
+      body: '{ "constructor": { "prototype": { "foo": "bar" } } }',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -124,7 +124,7 @@ test('constructor-poisoning error', t => {
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
+      body: '{ "constructor": { "prototype": { "foo": "bar" } } }',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -150,7 +150,7 @@ test('constructor-poisoning remove', t => {
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
+      body: '{ "constructor": { "prototype": { "foo": "bar" } } }',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

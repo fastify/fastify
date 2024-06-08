@@ -16,8 +16,8 @@ test('https', (t) => {
     fastify = Fastify({
       https: {
         key: global.context.key,
-        cert: global.context.cert
-      }
+        cert: global.context.cert,
+      },
     })
     t.pass('Key/cert successfully loaded')
   } catch (e) {
@@ -41,7 +41,7 @@ test('https', (t) => {
       sget({
         method: 'GET',
         url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -55,7 +55,7 @@ test('https', (t) => {
       sget({
         method: 'GET',
         url: 'https://localhost:' + fastify.server.address().port + '/proto',
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
       }, (err, response, body) => {
         t.error(err)
         t.same(JSON.parse(body), { proto: 'https' })
@@ -65,8 +65,8 @@ test('https', (t) => {
         url: 'https://localhost:' + fastify.server.address().port + '/proto',
         rejectUnauthorized: false,
         headers: {
-          'x-forwarded-proto': 'lorem'
-        }
+          'x-forwarded-proto': 'lorem',
+        },
       }, (err, response, body) => {
         t.error(err)
         t.same(JSON.parse(body), { proto: 'https' })
@@ -82,8 +82,8 @@ test('https - headers', (t) => {
     fastify = Fastify({
       https: {
         key: global.context.key,
-        cert: global.context.cert
-      }
+        cert: global.context.cert,
+      },
     })
     t.pass('Key/cert successfully loaded')
   } catch (e) {
@@ -104,7 +104,7 @@ test('https - headers', (t) => {
       sget({
         method: 'GET',
         url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -118,10 +118,10 @@ test('https - headers', (t) => {
       sget({
         method: 'GET',
         headers: {
-          host: 'example.com'
+          host: 'example.com',
         },
         url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)

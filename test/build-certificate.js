@@ -33,7 +33,7 @@ function selfCert (opts) {
     { name: 'stateOrProvinceName', value: options.attrs.stateName || 'Georgia' },
     { name: 'localityName', value: options.attrs.locality || 'Atlanta' },
     { name: 'organizationName', value: options.attrs.orgName || 'None' },
-    { shortName: 'OU', value: options.attrs.shortName || 'example' }
+    { shortName: 'OU', value: options.attrs.shortName || 'example' },
   ]
   cert.setSubject(attrs)
   cert.setIssuer(attrs)
@@ -46,7 +46,7 @@ function selfCert (opts) {
       digitalSignature: true,
       nonRepudiation: true,
       keyEncipherment: true,
-      dataEncipherment: true
+      dataEncipherment: true,
     },
     {
       name: 'extKeyUsage',
@@ -54,7 +54,7 @@ function selfCert (opts) {
       clientAuth: true,
       codeSigning: true,
       emailProtection: true,
-      timeStamping: true
+      timeStamping: true,
     },
     {
       name: 'nsCertType',
@@ -64,7 +64,7 @@ function selfCert (opts) {
       objsign: true,
       sslCA: true,
       emailCA: true,
-      objCA: true
+      objCA: true,
     },
     { name: 'subjectKeyIdentifier' },
     {
@@ -78,8 +78,8 @@ function selfCert (opts) {
           .map(i => ({ type: 7 /* IP */, ip: i.address }))
 
         return ips
-      }()))
-    }
+      }())),
+    },
   ])
 
   cert.sign(keys.privateKey)
@@ -87,7 +87,7 @@ function selfCert (opts) {
   return {
     privateKey: forge.pki.privateKeyToPem(keys.privateKey),
     publicKey: forge.pki.publicKeyToPem(keys.publicKey),
-    certificate: forge.pki.certificateToPem(cert)
+    certificate: forge.pki.certificateToPem(cert),
   }
 }
 
@@ -97,11 +97,11 @@ async function buildCertificate () {
   // number of times executing it.
   if (!global.context || !global.context.cert || !global.context.key) {
     const certs = selfCert({
-      expires: new Date(Date.now() + 86400000)
+      expires: new Date(Date.now() + 86400000),
     })
     global.context = {
       cert: certs.certificate,
-      key: certs.privateKey
+      key: certs.privateKey,
     }
   }
 }

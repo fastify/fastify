@@ -11,8 +11,8 @@ test('Example - URI $id', t => {
     $id: 'http://example.com/',
     type: 'object',
     properties: {
-      hello: { type: 'string' }
-    }
+      hello: { type: 'string' },
+    },
   })
 
   fastify.post('/', {
@@ -20,9 +20,9 @@ test('Example - URI $id', t => {
     schema: {
       body: {
         type: 'array',
-        items: { $ref: 'http://example.com#/properties/hello' }
-      }
-    }
+        items: { $ref: 'http://example.com#/properties/hello' },
+      },
+    },
   })
 
   fastify.ready(err => t.error(err))
@@ -35,16 +35,16 @@ test('Example - string $id', t => {
     $id: 'commonSchema',
     type: 'object',
     properties: {
-      hello: { type: 'string' }
-    }
+      hello: { type: 'string' },
+    },
   })
 
   fastify.post('/', {
     handler () { },
     schema: {
       body: { $ref: 'commonSchema#' },
-      headers: { $ref: 'commonSchema#' }
-    }
+      headers: { $ref: 'commonSchema#' },
+    },
   })
 
   fastify.ready(err => t.error(err))
@@ -57,8 +57,8 @@ test('Example - get schema', t => {
     $id: 'schemaId',
     type: 'object',
     properties: {
-      hello: { type: 'string' }
-    }
+      hello: { type: 'string' },
+    },
   })
 
   const mySchemas = fastify.getSchemas()
@@ -101,9 +101,9 @@ test('Example - validation', t => {
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        allowUnionTypes: true
-      }
-    }
+        allowUnionTypes: true,
+      },
+    },
   })
   const handler = () => { }
 
@@ -116,49 +116,49 @@ test('Example - validation', t => {
       requiredKey: {
         type: 'array',
         maxItems: 3,
-        items: { type: 'integer' }
+        items: { type: 'integer' },
       },
       nullableKey: { type: ['number', 'null'] }, // or { type: 'number', nullable: true }
       multipleTypesKey: { type: ['boolean', 'number'] },
       multipleRestrictedTypesKey: {
         oneOf: [
           { type: 'string', maxLength: 5 },
-          { type: 'number', minimum: 10 }
-        ]
+          { type: 'number', minimum: 10 },
+        ],
       },
       enumKey: {
         type: 'string',
-        enum: ['John', 'Foo']
+        enum: ['John', 'Foo'],
       },
       notTypeKey: {
-        not: { type: 'array' }
-      }
-    }
+        not: { type: 'array' },
+      },
+    },
   }
 
   const queryStringJsonSchema = {
     name: { type: 'string' },
-    excitement: { type: 'integer' }
+    excitement: { type: 'integer' },
   }
 
   const paramsJsonSchema = {
     par1: { type: 'string' },
-    par2: { type: 'number' }
+    par2: { type: 'number' },
   }
 
   const headersJsonSchema = {
     type: 'object',
     properties: {
-      'x-foo': { type: 'string' }
+      'x-foo': { type: 'string' },
     },
-    required: ['x-foo']
+    required: ['x-foo'],
   }
 
   const schema = {
     body: bodyJsonSchema,
     querystring: queryStringJsonSchema,
     params: paramsJsonSchema,
-    headers: headersJsonSchema
+    headers: headersJsonSchema,
   }
 
   fastify.post('/the/url', { schema }, handler)
@@ -171,9 +171,9 @@ test('Example - ajv config', t => {
   const fastify = Fastify({
     ajv: {
       plugins: [
-        require('ajv-merge-patch')
-      ]
-    }
+        require('ajv-merge-patch'),
+      ],
+    },
   })
 
   fastify.post('/', {
@@ -185,20 +185,20 @@ test('Example - ajv config', t => {
             type: 'object',
             properties: {
               q: {
-                type: 'string'
-              }
-            }
+                type: 'string',
+              },
+            },
           },
           with: [
             {
               op: 'add',
               path: '/properties/q',
-              value: { type: 'number' }
-            }
-          ]
-        }
-      }
-    }
+              value: { type: 'number' },
+            },
+          ],
+        },
+      },
+    },
   })
 
   fastify.post('/foo', {
@@ -210,16 +210,16 @@ test('Example - ajv config', t => {
             type: 'object',
             properties: {
               q: {
-                type: 'string'
-              }
-            }
+                type: 'string',
+              },
+            },
           },
           with: {
-            required: ['q']
-          }
-        }
-      }
-    }
+            required: ['q'],
+          },
+        },
+      },
+    },
   })
 
   fastify.ready(err => t.error(err))
@@ -234,12 +234,12 @@ test('Example Joi', t => {
   fastify.post('/the/url', {
     schema: {
       body: Joi.object().keys({
-        hello: Joi.string().required()
-      }).required()
+        hello: Joi.string().required(),
+      }).required(),
     },
     validatorCompiler: ({ schema, method, url, httpPart }) => {
       return data => schema.validate(data)
-    }
+    },
   }, handler)
 
   fastify.ready(err => t.error(err))
@@ -256,7 +256,7 @@ test('Example yup', t => {
     strict: false,
     abortEarly: false, // return all errors
     stripUnknown: true, // remove additional properties
-    recursive: true
+    recursive: true,
   }
 
   fastify.post('/the/url', {
@@ -264,9 +264,9 @@ test('Example yup', t => {
       body: yup.object({
         age: yup.number().integer().required(),
         sub: yup.object().shape({
-          name: yup.string().required()
-        }).required()
-      })
+          name: yup.string().required(),
+        }).required(),
+      }),
     },
     validatorCompiler: ({ schema, method, url, httpPart }) => {
       return function (data) {
@@ -278,7 +278,7 @@ test('Example yup', t => {
           return { error: e }
         }
       }
-    }
+    },
   }, handler)
 
   fastify.ready(err => t.error(err))
@@ -295,10 +295,10 @@ test('Example - serialization', t => {
         type: 'object',
         properties: {
           value: { type: 'string' },
-          otherValue: { type: 'boolean' }
-        }
-      }
-    }
+          otherValue: { type: 'boolean' },
+        },
+      },
+    },
   }
 
   fastify.post('/the/url', { schema }, handler)
@@ -316,14 +316,14 @@ test('Example - serialization 2', t => {
         type: 'object',
         properties: {
           value: { type: 'string' },
-          otherValue: { type: 'boolean' }
-        }
+          otherValue: { type: 'boolean' },
+        },
       },
       201: {
         // the contract syntax
-        value: { type: 'string' }
-      }
-    }
+        value: { type: 'string' },
+      },
+    },
   }
 
   fastify.post('/the/url', { schema }, handler)
@@ -346,10 +346,10 @@ test('Example - serializator', t => {
       response: {
         '2xx': {
           id: { type: 'number' },
-          name: { type: 'string' }
-        }
-      }
-    }
+          name: { type: 'string' },
+        },
+      },
+    },
   })
 
   fastify.ready(err => t.error(err))
@@ -368,10 +368,10 @@ test('Example - schemas examples', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { type: 'string' }
-        }
-      }
-    }
+          city: { type: 'string' },
+        },
+      },
+    },
   })
 
   fastify.addSchema({
@@ -381,10 +381,10 @@ test('Example - schemas examples', t => {
       foo: {
         type: 'object',
         properties: {
-          city: { type: 'string' }
-        }
-      }
-    }
+          city: { type: 'string' },
+        },
+      },
+    },
   })
 
   const refToId = {
@@ -394,14 +394,14 @@ test('Example - schemas examples', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { type: 'string' }
-        }
-      }
+          city: { type: 'string' },
+        },
+      },
     },
     properties: {
       home: { $ref: '#address' },
-      work: { $ref: '#address' }
-    }
+      work: { $ref: '#address' },
+    },
   }
 
   const refToDefinitions = {
@@ -411,30 +411,30 @@ test('Example - schemas examples', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { type: 'string' }
-        }
-      }
+          city: { type: 'string' },
+        },
+      },
     },
     properties: {
       home: { $ref: '#/definitions/foo' },
-      work: { $ref: '#/definitions/foo' }
-    }
+      work: { $ref: '#/definitions/foo' },
+    },
   }
 
   const refToSharedSchemaId = {
     type: 'object',
     properties: {
       home: { $ref: 'http://foo/common.json#address' },
-      work: { $ref: 'http://foo/common.json#address' }
-    }
+      work: { $ref: 'http://foo/common.json#address' },
+    },
   }
 
   const refToSharedSchemaDefinitions = {
     type: 'object',
     properties: {
       home: { $ref: 'http://foo/shared.json#/definitions/foo' },
-      work: { $ref: 'http://foo/shared.json#/definitions/foo' }
-    }
+      work: { $ref: 'http://foo/shared.json#/definitions/foo' },
+    },
   }
 
   fastify.post('/', {
@@ -443,8 +443,8 @@ test('Example - schemas examples', t => {
       body: refToId,
       headers: refToDefinitions,
       params: refToSharedSchemaId,
-      query: refToSharedSchemaDefinitions
-    }
+      query: refToSharedSchemaDefinitions,
+    },
 
   })
 
@@ -458,9 +458,9 @@ test('should return custom error messages with ajv-errors', t => {
     ajv: {
       customOptions: { allErrors: true },
       plugins: [
-        require('ajv-errors')
-      ]
-    }
+        require('ajv-errors'),
+      ],
+    },
   })
 
   const schema = {
@@ -472,19 +472,19 @@ test('should return custom error messages with ajv-errors', t => {
         age: {
           type: 'number',
           errorMessage: {
-            type: 'bad age - should be num'
-          }
-        }
+            type: 'bad age - should be num',
+          },
+        },
       },
       required: ['name', 'work'],
       errorMessage: {
         required: {
           name: 'name please',
           work: 'work please',
-          age: 'age please'
-        }
-      }
-    }
+          age: 'age please',
+        },
+      },
+    },
   }
 
   fastify.post('/', { schema }, function (req, reply) {
@@ -495,16 +495,16 @@ test('should return custom error messages with ajv-errors', t => {
     method: 'POST',
     payload: {
       hello: 'salman',
-      age: 'bad'
+      age: 'bad',
     },
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'body/age bad age - should be num, body name please, body work please'
+      message: 'body/age bad age - should be num, body name please, body work please',
     })
     t.equal(res.statusCode, 400)
   })
@@ -516,9 +516,9 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
   const fastify = Fastify({
     ajv: {
       plugins: [
-        require('ajv-formats')
-      ]
-    }
+        require('ajv-formats'),
+      ],
+    },
   })
 
   const schema = {
@@ -526,10 +526,10 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
       type: 'object',
       properties: {
         id: { type: 'string', format: 'uuid' },
-        email: { type: 'string', format: 'email' }
+        email: { type: 'string', format: 'email' },
       },
-      required: ['id', 'email']
-    }
+      required: ['id', 'email'],
+    },
   }
 
   fastify.post('/', { schema }, function (req, reply) {
@@ -540,9 +540,9 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     method: 'POST',
     payload: {
       id: '254381a5-888c-4b41-8116-e3b1a54980bd',
-      email: 'info@fastify.dev'
+      email: 'info@fastify.dev',
     },
-    url: '/'
+    url: '/',
   }, (_err, res) => {
     t.equal(res.body, '254381a5-888c-4b41-8116-e3b1a54980bd')
     t.equal(res.statusCode, 200)
@@ -552,15 +552,15 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     method: 'POST',
     payload: {
       id: 'invalid',
-      email: 'info@fastify.dev'
+      email: 'info@fastify.dev',
     },
-    url: '/'
+    url: '/',
   }, (_err, res) => {
     t.same(JSON.parse(res.payload), {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'body/id must match format "uuid"'
+      message: 'body/id must match format "uuid"',
     })
   })
 })
@@ -573,16 +573,16 @@ test('should return localized error messages with ajv-i18n', t => {
       type: 'object',
       properties: {
         name: { type: 'string' },
-        work: { type: 'string' }
+        work: { type: 'string' },
       },
-      required: ['name', 'work']
-    }
+      required: ['name', 'work'],
+    },
   }
 
   const fastify = Fastify({
     ajv: {
-      customOptions: { allErrors: true }
-    }
+      customOptions: { allErrors: true },
+    },
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
@@ -601,9 +601,9 @@ test('should return localized error messages with ajv-i18n', t => {
   fastify.inject({
     method: 'POST',
     payload: {
-      name: 'salman'
+      name: 'salman',
     },
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), [{
@@ -611,7 +611,7 @@ test('should return localized error messages with ajv-i18n', t => {
       keyword: 'required',
       message: 'должно иметь обязательное поле work',
       params: { missingProperty: 'work' },
-      schemaPath: '#/required'
+      schemaPath: '#/required',
     }])
     t.equal(res.statusCode, 400)
   })

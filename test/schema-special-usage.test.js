@@ -14,12 +14,12 @@ test('Ajv plugins array parameter', t => {
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        allErrors: true
+        allErrors: true,
       },
       plugins: [
-        [ajvErrors, { singleError: '@@@@' }]
-      ]
-    }
+        [ajvErrors, { singleError: '@@@@' }],
+      ],
+    },
   })
 
   fastify.post('/', {
@@ -36,19 +36,19 @@ test('Ajv plugins array parameter', t => {
               type: 'should be number',
               minimum: 'should be >= 2',
               maximum: 'should be <= 10',
-              multipleOf: 'should be multipleOf 2'
-            }
-          }
-        }
-      }
+              multipleOf: 'should be multipleOf 2',
+            },
+          },
+        },
+      },
     },
-    handler (req, reply) { reply.send({ ok: 1 }) }
+    handler (req, reply) { reply.send({ ok: 1 }) },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { foo: 99 }
+    payload: { foo: 99 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -61,9 +61,9 @@ test('Should handle root $merge keywords in header', t => {
   const fastify = Fastify({
     ajv: {
       plugins: [
-        ajvMergePatch
-      ]
-    }
+        ajvMergePatch,
+      ],
+    },
   })
 
   fastify.route({
@@ -75,14 +75,14 @@ test('Should handle root $merge keywords in header', t => {
           source: {
             type: 'object',
             properties: {
-              q: { type: 'string' }
-            }
+              q: { type: 'string' },
+            },
           },
-          with: { required: ['q'] }
-        }
-      }
+          with: { required: ['q'] },
+        },
+      },
     },
-    handler (req, reply) { reply.send({ ok: 1 }) }
+    handler (req, reply) { reply.send({ ok: 1 }) },
   })
 
   fastify.ready(err => {
@@ -90,7 +90,7 @@ test('Should handle root $merge keywords in header', t => {
 
     fastify.inject({
       method: 'GET',
-      url: '/'
+      url: '/',
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 400)
@@ -99,7 +99,7 @@ test('Should handle root $merge keywords in header', t => {
     fastify.inject({
       method: 'GET',
       url: '/',
-      headers: { q: 'foo' }
+      headers: { q: 'foo' },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 200)
@@ -112,9 +112,9 @@ test('Should handle root $patch keywords in header', t => {
   const fastify = Fastify({
     ajv: {
       plugins: [
-        ajvMergePatch
-      ]
-    }
+        ajvMergePatch,
+      ],
+    },
   })
 
   fastify.route({
@@ -126,20 +126,20 @@ test('Should handle root $patch keywords in header', t => {
           source: {
             type: 'object',
             properties: {
-              q: { type: 'string' }
-            }
+              q: { type: 'string' },
+            },
           },
           with: [
             {
               op: 'add',
               path: '/properties/q',
-              value: { type: 'number' }
-            }
-          ]
-        }
-      }
+              value: { type: 'number' },
+            },
+          ],
+        },
+      },
     },
-    handler (req, reply) { reply.send({ ok: 1 }) }
+    handler (req, reply) { reply.send({ ok: 1 }) },
   })
 
   fastify.ready(err => {
@@ -149,8 +149,8 @@ test('Should handle root $patch keywords in header', t => {
       method: 'GET',
       url: '/',
       headers: {
-        q: 'foo'
-      }
+        q: 'foo',
+      },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 400)
@@ -159,7 +159,7 @@ test('Should handle root $patch keywords in header', t => {
     fastify.inject({
       method: 'GET',
       url: '/',
-      headers: { q: 10 }
+      headers: { q: 10 },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 200)
@@ -171,8 +171,8 @@ test('Should handle $merge keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      plugins: [ajvMergePatch]
-    }
+      plugins: [ajvMergePatch],
+    },
   })
 
   fastify.post('/', {
@@ -183,17 +183,17 @@ test('Should handle $merge keywords in body', t => {
             type: 'object',
             properties: {
               q: {
-                type: 'string'
-              }
-            }
+                type: 'string',
+              },
+            },
           },
           with: {
-            required: ['q']
-          }
-        }
-      }
+            required: ['q'],
+          },
+        },
+      },
     },
-    handler (req, reply) { reply.send({ ok: 1 }) }
+    handler (req, reply) { reply.send({ ok: 1 }) },
   })
 
   fastify.ready(err => {
@@ -201,7 +201,7 @@ test('Should handle $merge keywords in body', t => {
 
     fastify.inject({
       method: 'POST',
-      url: '/'
+      url: '/',
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 400)
@@ -210,7 +210,7 @@ test('Should handle $merge keywords in body', t => {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { q: 'foo' }
+      payload: { q: 'foo' },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 200)
@@ -222,8 +222,8 @@ test('Should handle $patch keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      plugins: [ajvMergePatch]
-    }
+      plugins: [ajvMergePatch],
+    },
   })
 
   fastify.post('/', {
@@ -234,21 +234,21 @@ test('Should handle $patch keywords in body', t => {
             type: 'object',
             properties: {
               q: {
-                type: 'string'
-              }
-            }
+                type: 'string',
+              },
+            },
           },
           with: [
             {
               op: 'add',
               path: '/properties/q',
-              value: { type: 'number' }
-            }
-          ]
-        }
-      }
+              value: { type: 'number' },
+            },
+          ],
+        },
+      },
     },
-    handler (req, reply) { reply.send({ ok: 1 }) }
+    handler (req, reply) { reply.send({ ok: 1 }) },
   })
 
   fastify.ready(err => {
@@ -257,7 +257,7 @@ test('Should handle $patch keywords in body', t => {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { q: 'foo' }
+      payload: { q: 'foo' },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 400)
@@ -266,7 +266,7 @@ test('Should handle $patch keywords in body', t => {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { q: 10 }
+      payload: { q: 10 },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 200)
@@ -281,20 +281,20 @@ test("serializer read validator's schemas", t => {
   const baseSchema = {
     $id: 'http://example.com/schemas/base',
     definitions: {
-      hello: { type: 'string' }
+      hello: { type: 'string' },
     },
     type: 'object',
     properties: {
-      hello: { $ref: '#/definitions/hello' }
-    }
+      hello: { $ref: '#/definitions/hello' },
+    },
   }
 
   const refSchema = {
     $id: 'http://example.com/schemas/ref',
     type: 'object',
     properties: {
-      hello: { $ref: 'http://example.com/schemas/base#/definitions/hello' }
-    }
+      hello: { $ref: 'http://example.com/schemas/base#/definitions/hello' },
+    },
   }
 
   ajvInstance.addSchema(baseSchema)
@@ -308,12 +308,12 @@ test("serializer read validator's schemas", t => {
           getSchemas () {
             return {
               [baseSchema.$id]: ajvInstance.getSchema(baseSchema.$id).schema,
-              [refSchema.$id]: ajvInstance.getSchema(refSchema.$id).schema
+              [refSchema.$id]: ajvInstance.getSchema(refSchema.$id).schema,
             }
-          }
+          },
         }
-      }
-    }
+      },
+    },
   })
 
   fastify.setValidatorCompiler(function ({ schema }) {
@@ -323,10 +323,10 @@ test("serializer read validator's schemas", t => {
   fastify.get('/', {
     schema: {
       response: {
-        '2xx': ajvInstance.getSchema('http://example.com/schemas/ref').schema
-      }
+        '2xx': ajvInstance.getSchema('http://example.com/schemas/ref').schema,
+      },
     },
-    handler (req, res) { res.send({ hello: 'world', evict: 'this' }) }
+    handler (req, res) { res.send({ hello: 'world', evict: 'this' }) },
   })
 
   fastify.inject('/', (err, res) => {
@@ -341,20 +341,20 @@ test('setSchemaController in a plugin', t => {
   const baseSchema = {
     $id: 'urn:schema:base',
     definitions: {
-      hello: { type: 'string' }
+      hello: { type: 'string' },
     },
     type: 'object',
     properties: {
-      hello: { $ref: '#/definitions/hello' }
-    }
+      hello: { $ref: '#/definitions/hello' },
+    },
   }
 
   const refSchema = {
     $id: 'urn:schema:ref',
     type: 'object',
     properties: {
-      hello: { $ref: 'urn:schema:base#/definitions/hello' }
-    }
+      hello: { $ref: 'urn:schema:base#/definitions/hello' },
+    },
   }
 
   const ajvInstance = new AJV()
@@ -367,12 +367,12 @@ test('setSchemaController in a plugin', t => {
     schema: {
       query: ajvInstance.getSchema('urn:schema:ref').schema,
       response: {
-        '2xx': ajvInstance.getSchema('urn:schema:ref').schema
-      }
+        '2xx': ajvInstance.getSchema('urn:schema:ref').schema,
+      },
     },
     handler (req, res) {
       res.send({ hello: 'world', evict: 'this' })
-    }
+    },
   })
 
   fastify.inject('/', (err, res) => {
@@ -395,11 +395,11 @@ test('setSchemaController in a plugin', t => {
           getSchemas () {
             return {
               'urn:schema:base': baseSchema,
-              'urn:schema:ref': refSchema
+              'urn:schema:ref': refSchema,
             }
-          }
+          },
         }
-      }
+      },
     })
     server.setValidatorCompiler(function ({ schema }) {
       t.pass('the querystring schema is compiled')
@@ -415,9 +415,9 @@ test('side effect on schema let the server crash', async t => {
     type: 'object',
     properties: {
       name: {
-        type: 'string'
-      }
-    }
+        type: 'string',
+      },
+    },
   }
 
   const reusedSchema = {
@@ -427,11 +427,11 @@ test('side effect on schema let the server crash', async t => {
       name: {
         oneOf: [
           {
-            $ref: 'example1'
-          }
-        ]
-      }
-    }
+            $ref: 'example1',
+          },
+        ],
+      },
+    },
   }
 
   const fastify = Fastify()
@@ -441,15 +441,15 @@ test('side effect on schema let the server crash', async t => {
     handler: async () => 'OK',
     schema: {
       body: reusedSchema,
-      response: { 200: reusedSchema }
-    }
+      response: { 200: reusedSchema },
+    },
   })
   fastify.post('/b', {
     handler: async () => 'OK',
     schema: {
       body: reusedSchema,
-      response: { 200: reusedSchema }
-    }
+      response: { 200: reusedSchema },
+    },
   })
 
   await fastify.ready()
@@ -464,7 +464,7 @@ test('only response schema trigger AJV pollution', async t => {
   fastify.addSchema(ShowSchema)
 
   const routeResponseSchemas = {
-    schema: { response: { 200: S.ref('ListSchema#') } }
+    schema: { response: { 200: S.ref('ListSchema#') } },
   }
 
   fastify.register(
@@ -490,8 +490,8 @@ test('only response schema trigger AJV pollution #2', async t => {
   const routeResponseSchemas = {
     schema: {
       params: S.ref('ListSchema#'),
-      response: { 200: S.ref('ListSchema#') }
-    }
+      response: { 200: S.ref('ListSchema#') },
+    },
   }
 
   fastify.register(
@@ -511,20 +511,20 @@ test('setSchemaController in a plugin with head routes', t => {
   const baseSchema = {
     $id: 'urn:schema:base',
     definitions: {
-      hello: { type: 'string' }
+      hello: { type: 'string' },
     },
     type: 'object',
     properties: {
-      hello: { $ref: '#/definitions/hello' }
-    }
+      hello: { $ref: '#/definitions/hello' },
+    },
   }
 
   const refSchema = {
     $id: 'urn:schema:ref',
     type: 'object',
     properties: {
-      hello: { $ref: 'urn:schema:base#/definitions/hello' }
-    }
+      hello: { $ref: 'urn:schema:base#/definitions/hello' },
+    },
   }
 
   const ajvInstance = new AJV()
@@ -537,12 +537,12 @@ test('setSchemaController in a plugin with head routes', t => {
     schema: {
       query: ajvInstance.getSchema('urn:schema:ref').schema,
       response: {
-        '2xx': ajvInstance.getSchema('urn:schema:ref').schema
-      }
+        '2xx': ajvInstance.getSchema('urn:schema:ref').schema,
+      },
     },
     handler (req, res) {
       res.send({ hello: 'world', evict: 'this' })
-    }
+    },
   })
 
   fastify.inject('/', (err, res) => {
@@ -565,11 +565,11 @@ test('setSchemaController in a plugin with head routes', t => {
           getSchemas () {
             return {
               'urn:schema:base': baseSchema,
-              'urn:schema:ref': refSchema
+              'urn:schema:ref': refSchema,
             }
-          }
+          },
         }
-      }
+      },
     })
     server.setValidatorCompiler(function ({ schema }) {
       if (schema.$id) {
@@ -592,20 +592,20 @@ test('multiple refs with the same ids', t => {
   const baseSchema = {
     $id: 'urn:schema:base',
     definitions: {
-      hello: { type: 'string' }
+      hello: { type: 'string' },
     },
     type: 'object',
     properties: {
-      hello: { $ref: '#/definitions/hello' }
-    }
+      hello: { $ref: '#/definitions/hello' },
+    },
   }
 
   const refSchema = {
     $id: 'urn:schema:ref',
     type: 'object',
     properties: {
-      hello: { $ref: 'urn:schema:base#/definitions/hello' }
-    }
+      hello: { $ref: 'urn:schema:base#/definitions/hello' },
+    },
   }
 
   const fastify = Fastify()
@@ -617,24 +617,24 @@ test('multiple refs with the same ids', t => {
     schema: {
       query: refSchema,
       response: {
-        '2xx': refSchema
-      }
+        '2xx': refSchema,
+      },
     },
     handler (req, res) {
       res.send({ hello: 'world', evict: 'this' })
-    }
+    },
   })
 
   fastify.get('/', {
     schema: {
       query: refSchema,
       response: {
-        '2xx': refSchema
-      }
+        '2xx': refSchema,
+      },
     },
     handler (req, res) {
       res.send({ hello: 'world', evict: 'this' })
-    }
+    },
   })
 
   fastify.inject('/', (err, res) => {
@@ -658,9 +658,9 @@ test('JOI validation overwrite request headers', t => {
     schema: {
       headers: Joi.object({
         'user-agent': Joi.string().required(),
-        host: Joi.string().required()
-      })
-    }
+        host: Joi.string().required(),
+      }),
+    },
   }, (request, reply) => {
     reply.send(request.headers)
   })
@@ -670,7 +670,7 @@ test('JOI validation overwrite request headers', t => {
     t.equal(res.statusCode, 200)
     t.same(res.json(), {
       'user-agent': 'lightMyRequest',
-      host: 'localhost:80'
+      host: 'localhost:80',
     })
   })
 })
@@ -682,8 +682,8 @@ test('Custom schema object should not trigger FST_ERR_SCH_DUPLICATE', async t =>
   fastify.get('/the/url', {
     schema: {
       query: yup.object({
-        foo: yup.string()
-      })
+        foo: yup.string(),
+      }),
     },
     validatorCompiler: ({ schema, method, url, httpPart }) => {
       return function (data) {
@@ -696,7 +696,7 @@ test('Custom schema object should not trigger FST_ERR_SCH_DUPLICATE', async t =>
         }
       }
     },
-    handler
+    handler,
   })
 
   await fastify.ready()
@@ -710,7 +710,7 @@ test('The default schema compilers should not be called when overwritten by the 
     },
     '@fastify/fast-json-stringify-compiler': () => {
       t.fail('The default serializer compiler should not be called')
-    }
+    },
   })
 
   const fastify = Fastify({
@@ -727,9 +727,9 @@ test('The default schema compilers should not be called when overwritten by the 
           return function serializerCompiler () {
             return () => { return true }
           }
-        }
-      }
-    }
+        },
+      },
+    },
   })
 
   fastify.get('/',
@@ -737,9 +737,9 @@ test('The default schema compilers should not be called when overwritten by the 
       schema: {
         query: { foo: { type: 'string' } },
         response: {
-          200: { type: 'object' }
-        }
-      }
+          200: { type: 'object' },
+        },
+      },
     }, () => {})
 
   await fastify.ready()
@@ -754,7 +754,7 @@ test('Supports async JOI validation', t => {
   }
 
   const fastify = Fastify({
-    exposeHeadRoutes: false
+    exposeHeadRoutes: false,
   })
   fastify.setValidatorCompiler(schemaValidator)
 
@@ -769,9 +769,9 @@ test('Supports async JOI validation', t => {
           t.equal(val, 'lightMyRequest')
           return val
         }),
-        host: Joi.string().required()
-      })
-    }
+        host: Joi.string().required(),
+      }),
+    },
   }, (request, reply) => {
     reply.send(request.headers)
   })
@@ -781,15 +781,15 @@ test('Supports async JOI validation', t => {
     t.equal(res.statusCode, 200)
     t.same(res.json(), {
       'user-agent': 'lightMyRequest',
-      host: 'localhost:80'
+      host: 'localhost:80',
     })
   })
 
   fastify.inject({
     url: '/',
     headers: {
-      'user-agent': 'invalid'
-    }
+      'user-agent': 'invalid',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -797,7 +797,7 @@ test('Supports async JOI validation', t => {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'Invalid user-agent (user-agent)'
+      message: 'Invalid user-agent (user-agent)',
     })
   })
 })
@@ -815,14 +815,14 @@ test('Supports async AJV validation', t => {
             keyword: 'idExists',
             async: true,
             type: 'number',
-            validate: checkIdExists
-          }
-        ]
+            validate: checkIdExists,
+          },
+        ],
       },
       plugins: [
-        [ajvErrors, { singleError: '@@@@' }]
-      ]
-    }
+        [ajvErrors, { singleError: '@@@@' }],
+      ],
+    },
   })
 
   async function checkIdExists (schema, data) {
@@ -845,26 +845,26 @@ test('Supports async AJV validation', t => {
     properties: {
       userId: {
         type: 'integer',
-        idExists: { table: 'users' }
+        idExists: { table: 'users' },
       },
       postId: {
         type: 'integer',
-        idExists: { table: 'posts' }
-      }
-    }
+        idExists: { table: 'posts' },
+      },
+    },
   }
 
   fastify.post('/', {
     schema: {
-      body: schema
+      body: schema,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { userId: 99 }
+    payload: { userId: 99 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -872,14 +872,14 @@ test('Supports async AJV validation', t => {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'validation failed'
+      message: 'validation failed',
     })
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { userId: 500 }
+    payload: { userId: 500 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -887,14 +887,14 @@ test('Supports async AJV validation', t => {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'custom error'
+      message: 'custom error',
     })
   })
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { userId: 42 }
+    payload: { userId: 42 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -904,7 +904,7 @@ test('Supports async AJV validation', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { userId: 42, postId: 19 }
+    payload: { userId: 42, postId: 19 },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -912,7 +912,7 @@ test('Supports async AJV validation', t => {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
-      message: 'validation failed'
+      message: 'validation failed',
     })
   })
 })
@@ -928,11 +928,11 @@ test('Check all the async AJV validation paths', t => {
             keyword: 'idExists',
             async: true,
             type: 'number',
-            validate: checkIdExists
-          }
-        ]
-      }
-    }
+            validate: checkIdExists,
+          },
+        ],
+      },
+    },
   })
 
   async function checkIdExists (schema, data) {
@@ -952,9 +952,9 @@ test('Check all the async AJV validation paths', t => {
     properties: {
       id: {
         type: 'integer',
-        idExists: { table: 'posts' }
-      }
-    }
+        idExists: { table: 'posts' },
+      },
+    },
   }
 
   fastify.post('/:id', {
@@ -962,9 +962,9 @@ test('Check all the async AJV validation paths', t => {
       params: schema,
       body: schema,
       query: schema,
-      headers: schema
+      headers: schema,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   const testCases = [
@@ -973,36 +973,36 @@ test('Check all the async AJV validation paths', t => {
       body: 200,
       querystring: 200,
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 400,
       querystring: 200,
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 200,
       querystring: 400,
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 200,
       querystring: 200,
       headers: 400,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 200,
       querystring: 200,
       headers: 200,
-      response: 200
-    }
+      response: 200,
+    },
   ]
   t.plan(testCases.length * 2)
   testCases.forEach(validate)
@@ -1012,14 +1012,14 @@ test('Check all the async AJV validation paths', t => {
     body,
     querystring,
     headers,
-    response
+    response,
   }) {
     fastify.inject({
       method: 'POST',
       url: `/${params}`,
       headers: { id: headers },
       query: { id: querystring },
-      payload: { id: body }
+      payload: { id: body },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, response)
@@ -1038,11 +1038,11 @@ test('Check mixed sync and async AJV validations', t => {
             keyword: 'idExists',
             async: true,
             type: 'number',
-            validate: checkIdExists
-          }
-        ]
-      }
-    }
+            validate: checkIdExists,
+          },
+        ],
+      },
+    },
   })
 
   async function checkIdExists (schema, data) {
@@ -1059,8 +1059,8 @@ test('Check mixed sync and async AJV validations', t => {
   const schemaSync = {
     type: 'object',
     properties: {
-      id: { type: 'integer' }
-    }
+      id: { type: 'integer' },
+    },
   }
 
   const schemaAsync = {
@@ -1069,9 +1069,9 @@ test('Check mixed sync and async AJV validations', t => {
     properties: {
       id: {
         type: 'integer',
-        idExists: { table: 'posts' }
-      }
-    }
+        idExists: { table: 'posts' },
+      },
+    },
   }
 
   fastify.post('/queryAsync/:id', {
@@ -1079,26 +1079,26 @@ test('Check mixed sync and async AJV validations', t => {
       params: schemaSync,
       body: schemaSync,
       query: schemaAsync,
-      headers: schemaSync
+      headers: schemaSync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   fastify.post('/paramsAsync/:id', {
     schema: {
       params: schemaAsync,
-      body: schemaSync
+      body: schemaSync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   fastify.post('/bodyAsync/:id', {
     schema: {
       params: schemaAsync,
       body: schemaAsync,
-      query: schemaSync
+      query: schemaSync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   fastify.post('/headersSync/:id', {
@@ -1106,27 +1106,27 @@ test('Check mixed sync and async AJV validations', t => {
       params: schemaSync,
       body: schemaSync,
       query: schemaAsync,
-      headers: schemaSync
+      headers: schemaSync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   fastify.post('/noHeader/:id', {
     schema: {
       params: schemaSync,
       body: schemaSync,
-      query: schemaAsync
+      query: schemaAsync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   fastify.post('/noBody/:id', {
     schema: {
       params: schemaSync,
       query: schemaAsync,
-      headers: schemaSync
+      headers: schemaSync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   const testCases = [
@@ -1136,7 +1136,7 @@ test('Check mixed sync and async AJV validations', t => {
       body: 200,
       querystring: 200,
       headers: 'not a number sync',
-      response: 400
+      response: 400,
     },
     {
       url: '/paramsAsync',
@@ -1144,7 +1144,7 @@ test('Check mixed sync and async AJV validations', t => {
       body: 'not a number sync',
       querystring: 200,
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       url: '/bodyAsync',
@@ -1152,7 +1152,7 @@ test('Check mixed sync and async AJV validations', t => {
       body: 200,
       querystring: 'not a number sync',
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       url: '/headersSync',
@@ -1160,7 +1160,7 @@ test('Check mixed sync and async AJV validations', t => {
       body: 200,
       querystring: 200,
       headers: 'not a number sync',
-      response: 400
+      response: 400,
     },
     {
       url: '/noHeader',
@@ -1168,7 +1168,7 @@ test('Check mixed sync and async AJV validations', t => {
       body: 200,
       querystring: 200,
       headers: 'not a number sync, but not validated',
-      response: 200
+      response: 200,
     },
     {
       url: '/noBody',
@@ -1176,8 +1176,8 @@ test('Check mixed sync and async AJV validations', t => {
       body: 'not a number sync, but not validated',
       querystring: 200,
       headers: 'not a number sync',
-      response: 400
-    }
+      response: 400,
+    },
   ]
   t.plan(testCases.length * 2)
   testCases.forEach(validate)
@@ -1188,14 +1188,14 @@ test('Check mixed sync and async AJV validations', t => {
     body,
     querystring,
     headers,
-    response
+    response,
   }) {
     fastify.inject({
       method: 'POST',
       url: `${url}/${params || ''}`,
       headers: { id: headers },
       query: { id: querystring },
-      payload: { id: body }
+      payload: { id: body },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, response)
@@ -1214,11 +1214,11 @@ test('Check if hooks and attachValidation work with AJV validations', t => {
             keyword: 'idExists',
             async: true,
             type: 'number',
-            validate: checkIdExists
-          }
-        ]
-      }
-    }
+            validate: checkIdExists,
+          },
+        ],
+      },
+    },
   })
 
   async function checkIdExists (schema, data) {
@@ -1238,9 +1238,9 @@ test('Check if hooks and attachValidation work with AJV validations', t => {
     properties: {
       id: {
         type: 'integer',
-        idExists: { table: 'posts' }
-      }
-    }
+        idExists: { table: 'posts' },
+      },
+    },
   }
 
   fastify.post('/:id', {
@@ -1255,9 +1255,9 @@ test('Check if hooks and attachValidation work with AJV validations', t => {
       params: schemaAsync,
       body: schemaAsync,
       query: schemaAsync,
-      headers: schemaAsync
+      headers: schemaAsync,
     },
-    handler (req, reply) { reply.send(req.body) }
+    handler (req, reply) { reply.send(req.body) },
   })
 
   const testCases = [
@@ -1266,29 +1266,29 @@ test('Check if hooks and attachValidation work with AJV validations', t => {
       body: 200,
       querystring: 200,
       headers: 400,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 400,
       querystring: 200,
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 200,
       querystring: 400,
       headers: 200,
-      response: 400
+      response: 400,
     },
     {
       params: 200,
       body: 200,
       querystring: 200,
       headers: 400,
-      response: 400
-    }
+      response: 400,
+    },
   ]
   t.plan(testCases.length * 4)
   testCases.forEach(validate)
@@ -1299,14 +1299,14 @@ test('Check if hooks and attachValidation work with AJV validations', t => {
     body,
     querystring,
     headers,
-    response
+    response,
   }) {
     fastify.inject({
       method: 'POST',
       url: `/${params}`,
       headers: { id: headers },
       query: { id: querystring },
-      payload: { id: body }
+      payload: { id: body },
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, response)

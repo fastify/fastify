@@ -16,12 +16,12 @@ const opts = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 }
 
 const optsWithHostnameAndPort = {
@@ -31,18 +31,18 @@ const optsWithHostnameAndPort = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string'
+            type: 'string',
           },
           hostname: {
-            type: 'string'
+            type: 'string',
           },
           port: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 }
 test('async await', t => {
   t.plan(13)
@@ -82,7 +82,7 @@ test('async await', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -92,7 +92,7 @@ test('async await', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no-await'
+      url: 'http://localhost:' + fastify.server.address().port + '/no-await',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -104,7 +104,7 @@ test('async await', t => {
       t.plan(4)
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/await/hostname_port'
+        url: 'http://localhost:' + fastify.server.address().port + '/await/hostname_port',
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -132,7 +132,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
     t.error(err)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
+      url: 'http://localhost:' + server.server.address().port + '/',
     }, (err, res, body) => {
       t.error(err)
       t.same(payload, JSON.parse(body))
@@ -158,7 +158,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
     t.error(err)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
+      url: 'http://localhost:' + server.server.address().port + '/',
     }, (err, res, body) => {
       t.error(err)
       t.same(payload, JSON.parse(body))
@@ -179,7 +179,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   const logger = pino(splitStream)
 
   const fastify = Fastify({
-    loggerInstance: logger
+    loggerInstance: logger,
   })
 
   fastify.get('/', async (req, reply) => {
@@ -189,7 +189,7 @@ test('server logs an error if reply.send is called and a value is returned via a
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -213,7 +213,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
     t.error(err)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
+      url: 'http://localhost:' + server.server.address().port + '/',
     }, (err, res, body) => {
       t.error(err)
       t.same(payload, JSON.parse(body))
@@ -239,7 +239,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
     t.error(err)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
+      url: 'http://localhost:' + server.server.address().port + '/',
     }, (err, res, body) => {
       t.error(err)
       t.same(payload, JSON.parse(body))
@@ -259,8 +259,8 @@ test('await reply if we will be calling reply.send in the future', t => {
 
   const server = Fastify({
     logger: {
-      stream: splitStream
-    }
+      stream: splitStream,
+    },
   })
   const payload = { hello: 'world' }
 
@@ -274,7 +274,7 @@ test('await reply if we will be calling reply.send in the future', t => {
 
   server.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -293,8 +293,8 @@ test('await reply if we will be calling reply.send in the future (error case)', 
 
   const server = Fastify({
     logger: {
-      stream: splitStream
-    }
+      stream: splitStream,
+    },
   })
 
   server.get('/', async function awaitMyFunc (req, reply) {
@@ -307,7 +307,7 @@ test('await reply if we will be calling reply.send in the future (error case)', 
 
   server.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -334,7 +334,7 @@ test('support reply decorators with await', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -420,7 +420,7 @@ test('does not call reply.send() twice if 204 response equal already sent', t =>
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 204)
@@ -436,8 +436,8 @@ test('promise was fulfilled with undefined', t => {
     fastify = Fastify({
       logger: {
         stream,
-        level: 'error'
-      }
+        level: 'error',
+      },
     })
   } catch (e) {
     t.fail()
@@ -458,7 +458,7 @@ test('promise was fulfilled with undefined', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
+      url: 'http://localhost:' + fastify.server.address().port + '/',
     }, (err, res, body) => {
       t.error(err)
       t.equal(res.body, undefined)
@@ -472,8 +472,8 @@ test('promise was fulfilled with undefined using inject', async (t) => {
   const fastify = Fastify({
     logger: {
       stream,
-      level: 'error'
-    }
+      level: 'error',
+    },
   })
 
   fastify.get('/', async (req, reply) => {
@@ -499,8 +499,8 @@ test('error is not logged because promise was fulfilled with undefined but respo
     fastify = Fastify({
       logger: {
         stream,
-        level: 'error'
-      }
+        level: 'error',
+      },
     })
   } catch (e) {
     t.fail()
@@ -522,7 +522,7 @@ test('error is not logged because promise was fulfilled with undefined but respo
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
+      url: 'http://localhost:' + fastify.server.address().port + '/',
     }, (err, res, body) => {
       t.error(err)
       t.equal(res.statusCode, 200)
@@ -548,7 +548,7 @@ test('Thrown Error instance sets HTTP status code', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
@@ -556,7 +556,7 @@ test('Thrown Error instance sets HTTP status code', t => {
       {
         error: statusCodes['418'],
         message: err.message,
-        statusCode: 418
+        statusCode: 418,
       },
       JSON.parse(res.payload)
     )
@@ -583,7 +583,7 @@ test('customErrorHandler support', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 401)
@@ -591,7 +591,7 @@ test('customErrorHandler support', t => {
       {
         error: statusCodes['401'],
         message: 'kaboom',
-        statusCode: 401
+        statusCode: 401,
       },
       JSON.parse(res.payload)
     )
@@ -617,7 +617,7 @@ test('customErrorHandler support without throwing', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 401)
@@ -645,7 +645,7 @@ test('customErrorHandler only called if reply not already sent', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -669,13 +669,13 @@ test('setNotFoundHandler should accept return value', t => {
     return {
       error: statusCodes['404'],
       message: 'lost',
-      statusCode: 404
+      statusCode: 404,
     }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/elsewhere'
+    url: '/elsewhere',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -683,7 +683,7 @@ test('setNotFoundHandler should accept return value', t => {
       {
         error: statusCodes['404'],
         message: 'lost',
-        statusCode: 404
+        statusCode: 404,
       },
       JSON.parse(res.payload)
     )
@@ -708,13 +708,13 @@ test('customErrorHandler should accept return value', t => {
     return {
       error: statusCodes['401'],
       message: 'kaboom',
-      statusCode: 401
+      statusCode: 401,
     }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 401)
@@ -722,7 +722,7 @@ test('customErrorHandler should accept return value', t => {
       {
         error: statusCodes['401'],
         message: 'kaboom',
-        statusCode: 401
+        statusCode: 401,
       },
       JSON.parse(res.payload)
     )

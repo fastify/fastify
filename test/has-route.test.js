@@ -26,17 +26,17 @@ test('hasRoute', t => {
       url: '/',
       handler: function (req, reply) {
         reply.send({ hello: 'world' })
-      }
+      },
     })
 
     t.equal(fastify.hasRoute({
       method: 'GET',
-      url: '/'
+      url: '/',
     }), true)
 
     t.equal(fastify.hasRoute({
       method: 'POST',
-      url: '/'
+      url: '/',
     }), false)
   })
 
@@ -48,19 +48,19 @@ test('hasRoute', t => {
       constraints: { version: '1.2.0' },
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
-      }
+      },
     })
 
     t.equal(fastify.hasRoute({
       method: 'GET',
       url: '/',
-      constraints: { version: '1.2.0' }
+      constraints: { version: '1.2.0' },
     }), true)
 
     t.equal(fastify.hasRoute({
       method: 'GET',
       url: '/',
-      constraints: { version: '1.3.0' }
+      constraints: { version: '1.3.0' },
     }), false)
   })
 
@@ -71,7 +71,7 @@ test('hasRoute', t => {
 
     t.equal(fastify.hasRoute({
       method: 'GET',
-      url: '/example/:file(^\\d+).png'
+      url: '/example/:file(^\\d+).png',
     }), true)
   })
 })

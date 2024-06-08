@@ -49,7 +49,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     requestIdLogLabel: 'reqId',
     http2SessionTimeout: 72000,
     exposeHeadRoutes: true,
-    useSemicolonDelimiter: false
+    useSemicolonDelimiter: false,
   }
 
   t.same(Fastify().initialConfig, fastifyDefaultOptions)
@@ -72,13 +72,13 @@ test('Fastify.initialConfig should expose all options', t => {
       const versions = {}
       return {
         get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
+        set: (version, store) => { versions[version] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers.accept
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   let reqId = 0
@@ -86,7 +86,7 @@ test('Fastify.initialConfig should expose all options', t => {
     http2: true,
     https: {
       key: global.context.key,
-      cert: global.context.cert
+      cert: global.context.cert,
     },
     ignoreTrailingSlash: true,
     ignoreDuplicateSlashes: true,
@@ -107,11 +107,11 @@ test('Fastify.initialConfig should expose all options', t => {
     },
     loggerInstance: pino({ level: 'info' }),
     constraints: {
-      version: versionStrategy
+      version: versionStrategy,
     },
     trustProxy: function myTrustFn (address, hop) {
       return address === '1.2.3.4' || hop === 1
-    }
+    },
   }
 
   const fastify = Fastify(options)
@@ -163,8 +163,8 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     https: {
       allowHTTP1: true,
       key: global.context.key,
-      cert: global.context.cert
-    }
+      cert: global.context.cert,
+    },
   })
 
   try {
@@ -175,7 +175,7 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.equal(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
     t.ok(error.stack)
     t.same(fastify.initialConfig.https, {
-      allowHTTP1: true
+      allowHTTP1: true,
     }, 'key cert removed')
   }
 })
@@ -211,8 +211,8 @@ test('Original options must not be frozen', t => {
     https: {
       allowHTTP1: true,
       key: global.context.key,
-      cert: global.context.cert
-    }
+      cert: global.context.cert,
+    },
   }
 
   const fastify = Fastify(originalOptions)
@@ -230,8 +230,8 @@ test('Original options must not be altered (test deep cloning)', t => {
     https: {
       allowHTTP1: true,
       key: global.context.key,
-      cert: global.context.cert
-    }
+      cert: global.context.cert,
+    },
   }
 
   const originalOptionsClone = deepClone(originalOptions)
@@ -255,8 +255,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     ignoreTrailingSlash: true,
     logger: {
       level: 'trace',
-      stream
-    }
+      stream,
+    },
   }
 
   let fastify
@@ -289,7 +289,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       requestIdLogLabel: 'reqId',
       http2SessionTimeout: 72000,
       exposeHeadRoutes: true,
-      useSemicolonDelimiter: false
+      useSemicolonDelimiter: false,
     })
   } catch (error) {
     t.fail()
@@ -340,10 +340,10 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
     float: 1.1,
     integer: 1,
     object: {
-      nested: { string: 'string' }
+      nested: { string: 'string' },
     },
     stream: split(JSON.parse),
-    string: 'string'
+    string: 'string',
   }
 
   try {
@@ -376,12 +376,12 @@ test('Fastify.initialConfig should accept the deprecated versioning option', t =
       const versions = {}
       return {
         get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
+        set: (version, store) => { versions[version] = store },
       }
     },
     deriveVersion: (req, ctx) => {
       return req.headers.accept
-    }
+    },
   }
 
   Fastify({ versioning })

@@ -37,8 +37,8 @@ test('contentTypeParser should add a custom async parser', t => {
         url: 'http://localhost:' + fastify.server.address().port,
         body: '{"hello":"world"}',
         headers: {
-          'Content-Type': 'application/jsoff'
-        }
+          'Content-Type': 'application/jsoff',
+        },
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -54,8 +54,8 @@ test('contentTypeParser should add a custom async parser', t => {
         url: 'http://localhost:' + fastify.server.address().port,
         body: '{"hello":"world"}',
         headers: {
-          'Content-Type': 'application/jsoff'
-        }
+          'Content-Type': 'application/jsoff',
+        },
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)

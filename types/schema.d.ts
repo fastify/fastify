@@ -44,7 +44,7 @@ export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) =
 
 export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string
 
-export interface FastifySchemaControllerOptions{
+export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {
     add(schema: unknown): FastifyInstance;
     getSchema(schemaId: string): unknown;

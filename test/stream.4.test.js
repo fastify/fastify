@@ -23,8 +23,8 @@ test('Destroying streams prematurely should call abort method', t => {
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'info'
-      }
+        level: 'info',
+      },
     })
   } catch (e) {
     t.fail()
@@ -50,7 +50,7 @@ test('Destroying streams prematurely should call abort method', t => {
           this.push(Buffer.from('hello\n'))
         }
         sent = true
-      }
+      },
     })
     reallyLongStream.destroy = undefined
     reallyLongStream.close = undefined
@@ -83,7 +83,7 @@ test('Destroying streams prematurely, log is disabled', t => {
   let fastify = null
   try {
     fastify = Fastify({
-      logger: false
+      logger: false,
     })
   } catch (e) {
     t.fail()
@@ -101,7 +101,7 @@ test('Destroying streams prematurely, log is disabled', t => {
           this.push(Buffer.from('hello\n'))
         }
         sent = true
-      }
+      },
     })
     reallyLongStream.destroy = true
     reallyLongStream.close = () => t.ok('called')
@@ -164,7 +164,7 @@ test('return a 404 if the stream emits a 404 error', t => {
         setImmediate(() => {
           this.emit('error', new errors.NotFound())
         })
-      }
+      },
     })
 
     reply.send(reallyLongStream)

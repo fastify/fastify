@@ -14,7 +14,7 @@ export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
   opts: Options,
@@ -30,11 +30,11 @@ export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
   opts: Options
-) => Promise<void>;
+) => Promise<void>
 
 /**
  * Generic plugin type.

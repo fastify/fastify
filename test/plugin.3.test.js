@@ -64,7 +64,7 @@ test('add hooks after route declaration', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
@@ -103,7 +103,7 @@ test('nested plugins', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1',
     }, (err, response, body) => {
       t.error(err)
       t.same(body.toString(), 'I am child 1')
@@ -111,7 +111,7 @@ test('nested plugins', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2',
     }, (err, response, body) => {
       t.error(err)
       t.same(body.toString(), 'I am child 2')
@@ -145,7 +145,7 @@ test('nested plugins awaited', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1',
     }, (err, response, body) => {
       t.error(err)
       t.same(body.toString(), 'I am child 1')
@@ -153,7 +153,7 @@ test('nested plugins awaited', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2',
     }, (err, response, body) => {
       t.error(err)
       t.same(body.toString(), 'I am child 2')
@@ -174,8 +174,8 @@ test('plugin metadata - decorators', t => {
     decorators: {
       fastify: ['plugin1'],
       reply: ['plugin1'],
-      request: ['plugin1']
-    }
+      request: ['plugin1'],
+    },
   }
 
   fastify.register(plugin)
@@ -202,8 +202,8 @@ test('plugin metadata - decorators - should throw', t => {
     decorators: {
       fastify: ['plugin1'],
       reply: ['plugin1'],
-      request: ['plugin1']
-    }
+      request: ['plugin1'],
+    },
   }
 
   fastify.register(plugin)
@@ -230,8 +230,8 @@ test('plugin metadata - decorators - should throw with plugin name', t => {
     decorators: {
       fastify: ['plugin1'],
       reply: ['plugin1'],
-      request: ['plugin1']
-    }
+      request: ['plugin1'],
+    },
   }
 
   fastify.register(plugin)
@@ -251,12 +251,12 @@ test('plugin metadata - dependencies', t => {
 
   dependency[Symbol.for('skip-override')] = true
   dependency[Symbol.for('plugin-meta')] = {
-    name: 'plugin'
+    name: 'plugin',
   }
 
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
-    dependencies: ['plugin']
+    dependencies: ['plugin'],
   }
 
   fastify.register(dependency)
@@ -281,12 +281,12 @@ test('plugin metadata - dependencies (nested)', t => {
 
   dependency[Symbol.for('skip-override')] = true
   dependency[Symbol.for('plugin-meta')] = {
-    name: 'plugin'
+    name: 'plugin',
   }
 
   nested[Symbol.for('skip-override')] = true
   nested[Symbol.for('plugin-meta')] = {
-    dependencies: ['plugin']
+    dependencies: ['plugin'],
   }
 
   fastify.register(dependency)

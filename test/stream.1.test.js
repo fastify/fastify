@@ -67,7 +67,7 @@ test('should trigger the onSend hook', t => {
   })
 
   fastify.inject({
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.headers['content-type'], 'application/javascript')

@@ -112,10 +112,10 @@ const customLogger = {
   trace: () => { },
   debug: () => { },
   child: () => customLogger,
-  silent: () => { }
+  silent: () => { },
 }
 const serverWithTypeProviderAndLogger = fastify({
-  loggerInstance: customLogger
+  loggerInstance: customLogger,
 }).withTypeProvider<TestTypeProvider>()
 type ServerWithTypeProviderAndLogger = FastifyInstance<Server, IncomingMessage, ServerResponse, typeof customLogger, TestTypeProvider>
 const testPluginWithTypeProviderAndLogger: FastifyPluginCallback<TestOptions, RawServerDefault, TestTypeProvider, typeof customLogger> = function (instance, opts, done) { }

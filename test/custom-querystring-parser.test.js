@@ -13,13 +13,13 @@ test('Custom querystring parser', t => {
     querystringParser: function (str) {
       t.equal(str, 'foo=bar&baz=faz')
       return querystring.parse(str)
-    }
+    },
   })
 
   fastify.get('/', (req, reply) => {
     t.same(req.query, {
       foo: 'bar',
-      baz: 'faz'
+      baz: 'faz',
     })
     reply.send({ hello: 'world' })
   })
@@ -30,7 +30,7 @@ test('Custom querystring parser', t => {
 
     sget({
       method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
+      url: `${address}?foo=bar&baz=faz`,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -38,7 +38,7 @@ test('Custom querystring parser', t => {
 
     fastify.inject({
       method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
+      url: `${address}?foo=bar&baz=faz`,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -53,7 +53,7 @@ test('Custom querystring parser should be called also if there is nothing to par
     querystringParser: function (str) {
       t.equal(str, '')
       return querystring.parse(str)
-    }
+    },
   })
 
   fastify.get('/', (req, reply) => {
@@ -67,7 +67,7 @@ test('Custom querystring parser should be called also if there is nothing to par
 
     sget({
       method: 'GET',
-      url: address
+      url: address,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -75,7 +75,7 @@ test('Custom querystring parser should be called also if there is nothing to par
 
     fastify.inject({
       method: 'GET',
-      url: address
+      url: address,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -90,7 +90,7 @@ test('Querystring without value', t => {
     querystringParser: function (str) {
       t.equal(str, 'foo')
       return querystring.parse(str)
-    }
+    },
   })
 
   fastify.get('/', (req, reply) => {
@@ -104,7 +104,7 @@ test('Querystring without value', t => {
 
     sget({
       method: 'GET',
-      url: `${address}?foo`
+      url: `${address}?foo`,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -112,7 +112,7 @@ test('Querystring without value', t => {
 
     fastify.inject({
       method: 'GET',
-      url: `${address}?foo`
+      url: `${address}?foo`,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -125,7 +125,7 @@ test('Custom querystring parser should be a function', t => {
 
   try {
     Fastify({
-      querystringParser: 10
+      querystringParser: 10,
     })
     t.fail('Should throw')
   } catch (err) {

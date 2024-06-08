@@ -10,29 +10,29 @@ const defaultSchema = {
   required: ['hello'],
   properties: {
     hello: { type: 'string' },
-    world: { type: 'string' }
-  }
+    world: { type: 'string' },
+  },
 }
 
 const requestSchema = {
   params: {
     id: {
       type: 'integer',
-      minimum: 1
-    }
+      minimum: 1,
+    },
   },
   querystring: {
     foo: {
       type: 'string',
-      enum: ['bar']
-    }
+      enum: ['bar'],
+    },
   },
   body: defaultSchema,
   headers: {
     'x-foo': {
-      type: 'string'
-    }
-  }
+      type: 'string',
+    },
+  },
 }
 
 test('#compileValidationSchema', subtest => {
@@ -55,7 +55,7 @@ test('#compileValidationSchema', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 
@@ -76,7 +76,7 @@ test('#compileValidationSchema', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 
@@ -98,7 +98,7 @@ test('#compileValidationSchema', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 
@@ -131,20 +131,20 @@ test('#compileValidationSchema', subtest => {
       await Promise.all([
         fastify.inject({
           path: '/',
-          method: 'GET'
+          method: 'GET',
         }),
         fastify.inject({
           path: '/',
-          method: 'GET'
+          method: 'GET',
         }),
         fastify.inject({
           path: '/',
-          method: 'GET'
+          method: 'GET',
         }),
         fastify.inject({
           path: '/',
-          method: 'GET'
-        })
+          method: 'GET',
+        }),
       ])
 
       t.equal(counter, 4)
@@ -160,8 +160,8 @@ test('#compileValidationSchema', subtest => {
       '/',
       {
         schema: {
-          body: defaultSchema
-        }
+          body: defaultSchema,
+        },
       },
       (req, reply) => {
         const validate = req.compileValidationSchema(defaultSchema)
@@ -179,8 +179,8 @@ test('#compileValidationSchema', subtest => {
       method: 'POST',
       payload: {
         hello: 'world',
-        world: 'foo'
-      }
+        world: 'foo',
+      },
     })
   })
 
@@ -218,7 +218,7 @@ test('#compileValidationSchema', subtest => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET'
+        method: 'GET',
       })
     }
   )
@@ -242,7 +242,7 @@ test('#compileValidationSchema', subtest => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET'
+        method: 'GET',
       })
     }
   )
@@ -267,7 +267,7 @@ test('#getValidationFunction', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 
@@ -289,7 +289,7 @@ test('#getValidationFunction', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 
@@ -312,7 +312,7 @@ test('#getValidationFunction', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 
@@ -346,7 +346,7 @@ test('#getValidationFunction', subtest => {
       fastify.post(
         '/:id',
         {
-          schema: requestSchema
+          schema: requestSchema,
         },
         (req, reply) => {
           const { params } = req
@@ -402,11 +402,11 @@ test('#getValidationFunction', subtest => {
             method: 'post',
             query: { foo: 'bar' },
             payload: {
-              hello: 'world'
+              hello: 'world',
             },
             headers: {
-              'x-foo': 'x-bar'
-            }
+              'x-foo': 'x-bar',
+            },
           })
         )
       }
@@ -430,7 +430,7 @@ test('#getValidationFunction', subtest => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET'
+      method: 'GET',
     })
   })
 })
@@ -457,7 +457,7 @@ test('#validate', subtest => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET'
+        method: 'GET',
       })
     }
   )
@@ -499,7 +499,7 @@ test('#validate', subtest => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET'
+        method: 'GET',
       })
     }
   )
@@ -514,7 +514,7 @@ test('#validate', subtest => {
       fastify.post(
         '/:id',
         {
-          schema: requestSchema
+          schema: requestSchema,
         },
         (req, reply) => {
           const { params } = req
@@ -553,11 +553,11 @@ test('#validate', subtest => {
             method: 'post',
             query: { foo: 'bar' },
             payload: {
-              hello: 'world'
+              hello: 'world',
             },
             headers: {
-              'x-foo': 'x-bar'
-            }
+              'x-foo': 'x-bar',
+            },
           })
         )
       }
@@ -653,7 +653,7 @@ test('#validate', subtest => {
           (async j => {
             const response = await fastify.inject({
               path: `/${j}`,
-              method: 'GET'
+              method: 'GET',
             })
 
             const result = response.json()
@@ -703,7 +703,7 @@ test('#validate', subtest => {
         (async j => {
           const response = await fastify.inject({
             path: `/${j}`,
-            method: 'GET'
+            method: 'GET',
           })
 
           const result = response.json()
@@ -733,7 +733,7 @@ test('#validate', subtest => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET'
+        method: 'GET',
       })
     }
   )
@@ -768,7 +768,7 @@ test('Nested Context', subtest => {
 
         await fastify.inject({
           path: '/',
-          method: 'GET'
+          method: 'GET',
         })
       })
 
@@ -806,7 +806,7 @@ test('Nested Context', subtest => {
             fastify.inject('/'),
             fastify.inject('/'),
             fastify.inject('/'),
-            fastify.inject('/')
+            fastify.inject('/'),
           ])
 
           t.equal(counter, 4)
@@ -823,8 +823,8 @@ test('Nested Context', subtest => {
             '/',
             {
               schema: {
-                body: defaultSchema
-              }
+                body: defaultSchema,
+              },
             },
             (req, reply) => {
               const validate = req.compileValidationSchema(defaultSchema)
@@ -845,8 +845,8 @@ test('Nested Context', subtest => {
           method: 'POST',
           payload: {
             hello: 'world',
-            world: 'foo'
-          }
+            world: 'foo',
+          },
         })
       })
 
@@ -904,9 +904,9 @@ test('Nested Context', subtest => {
         const schemaWithHeaders = {
           headers: {
             'x-foo': {
-              type: 'string'
-            }
-          }
+              type: 'string',
+            },
+          },
         }
 
         const custom = ({ schema, httpPart, url, method }) => {
@@ -994,7 +994,7 @@ test('Nested Context', subtest => {
             instance.post(
               '/:id',
               {
-                schema: requestSchema
+                schema: requestSchema,
               },
               (req, reply) => {
                 const { params } = req
@@ -1028,7 +1028,7 @@ test('Nested Context', subtest => {
                     )
                     t.notOk(
                       req.getValidationFunction('querystring')({
-                        foo: 'not-bar'
+                        foo: 'not-bar',
                       })
                     )
                     break
@@ -1063,11 +1063,11 @@ test('Nested Context', subtest => {
                 method: 'post',
                 query: { foo: 'bar' },
                 payload: {
-                  hello: 'world'
+                  hello: 'world',
                 },
                 headers: {
-                  'x-foo': 'x-bar'
-                }
+                  'x-foo': 'x-bar',
+                },
               })
             )
           }
@@ -1186,7 +1186,7 @@ test('Nested Context', subtest => {
             instance.get(
               '/',
               {
-                validatorCompiler: customChild
+                validatorCompiler: customChild,
               },
               (req, reply) => {
                 const validate1 = req.compileValidationSchema(defaultSchema)
@@ -1308,7 +1308,7 @@ test('Nested Context', subtest => {
             query: 0,
             body: 0,
             params: 0,
-            headers: 0
+            headers: 0,
           }
           let parentCalled = 0
 
@@ -1334,7 +1334,7 @@ test('Nested Context', subtest => {
             instance.post(
               '/:id',
               {
-                schema: requestSchema
+                schema: requestSchema,
               },
               (req, reply) => {
                 const { params } = req
@@ -1376,8 +1376,8 @@ test('Nested Context', subtest => {
                 method: 'post',
                 query: {},
                 payload: {
-                  hello: 'world'
-                }
+                  hello: 'world',
+                },
               })
             )
           }

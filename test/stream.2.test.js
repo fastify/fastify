@@ -31,7 +31,7 @@ test('onSend hook stream', t => {
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.headers['content-encoding'], 'gzip')
@@ -49,11 +49,11 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
     'node:stream': {
       finished: (...args) => {
         if (args.length === 2) { args[1](new Error('test-error')) }
-      }
-    }
+      },
+    },
   })
   const Fastify = proxyquire('..', {
-    './lib/reply.js': reply
+    './lib/reply.js': reply,
   })
   const spyLogger = {
     fatal: () => { },
@@ -65,7 +65,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
     info: () => { },
     debug: () => { },
     trace: () => { },
-    child: () => { return spyLogger }
+    child: () => { return spyLogger },
   }
 
   const fastify = Fastify({ loggerInstance: spyLogger })
@@ -79,7 +79,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   })
 })
 
@@ -90,11 +90,11 @@ test('onSend hook stream should work on payload with "close" ending function', t
     'node:stream': {
       finished: (...args) => {
         if (args.length === 2) { args[1](new Error('test-error')) }
-      }
-    }
+      },
+    },
   })
   const Fastify = proxyquire('..', {
-    './lib/reply.js': reply
+    './lib/reply.js': reply,
   })
 
   const fastify = Fastify({ logger: false })
@@ -107,13 +107,13 @@ test('onSend hook stream should work on payload with "close" ending function', t
       close: (cb) => {
         cb()
         t.pass()
-      }
+      },
     }
     done(null, fakeStream)
   })
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   })
 })

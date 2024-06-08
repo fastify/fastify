@@ -8,20 +8,20 @@ const {
   kPublicRouteContext,
   kReply,
   kRequest,
-  kOptions
+  kOptions,
 } = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
 
 test('Regular request', t => {
   const headers = {
-    host: 'hostname'
+    host: 'hostname',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
   const context = new Context({
     schema: {
@@ -29,22 +29,22 @@ test('Regular request', t => {
         type: 'object',
         required: ['hello'],
         properties: {
-          hello: { type: 'string' }
-        }
-      }
+          hello: { type: 'string' },
+        },
+      },
     },
     config: {
       some: 'config',
       url: req.url,
-      method: req.method
+      method: req.method,
     },
     server: {
       [kReply]: {},
       [kRequest]: Request,
       [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      }
-    }
+        requestIdLogLabel: 'reqId',
+      },
+    },
   })
   req.connection = req.socket
   const request = new Request('id', 'params', req, 'query', 'log', context)
@@ -81,13 +81,13 @@ test('Regular request', t => {
 
 test('Request with undefined config', t => {
   const headers = {
-    host: 'hostname'
+    host: 'hostname',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
   const context = new Context({
     schema: {
@@ -95,17 +95,17 @@ test('Request with undefined config', t => {
         type: 'object',
         required: ['hello'],
         properties: {
-          hello: { type: 'string' }
-        }
-      }
+          hello: { type: 'string' },
+        },
+      },
     },
     server: {
       [kReply]: {},
       [kRequest]: Request,
       [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      }
-    }
+        requestIdLogLabel: 'reqId',
+      },
+    },
   })
   req.connection = req.socket
   const request = new Request('id', 'params', req, 'query', 'log', context)
@@ -144,13 +144,13 @@ test('Request with undefined config', t => {
 test('Regular request - hostname from authority', t => {
   t.plan(3)
   const headers = {
-    ':authority': 'authority'
+    ':authority': 'authority',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
 
   const request = new Request('id', 'params', req, 'query', 'log')
@@ -163,13 +163,13 @@ test('Regular request - host header has precedence over authority', t => {
   t.plan(3)
   const headers = {
     host: 'hostname',
-    ':authority': 'authority'
+    ':authority': 'authority',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
@@ -181,13 +181,13 @@ test('Request with trust proxy', t => {
   t.plan(22)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'example.com',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
   const context = new Context({
     schema: {
@@ -195,22 +195,22 @@ test('Request with trust proxy', t => {
         type: 'object',
         required: ['hello'],
         properties: {
-          hello: { type: 'string' }
-        }
-      }
+          hello: { type: 'string' },
+        },
+      },
     },
     config: {
       some: 'config',
       url: req.url,
-      method: req.method
+      method: req.method,
     },
     server: {
       [kReply]: {},
       [kRequest]: Request,
       [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      }
-    }
+        requestIdLogLabel: 'reqId',
+      },
+    },
   })
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -243,13 +243,13 @@ test('Request with trust proxy, encrypted', t => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'example.com',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip', encrypted: true },
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -262,13 +262,13 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    host: 'hostname'
+    host: 'hostname',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -281,13 +281,13 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    ':authority': 'authority'
+    ':authority': 'authority',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -301,13 +301,13 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   const headers = {
     'x-forwarded-for': ' 2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com',
-    host: 'hostname'
+    host: 'hostname',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -320,13 +320,13 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   t.plan(3)
   const headers = {
     'x-forwarded-host': 'example2.com, example.com',
-    'x-forwarded-proto': 'http, https'
+    'x-forwarded-proto': 'http, https',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -340,13 +340,13 @@ test('Request with trust proxy - plain', t => {
   t.plan(1)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'example.com',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: { remoteAddress: 'ip' },
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)
@@ -357,13 +357,13 @@ test('Request with trust proxy - plain', t => {
 test('Request with undefined socket', t => {
   t.plan(18)
   const headers = {
-    host: 'hostname'
+    host: 'hostname',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: undefined,
-    headers
+    headers,
   }
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
@@ -390,13 +390,13 @@ test('Request with trust proxy and undefined socket', t => {
   t.plan(1)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'example.com',
   }
   const req = {
     method: 'GET',
     url: '/',
     socket: undefined,
-    headers
+    headers,
   }
 
   const TpRequest = Request.buildRequest(Request, true)

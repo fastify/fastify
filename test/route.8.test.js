@@ -14,7 +14,7 @@ test('Request and Reply share the route config', async t => {
 
   const config = {
     this: 'is a string',
-    thisIs: function aFunction () {}
+    thisIs: function aFunction () {},
   }
 
   fastify.route({
@@ -27,7 +27,7 @@ test('Request and Reply share the route config', async t => {
       t.match(req.context.config, config, 'there are url and method additional properties')
 
       reply.send({ hello: 'world' })
-    }
+    },
   })
 
   await fastify.inject('/')
@@ -45,14 +45,14 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
       handler: (req, reply) => {
         reply.header('content-type', 'text/plain')
         reply.send('custom HEAD response')
-      }
+      },
     })
     scope.route({
       method: 'GET',
       path: '/route',
       handler: (req, reply) => {
         reply.send({ ok: true })
-      }
+      },
     })
 
     next()
@@ -78,7 +78,7 @@ test('route with non-english characters', t => {
 
     sget({
       method: 'GET',
-      url: getServerUrl(fastify) + encodeURI('/föö')
+      url: getServerUrl(fastify) + encodeURI('/föö'),
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -123,7 +123,7 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
     path: '/more-coffee',
     async handler () {
       return 'hello world'
-    }
+    },
   })
 })
 

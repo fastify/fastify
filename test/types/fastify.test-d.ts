@@ -11,14 +11,13 @@ import fastify, {
   RawRequestDefaultExpression,
   RouteGenericInterface,
   FastifyErrorCodes,
-  FastifyError
+  FastifyError,
 } from '../../fastify'
 import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
 import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd'
-import { FastifyLoggerInstance } from '../../types/logger'
 import { Socket } from 'net'
 
 // FastifyInstance
@@ -37,8 +36,8 @@ expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerRespon
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(
   fastify({
     schemaController: {
-      compilersFactory: {}
-    }
+      compilersFactory: {},
+    },
   })
 )
 
@@ -47,8 +46,8 @@ expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option 
 expectError(
   fastify({
     schemaController: {
-      bucket: () => ({}) // cannot be empty
-    }
+      bucket: () => ({}), // cannot be empty
+    },
   })
 )
 
@@ -94,23 +93,23 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
           version: '1.0.0',
           host: 'localhost',
           remoteAddress: '127.0.0.1',
-          remotePort: 3000
+          remotePort: 3000,
         }
       },
       res: () => {
         return {
-          statusCode: 200
+          statusCode: 200,
         }
       },
       err: () => {
         return {
           type: 'Error',
           message: 'foo',
-          stack: ''
+          stack: '',
         }
-      }
-    }
-  }
+      },
+    },
+  },
 }))
 const customLogger = {
   level: 'info',
@@ -120,7 +119,7 @@ const customLogger = {
   fatal: () => { },
   trace: () => { },
   debug: () => { },
-  child: () => customLogger
+  child: () => customLogger,
 }
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: customLogger }))
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
@@ -131,7 +130,7 @@ expectAssignable<FastifyInstance>(fastify({
   genReqId: (req) => {
     expectType<RawRequestDefaultExpression>(req)
     return 'foo'
-  }
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
@@ -143,10 +142,10 @@ expectAssignable<FastifyInstance>(fastify({
       get: () => 'foo',
       set: () => { },
       del: () => { },
-      empty: () => { }
+      empty: () => { },
     }),
-    deriveVersion: () => 'foo'
-  }
+    deriveVersion: () => 'foo',
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({ constraints: {} }))
 expectAssignable<FastifyInstance>(fastify({
@@ -157,10 +156,10 @@ expectAssignable<FastifyInstance>(fastify({
         get: () => () => {},
         set: () => { },
         del: () => { },
-        empty: () => { }
+        empty: () => { },
       }),
       validate () {},
-      deriveConstraint: () => 'foo'
+      deriveConstraint: () => 'foo',
     },
     host: {
       name: 'host',
@@ -168,10 +167,10 @@ expectAssignable<FastifyInstance>(fastify({
         get: () => () => {},
         set: () => { },
         del: () => { },
-        empty: () => { }
+        empty: () => { },
       }),
       validate () {},
-      deriveConstraint: () => 'foo'
+      deriveConstraint: () => 'foo',
     },
     withObjectValue: {
       name: 'withObjectValue',
@@ -179,34 +178,34 @@ expectAssignable<FastifyInstance>(fastify({
         get: () => () => {},
         set: () => { },
         del: () => { },
-        empty: () => { }
+        empty: () => { },
       }),
       validate () {},
-      deriveConstraint: () => {}
+      deriveConstraint: () => {},
 
-    }
-  }
+    },
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({ return503OnClosing: true }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
     customOptions: {
-      removeAdditional: 'all'
+      removeAdditional: 'all',
     },
-    plugins: [() => { }]
-  }
+    plugins: [() => { }],
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
-    plugins: [[() => { }, ['keyword1', 'keyword2']]]
-  }
+    plugins: [[() => { }, ['keyword1', 'keyword2']]],
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: function (req) {
     this.log.debug('rewrite url')
     return req.url === '/hi' ? '/hello' : req.url!
-  }
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({
   schemaErrorFormatter: (errors, dataVar) => {
@@ -218,13 +217,13 @@ expectAssignable<FastifyInstance>(fastify({
       errors[0].schemaPath.toLowerCase()
     )
     return new Error()
-  }
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({
   clientErrorHandler: (err, socket) => {
     expectType<ConnectionError>(err)
     expectType<Socket>(socket)
-  }
+  },
 }))
 expectAssignable<FastifyInstance>(fastify({ jsonShorthand: true }))
 
@@ -241,14 +240,14 @@ const ajvErrorObject: AjvErrorObject = {
   instancePath: '',
   schemaPath: '',
   params: {},
-  message: ''
+  message: '',
 }
 expectNotAssignable<AjvErrorObject>({
   keyword: '',
   instancePath: '',
   schemaPath: '',
   params: '',
-  message: ''
+  message: '',
 })
 
 expectAssignable<FastifyError['validation']>([ajvErrorObject])

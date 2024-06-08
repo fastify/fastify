@@ -17,14 +17,14 @@ test('diagnostics_channel when present and subscribers', t => {
         publish (event) {
           t.ok(event.fastify)
           fastifyInHook = event.fastify
-        }
+        },
       }
     },
-    '@noCallThru': true
+    '@noCallThru': true,
   }
 
   const fastify = proxyquire('../../fastify', {
-    'dc-polyfill': diagnostics
+    'dc-polyfill': diagnostics,
   })()
   t.equal(fastifyInHook, fastify)
 })
@@ -39,13 +39,13 @@ test('diagnostics_channel when present and no subscribers', t => {
         hasSubscribers: false,
         publish () {
           t.fail('publish should not be called')
-        }
+        },
       }
     },
-    '@noCallThru': true
+    '@noCallThru': true,
   }
 
   proxyquire('../../fastify', {
-    'dc-polyfill': diagnostics
+    'dc-polyfill': diagnostics,
   })()
 })

@@ -22,6 +22,7 @@ declare module '../../fastify' {
     includeMessage?: boolean;
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
     message: ContextConfig extends { includeMessage: true }
       ? string
@@ -64,13 +65,13 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
 'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
 
 ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'PROPFIND',
-  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
+  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT',
 ].forEach(method => {
   // route method
   expectType<FastifyInstance>(fastify().route({
     method: method as HTTPMethods,
     url: '/',
-    handler: routeHandler
+    handler: routeHandler,
   }))
 
   const lowerCaseMethod: LowerCaseHTTPMethods = method.toLowerCase() as LowerCaseHTTPMethods
@@ -88,7 +89,7 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
     },
     childLoggerFactory: function (logger, bindings, opts) {
       return logger.child(bindings, opts)
-    }
+    },
   }))
 
   interface BodyInterface { prop: string }
@@ -256,7 +257,7 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<number>(res.context.config.bar)
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
-    }
+    },
   })
 
   fastify().route<RouteGeneric>({
@@ -393,79 +394,79 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
       expectType<number>(res.context.config.bar)
       expectType<string>(req.routeConfig.url)
       expectType<HTTPMethods | HTTPMethods[]>(req.routeConfig.method)
-    }
+    },
   })
 })
 
 expectError(fastify().route({
   url: '/',
   method: 'CONNECT', // not a valid method
-  handler: routeHandler
+  handler: routeHandler,
 }))
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: ['GET', 'POST'],
-  handler: routeHandler
+  handler: routeHandler,
 }))
 
 expectError(fastify().route({
   url: '/',
   method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS
-  handler: routeHandler
+  handler: routeHandler,
 }))
 
 expectError(fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandler,
-  schemaErrorFormatter: 500 // Not a valid formatter
+  schemaErrorFormatter: 500, // Not a valid formatter
 }))
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandler,
-  schemaErrorFormatter: (errors, dataVar) => new Error('')
+  schemaErrorFormatter: (errors, dataVar) => new Error(''),
 }))
 
 expectError(fastify().route({
-  prefixTrailingSlash: true // Not a valid value
+  prefixTrailingSlash: true, // Not a valid value
 }))
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'GET',
-  handler: routeHandlerWithReturnValue
-}))
-
-expectType<boolean>(fastify().hasRoute({
-  url: '/',
-  method: 'GET'
+  handler: routeHandlerWithReturnValue,
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { version: '1.2.0' }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: 'auth.fastify.dev' }
+  constraints: { version: '1.2.0' },
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/ }
+  constraints: { host: 'auth.fastify.dev' },
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' }
+  constraints: { host: /.*\.fastify\.dev$/ },
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' },
 }))
 
 expectType<boolean>(fastify().hasRoute({
@@ -477,31 +478,31 @@ expectType<boolean>(fastify().hasRoute({
     date: new Date(),
     boolean: true,
     function: () => {},
-    object: { foo: 'bar' }
-  }
+    object: { foo: 'bar' },
+  },
 }))
 
 expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>(
   fastify().findRoute({
     url: '/',
-    method: 'get'
+    method: 'get',
   })
 )
 
 // we should not expose store
 expectError(fastify().findRoute({
   url: '/',
-  method: 'get'
+  method: 'get',
 }).store)
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'get',
-  handler: routeHandlerWithReturnValue
+  handler: routeHandlerWithReturnValue,
 }))
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: ['put', 'patch'],
-  handler: routeHandlerWithReturnValue
+  handler: routeHandlerWithReturnValue,
 }))

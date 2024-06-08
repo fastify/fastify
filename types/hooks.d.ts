@@ -8,7 +8,7 @@ import { FastifyError } from '@fastify/error'
 import { FastifyBaseLogger } from './logger'
 import {
   FastifyTypeProvider,
-  FastifyTypeProviderDefault
+  FastifyTypeProviderDefault,
 } from './type-provider'
 import { RegisterOptions } from './register'
 import { FastifySchema } from './schema'
@@ -724,7 +724,7 @@ export interface onReadyHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
@@ -737,7 +737,7 @@ export interface onReadyAsyncHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
@@ -752,7 +752,7 @@ export interface onListenHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
@@ -765,7 +765,7 @@ export interface onListenAsyncHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
@@ -779,7 +779,7 @@ export interface onCloseHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
@@ -807,7 +807,7 @@ export interface preCloseHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,

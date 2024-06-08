@@ -9,12 +9,12 @@ const opts = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 }
 
 fastify

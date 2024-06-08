@@ -9,7 +9,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
     library: {
-      type: 'commonjs2'
-    }
-  }
+      type: 'commonjs2',
+    },
+  },
 }

@@ -46,15 +46,15 @@ test('handler function - invalid schema', t => {
   const context = {
     config: {
       method: 'GET',
-      url: '/an-url'
+      url: '/an-url',
     },
     schema: {
       body: {
         type: 'object',
         properties: {
-          hello: { type: 'number' }
-        }
-      }
+          hello: { type: 'number' },
+        },
+      },
     },
     errorHandler: { func: () => { t.pass('errorHandler called') } },
     handler: () => {},
@@ -65,12 +65,12 @@ test('handler function - invalid schema', t => {
     onSend: [],
     onError: [],
     attachValidation: false,
-    schemaErrorFormatter: () => new Error()
+    schemaErrorFormatter: () => new Error(),
   }
   buildSchema(context, schemaValidator)
   const request = {
     body: { hello: 'world' },
-    [kRouteContext]: context
+    [kRouteContext]: context,
   }
   internals.handler(request, new Reply(res, request))
 })
@@ -97,8 +97,8 @@ test('handler function - reply', t => {
     onError: [],
     config: {
       url: '',
-      method: ''
-    }
+      method: '',
+    },
   }
   buildSchema(context, schemaValidator)
   internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
@@ -123,7 +123,7 @@ test('handler function - preValidationCallback with finished response', t => {
     preValidation: null,
     preHandler: [],
     onSend: [],
-    onError: []
+    onError: [],
   }
   buildSchema(context, schemaValidator)
   internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
@@ -152,8 +152,8 @@ test('request should be defined in onSend Hook on post request with content type
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     }, (err, response, body) => {
       t.error(err)
       // a 400 error is expected because of no body
@@ -184,8 +184,8 @@ test('request should be defined in onSend Hook on post request with content type
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
-      }
+        'content-type': 'application/x-www-form-urlencoded',
+      },
     }, (err, response, body) => {
       t.error(err)
       // a 415 error is expected because of missing content type parser
@@ -216,8 +216,8 @@ test('request should be defined in onSend Hook on options request with content t
       method: 'OPTIONS',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
-      }
+        'content-type': 'application/x-www-form-urlencoded',
+      },
     }, (err, response, body) => {
       t.error(err)
       // Body parsing skipped, so no body sent
@@ -238,7 +238,7 @@ test('request should respond with an error if an unserialized payload is sent in
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -246,7 +246,7 @@ test('request should respond with an error if an unserialized payload is sent in
       error: 'Internal Server Error',
       code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
       message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
-      statusCode: 500
+      statusCode: 500,
     })
   })
 })

@@ -21,7 +21,7 @@ test('should reject immediately when reply[kReplyHijacked] is true', t => {
   reply.log = {
     error: ({ err }) => {
       t.equal(err.message, 'Reply sent already')
-    }
+    },
   }
 
   const thenable = Promise.reject(new Error('Reply sent already'))

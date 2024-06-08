@@ -46,17 +46,17 @@ test('build schema - output schema', t => {
         '2xx': {
           type: 'object',
           properties: {
-            hello: { type: 'string' }
-          }
+            hello: { type: 'string' },
+          },
         },
         201: {
           type: 'object',
           properties: {
-            hello: { type: 'number' }
-          }
-        }
-      }
-    }
+            hello: { type: 'number' },
+          },
+        },
+      },
+    },
   }
   validation.compileSchemasForSerialization(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.equal(typeof opts[symbols.responseSchema]['2xx'], 'function')
@@ -70,10 +70,10 @@ test('build schema - payload schema', t => {
       body: {
         type: 'object',
         properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
+          hello: { type: 'string' },
+        },
+      },
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.equal(typeof opts[symbols.bodySchema], 'function')
@@ -82,17 +82,17 @@ test('build schema - payload schema', t => {
 test('build schema - avoid repeated normalize schema', t => {
   t.plan(3)
   const serverConfig = {
-    jsonShorthand: true
+    jsonShorthand: true,
   }
   const opts = {
     schema: {
       query: {
         type: 'object',
         properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
+          hello: { type: 'string' },
+        },
+      },
+    },
   }
   opts.schema = normalizeSchema(opts.schema, serverConfig)
   t.not(kSchemaVisited, undefined)
@@ -103,17 +103,17 @@ test('build schema - avoid repeated normalize schema', t => {
 test('build schema - query schema', t => {
   t.plan(2)
   const serverConfig = {
-    jsonShorthand: true
+    jsonShorthand: true,
   }
   const opts = {
     schema: {
       query: {
         type: 'object',
         properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
+          hello: { type: 'string' },
+        },
+      },
+    },
   }
   opts.schema = normalizeSchema(opts.schema, serverConfig)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
@@ -124,14 +124,14 @@ test('build schema - query schema', t => {
 test('build schema - query schema abbreviated', t => {
   t.plan(2)
   const serverConfig = {
-    jsonShorthand: true
+    jsonShorthand: true,
   }
   const opts = {
     schema: {
       query: {
-        hello: { type: 'string' }
-      }
-    }
+        hello: { type: 'string' },
+      },
+    },
   }
   opts.schema = normalizeSchema(opts.schema, serverConfig)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
@@ -146,10 +146,10 @@ test('build schema - querystring schema', t => {
       querystring: {
         type: 'object',
         properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
+          hello: { type: 'string' },
+        },
+      },
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
@@ -159,14 +159,14 @@ test('build schema - querystring schema', t => {
 test('build schema - querystring schema abbreviated', t => {
   t.plan(2)
   const serverConfig = {
-    jsonShorthand: true
+    jsonShorthand: true,
   }
   const opts = {
     schema: {
       querystring: {
-        hello: { type: 'string' }
-      }
-    }
+        hello: { type: 'string' },
+      },
+    },
   }
   opts.schema = normalizeSchema(opts.schema, serverConfig)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
@@ -178,23 +178,23 @@ test('build schema - must throw if querystring and query schema exist', t => {
   t.plan(2)
   try {
     const serverConfig = {
-      jsonShorthand: true
+      jsonShorthand: true,
     }
     const opts = {
       schema: {
         query: {
           type: 'object',
           properties: {
-            hello: { type: 'string' }
-          }
+            hello: { type: 'string' },
+          },
         },
         querystring: {
           type: 'object',
           properties: {
-            hello: { type: 'string' }
-          }
-        }
-      }
+            hello: { type: 'string' },
+          },
+        },
+      },
     }
     opts.schema = normalizeSchema(opts.schema, serverConfig)
   } catch (err) {
@@ -210,10 +210,10 @@ test('build schema - params schema', t => {
       params: {
         type: 'object',
         properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
+          hello: { type: 'string' },
+        },
+      },
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.equal(typeof opts[symbols.paramsSchema], 'function')
@@ -226,10 +226,10 @@ test('build schema - headers schema', t => {
       headers: {
         type: 'object',
         properties: {
-          'content-type': { type: 'string' }
-        }
-      }
-    }
+          'content-type': { type: 'string' },
+        },
+      },
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.equal(typeof opts[symbols.headersSchema], 'function')
@@ -242,10 +242,10 @@ test('build schema - headers are lowercase', t => {
       headers: {
         type: 'object',
         properties: {
-          'Content-Type': { type: 'string' }
-        }
-      }
-    }
+          'Content-Type': { type: 'string' },
+        },
+      },
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.ok(schema.properties['content-type'], 'lowercase content-type exists')
@@ -259,8 +259,8 @@ test('build schema - headers are not lowercased in case of custom object', t => 
   class Headers {}
   const opts = {
     schema: {
-      headers: new Headers()
-    }
+      headers: new Headers(),
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.type(schema, Headers)
@@ -274,8 +274,8 @@ test('build schema - headers are not lowercased in case of custom validator prov
   class Headers {}
   const opts = {
     schema: {
-      headers: new Headers()
-    }
+      headers: new Headers(),
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.type(schema, Headers)
@@ -290,10 +290,10 @@ test('build schema - uppercased headers are not included', t => {
       headers: {
         type: 'object',
         properties: {
-          'Content-Type': { type: 'string' }
-        }
-      }
-    }
+          'Content-Type': { type: 'string' },
+        },
+      },
+    },
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.notOk('Content-Type' in schema.properties, 'uppercase does not exist')
@@ -306,51 +306,51 @@ test('build schema - mixed schema types are individually skipped or normalized',
 
   class CustomSchemaClass {}
   const nonNormalizedSchema = {
-    hello: { type: 'string' }
+    hello: { type: 'string' },
   }
   const normalizedSchema = {
     type: 'object',
-    properties: nonNormalizedSchema
+    properties: nonNormalizedSchema,
   }
 
   const testCases = [{
     schema: {
-      body: new CustomSchemaClass()
+      body: new CustomSchemaClass(),
     },
     assertions: (schema) => {
       t.type(schema.body, CustomSchemaClass)
-    }
+    },
   }, {
     schema: {
       response: {
-        200: new CustomSchemaClass()
-      }
+        200: new CustomSchemaClass(),
+      },
     },
     assertions: (schema) => {
       t.type(schema.response[200], CustomSchemaClass)
-    }
+    },
   }, {
     schema: {
       body: nonNormalizedSchema,
       response: {
-        200: new CustomSchemaClass()
-      }
+        200: new CustomSchemaClass(),
+      },
     },
     assertions: (schema) => {
       t.same(schema.body, normalizedSchema)
       t.type(schema.response[200], CustomSchemaClass)
-    }
+    },
   }, {
     schema: {
       body: new CustomSchemaClass(),
       response: {
-        200: nonNormalizedSchema
-      }
+        200: nonNormalizedSchema,
+      },
     },
     assertions: (schema) => {
       t.type(schema.body, CustomSchemaClass)
       t.same(schema.response[200], normalizedSchema)
-    }
+    },
   }]
 
   testCases.forEach((testCase) => {

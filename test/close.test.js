@@ -154,7 +154,7 @@ test('Should return error while closing (promise) - injection', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -163,7 +163,7 @@ test('Should return error while closing (promise) - injection', t => {
     process.nextTick(() => {
       fastify.inject({
         method: 'GET',
-        url: '/'
+        url: '/',
       }).catch(err => {
         t.ok(err)
         t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
@@ -186,7 +186,7 @@ test('Should return error while closing (callback) - injection', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -195,7 +195,7 @@ test('Should return error while closing (callback) - injection', t => {
     setTimeout(() => {
       fastify.inject({
         method: 'GET',
-        url: '/'
+        url: '/',
       }, (err, res) => {
         t.ok(err)
         t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
@@ -208,7 +208,7 @@ const isNodeVersionGte1819 = semver.gte(process.version, '18.19.0')
 test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v18.19.x', { skip: isNodeVersionGte1819 }, t => {
   const fastify = Fastify({
     return503OnClosing: false,
-    forceCloseConnections: false
+    forceCloseConnections: false,
   })
 
   fastify.get('/', (req, reply) => {
@@ -247,7 +247,7 @@ test('Current opened connection should NOT continue to work after closing and re
   t.plan(4)
   const fastify = Fastify({
     return503OnClosing: false,
-    forceCloseConnections: false
+    forceCloseConnections: false,
   })
 
   fastify.get('/', (req, reply) => {
@@ -311,8 +311,8 @@ test('rejected incoming connections should be logged', t => {
     forceCloseConnections: false,
     logger: {
       stream,
-      level: 'info'
-    }
+      level: 'info',
+    },
   })
 
   const messages = []
@@ -512,7 +512,7 @@ test('triggers on-close hook in the right order with multiple bindings (forceClo
     const { family, address, port } = addr
     const host = family === 'IPv6' ? `[${address}]` : address
     const client = new Client(`http://${host}:${port}`, {
-      keepAliveTimeout: 1 * 60 * 1000
+      keepAliveTimeout: 1 * 60 * 1000,
     })
 
     client.request({ path: '/', method: 'GET' })
@@ -568,7 +568,7 @@ test('triggers on-close hook in the right order with multiple bindings (forceClo
     const { family, address, port } = addr
     const host = family === 'IPv6' ? `[${address}]` : address
     const client = new Client(`http://${host}:${port}`, {
-      keepAliveTimeout: 1 * 60 * 1000
+      keepAliveTimeout: 1 * 60 * 1000,
     })
 
     client.request({ path: '/', method: 'GET' })
@@ -604,7 +604,7 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', t 
       server.closeAllConnections = null
 
       return server
-    }
+    },
   })
 
   fastify.server.setTimeout(timeoutTime)

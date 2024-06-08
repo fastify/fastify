@@ -20,8 +20,8 @@ test('Buffer test', async t => {
       url: '/',
       payload: Buffer.from('{"hello":"world"}'),
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
 
     t.error(response.error)
@@ -37,8 +37,8 @@ test('Buffer test', async t => {
       url: '/',
       payload: Buffer.alloc(0),
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
 
     t.error(response.error)
@@ -47,7 +47,7 @@ test('Buffer test', async t => {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
       message: 'Body cannot be empty when content-type is set to \'application/json\'',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })

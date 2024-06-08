@@ -29,7 +29,7 @@ function helper (code) {
 
     fastify.inject({
       method: 'GET',
-      url: '/'
+      url: '/',
     }, (error, res) => {
       t.error(error)
       t.equal(res.statusCode, Number(code))
@@ -38,7 +38,7 @@ function helper (code) {
         {
           error: statusCodes[code],
           message: err.message,
-          statusCode: Number(code)
+          statusCode: Number(code),
         },
         JSON.parse(res.payload)
       )
@@ -61,7 +61,7 @@ test('preHandler hook error handling with external code', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 400)
@@ -69,7 +69,7 @@ test('preHandler hook error handling with external code', t => {
       {
         error: statusCodes['400'],
         message: err.message,
-        statusCode: 400
+        statusCode: 400,
       },
       JSON.parse(res.payload)
     )
@@ -91,7 +91,7 @@ test('onRequest hook error handling with external done', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 400)
@@ -99,7 +99,7 @@ test('onRequest hook error handling with external done', t => {
       {
         error: statusCodes['400'],
         message: err.message,
-        statusCode: 400
+        statusCode: 400,
       },
       JSON.parse(res.payload)
     )
@@ -126,7 +126,7 @@ test('Should reply 400 on client error', t => {
       const body = JSON.stringify({
         error: 'Bad Request',
         message: 'Client Error',
-        statusCode: 400
+        statusCode: 400,
       })
       t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`, chunks)
     })
@@ -139,7 +139,7 @@ test('Should set the response from client error handler', t => {
   const responseBody = JSON.stringify({
     error: 'Ended Request',
     message: 'Serious Client Error',
-    statusCode: 400
+    statusCode: 400,
   })
   const response = `HTTP/1.1 400 Bad Request\r\nContent-Length: ${responseBody.length}\r\nContent-Type: application/json; charset=utf-8\r\n\r\n${responseBody}`
 
@@ -155,8 +155,8 @@ test('Should set the response from client error handler', t => {
     clientErrorHandler,
     logger: {
       stream: logStream,
-      level: 'warn'
-    }
+      level: 'warn',
+    },
   })
 
   fastify.listen({ port: 0, host: '127.0.0.1' }, err => {
@@ -195,7 +195,7 @@ test('Error instance sets HTTP status code', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
@@ -203,7 +203,7 @@ test('Error instance sets HTTP status code', t => {
       {
         error: statusCodes['418'],
         message: err.message,
-        statusCode: 418
+        statusCode: 418,
       },
       JSON.parse(res.payload)
     )
@@ -223,7 +223,7 @@ test('Error status code below 400 defaults to 500', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 500)
@@ -231,7 +231,7 @@ test('Error status code below 400 defaults to 500', t => {
       {
         error: statusCodes['500'],
         message: err.message,
-        statusCode: 500
+        statusCode: 500,
       },
       JSON.parse(res.payload)
     )
@@ -251,7 +251,7 @@ test('Error.status property support', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
@@ -259,7 +259,7 @@ test('Error.status property support', t => {
       {
         error: statusCodes['418'],
         message: err.message,
-        statusCode: 418
+        statusCode: 418,
       },
       JSON.parse(res.payload)
     )
@@ -278,7 +278,7 @@ test('Support rejection with values that are not Error instances', t => {
     'abc',
     new RegExp(),
     new Date(),
-    new Uint8Array()
+    new Uint8Array(),
   ]
   t.plan(objs.length)
   for (const nonErr of objs) {
@@ -302,7 +302,7 @@ test('Support rejection with values that are not Error instances', t => {
 
       fastify.inject({
         method: 'GET',
-        url: '/'
+        url: '/',
       }, (error, res) => {
         t.error(error)
         t.equal(res.statusCode, 500)
@@ -322,10 +322,10 @@ test('invalid schema - ajv', t => {
       querystring: {
         type: 'object',
         properties: {
-          id: { type: 'number' }
-        }
-      }
-    }
+          id: { type: 'number' },
+        },
+      },
+    },
   }, (req, reply) => {
     t.fail('we should not be here')
   })
@@ -337,7 +337,7 @@ test('invalid schema - ajv', t => {
 
   fastify.inject({
     url: '/?id=abc',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -359,7 +359,7 @@ test('should set the status code and the headers from the error object (from rou
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -367,7 +367,7 @@ test('should set the status code and the headers from the error object (from rou
     t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'kaboom',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -394,7 +394,7 @@ test('should set the status code and the headers from the error object (from cus
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -402,7 +402,7 @@ test('should set the status code and the headers from the error object (from cus
     t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'kaboom',
-      statusCode: 400
+      statusCode: 400,
     })
   })
 })
@@ -426,7 +426,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (e, res) => {
     t.fail('should not be called')
   })
@@ -452,7 +452,7 @@ test('should throw an error if the custom serializer does not serialize the payl
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (e, res) => {
     t.fail('should not be called')
   })
@@ -466,7 +466,7 @@ test('should not set headers or status code for custom error handler', t => {
   fastify.get('/', function (req, reply) {
     const err = new Error('kaboom')
     err.headers = {
-      'fake-random-header': 'abc'
+      'fake-random-header': 'abc',
     }
     reply.send(err)
   })
@@ -479,7 +479,7 @@ test('should not set headers or status code for custom error handler', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -497,7 +497,7 @@ test('error thrown by custom error handler routes to default error handler', t =
 
   const error = new Error('kaboom')
   error.headers = {
-    'fake-random-header': 'abc'
+    'fake-random-header': 'abc',
   }
 
   fastify.get('/', function (req, reply) {
@@ -516,14 +516,14 @@ test('error thrown by custom error handler routes to default error handler', t =
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
     t.same(JSON.parse(res.payload), {
       error: statusCodes['500'],
       message: newError.message,
-      statusCode: 500
+      statusCode: 500,
     })
   })
 })
@@ -545,14 +545,14 @@ test('allow re-thrown error to default error handler when route handler is async
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
     t.same(JSON.parse(res.payload), {
       error: statusCodes['500'],
       message: 'kabong',
-      statusCode: 500
+      statusCode: 500,
     })
   })
 })
@@ -569,7 +569,7 @@ const invalidErrorCodes = [
   1,
   99,
   600,
-  700
+  700,
 ]
 invalidErrorCodes.forEach((invalidCode) => {
   test(`should throw error if error code is ${invalidCode}`, t => {
@@ -586,7 +586,7 @@ invalidErrorCodes.forEach((invalidCode) => {
     })
     fastify.inject({
       url: '/',
-      method: 'GET'
+      method: 'GET',
     }, (e, res) => {
       t.fail('should not be called')
     })
@@ -603,7 +603,6 @@ test('error handler is triggered when a string is thrown from sync handler', t =
   const payload = 'error'
 
   fastify.get('/', function (req, reply) {
-    // eslint-disable-next-line no-throw-literal
     throw throwable
   })
 
@@ -615,7 +614,7 @@ test('error handler is triggered when a string is thrown from sync handler', t =
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, payload)
@@ -666,7 +665,6 @@ test('should trigger error handlers if a sync route throws any non-error object'
   const payload = 'error'
 
   fastify.get('/', function async (req, reply) {
-    // eslint-disable-next-line no-throw-literal
     throw throwable
   })
 
@@ -708,7 +706,7 @@ test('setting content-type on reply object should not hang the server case 1', t
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -731,13 +729,13 @@ test('setting content-type on reply object should not hang the server case 2', a
     await fastify.ready()
     const res = await fastify.inject({
       url: '/',
-      method: 'GET'
+      method: 'GET',
     })
     t.same({
       error: 'Internal Server Error',
       message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
       statusCode: 500,
-      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE'
+      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
     },
     res.json())
   } catch (error) {
@@ -761,7 +759,7 @@ test('setting content-type on reply object should not hang the server case 3', t
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -787,7 +785,7 @@ test('pipe stream inside error handler should not cause error', t => {
 
   fastify.inject({
     url: '/',
-    method: 'GET'
+    method: 'GET',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)

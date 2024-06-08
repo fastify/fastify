@@ -7,7 +7,7 @@ const h2url = require('h2url')
 const msg = { hello: 'world' }
 
 const fastify = Fastify({
-  http2: true
+  http2: true,
 })
 
 fastify.get('/', function (req, reply) {
@@ -29,7 +29,7 @@ fastify.listen({ port: 0 }, err => {
       statusCode: 404,
       code: 'FST_ERR_NOT_FOUND',
       error: 'Not Found',
-      message: 'Not Found'
+      message: 'Not Found',
     })
   })
 })

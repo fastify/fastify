@@ -22,9 +22,9 @@ test('rawBody function', t => {
       return {
         then (cb) {
           cb()
-        }
+        },
       }
-    }
+    },
   }
   const res = {}
   res.end = () => { }
@@ -37,8 +37,8 @@ test('rawBody function', t => {
     preHandler: [],
     onSend: [],
     _parserOptions: {
-      limit: 1024
-    }
+      limit: 1024,
+    },
   }
   const rs = new Readable()
   rs._read = function () { }
@@ -62,7 +62,7 @@ test('Should support Webpack and faux modules', t => {
   t.plan(2)
 
   const internals = proxyquire('../../lib/contentTypeParser', {
-    'tiny-lru': { default: () => { } }
+    'tiny-lru': { default: () => { } },
   })[kTestInternals]
 
   const body = Buffer.from('你好 世界')
@@ -75,9 +75,9 @@ test('Should support Webpack and faux modules', t => {
       return {
         then (cb) {
           cb()
-        }
+        },
       }
-    }
+    },
   }
   const res = {}
   res.end = () => { }
@@ -90,8 +90,8 @@ test('Should support Webpack and faux modules', t => {
     preHandler: [],
     onSend: [],
     _parserOptions: {
-      limit: 1024
-    }
+      limit: 1024,
+    },
   }
   const rs = new Readable()
   rs._read = function () { }

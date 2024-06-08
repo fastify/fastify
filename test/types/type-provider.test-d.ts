@@ -4,7 +4,7 @@ import fastify, {
   FastifyRequest,
   FastifyReply,
   FastifyInstance,
-  FastifyError
+  FastifyError,
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
@@ -32,8 +32,8 @@ expectAssignable(server.withTypeProvider<NumberProvider>().get(
       body: { type: 'string' },
       querystring: { type: 'string' },
       headers: { type: 'string' },
-      params: { type: 'string' }
-    }
+      params: { type: 'string' },
+    },
   },
   (req) => {
     expectType<number & IncomingHttpHeaders>(req.headers)
@@ -56,9 +56,9 @@ expectAssignable(server.withTypeProvider<OverriddenProvider>().get<{ Body: 'over
       body: Type.Object({
         x: Type.Number(),
         y: Type.Number(),
-        z: Type.Number()
-      })
-    }
+        z: Type.Number(),
+      }),
+    },
   },
   (req) => {
     expectType<'override'>(req.body)
@@ -78,8 +78,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
       body: Type.Object({
         x: Type.Number(),
         y: Type.Number(),
-        z: Type.Number()
-      })
+        z: Type.Number(),
+      }),
     },
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
@@ -88,7 +88,7 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
       expectType<number>(request.body.y)
       expectType<number>(request.body.z)
       expectAssignable<FastifyReply>(reply)
-    }
+    },
   },
   (req) => {
     expectType<number>(req.body.x)
@@ -116,9 +116,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
         properties: {
           x: { type: 'number' },
           y: { type: 'string' },
-          z: { type: 'boolean' }
-        }
-      } as const
+          z: { type: 'boolean' },
+        },
+      } as const,
     },
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
@@ -127,7 +127,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       expectType<string | undefined>(request.body.y)
       expectType<boolean | undefined>(request.body.z)
       expectAssignable<FastifyReply>(reply)
-    }
+    },
   },
   (req) => {
     expectType<number | undefined>(req.body.x)
@@ -145,9 +145,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
       properties: {
         x: { type: 'number' },
         y: { type: 'string' },
-        z: { type: 'boolean' }
-      }
-    }
+        z: { type: 'boolean' },
+      },
+    },
   } as const,
   errorHandler: (error, request, reply) => {
     expectType<FastifyError>(error)
@@ -161,7 +161,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
     expectType<number | undefined>(req.body.x)
     expectType<string | undefined>(req.body.y)
     expectType<boolean | undefined>(req.body.z)
-  }
+  },
 }))
 
 // inferring schema `as const`
@@ -175,9 +175,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
         properties: {
           x: { type: 'number' },
           y: { type: 'string' },
-          z: { type: 'boolean' }
-        }
-      }
+          z: { type: 'boolean' },
+        },
+      },
     },
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
@@ -186,7 +186,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       expectType<string | undefined>(request.body.y)
       expectType<boolean | undefined>(request.body.z)
       expectAssignable<FastifyReply>(reply)
-    }
+    },
   },
   (req) => {
     expectType<number | undefined>(req.body.x)
@@ -204,9 +204,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
       properties: {
         x: { type: 'number' },
         y: { type: 'string' },
-        z: { type: 'boolean' }
-      }
-    }
+        z: { type: 'boolean' },
+      },
+    },
   },
   errorHandler: (error, request, reply) => {
     expectType<FastifyError>(error)
@@ -220,7 +220,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
     expectType<number | undefined>(req.body.x)
     expectType<string | undefined>(req.body.y)
     expectType<boolean | undefined>(req.body.z)
-  }
+  },
 }))
 
 expectAssignable<FastifyInstance>(server.withTypeProvider<JsonSchemaToTsProvider>())
@@ -238,9 +238,9 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<Jso
         properties: {
           x: { type: 'number' },
           y: { type: 'string' },
-          z: { type: 'boolean' }
-        }
-      } as const
+          z: { type: 'boolean' },
+        },
+      } as const,
     },
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
@@ -249,7 +249,7 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<Jso
       expectType<string | undefined>(request.body.y)
       expectType<boolean | undefined>(request.body.z)
       expectAssignable<FastifyReply>(reply)
-    }
+    },
   },
   (req) => {
     expectType<number | undefined>(req.body.x)
@@ -271,8 +271,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
       body: Type.Object({
         x: Type.Number(),
         y: Type.String(),
-        z: Type.Boolean()
-      })
+        z: Type.Boolean(),
+      }),
     },
     preHandler: (req, reply, done) => {
       expectType<number>(req.body.x)
@@ -318,7 +318,7 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
-    }
+    },
   },
   req => {
     expectType<number>(req.body.x)
@@ -336,8 +336,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
       body: Type.Object({
         x: Type.Number(),
         y: Type.String(),
-        z: Type.Boolean()
-      })
+        z: Type.Boolean(),
+      }),
     },
     preHandler: async (req, reply, done) => {
       expectType<number>(req.body.x)
@@ -383,7 +383,7 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
       expectType<number>(req.body.x)
       expectType<string>(req.body.y)
       expectType<boolean>(req.body.z)
-    }
+    },
   },
   req => {
     expectType<number>(req.body.x)
@@ -408,11 +408,11 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
           UPPERCASE: { type: 'number' },
           camelCase: { type: 'boolean' },
           'KEBAB-case': { type: 'boolean' },
-          PRESERVE_OPTIONAL: { type: 'number' }
+          PRESERVE_OPTIONAL: { type: 'number' },
         },
-        required: ['lowercase', 'UPPERCASE', 'camelCase', 'KEBAB-case']
-      } as const
-    }
+        required: ['lowercase', 'UPPERCASE', 'camelCase', 'KEBAB-case'],
+      } as const,
+    },
   },
   (req) => {
     expectType<string>(req.headers.lowercase)
@@ -434,9 +434,9 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         UPPERCASE: Type.Number(),
         camelCase: Type.Boolean(),
         'KEBAB-case': Type.Boolean(),
-        PRESERVE_OPTIONAL: Type.Optional(Type.Number())
-      })
-    }
+        PRESERVE_OPTIONAL: Type.Optional(Type.Number()),
+      }),
+    },
   },
   (req) => {
     expectType<string>(req.headers.lowercase)
@@ -460,10 +460,10 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         200: Type.String(),
         400: Type.Number(),
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     res.send('hello')
@@ -488,20 +488,20 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: Type.String()
+              schema: Type.String(),
             },
             'application/json': {
               schema: Type.Object({
-                msg: Type.String()
-              })
-            }
-          }
+                msg: Type.String(),
+              }),
+            },
+          },
         },
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     res.send('hello')
@@ -522,10 +522,10 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
         200: Type.String(),
         400: Type.Number(),
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     res.send(false)
@@ -544,20 +544,20 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: Type.String()
+              schema: Type.String(),
             },
             'application/json': {
               schema: Type.Object({
-                msg: Type.String()
-              })
-            }
-          }
+                msg: Type.String(),
+              }),
+            },
+          },
         },
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     res.send(false)
@@ -576,10 +576,10 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         200: Type.String(),
         400: Type.Number(),
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     const option = 1 as 1 | 2 | 3
@@ -603,20 +603,20 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: Type.String()
+              schema: Type.String(),
             },
             'application/json': {
               schema: Type.Object({
-                msg: Type.String()
-              })
-            }
-          }
+                msg: Type.String(),
+              }),
+            },
+          },
         },
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     const option = 1 as 1 | 2 | 3
@@ -640,10 +640,10 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
         200: Type.String(),
         400: Type.Number(),
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     return false
@@ -662,20 +662,20 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: Type.String()
+              schema: Type.String(),
             },
             'application/json': {
               schema: Type.Object({
-                msg: Type.String()
-              })
-            }
-          }
+                msg: Type.String(),
+              }),
+            },
+          },
         },
         500: Type.Object({
-          error: Type.String()
-        })
-      }
-    }
+          error: Type.String(),
+        }),
+      },
+    },
   },
   async (_, res) => {
     return false
@@ -693,9 +693,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   (_, res) => {
     res.send('hello')
@@ -720,16 +720,16 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: { type: 'string' }
+              schema: { type: 'string' },
             },
             'application/json': {
-              schema: { type: 'object', properties: { msg: { type: 'string' } } }
-            }
-          }
+              schema: { type: 'object', properties: { msg: { type: 'string' } } },
+            },
+          },
         },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   (_, res) => {
     res.send('hello')
@@ -749,9 +749,9 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     res.send(false)
@@ -770,16 +770,16 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: { type: 'string' }
+              schema: { type: 'string' },
             },
             'application/json': {
-              schema: { type: 'object', properties: { msg: { type: 'string' } } }
-            }
-          }
+              schema: { type: 'object', properties: { msg: { type: 'string' } } },
+            },
+          },
         },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     res.send(false)
@@ -797,9 +797,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     const option = 1 as 1 | 2 | 3
@@ -823,16 +823,16 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: { type: 'string' }
+              schema: { type: 'string' },
             },
             'application/json': {
-              schema: { type: 'object', properties: { msg: { type: 'string' } } }
-            }
-          }
+              schema: { type: 'object', properties: { msg: { type: 'string' } } },
+            },
+          },
         },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     const option = 1 as 1 | 2 | 3
@@ -855,9 +855,9 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     return false
@@ -868,9 +868,9 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get('/', {
   schema: {
     response: {
-      200: { type: 'string' }
-    }
-  } as const
+      200: { type: 'string' },
+    },
+  } as const,
 }, (_, res) => {
   return { foo: 555 }
 }))
@@ -887,16 +887,16 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
         200: {
           content: {
             'text/string': {
-              schema: { type: 'string' }
+              schema: { type: 'string' },
             },
             'application/json': {
-              schema: { type: 'object', properties: { msg: { type: 'string' } } }
-            }
-          }
+              schema: { type: 'object', properties: { msg: { type: 'string' } } },
+            },
+          },
         },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     return false
@@ -907,16 +907,16 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 // Reply Type Override
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     res.send(true)
@@ -927,7 +927,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 // Reply Type Override (Different Content-types)
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
@@ -935,16 +935,16 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
         200: {
           content: {
             'text/string': {
-              schema: { type: 'string' }
+              schema: { type: 'string' },
             },
             'application/json': {
-              schema: { type: 'object', properties: { msg: { type: 'string' } } }
-            }
-          }
+              schema: { type: 'object', properties: { msg: { type: 'string' } } },
+            },
+          },
         },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     res.send(true)
@@ -955,16 +955,16 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 // Reply Type Return Override
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     return true
@@ -975,7 +975,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 // Reply Type Return Override (Different Content-types)
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
@@ -983,16 +983,16 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
         200: {
           content: {
             'text/string': {
-              schema: { type: 'string' }
+              schema: { type: 'string' },
             },
             'application/json': {
-              schema: { type: 'object', properties: { msg: { type: 'string' } } }
-            }
-          }
+              schema: { type: 'object', properties: { msg: { type: 'string' } } },
+            },
+          },
         },
-        500: { type: 'object', properties: { error: { type: 'string' } } }
-      } as const
-    }
+        500: { type: 'object', properties: { error: { type: 'string' } } },
+      } as const,
+    },
   },
   async (_, res) => {
     return true
@@ -1010,7 +1010,7 @@ function plugin<T extends FastifyInstance> (instance: T) {
   expectAssignable(instance.withTypeProvider<AuxiliaryPluginProvider>().get(
     '/',
     {
-      schema: { body: null }
+      schema: { body: null },
     },
     (req) => {
       expectType<'plugin-auxiliary'>(req.body)
@@ -1021,7 +1021,7 @@ function plugin<T extends FastifyInstance> (instance: T) {
 expectAssignable(server.withTypeProvider<AuxiliaryPluginProvider>().register(plugin).get(
   '/',
   {
-    schema: { body: null }
+    schema: { body: null },
   },
   (req) => {
     expectType<'plugin-auxiliary'>(req.body)
@@ -1041,7 +1041,7 @@ expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
     onRequest: (req, res, done) => {
       expectType<'handler-inline'>(req.body)
     },
-    schema: { body: null }
+    schema: { body: null },
   },
   (req) => {
     expectType<'handler-inline'>(req.body)
@@ -1063,7 +1063,7 @@ expectAssignable(server.withTypeProvider<AuxiliaryHandlerProvider>().get(
   '/',
   {
     onRequest: auxiliaryHandler,
-    schema: { body: null }
+    schema: { body: null },
   },
   (req) => {
     expectType<'handler-auxiliary'>(req.body)

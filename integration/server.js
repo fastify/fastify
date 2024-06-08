@@ -6,7 +6,7 @@ const fastify = Fastify()
 
 fastify.listen({
   host: '::',
-  port: 3000
+  port: 3000,
 })
 
 fastify.get('/', async function (request, reply) {

@@ -23,7 +23,7 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
       prefixTrailingSlash: 'both',
       handler: (req, reply) => {
         reply.send({ here: 'is coffee' })
-      }
+      },
     })
 
     next()
@@ -44,7 +44,7 @@ test('Will not create a HEAD route that is not GET', t => {
     path: '/more-coffee',
     handler: (req, reply) => {
       reply.send({ here: 'is coffee' })
-    }
+    },
   })
 
   fastify.route({
@@ -52,7 +52,7 @@ test('Will not create a HEAD route that is not GET', t => {
     path: '/some-light',
     handler: (req, reply) => {
       reply.send()
-    }
+    },
   })
 
   fastify.route({
@@ -60,12 +60,12 @@ test('Will not create a HEAD route that is not GET', t => {
     path: '/something',
     handler: (req, reply) => {
       reply.send({ look: 'It is something!' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'HEAD',
-    url: '/more-coffee'
+    url: '/more-coffee',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -75,7 +75,7 @@ test('Will not create a HEAD route that is not GET', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/some-light'
+    url: '/some-light',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -86,7 +86,7 @@ test('Will not create a HEAD route that is not GET', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/something'
+    url: '/something',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 404)
@@ -107,7 +107,7 @@ test('HEAD route should handle properly each response type', t => {
     path: '/json',
     handler: (req, reply) => {
       reply.send(resJSON)
-    }
+    },
   })
 
   fastify.route({
@@ -115,7 +115,7 @@ test('HEAD route should handle properly each response type', t => {
     path: '/string',
     handler: (req, reply) => {
       reply.send(resString)
-    }
+    },
   })
 
   fastify.route({
@@ -123,7 +123,7 @@ test('HEAD route should handle properly each response type', t => {
     path: '/buffer',
     handler: (req, reply) => {
       reply.send(resBuffer)
-    }
+    },
   })
 
   fastify.route({
@@ -132,7 +132,7 @@ test('HEAD route should handle properly each response type', t => {
     handler: (req, reply) => {
       reply.headers({ 'content-type': 'image/jpeg' })
       reply.send(resBuffer)
-    }
+    },
   })
 
   fastify.route({
@@ -140,12 +140,12 @@ test('HEAD route should handle properly each response type', t => {
     path: '/stream',
     handler: (req, reply) => {
       return resStream
-    }
+    },
   })
 
   fastify.inject({
     method: 'HEAD',
-    url: '/json'
+    url: '/json',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -156,7 +156,7 @@ test('HEAD route should handle properly each response type', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/string'
+    url: '/string',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -167,7 +167,7 @@ test('HEAD route should handle properly each response type', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/buffer'
+    url: '/buffer',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -178,7 +178,7 @@ test('HEAD route should handle properly each response type', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/buffer-with-content-type'
+    url: '/buffer-with-content-type',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -189,7 +189,7 @@ test('HEAD route should handle properly each response type', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/stream'
+    url: '/stream',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -216,12 +216,12 @@ test('HEAD route should respect custom onSend handlers', t => {
     handler: (req, reply) => {
       reply.send(resBuffer)
     },
-    onSend: [customOnSend, customOnSend]
+    onSend: [customOnSend, customOnSend],
   })
 
   fastify.inject({
     method: 'HEAD',
-    url: '/more-coffee'
+    url: '/more-coffee',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -246,7 +246,7 @@ test('route onSend can be function or array of functions', t => {
     onSend: (res, reply, payload, done) => {
       counters.single += 1
       done(null, payload)
-    }
+    },
   })
 
   const customOnSend = (res, reply, payload, done) => {
@@ -258,7 +258,7 @@ test('route onSend can be function or array of functions', t => {
     method: 'GET',
     path: '/more-coffee',
     handler: () => resBuffer,
-    onSend: [customOnSend, customOnSend]
+    onSend: [customOnSend, customOnSend],
   })
 
   fastify.inject({ method: 'HEAD', url: '/coffee' }, (error, res) => {
@@ -289,7 +289,7 @@ test('no warning for exposeHeadRoute', async t => {
     exposeHeadRoute: true,
     async handler () {
       return 'hello world'
-    }
+    },
   })
 
   const listener = (w) => {

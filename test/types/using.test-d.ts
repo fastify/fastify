@@ -1,4 +1,4 @@
-import { expectAssignable, expectType } from 'tsd'
+import { expectAssignable } from 'tsd'
 import fastify, { FastifyInstance } from '../../fastify'
 
 async function hasSymbolDisposeWithUsing () {
@@ -12,3 +12,6 @@ async function hasSymbolDispose () {
   expectAssignable<FastifyInstance>(app)
   expectAssignable<FastifyInstance[typeof Symbol.asyncDispose]>(app.close)
 }
+
+hasSymbolDisposeWithUsing()
+hasSymbolDispose()

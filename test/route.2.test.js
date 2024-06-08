@@ -10,7 +10,7 @@ test('same route definition object on multiple prefixes', async t => {
   const routeObject = {
     handler: () => { },
     method: 'GET',
-    url: '/simple'
+    url: '/simple',
   }
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -40,12 +40,12 @@ test('path can be specified in place of uri', t => {
     path: '/path',
     handler: function (req, reply) {
       reply.send({ hello: 'world' })
-    }
+    },
   })
 
   const reqOpts = {
     method: 'GET',
-    url: '/path'
+    url: '/path',
   }
 
   fastify.inject(reqOpts, (err, res) => {
@@ -63,7 +63,7 @@ test('invalid bodyLimit option - route', t => {
     fastify.route({
       bodyLimit: false,
       method: 'PUT',
-      handler: () => null
+      handler: () => null,
     })
     t.fail('bodyLimit must be an integer')
   } catch (err) {
@@ -85,12 +85,12 @@ test('handler function in options of shorthand route should works correctly', t 
   fastify.get('/foo', {
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/foo'
+    url: '/foo',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)

@@ -25,8 +25,8 @@ test('Should have typeof body object with no custom parser defined, null body an
       url: getServerUrl(fastify),
       body: null,
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        'Content-Type': 'text/plain',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -52,8 +52,8 @@ test('Should have typeof body object with no custom parser defined, undefined bo
       url: getServerUrl(fastify),
       body: undefined,
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        'Content-Type': 'text/plain',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -91,8 +91,8 @@ test('Should get the body as string /1', t => {
       url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        'Content-Type': 'text/plain',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -130,8 +130,8 @@ test('Should get the body as string /2', t => {
       url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
-        'Content-Type': '   text/plain/test  '
-      }
+        'Content-Type': '   text/plain/test  ',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -169,8 +169,8 @@ test('Should get the body as buffer', t => {
       url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -208,8 +208,8 @@ test('Should get the body as buffer', t => {
       url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        'Content-Type': 'text/plain',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -233,7 +233,7 @@ test('Should parse empty bodies as a string', t => {
     url: '/',
     handler (request, reply) {
       reply.send(request.body)
-    }
+    },
   })
 
   fastify.listen({ port: 0 }, err => {
@@ -245,8 +245,8 @@ test('Should parse empty bodies as a string', t => {
       url: getServerUrl(fastify),
       body: '',
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        'Content-Type': 'text/plain',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -259,8 +259,8 @@ test('Should parse empty bodies as a string', t => {
       body: '',
       headers: {
         'Content-Type': 'text/plain',
-        'Content-Length': '0'
-      }
+        'Content-Length': '0',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -291,8 +291,8 @@ test('Should parse empty bodies as a buffer', t => {
       url: getServerUrl(fastify),
       body: '',
       headers: {
-        'Content-Type': 'text/plain'
-      }
+        'Content-Type': 'text/plain',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -325,8 +325,8 @@ test('The charset should not interfere with the content type handling', t => {
       url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

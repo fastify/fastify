@@ -15,11 +15,11 @@ import {
   FastifySchemaCompiler,
   FastifySchemaControllerOptions,
   FastifySerializerCompiler,
-  SchemaErrorFormatter
+  SchemaErrorFormatter,
 } from './schema'
 import {
   FastifyTypeProvider,
-  FastifyTypeProviderDefault
+  FastifyTypeProviderDefault,
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
@@ -30,7 +30,7 @@ export interface PrintRoutesOptions {
   includeHooks?: boolean
 }
 
-type AsyncFunction = (...args: any) => Promise<any>;
+type AsyncFunction = (...args: any) => Promise<any>
 
 export interface FastifyListenOptions {
   /**
@@ -96,7 +96,7 @@ type GetterSetter<This, T> = T | {
 type DecorationMethod<This, Return = This> = {
   <
     // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorate<Foo> would suddenly mean something new
-    // eslint-disable-next-line no-use-before-define
+
     T extends (P extends keyof This ? This[P] : unknown),
     P extends string | symbol = string | symbol
   >(property: P,
@@ -109,7 +109,7 @@ type DecorationMethod<This, Return = This> = {
 
   (property: string | symbol): Return;
 
-  (property: string | symbol, value: null|undefined, dependencies: string[]): Return;
+  (property: string | symbol, value: null | undefined, dependencies: string[]): Return;
 }
 
 /**
@@ -120,7 +120,7 @@ export interface FastifyInstance<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   server: RawServer;
   pluginName: string;
@@ -142,7 +142,7 @@ export interface FastifyInstance<
   close(closeListener: () => void): undefined;
 
   /** Alias for {@linkcode FastifyInstance.close()} */
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
   // @ts-ignore - type only available for @types/node >=17 or typescript >= 5.2
   [Symbol.asyncDispose](): Promise<undefined>;
 
@@ -177,7 +177,7 @@ export interface FastifyInstance<
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    const SchemaCompiler extends FastifySchema = FastifySchema,
+    const SchemaCompiler extends FastifySchema = FastifySchema
   >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
@@ -203,13 +203,13 @@ export interface FastifyInstance<
   hasRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema,
+    SchemaCompiler extends FastifySchema = FastifySchema
   >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
 
   findRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema,
+    SchemaCompiler extends FastifySchema = FastifySchema
   >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): Omit<FindMyWayFindResult<RawServer>, 'store'>;
 
   // addHook: overloads

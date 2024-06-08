@@ -14,15 +14,15 @@ test('Should register a host constrained route', t => {
     constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fastify.dev'
-    }
+      host: 'fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -33,8 +33,8 @@ test('Should register a host constrained route', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'example.com'
-    }
+      host: 'example.com',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -42,7 +42,7 @@ test('Should register a host constrained route', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -59,7 +59,7 @@ test('Should register the same route with host constraints', t => {
     constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send('fastify.dev')
-    }
+    },
   })
 
   fastify.route({
@@ -68,15 +68,15 @@ test('Should register the same route with host constraints', t => {
     constraints: { host: 'example.com' },
     handler: (req, reply) => {
       reply.send('example.com')
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fastify.dev'
-    }
+      host: 'fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -87,8 +87,8 @@ test('Should register the same route with host constraints', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'example.com'
-    }
+      host: 'example.com',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -99,8 +99,8 @@ test('Should register the same route with host constraints', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fancy.ca'
-    }
+      host: 'fancy.ca',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -116,13 +116,13 @@ test('Should allow registering custom constrained routes', t => {
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify({ constraints: { secret: constraint } })
@@ -133,7 +133,7 @@ test('Should allow registering custom constrained routes', t => {
     constraints: { secret: 'alpha' },
     handler: (req, reply) => {
       reply.send({ hello: 'from alpha' })
-    }
+    },
   })
 
   fastify.route({
@@ -142,15 +142,15 @@ test('Should allow registering custom constrained routes', t => {
     constraints: { secret: 'beta' },
     handler: (req, reply) => {
       reply.send({ hello: 'from beta' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'X-Secret': 'alpha'
-    }
+      'X-Secret': 'alpha',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from alpha' })
@@ -161,8 +161,8 @@ test('Should allow registering custom constrained routes', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'X-Secret': 'beta'
-    }
+      'X-Secret': 'beta',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from beta' })
@@ -173,8 +173,8 @@ test('Should allow registering custom constrained routes', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'X-Secret': 'gamma'
-    }
+      'X-Secret': 'gamma',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -190,13 +190,13 @@ test('Should allow registering custom constrained routes outside constructor', t
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -208,7 +208,7 @@ test('Should allow registering custom constrained routes outside constructor', t
     constraints: { secret: 'alpha' },
     handler: (req, reply) => {
       reply.send({ hello: 'from alpha' })
-    }
+    },
   })
 
   fastify.route({
@@ -217,15 +217,15 @@ test('Should allow registering custom constrained routes outside constructor', t
     constraints: { secret: 'beta' },
     handler: (req, reply) => {
       reply.send({ hello: 'from beta' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'X-Secret': 'alpha'
-    }
+      'X-Secret': 'alpha',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from alpha' })
@@ -236,8 +236,8 @@ test('Should allow registering custom constrained routes outside constructor', t
     method: 'GET',
     url: '/',
     headers: {
-      'X-Secret': 'beta'
-    }
+      'X-Secret': 'beta',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from beta' })
@@ -248,8 +248,8 @@ test('Should allow registering custom constrained routes outside constructor', t
     method: 'GET',
     url: '/',
     headers: {
-      'X-Secret': 'gamma'
-    }
+      'X-Secret': 'gamma',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -265,13 +265,13 @@ test('Custom constrained routes registered also for HEAD method generated by fas
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify({ constraints: { secret: constraint } })
@@ -282,15 +282,15 @@ test('Custom constrained routes registered also for HEAD method generated by fas
     constraints: { secret: 'mySecret' },
     handler: (req, reply) => {
       reply.send('from mySecret - my length is 31')
-    }
+    },
   })
 
   fastify.inject({
     method: 'HEAD',
     url: '/',
     headers: {
-      'X-Secret': 'mySecret'
-    }
+      'X-Secret': 'mySecret',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(res.headers['content-length'], '31')
@@ -307,13 +307,13 @@ test('Custom constrained routes registered with addConstraintStrategy apply also
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -325,15 +325,15 @@ test('Custom constrained routes registered with addConstraintStrategy apply also
     constraints: { secret: 'mySecret' },
     handler: (req, reply) => {
       reply.send('from mySecret - my length is 31')
-    }
+    },
   })
 
   fastify.inject({
     method: 'HEAD',
     url: '/',
     headers: {
-      'X-Secret': 'mySecret'
-    }
+      'X-Secret': 'mySecret',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(res.headers['content-length'], '31')
@@ -350,13 +350,13 @@ test('Add a constraint strategy after fastify instance was started', t => {
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -364,12 +364,12 @@ test('Add a constraint strategy after fastify instance was started', t => {
   fastify.route({
     method: 'GET',
     url: '/',
-    handler: (req, reply) => { reply.send('ok') }
+    handler: (req, reply) => { reply.send('ok') },
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/'
+    url: '/',
   }, (err, res) => {
     t.error(err)
     t.same(res.payload, 'ok')
@@ -391,13 +391,13 @@ test('Add a constraint strategy should throw an error if there already exist cus
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -418,13 +418,13 @@ test('Add a constraint strategy shouldn\'t throw an error if default constraint 
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -442,13 +442,13 @@ test('Add a constraint strategy should throw an error if default constraint with
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -459,7 +459,7 @@ test('Add a constraint strategy should throw an error if default constraint with
     constraints: { version: '1.0.0' },
     handler: (req, reply) => {
       reply.send('ok')
-    }
+    },
   })
 
   t.throws(
@@ -482,7 +482,7 @@ test('The hasConstraintStrategy should return false for default constraints unti
     constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'from any other domain' })
-    }
+    },
   })
 
   t.equal(fastify.hasConstraintStrategy('version'), false)
@@ -494,7 +494,7 @@ test('The hasConstraintStrategy should return false for default constraints unti
     constraints: { version: '1.0.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'from any other domain' })
-    }
+    },
   })
 
   t.equal(fastify.hasConstraintStrategy('version'), true)
@@ -510,13 +510,13 @@ test('The hasConstraintStrategy should return true if there already exist a cust
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify()
@@ -536,7 +536,7 @@ test('Should allow registering an unconstrained route after a constrained route'
     constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'from fastify.dev' })
-    }
+    },
   })
 
   fastify.route({
@@ -544,15 +544,15 @@ test('Should allow registering an unconstrained route after a constrained route'
     url: '/',
     handler: (req, reply) => {
       reply.send({ hello: 'from any other domain' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      host: 'fastify.dev'
-    }
+      host: 'fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from fastify.dev' })
@@ -563,8 +563,8 @@ test('Should allow registering an unconstrained route after a constrained route'
     method: 'GET',
     url: '/',
     headers: {
-      host: 'example.com'
-    }
+      host: 'example.com',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from any other domain' })
@@ -584,7 +584,7 @@ test('Should allow registering constrained routes in a prefixed plugin', t => {
       path: '/route',
       handler: (req, reply) => {
         reply.send({ ok: true })
-      }
+      },
     })
   }, { prefix: '/prefix' })
 
@@ -592,8 +592,8 @@ test('Should allow registering constrained routes in a prefixed plugin', t => {
     method: 'GET',
     url: '/prefix/route',
     headers: {
-      host: 'fastify.dev'
-    }
+      host: 'fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { ok: true })
@@ -612,7 +612,7 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
     handler: (req, reply) => {
       reply.header('content-type', 'text/plain')
       reply.send('custom HEAD response')
-    }
+    },
   })
 
   fastify.route({
@@ -621,15 +621,15 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
     constraints: { host: 'fastify.dev' },
     handler: (req, reply) => {
       reply.send({ hello: 'from any other domain' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'HEAD',
     url: '/',
     headers: {
-      host: 'fastify.dev'
-    }
+      host: 'fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(res.payload, 'custom HEAD response')
@@ -647,7 +647,7 @@ test('Should allow registering a constrained GET route after an unconstrained HE
     handler: (req, reply) => {
       reply.header('content-type', 'text/plain')
       reply.send('HEAD response: length is about 33')
-    }
+    },
   })
 
   fastify.route({
@@ -657,15 +657,15 @@ test('Should allow registering a constrained GET route after an unconstrained HE
     handler: (req, reply) => {
       reply.header('content-type', 'text/plain')
       reply.send('Hello from constrains: length is about 41')
-    }
+    },
   })
 
   fastify.inject({
     method: 'HEAD',
     url: '/',
     headers: {
-      host: 'fastify.dev'
-    }
+      host: 'fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(res.headers['content-length'], '41')
@@ -686,7 +686,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
       handler: (req, reply) => {
         reply.header('content-type', 'text/plain')
         reply.send('custom HEAD response')
-      }
+      },
     })
     scope.route({
       method: 'GET',
@@ -694,7 +694,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
       constraints: { host: 'fastify.dev' },
       handler: (req, reply) => {
         reply.send({ ok: true })
-      }
+      },
     })
 
     next()
@@ -717,7 +717,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
       handler: (req, reply) => {
         reply.header('content-type', 'text/plain')
         reply.send('unconstrained HEAD response')
-      }
+      },
     })
 
     scope.route({
@@ -727,7 +727,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
       handler: (req, reply) => {
         reply.header('content-type', 'text/plain')
         reply.send('constrained HEAD response')
-      }
+      },
     })
 
     scope.route({
@@ -736,7 +736,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
       constraints: { host: 'fastify.dev' },
       handler: (req, reply) => {
         reply.send({ ok: true })
-      }
+      },
     })
 
     next()
@@ -756,13 +756,13 @@ test('allow async constraints', async (t) => {
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx, done) => {
       done(null, req.headers['x-secret'])
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify({ constraints: { secret: constraint } })
@@ -773,7 +773,7 @@ test('allow async constraints', async (t) => {
     constraints: { secret: 'alpha' },
     handler: (req, reply) => {
       reply.send({ hello: 'from alpha' })
-    }
+    },
   })
 
   fastify.route({
@@ -782,7 +782,7 @@ test('allow async constraints', async (t) => {
     constraints: { secret: 'beta' },
     handler: (req, reply) => {
       reply.send({ hello: 'from beta' })
-    }
+    },
   })
 
   {
@@ -810,13 +810,13 @@ test('error in async constraints', async (t) => {
       const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        set: (secret, store) => { secrets[secret] = store },
       }
     },
     deriveConstraint: (req, ctx, done) => {
       done(Error('kaboom'))
     },
-    validate () { return true }
+    validate () { return true },
   }
 
   const fastify = Fastify({ constraints: { secret: constraint } })
@@ -827,7 +827,7 @@ test('error in async constraints', async (t) => {
     constraints: { secret: 'alpha' },
     handler: (req, reply) => {
       reply.send({ hello: 'from alpha' })
-    }
+    },
   })
 
   fastify.route({
@@ -836,7 +836,7 @@ test('error in async constraints', async (t) => {
     constraints: { secret: 'beta' },
     handler: (req, reply) => {
       reply.send({ hello: 'from beta' })
-    }
+    },
   })
 
   {
@@ -872,15 +872,15 @@ test('Allow regex constraints in routes', t => {
     constraints: { host: /.*\.fastify\.dev$/ },
     handler: (req, reply) => {
       reply.send({ hello: 'from fastify dev domain' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      host: 'dev.fastify.dev'
-    }
+      host: 'dev.fastify.dev',
+    },
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from fastify dev domain' })
@@ -891,8 +891,8 @@ test('Allow regex constraints in routes', t => {
     method: 'GET',
     url: '/',
     headers: {
-      host: 'google.com'
-    }
+      host: 'google.com',
+    },
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)

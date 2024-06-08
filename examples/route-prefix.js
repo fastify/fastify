@@ -8,11 +8,11 @@ const opts = {
       '2xx': {
         type: 'object',
         properties: {
-          greet: { type: 'string' }
-        }
-      }
-    }
-  }
+          greet: { type: 'string' },
+        },
+      },
+    },
+  },
 }
 
 fastify.register(function (instance, options, done) {

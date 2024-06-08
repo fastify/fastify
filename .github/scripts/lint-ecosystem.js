@@ -8,7 +8,7 @@ const basePathEcosystemDocFile = path.join('docs', 'Guides', 'Ecosystem.md')
 const ecosystemDocFile = path.join(__dirname, '..', '..', basePathEcosystemDocFile)
 const failureTypes = {
   improperFormat: 'improperFormat',
-  outOfOrderItem: 'outOfOrderItem'
+  outOfOrderItem: 'outOfOrderItem',
 }
 
 module.exports = async function ({ core }) {
@@ -20,12 +20,12 @@ async function runCheck () {
   const stream = await fs.createReadStream(ecosystemDocFile)
   const rl = readline.createInterface({
     input: stream,
-    crlfDelay: Infinity
+    crlfDelay: Infinity,
   })
 
   const failures = []
   const successes = []
-  const moduleNameRegex = /^\- \[\`(.+)\`\]/
+  const moduleNameRegex = /^- \[`(.+)`\]/
   let lineNumber = 0
   let modules = []
   let grouping = 'core'
@@ -53,7 +53,7 @@ async function runCheck () {
         lineNumber,
         grouping,
         moduleName: 'unknown',
-        type: failureTypes.improperFormat
+        type: failureTypes.improperFormat,
       })
       continue
     }
@@ -65,7 +65,7 @@ async function runCheck () {
           lineNumber,
           moduleName,
           grouping,
-          type: failureTypes.outOfOrderItem
+          type: failureTypes.outOfOrderItem,
         })
       } else {
         successes.push({ moduleName, lineNumber, grouping })
@@ -82,11 +82,11 @@ async function runCheck () {
 
 async function handleResults (scriptLibs, results) {
   const { core } = scriptLibs
-  const { failures, successes } = results;
-  const isError = !!failures.length;
+  const { failures, successes } = results
+  const isError = !!failures.length
 
   await core.summary
-    .addHeading(isError ? `❌ Ecosystem.md Lint (${failures.length} error${failures.length === 1 ? '' : 's' })` : '✅ Ecosystem Lint (no errors found)')
+    .addHeading(isError ? `❌ Ecosystem.md Lint (${failures.length} error${failures.length === 1 ? '' : 's'})` : '✅ Ecosystem Lint (no errors found)')
     .addTable([
       [
         { data: 'Status', header: true },
@@ -97,14 +97,14 @@ async function handleResults (scriptLibs, results) {
         '❌',
         failure.grouping,
         failure.moduleName,
-        `Line Number: ${failure.lineNumber.toString()} - ${failure.type}`
+        `Line Number: ${failure.lineNumber.toString()} - ${failure.type}`,
       ]),
       ...successes.map((success) => [
         '✅',
         success.grouping,
         success.moduleName,
-        '-'
-      ])
+        '-',
+      ]),
     ])
     .write()
 
@@ -114,13 +114,13 @@ async function handleResults (scriptLibs, results) {
         core.error('The module name should be enclosed with backticks', {
           title: 'Improper format',
           file: basePathEcosystemDocFile,
-          startLine: failure.lineNumber
+          startLine: failure.lineNumber,
         })
       } else if (failure.type === failureTypes.outOfOrderItem) {
         core.error(`${failure.moduleName} not listed in alphabetical order`, {
           title: 'Out of Order',
           file: basePathEcosystemDocFile,
-          startLine: failure.lineNumber
+          startLine: failure.lineNumber,
         })
       } else {
         core.error('Unknown error')

@@ -14,8 +14,8 @@ test('Destroying streams prematurely', t => {
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'info'
-      }
+        level: 'info',
+      },
     })
   } catch (e) {
     t.fail()
@@ -41,7 +41,7 @@ test('Destroying streams prematurely', t => {
           this.push(Buffer.from('hello\n'))
         }
         sent = true
-      }
+      },
     })
 
     reply.send(reallyLongStream)
@@ -76,8 +76,8 @@ test('Destroying streams prematurely should call close method', t => {
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'info'
-      }
+        level: 'info',
+      },
     })
   } catch (e) {
     t.fail()
@@ -103,7 +103,7 @@ test('Destroying streams prematurely should call close method', t => {
           this.push(Buffer.from('hello\n'))
         }
         sent = true
-      }
+      },
     })
     reallyLongStream.destroy = undefined
     reallyLongStream.close = () => t.ok('called')
@@ -138,8 +138,8 @@ test('Destroying streams prematurely should call close method when destroy is no
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'info'
-      }
+        level: 'info',
+      },
     })
   } catch (e) {
     t.fail()
@@ -165,7 +165,7 @@ test('Destroying streams prematurely should call close method when destroy is no
           this.push(Buffer.from('hello\n'))
         }
         sent = true
-      }
+      },
     })
     reallyLongStream.destroy = true
     reallyLongStream.close = () => t.ok('called')

@@ -9,12 +9,12 @@ const opts = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 }
 
 const optsPost = {
@@ -24,12 +24,12 @@ const optsPost = {
       required: ['hello'],
       properties: {
         hello: {
-          type: 'string'
-        }
-      }
+          type: 'string',
+        },
+      },
     },
-    response: opts.response
-  }
+    response: opts.response,
+  },
 }
 
 fastify

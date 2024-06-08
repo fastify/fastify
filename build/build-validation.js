@@ -19,7 +19,7 @@ module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
     const file = path.join(__dirname, '..', 'lib', 'configValidator.js')
     fs.writeFileSync(file, moduleCode)
     console.log(`Saved ${file} file successfully`)
-  }
+  },
 })
 
 const defaultInitOptions = {
@@ -43,7 +43,7 @@ const defaultInitOptions = {
   requestIdLogLabel: 'reqId',
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
-  useSemicolonDelimiter: false
+  useSemicolonDelimiter: false,
 }
 
 const schema = {
@@ -56,12 +56,12 @@ const schema = {
       oneOf: [
         {
           type: 'string',
-          pattern: 'idle'
+          pattern: 'idle',
         },
         {
-          type: 'boolean'
-        }
-      ]
+          type: 'boolean',
+        },
+      ],
     },
     maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
@@ -80,19 +80,19 @@ const schema = {
               additionalProperties: false,
               required: ['allowHTTP1'],
               properties: {
-                allowHTTP1: { type: 'boolean' }
-              }
-            }
-          ]
-        }
+                allowHTTP1: { type: 'boolean' },
+              },
+            },
+          ],
+        },
       },
-      then: { setDefaultValue: true }
+      then: { setDefaultValue: true },
     },
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
     disableRequestLogging: {
       type: 'boolean',
-      default: false
+      default: false,
     },
     jsonShorthand: { type: 'boolean', default: defaultInitOptions.jsonShorthand },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
@@ -111,8 +111,8 @@ const schema = {
       required: ['storage', 'deriveVersion'],
       properties: {
         storage: { },
-        deriveVersion: { }
-      }
+        deriveVersion: { },
+      },
     },
     constraints: {
       type: 'object',
@@ -124,11 +124,11 @@ const schema = {
           name: { type: 'string' },
           storage: { },
           validate: { },
-          deriveConstraint: { }
-        }
-      }
-    }
-  }
+          deriveConstraint: { },
+        },
+      },
+    },
+  },
 }
 
 const compiler = factory({}, {
@@ -136,7 +136,7 @@ const compiler = factory({}, {
     code: {
       source: true,
       lines: true,
-      optimize: 3
+      optimize: 3,
     },
     removeAdditional: true,
     useDefaults: true,
@@ -152,10 +152,10 @@ const compiler = factory({}, {
           const { gen, it, schemaValue } = keywordCxt
           const logicCode = gen.assign(_`${it.parentData}[${it.parentDataProperty}]`, schemaValue)
           return logicCode
-        }
-      }
-    ]
-  }
+        },
+      },
+    ],
+  },
 })
 
 compiler({ schema })

@@ -13,12 +13,12 @@ test('Should expose router options via getters on request and reply', t => {
   const fastify = Fastify()
   const expectedSchema = {
     params: {
-      id: { type: 'integer' }
-    }
+      id: { type: 'integer' },
+    },
   }
 
   fastify.get('/test/:id', {
-    schema: expectedSchema
+    schema: expectedSchema,
   }, (req, reply) => {
     t.equal(req.routeConfig.url, '/test/:id')
     t.equal(req.routeConfig.method, 'GET')
@@ -30,7 +30,7 @@ test('Should expose router options via getters on request and reply', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/test/123456789'
+    url: '/test/123456789',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)

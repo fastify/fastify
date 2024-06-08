@@ -22,9 +22,9 @@ test('nullable string', t => {
           hello: {
             type: 'string',
             format: 'email',
-            nullable: true
-          }
-        }
+            nullable: true,
+          },
+        },
       },
       response: {
         200: {
@@ -33,19 +33,19 @@ test('nullable string', t => {
             hello: {
               type: 'string',
               format: 'email',
-              nullable: true
-            }
-          }
-        }
-      }
-    }
+              nullable: true,
+            },
+          },
+        },
+      },
+    },
   })
   fastify.inject({
     method: 'POST',
     url: '/',
     body: {
-      hello: null
-    }
+      hello: null,
+    },
   }, (err, res) => {
     t.error(err)
     t.same(res.payload.hello, null)
@@ -70,9 +70,9 @@ test('object or null body', t => {
         properties: {
           hello: {
             type: 'string',
-            format: 'email'
-          }
-        }
+            format: 'email',
+          },
+        },
       },
       response: {
         200: {
@@ -80,12 +80,12 @@ test('object or null body', t => {
           nullable: true,
           properties: {
             isUndefinedBody: {
-              type: 'boolean'
-            }
-          }
-        }
-      }
-    }
+              type: 'boolean',
+            },
+          },
+        },
+      },
+    },
   })
 
   fastify.listen({ port: 0 }, (err) => {
@@ -94,7 +94,7 @@ test('object or null body', t => {
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -122,9 +122,9 @@ test('nullable body', t => {
         properties: {
           hello: {
             type: 'string',
-            format: 'email'
-          }
-        }
+            format: 'email',
+          },
+        },
       },
       response: {
         200: {
@@ -132,12 +132,12 @@ test('nullable body', t => {
           nullable: true,
           properties: {
             isUndefinedBody: {
-              type: 'boolean'
-            }
-          }
-        }
-      }
-    }
+              type: 'boolean',
+            },
+          },
+        },
+      },
+    },
   })
 
   fastify.listen({ port: 0 }, (err) => {
@@ -146,7 +146,7 @@ test('nullable body', t => {
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -174,11 +174,11 @@ test('Nullable body with 204', t => {
         properties: {
           hello: {
             type: 'string',
-            format: 'email'
-          }
-        }
-      }
-    }
+            format: 'email',
+          },
+        },
+      },
+    },
   })
 
   fastify.listen({ port: 0 }, (err) => {
@@ -187,7 +187,7 @@ test('Nullable body with 204', t => {
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 204)

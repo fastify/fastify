@@ -1,7 +1,7 @@
 'use strict'
 
 const fastify = require('../../fastify')({
-  logger: false
+  logger: false,
 })
 
 const schema = {
@@ -11,12 +11,12 @@ const schema = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 }
 
 fastify

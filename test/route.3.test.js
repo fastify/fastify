@@ -29,17 +29,17 @@ test('does not mutate joi schemas', t => {
     path: '/foo/:an_id',
     method: 'GET',
     schema: {
-      params: { an_id: joi.number() }
+      params: { an_id: joi.number() },
     },
     handler (req, res) {
       t.same(req.params, { an_id: 42 })
       res.send({ hello: 'world' })
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/foo/42'
+    url: '/foo/42',
   }, (err, result) => {
     t.error(err)
     t.equal(result.statusCode, 200)
@@ -54,8 +54,8 @@ test('multiple routes with one schema', t => {
 
   const schema = {
     query: {
-      id: { type: 'number' }
-    }
+      id: { type: 'number' },
+    },
   }
 
   fastify.route({
@@ -64,7 +64,7 @@ test('multiple routes with one schema', t => {
     path: '/first/:id',
     handler (req, res) {
       res.send({ hello: 'world' })
-    }
+    },
   })
 
   fastify.route({
@@ -73,7 +73,7 @@ test('multiple routes with one schema', t => {
     path: '/second/:id',
     handler (req, res) {
       res.send({ hello: 'world' })
-    }
+    },
   })
 
   fastify.ready(error => {
@@ -93,7 +93,7 @@ test('route error handler overrides default error handler', t => {
     reply.code(418).send({
       message: 'Make a brew',
       statusCode: 418,
-      error: 'Wrong Pot Error'
+      error: 'Wrong Pot Error',
     })
   }
 
@@ -103,19 +103,19 @@ test('route error handler overrides default error handler', t => {
     handler: (req, res) => {
       res.send(new Error('Wrong Pot Error'))
     },
-    errorHandler: customRouteErrorHandler
+    errorHandler: customRouteErrorHandler,
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/coffee'
+    url: '/coffee',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
     t.same(JSON.parse(res.payload), {
       message: 'Make a brew',
       statusCode: 418,
-      error: 'Wrong Pot Error'
+      error: 'Wrong Pot Error',
     })
   })
 })
@@ -131,7 +131,7 @@ test('route error handler does not affect other routes', t => {
     reply.code(418).send({
       message: 'Make a brew',
       statusCode: 418,
-      error: 'Wrong Pot Error'
+      error: 'Wrong Pot Error',
     })
   }
 
@@ -141,7 +141,7 @@ test('route error handler does not affect other routes', t => {
     handler: (req, res) => {
       res.send(new Error('Wrong Pot Error'))
     },
-    errorHandler: customRouteErrorHandler
+    errorHandler: customRouteErrorHandler,
   })
 
   fastify.route({
@@ -149,19 +149,19 @@ test('route error handler does not affect other routes', t => {
     path: '/tea',
     handler: (req, res) => {
       res.send(new Error('No tea today'))
-    }
+    },
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/tea'
+    url: '/tea',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 500)
     t.same(JSON.parse(res.payload), {
       message: 'No tea today',
       statusCode: 500,
-      error: 'Internal Server Error'
+      error: 'Internal Server Error',
     })
   })
 })
@@ -177,7 +177,7 @@ test('async error handler for a route', t => {
     return {
       message: 'Make a brew sometime later',
       statusCode: 418,
-      error: 'Delayed Pot Error'
+      error: 'Delayed Pot Error',
     }
   }
 
@@ -187,19 +187,19 @@ test('async error handler for a route', t => {
     handler: (req, res) => {
       res.send(new Error('Delayed Pot Error'))
     },
-    errorHandler: customRouteErrorHandler
+    errorHandler: customRouteErrorHandler,
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/late-coffee'
+    url: '/late-coffee',
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
     t.same(JSON.parse(res.payload), {
       message: 'Make a brew sometime later',
       statusCode: 418,
-      error: 'Delayed Pot Error'
+      error: 'Delayed Pot Error',
     })
   })
 })

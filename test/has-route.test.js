@@ -75,7 +75,7 @@ test('hasRoute', t => {
     }), true)
   })
 
-  test('hasRoute - with normalize method', t => {
+  test('hasRoute - finds a route even if method is not uppercased', t => {
     t.plan(1)
     fastify.route({
       method: 'GET',

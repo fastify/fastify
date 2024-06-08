@@ -1,7 +1,5 @@
 'use strict'
 
-/* eslint no-prototype-builtins: 0 */
-
 const t = require('tap')
 const test = t.test
 const Fastify = require('../fastify')
@@ -117,8 +115,8 @@ test('fastify.register with fastify-plugin should provide access to external fas
 
     instance.register((i, o, n) => n(), p => {
       t.notOk(p === instance || p === fastify)
-      t.ok(instance.isPrototypeOf(p))
-      t.ok(fastify.isPrototypeOf(p))
+      t.ok(Object.prototype.isPrototypeOf.call(instance, p))
+      t.ok(Object.prototype.isPrototypeOf.call(fastify, p))
       t.ok(p.global)
     })
 

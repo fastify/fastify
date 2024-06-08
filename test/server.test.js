@@ -4,7 +4,6 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
-const semver = require('semver')
 const undici = require('undici')
 
 test('listen should accept null port', t => {
@@ -88,7 +87,7 @@ test('Test for hostname and port', t => {
   })
 })
 
-test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
+test('abort signal', t => {
   t.test('listen should not start server', t => {
     t.plan(2)
     function onClose (instance, done) {

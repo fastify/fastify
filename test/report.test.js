@@ -21,7 +21,7 @@ const bodySample = `<?xml version="1.0" encoding="UTF-8"?>
   </B:calendar-query>
   `
 
-test('can be created - report', (t) => {
+test('can be created - report', t => {
   t.plan(1)
   try {
     fastify.route({
@@ -73,13 +73,13 @@ test('can be created - report', (t) => {
   }
 })
 
-fastify.listen({ port: 0 }, (err) => {
+fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => {
     fastify.close()
   })
 
-  test('request - report', (t) => {
+  test('request - report', t => {
     t.plan(3)
     sget(
       {
@@ -94,7 +94,7 @@ fastify.listen({ port: 0 }, (err) => {
     )
   })
 
-  test('request with other path - report', (t) => {
+  test('request with other path - report', t => {
     t.plan(3)
     sget(
       {
@@ -111,7 +111,7 @@ fastify.listen({ port: 0 }, (err) => {
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  test('request with body - report', (t) => {
+  test('request with body - report', t => {
     t.plan(3)
     sget(
       {
@@ -128,7 +128,7 @@ fastify.listen({ port: 0 }, (err) => {
     )
   })
 
-  test('request with body and no content type (415 error) - report', (t) => {
+  test('request with body and no content type (415 error) - report', t => {
     t.plan(3)
     sget(
       {
@@ -144,7 +144,7 @@ fastify.listen({ port: 0 }, (err) => {
     )
   })
 
-  test('request without body - report', (t) => {
+  test('request without body - report', t => {
     t.plan(3)
     sget(
       {

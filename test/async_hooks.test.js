@@ -8,12 +8,12 @@ const sget = require('simple-get').concat
 const remainingIds = new Set()
 
 createHook({
-  init (asyncId, type, triggerAsyncId, resource) {
+  init(asyncId, type, triggerAsyncId, resource) {
     if (type === 'content-type-parser:run') {
       remainingIds.add(asyncId)
     }
   },
-  destroy (asyncId) {
+  destroy(asyncId) {
     remainingIds.delete(asyncId)
   }
 })
@@ -31,39 +31,48 @@ app.post('/', function (request, reply) {
 app.listen({ port: 0 }, function (err, address) {
   t.error(err)
 
-  sget({
-    method: 'POST',
-    url: 'http://localhost:' + app.server.address().port,
-    body: {
-      hello: 'world'
-    },
-    json: true
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-
-    sget({
+  sget(
+    {
       method: 'POST',
       url: 'http://localhost:' + app.server.address().port,
       body: {
         hello: 'world'
       },
       json: true
-    }, (err, response, body) => {
+    },
+    (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
 
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + app.server.address().port,
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        app.close()
-        t.equal(remainingIds.size, 0)
-        t.end()
-      })
-    })
-  })
+      sget(
+        {
+          method: 'POST',
+          url: 'http://localhost:' + app.server.address().port,
+          body: {
+            hello: 'world'
+          },
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+
+          sget(
+            {
+              method: 'GET',
+              url: 'http://localhost:' + app.server.address().port,
+              json: true
+            },
+            (err, response, body) => {
+              t.error(err)
+              t.equal(response.statusCode, 200)
+              app.close()
+              t.equal(remainingIds.size, 0)
+              t.end()
+            }
+          )
+        }
+      )
+    }
+  )
 })

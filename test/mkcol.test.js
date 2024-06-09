@@ -23,16 +23,21 @@ test('can be created - mkcol', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   test('request - mkcol', t => {
     t.plan(2)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/`,
-      method: 'MKCOL'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 201)
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test/`,
+        method: 'MKCOL'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 201)
+      }
+    )
   })
 })

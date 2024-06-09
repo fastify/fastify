@@ -30,9 +30,11 @@ fastify.get('/hostname_port', function (req, reply) {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
-  test('http get request', async (t) => {
+  test('http get request', async t => {
     t.plan(3)
 
     const url = `http://localhost:${fastify.server.address().port}`
@@ -44,7 +46,7 @@ fastify.listen({ port: 0 }, err => {
     t.same(JSON.parse(res.body), msg)
   })
 
-  test('http host', async (t) => {
+  test('http host', async t => {
     t.plan(1)
 
     const host = `localhost:${fastify.server.address().port}`
@@ -54,7 +56,7 @@ fastify.listen({ port: 0 }, err => {
 
     t.equal(res.body, host)
   })
-  test('http hostname and port', async (t) => {
+  test('http hostname and port', async t => {
     t.plan(2)
 
     const host = `localhost:${fastify.server.address().port}`

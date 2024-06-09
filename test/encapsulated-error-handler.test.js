@@ -11,7 +11,7 @@ test('encapsulates an asynchronous error handler', async t => {
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {
-    fastify.setErrorHandler(async function a (err) {
+    fastify.setErrorHandler(async function a(err) {
       // 3. the inner error handler catches the error, and throws a new error
       t.equal(err.message, 'from_endpoint')
       throw new Error('from_inner')
@@ -22,7 +22,7 @@ test('encapsulates an asynchronous error handler', async t => {
     })
   })
 
-  fastify.setErrorHandler(async function b (err) {
+  fastify.setErrorHandler(async function b(err) {
     // 4. the outer error handler catches the error thrown by the inner error handler
     t.equal(err.message, 'from_inner')
     // 5. the outer error handler throws a new error
@@ -41,7 +41,7 @@ test('encapsulates a synchronous error handler', async t => {
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {
-    fastify.setErrorHandler(function a (err) {
+    fastify.setErrorHandler(function a(err) {
       // 3. the inner error handler catches the error, and throws a new error
       t.equal(err.message, 'from_endpoint')
       throw new Error('from_inner')
@@ -52,7 +52,7 @@ test('encapsulates a synchronous error handler', async t => {
     })
   })
 
-  fastify.setErrorHandler(async function b (err) {
+  fastify.setErrorHandler(async function b(err) {
     // 4. the outer error handler catches the error thrown by the inner error handler
     t.equal(err.message, 'from_inner')
     // 5. the outer error handler throws a new error
@@ -70,7 +70,7 @@ test('onError hook nested', async t => {
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {
-    fastify.setErrorHandler(async function a (err) {
+    fastify.setErrorHandler(async function a(err) {
       // 4. the inner error handler catches the error, and throws a new error
       t.equal(err.message, 'from_endpoint')
       throw new Error('from_inner')
@@ -81,7 +81,7 @@ test('onError hook nested', async t => {
     })
   })
 
-  fastify.setErrorHandler(async function b (err) {
+  fastify.setErrorHandler(async function b(err) {
     // 5. the outer error handler catches the error thrown by the inner error handler
     t.equal(err.message, 'from_inner')
     // 6. the outer error handler throws a new error
@@ -105,7 +105,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {
-    fastify.setErrorHandler(function a (err) {
+    fastify.setErrorHandler(function a(err) {
       // 3. the inner error handler catches the error, and throws a new error
       t.equal(err.message, 'from_hook')
       throw new Error('from_inner')
@@ -117,7 +117,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
     fastify.get('/encapsulated', async () => {})
   })
 
-  fastify.setErrorHandler(function b (err) {
+  fastify.setErrorHandler(function b(err) {
     // 4. the outer error handler catches the error thrown by the inner error handler
     t.equal(err.message, 'from_inner')
     // 5. the outer error handler throws a new error
@@ -151,7 +151,7 @@ test('encapuslates many synchronous error handlers that rethrow errors', async t
     if (depth < 0) {
       throw new Error('Expected depth >= 0')
     } else if (depth === 0) {
-      fastify.setErrorHandler(function a (err) {
+      fastify.setErrorHandler(function a(err) {
         // 3. innermost error handler catches the error, and throws a new error
         t.equal(err.message, 'from_route')
         throw new Error(`from_handler_${depth}`)
@@ -161,7 +161,7 @@ test('encapuslates many synchronous error handlers that rethrow errors', async t
         throw new Error('from_route')
       })
     } else {
-      fastify.setErrorHandler(function d (err) {
+      fastify.setErrorHandler(function d(err) {
         // 4 to {DEPTH+4}. error handlers each catch errors, and then throws a new error
         t.equal(err.message, `from_handler_${depth - 1}`)
         throw new Error(`from_handler_${depth}`)
@@ -205,7 +205,7 @@ test('encapuslates many asynchronous error handlers that rethrow errors', async 
     if (depth < 0) {
       throw new Error('Expected depth >= 0')
     } else if (depth === 0) {
-      fastify.setErrorHandler(async function a (err) {
+      fastify.setErrorHandler(async function a(err) {
         // 3. innermost error handler catches the error, and throws a new error
         t.equal(err.message, 'from_route')
         throw new Error(`from_handler_${depth}`)
@@ -215,7 +215,7 @@ test('encapuslates many asynchronous error handlers that rethrow errors', async 
         throw new Error('from_route')
       })
     } else {
-      fastify.setErrorHandler(async function m (err) {
+      fastify.setErrorHandler(async function m(err) {
         // 4 to {DEPTH+4}. error handlers each catch errors, and then throws a new error
         t.equal(err.message, `from_handler_${depth - 1}`)
         throw new Error(`from_handler_${depth}`)

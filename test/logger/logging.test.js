@@ -11,7 +11,7 @@ const helper = require('../helper')
 const { once, on } = stream
 const { request } = require('./logger-test-utils')
 
-t.test('logging', (t) => {
+t.test('logging', t => {
   t.setTimeout(60000)
 
   let localhost
@@ -20,10 +20,10 @@ t.test('logging', (t) => {
   t.plan(13)
 
   t.before(async function () {
-    [localhost, localhostForURL] = await helper.getLoopbackHost()
+    ;[localhost, localhostForURL] = await helper.getLoopbackHost()
   })
 
-  t.test('The default 404 handler logs the incoming request', async (t) => {
+  t.test('The default 404 handler logs the incoming request', async t => {
     const lines = ['incoming request', 'Route GET:/not-found not found', 'request completed']
     t.plan(lines.length + 1)
 
@@ -49,7 +49,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should not rely on raw request to log errors', async (t) => {
+  t.test('should not rely on raw request to log errors', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { level: 30, msg: 'incoming request' },
@@ -81,7 +81,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should log the error if no error handler is defined', async (t) => {
+  t.test('should log the error if no error handler is defined', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { msg: 'incoming request' },
@@ -115,7 +115,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should log as info if error status code >= 400 and < 500 if no error handler is defined', async (t) => {
+  t.test('should log as info if error status code >= 400 and < 500 if no error handler is defined', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { msg: 'incoming request' },
@@ -152,7 +152,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should log as error if error status code >= 500 if no error handler is defined', async (t) => {
+  t.test('should log as error if error status code >= 500 if no error handler is defined', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { msg: 'incoming request' },
@@ -184,7 +184,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should not log the error if error handler is defined and it does not error', async (t) => {
+  t.test('should not log the error if error handler is defined and it does not error', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { level: 30, msg: 'incoming request' },
@@ -219,7 +219,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('reply.send logs an error if called twice in a row', async (t) => {
+  t.test('reply.send logs an error if called twice in a row', async t => {
     const lines = [
       'incoming request',
       'request completed',
@@ -252,7 +252,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should not log incoming request and outgoing response when disabled', async (t) => {
+  t.test('should not log incoming request and outgoing response when disabled', async t => {
     t.plan(1)
     const stream = split(JSON.parse)
     const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
@@ -270,21 +270,24 @@ t.test('logging', (t) => {
     t.equal(stream.readableLength, 0)
   })
 
-  t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {
-    t.plan(1)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
-    t.teardown(fastify.close.bind(fastify))
+  t.test(
+    'should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled',
+    async t => {
+      t.plan(1)
+      const stream = split(JSON.parse)
+      const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
+      t.teardown(fastify.close.bind(fastify))
 
-    await fastify.ready()
+      await fastify.ready()
 
-    await fastify.inject({ method: 'GET', url: '/%c0' })
+      await fastify.inject({ method: 'GET', url: '/%c0' })
 
-    // no more readable data
-    t.equal(stream.readableLength, 0)
-  })
+      // no more readable data
+      t.equal(stream.readableLength, 0)
+    }
+  )
 
-  t.test('defaults to info level', async (t) => {
+  t.test('defaults to info level', async t => {
     const lines = [
       { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
       { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
@@ -319,7 +322,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('test log stream', async (t) => {
+  t.test('test log stream', async t => {
     const lines = [
       { msg: /^Server listening at / },
       { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
@@ -355,7 +358,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('test error log stream', async (t) => {
+  t.test('test error log stream', async t => {
     const lines = [
       { msg: /^Server listening at / },
       { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
@@ -392,7 +395,7 @@ t.test('logging', (t) => {
     }
   })
 
-  t.test('should not log the error if request logging is disabled', async (t) => {
+  t.test('should not log the error if request logging is disabled', async t => {
     t.plan(4)
 
     const stream = split(JSON.parse)

@@ -28,21 +28,27 @@ test('Custom querystring parser', t => {
     t.error(err)
     t.teardown(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: `${address}?foo=bar&baz=faz`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
 
-    fastify.inject({
-      method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: `${address}?foo=bar&baz=faz`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -65,21 +71,27 @@ test('Custom querystring parser should be called also if there is nothing to par
     t.error(err)
     t.teardown(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: address
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
 
-    fastify.inject({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: address
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -102,21 +114,27 @@ test('Querystring without value', t => {
     t.error(err)
     t.teardown(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}?foo`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: `${address}?foo`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
 
-    fastify.inject({
-      method: 'GET',
-      url: `${address}?foo`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: `${address}?foo`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -129,9 +147,6 @@ test('Custom querystring parser should be a function', t => {
     })
     t.fail('Should throw')
   } catch (err) {
-    t.equal(
-      err.message,
-      "querystringParser option should be a function, instead got 'number'"
-    )
+    t.equal(err.message, "querystringParser option should be a function, instead got 'number'")
   }
 })

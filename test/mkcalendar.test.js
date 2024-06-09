@@ -25,7 +25,7 @@ const bodySample = `<?xml version="1.0" encoding="UTF-8"?>
   </B:mkcalendar>
   `
 
-test('can be created - mkcalendar', (t) => {
+test('can be created - mkcalendar', t => {
   t.plan(1)
   try {
     fastify.route({
@@ -77,13 +77,13 @@ test('can be created - mkcalendar', (t) => {
   }
 })
 
-fastify.listen({ port: 0 }, (err) => {
+fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => {
     fastify.close()
   })
 
-  test('request - mkcalendar', (t) => {
+  test('request - mkcalendar', t => {
     t.plan(3)
     sget(
       {
@@ -98,7 +98,7 @@ fastify.listen({ port: 0 }, (err) => {
     )
   })
 
-  test('request with other path - mkcalendar', (t) => {
+  test('request with other path - mkcalendar', t => {
     t.plan(3)
     sget(
       {
@@ -115,7 +115,7 @@ fastify.listen({ port: 0 }, (err) => {
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  test('request with body - mkcalendar', (t) => {
+  test('request with body - mkcalendar', t => {
     t.plan(3)
     sget(
       {
@@ -132,7 +132,7 @@ fastify.listen({ port: 0 }, (err) => {
     )
   })
 
-  test('request with body and no content type (415 error) - mkcalendar', (t) => {
+  test('request with body and no content type (415 error) - mkcalendar', t => {
     t.plan(3)
     sget(
       {
@@ -148,7 +148,7 @@ fastify.listen({ port: 0 }, (err) => {
     )
   })
 
-  test('request without body - mkcalendar', (t) => {
+  test('request without body - mkcalendar', t => {
     t.plan(3)
     sget(
       {

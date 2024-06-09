@@ -17,11 +17,11 @@ const opts = {
   }
 }
 
-function promiseFunction (resolve) {
+function promiseFunction(resolve) {
   setImmediate(resolve)
 }
 
-async function asyncHook () {
+async function asyncHook() {
   await new Promise(promiseFunction)
 }
 

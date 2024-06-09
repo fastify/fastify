@@ -16,25 +16,28 @@ test('default 400 on request error', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    simulate: {
-      error: true
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      simulate: {
+        error: true
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
     },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Bad Request',
+        message: 'Simulated',
+        statusCode: 400
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Bad Request',
-      message: 'Simulated',
-      statusCode: 400
-    })
-  })
+  )
 })
 
 test('default 400 on request error with custom error handler', t => {
@@ -45,35 +48,35 @@ test('default 400 on request error with custom error handler', t => {
   fastify.setErrorHandler(function (err, request, reply) {
     t.type(request, 'object')
     t.type(request, fastify[kRequest].parent)
-    reply
-      .code(err.statusCode)
-      .type('application/json; charset=utf-8')
-      .send(err)
+    reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
   })
 
   fastify.post('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    simulate: {
-      error: true
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      simulate: {
+        error: true
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
     },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Bad Request',
+        message: 'Simulated',
+        statusCode: 400
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Bad Request',
-      message: 'Simulated',
-      statusCode: 400
-    })
-  })
+  )
 })
 
 test('default clientError handler ignores ECONNRESET', t => {
@@ -88,7 +91,7 @@ test('default clientError handler ignores ECONNRESET', t => {
     logger: {
       level: 'trace',
       stream: {
-        write () {
+        write() {
           logs += JSON.stringify(arguments)
         }
       }
@@ -108,7 +111,9 @@ test('default clientError handler ignores ECONNRESET', t => {
 
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const client = connect(fastify.server.address().port)
 
@@ -142,10 +147,10 @@ test('default clientError handler ignores sockets in destroyed state', t => {
   })
   fastify.server.emit('clientError', new Error(), {
     destroyed: true,
-    end () {
+    end() {
       t.fail('end should not be called')
     },
-    destroy () {
+    destroy() {
       t.fail('destroy should not be called')
     }
   })
@@ -163,13 +168,13 @@ test('default clientError handler destroys sockets in writable state', t => {
     destroyed: false,
     writable: true,
     encrypted: true,
-    end () {
+    end() {
       t.fail('end should not be called')
     },
-    destroy () {
+    destroy() {
       t.pass('destroy should be called')
     },
-    write (response) {
+    write(response) {
       t.match(response, /^HTTP\/1.1 400 Bad Request/)
     }
   })
@@ -186,13 +191,13 @@ test('default clientError handler destroys http sockets in non-writable state', 
   fastify.server.emit('clientError', new Error(), {
     destroyed: false,
     writable: false,
-    end () {
+    end() {
       t.fail('end should not be called')
     },
-    destroy () {
+    destroy() {
       t.pass('destroy should be called')
     },
-    write (response) {
+    write(response) {
       t.fail('write should not be called')
     }
   })
@@ -205,35 +210,35 @@ test('error handler binding', t => {
 
   fastify.setErrorHandler(function (err, request, reply) {
     t.equal(this, fastify)
-    reply
-      .code(err.statusCode)
-      .type('application/json; charset=utf-8')
-      .send(err)
+    reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
   })
 
   fastify.post('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    simulate: {
-      error: true
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      simulate: {
+        error: true
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
     },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Bad Request',
+        message: 'Simulated',
+        statusCode: 400
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Bad Request',
-      message: 'Simulated',
-      statusCode: 400
-    })
-  })
+  )
 })
 
 test('encapsulated error handler binding', t => {
@@ -249,34 +254,34 @@ test('encapsulated error handler binding', t => {
     })
     app.setErrorHandler(function (err, request, reply) {
       t.equal(this.hello, 'world')
-      reply
-        .code(err.statusCode)
-        .type('application/json; charset=utf-8')
-        .send(err)
+      reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
     })
     done()
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    simulate: {
-      error: true
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      simulate: {
+        error: true
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
     },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(res.json(), {
+        error: 'Bad Request',
+        message: 'Simulated',
+        statusCode: 400
+      })
+      t.equal(fastify.hello, undefined)
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.json(), {
-      error: 'Bad Request',
-      message: 'Simulated',
-      statusCode: 400
-    })
-    t.equal(fastify.hello, undefined)
-  })
+  )
 })
 
 test('default clientError replies with bad request on reused keep-alive connection', t => {
@@ -324,15 +329,33 @@ test('request.routeOptions should be immutable', t => {
   const handler = function (req, res) {
     t.equal('POST', req.routeOptions.method)
     t.equal('/', req.routeOptions.url)
-    t.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
-    t.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
+    t.throws(() => {
+      req.routeOptions = null
+    }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
+    t.throws(() => {
+      req.routeOptions.method = 'INVALID'
+    }, new TypeError("Cannot assign to read only property 'method' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.url = '//'
+    }, new TypeError("Cannot assign to read only property 'url' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.bodyLimit = 0xdeadbeef
+    }, new TypeError("Cannot assign to read only property 'bodyLimit' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.attachValidation = true
+    }, new TypeError("Cannot assign to read only property 'attachValidation' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.logLevel = 'invalid'
+    }, new TypeError("Cannot assign to read only property 'logLevel' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.version = '95.0.1'
+    }, new TypeError("Cannot assign to read only property 'version' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.prefixTrailingSlash = true
+    }, new TypeError("Cannot assign to read only property 'prefixTrailingSlash' of object '#<Object>'"))
+    t.throws(() => {
+      req.routeOptions.newAttribute = {}
+    }, new TypeError('Cannot add property newAttribute, object is not extensible'))
 
     for (const key of Object.keys(req.routeOptions)) {
       if (typeof req.routeOptions[key] === 'object' && req.routeOptions[key] !== null) {
@@ -348,18 +371,23 @@ test('request.routeOptions should be immutable', t => {
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -387,28 +415,36 @@ test('test request.routeOptions.version', t => {
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/version',
-      headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    t.teardown(() => {
+      fastify.close()
     })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port + '/version',
+        headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
+        headers: { 'Content-Type': 'application/json' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })

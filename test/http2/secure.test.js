@@ -9,7 +9,7 @@ const msg = { hello: 'world' }
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
-test('secure', (t) => {
+test('secure', t => {
   t.plan(5)
 
   let fastify
@@ -38,9 +38,11 @@ test('secure', (t) => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
-    t.test('https get request', async (t) => {
+    t.test('https get request', async t => {
       t.plan(3)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -51,14 +53,16 @@ test('secure', (t) => {
       t.same(JSON.parse(res.body), msg)
     })
 
-    t.test('https get request without trust proxy - protocol', async (t) => {
+    t.test('https get request without trust proxy - protocol', async t => {
       t.plan(2)
 
       const url = `https://localhost:${fastify.server.address().port}/proto`
       t.same(JSON.parse((await h2url.concat({ url })).body), { proto: 'https' })
-      t.same(JSON.parse((await h2url.concat({ url, headers: { 'X-Forwarded-Proto': 'lorem' } })).body), { proto: 'https' })
+      t.same(JSON.parse((await h2url.concat({ url, headers: { 'X-Forwarded-Proto': 'lorem' } })).body), {
+        proto: 'https'
+      })
     })
-    t.test('https get request - test hostname and port', async (t) => {
+    t.test('https get request - test hostname and port', async t => {
       t.plan(2)
 
       const url = `https://localhost:${fastify.server.address().port}/hostname_port`

@@ -42,7 +42,7 @@ test('DNS errors does not stop the main server on localhost - callback interface
     }
   })
   const { server, listen } = createServer({}, handler)
-  listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
+  listen.call(Fastify(), { port: 0, host: 'localhost' }, err => {
     t.error(err)
     server.close()
     t.pass('server started')
@@ -59,7 +59,7 @@ test('DNS returns empty binding', t => {
     }
   })
   const { server, listen } = createServer({}, handler)
-  listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
+  listen.call(Fastify(), { port: 0, host: 'localhost' }, err => {
     t.error(err)
     server.close()
     t.pass('server started')
@@ -80,7 +80,7 @@ test('DNS returns more than two binding', t => {
     }
   })
   const { server, listen } = createServer({}, handler)
-  listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
+  listen.call(Fastify(), { port: 0, host: 'localhost' }, err => {
     t.error(err)
     server.close()
     t.pass('server started')

@@ -34,18 +34,21 @@ test('route error handler overrides global custom error handler', t => {
     errorHandler: customRouteErrorHandler
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 418)
-    t.same(JSON.parse(res.payload), {
-      message: 'Make a brew',
-      statusCode: 418,
-      error: 'Wrong Pot Error'
-    })
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/more-coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 418)
+      t.same(JSON.parse(res.payload), {
+        message: 'Make a brew',
+        statusCode: 418,
+        error: 'Wrong Pot Error'
+      })
+    }
+  )
 })
 
 test('throws when route with empty url', async t => {
@@ -70,10 +73,9 @@ test('throws when route with empty url in shorthand declaration', async t => {
 
   const fastify = Fastify()
   try {
-    fastify.get(
-      '',
-      async function handler () { return {} }
-    )
+    fastify.get('', async function handler() {
+      return {}
+    })
   } catch (err) {
     t.equal(err.message, 'The path could not be empty')
   }
@@ -121,11 +123,14 @@ test('route child logger factory overrides default child logger factory', t => {
     childLoggerFactory: customRouteChildLogger
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })

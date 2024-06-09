@@ -32,17 +32,20 @@ test('The logger should add a unique id for every request', t => {
     })
   })
 
-  function checkId (done) {
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.ok(ids.indexOf(payload.id) === -1, 'the id should not be duplicated')
-      ids.push(payload.id)
-      done()
-    })
+  function checkId(done) {
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.ok(ids.indexOf(payload.id) === -1, 'the id should not be duplicated')
+        ids.push(payload.id)
+        done()
+      }
+    )
   }
 })
 
@@ -56,20 +59,26 @@ test('The logger should not reuse request id header for req.id', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Request-Id': 'request-id-1'
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Request-Id': 'request-id-1'
+        }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.ok(
+          payload.id !== 'request-id-1',
+          'the request id from the header should not be returned with default configuration'
+        )
+        t.ok(payload.id === 'req-1') // first request id when using the default configuration
+        fastify.close()
+        t.end()
       }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.ok(payload.id !== 'request-id-1', 'the request id from the header should not be returned with default configuration')
-      t.ok(payload.id === 'req-1') // first request id when using the default configuration
-      fastify.close()
-      t.end()
-    })
+    )
   })
 })
 
@@ -85,33 +94,36 @@ test('The logger should reuse request id header for req.id if requestIdHeader is
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Request-Id': 'request-id-1'
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Request-Id': 'request-id-1'
+        }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
+        fastify.close()
+        t.end()
       }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
-      fastify.close()
-      t.end()
-    })
+    )
   })
 })
 
-function Queue () {
+function Queue() {
   this.q = []
   this.running = false
 }
 
-Queue.prototype.add = function add (job) {
+Queue.prototype.add = function add(job) {
   this.q.push(job)
   if (!this.running) this.run()
 }
 
-Queue.prototype.run = function run () {
+Queue.prototype.run = function run() {
   this.running = true
   const job = this.q.shift()
   job(() => {

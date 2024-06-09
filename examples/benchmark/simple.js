@@ -19,11 +19,9 @@ const schema = {
   }
 }
 
-fastify
-  .get('/', schema, function (req, reply) {
-    reply
-      .send({ hello: 'world' })
-  })
+fastify.get('/', schema, function (req, reply) {
+  reply.send({ hello: 'world' })
+})
 
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) throw err

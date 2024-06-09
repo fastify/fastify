@@ -23,19 +23,24 @@ test('can be created - copy', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   test('request - copy', t => {
     t.plan(2)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test.txt`,
-      method: 'COPY',
-      headers: {
-        Destination: '/test2.txt'
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test.txt`,
+        method: 'COPY',
+        headers: {
+          Destination: '/test2.txt'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 204)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 204)
-    })
+    )
   })
 })

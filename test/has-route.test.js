@@ -12,7 +12,7 @@ test('hasRoute', t => {
   test('hasRoute - invalid options', t => {
     t.plan(3)
 
-    t.equal(fastify.hasRoute({ }), false)
+    t.equal(fastify.hasRoute({}), false)
 
     t.equal(fastify.hasRoute({ method: 'GET' }), false)
 
@@ -29,15 +29,21 @@ test('hasRoute', t => {
       }
     })
 
-    t.equal(fastify.hasRoute({
-      method: 'GET',
-      url: '/'
-    }), true)
+    t.equal(
+      fastify.hasRoute({
+        method: 'GET',
+        url: '/'
+      }),
+      true
+    )
 
-    t.equal(fastify.hasRoute({
-      method: 'POST',
-      url: '/'
-    }), false)
+    t.equal(
+      fastify.hasRoute({
+        method: 'POST',
+        url: '/'
+      }),
+      false
+    )
   })
 
   test('hasRoute - with constraints', t => {
@@ -51,27 +57,36 @@ test('hasRoute', t => {
       }
     })
 
-    t.equal(fastify.hasRoute({
-      method: 'GET',
-      url: '/',
-      constraints: { version: '1.2.0' }
-    }), true)
+    t.equal(
+      fastify.hasRoute({
+        method: 'GET',
+        url: '/',
+        constraints: { version: '1.2.0' }
+      }),
+      true
+    )
 
-    t.equal(fastify.hasRoute({
-      method: 'GET',
-      url: '/',
-      constraints: { version: '1.3.0' }
-    }), false)
+    t.equal(
+      fastify.hasRoute({
+        method: 'GET',
+        url: '/',
+        constraints: { version: '1.3.0' }
+      }),
+      false
+    )
   })
 
   test('hasRoute - parametric route regexp with constraints', t => {
     t.plan(1)
     // parametric with regexp
-    fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
+    fastify.get('/example/:file(^\\d+).png', function (request, reply) {})
 
-    t.equal(fastify.hasRoute({
-      method: 'GET',
-      url: '/example/:file(^\\d+).png'
-    }), true)
+    t.equal(
+      fastify.hasRoute({
+        method: 'GET',
+        url: '/example/:file(^\\d+).png'
+      }),
+      true
+    )
   })
 })

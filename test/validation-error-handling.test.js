@@ -15,7 +15,7 @@ const schema = {
   }
 }
 
-function echoBody (req, reply) {
+function echoBody(req, reply) {
   reply.code(200).send(req.body.name)
 }
 
@@ -26,18 +26,21 @@ test('should work with valid payload', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      name: 'michelangelo',
-      work: 'sculptor, painter, architect and poet'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        name: 'michelangelo',
+        work: 'sculptor, painter, architect and poet'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, 'michelangelo')
-    t.equal(res.statusCode, 200)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.payload, 'michelangelo')
+      t.equal(res.statusCode, 200)
+    }
+  )
 })
 
 test('should fail immediately with invalid payload', t => {
@@ -47,22 +50,25 @@ test('should fail immediately with invalid payload', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: "body must have required property 'name'"
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: "body must have required property 'name'"
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('should be able to use setErrorHandler specify custom validation error', t => {
@@ -81,21 +87,24 @@ test('should be able to use setErrorHandler specify custom validation error', t 
     }
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 422,
-      error: 'Unprocessable Entity',
-      message: 'validation failed'
-    })
-    t.equal(res.statusCode, 422)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(JSON.parse(res.payload), {
+        statusCode: 422,
+        error: 'Unprocessable Entity',
+        message: 'validation failed'
+      })
+      t.equal(res.statusCode, 422)
+    }
+  )
 })
 
 test('validation error has 400 statusCode set', t => {
@@ -114,20 +123,23 @@ test('validation error has 400 statusCode set', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      message: "body must have required property 'name'"
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        message: "body must have required property 'name'"
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('error inside custom error handler should have validationContext', t => {
@@ -135,31 +147,38 @@ test('error inside custom error handler should have validationContext', t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', {
-    schema,
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return function (data) {
-        return { error: new Error('this failed') }
+  fastify.post(
+    '/',
+    {
+      schema,
+      validatorCompiler: ({ schema, method, url, httpPart }) => {
+        return function (data) {
+          return { error: new Error('this failed') }
+        }
       }
+    },
+    function (req, reply) {
+      t.fail('should not be here')
+      reply.code(200).send(req.body.name)
     }
-  }, function (req, reply) {
-    t.fail('should not be here')
-    reply.code(200).send(req.body.name)
-  })
+  )
 
   fastify.setErrorHandler(function (error, request, reply) {
     t.equal(error.validationContext, 'body')
     reply.status(500).send(error)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      name: 'michelangelo',
-      work: 'artist'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        name: 'michelangelo',
+        work: 'artist'
+      },
+      url: '/'
     },
-    url: '/'
-  }, () => {})
+    () => {}
+  )
 })
 
 test('error inside custom error handler should have validationContext if specified by custom error handler', t => {
@@ -167,33 +186,40 @@ test('error inside custom error handler should have validationContext if specifi
 
   const fastify = Fastify()
 
-  fastify.post('/', {
-    schema,
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return function (data) {
-        const error = new Error('this failed')
-        error.validationContext = 'customContext'
-        return { error }
+  fastify.post(
+    '/',
+    {
+      schema,
+      validatorCompiler: ({ schema, method, url, httpPart }) => {
+        return function (data) {
+          const error = new Error('this failed')
+          error.validationContext = 'customContext'
+          return { error }
+        }
       }
+    },
+    function (req, reply) {
+      t.fail('should not be here')
+      reply.code(200).send(req.body.name)
     }
-  }, function (req, reply) {
-    t.fail('should not be here')
-    reply.code(200).send(req.body.name)
-  })
+  )
 
   fastify.setErrorHandler(function (error, request, reply) {
     t.equal(error.validationContext, 'customContext')
     reply.status(500).send(error)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      name: 'michelangelo',
-      work: 'artist'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        name: 'michelangelo',
+        work: 'artist'
+      },
+      url: '/'
     },
-    url: '/'
-  }, () => {})
+    () => {}
+  )
 })
 
 test('should be able to attach validation to request', t => {
@@ -205,24 +231,29 @@ test('should be able to attach validation to request', t => {
     reply.code(400).send(req.validationError.validation)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
+    (err, res) => {
+      t.error(err)
 
-    t.same(res.json(), [{
-      keyword: 'required',
-      instancePath: '',
-      schemaPath: '#/required',
-      params: { missingProperty: 'name' },
-      message: 'must have required property \'name\''
-    }])
-    t.equal(res.statusCode, 400)
-  })
+      t.same(res.json(), [
+        {
+          keyword: 'required',
+          instancePath: '',
+          schemaPath: '#/required',
+          params: { missingProperty: 'name' },
+          message: "must have required property 'name'"
+        }
+      ])
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('should respect when attachValidation is explicitly set to false', t => {
@@ -235,22 +266,25 @@ test('should respect when attachValidation is explicitly set to false', t => {
     reply.code(200).send(req.validationError.validation)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: "body must have required property 'name'"
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(JSON.parse(res.payload), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: "body must have required property 'name'"
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('Attached validation error should take precedence over setErrorHandler', t => {
@@ -269,17 +303,20 @@ test('Attached validation error should take precedence over setErrorHandler', t 
     }
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, "Attached: Error: body must have required property 'name'")
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.payload, "Attached: Error: body must have required property 'name'")
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('should handle response validation error', t => {
@@ -306,14 +343,17 @@ test('should handle response validation error', t => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    payload: { },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      payload: {},
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
+    }
+  )
 })
 
 test('should handle response validation error with promises', t => {
@@ -336,14 +376,17 @@ test('should handle response validation error with promises', t => {
     return Promise.resolve({ work: 'actor' })
   })
 
-  fastify.inject({
-    method: 'GET',
-    payload: { },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      payload: {},
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
+    }
+  )
 })
 
 test('should return a defined output message parsing AJV errors', t => {
@@ -364,77 +407,105 @@ test('should return a defined output message parsing AJV errors', t => {
     t.fail()
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: { },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body must have required property \'name\'"}')
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {},
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(
+        res.payload,
+        '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body must have required property \'name\'"}'
+      )
+    }
+  )
 })
 
 test('should return a defined output message parsing JOI errors', t => {
   t.plan(2)
 
-  const body = Joi.object().keys({
-    name: Joi.string().required(),
-    work: Joi.string().required()
-  }).required()
+  const body = Joi.object()
+    .keys({
+      name: Joi.string().required(),
+      work: Joi.string().required()
+    })
+    .required()
 
   const fastify = Fastify()
 
-  fastify.post('/', {
-    schema: { body },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return data => schema.validate(data)
+  fastify.post(
+    '/',
+    {
+      schema: { body },
+      validatorCompiler: ({ schema, method, url, httpPart }) => {
+        return data => schema.validate(data)
+      }
+    },
+    function (req, reply) {
+      t.fail()
     }
-  },
-  function (req, reply) {
-    t.fail()
-  })
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {},
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"\\"name\\" is required"}')
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {},
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(
+        res.payload,
+        '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"\\"name\\" is required"}'
+      )
+    }
+  )
 })
 
 test('should return a defined output message parsing JOI error details', t => {
   t.plan(2)
 
-  const body = Joi.object().keys({
-    name: Joi.string().required(),
-    work: Joi.string().required()
-  }).required()
+  const body = Joi.object()
+    .keys({
+      name: Joi.string().required(),
+      work: Joi.string().required()
+    })
+    .required()
 
   const fastify = Fastify()
 
-  fastify.post('/', {
-    schema: { body },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return data => {
-        const validation = schema.validate(data)
-        return { error: validation.error.details }
+  fastify.post(
+    '/',
+    {
+      schema: { body },
+      validatorCompiler: ({ schema, method, url, httpPart }) => {
+        return data => {
+          const validation = schema.validate(data)
+          return { error: validation.error.details }
+        }
       }
+    },
+    function (req, reply) {
+      t.fail()
     }
-  },
-  function (req, reply) {
-    t.fail()
-  })
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {},
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body \\"name\\" is required"}')
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {},
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(
+        res.payload,
+        '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body \\"name\\" is required"}'
+      )
+    }
+  )
 })
 
 test('the custom error formatter context must be the server instance', t => {
@@ -449,22 +520,25 @@ test('the custom error formatter context must be the server instance', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'my error'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'my error'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('the custom error formatter context must be the server instance in options', t => {
@@ -479,22 +553,25 @@ test('the custom error formatter context must be the server instance in options'
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'my error'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'my error'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('should call custom error formatter', t => {
@@ -516,22 +593,25 @@ test('should call custom error formatter', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'my error'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'my error'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('should catch error inside formatter and return message', t => {
@@ -545,22 +625,25 @@ test('should catch error inside formatter and return message', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 500)
-    t.end()
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 500,
+        error: 'Internal Server Error',
+        message: 'abc'
+      })
+      t.equal(res.statusCode, 500)
+      t.end()
+    }
+  )
 })
 
 test('cannot create a fastify instance with wrong type of errorFormatter', t => {
@@ -597,30 +680,37 @@ test('should register a route based schema error formatter', t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', {
-    schema,
-    schemaErrorFormatter: (errors, dataVar) => {
-      return new Error('abc')
-    }
-  }, echoBody)
-
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.post(
+    '/',
+    {
+      schema,
+      schemaErrorFormatter: (errors, dataVar) => {
+        return new Error('abc')
+      }
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 400)
-    t.end()
-  })
+    echoBody
+  )
+
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'abc'
+      })
+      t.equal(res.statusCode, 400)
+      t.end()
+    }
+  )
 })
 
 test('prefer route based error formatter over global one', t => {
@@ -632,72 +722,89 @@ test('prefer route based error formatter over global one', t => {
     }
   })
 
-  fastify.post('/', {
-    schema,
-    schemaErrorFormatter: (errors, dataVar) => {
-      return new Error('123')
-    }
-  }, echoBody)
+  fastify.post(
+    '/',
+    {
+      schema,
+      schemaErrorFormatter: (errors, dataVar) => {
+        return new Error('123')
+      }
+    },
+    echoBody
+  )
 
-  fastify.post('/abc', {
-    schema,
-    schemaErrorFormatter: (errors, dataVar) => {
-      return new Error('abc')
-    }
-  }, echoBody)
+  fastify.post(
+    '/abc',
+    {
+      schema,
+      schemaErrorFormatter: (errors, dataVar) => {
+        return new Error('abc')
+      }
+    },
+    echoBody
+  )
 
   fastify.post('/test', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: '123'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: '123'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/abc'
     },
-    url: '/abc'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'abc'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/test'
     },
-    url: '/test'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc123'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'abc123'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })
 
 test('adding schemaErrorFormatter', t => {
@@ -711,23 +818,26 @@ test('adding schemaErrorFormatter', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 400)
-    t.end()
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'abc'
+      })
+      t.equal(res.statusCode, 400)
+      t.end()
+    }
+  )
 })
 
 test('plugin override', t => {
@@ -744,14 +854,18 @@ test('plugin override', t => {
       return new Error('C')
     })
 
-    instance.post('/d', {
-      schema,
-      schemaErrorFormatter: (errors, dataVar) => {
-        return new Error('D')
+    instance.post(
+      '/d',
+      {
+        schema,
+        schemaErrorFormatter: (errors, dataVar) => {
+          return new Error('D')
+        }
+      },
+      function (req, reply) {
+        reply.code(200).send(req.body.name)
       }
-    }, function (req, reply) {
-      reply.code(200).send(req.body.name)
-    })
+    )
 
     instance.post('/c', { schema }, echoBody)
 
@@ -765,95 +879,114 @@ test('plugin override', t => {
 
   fastify.post('/b', { schema }, echoBody)
 
-  fastify.post('/', {
-    schema,
-    schemaErrorFormatter: (errors, dataVar) => {
-      return new Error('A')
+  fastify.post(
+    '/',
+    {
+      schema,
+      schemaErrorFormatter: (errors, dataVar) => {
+        return new Error('A')
+      }
+    },
+    echoBody
+  )
+
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'A'
+      })
+      t.equal(res.statusCode, 400)
     }
-  }, echoBody)
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/b'
     },
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'A'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'B'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/c'
     },
-    url: '/b'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'B'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'C'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/d'
     },
-    url: '/c'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'C'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'D'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'michelangelo'
+      },
+      url: '/stillC'
     },
-    url: '/d'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'D'
-    })
-    t.equal(res.statusCode, 400)
-  })
-
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'michelangelo'
-    },
-    url: '/stillC'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'C'
-    })
-    t.equal(res.statusCode, 400)
-  })
+    (err, res) => {
+      t.error(err)
+      t.same(res.json(), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'C'
+      })
+      t.equal(res.statusCode, 400)
+    }
+  )
 })

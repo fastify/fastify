@@ -19,7 +19,7 @@ const lifecycleHooks = [
   'onError'
 ]
 
-test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
+test('skip automatic reply.send() with reply.sent = true and a body', t => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
@@ -27,7 +27,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
     }
   })
 
-  stream.on('data', (line) => {
+  stream.on('data', line => {
     t.not(line.level, 40) // there are no errors
     t.not(line.level, 50) // there are no errors
   })
@@ -39,16 +39,18 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
     return Promise.resolve('this will be skipped')
   })
 
-  return app.inject({
-    method: 'GET',
-    url: '/'
-  }).then((res) => {
-    t.equal(res.statusCode, 200)
-    t.equal(res.body, 'hello world')
-  })
+  return app
+    .inject({
+      method: 'GET',
+      url: '/'
+    })
+    .then(res => {
+      t.equal(res.statusCode, 200)
+      t.equal(res.body, 'hello world')
+    })
 })
 
-test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
+test('skip automatic reply.send() with reply.sent = true and no body', t => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
@@ -56,7 +58,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
     }
   })
 
-  stream.on('data', (line) => {
+  stream.on('data', line => {
     t.not(line.level, 40) // there are no error
     t.not(line.level, 50) // there are no error
   })
@@ -68,16 +70,18 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
     return Promise.resolve()
   })
 
-  return app.inject({
-    method: 'GET',
-    url: '/'
-  }).then((res) => {
-    t.equal(res.statusCode, 200)
-    t.equal(res.body, 'hello world')
-  })
+  return app
+    .inject({
+      method: 'GET',
+      url: '/'
+    })
+    .then(res => {
+      t.equal(res.statusCode, 200)
+      t.equal(res.body, 'hello world')
+    })
 })
 
-test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
+test('skip automatic reply.send() with reply.sent = true and an error', t => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
@@ -87,7 +91,7 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
 
   let errorSeen = false
 
-  stream.on('data', (line) => {
+  stream.on('data', line => {
     if (line.level === 50) {
       errorSeen = true
       t.equal(line.err.message, 'kaboom')
@@ -102,17 +106,19 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
     return Promise.reject(new Error('kaboom'))
   })
 
-  return app.inject({
-    method: 'GET',
-    url: '/'
-  }).then((res) => {
-    t.equal(errorSeen, true)
-    t.equal(res.statusCode, 200)
-    t.equal(res.body, 'hello world')
-  })
+  return app
+    .inject({
+      method: 'GET',
+      url: '/'
+    })
+    .then(res => {
+      t.equal(errorSeen, true)
+      t.equal(res.statusCode, 200)
+      t.equal(res.body, 'hello world')
+    })
 })
 
-function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
+function testHandlerOrBeforeHandlerHook(test, hookOrHandler) {
   const idx = hookOrHandler === 'handler' ? lifecycleHooks.indexOf('preHandler') : lifecycleHooks.indexOf(hookOrHandler)
   const previousHooks = lifecycleHooks.slice(0, idx)
   const nextHooks = lifecycleHooks.slice(idx + 1)
@@ -129,7 +135,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         }
       })
 
-      stream.on('data', (line) => {
+      stream.on('data', line => {
         t.not(line.level, 40) // there are no errors
         t.not(line.level, 50) // there are no errors
       })
@@ -157,13 +163,15 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         }
       })
 
-      return app.inject({
-        method: 'GET',
-        url: '/'
-      }).then((res) => {
-        t.equal(res.statusCode, 200)
-        t.equal(res.body, `hello from ${hookOrHandler}`)
-      })
+      return app
+        .inject({
+          method: 'GET',
+          url: '/'
+        })
+        .then(res => {
+          t.equal(res.statusCode, 200)
+          t.equal(res.body, `hello from ${hookOrHandler}`)
+        })
     })
 
     test('Sending a response using req.socket => onResponse not called', t => {
@@ -175,7 +183,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       })
       t.teardown(() => app.close())
 
-      stream.on('data', (line) => {
+      stream.on('data', line => {
         t.not(line.level, 40) // there are no errors
         t.not(line.level, 50) // there are no errors
       })
@@ -203,7 +211,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
 
       app.listen({ port: 0 }, err => {
         t.error(err)
-        const client = net.createConnection({ port: (app.server.address()).port }, () => {
+        const client = net.createConnection({ port: app.server.address().port }, () => {
           client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           let chunks = ''
@@ -230,7 +238,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       t.teardown(() => app.close())
 
       let errorSeen = false
-      stream.on('data', (line) => {
+      stream.on('data', line => {
         if (hookOrHandler === 'handler') {
           if (line.level === 40) {
             errorSeen = true
@@ -280,7 +288,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
 
       let errorSeen = false
 
-      stream.on('data', (line) => {
+      stream.on('data', line => {
         if (line.level === 40) {
           errorSeen = true
           t.equal(line.err.code, 'FST_ERR_REP_ALREADY_SENT')

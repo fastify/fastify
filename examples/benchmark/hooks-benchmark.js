@@ -36,10 +36,9 @@ fastify
     done()
   })
 
-fastify
-  .addHook('onSend', function (request, reply, payload, done) {
-    done()
-  })
+fastify.addHook('onSend', function (request, reply, payload, done) {
+  done()
+})
 
 fastify.get('/', opts, function (request, reply) {
   reply.send({ hello: 'world' })

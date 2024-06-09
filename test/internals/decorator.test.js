@@ -3,13 +3,11 @@
 const t = require('tap')
 const test = t.test
 const decorator = require('../../lib/decorate')
-const {
-  kState
-} = require('../../lib/symbols')
+const { kState } = require('../../lib/symbols')
 
 test('decorate should add the given method to its instance', t => {
   t.plan(1)
-  function build () {
+  function build() {
     server.add = decorator.add
     server[kState] = {
       listening: false,
@@ -17,7 +15,7 @@ test('decorate should add the given method to its instance', t => {
       started: false
     }
     return server
-    function server () {}
+    function server() {}
   }
 
   const server = build()
@@ -27,7 +25,7 @@ test('decorate should add the given method to its instance', t => {
 
 test('decorate is chainable', t => {
   t.plan(3)
-  function build () {
+  function build() {
     server.add = decorator.add
     server[kState] = {
       listening: false,
@@ -35,7 +33,7 @@ test('decorate is chainable', t => {
       started: false
     }
     return server
-    function server () {}
+    function server() {}
   }
 
   const server = build()
@@ -57,7 +55,7 @@ test('checkExistence should check if a property is part of the given instance', 
 
 test('checkExistence should find the instance if not given', t => {
   t.plan(1)
-  function build () {
+  function build() {
     server.add = decorator.add
     server.check = decorator.exist
     server[kState] = {
@@ -66,7 +64,7 @@ test('checkExistence should find the instance if not given', t => {
       started: false
     }
     return server
-    function server () {}
+    function server() {}
   }
 
   const server = build()
@@ -76,7 +74,7 @@ test('checkExistence should find the instance if not given', t => {
 
 test('checkExistence should check the prototype as well', t => {
   t.plan(1)
-  function Instance () {}
+  function Instance() {}
   Instance.prototype.test = () => {}
 
   const instance = new Instance()
@@ -91,13 +89,13 @@ test('checkDependencies should throw if a dependency is not present', t => {
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.equal(e.message, 'The decorator is missing dependency \'test\'.')
+    t.equal(e.message, "The decorator is missing dependency 'test'.")
   }
 })
 
 test('decorate should internally call checkDependencies', t => {
   t.plan(2)
-  function build () {
+  function build() {
     server.add = decorator.add
     server[kState] = {
       listening: false,
@@ -105,7 +103,7 @@ test('decorate should internally call checkDependencies', t => {
       started: false
     }
     return server
-    function server () {}
+    function server() {}
   }
 
   const server = build()
@@ -115,7 +113,7 @@ test('decorate should internally call checkDependencies', t => {
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.equal(e.message, 'The decorator is missing dependency \'test\'.')
+    t.equal(e.message, "The decorator is missing dependency 'test'.")
   }
 })
 
@@ -131,7 +129,7 @@ test('decorate should recognize getter/setter objects', t => {
   }
   decorator.add.call(one, 'foo', {
     getter: () => this._a,
-    setter: (val) => {
+    setter: val => {
       t.pass()
       this._a = val
     }

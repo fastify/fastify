@@ -17,10 +17,12 @@ test('pluginTimeout', t => {
   fastify.register(function (app, opts, done) {
     // to no call done on purpose
   })
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.ok(err)
-    t.equal(err.message,
-      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(
+      err.message,
+      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise"
+    )
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
     t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
@@ -32,13 +34,15 @@ test('pluginTimeout - named function', t => {
   const fastify = Fastify({
     pluginTimeout: 10
   })
-  fastify.register(function nameFunction (app, opts, done) {
+  fastify.register(function nameFunction(app, opts, done) {
     // to no call done on purpose
   })
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.ok(err)
-    t.equal(err.message,
-      "fastify-plugin: Plugin did not start in time: 'nameFunction'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(
+      err.message,
+      "fastify-plugin: Plugin did not start in time: 'nameFunction'. You may have forgotten to call 'done' function or to resolve a Promise"
+    )
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
     t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
@@ -55,10 +59,12 @@ test('pluginTimeout default', t => {
     clock.tick(10000)
   })
 
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.ok(err)
-    t.equal(err.message,
-      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(
+      err.message,
+      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise"
+    )
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
     t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
@@ -83,7 +89,7 @@ test('plugin metadata - version', t => {
     t.pass('everything right')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -104,7 +110,7 @@ test('plugin metadata - version range', t => {
     t.pass('everything right')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -121,12 +127,12 @@ test('plugin metadata - version not matching requirement', t => {
 
   fastify.register(plugin)
 
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.ok(err)
     t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -143,12 +149,12 @@ test('plugin metadata - version not matching requirement 2', t => {
 
   fastify.register(plugin)
 
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.ok(err)
     t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -165,12 +171,12 @@ test('plugin metadata - version not matching requirement 3', t => {
 
   fastify.register(plugin)
 
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.ok(err)
     t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -189,12 +195,12 @@ test('plugin metadata - release candidate', t => {
 
   fastify.register(plugin)
 
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.error(err)
     t.pass('everything right')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -217,16 +223,16 @@ test('fastify-rc loads prior version plugins', t => {
 
   fastify.register(plugin)
 
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.error(err)
     t.pass('everything right')
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 
-  function plugin2 (instance, opts, done) {
+  function plugin2(instance, opts, done) {
     done()
   }
 })
@@ -243,14 +249,14 @@ test('hasPlugin returns true if the specified plugin has been registered', async
 
   const fastify = Fastify()
 
-  function pluginA (fastify, opts, done) {
+  function pluginA(fastify, opts, done) {
     t.ok(fastify.hasPlugin('plugin-A'))
     done()
   }
   pluginA[Symbol.for('fastify.display-name')] = 'plugin-A'
   fastify.register(pluginA)
 
-  fastify.register(function pluginB (fastify, opts, done) {
+  fastify.register(function pluginB(fastify, opts, done) {
     t.ok(fastify.hasPlugin('pluginB'))
     done()
   })
@@ -278,21 +284,21 @@ test('hasPlugin returns false when using encapsulation', async t => {
 
   const fastify = Fastify()
 
-  fastify.register(function pluginA (fastify, opts, done) {
+  fastify.register(function pluginA(fastify, opts, done) {
     t.ok(fastify.hasPlugin('pluginA'))
     t.notOk(fastify.hasPlugin('pluginAA'))
     t.notOk(fastify.hasPlugin('pluginAAA'))
     t.notOk(fastify.hasPlugin('pluginAB'))
     t.notOk(fastify.hasPlugin('pluginB'))
 
-    fastify.register(function pluginAA (fastify, opts, done) {
+    fastify.register(function pluginAA(fastify, opts, done) {
       t.notOk(fastify.hasPlugin('pluginA'))
       t.ok(fastify.hasPlugin('pluginAA'))
       t.notOk(fastify.hasPlugin('pluginAAA'))
       t.notOk(fastify.hasPlugin('pluginAB'))
       t.notOk(fastify.hasPlugin('pluginB'))
 
-      fastify.register(function pluginAAA (fastify, opts, done) {
+      fastify.register(function pluginAAA(fastify, opts, done) {
         t.notOk(fastify.hasPlugin('pluginA'))
         t.notOk(fastify.hasPlugin('pluginAA'))
         t.ok(fastify.hasPlugin('pluginAAA'))
@@ -305,7 +311,7 @@ test('hasPlugin returns false when using encapsulation', async t => {
       done()
     })
 
-    fastify.register(function pluginAB (fastify, opts, done) {
+    fastify.register(function pluginAB(fastify, opts, done) {
       t.notOk(fastify.hasPlugin('pluginA'))
       t.notOk(fastify.hasPlugin('pluginAA'))
       t.notOk(fastify.hasPlugin('pluginAAA'))
@@ -318,7 +324,7 @@ test('hasPlugin returns false when using encapsulation', async t => {
     done()
   })
 
-  fastify.register(function pluginB (fastify, opts, done) {
+  fastify.register(function pluginB(fastify, opts, done) {
     t.notOk(fastify.hasPlugin('pluginA'))
     t.notOk(fastify.hasPlugin('pluginAA'))
     t.notOk(fastify.hasPlugin('pluginAAA'))
@@ -336,56 +342,81 @@ test('hasPlugin returns true when using no encapsulation', async t => {
 
   const fastify = Fastify()
 
-  fastify.register(fp((fastify, opts, done) => {
-    t.equal(fastify.pluginName, 'fastify -> plugin-AA')
-    t.ok(fastify.hasPlugin('plugin-AA'))
-    t.notOk(fastify.hasPlugin('plugin-A'))
-    t.notOk(fastify.hasPlugin('plugin-AAA'))
-    t.notOk(fastify.hasPlugin('plugin-AB'))
-    t.notOk(fastify.hasPlugin('plugin-B'))
-
-    fastify.register(fp((fastify, opts, done) => {
-      t.ok(fastify.hasPlugin('plugin-AA'))
-      t.ok(fastify.hasPlugin('plugin-A'))
-      t.notOk(fastify.hasPlugin('plugin-AAA'))
-      t.notOk(fastify.hasPlugin('plugin-AB'))
-      t.notOk(fastify.hasPlugin('plugin-B'))
-
-      fastify.register(fp((fastify, opts, done) => {
+  fastify.register(
+    fp(
+      (fastify, opts, done) => {
+        t.equal(fastify.pluginName, 'fastify -> plugin-AA')
         t.ok(fastify.hasPlugin('plugin-AA'))
-        t.ok(fastify.hasPlugin('plugin-A'))
-        t.ok(fastify.hasPlugin('plugin-AAA'))
+        t.notOk(fastify.hasPlugin('plugin-A'))
+        t.notOk(fastify.hasPlugin('plugin-AAA'))
         t.notOk(fastify.hasPlugin('plugin-AB'))
         t.notOk(fastify.hasPlugin('plugin-B'))
 
+        fastify.register(
+          fp(
+            (fastify, opts, done) => {
+              t.ok(fastify.hasPlugin('plugin-AA'))
+              t.ok(fastify.hasPlugin('plugin-A'))
+              t.notOk(fastify.hasPlugin('plugin-AAA'))
+              t.notOk(fastify.hasPlugin('plugin-AB'))
+              t.notOk(fastify.hasPlugin('plugin-B'))
+
+              fastify.register(
+                fp(
+                  (fastify, opts, done) => {
+                    t.ok(fastify.hasPlugin('plugin-AA'))
+                    t.ok(fastify.hasPlugin('plugin-A'))
+                    t.ok(fastify.hasPlugin('plugin-AAA'))
+                    t.notOk(fastify.hasPlugin('plugin-AB'))
+                    t.notOk(fastify.hasPlugin('plugin-B'))
+
+                    done()
+                  },
+                  { name: 'plugin-AAA' }
+                )
+              )
+
+              done()
+            },
+            { name: 'plugin-A' }
+          )
+        )
+
+        fastify.register(
+          fp(
+            (fastify, opts, done) => {
+              t.ok(fastify.hasPlugin('plugin-AA'))
+              t.ok(fastify.hasPlugin('plugin-A'))
+              t.ok(fastify.hasPlugin('plugin-AAA'))
+              t.ok(fastify.hasPlugin('plugin-AB'))
+              t.notOk(fastify.hasPlugin('plugin-B'))
+
+              done()
+            },
+            { name: 'plugin-AB' }
+          )
+        )
+
         done()
-      }, { name: 'plugin-AAA' }))
+      },
+      { name: 'plugin-AA' }
+    )
+  )
 
-      done()
-    }, { name: 'plugin-A' }))
+  fastify.register(
+    fp(
+      (fastify, opts, done) => {
+        t.ok(fastify.hasPlugin('plugin-AA'))
+        t.ok(fastify.hasPlugin('plugin-A'))
+        t.ok(fastify.hasPlugin('plugin-AAA'))
+        t.ok(fastify.hasPlugin('plugin-AB'))
+        t.ok(fastify.hasPlugin('plugin-B'))
 
-    fastify.register(fp((fastify, opts, done) => {
-      t.ok(fastify.hasPlugin('plugin-AA'))
-      t.ok(fastify.hasPlugin('plugin-A'))
-      t.ok(fastify.hasPlugin('plugin-AAA'))
-      t.ok(fastify.hasPlugin('plugin-AB'))
-      t.notOk(fastify.hasPlugin('plugin-B'))
-
-      done()
-    }, { name: 'plugin-AB' }))
-
-    done()
-  }, { name: 'plugin-AA' }))
-
-  fastify.register(fp((fastify, opts, done) => {
-    t.ok(fastify.hasPlugin('plugin-AA'))
-    t.ok(fastify.hasPlugin('plugin-A'))
-    t.ok(fastify.hasPlugin('plugin-AAA'))
-    t.ok(fastify.hasPlugin('plugin-AB'))
-    t.ok(fastify.hasPlugin('plugin-B'))
-
-    done()
-  }, { name: 'plugin-B' }))
+        done()
+      },
+      { name: 'plugin-B' }
+    )
+  )
 
   await fastify.ready()
 })
@@ -403,12 +434,12 @@ test('hasPlugin returns true when using encapsulation', async t => {
 
   fastify.register(plugin)
 
-  fastify.register(async (server) => {
+  fastify.register(async server => {
     t.ok(server.hasPlugin(pluginName))
   })
 
-  fastify.register(async function foo (server) {
-    server.register(async function bar (server) {
+  fastify.register(async function foo(server) {
+    server.register(async function bar(server) {
       t.ok(server.hasPlugin(pluginName))
     })
   })
@@ -432,7 +463,10 @@ test('registering anonymous plugin with mixed style should throw', async t => {
     t.fail('should throw')
   } catch (error) {
     t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
-    t.equal(error.message, 'The anonymousPlugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+    t.equal(
+      error.message,
+      'The anonymousPlugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.'
+    )
   }
 })
 
@@ -454,6 +488,9 @@ test('registering named plugin with mixed style should throw', async t => {
     t.fail('should throw')
   } catch (error) {
     t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
-    t.equal(error.message, 'The error-plugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+    t.equal(
+      error.message,
+      'The error-plugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.'
+    )
   }
 })

@@ -3,7 +3,7 @@ const test = require('tap').test
 const { kRouteContext } = require('../lib/symbols')
 const fastify = require('../')
 
-test('handlers receive correct `this` context', async (t) => {
+test('handlers receive correct `this` context', async t => {
   t.plan(4)
 
   // simulate plugin that uses fastify-plugin
@@ -28,7 +28,7 @@ test('handlers receive correct `this` context', async (t) => {
   t.equal(instance.foo, 'foo')
 })
 
-test('handlers have access to the internal context', async (t) => {
+test('handlers have access to the internal context', async t => {
   t.plan(5)
 
   const instance = fastify()

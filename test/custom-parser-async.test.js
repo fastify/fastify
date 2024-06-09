@@ -32,35 +32,41 @@ test('contentTypeParser should add a custom async parser', t => {
     t.test('in POST', t => {
       t.plan(3)
 
-      sget({
-        method: 'POST',
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/jsoff'
+      sget(
+        {
+          method: 'POST',
+          url: 'http://localhost:' + fastify.server.address().port,
+          body: '{"hello":"world"}',
+          headers: {
+            'Content-Type': 'application/jsoff'
+          }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body.toString(), JSON.stringify({ hello: 'world' }))
         }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      })
+      )
     })
 
     t.test('in OPTIONS', t => {
       t.plan(3)
 
-      sget({
-        method: 'OPTIONS',
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/jsoff'
+      sget(
+        {
+          method: 'OPTIONS',
+          url: 'http://localhost:' + fastify.server.address().port,
+          body: '{"hello":"world"}',
+          headers: {
+            'Content-Type': 'application/jsoff'
+          }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body.toString(), JSON.stringify({ hello: 'world' }))
         }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      })
+      )
     })
   })
 })

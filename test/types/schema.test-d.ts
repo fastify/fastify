@@ -6,68 +6,78 @@ import { StandaloneSerializer } from '@fastify/fast-json-stringify-compiler'
 
 const server = fastify()
 
-expectAssignable<FastifyInstance>(server.get(
-  '/full-schema',
-  {
-    schema: {
-      body: { type: 'null' },
-      querystring: { type: 'null' },
-      params: { type: 'null' },
-      headers: { type: 'null' },
-      response: { type: 'null' }
-    }
-  },
-  () => { }
-))
-
-expectAssignable<FastifyInstance>(server.get(
-  '/empty-schema',
-  {
-    schema: {}
-  },
-  () => { }
-))
-
-expectAssignable<FastifyInstance>(server.get(
-  '/no-schema',
-  {},
-  () => { }
-))
-
-expectAssignable<FastifyInstance>(server.setValidatorCompiler(({ schema }) => {
-  return new Ajv().compile(schema)
-}))
-
-expectAssignable<FastifyInstance>(server.setSerializerCompiler(() => {
-  return data => JSON.stringify(data)
-}))
-
-expectAssignable<FastifyInstance>(server.post('/test', {
-  validatorCompiler: ({ schema }) => {
-    return data => {
-      if (!data || data.constructor !== Object) {
-        return { error: new Error('value is not an object') }
+expectAssignable<FastifyInstance>(
+  server.get(
+    '/full-schema',
+    {
+      schema: {
+        body: { type: 'null' },
+        querystring: { type: 'null' },
+        params: { type: 'null' },
+        headers: { type: 'null' },
+        response: { type: 'null' }
       }
-      return { value: data }
-    }
-  }
-}, async req => req.body))
+    },
+    () => {}
+  )
+)
 
-expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
-  function ({ schema }) {
+expectAssignable<FastifyInstance>(
+  server.get(
+    '/empty-schema',
+    {
+      schema: {}
+    },
+    () => {}
+  )
+)
+
+expectAssignable<FastifyInstance>(server.get('/no-schema', {}, () => {}))
+
+expectAssignable<FastifyInstance>(
+  server.setValidatorCompiler(({ schema }) => {
     return new Ajv().compile(schema)
-  }
-))
+  })
+)
 
-expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & { validate: string }>(
-  () => data => JSON.stringify(data)
-))
+expectAssignable<FastifyInstance>(
+  server.setSerializerCompiler(() => {
+    return data => JSON.stringify(data)
+  })
+)
+
+expectAssignable<FastifyInstance>(
+  server.post(
+    '/test',
+    {
+      validatorCompiler: ({ schema }) => {
+        return data => {
+          if (!data || data.constructor !== Object) {
+            return { error: new Error('value is not an object') }
+          }
+          return { value: data }
+        }
+      }
+    },
+    async req => req.body
+  )
+)
+
+expectAssignable<FastifyInstance>(
+  server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(function ({ schema }) {
+    return new Ajv().compile(schema)
+  })
+)
+
+expectAssignable<FastifyInstance>(
+  server.setSerializerCompiler<FastifySchema & { validate: string }>(() => data => JSON.stringify(data))
+)
 
 // https://github.com/fastify/ajv-compiler/issues/95
 {
   const factory = StandaloneValidator({
     readMode: false,
-    storeFunction (routeOpts, schemaValidationCode) { }
+    storeFunction(routeOpts, schemaValidationCode) {}
   })
 
   const app = fastify({
@@ -83,7 +93,7 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
 {
   const factory = StandaloneSerializer({
     readMode: false,
-    storeFunction (routeOpts, schemaValidationCode) { }
+    storeFunction(routeOpts, schemaValidationCode) {}
   })
 
   const app = fastify({

@@ -44,9 +44,11 @@ module.exports.payloadMethod = function (method, t) {
 
   const optsWithJoiValidator = {
     schema: {
-      body: Joi.object().keys({
-        hello: Joi.string().required()
-      }).required()
+      body: Joi.object()
+        .keys({
+          hello: Joi.string().required()
+        })
+        .required()
     },
     validatorCompiler: function ({ schema, method, url, httpPart }) {
       return schema.validate.bind(schema)
@@ -62,9 +64,12 @@ module.exports.payloadMethod = function (method, t) {
 
   const optsWithYupValidator = {
     schema: {
-      body: yup.object().shape({
-        hello: yup.string().required()
-      }).required()
+      body: yup
+        .object()
+        .shape({
+          hello: yup.string().required()
+        })
+        .required()
     },
     validatorCompiler: function ({ schema, method, url, httpPart }) {
       return data => {
@@ -95,14 +100,14 @@ module.exports.payloadMethod = function (method, t) {
       })
 
       fastify.register(function (fastify2, opts, done) {
-        fastify2.setValidatorCompiler(function schema ({ schema, method, url, httpPart }) {
+        fastify2.setValidatorCompiler(function schema({ schema, method, url, httpPart }) {
           return body => ({ error: new Error('From custom schema compiler!') })
         })
         const withInstanceCustomCompiler = {
           schema: {
             body: {
               type: 'object',
-              properties: { },
+              properties: {},
               additionalProperties: false
             }
           }
@@ -113,7 +118,7 @@ module.exports.payloadMethod = function (method, t) {
           schema: {
             body: {
               type: 'object',
-              properties: { },
+              properties: {},
               additionalProperties: false
             }
           },
@@ -123,7 +128,9 @@ module.exports.payloadMethod = function (method, t) {
             }
           }
         }
-        fastify2[loMethod]('/plugin/custom', optsWithCustomValidator2, (req, reply) => reply.send({ hello: 'never here!' }))
+        fastify2[loMethod]('/plugin/custom', optsWithCustomValidator2, (req, reply) =>
+          reply.send({ hello: 'never here!' })
+        )
 
         done()
       })
@@ -138,199 +145,234 @@ module.exports.payloadMethod = function (method, t) {
       t.error(err)
     }
 
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     test(`${upMethod} - correctly replies`, t => {
       if (upMethod === 'HEAD') {
         t.plan(2)
-        sget({
-          method: upMethod,
-          url: 'http://localhost:' + fastify.server.address().port
-        }, (err, response) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
-        })
+        sget(
+          {
+            method: upMethod,
+            url: 'http://localhost:' + fastify.server.address().port
+          },
+          (err, response) => {
+            t.error(err)
+            t.equal(response.statusCode, 200)
+          }
+        )
       } else {
         t.plan(3)
-        sget({
-          method: upMethod,
-          url: 'http://localhost:' + fastify.server.address().port,
-          body: {
-            hello: 42
+        sget(
+          {
+            method: upMethod,
+            url: 'http://localhost:' + fastify.server.address().port,
+            body: {
+              hello: 42
+            },
+            json: true
           },
-          json: true
-        }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
-          t.same(body, { hello: 42 })
-        })
+          (err, response, body) => {
+            t.error(err)
+            t.equal(response.statusCode, 200)
+            t.same(body, { hello: 42 })
+          }
+        )
       }
     })
 
     test(`${upMethod} - 400 on bad parameters`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: {
-          hello: 'world'
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port,
+          body: {
+            hello: 'world'
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: 'body/hello must be integer',
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 400)
+          t.same(body, {
+            error: 'Bad Request',
+            message: 'body/hello must be integer',
+            statusCode: 400,
+            code: 'FST_ERR_VALIDATION'
+          })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation coerce`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: {
-          hello: '42'
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port,
+          body: {
+            hello: '42'
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body, { hello: 42 })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation custom schema compiler`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/custom',
-        body: {
-          hello: '42',
-          world: 55
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/custom',
+          body: {
+            hello: '42',
+            world: 55
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body, { hello: 42 })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation joi schema compiler ok`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/joi',
-        body: {
-          hello: '42'
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/joi',
+          body: {
+            hello: '42'
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body, { hello: 42 })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation joi schema compiler ko`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/joi',
-        body: {
-          hello: 44
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/joi',
+          body: {
+            hello: 44
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: '"hello" must be a string',
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 400)
+          t.same(body, {
+            error: 'Bad Request',
+            message: '"hello" must be a string',
+            statusCode: 400,
+            code: 'FST_ERR_VALIDATION'
+          })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation yup schema compiler ok`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/yup',
-        body: {
-          hello: '42'
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/yup',
+          body: {
+            hello: '42'
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body, { hello: 42 })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation yup schema compiler ko`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/yup',
-        body: {
-          hello: 44
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/yup',
+          body: {
+            hello: 44
+          },
+          json: true
         },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.match(body, {
-          error: 'Bad Request',
-          message: /body hello must be a `string` type, but the final value was: `44`./,
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 400)
+          t.match(body, {
+            error: 'Bad Request',
+            message: /body hello must be a `string` type, but the final value was: `44`./,
+            statusCode: 400,
+            code: 'FST_ERR_VALIDATION'
+          })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/plugin',
-        body: { },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: 'From custom schema compiler!',
-          statusCode: '400',
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/plugin',
+          body: {},
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 400)
+          t.same(body, {
+            error: 'Bad Request',
+            message: 'From custom schema compiler!',
+            statusCode: '400',
+            code: 'FST_ERR_VALIDATION'
+          })
+        }
+      )
     })
 
     test(`${upMethod} - input-validation custom schema compiler encapsulated`, t => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
-        body: { },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: 'Always fail!',
-          statusCode: '400',
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
+      sget(
+        {
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
+          body: {},
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 400)
+          t.same(body, {
+            error: 'Bad Request',
+            message: 'Always fail!',
+            statusCode: '400',
+            code: 'FST_ERR_VALIDATION'
+          })
+        }
+      )
     })
   })
 }

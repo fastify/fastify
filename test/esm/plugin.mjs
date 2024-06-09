@@ -1,5 +1,5 @@
 // Imported in both index.test.js & esm.test.mjs
-async function plugin (fastify, opts) {
+async function plugin(fastify, opts) {
   fastify.decorate('foo', opts.foo)
 }
 

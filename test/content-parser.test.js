@@ -4,7 +4,11 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const keys = require('../lib/symbols')
-const { FST_ERR_CTP_ALREADY_PRESENT, FST_ERR_CTP_INVALID_TYPE, FST_ERR_CTP_INVALID_MEDIA_TYPE } = require('../lib/errors')
+const {
+  FST_ERR_CTP_ALREADY_PRESENT,
+  FST_ERR_CTP_INVALID_TYPE,
+  FST_ERR_CTP_INVALID_MEDIA_TYPE
+} = require('../lib/errors')
 
 const first = function (req, payload, done) {}
 const second = function (req, payload, done) {}
@@ -264,8 +268,7 @@ test('non-Error thrown from content parser is properly handled', t => {
     done(throwable)
   })
 
-  fastify.post('/', (req, reply) => {
-  })
+  fastify.post('/', (req, reply) => {})
 
   fastify.setErrorHandler((err, req, res) => {
     t.equal(err, throwable)
@@ -273,15 +276,18 @@ test('non-Error thrown from content parser is properly handled', t => {
     res.send(payload)
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: { 'Content-Type': 'text/test' },
-    body: 'some text'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, payload)
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      headers: { 'Content-Type': 'text/test' },
+      body: 'some text'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.payload, payload)
+    }
+  )
 })
 
 test('Error thrown 415 from content type is null and make post request to server', t => {
@@ -290,18 +296,20 @@ test('Error thrown 415 from content type is null and make post request to server
   const fastify = Fastify()
   const errMsg = new FST_ERR_CTP_INVALID_MEDIA_TYPE(undefined).message
 
-  fastify.post('/', (req, reply) => {
-  })
+  fastify.post('/', (req, reply) => {})
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: 'some text'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 415)
-    t.equal(JSON.parse(res.body).message, errMsg)
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      body: 'some text'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 415)
+      t.equal(JSON.parse(res.body).message, errMsg)
+    }
+  )
 })
 
 test('remove', t => {
@@ -456,7 +464,7 @@ test('Safeguard against content-type spoofing - string', async t => {
     done(null, body)
   })
   fastify.addContentTypeParser('application/json', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.fail("shouldn't be called")
     done(null, body)
   })
 
@@ -480,7 +488,7 @@ test('Warning against improper content-type - regexp', t => {
   const fastify = Fastify()
 
   process.on('warning', onWarning)
-  function onWarning (warning) {
+  function onWarning(warning) {
     t.equal(warning.name, 'FastifySecurity')
     t.equal(warning.code, 'FSTSEC001')
   }
@@ -501,7 +509,7 @@ test('content-type match parameters - string 1', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('text/plain; charset=utf8', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.fail("shouldn't be called")
     done(null, body)
   })
   fastify.addContentTypeParser('application/json; charset=utf8', function (request, body, done) {
@@ -553,7 +561,7 @@ test('content-type fail when parameters not match - string 1', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.fail("shouldn't be called")
     done(null, body)
   })
 
@@ -579,7 +587,7 @@ test('content-type fail when parameters not match - string 2', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.fail("shouldn't be called")
     done(null, body)
   })
 
@@ -605,7 +613,7 @@ test('content-type fail when parameters not match - regexp', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser(/application\/json; charset=utf8; foo=bar/, function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.fail("shouldn't be called")
     done(null, body)
   })
 
@@ -635,7 +643,7 @@ test('content-type regexp list should be cloned when plugin override', async t =
     done(null, payload)
   })
 
-  fastify.register(function plugin (fastify, options, done) {
+  fastify.register(function plugin(fastify, options, done) {
     fastify.post('/', function (request, reply) {
       reply.type(request.headers['content-type']).send(request.body)
     })

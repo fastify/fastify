@@ -228,9 +228,9 @@ test('pretty print - nested plugins', t => {
   t.plan(4)
 
   const fastify = Fastify()
-  fastify.register(async function foo (instance) {
-    instance.register(async function bar () {})
-    instance.register(async function baz () {})
+  fastify.register(async function foo(instance) {
+    instance.register(async function bar() {})
+    instance.register(async function baz() {})
   })
   fastify.ready(() => {
     const tree = fastify.printPlugins()

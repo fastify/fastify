@@ -36,20 +36,26 @@ test('route child logger factory does not affect other routes', t => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
-  fastify.inject({
-    method: 'GET',
-    url: '/tea'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/tea'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })
 test('route child logger factory overrides global custom error handler', t => {
   t.plan(6)
@@ -91,20 +97,26 @@ test('route child logger factory overrides global custom error handler', t => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
-  fastify.inject({
-    method: 'GET',
-    url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/more-coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })
 
 test('Creates a HEAD route for each GET one (default)', t => {
@@ -128,25 +140,31 @@ test('Creates a HEAD route for each GET one (default)', t => {
     }
   })
 
-  fastify.inject({
-    method: 'HEAD',
-    url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.body, '')
-  })
+  fastify.inject(
+    {
+      method: 'HEAD',
+      url: '/more-coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(res.body, '')
+    }
+  )
 
-  fastify.inject({
-    method: 'HEAD',
-    url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.equal(res.body, '')
-  })
+  fastify.inject(
+    {
+      method: 'HEAD',
+      url: '/some-light'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
+      t.equal(res.body, '')
+    }
+  )
 })
 
 test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t => {
@@ -170,21 +188,27 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
     }
   })
 
-  fastify.inject({
-    method: 'HEAD',
-    url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 404)
-  })
+  fastify.inject(
+    {
+      method: 'HEAD',
+      url: '/more-coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 404)
+    }
+  )
 
-  fastify.inject({
-    method: 'HEAD',
-    url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 404)
-  })
+  fastify.inject(
+    {
+      method: 'HEAD',
+      url: '/some-light'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 404)
+    }
+  )
 })
 
 test('Creates a HEAD route for each GET one', t => {
@@ -208,23 +232,29 @@ test('Creates a HEAD route for each GET one', t => {
     }
   })
 
-  fastify.inject({
-    method: 'HEAD',
-    url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.body, '')
-  })
+  fastify.inject(
+    {
+      method: 'HEAD',
+      url: '/more-coffee'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(res.body, '')
+    }
+  )
 
-  fastify.inject({
-    method: 'HEAD',
-    url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.equal(res.body, '')
-  })
+  fastify.inject(
+    {
+      method: 'HEAD',
+      url: '/some-light'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
+      t.equal(res.body, '')
+    }
+  )
 })

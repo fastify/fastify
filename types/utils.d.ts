@@ -5,8 +5,25 @@ import * as https from 'https'
 /**
  * Standard HTTP method strings
  */
-type _HTTPMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS' |
-'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' | 'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH' | 'REPORT' | 'MKCALENDAR'
+type _HTTPMethods =
+  | 'DELETE'
+  | 'GET'
+  | 'HEAD'
+  | 'PATCH'
+  | 'POST'
+  | 'PUT'
+  | 'OPTIONS'
+  | 'PROPFIND'
+  | 'PROPPATCH'
+  | 'MKCOL'
+  | 'COPY'
+  | 'MOVE'
+  | 'LOCK'
+  | 'UNLOCK'
+  | 'TRACE'
+  | 'SEARCH'
+  | 'REPORT'
+  | 'MKCALENDAR'
 
 export type HTTPMethods = Uppercase<_HTTPMethods> | Lowercase<_HTTPMethods>
 
@@ -23,19 +40,23 @@ export type RawServerDefault = http.Server
 /**
  * The default request type based on the server type. Utilizes generic constraining.
  */
-export type RawRequestDefaultExpression<
-  RawServer extends RawServerBase = RawServerDefault,
-> = RawServer extends http.Server | https.Server ? http.IncomingMessage
-  : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerRequest
+export type RawRequestDefaultExpression<RawServer extends RawServerBase = RawServerDefault> = RawServer extends
+  | http.Server
+  | https.Server
+  ? http.IncomingMessage
+  : RawServer extends http2.Http2Server | http2.Http2SecureServer
+    ? http2.Http2ServerRequest
     : never
 
 /**
  * The default reply type based on the server type. Utilizes generic constraining.
  */
-export type RawReplyDefaultExpression<
-  RawServer extends RawServerBase = RawServerDefault
-> = RawServer extends http.Server | https.Server ? http.ServerResponse
-  : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerResponse
+export type RawReplyDefaultExpression<RawServer extends RawServerBase = RawServerDefault> = RawServer extends
+  | http.Server
+  | https.Server
+  ? http.ServerResponse
+  : RawServer extends http2.Http2Server | http2.Http2SecureServer
+    ? http2.Http2ServerResponse
     : never
 
 export type RequestBodyDefault = unknown
@@ -50,41 +71,41 @@ export type ReplyDefault = unknown
  * Helpers for determining the type of the response payload based on the code
  */
 
-type StringAsNumber<T extends string> = T extends `${infer N extends number}` ? N : never;
-type CodeClasses = 1 | 2 | 3 | 4 | 5;
-type Digit = 0 |1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-type HttpCodes = StringAsNumber<`${CodeClasses}${Digit}${Digit}`>;
-type HttpKeys = HttpCodes | `${Digit}xx`;
+type StringAsNumber<T extends string> = T extends `${infer N extends number}` ? N : never
+type CodeClasses = 1 | 2 | 3 | 4 | 5
+type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+type HttpCodes = StringAsNumber<`${CodeClasses}${Digit}${Digit}`>
+type HttpKeys = HttpCodes | `${Digit}xx`
 export type StatusCodeReply = {
   // eslint-disable-next-line no-unused-vars
-  [Key in HttpKeys]?: unknown;
-};
+  [Key in HttpKeys]?: unknown
+}
 
 // weird TS quirk: https://stackoverflow.com/questions/58977876/generic-conditional-type-resolves-to-never-when-the-generic-type-is-set-to-never
-export type ReplyKeysToCodes<Key> = [Key] extends [never] ? number :
-  Key extends HttpCodes ? Key :
-    Key extends `${infer X extends CodeClasses}xx` ?
-      StringAsNumber<`${X}${Digit}${Digit}`> : number;
+export type ReplyKeysToCodes<Key> = [Key] extends [never]
+  ? number
+  : Key extends HttpCodes
+    ? Key
+    : Key extends `${infer X extends CodeClasses}xx`
+      ? StringAsNumber<`${X}${Digit}${Digit}`>
+      : number
 
 export type CodeToReplyKey<Code extends number> = `${Code}` extends `${infer FirstDigit extends CodeClasses}${number}`
   ? `${FirstDigit}xx`
-  : never;
+  : never
 
 export type RecordKeysToLowercase<Input> = Input extends Record<string, unknown>
   ? {
-    [Key in keyof Input as Key extends string
-      ? Lowercase<Key>
-      : Key
-    ]: Input[Key];
-  }
-  : Input;
+      [Key in keyof Input as Key extends string ? Lowercase<Key> : Key]: Input[Key]
+    }
+  : Input
 
 type OmitIndexSignature<T> = {
-  [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
-};
+  [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K]
+}
 
 /**
  * HTTP header strings
  * Use this type only for input values, not for output values.
  */
-export type HttpHeader = keyof OmitIndexSignature<http.OutgoingHttpHeaders> | (string & Record<never, never>);
+export type HttpHeader = keyof OmitIndexSignature<http.OutgoingHttpHeaders> | (string & Record<never, never>)

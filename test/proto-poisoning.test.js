@@ -18,15 +18,18 @@ test('proto-poisoning error', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 } }'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ "__proto__": { "a": 42 } }'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+      }
+    )
   })
 })
 
@@ -44,15 +47,18 @@ test('proto-poisoning remove', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 }, "b": 42 }'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ "__proto__": { "a": 42 }, "b": 42 }'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -70,15 +76,18 @@ test('proto-poisoning ignore', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 }, "b": 42 }'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ "__proto__": { "a": 42 }, "b": 42 }'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -95,15 +104,18 @@ test('constructor-poisoning error (default in v3)', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+      }
+    )
   })
 })
 
@@ -120,15 +132,18 @@ test('constructor-poisoning error', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+      }
+    )
   })
 })
 
@@ -146,14 +161,17 @@ test('constructor-poisoning remove', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })

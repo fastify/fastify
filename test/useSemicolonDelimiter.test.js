@@ -19,14 +19,17 @@ test('use semicolon delimiter default false', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {})
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {})
+      }
+    )
   })
 })
 
@@ -45,16 +48,19 @@ test('use semicolon delimiter set to true', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        foo: 'bar'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {
+          foo: 'bar'
+        })
+      }
+    )
   })
 })
 
@@ -73,14 +79,17 @@ test('use semicolon delimiter set to false', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {})
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {})
+      }
+    )
   })
 })
 
@@ -99,12 +108,15 @@ test('use semicolon delimiter set to false return 404', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })

@@ -14,7 +14,7 @@ test('Request and Reply share the route config', async t => {
 
   const config = {
     this: 'is a string',
-    thisIs: function aFunction () {}
+    thisIs: function aFunction() {}
   }
 
   fastify.route({
@@ -33,30 +33,33 @@ test('Request and Reply share the route config', async t => {
   await fastify.inject('/')
 })
 
-test('Will not try to re-createprefixed HEAD route if it already exists and exposeHeadRoutes is true', async (t) => {
+test('Will not try to re-createprefixed HEAD route if it already exists and exposeHeadRoutes is true', async t => {
   t.plan(1)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
-  fastify.register((scope, opts, next) => {
-    scope.route({
-      method: 'HEAD',
-      path: '/route',
-      handler: (req, reply) => {
-        reply.header('content-type', 'text/plain')
-        reply.send('custom HEAD response')
-      }
-    })
-    scope.route({
-      method: 'GET',
-      path: '/route',
-      handler: (req, reply) => {
-        reply.send({ ok: true })
-      }
-    })
+  fastify.register(
+    (scope, opts, next) => {
+      scope.route({
+        method: 'HEAD',
+        path: '/route',
+        handler: (req, reply) => {
+          reply.header('content-type', 'text/plain')
+          reply.send('custom HEAD response')
+        }
+      })
+      scope.route({
+        method: 'GET',
+        path: '/route',
+        handler: (req, reply) => {
+          reply.send({ ok: true })
+        }
+      })
 
-    next()
-  }, { prefix: '/prefix' })
+      next()
+    },
+    { prefix: '/prefix' }
+  )
 
   await fastify.ready()
 
@@ -74,16 +77,21 @@ test('route with non-english characters', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + encodeURI('/föö')
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'here /föö')
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: getServerUrl(fastify) + encodeURI('/föö')
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(body.toString(), 'here /föö')
+      }
+    )
   })
 })
 
@@ -92,7 +100,7 @@ test('invalid url attribute - non string URL', t => {
   const fastify = Fastify()
 
   try {
-    fastify.get(/^\/(donations|skills|blogs)/, () => { })
+    fastify.get(/^\/(donations|skills|blogs)/, () => {})
   } catch (error) {
     t.equal(error.code, FST_ERR_INVALID_URL().code)
   }
@@ -121,7 +129,7 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
   fastify.route({
     method: 'GET',
     path: '/more-coffee',
-    async handler () {
+    async handler() {
       return 'hello world'
     }
   })

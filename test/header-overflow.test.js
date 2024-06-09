@@ -22,16 +22,19 @@ test('Should return 431 if request header fields are too large', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Large-Header': 'a'.repeat(maxHeaderSize)
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Large-Header': 'a'.repeat(maxHeaderSize)
+        }
+      },
+      (err, res) => {
+        t.error(err)
+        t.equal(res.statusCode, 431)
       }
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 431)
-    })
+    )
   })
 
   t.teardown(() => fastify.close())
@@ -52,13 +55,16 @@ test('Should return 431 if URI is too long', t => {
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + `/${'a'.repeat(maxHeaderSize)}`
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 431)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + `/${'a'.repeat(maxHeaderSize)}`
+      },
+      (err, res) => {
+        t.error(err)
+        t.equal(res.statusCode, 431)
+      }
+    )
   })
 
   t.teardown(() => fastify.close())

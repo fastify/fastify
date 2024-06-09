@@ -13,7 +13,7 @@ if (semver.lt(process.versions.node, '18.0.0')) {
   process.exit(0)
 }
 
-test('should response with a ReadableStream', async (t) => {
+test('should response with a ReadableStream', async t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -23,10 +23,7 @@ test('should response with a ReadableStream', async (t) => {
     reply.code(200).send(Readable.toWeb(stream))
   })
 
-  const {
-    statusCode,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, body } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -34,26 +31,24 @@ test('should response with a ReadableStream', async (t) => {
   t.equal(expected.toString(), body.toString())
 })
 
-test('should response with a Response', async (t) => {
+test('should response with a Response', async t => {
   t.plan(3)
 
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
     const stream = fs.createReadStream(__filename)
-    reply.send(new Response(Readable.toWeb(stream), {
-      status: 200,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(Readable.toWeb(stream), {
+        status: 200,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -62,7 +57,7 @@ test('should response with a Response', async (t) => {
   t.equal(headers.hello, 'world')
 })
 
-test('able to use in onSend hook - ReadableStream', async (t) => {
+test('able to use in onSend hook - ReadableStream', async t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -74,19 +69,18 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.equal(Object.prototype.toString.call(payload), '[object ReadableStream]')
-    done(null, new Response(payload, {
-      status: 200,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    done(
+      null,
+      new Response(payload, {
+        status: 200,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -95,34 +89,35 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
   t.equal(headers.hello, 'world')
 })
 
-test('able to use in onSend hook - Response', async (t) => {
+test('able to use in onSend hook - Response', async t => {
   t.plan(4)
 
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
     const stream = fs.createReadStream(__filename)
-    reply.send(new Response(Readable.toWeb(stream), {
-      status: 500,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(Readable.toWeb(stream), {
+        status: 500,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.equal(Object.prototype.toString.call(payload), '[object Response]')
-    done(null, new Response(payload.body, {
-      status: 200,
-      headers: payload.headers
-    }))
+    done(
+      null,
+      new Response(payload.body, {
+        status: 200,
+        headers: payload.headers
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -131,7 +126,7 @@ test('able to use in onSend hook - Response', async (t) => {
   t.equal(headers.hello, 'world')
 })
 
-test('Error when Response.bodyUsed', async (t) => {
+test('Error when Response.bodyUsed', async t => {
   t.plan(4)
 
   const expected = await fs.promises.readFile(__filename)
@@ -159,7 +154,7 @@ test('Error when Response.bodyUsed', async (t) => {
   t.equal(body.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
 })
 
-test('allow to pipe with fetch', async (t) => {
+test('allow to pipe with fetch', async t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -183,7 +178,7 @@ test('allow to pipe with fetch', async (t) => {
   t.same(response.json(), { ok: true })
 })
 
-test('allow to pipe with undici.fetch', async (t) => {
+test('allow to pipe with undici.fetch', async t => {
   t.plan(2)
 
   const fastify = Fastify()

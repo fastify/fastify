@@ -21,13 +21,16 @@ test('Should accept a custom childLoggerFactory function', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.error(err)
-      fastify.close()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.error(err)
+        fastify.close()
+      }
+    )
   })
 })
 
@@ -48,13 +51,16 @@ test('req.log should be the instance returned by the factory', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.error(err)
-      fastify.close()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.error(err)
+        fastify.close()
+      }
+    )
   })
 })
 
@@ -73,19 +79,25 @@ test('should throw error if invalid logger is returned', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.throws(() => {
-      try {
-        fastify.inject({
-          method: 'GET',
-          url: 'http://localhost:' + fastify.server.address().port
-        }, (err) => {
-          t.fail('request should have failed but did not')
-          t.error(err)
+    t.throws(
+      () => {
+        try {
+          fastify.inject(
+            {
+              method: 'GET',
+              url: 'http://localhost:' + fastify.server.address().port
+            },
+            err => {
+              t.fail('request should have failed but did not')
+              t.error(err)
+              fastify.close()
+            }
+          )
+        } finally {
           fastify.close()
-        })
-      } finally {
-        fastify.close()
-      }
-    }, { code: 'FST_ERR_LOG_INVALID_LOGGER' })
+        }
+      },
+      { code: 'FST_ERR_LOG_INVALID_LOGGER' }
+    )
   })
 })

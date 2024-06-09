@@ -15,10 +15,13 @@ test('findRoute should return null when route cannot be found due to a different
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.equal(fastify.findRoute({
-    method: 'POST',
-    url: '/artists/:artistId'
-  }), null)
+  t.equal(
+    fastify.findRoute({
+      method: 'POST',
+      url: '/artists/:artistId'
+    }),
+    null
+  )
 })
 
 test('findRoute should return an immutable route to avoid leaking and runtime route modifications', t => {
@@ -60,9 +63,12 @@ test('findRoute should return null when when url is not passed', t => {
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.equal(fastify.findRoute({
-    method: 'POST'
-  }), null)
+  t.equal(
+    fastify.findRoute({
+      method: 'POST'
+    }),
+    null
+  )
 })
 
 test('findRoute should return null when route cannot be found due to a different path', t => {
@@ -76,10 +82,13 @@ test('findRoute should return null when route cannot be found due to a different
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.equal(fastify.findRoute({
-    method: 'GET',
-    url: '/books/:bookId'
-  }), null)
+  t.equal(
+    fastify.findRoute({
+      method: 'GET',
+      url: '/books/:bookId'
+    }),
+    null
+  )
 })
 
 test('findRoute should return the route when found', t => {
@@ -114,12 +123,14 @@ test('findRoute should work correctly when used within plugins', t => {
     handler
   })
 
-  function validateRoutePlugin (instance, opts, done) {
+  function validateRoutePlugin(instance, opts, done) {
     const validateParams = function () {
-      return instance.findRoute({
-        method: 'GET',
-        url: '/artists/:artistId'
-      }) !== null
+      return (
+        instance.findRoute({
+          method: 'GET',
+          url: '/artists/:artistId'
+        }) !== null
+      )
     }
     instance.decorate('validateRoutes', { validateParams })
     done()

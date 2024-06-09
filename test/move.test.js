@@ -13,9 +13,7 @@ test('shorthand - move', t => {
       url: '*',
       handler: function (req, reply) {
         const destination = req.headers.destination
-        reply.code(201)
-          .header('location', destination)
-          .send()
+        reply.code(201).header('location', destination).send()
       }
     })
     t.pass()
@@ -26,20 +24,25 @@ test('shorthand - move', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   test('request - move', t => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test.txt`,
-      method: 'MOVE',
-      headers: {
-        Destination: '/test2.txt'
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test.txt`,
+        method: 'MOVE',
+        headers: {
+          Destination: '/test2.txt'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 201)
+        t.equal(response.headers.location, '/test2.txt')
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 201)
-      t.equal(response.headers.location, '/test2.txt')
-    })
+    )
   })
 })

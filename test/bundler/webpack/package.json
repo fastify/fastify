@@ -1,5 +1,5 @@
 {
-  "version":"0.0.1",
+  "version": "0.0.1",
   "scripts": {
     "bundle": "webpack",
     "test": "npm run bundle && node bundler-test.js"

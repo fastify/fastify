@@ -4,7 +4,7 @@ const t = require('tap')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
-t.test('The request id header key can be customized', async (t) => {
+t.test('The request id header key can be customized', async t => {
   t.plan(2)
   const REQUEST_ID = '42'
 
@@ -22,7 +22,7 @@ t.test('The request id header key can be customized', async (t) => {
   t.equal(body.id, REQUEST_ID)
 })
 
-t.test('The request id header key can be customized', async (t) => {
+t.test('The request id header key can be customized', async t => {
   t.plan(2)
   const REQUEST_ID = '42'
 
@@ -40,7 +40,7 @@ t.test('The request id header key can be customized', async (t) => {
   t.equal(body.id, REQUEST_ID)
 })
 
-t.test('The request id header key can be customized', (t) => {
+t.test('The request id header key can be customized', t => {
   t.plan(4)
   const REQUEST_ID = '42'
 
@@ -57,20 +57,23 @@ t.test('The request id header key can be customized', (t) => {
     t.error(err)
     t.teardown(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address,
-      headers: {
-        'my-custom-request-id': REQUEST_ID
+    sget(
+      {
+        method: 'GET',
+        url: address,
+        headers: {
+          'my-custom-request-id': REQUEST_ID
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
-    })
+    )
   })
 })
 
-t.test('The request id header key can be customized', (t) => {
+t.test('The request id header key can be customized', t => {
   t.plan(4)
   const REQUEST_ID = '42'
 
@@ -87,20 +90,23 @@ t.test('The request id header key can be customized', (t) => {
     t.error(err)
     t.teardown(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address,
-      headers: {
-        'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+    sget(
+      {
+        method: 'GET',
+        url: address,
+        headers: {
+          'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
-    })
+    )
   })
 })
 
-t.test('The request id header key can be customized', (t) => {
+t.test('The request id header key can be customized', t => {
   t.plan(4)
   const REQUEST_ID = '42'
 
@@ -117,15 +123,18 @@ t.test('The request id header key can be customized', (t) => {
     t.error(err)
     t.teardown(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address,
-      headers: {
-        'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+    sget(
+      {
+        method: 'GET',
+        url: address,
+        headers: {
+          'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
-    })
+    )
   })
 })

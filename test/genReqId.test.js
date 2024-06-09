@@ -21,15 +21,18 @@ test('Should accept a custom genReqId function', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.equal(payload.id, 'a')
-      fastify.close()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.equal(payload.id, 'a')
+        fastify.close()
+      }
+    )
   })
 })
 
@@ -59,18 +62,21 @@ test('Custom genReqId function gets raw request as argument', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.inject({
-      method: 'GET',
-      headers: {
-        'x-request-id': REQUEST_ID
+    fastify.inject(
+      {
+        method: 'GET',
+        headers: {
+          'x-request-id': REQUEST_ID
+        },
+        url: 'http://localhost:' + fastify.server.address().port
       },
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.equal(payload.id, REQUEST_ID)
-      fastify.close()
-    })
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.equal(payload.id, REQUEST_ID)
+        fastify.close()
+      }
+    )
   })
 })
 
@@ -92,62 +98,77 @@ test('Should accept option to set genReqId with setGenReqId option', t => {
     }
   })
 
-  fastify.register(function (instance, opts, next) {
-    instance.setGenReqId(function (req) {
-      return 'foo'
-    })
-    instance.get('/', (req, reply) => {
-      t.ok(req.id)
-      reply.send({ id: req.id })
-    })
-    next()
-  }, { prefix: 'foo' })
+  fastify.register(
+    function (instance, opts, next) {
+      instance.setGenReqId(function (req) {
+        return 'foo'
+      })
+      instance.get('/', (req, reply) => {
+        t.ok(req.id)
+        reply.send({ id: req.id })
+      })
+      next()
+    },
+    { prefix: 'foo' }
+  )
 
-  fastify.register(function (instance, opts, next) {
-    instance.setGenReqId(function (req) {
-      return 'bar'
-    })
-    instance.get('/', (req, reply) => {
-      t.ok(req.id)
-      reply.send({ id: req.id })
-    })
-    next()
-  }, { prefix: 'bar' })
+  fastify.register(
+    function (instance, opts, next) {
+      instance.setGenReqId(function (req) {
+        return 'bar'
+      })
+      instance.get('/', (req, reply) => {
+        t.ok(req.id)
+        reply.send({ id: req.id })
+      })
+      next()
+    },
+    { prefix: 'bar' }
+  )
 
   fastify.get('/', (req, reply) => {
     t.ok(req.id)
     reply.send({ id: req.id })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'base')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'base')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'foo')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/bar'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'bar')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/bar'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'bar')
+      fastify.close()
+    }
+  )
 })
 
 test('Should encapsulate setGenReqId', t => {
@@ -205,45 +226,57 @@ test('Should encapsulate setGenReqId', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'base')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'base')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'foo')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/bar'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'bar')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo/bar'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'bar')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/baz'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'baz')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo/baz'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'baz')
+      fastify.close()
+    }
+  )
 })
 
 test('Should encapsulate setGenReqId', t => {
@@ -301,45 +334,57 @@ test('Should encapsulate setGenReqId', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'base')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'base')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'foo')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/bar'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'bar')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo/bar'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'bar')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/baz'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'baz')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo/baz'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'baz')
+      fastify.close()
+    }
+  )
 })
 
 test('Should not alter parent of genReqId', t => {
@@ -366,25 +411,31 @@ test('Should not alter parent of genReqId', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'req-1')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'req-1')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'foo')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    }
+  )
 })
 
 test('Should have child instance user parent genReqId', t => {
@@ -411,25 +462,31 @@ test('Should have child instance user parent genReqId', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'foo')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'foo')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'foo')
+      fastify.close()
+    }
+  )
 })
 
 test('genReqId set on root scope when using fastify-plugin', t => {
@@ -437,39 +494,47 @@ test('genReqId set on root scope when using fastify-plugin', t => {
 
   const fastify = Fastify()
 
-  fastify.register(fp(function (fastify, options, done) {
-    fastify.setGenReqId(function (req) {
-      return 'not-encapsulated'
+  fastify.register(
+    fp(function (fastify, options, done) {
+      fastify.setGenReqId(function (req) {
+        return 'not-encapsulated'
+      })
+      fastify.get('/not-encapsulated-1', (req, reply) => {
+        t.ok(req.id)
+        reply.send({ id: req.id })
+      })
+      done()
     })
-    fastify.get('/not-encapsulated-1', (req, reply) => {
-      t.ok(req.id)
-      reply.send({ id: req.id })
-    })
-    done()
-  }))
+  )
 
   fastify.get('/not-encapsulated-2', (req, reply) => {
     t.ok(req.id)
     reply.send({ id: req.id })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/not-encapsulated-1'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'not-encapsulated')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/not-encapsulated-1'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'not-encapsulated')
+      fastify.close()
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/not-encapsulated-2'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.equal(payload.id, 'not-encapsulated')
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/not-encapsulated-2'
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'not-encapsulated')
+      fastify.close()
+    }
+  )
 })

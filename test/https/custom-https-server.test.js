@@ -8,7 +8,7 @@ const dns = require('node:dns').promises
 const sget = require('simple-get').concat
 const { buildCertificate } = require('../build-certificate')
 
-async function setup () {
+async function setup() {
   await buildCertificate()
 
   const localAddresses = await dns.lookup('localhost', { all: true })
@@ -44,18 +44,21 @@ async function setup () {
     await fastify.listen({ port: 0 })
 
     await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
+      sget(
+        {
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port,
+          rejectUnauthorized: false
+        },
+        (err, response, body) => {
+          if (err) {
+            return reject(err)
+          }
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+          resolve()
         }
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
+      )
     })
   })
 }

@@ -40,16 +40,19 @@ test('nullable string', t => {
       }
     }
   })
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      hello: null
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      body: {
+        hello: null
+      }
+    },
+    (err, res) => {
+      t.error(err)
+      t.same(res.payload.hello, null)
     }
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.payload.hello, null)
-  })
+  )
 })
 
 test('object or null body', t => {
@@ -88,18 +91,23 @@ test('object or null body', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { isUndefinedBody: true })
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), { isUndefinedBody: true })
+      }
+    )
   })
 })
 
@@ -140,18 +148,23 @@ test('nullable body', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { isUndefinedBody: true })
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), { isUndefinedBody: true })
+      }
+    )
   })
 })
 
@@ -181,17 +194,22 @@ test('Nullable body with 204', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 204)
-      t.equal(body.length, 0)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 204)
+        t.equal(body.length, 0)
+      }
+    )
   })
 })

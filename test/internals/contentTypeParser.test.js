@@ -16,21 +16,21 @@ test('rawBody function', t => {
   const parser = {
     asString: true,
     asBuffer: false,
-    fn (req, bodyInString, done) {
+    fn(req, bodyInString, done) {
       t.equal(bodyInString, body.toString())
       t.equal(typeof done, 'function')
       return {
-        then (cb) {
+        then(cb) {
           cb()
         }
       }
     }
   }
   const res = {}
-  res.end = () => { }
-  res.writeHead = () => { }
+  res.end = () => {}
+  res.writeHead = () => {}
 
-  res.log = { error: () => { }, info: () => { } }
+  res.log = { error: () => {}, info: () => {} }
   const context = {
     Reply,
     Request,
@@ -41,19 +41,13 @@ test('rawBody function', t => {
     }
   }
   const rs = new Readable()
-  rs._read = function () { }
+  rs._read = function () {}
   rs.headers = { 'content-length': body.length }
   const request = new Request('id', 'params', rs, 'query', 'log', context)
   const reply = new Reply(res, request)
-  const done = () => { }
+  const done = () => {}
 
-  internals.rawBody(
-    request,
-    reply,
-    reply[kRouteContext]._parserOptions,
-    parser,
-    done
-  )
+  internals.rawBody(request, reply, reply[kRouteContext]._parserOptions, parser, done)
   rs.emit('data', body.toString())
   rs.emit('end')
 })
@@ -62,28 +56,28 @@ test('Should support Webpack and faux modules', t => {
   t.plan(2)
 
   const internals = proxyquire('../../lib/contentTypeParser', {
-    'tiny-lru': { default: () => { } }
+    'tiny-lru': { default: () => {} }
   })[kTestInternals]
 
   const body = Buffer.from('你好 世界')
   const parser = {
     asString: true,
     asBuffer: false,
-    fn (req, bodyInString, done) {
+    fn(req, bodyInString, done) {
       t.equal(bodyInString, body.toString())
       t.equal(typeof done, 'function')
       return {
-        then (cb) {
+        then(cb) {
           cb()
         }
       }
     }
   }
   const res = {}
-  res.end = () => { }
-  res.writeHead = () => { }
+  res.end = () => {}
+  res.writeHead = () => {}
 
-  res.log = { error: () => { }, info: () => { } }
+  res.log = { error: () => {}, info: () => {} }
   const context = {
     Reply,
     Request,
@@ -94,19 +88,13 @@ test('Should support Webpack and faux modules', t => {
     }
   }
   const rs = new Readable()
-  rs._read = function () { }
+  rs._read = function () {}
   rs.headers = { 'content-length': body.length }
   const request = new Request('id', 'params', rs, 'query', 'log', context)
   const reply = new Reply(res, request)
-  const done = () => { }
+  const done = () => {}
 
-  internals.rawBody(
-    request,
-    reply,
-    reply[kRouteContext]._parserOptions,
-    parser,
-    done
-  )
+  internals.rawBody(request, reply, reply[kRouteContext]._parserOptions, parser, done)
   rs.emit('data', body.toString())
   rs.emit('end')
 })

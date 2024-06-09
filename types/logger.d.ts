@@ -2,7 +2,13 @@ import { FastifyError } from '@fastify/error'
 import { RouteGenericInterface } from './route'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
+import {
+  RawServerBase,
+  RawServerDefault,
+  RawRequestDefaultExpression,
+  RawReplyDefaultExpression,
+  ContextConfigDefault
+} from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 import { FastifyInstance } from './instance'
@@ -31,7 +37,7 @@ export interface FastifyBaseLogger extends pino.BaseLogger {
 export type FastifyLoggerInstance = FastifyBaseLogger
 
 export interface FastifyLoggerStreamDestination {
-  write(msg: string): void;
+  write(msg: string): void
 }
 
 export type PinoLoggerOptions = pino.LoggerOptions
@@ -43,41 +49,69 @@ export type PinoLoggerOptions = pino.LoggerOptions
 export type ResSerializerReply<
   RawServer extends RawServerBase,
   RawReply extends FastifyReply<RawServer>
-> = Partial<RawReply> & Pick<RawReply, 'statusCode'>;
+> = Partial<RawReply> & Pick<RawReply, 'statusCode'>
 
 /**
  * Fastify Custom Logger options.
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProvider> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
-  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>,
+  RawRequest extends FastifyRequest<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    FastifySchema,
+    FastifyTypeProvider
+  > = FastifyRequest<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >,
+  RawReply extends FastifyReply<
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    RawReplyDefaultExpression<RawServer>,
+    RouteGenericInterface,
+    ContextConfigDefault,
+    FastifySchema,
+    FastifyTypeProvider
+  > = FastifyReply<
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    RawReplyDefaultExpression<RawServer>,
+    RouteGenericInterface,
+    ContextConfigDefault,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >
 > {
   serializers?: {
     req?: (req: RawRequest) => {
-      method?: string;
-      url?: string;
-      version?: string;
-      host?: string;
-      remoteAddress?: string;
-      remotePort?: number;
-      [key: string]: unknown;
-    };
+      method?: string
+      url?: string
+      version?: string
+      host?: string
+      remoteAddress?: string
+      remotePort?: number
+      [key: string]: unknown
+    }
     err?: (err: FastifyError) => {
-      type: string;
-      message: string;
-      stack: string;
-      [key: string]: unknown;
-    };
+      type: string
+      message: string
+      stack: string
+      [key: string]: unknown
+    }
     res?: (res: ResSerializerReply<RawServer, RawReply>) => {
-      statusCode?: string | number;
-      [key: string]: unknown;
-    };
-  };
-  level?: string;
-  file?: string;
-  genReqId?: (req: RawRequest) => string;
-  stream?: FastifyLoggerStreamDestination;
+      statusCode?: string | number
+      [key: string]: unknown
+    }
+  }
+  level?: string
+  file?: string
+  genReqId?: (req: RawRequest) => string
+  stream?: FastifyLoggerStreamDestination
 }
 
 export interface FastifyChildLoggerFactory<

@@ -34,14 +34,7 @@
     "type": "git",
     "url": "git+https://github.com/fastify/fastify.git"
   },
-  "keywords": [
-    "web",
-    "framework",
-    "json",
-    "schema",
-    "open",
-    "api"
-  ],
+  "keywords": ["web", "framework", "json", "schema", "open", "api"],
   "author": "Matteo Collina <hello@matteocollina.com>",
   "contributors": [
     {
@@ -152,13 +145,11 @@
     }
   ],
   "devDependencies": {
-    "@biomejs/biome": "^1.4.1",
+    "@biomejs/biome": "^1.8.0",
     "@fastify/pre-commit": "^2.1.0",
     "@sinclair/typebox": "^0.32.22",
     "@sinonjs/fake-timers": "^11.2.2",
     "@types/node": "^20.12.7",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
     "ajv": "^8.12.0",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",
@@ -168,12 +159,6 @@
     "branch-comparer": "^1.1.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "eslint": "^8.57.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-import-resolver-node": "^0.3.9",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^4.5.1",
     "fluent-json-schema": "^4.2.1",

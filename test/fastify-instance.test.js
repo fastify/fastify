@@ -5,11 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const os = require('node:os')
 
-const {
-  kOptions,
-  kErrorHandler,
-  kChildLoggerFactory
-} = require('../lib/symbols')
+const { kOptions, kErrorHandler, kChildLoggerFactory } = require('../lib/symbols')
 
 test('root fastify instance is an object', t => {
   t.plan(1)
@@ -53,21 +49,25 @@ test('fastify instance should contains ajv options.plugins nested arrays', t => 
 
 test('fastify instance get invalid ajv options', t => {
   t.plan(1)
-  t.throws(() => Fastify({
-    ajv: {
-      customOptions: 8
-    }
-  }))
+  t.throws(() =>
+    Fastify({
+      ajv: {
+        customOptions: 8
+      }
+    })
+  )
 })
 
 test('fastify instance get invalid ajv options.plugins', t => {
   t.plan(1)
-  t.throws(() => Fastify({
-    ajv: {
-      customOptions: {},
-      plugins: 8
-    }
-  }))
+  t.throws(() =>
+    Fastify({
+      ajv: {
+        customOptions: {},
+        plugins: 8
+      }
+    })
+  )
 })
 
 test('fastify instance should contain default errorHandler', t => {
@@ -132,20 +132,19 @@ test('childLoggerFactory in plugin should be separate from the external one', as
   t.same(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
 })
 
-test('ready should resolve in order when called multiply times (promises only)', async (t) => {
+test('ready should resolve in order when called multiply times (promises only)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5]
   const result = []
 
-  const promises = [1, 2, 3, 4, 5]
-    .map((id) => app.ready().then(() => result.push(id)))
+  const promises = [1, 2, 3, 4, 5].map(id => app.ready().then(() => result.push(id)))
 
   await Promise.all(promises)
 
   t.strictSame(result, expectedOrder, 'Should resolve in order')
 })
 
-test('ready should reject in order when called multiply times (promises only)', async (t) => {
+test('ready should reject in order when called multiply times (promises only)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5]
   const result = []
@@ -154,15 +153,14 @@ test('ready should reject in order when called multiply times (promises only)', 
     setTimeout(() => done(new Error('test')), 500)
   })
 
-  const promises = [1, 2, 3, 4, 5]
-    .map((id) => app.ready().catch(() => result.push(id)))
+  const promises = [1, 2, 3, 4, 5].map(id => app.ready().catch(() => result.push(id)))
 
   await Promise.all(promises)
 
   t.strictSame(result, expectedOrder, 'Should resolve in order')
 })
 
-test('ready should reject in order when called multiply times (callbacks only)', async (t) => {
+test('ready should reject in order when called multiply times (callbacks only)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5]
   const result = []
@@ -171,7 +169,7 @@ test('ready should reject in order when called multiply times (callbacks only)',
     setTimeout(() => done(new Error('test')), 500)
   })
 
-  expectedOrder.map((id) => app.ready(() => result.push(id)))
+  expectedOrder.map(id => app.ready(() => result.push(id)))
 
   await app.ready().catch(err => {
     t.equal(err.message, 'test')
@@ -180,19 +178,19 @@ test('ready should reject in order when called multiply times (callbacks only)',
   t.strictSame(result, expectedOrder, 'Should resolve in order')
 })
 
-test('ready should resolve in order when called multiply times (callbacks only)', async (t) => {
+test('ready should resolve in order when called multiply times (callbacks only)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5]
   const result = []
 
-  expectedOrder.map((id) => app.ready(() => result.push(id)))
+  expectedOrder.map(id => app.ready(() => result.push(id)))
 
   await app.ready()
 
   t.strictSame(result, expectedOrder, 'Should resolve in order')
 })
 
-test('ready should resolve in order when called multiply times (mixed)', async (t) => {
+test('ready should resolve in order when called multiply times (mixed)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5, 6]
   const result = []
@@ -210,7 +208,7 @@ test('ready should resolve in order when called multiply times (mixed)', async (
   t.strictSame(result, expectedOrder, 'Should resolve in order')
 })
 
-test('ready should reject in order when called multiply times (mixed)', async (t) => {
+test('ready should reject in order when called multiply times (mixed)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5, 6]
   const result = []
@@ -234,7 +232,7 @@ test('ready should reject in order when called multiply times (mixed)', async (t
   t.strictSame(result, expectedOrder, 'Should resolve in order')
 })
 
-test('ready should resolve in order when called multiply times (mixed)', async (t) => {
+test('ready should resolve in order when called multiply times (mixed)', async t => {
   const app = Fastify()
   const expectedOrder = [1, 2, 3, 4, 5, 6]
   const result = []
@@ -272,13 +270,17 @@ test('fastify instance should contains listeningOrigin property (with port and h
   await fastify.close()
 })
 
-test('fastify instance should contains listeningOrigin property (unix socket)', { skip: os.platform() === 'win32' }, async t => {
-  const fastify = Fastify()
-  const path = `fastify.${Date.now()}.sock`
-  await fastify.listen({ path })
-  t.same(fastify.listeningOrigin, path)
-  await fastify.close()
-})
+test(
+  'fastify instance should contains listeningOrigin property (unix socket)',
+  { skip: os.platform() === 'win32' },
+  async t => {
+    const fastify = Fastify()
+    const path = `fastify.${Date.now()}.sock`
+    await fastify.listen({ path })
+    t.same(fastify.listeningOrigin, path)
+    await fastify.close()
+  }
+)
 
 test('fastify instance should contains listeningOrigin property (IPv6)', async t => {
   t.plan(1)

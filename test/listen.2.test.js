@@ -7,7 +7,7 @@ const helper = require('./helper')
 let localhostForURL
 
 before(async function () {
-  [, localhostForURL] = await helper.getLoopbackHost()
+  ;[, localhostForURL] = await helper.getLoopbackHost()
 })
 
 test('register after listen using Promise.resolve()', t => {
@@ -32,7 +32,7 @@ test('double listen errors', t => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.listen({ port: fastify.server.address().port }, (err, address) => {
       t.equal(address, null)

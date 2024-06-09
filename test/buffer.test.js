@@ -6,9 +6,13 @@ const Fastify = require('..')
 
 test('Buffer test', async t => {
   const fastify = Fastify()
-  fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, fastify.getDefaultJsonParser('error', 'ignore'))
+  fastify.addContentTypeParser(
+    'application/json',
+    { parseAs: 'buffer' },
+    fastify.getDefaultJsonParser('error', 'ignore')
+  )
 
-  fastify.delete('/', async (request) => {
+  fastify.delete('/', async request => {
     return request.body
   })
 
@@ -46,7 +50,7 @@ test('Buffer test', async t => {
     t.same(JSON.parse(response.payload.toString()), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-      message: 'Body cannot be empty when content-type is set to \'application/json\'',
+      message: "Body cannot be empty when content-type is set to 'application/json'",
       statusCode: 400
     })
   })

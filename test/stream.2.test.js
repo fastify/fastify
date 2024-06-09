@@ -21,25 +21,24 @@ test('onSend hook stream', t => {
     const gzStream = zlib.createGzip()
 
     reply.header('Content-Encoding', 'gzip')
-    pipeline(
-      fs.createReadStream(resolve(__filename), 'utf8'),
-      gzStream,
-      t.error
-    )
+    pipeline(fs.createReadStream(resolve(__filename), 'utf8'), gzStream, t.error)
     done(null, gzStream)
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['content-encoding'], 'gzip')
-    const file = fs.readFileSync(resolve(__filename), 'utf8')
-    const payload = zlib.gunzipSync(res.rawPayload)
-    t.equal(payload.toString('utf-8'), file)
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.headers['content-encoding'], 'gzip')
+      const file = fs.readFileSync(resolve(__filename), 'utf8')
+      const payload = zlib.gunzipSync(res.rawPayload)
+      t.equal(payload.toString('utf-8'), file)
+      fastify.close()
+    }
+  )
 })
 
 test('onSend hook stream should work even if payload is not a proper stream', t => {
@@ -48,7 +47,9 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
   const reply = proxyquire('../lib/reply', {
     'node:stream': {
       finished: (...args) => {
-        if (args.length === 2) { args[1](new Error('test-error')) }
+        if (args.length === 2) {
+          args[1](new Error('test-error'))
+        }
       }
     }
   })
@@ -56,16 +57,18 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
     './lib/reply.js': reply
   })
   const spyLogger = {
-    fatal: () => { },
-    error: () => { },
-    warn: (message) => {
+    fatal: () => {},
+    error: () => {},
+    warn: message => {
       t.equal(message, 'stream payload does not end properly')
       fastify.close()
     },
-    info: () => { },
-    debug: () => { },
-    trace: () => { },
-    child: () => { return spyLogger }
+    info: () => {},
+    debug: () => {},
+    trace: () => {},
+    child: () => {
+      return spyLogger
+    }
   }
 
   const fastify = Fastify({ loggerInstance: spyLogger })
@@ -73,7 +76,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
     reply.send({ hello: 'world' })
   })
   fastify.addHook('onSend', (req, reply, payload, done) => {
-    const fakeStream = { pipe: () => { } }
+    const fakeStream = { pipe: () => {} }
     done(null, fakeStream)
   })
 
@@ -89,7 +92,9 @@ test('onSend hook stream should work on payload with "close" ending function', t
   const reply = proxyquire('../lib/reply', {
     'node:stream': {
       finished: (...args) => {
-        if (args.length === 2) { args[1](new Error('test-error')) }
+        if (args.length === 2) {
+          args[1](new Error('test-error'))
+        }
       }
     }
   })
@@ -103,8 +108,8 @@ test('onSend hook stream should work on payload with "close" ending function', t
   })
   fastify.addHook('onSend', (req, reply, payload, done) => {
     const fakeStream = {
-      pipe: () => { },
-      close: (cb) => {
+      pipe: () => {},
+      close: cb => {
         cb()
         t.pass()
       }

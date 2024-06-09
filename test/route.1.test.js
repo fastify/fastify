@@ -4,10 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('..')
-const {
-  FST_ERR_INSTANCE_ALREADY_LISTENING,
-  FST_ERR_ROUTE_METHOD_INVALID
-} = require('../lib/errors')
+const { FST_ERR_INSTANCE_ALREADY_LISTENING, FST_ERR_ROUTE_METHOD_INVALID } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
 test('route', t => {
@@ -42,15 +39,20 @@ test('route', t => {
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+      t.teardown(() => {
+        fastify.close()
       })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
   })
 
@@ -70,15 +72,20 @@ test('route', t => {
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/missing'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+      t.teardown(() => {
+        fastify.close()
       })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/missing'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
   })
 
@@ -86,7 +93,7 @@ test('route', t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.throws(() => fastify.get('/', { handler: 'not a function' }, () => { }))
+    t.throws(() => fastify.get('/', { handler: 'not a function' }, () => {}))
   })
 
   test('Add Multiple methods per route all uppercase', t => {
@@ -100,28 +107,37 @@ test('route', t => {
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
         }
-      }))
+      })
+    )
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+      t.teardown(() => {
+        fastify.close()
       })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+      sget(
+        {
+          method: 'DELETE',
+          url: getServerUrl(fastify) + '/multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
   })
 
@@ -136,28 +152,37 @@ test('route', t => {
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
         }
-      }))
+      })
+    )
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+      t.teardown(() => {
+        fastify.close()
       })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+      sget(
+        {
+          method: 'DELETE',
+          url: getServerUrl(fastify) + '/multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
   })
 
@@ -172,28 +197,37 @@ test('route', t => {
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
         }
-      }))
+      })
+    )
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+      t.teardown(() => {
+        fastify.close()
       })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+      sget(
+        {
+          method: 'DELETE',
+          url: getServerUrl(fastify) + '/multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
   })
 
@@ -201,28 +235,34 @@ test('route', t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.throws(() =>
-      fastify.route({
-        method: ['GET', 1],
-        url: '/invalid-method',
-        handler: function (req, reply) {
-          reply.send({ hello: 'world' })
-        }
-      }), new FST_ERR_ROUTE_METHOD_INVALID())
+    t.throws(
+      () =>
+        fastify.route({
+          method: ['GET', 1],
+          url: '/invalid-method',
+          handler: function (req, reply) {
+            reply.send({ hello: 'world' })
+          }
+        }),
+      new FST_ERR_ROUTE_METHOD_INVALID()
+    )
   })
 
   test('Add method', t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.throws(() =>
-      fastify.route({
-        method: 1,
-        url: '/invalid-method',
-        handler: function (req, reply) {
-          reply.send({ hello: 'world' })
-        }
-      }), new FST_ERR_ROUTE_METHOD_INVALID())
+    t.throws(
+      () =>
+        fastify.route({
+          method: 1,
+          url: '/invalid-method',
+          handler: function (req, reply) {
+            reply.send({ hello: 'world' })
+          }
+        }),
+      new FST_ERR_ROUTE_METHOD_INVALID()
+    )
   })
 
   test('Add additional multiple methods to existing route', t => {
@@ -244,24 +284,32 @@ test('route', t => {
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify) + '/add-multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+      t.teardown(() => {
+        fastify.close()
       })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify) + '/add-multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/add-multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+      sget(
+        {
+          method: 'DELETE',
+          url: getServerUrl(fastify) + '/add-multiple'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
   })
 
@@ -272,15 +320,21 @@ test('route', t => {
 
     fastify.listen({ port: 0 }, function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
+      t.teardown(() => {
+        fastify.close()
+      })
 
-      t.throws(() => fastify.route({
-        method: 'GET',
-        url: '/another-get-route',
-        handler: function (req, reply) {
-          reply.send({ hello: 'world' })
-        }
-      }), new FST_ERR_INSTANCE_ALREADY_LISTENING('Cannot add route!'))
+      t.throws(
+        () =>
+          fastify.route({
+            method: 'GET',
+            url: '/another-get-route',
+            handler: function (req, reply) {
+              reply.send({ hello: 'world' })
+            }
+          }),
+        new FST_ERR_INSTANCE_ALREADY_LISTENING('Cannot add route!')
+      )
     })
   })
 })
@@ -290,7 +344,7 @@ test('invalid schema - route', t => {
 
   const fastify = Fastify()
   fastify.route({
-    handler: () => { },
+    handler: () => {},
     method: 'GET',
     url: '/invalid',
     schema: {

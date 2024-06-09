@@ -58,19 +58,22 @@ test('should be able to override the default json parser after removeAllContentT
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+        fastify.close()
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      fastify.close()
-    })
+    )
   })
 })
 
@@ -95,19 +98,22 @@ test('should be able to override the default plain text parser after removeAllCo
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': 'text/plain'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: 'hello world',
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(body.toString(), 'hello world')
+        fastify.close()
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'hello world')
-      fastify.close()
-    })
+    )
   })
 })
 
@@ -132,18 +138,21 @@ test('should be able to add a custom content type parser after removeAllContentT
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/jsoff'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/jsoff'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+        fastify.close()
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      fastify.close()
-    })
+    )
   })
 })

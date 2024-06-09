@@ -224,145 +224,183 @@ test('missing schema - head', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   test('shorthand - request head', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - request head params schema', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - request head params schema error', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+      }
+    )
   })
 
   test('shorthand - request head querystring schema', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - request head querystring schema error', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+      }
+    )
   })
 
   test('shorthand - request head missing schema', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/missing'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - request head custom head', t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/proxy/test'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.headers['x-foo'], 'bar')
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - request head custom head with constraints', t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
-      headers: {
-        version: '1.0.0'
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
+        headers: {
+          version: '1.0.0'
+        }
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.headers['x-foo'], 'bar')
+        t.equal(response.statusCode, 200)
       }
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
-    })
+    )
   })
 
   test('shorthand - should not reset a head route', t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query1'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/query1'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - should override head route when setting multiple routes', t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query2'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/query2'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.headers['x-foo'], 'bar')
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - should override head route when setting multiple routes', t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query3'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/query3'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.headers['x-foo'], 'bar')
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 
   test('shorthand - should set get and head route in the same api call', t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query4'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port + '/query4'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.headers['x-foo'], 'bar')
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })

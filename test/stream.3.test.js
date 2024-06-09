@@ -49,7 +49,9 @@ test('Destroying streams prematurely', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -112,7 +114,9 @@ test('Destroying streams prematurely should call close method', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -174,7 +178,9 @@ test('Destroying streams prematurely should call close method when destroy is no
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 

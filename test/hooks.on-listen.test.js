@@ -9,7 +9,7 @@ const { kState } = require('../lib/symbols')
 
 let localhost
 before(async function () {
-  [localhost] = await helper.getLoopbackHost()
+  ;[localhost] = await helper.getLoopbackHost()
 })
 
 test('onListen should not be processed when .ready() is called', t => {
@@ -198,27 +198,31 @@ test('localhost Register onListen hook after a plugin inside a plugin', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
-
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: 'localhost',
@@ -244,27 +248,31 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
     }
   })
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+      done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+
+      done()
     })
-
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: 'localhost',
@@ -317,8 +325,8 @@ test('localhost onListen encapsulation with only nested hook', async t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  await fastify.register(async (child) => {
-    await child.register(async (child2) => {
+  await fastify.register(async child => {
+    await child.register(async child2 => {
       child2.addHook('onListen', function (done) {
         t.pass()
         done()
@@ -337,15 +345,15 @@ test('localhost onListen peer encapsulations with only nested hooks', async t =>
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  await fastify.register(async (child) => {
-    await child.register(async (child2) => {
+  await fastify.register(async child => {
+    await child.register(async child2 => {
       child2.addHook('onListen', function (done) {
         t.pass()
         done()
       })
     })
 
-    await child.register(async (child2) => {
+    await child.register(async child2 => {
       child2.addHook('onListen', function (done) {
         t.pass()
         done()
@@ -534,27 +542,31 @@ test('non-localhost Register onListen hook after a plugin inside a plugin', t =>
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
-
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: '::1',
@@ -580,27 +592,31 @@ test('non-localhost Register onListen hook after a plugin inside a plugin should
     }
   })
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+      done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+
+      done()
     })
-
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: '::1',
@@ -703,7 +719,7 @@ test('onListen localhost should work in order with callback', t => {
     done()
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
@@ -723,7 +739,7 @@ test('onListen localhost should work in order with callback in async', t => {
     t.equal(++order, 2, '2nd called in root')
   })
 
-  fastify.listen({ host: 'localhost', port: 0 }, (err) => {
+  fastify.listen({ host: 'localhost', port: 0 }, err => {
     t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
@@ -764,7 +780,7 @@ test('onListen localhost sync with callback should log errors as warnings and co
     done()
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     t.equal(fastify.server.address().address, localhost)
   })
@@ -803,7 +819,7 @@ test('onListen localhost async with callback should log errors as warnings and c
     t.pass('3rd called in root')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     t.equal(fastify.server.address().address, localhost)
   })
@@ -814,29 +830,33 @@ test('Register onListen hook localhost with callback after a plugin inside a plu
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
+  )
 
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
-
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
@@ -868,7 +888,7 @@ test('onListen localhost with callback encapsulation should be called in order',
       })
     })
   })
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
@@ -890,7 +910,7 @@ test('onListen non-localhost should work in order with callback in sync', t => {
     done()
   })
 
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
+  fastify.listen({ host: '::1', port: 0 }, err => {
     t.equal(fastify.server.address().address, '::1')
     t.error(err)
   })
@@ -910,7 +930,7 @@ test('onListen non-localhost should work in order with callback in async', t => 
     t.equal(++order, 2, '2nd called in root')
   })
 
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
+  fastify.listen({ host: '::1', port: 0 }, err => {
     t.equal(fastify.server.address().address, '::1')
     t.error(err)
   })
@@ -954,7 +974,7 @@ test('onListen non-localhost sync with callback should log errors as warnings an
     done()
   })
 
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
+  fastify.listen({ host: '::1', port: 0 }, err => {
     t.error(err)
     t.equal(fastify.server.address().address, '::1')
   })
@@ -996,7 +1016,7 @@ test('onListen non-localhost async with callback should log errors as warnings a
     t.pass('3rd called in root')
   })
 
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
+  fastify.listen({ host: '::1', port: 0 }, err => {
     t.error(err)
     t.equal(fastify.server.address().address, '::1')
   })
@@ -1007,29 +1027,33 @@ test('Register onListen hook non-localhost with callback after a plugin inside a
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
+  )
 
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
-
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
+  fastify.listen({ host: '::1', port: 0 }, err => {
     t.equal(fastify.server.address().address, '::1')
     t.error(err)
   })
@@ -1061,7 +1085,7 @@ test('onListen non-localhost with callback encapsulation should be called in ord
       })
     })
   })
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
+  fastify.listen({ host: '::1', port: 0 }, err => {
     t.equal(fastify.server.address().address, '::1')
     t.error(err)
   })
@@ -1118,12 +1142,15 @@ test('onListen hooks do not block /1', t => {
     done()
   })
 
-  fastify.listen({
-    host: 'localhost',
-    port: 0
-  }, err => {
-    t.error(err)
-  })
+  fastify.listen(
+    {
+      host: 'localhost',
+      port: 0
+    },
+    err => {
+      t.error(err)
+    }
+  )
 })
 
 test('onListen hooks do not block /2', async t => {

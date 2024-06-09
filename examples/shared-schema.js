@@ -26,10 +26,9 @@ const opts = {
   }
 }
 
-fastify
-  .get('/', opts, function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
+fastify.get('/', opts, function (req, reply) {
+  reply.send({ hello: 'world' })
+})
 
 fastify.listen({ port: 3000 }, err => {
   if (err) {

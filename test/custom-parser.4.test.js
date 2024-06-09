@@ -20,7 +20,9 @@ test('should prefer string content types over RegExp ones', t => {
 
   fastify.addContentTypeParser(/^application\/.*/, function (req, payload, done) {
     let data = ''
-    payload.on('data', chunk => { data += chunk })
+    payload.on('data', chunk => {
+      data += chunk
+    })
     payload.on('end', () => {
       done(null, data)
     })
@@ -35,31 +37,37 @@ test('should prefer string content types over RegExp ones', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"k1":"myValue", "k2": "myValue"}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"k1":"myValue", "k2": "myValue"}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'javascript',
-      headers: {
-        'Content-Type': 'application/javascript'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: 'javascript',
+        headers: {
+          'Content-Type': 'application/javascript'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'javascript')
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'javascript')
-    })
+    )
   })
 })
 
@@ -92,42 +100,51 @@ test('removeContentTypeParser should support arrays of content types to remove',
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '<?xml version="1.0">',
+        headers: {
+          'Content-Type': 'application/xml'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'xml')
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'xml')
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'image/png'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '',
+        headers: {
+          'Content-Type': 'image/png'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 415)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{test: "test"}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{test: "test"}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 415)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
-    })
+    )
   })
 })
 
@@ -160,31 +177,37 @@ test('removeContentTypeParser should support encapsulation', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify) + '/encapsulated',
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify) + '/encapsulated',
+        body: '<?xml version="1.0">',
+        headers: {
+          'Content-Type': 'application/xml'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 415)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '<?xml version="1.0">',
+        headers: {
+          'Content-Type': 'application/xml'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'xml')
+        fastify.close()
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'xml')
-      fastify.close()
-    })
+    )
   })
 })
 
@@ -210,30 +233,36 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify) + '/encapsulated',
-      body: '{}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify) + '/encapsulated',
+        body: '{}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 415)
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"test":1}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"test":1}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body.toString()).test, 1)
+        fastify.close()
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body.toString()).test, 1)
-      fastify.close()
-    })
+    )
   })
 })

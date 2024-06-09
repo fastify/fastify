@@ -10,7 +10,7 @@ if (semver.lt(process.versions.node, '14.13.0')) {
   // even if this branch is never touch in the code,
   // by using `eval` we can avoid this issue.
   // eslint-disable-next-line
-  new Function('module', 'return import(module)')('./named-exports.mjs').catch((err) => {
+  new Function('module', 'return import(module)')('./named-exports.mjs').catch(err => {
     process.nextTick(() => {
       throw err
     })

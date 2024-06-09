@@ -178,7 +178,6 @@
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^4.5.1",
     "fluent-json-schema": "^4.2.1",
-    "form-data": "^4.0.0",
     "h2url": "^0.2.0",
     "http-errors": "^2.0.0",
     "joi": "^17.12.3",

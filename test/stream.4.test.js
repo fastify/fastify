@@ -3,16 +3,12 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const fs = require('node:fs')
 const errors = require('http-errors')
 const JSONStream = require('JSONStream')
-const send = require('send')
 const Readable = require('node:stream').Readable
 const split = require('split2')
-const semver = require('semver')
 const Fastify = require('..')
 const { kDisableRequestLogging } = require('../lib/symbols.js')
-const { getServerUrl } = require('./helper')
 
 test('Destroying streams prematurely should call abort method', t => {
   t.plan(7)
@@ -179,44 +175,6 @@ test('return a 404 if the stream emits a 404 error', t => {
     sget(`http://localhost:${port}`, function (err, response) {
       t.error(err)
       t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.equal(response.statusCode, 404)
-    })
-  })
-})
-
-test('should support send module 200 and 404', { skip: semver.gte(process.versions.node, '17.0.0') }, t => {
-  t.plan(8)
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    const stream = send(req.raw, __filename)
-    reply.code(200).send(stream)
-  })
-
-  fastify.get('/error', function (req, reply) {
-    const stream = send(req.raw, 'non-existing-file')
-    reply.code(200).send(stream)
-  })
-
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    const url = getServerUrl(fastify)
-
-    sget(url, function (err, response, data) {
-      t.error(err)
-      t.equal(response.headers['content-type'], 'application/javascript; charset=UTF-8')
-      t.equal(response.statusCode, 200)
-
-      fs.readFile(__filename, (err, expected) => {
-        t.error(err)
-        t.equal(expected.toString(), data.toString())
-      })
-    })
-
-    sget(url + '/error', function (err, response) {
-      t.error(err)
       t.equal(response.statusCode, 404)
     })
   })

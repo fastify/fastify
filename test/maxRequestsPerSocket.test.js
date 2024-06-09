@@ -2,12 +2,9 @@
 
 const net = require('node:net')
 const { test } = require('tap')
-const semver = require('semver')
 const Fastify = require('../fastify')
 
-const skip = semver.lt(process.versions.node, '16.10.0')
-
-test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
+test('maxRequestsPerSocket', t => {
   t.plan(8)
 
   const fastify = Fastify({ maxRequestsPerSocket: 2 })
@@ -48,7 +45,7 @@ test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
   })
 })
 
-test('maxRequestsPerSocket zero should behave same as null', { skip }, t => {
+test('maxRequestsPerSocket zero should behave same as null', t => {
   t.plan(10)
 
   const fastify = Fastify({ maxRequestsPerSocket: 0 })

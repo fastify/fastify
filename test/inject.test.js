@@ -5,7 +5,6 @@ const test = t.test
 const Stream = require('node:stream')
 const util = require('node:util')
 const Fastify = require('..')
-const FormData = require('form-data')
 const { Readable } = require('node:stream')
 
 test('inject should exist', t => {
@@ -343,7 +342,7 @@ test('inject a multipart request using form-body', t => {
   })
 
   const form = new FormData()
-  form.append('my_field', 'my value')
+  form.set('my_field', 'my value')
 
   fastify.inject({
     method: 'POST',

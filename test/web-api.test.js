@@ -4,14 +4,8 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('../fastify')
 const fs = require('node:fs')
-const semver = require('semver')
 const { Readable } = require('node:stream')
 const { fetch: undiciFetch } = require('undici')
-
-if (semver.lt(process.versions.node, '18.0.0')) {
-  t.skip('Response or ReadableStream not available, skipping test')
-  process.exit(0)
-}
 
 test('should response with a ReadableStream', async (t) => {
   t.plan(2)

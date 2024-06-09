@@ -5,7 +5,6 @@ const http = require('node:http')
 const { test } = require('tap')
 const Fastify = require('..')
 const { Client } = require('undici')
-const semver = require('semver')
 const split = require('split2')
 const { sleep } = require('./helper')
 
@@ -204,46 +203,7 @@ test('Should return error while closing (callback) - injection', t => {
   })
 })
 
-const isNodeVersionGte1819 = semver.gte(process.version, '18.19.0')
-test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v18.19.x', { skip: isNodeVersionGte1819 }, t => {
-  const fastify = Fastify({
-    return503OnClosing: false,
-    forceCloseConnections: false
-  })
-
-  fastify.get('/', (req, reply) => {
-    fastify.close()
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-
-    const port = fastify.server.address().port
-    const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
-
-      client.once('data', data => {
-        t.match(data.toString(), /Connection:\s*keep-alive/i)
-        t.match(data.toString(), /200 OK/i)
-
-        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
-
-        client.once('data', data => {
-          t.match(data.toString(), /Connection:\s*close/i)
-          t.match(data.toString(), /200 OK/i)
-
-          // Test that fastify closes the TCP connection
-          client.once('close', () => {
-            t.end()
-          })
-        })
-      })
-    })
-  })
-})
-
-test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v18.19.x', { skip: !isNodeVersionGte1819 }, t => {
+test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false', t => {
   t.plan(4)
   const fastify = Fastify({
     return503OnClosing: false,

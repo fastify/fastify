@@ -17,7 +17,7 @@ test('default 500', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -25,7 +25,7 @@ test('default 500', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
-      statusCode: 500,
+      statusCode: 500
     })
   })
 })
@@ -51,7 +51,7 @@ test('custom 500', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -89,7 +89,7 @@ test('encapsulated 500', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/test',
+    url: '/test'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -99,7 +99,7 @@ test('encapsulated 500', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -107,7 +107,7 @@ test('encapsulated 500', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
-      statusCode: 500,
+      statusCode: 500
     })
   })
 })
@@ -144,7 +144,7 @@ test('custom 500 with hooks', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
@@ -207,16 +207,16 @@ test('catch synchronous errors', t => {
     method: 'POST',
     url: '/',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
-    payload: JSON.stringify({ hello: 'world' }).substring(0, 5),
+    payload: JSON.stringify({ hello: 'world' }).substring(0, 5)
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
     t.same(res.json(), {
       error: 'Internal Server Error',
       message: 'kaboom2',
-      statusCode: 500,
+      statusCode: 500
     })
   })
 })

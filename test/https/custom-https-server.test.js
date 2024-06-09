@@ -22,7 +22,7 @@ async function setup () {
 
         const options = {
           key: global.context.key,
-          cert: global.context.cert,
+          cert: global.context.cert
         }
 
         const server = https.createServer(options, (req, res) => {
@@ -31,7 +31,7 @@ async function setup () {
         })
 
         return server
-      },
+      }
     })
 
     t.teardown(fastify.close.bind(fastify))
@@ -47,7 +47,7 @@ async function setup () {
       sget({
         method: 'GET',
         url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
       }, (err, response, body) => {
         if (err) {
           return reject(err)

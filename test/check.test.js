@@ -26,23 +26,23 @@ const options = {
     body: {
       type: 'object',
       properties: {
-        id: { type: 'string' },
-      },
+        id: { type: 'string' }
+      }
     },
     response: {
       200: {
         type: 'object',
         properties: {
-          id: { type: 'string' },
-        },
+          id: { type: 'string' }
+        }
       },
       400: {
         description: 'Bad Request',
         content: {
           'application/json': {
-            schema: BadRequestSchema.valueOf(),
-          },
-        },
+            schema: BadRequestSchema.valueOf()
+          }
+        }
       },
       404: {
         description: 'Resource not found',
@@ -52,10 +52,10 @@ const options = {
             example: {
               statusCode: 404,
               error: 'Not Found',
-              message: 'Not Found',
-            },
-          },
-        },
+              message: 'Not Found'
+            }
+          }
+        }
       },
       500: {
         description: 'Internal Server Error',
@@ -63,13 +63,13 @@ const options = {
           'application/json': {
             schema: InternalServerErrorSchema.valueOf(),
             example: {
-              message: 'Internal Server Error',
-            },
-          },
-        },
-      },
-    },
-  },
+              message: 'Internal Server Error'
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 const handler = (request, reply) => {
@@ -79,7 +79,7 @@ const handler = (request, reply) => {
       statusCode: 400,
       error: 'Bad Request',
       message: 'Custom message',
-      extra: 'This should not be in the response',
+      extra: 'This should not be in the response'
     })
   }
 
@@ -88,7 +88,7 @@ const handler = (request, reply) => {
       statusCode: 404,
       error: 'Not Found',
       message: 'Custom Not Found',
-      extra: 'This should not be in the response',
+      extra: 'This should not be in the response'
     })
   }
 
@@ -97,13 +97,13 @@ const handler = (request, reply) => {
       statusCode: 500,
       error: 'Internal Server Error',
       message: 'Custom Internal Server Error',
-      extra: 'This should not be in the response',
+      extra: 'This should not be in the response'
     })
   }
 
   reply.send({
     id: request.body.id,
-    extra: 'This should not be in the response',
+    extra: 'This should not be in the response'
   })
 }
 
@@ -122,14 +122,14 @@ test('serialize the response for a Bad Request error, as defined on the schema',
     sget({
       method: 'POST',
       url,
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
       t.same(body, {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must be object',
+        message: 'body must be object'
       })
       t.end()
     })

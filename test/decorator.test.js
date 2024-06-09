@@ -100,8 +100,8 @@ test('should pass error for missing request decorator', t => {
     done()
   }, {
     decorators: {
-      request: ['foo'],
-    },
+      request: ['foo']
+    }
   })
   fastify
     .register(plugin)
@@ -137,7 +137,7 @@ test('decorateReply inside register', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -147,7 +147,7 @@ test('decorateReply inside register', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no',
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -185,7 +185,7 @@ test('decorateReply as plugin (inside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -195,7 +195,7 @@ test('decorateReply as plugin (inside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no',
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -233,7 +233,7 @@ test('decorateReply as plugin (outside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -243,7 +243,7 @@ test('decorateReply as plugin (outside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no',
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -279,7 +279,7 @@ test('decorateRequest inside register', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -289,7 +289,7 @@ test('decorateRequest inside register', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no',
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -327,7 +327,7 @@ test('decorateRequest as plugin (inside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -337,7 +337,7 @@ test('decorateRequest as plugin (inside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no',
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -375,7 +375,7 @@ test('decorateRequest as plugin (outside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -385,7 +385,7 @@ test('decorateRequest as plugin (outside .after)', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no',
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -551,7 +551,7 @@ test('should register properties via getter/setter objects', t => {
     instance.decorate('test', {
       getter () {
         return 'a getter'
-      },
+      }
     })
     t.ok(instance.test)
     t.ok(instance.test, 'a getter')
@@ -571,7 +571,7 @@ test('decorateRequest should work with getter/setter', t => {
     instance.decorateRequest('test', {
       getter () {
         return 'a getter'
-      },
+      }
     })
 
     instance.get('/req-decorated-get-set', (req, res) => {
@@ -607,7 +607,7 @@ test('decorateReply should work with getter/setter', t => {
     instance.decorateReply('test', {
       getter () {
         return 'a getter'
-      },
+      }
     })
 
     instance.get('/res-decorated-get-set', (req, res) => {
@@ -686,7 +686,7 @@ test('a decorator should addSchema to all the encapsulated tree', t => {
     instance.decorate('decoratorAddSchema', function (whereAddTheSchema) {
       instance.addSchema({
         $id: 'schema',
-        type: 'string',
+        type: 'string'
       })
     })
     done()
@@ -759,7 +759,7 @@ test('decorate* should throw if called after ready', async t => {
 
   fastify.get('/', (request, reply) => {
     reply.send({
-      hello: 'world',
+      hello: 'world'
     })
   })
 
@@ -833,7 +833,7 @@ test('decorate* should not emit warning if object with getter/setter is passed',
     },
     getter () {
       return 'a getter'
-    },
+    }
   })
   t.end('Done')
 })
@@ -848,7 +848,7 @@ test('decorateRequest with getter/setter can handle encapsulation', async t => {
     getter () {
       this.test_getter_setter_holder ??= {}
       return this.test_getter_setter_holder
-    },
+    }
   })
 
   fastify.get('/', async function (req, reply) {
@@ -867,7 +867,7 @@ test('decorateRequest with getter/setter can handle encapsulation', async t => {
     fastify.inject('/').then(res => t.same(res.statusCode, 200)),
     fastify.inject('/').then(res => t.same(res.statusCode, 200)),
     fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200))
   ])
 })
 
@@ -881,7 +881,7 @@ test('decorateRequest with getter/setter can handle encapsulation with arrays', 
     getter () {
       this.array_holder ??= []
       return this.array_holder
-    },
+    }
   })
 
   fastify.get('/', async function (req, reply) {
@@ -900,7 +900,7 @@ test('decorateRequest with getter/setter can handle encapsulation with arrays', 
     fastify.inject('/').then(res => t.same(res.statusCode, 200)),
     fastify.inject('/').then(res => t.same(res.statusCode, 200)),
     fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200))
   ])
 })
 
@@ -969,7 +969,7 @@ test('plugin required decorators', async t => {
       })
     },
     {
-      name: 'custom-plugin-one',
+      name: 'custom-plugin-one'
     }
   )
 
@@ -981,8 +981,8 @@ test('plugin required decorators', async t => {
       name: 'custom-plugin-two',
       dependencies: ['custom-plugin-one'],
       decorators: {
-        request: ['someThing'],
-      },
+        request: ['someThing']
+      }
     }
   )
 
@@ -1011,7 +1011,7 @@ test('decorateRequest/decorateReply empty string', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1040,7 +1040,7 @@ test('decorateRequest/decorateReply is undefined', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1069,7 +1069,7 @@ test('decorateRequest/decorateReply is not set to a value', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1123,7 +1123,7 @@ test('chain of decorators on Request', async (t) => {
     fastify.decorateRequest('foo', 'toto')
     fastify.decorateRequest('bar', () => 'tata')
   }, {
-    name: 'first',
+    name: 'first'
   }))
 
   fastify.get('/foo', async function (request, reply) {
@@ -1151,7 +1151,7 @@ test('chain of decorators on Request', async (t) => {
       fastify.decorateRequest('fooB', 'toto')
       fastify.decorateRequest('barB', () => 'tata')
     }, {
-      name: 'third',
+      name: 'third'
     }))
   },
   { prefix: '/plugin2', name: 'plugin2' }
@@ -1196,7 +1196,7 @@ test('chain of decorators on Reply', async (t) => {
     fastify.decorateReply('foo', 'toto')
     fastify.decorateReply('bar', () => 'tata')
   }, {
-    name: 'first',
+    name: 'first'
   }))
 
   fastify.get('/foo', async function (request, reply) {
@@ -1224,7 +1224,7 @@ test('chain of decorators on Reply', async (t) => {
       fastify.decorateReply('fooB', 'toto')
       fastify.decorateReply('barB', () => 'tata')
     }, {
-      name: 'third',
+      name: 'third'
     }))
   },
   { prefix: '/plugin2', name: 'plugin2' }

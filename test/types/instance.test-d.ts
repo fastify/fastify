@@ -7,7 +7,7 @@ import fastify, {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
-  RouteGenericInterface,
+  RouteGenericInterface
 } from '../../fastify'
 import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
@@ -19,13 +19,13 @@ import { Bindings, ChildLoggerOptions } from '../../types/logger'
 const server = fastify()
 
 expectAssignable<FastifyInstance>(server.addSchema({
-  type: 'null',
+  type: 'null'
 }))
 expectAssignable<FastifyInstance>(server.addSchema({
-  schemaId: 'id',
+  schemaId: 'id'
 }))
 expectAssignable<FastifyInstance>(server.addSchema({
-  schemas: [],
+  schemas: []
 }))
 
 expectType<string>(server.pluginName)
@@ -168,9 +168,9 @@ server.setSchemaController({
       getSchemas () {
         expectType<Record<string, unknown>>(server.getSchemas())
         return server.getSchemas()
-      },
+      }
     }
-  },
+  }
 })
 
 function invalidSchemaController (schemaControllerOptions: FastifySchemaControllerOptions) {}
@@ -253,7 +253,7 @@ expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: s
     expectAssignable<{ contextKey: string }>(request.routeConfig)
     expectAssignable<FastifyReply>(reply)
     expectAssignable<void>(server.errorHandler(error, request, reply))
-  },
+  }
 }))
 
 expectType<FastifyInstance>(fastify().get('/', {
@@ -261,7 +261,7 @@ expectType<FastifyInstance>(fastify().get('/', {
   childLoggerFactory: (logger, bindings, opts, req) => {
     expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
     return server.childLoggerFactory(logger, bindings, opts, req)
-  },
+  }
 }))
 
 expectAssignable<FastifyInstance>(
@@ -333,7 +333,7 @@ server.decorate<string>('test', {
   getter () {
     expectType<FastifyInstance>(this)
     return 'foo'
-  },
+  }
 })
 server.decorate<string>('test', {
   getter () {
@@ -343,7 +343,7 @@ server.decorate<string>('test', {
   setter (x) {
     expectType<string>(x)
     expectType<FastifyInstance>(this)
-  },
+  }
 })
 server.decorate('test')
 server.decorate('test', null, ['foo'])
@@ -373,10 +373,10 @@ expectError(server.decorate<(myNumber: number) => number>('test', function (myNu
 expectError(server.decorate<string>('test', {
   getter () {
     return true
-  },
+  }
 }))
 expectError(server.decorate<string>('test', {
-  setter (x) {},
+  setter (x) {}
 }))
 
 declare module '../../fastify' {
@@ -403,7 +403,7 @@ server.decorate('typedTestProperty', false)
 server.decorate('typedTestProperty', {
   getter () {
     return false
-  },
+  }
 })
 server.decorate('typedTestProperty', {
   getter (): boolean {
@@ -412,7 +412,7 @@ server.decorate('typedTestProperty', {
   setter (x) {
     expectType<boolean>(x)
     expectType<FastifyInstance>(this)
-  },
+  }
 })
 server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
@@ -421,7 +421,7 @@ expectError(server.decorate('typedTestProperty', 'foo'))
 expectError(server.decorate('typedTestProperty', {
   getter () {
     return 'foo'
-  },
+  }
 }))
 server.decorate('typedTestMethod', function (x) {
   expectType<string>(x)
@@ -443,7 +443,7 @@ server.decorateRequest('typedTestRequestProperty', false)
 server.decorateRequest('typedTestRequestProperty', {
   getter () {
     return false
-  },
+  }
 })
 server.decorateRequest('typedTestRequestProperty', {
   getter (): boolean {
@@ -452,7 +452,7 @@ server.decorateRequest('typedTestRequestProperty', {
   setter (x) {
     expectType<boolean>(x)
     expectType<FastifyRequest>(this)
-  },
+  }
 })
 server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
@@ -461,7 +461,7 @@ expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
 expectError(server.decorateRequest('typedTestRequestProperty', {
   getter () {
     return 'foo'
-  },
+  }
 }))
 server.decorateRequest('typedTestRequestMethod', function (x) {
   expectType<string>(x)
@@ -483,7 +483,7 @@ server.decorateReply('typedTestReplyProperty', false)
 server.decorateReply('typedTestReplyProperty', {
   getter () {
     return false
-  },
+  }
 })
 server.decorateReply('typedTestReplyProperty', {
   getter (): boolean {
@@ -492,7 +492,7 @@ server.decorateReply('typedTestReplyProperty', {
   setter (x) {
     expectType<boolean>(x)
     expectType<FastifyReply>(this)
-  },
+  }
 })
 server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
@@ -501,7 +501,7 @@ expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
 expectError(server.decorateReply('typedTestReplyProperty', {
   getter () {
     return 'foo'
-  },
+  }
 }))
 server.decorateReply('typedTestReplyMethod', function (x) {
   expectType<string>(x)
@@ -525,10 +525,10 @@ const versionConstraintStrategy = {
     get: () => () => {},
     set: () => { },
     del: () => { },
-    empty: () => { },
+    empty: () => { }
   }),
   validate () {},
-  deriveConstraint: () => 'foo',
+  deriveConstraint: () => 'foo'
 }
 expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
 expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))

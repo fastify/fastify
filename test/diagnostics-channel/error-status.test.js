@@ -23,7 +23,7 @@ test('Error.status property support', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
@@ -31,7 +31,7 @@ test('Error.status property support', t => {
       {
         error: statusCodes['418'],
         message: err.message,
-        statusCode: 418,
+        statusCode: 418
       },
       JSON.parse(res.payload)
     )

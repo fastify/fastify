@@ -12,7 +12,7 @@ test('Should rewrite url', t => {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
       this.log.info('rewriting url')
       return '/'
-    },
+    }
   })
 
   fastify.route({
@@ -20,7 +20,7 @@ test('Should rewrite url', t => {
     url: '/',
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -28,7 +28,7 @@ test('Should rewrite url', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite',
+      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.error(err)
       t.same(JSON.parse(body), { hello: 'world' })
@@ -46,7 +46,7 @@ test('Should not rewrite if the url is the same', t => {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
       this.log.info('rewriting url')
       return req.url
-    },
+    }
   })
 
   fastify.route({
@@ -54,7 +54,7 @@ test('Should not rewrite if the url is the same', t => {
     url: '/',
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -62,7 +62,7 @@ test('Should not rewrite if the url is the same', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite',
+      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)
@@ -78,7 +78,7 @@ test('Should throw an error', t => {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
       this.log.info('rewriting url')
       return undefined
-    },
+    }
   })
 
   fastify.route({
@@ -86,7 +86,7 @@ test('Should throw an error', t => {
     url: '/',
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -94,7 +94,7 @@ test('Should throw an error', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite',
+      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.equal(err.code, 'ECONNRESET')
       t.equal(response, undefined)
@@ -112,7 +112,7 @@ test('Should rewrite url but keep originalUrl unchanged', t => {
       t.equal(req.url, '/this-would-404-without-url-rewrite')
       t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
       return '/'
-    },
+    }
   })
 
   fastify.route({
@@ -121,7 +121,7 @@ test('Should rewrite url but keep originalUrl unchanged', t => {
     handler: (req, reply) => {
       reply.send({ hello: 'world', hostname: req.hostname, port: req.port })
       t.equal(req.originalUrl, '/this-would-404-without-url-rewrite')
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -129,7 +129,7 @@ test('Should rewrite url but keep originalUrl unchanged', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite',
+      url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.error(err)
       const parsedBody = JSON.parse(body)

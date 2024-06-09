@@ -63,8 +63,8 @@ test('should be able to override the default json parser after removeAllContentT
       url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -100,8 +100,8 @@ test('should be able to override the default plain text parser after removeAllCo
       url: getServerUrl(fastify),
       body: 'hello world',
       headers: {
-        'Content-Type': 'text/plain',
-      },
+        'Content-Type': 'text/plain'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -137,8 +137,8 @@ test('should be able to add a custom content type parser after removeAllContentT
       url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/jsoff',
-      },
+        'Content-Type': 'application/jsoff'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

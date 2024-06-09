@@ -16,7 +16,7 @@ import fastify, {
   // preClose hook types should be exported correctly https://github.com/fastify/fastify/pull/5335
   /* eslint-disable @typescript-eslint/no-unused-vars */
   preCloseAsyncHookHandler,
-  preCloseHookHandler,
+  preCloseHookHandler
 } from '../../fastify'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
@@ -307,7 +307,7 @@ server.route<RouteGenericInterface, CustomContextConfig>({
   onError: (request, reply, error, done) => {
     expectType<CustomContextConfigWithDefault>(request.context.config)
     expectType<CustomContextConfigWithDefault>(reply.context.config)
-  },
+  }
 })
 
 server.get<RouteGenericInterface, CustomContextConfig>('/', {
@@ -346,7 +346,7 @@ server.get<RouteGenericInterface, CustomContextConfig>('/', {
   onError: async (request, reply) => {
     expectType<CustomContextConfigWithDefault>(request.context.config)
     expectType<CustomContextConfigWithDefault>(reply.context.config)
-  },
+  }
 }, async (request, reply) => {
   expectType<CustomContextConfigWithDefault>(request.context.config)
   expectType<CustomContextConfigWithDefault>(reply.context.config)
@@ -393,7 +393,7 @@ server.route<RouteGenericInterface, CustomContextConfig>({
   onError: async (request: CustomContextRequest, reply: CustomContextReply, error: FastifyError) => {
     expectType<CustomContextConfigWithDefault>(request.context.config)
     expectType<CustomContextConfigWithDefault>(reply.context.config)
-  },
+  }
 })
 
 server.route({
@@ -455,7 +455,7 @@ server.route({
     expectType<FastifyReply>(reply)
     expectType<FastifyError>(error)
     expectType<() => void>(done)
-  },
+  }
 })
 
 server.get('/', {
@@ -501,7 +501,7 @@ server.get('/', {
     expectType<FastifyRequest>(request)
     expectType<FastifyReply>(reply)
     expectType<FastifyError>(error)
-  },
+  }
 }, async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

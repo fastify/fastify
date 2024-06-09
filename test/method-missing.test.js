@@ -13,7 +13,7 @@ test('missing method from http client', t => {
     const req = http.request({
       port,
       method: 'REBIND',
-      path: '/',
+      path: '/'
     }, (res) => {
       t.equal(res.statusCode, 404)
       fastify.close()

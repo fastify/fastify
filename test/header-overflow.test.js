@@ -16,7 +16,7 @@ test('Should return 431 if request header fields are too large', t => {
     url: '/',
     handler: (_req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -26,8 +26,8 @@ test('Should return 431 if request header fields are too large', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Large-Header': 'a'.repeat(maxHeaderSize),
-      },
+        'Large-Header': 'a'.repeat(maxHeaderSize)
+      }
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 431)
@@ -46,7 +46,7 @@ test('Should return 431 if URI is too long', t => {
     url: '/',
     handler: (_req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -54,7 +54,7 @@ test('Should return 431 if URI is too long', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + `/${'a'.repeat(maxHeaderSize)}`,
+      url: 'http://localhost:' + fastify.server.address().port + `/${'a'.repeat(maxHeaderSize)}`
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 431)

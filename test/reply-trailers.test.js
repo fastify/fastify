@@ -21,7 +21,7 @@ test('send trailers when payload is empty string', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -45,7 +45,7 @@ test('send trailers when payload is empty buffer', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -69,7 +69,7 @@ test('send trailers when payload is undefined', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -100,7 +100,7 @@ test('send trailers when payload is json', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -127,7 +127,7 @@ test('send trailers when payload is stream', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -152,7 +152,7 @@ test('send trailers when using async-await', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -176,7 +176,7 @@ test('error in trailers should be ignored', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -207,7 +207,7 @@ test('should emit deprecation warning when using direct return', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -247,7 +247,7 @@ test('trailer handler counter', t => {
 
     fastify.inject({
       method: 'GET',
-      url: '/',
+      url: '/'
     }, (error, res) => {
       t.error(error)
       t.equal(res.statusCode, 200)
@@ -280,7 +280,7 @@ test('trailer handler counter', t => {
 
     fastify.inject({
       method: 'GET',
-      url: '/',
+      url: '/'
     }, (error, res) => {
       t.error(error)
       t.equal(res.statusCode, 200)
@@ -313,7 +313,7 @@ test('removeTrailer', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -345,7 +345,7 @@ test('remove all trailers', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -379,7 +379,7 @@ test('hasTrailer', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -403,7 +403,7 @@ test('throw error when trailer header name is not allowed', t => {
     'content-encoding',
     'content-type',
     'content-range',
-    'trailer',
+    'trailer'
   ]
   t.plan(INVALID_TRAILERS.length + 2)
 
@@ -422,7 +422,7 @@ test('throw error when trailer header name is not allowed', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -438,7 +438,7 @@ test('throw error when trailer header value is not function', t => {
     'invalid',
     [],
     new Date(),
-    {},
+    {}
   ]
   t.plan(INVALID_TRAILERS_VALUE.length + 2)
 
@@ -457,7 +457,7 @@ test('throw error when trailer header value is not function', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)

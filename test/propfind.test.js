@@ -59,7 +59,7 @@ test('can be created - propfind', t => {
               </D:response>
             </D:multistatus>`
           )
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -77,7 +77,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/`,
-      method: 'PROPFIND',
+      method: 'PROPFIND'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)
@@ -89,7 +89,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test`,
-      method: 'PROPFIND',
+      method: 'PROPFIND'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)
@@ -105,7 +105,7 @@ fastify.listen({ port: 0 }, err => {
       url: `http://localhost:${fastify.server.address().port}/test`,
       headers: { 'content-type': 'text/plain' },
       body: bodySample,
-      method: 'PROPFIND',
+      method: 'PROPFIND'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)
@@ -118,7 +118,7 @@ fastify.listen({ port: 0 }, err => {
     sget({
       url: `http://localhost:${fastify.server.address().port}/test`,
       body: bodySample,
-      method: 'PROPFIND',
+      method: 'PROPFIND'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
@@ -130,7 +130,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test`,
-      method: 'PROPFIND',
+      method: 'PROPFIND'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 207)

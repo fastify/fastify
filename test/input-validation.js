@@ -17,11 +17,11 @@ module.exports.payloadMethod = function (method, t) {
         type: 'object',
         properties: {
           hello: {
-            type: 'integer',
-          },
-        },
-      },
-    },
+            type: 'integer'
+          }
+        }
+      }
+    }
   }
 
   const ajv = new Ajv({ coerceTypes: true, removeAdditional: true })
@@ -31,40 +31,40 @@ module.exports.payloadMethod = function (method, t) {
         type: 'object',
         properties: {
           hello: {
-            type: 'integer',
-          },
+            type: 'integer'
+          }
         },
-        additionalProperties: false,
-      },
+        additionalProperties: false
+      }
     },
     validatorCompiler: function ({ schema, method, url, httpPart }) {
       return ajv.compile(schema)
-    },
+    }
   }
 
   const optsWithJoiValidator = {
     schema: {
       body: Joi.object().keys({
-        hello: Joi.string().required(),
-      }).required(),
+        hello: Joi.string().required()
+      }).required()
     },
     validatorCompiler: function ({ schema, method, url, httpPart }) {
       return schema.validate.bind(schema)
-    },
+    }
   }
 
   const yupOptions = {
     strict: true, // don't coerce
     abortEarly: false, // return all errors
     stripUnknown: true, // remove additional properties
-    recursive: true,
+    recursive: true
   }
 
   const optsWithYupValidator = {
     schema: {
       body: yup.object().shape({
-        hello: yup.string().required(),
-      }).required(),
+        hello: yup.string().required()
+      }).required()
     },
     validatorCompiler: function ({ schema, method, url, httpPart }) {
       return data => {
@@ -75,7 +75,7 @@ module.exports.payloadMethod = function (method, t) {
           return { error: [e] }
         }
       }
-    },
+    }
   }
 
   test(`${upMethod} can be created`, t => {
@@ -103,9 +103,9 @@ module.exports.payloadMethod = function (method, t) {
             body: {
               type: 'object',
               properties: { },
-              additionalProperties: false,
-            },
-          },
+              additionalProperties: false
+            }
+          }
         }
         fastify2[loMethod]('/plugin', withInstanceCustomCompiler, (req, reply) => reply.send({ hello: 'never here!' }))
 
@@ -114,14 +114,14 @@ module.exports.payloadMethod = function (method, t) {
             body: {
               type: 'object',
               properties: { },
-              additionalProperties: false,
-            },
+              additionalProperties: false
+            }
           },
           validatorCompiler: function ({ schema, method, url, httpPart }) {
             return function (body) {
               return { error: new Error('Always fail!') }
             }
-          },
+          }
         }
         fastify2[loMethod]('/plugin/custom', optsWithCustomValidator2, (req, reply) => reply.send({ hello: 'never here!' }))
 
@@ -145,7 +145,7 @@ module.exports.payloadMethod = function (method, t) {
         t.plan(2)
         sget({
           method: upMethod,
-          url: 'http://localhost:' + fastify.server.address().port,
+          url: 'http://localhost:' + fastify.server.address().port
         }, (err, response) => {
           t.error(err)
           t.equal(response.statusCode, 200)
@@ -156,9 +156,9 @@ module.exports.payloadMethod = function (method, t) {
           method: upMethod,
           url: 'http://localhost:' + fastify.server.address().port,
           body: {
-            hello: 42,
+            hello: 42
           },
-          json: true,
+          json: true
         }, (err, response, body) => {
           t.error(err)
           t.equal(response.statusCode, 200)
@@ -173,9 +173,9 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
         body: {
-          hello: 'world',
+          hello: 'world'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -183,7 +183,7 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: 'body/hello must be integer',
           statusCode: 400,
-          code: 'FST_ERR_VALIDATION',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -194,9 +194,9 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
         body: {
-          hello: '42',
+          hello: '42'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -211,9 +211,9 @@ module.exports.payloadMethod = function (method, t) {
         url: 'http://localhost:' + fastify.server.address().port + '/custom',
         body: {
           hello: '42',
-          world: 55,
+          world: 55
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -227,9 +227,9 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/joi',
         body: {
-          hello: '42',
+          hello: '42'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -243,9 +243,9 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/joi',
         body: {
-          hello: 44,
+          hello: 44
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -253,7 +253,7 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: '"hello" must be a string',
           statusCode: 400,
-          code: 'FST_ERR_VALIDATION',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -264,9 +264,9 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/yup',
         body: {
-          hello: '42',
+          hello: '42'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -280,9 +280,9 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/yup',
         body: {
-          hello: 44,
+          hello: 44
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -290,7 +290,7 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: /body hello must be a `string` type, but the final value was: `44`./,
           statusCode: 400,
-          code: 'FST_ERR_VALIDATION',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -301,7 +301,7 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/plugin',
         body: { },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -309,7 +309,7 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: 'From custom schema compiler!',
           statusCode: '400',
-          code: 'FST_ERR_VALIDATION',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })
@@ -320,7 +320,7 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
         body: { },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -328,7 +328,7 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: 'Always fail!',
           statusCode: '400',
-          code: 'FST_ERR_VALIDATION',
+          code: 'FST_ERR_VALIDATION'
         })
       })
     })

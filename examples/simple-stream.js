@@ -1,7 +1,7 @@
 'use strict'
 
 const fastify = require('../fastify')({
-  logger: false,
+  logger: false
 })
 
 const Readable = require('node:stream').Readable

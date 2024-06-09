@@ -15,11 +15,11 @@ import {
   FastifySchemaCompiler,
   FastifySchemaControllerOptions,
   FastifySerializerCompiler,
-  SchemaErrorFormatter,
+  SchemaErrorFormatter
 } from './schema'
 import {
   FastifyTypeProvider,
-  FastifyTypeProviderDefault,
+  FastifyTypeProviderDefault
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 

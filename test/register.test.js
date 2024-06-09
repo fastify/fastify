@@ -49,7 +49,7 @@ test('register', t => {
   function makeRequest (path) {
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/' + path,
+      url: 'http://localhost:' + fastify.server.address().port + '/' + path
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

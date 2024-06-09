@@ -12,7 +12,7 @@ const { FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER } = require('../lib/errors')
 test('pluginTimeout', t => {
   t.plan(5)
   const fastify = Fastify({
-    pluginTimeout: 10,
+    pluginTimeout: 10
   })
   fastify.register(function (app, opts, done) {
     // to no call done on purpose
@@ -30,7 +30,7 @@ test('pluginTimeout', t => {
 test('pluginTimeout - named function', t => {
   t.plan(5)
   const fastify = Fastify({
-    pluginTimeout: 10,
+    pluginTimeout: 10
   })
   fastify.register(function nameFunction (app, opts, done) {
     // to no call done on purpose
@@ -74,7 +74,7 @@ test('plugin metadata - version', t => {
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '2.0.0',
+    fastify: '2.0.0'
   }
 
   fastify.register(plugin)
@@ -95,7 +95,7 @@ test('plugin metadata - version range', t => {
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '>=2.0.0',
+    fastify: '>=2.0.0'
   }
 
   fastify.register(plugin)
@@ -116,7 +116,7 @@ test('plugin metadata - version not matching requirement', t => {
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '99.0.0',
+    fastify: '99.0.0'
   }
 
   fastify.register(plugin)
@@ -138,7 +138,7 @@ test('plugin metadata - version not matching requirement 2', t => {
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '<=3.0.0',
+    fastify: '<=3.0.0'
   }
 
   fastify.register(plugin)
@@ -160,7 +160,7 @@ test('plugin metadata - version not matching requirement 3', t => {
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '>=99.0.0',
+    fastify: '>=99.0.0'
   }
 
   fastify.register(plugin)
@@ -179,12 +179,12 @@ test('plugin metadata - release candidate', t => {
   t.plan(2)
   const fastify = Fastify()
   Object.defineProperty(fastify, 'version', {
-    value: '99.0.0-rc.1',
+    value: '99.0.0-rc.1'
   })
 
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '99.x',
+    fastify: '99.x'
   }
 
   fastify.register(plugin)
@@ -203,16 +203,16 @@ test('fastify-rc loads prior version plugins', t => {
   t.plan(2)
   const fastify = Fastify()
   Object.defineProperty(fastify, 'version', {
-    value: '99.0.0-rc.1',
+    value: '99.0.0-rc.1'
   })
 
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
-    fastify: '^98.1.0',
+    fastify: '^98.1.0'
   }
   plugin2[Symbol.for('plugin-meta')] = {
     name: 'plugin2',
-    fastify: '98.x',
+    fastify: '98.x'
   }
 
   fastify.register(plugin)

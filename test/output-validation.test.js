@@ -12,20 +12,20 @@ const opts = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
+            type: 'string'
+          }
+        }
       },
       '2xx': {
         type: 'object',
         properties: {
           hello: {
-            type: 'number',
-          },
-        },
-      },
-    },
-  },
+            type: 'number'
+          }
+        }
+      }
+    }
+  }
 }
 
 test('shorthand - output string', t => {
@@ -98,7 +98,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/string',
+      url: 'http://localhost:' + fastify.server.address().port + '/string'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -111,7 +111,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/number',
+      url: 'http://localhost:' + fastify.server.address().port + '/number'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 201)
@@ -124,7 +124,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema',
+      url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -132,7 +132,7 @@ fastify.listen({ port: 0 }, err => {
       t.same(JSON.parse(body), {
         statusCode: 500,
         error: 'Internal Server Error',
-        message: 'The value "world" cannot be converted to a number.',
+        message: 'The value "world" cannot be converted to a number.'
       })
     })
   })
@@ -141,7 +141,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/empty',
+      url: 'http://localhost:' + fastify.server.address().port + '/empty'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 204)
@@ -152,7 +152,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/400',
+      url: 'http://localhost:' + fastify.server.address().port + '/400'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)

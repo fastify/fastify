@@ -12,12 +12,12 @@ const opts = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 }
 
 fastify.get('/return', opts, function (req, reply) {
@@ -68,7 +68,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/return',
+      url: 'http://localhost:' + fastify.server.address().port + '/return'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -81,7 +81,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/return-error',
+      url: 'http://localhost:' + fastify.server.address().port + '/return-error'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -93,7 +93,7 @@ fastify.listen({ port: 0 }, err => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/double',
+      url: 'http://localhost:' + fastify.server.address().port + '/double'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -105,7 +105,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/thenable',
+      url: 'http://localhost:' + fastify.server.address().port + '/thenable'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -118,7 +118,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/thenable-error',
+      url: 'http://localhost:' + fastify.server.address().port + '/thenable-error'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -129,7 +129,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/return-reply',
+      url: 'http://localhost:' + fastify.server.address().port + '/return-reply'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

@@ -15,7 +15,7 @@ createHook({
   },
   destroy (asyncId) {
     remainingIds.delete(asyncId)
-  },
+  }
 })
 
 const app = Fastify({ logger: false })
@@ -35,9 +35,9 @@ app.listen({ port: 0 }, function (err, address) {
     method: 'POST',
     url: 'http://localhost:' + app.server.address().port,
     body: {
-      hello: 'world',
+      hello: 'world'
     },
-    json: true,
+    json: true
   }, (err, response, body) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -46,9 +46,9 @@ app.listen({ port: 0 }, function (err, address) {
       method: 'POST',
       url: 'http://localhost:' + app.server.address().port,
       body: {
-        hello: 'world',
+        hello: 'world'
       },
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -56,7 +56,7 @@ app.listen({ port: 0 }, function (err, address) {
       sget({
         method: 'GET',
         url: 'http://localhost:' + app.server.address().port,
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)

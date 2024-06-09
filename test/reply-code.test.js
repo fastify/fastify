@@ -24,7 +24,7 @@ test('code should handle null/undefined/float', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/null',
+    url: '/null'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 500)
@@ -32,13 +32,13 @@ test('code should handle null/undefined/float', t => {
       statusCode: 500,
       code: 'FST_ERR_BAD_STATUS_CODE',
       error: 'Internal Server Error',
-      message: 'Called reply with an invalid status code: null',
+      message: 'Called reply with an invalid status code: null'
     })
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/undefined',
+    url: '/undefined'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 500)
@@ -46,13 +46,13 @@ test('code should handle null/undefined/float', t => {
       statusCode: 500,
       code: 'FST_ERR_BAD_STATUS_CODE',
       error: 'Internal Server Error',
-      message: 'Called reply with an invalid status code: undefined',
+      message: 'Called reply with an invalid status code: undefined'
     })
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/404.5',
+    url: '/404.5'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 404)
@@ -77,7 +77,7 @@ test('code should handle 204', t => {
     const stream = new Readable({
       read () {
         this.push(null)
-      },
+      }
     })
     stream.on('end', () => {
       t.pass('stream ended')
@@ -87,7 +87,7 @@ test('code should handle 204', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/204',
+    url: '/204'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 204)
@@ -97,7 +97,7 @@ test('code should handle 204', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/undefined/204',
+    url: '/undefined/204'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 204)
@@ -107,7 +107,7 @@ test('code should handle 204', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/stream/204',
+    url: '/stream/204'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 204)
@@ -123,19 +123,19 @@ test('code should handle onSend hook on 204', t => {
   fastify.addHook('onSend', async function (request, reply, payload) {
     return {
       ...payload,
-      world: 'hello',
+      world: 'hello'
     }
   })
 
   fastify.get('/204', function (request, reply) {
     reply.status(204).send({
-      hello: 'world',
+      hello: 'world'
     })
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/204',
+    url: '/204'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 204)

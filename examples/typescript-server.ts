@@ -48,11 +48,11 @@ const opts: RouteShorthandOptions = {
       type: 'object',
       properties: {
         pong: {
-          type: 'string',
-        },
-      },
-    },
-  },
+          type: 'string'
+        }
+      }
+    }
+  }
 }
 
 // Add our route handler with correct types

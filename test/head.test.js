@@ -9,10 +9,10 @@ const schema = {
   schema: {
     response: {
       '2xx': {
-        type: 'null',
-      },
-    },
-  },
+        type: 'null'
+      }
+    }
+  }
 }
 
 const querySchema = {
@@ -21,11 +21,11 @@ const querySchema = {
       type: 'object',
       properties: {
         hello: {
-          type: 'integer',
-        },
-      },
-    },
-  },
+          type: 'integer'
+        }
+      }
+    }
+  }
 }
 
 const paramsSchema = {
@@ -34,14 +34,14 @@ const paramsSchema = {
       type: 'object',
       properties: {
         foo: {
-          type: 'string',
+          type: 'string'
         },
         test: {
-          type: 'integer',
-        },
-      },
-    },
-  },
+          type: 'integer'
+        }
+      }
+    }
+  }
 }
 
 test('shorthand - head', t => {
@@ -118,7 +118,7 @@ test('shorthand - should override head route when setting multiple routes', t =>
       handler: function (req, reply) {
         reply.headers({ 'x-foo': 'bar' })
         reply.code(200).send(null)
-      },
+      }
     })
 
     fastify.route({
@@ -127,7 +127,7 @@ test('shorthand - should override head route when setting multiple routes', t =>
       handler: function (req, reply) {
         reply.headers({ 'x-foo': 'bar' })
         reply.code(200).send(null)
-      },
+      }
     })
 
     t.pass()
@@ -146,7 +146,7 @@ test('shorthand - should override head route when setting multiple routes', t =>
       handler: function (req, reply) {
         reply.headers({ 'x-foo': 'bar' })
         reply.code(200).send(null)
-      },
+      }
     })
 
     fastify.route({
@@ -155,7 +155,7 @@ test('shorthand - should override head route when setting multiple routes', t =>
       handler: function (req, reply) {
         reply.headers({ 'x-foo': 'bar' })
         reply.code(200).send(null)
-      },
+      }
     })
 
     t.pass()
@@ -174,7 +174,7 @@ test('shorthand - should set get and head route in the same api call', t => {
       handler: function (req, reply) {
         reply.headers({ 'x-foo': 'bar' })
         reply.code(200).send(null)
-      },
+      }
     })
 
     t.pass()
@@ -230,7 +230,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -241,7 +241,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123',
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -252,7 +252,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string',
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -263,7 +263,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123',
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -274,7 +274,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world',
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -285,7 +285,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing',
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -296,7 +296,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
+      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test'
     }, (err, response) => {
       t.error(err)
       t.equal(response.headers['x-foo'], 'bar')
@@ -310,8 +310,8 @@ fastify.listen({ port: 0 }, err => {
       method: 'HEAD',
       url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
       headers: {
-        version: '1.0.0',
-      },
+        version: '1.0.0'
+      }
     }, (err, response) => {
       t.error(err)
       t.equal(response.headers['x-foo'], 'bar')
@@ -323,7 +323,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(2)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query1',
+      url: 'http://localhost:' + fastify.server.address().port + '/query1'
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -334,7 +334,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query2',
+      url: 'http://localhost:' + fastify.server.address().port + '/query2'
     }, (err, response) => {
       t.error(err)
       t.equal(response.headers['x-foo'], 'bar')
@@ -346,7 +346,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query3',
+      url: 'http://localhost:' + fastify.server.address().port + '/query3'
     }, (err, response) => {
       t.error(err)
       t.equal(response.headers['x-foo'], 'bar')
@@ -358,7 +358,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query4',
+      url: 'http://localhost:' + fastify.server.address().port + '/query4'
     }, (err, response) => {
       t.error(err)
       t.equal(response.headers['x-foo'], 'bar')

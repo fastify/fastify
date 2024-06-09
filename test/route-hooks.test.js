@@ -24,7 +24,7 @@ function testExecutionHook (hook) {
       [hook]: (req, reply, doneOrPayload, done) => {
         t.pass('hook called')
         endRouteHook(doneOrPayload, done)
-      },
+      }
     }, (req, reply) => {
       reply.send(req.body)
     })
@@ -32,7 +32,7 @@ function testExecutionHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -44,7 +44,7 @@ function testExecutionHook (hook) {
     t.plan(3)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
-      get: function () { return ++this.calledTimes },
+      get: function () { return ++this.calledTimes }
     })
 
     fastify.addHook(hook, (req, reply, doneOrPayload, done) => {
@@ -56,7 +56,7 @@ function testExecutionHook (hook) {
       [hook]: (req, reply, doneOrPayload, done) => {
         t.equal(checker.check, 2)
         endRouteHook(doneOrPayload, done)
-      },
+      }
     }, (req, reply) => {
       reply.send({})
     })
@@ -64,7 +64,7 @@ function testExecutionHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
     })
@@ -74,7 +74,7 @@ function testExecutionHook (hook) {
     t.plan(3)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
-      get: function () { return ++this.calledTimes },
+      get: function () { return ++this.calledTimes }
     })
 
     fastify.post('/', {
@@ -86,8 +86,8 @@ function testExecutionHook (hook) {
         (req, reply, doneOrPayload, done) => {
           t.equal(checker.check, 2)
           endRouteHook(doneOrPayload, done)
-        },
-      ],
+        }
+      ]
     }, (req, reply) => {
       reply.send({})
     })
@@ -95,7 +95,7 @@ function testExecutionHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
     })
@@ -105,7 +105,7 @@ function testExecutionHook (hook) {
     t.plan(3)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
-      get: function () { return ++this.calledTimes },
+      get: function () { return ++this.calledTimes }
     })
 
     fastify.post('/', {
@@ -115,8 +115,8 @@ function testExecutionHook (hook) {
         },
         async (req, reply) => {
           t.equal(checker.check, 2)
-        },
-      ],
+        }
+      ]
     }, (req, reply) => {
       reply.send({})
     })
@@ -124,7 +124,7 @@ function testExecutionHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
     })
@@ -134,7 +134,7 @@ function testExecutionHook (hook) {
     t.plan(7)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
-      get: function () { return ++this.calledTimes },
+      get: function () { return ++this.calledTimes }
     })
 
     fastify.addHook(hook, (req, reply, doneOrPayload, done) => {
@@ -146,7 +146,7 @@ function testExecutionHook (hook) {
       [hook]: (req, reply, doneOrPayload, done) => {
         t.equal(checker.check, 2)
         endRouteHook(doneOrPayload, done)
-      },
+      }
     }, handler)
 
     fastify.post('/no', handler)
@@ -157,7 +157,7 @@ function testExecutionHook (hook) {
 
     fastify.inject({
       method: 'post',
-      url: '/',
+      url: '/'
     }, (err, res) => {
       t.error(err)
       t.equal(checker.calledTimes, 2)
@@ -166,7 +166,7 @@ function testExecutionHook (hook) {
 
       fastify.inject({
         method: 'post',
-        url: '/no',
+        url: '/no'
       }, (err, res) => {
         t.error(err)
         t.equal(checker.calledTimes, 1)
@@ -184,7 +184,7 @@ function testBeforeHandlerHook (hook) {
       [hook]: (req, reply, doneOrPayload, done) => {
         req.hello = 'earth'
         endRouteHook(doneOrPayload, done)
-      },
+      }
     }, (req, reply) => {
       reply.send({ hello: req.hello })
     })
@@ -196,7 +196,7 @@ function testBeforeHandlerHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -206,7 +206,7 @@ function testBeforeHandlerHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/no',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -221,7 +221,7 @@ function testBeforeHandlerHook (hook) {
     fastify.post('/', {
       [hook]: (req, reply, doneOrPayload, done) => {
         endRouteHook(doneOrPayload, done, new Error('kaboom'))
-      },
+      }
     }, (req, reply) => {
       reply.send(req.body)
     })
@@ -229,7 +229,7 @@ function testBeforeHandlerHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -237,7 +237,7 @@ function testBeforeHandlerHook (hook) {
       t.same(payload, {
         message: 'kaboom',
         error: 'Internal Server Error',
-        statusCode: 500,
+        statusCode: 500
       })
     })
   })
@@ -256,14 +256,14 @@ function testBeforeHandlerHook (hook) {
     fastify.get('/', {
       [hook]: async () => {
         throw myError
-      },
+      }
     }, (req, reply) => {
       t.fail('the handler must not be called')
     })
 
     fastify.inject({
       url: '/',
-      method: 'GET',
+      method: 'GET'
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 500)
@@ -279,14 +279,14 @@ function testBeforeHandlerHook (hook) {
       [hook]: async () => {
         // eslint-disable-next-line no-throw-literal
         throw { myError: 'kaboom', message: 'i am an error' }
-      },
+      }
     }, (req, reply) => {
       t.fail('the handler must not be called')
     })
 
     fastify.inject({
       url: '/',
-      method: 'GET',
+      method: 'GET'
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 500)
@@ -302,7 +302,7 @@ function testBeforeHandlerHook (hook) {
       [hook]: (req, reply, doneOrPayload, done) => {
         reply.code(401)
         endRouteHook(doneOrPayload, done, new Error('go away'))
-      },
+      }
     }, (req, reply) => {
       reply.send(req.body)
     })
@@ -310,7 +310,7 @@ function testBeforeHandlerHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -318,7 +318,7 @@ function testBeforeHandlerHook (hook) {
       t.same(payload, {
         message: 'go away',
         error: 'Unauthorized',
-        statusCode: 401,
+        statusCode: 401
       })
     })
   })
@@ -334,7 +334,7 @@ function testBeforeHandlerHook (hook) {
         t.equal(this.foo, 42)
         this.foo += 1
         endRouteHook(doneOrPayload, done)
-      },
+      }
     }, function (req, reply) {
       reply.send({ foo: this.foo })
     })
@@ -342,7 +342,7 @@ function testBeforeHandlerHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -361,7 +361,7 @@ function testBeforeHandlerHook (hook) {
         t.equal(this.foo, 42)
         this.foo += 1
         endRouteHook(doneOrPayload, done)
-      }],
+      }]
     }, function (req, reply) {
       reply.send({ foo: this.foo })
     })
@@ -369,7 +369,7 @@ function testBeforeHandlerHook (hook) {
     fastify.inject({
       method: 'POST',
       url: '/',
-      payload: { hello: 'world' },
+      payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
@@ -403,7 +403,7 @@ test('preValidation option should be called before preHandler hook', t => {
     preValidation: (req, reply, done) => {
       req.called = true
       done()
-    },
+    }
   }, (req, reply) => {
     reply.send(req.body)
   })
@@ -411,7 +411,7 @@ test('preValidation option should be called before preHandler hook', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { hello: 'world' },
+    payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -426,14 +426,14 @@ test('preSerialization option should be able to modify the payload', t => {
   fastify.get('/only', {
     preSerialization: (req, reply, payload, done) => {
       done(null, { hello: 'another world' })
-    },
+    }
   }, (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/only',
+    url: '/only'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -454,7 +454,7 @@ test('preParsing option should be called before preValidation hook', t => {
     preParsing: (req, reply, payload, done) => {
       req.called = true
       done()
-    },
+    }
   }, (req, reply) => {
     reply.send(req.body)
   })
@@ -462,7 +462,7 @@ test('preParsing option should be called before preValidation hook', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { hello: 'world' },
+    payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -481,7 +481,7 @@ test('preParsing option should be able to modify the payload', t => {
       stream.push(JSON.stringify({ hello: 'another world' }))
       stream.push(null)
       done(null, stream)
-    },
+    }
   }, (req, reply) => {
     reply.send(req.body)
   })
@@ -489,7 +489,7 @@ test('preParsing option should be able to modify the payload', t => {
   fastify.inject({
     method: 'POST',
     url: '/only',
-    payload: { hello: 'world' },
+    payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -508,14 +508,14 @@ test('preParsing option should be able to supply statusCode', t => {
           const error = new Error('kaboom')
           error.statusCode = 408
           this.destroy(error)
-        },
+        }
       })
       stream.receivedEncodedLength = 20
       return stream
     },
     onError: async (req, res, err) => {
       t.equal(err.statusCode, 408)
-    },
+    }
   }, (req, reply) => {
     t.fail('should not be called')
   })
@@ -523,14 +523,14 @@ test('preParsing option should be able to supply statusCode', t => {
   fastify.inject({
     method: 'POST',
     url: '/only',
-    payload: { hello: 'world' },
+    payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 408)
     t.same(JSON.parse(res.payload), {
       statusCode: 408,
       error: 'Request Timeout',
-      message: 'kaboom',
+      message: 'kaboom'
     })
   })
 })
@@ -548,7 +548,7 @@ test('onRequest option should be called before preParsing', t => {
     onRequest: (req, reply, done) => {
       req.called = true
       done()
-    },
+    }
   }, (req, reply) => {
     reply.send(req.body)
   })
@@ -556,7 +556,7 @@ test('onRequest option should be called before preParsing', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { hello: 'world' },
+    payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -573,7 +573,7 @@ test('onTimeout on route', t => {
     onTimeout (request, reply, done) {
       t.pass('onTimeout called')
       done()
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, (err, address) => {
@@ -582,7 +582,7 @@ test('onTimeout on route', t => {
 
     sget({
       method: 'GET',
-      url: `${address}/timeout`,
+      url: `${address}/timeout`
     }, (err, response, body) => {
       t.type(err, Error)
       t.equal(err.message, 'socket hang up')
@@ -602,7 +602,7 @@ test('onError on route', t => {
       onError (request, reply, error, done) {
         t.match(error, err)
         done()
-      },
+      }
     },
     (req, reply) => {
       reply.send(err)
@@ -613,7 +613,7 @@ test('onError on route', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
-      statusCode: 500,
+      statusCode: 500
     })
   })
 })

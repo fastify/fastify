@@ -12,12 +12,12 @@ const opts = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 }
 
 test('chainable - get', t => {
@@ -36,6 +36,6 @@ test('chainable - route', t => {
     method: 'GET',
     url: '/other',
     schema: opts.schema,
-    handler: noop,
+    handler: noop
   }), fastify)
 })

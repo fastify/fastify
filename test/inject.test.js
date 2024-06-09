@@ -30,7 +30,7 @@ test('should wait for the ready event', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.same(payload, JSON.parse(res.payload))
@@ -50,7 +50,7 @@ test('inject get request', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.same(payload, JSON.parse(res.payload))
@@ -70,7 +70,7 @@ test('inject get request - code check', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.same(payload, JSON.parse(res.payload))
@@ -89,7 +89,7 @@ test('inject get request - headers check', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal('', res.payload)
@@ -108,7 +108,7 @@ test('inject get request - querystring', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/?hello=world',
+    url: '/?hello=world'
   }, (err, res) => {
     t.error(err)
     t.same({ hello: 'world' }, JSON.parse(res.payload))
@@ -127,7 +127,7 @@ test('inject get request - params', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/world',
+    url: '/world'
   }, (err, res) => {
     t.error(err)
     t.same({ hello: 'world' }, JSON.parse(res.payload))
@@ -146,7 +146,7 @@ test('inject get request - wildcard', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/test/wildcard',
+    url: '/test/wildcard'
   }, (err, res) => {
     t.error(err)
     t.same({ '*': 'wildcard' }, JSON.parse(res.payload))
@@ -166,7 +166,7 @@ test('inject get request - headers', t => {
   fastify.inject({
     method: 'GET',
     url: '/',
-    headers: { hello: 'world' },
+    headers: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
     t.equal('world', JSON.parse(res.payload).hello)
@@ -187,7 +187,7 @@ test('inject post request', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload,
+    payload
   }, (err, res) => {
     t.error(err)
     t.same(payload, JSON.parse(res.payload))
@@ -208,7 +208,7 @@ test('inject post request - send stream', t => {
     method: 'POST',
     url: '/',
     headers: { 'content-type': 'application/json' },
-    payload: getStream(),
+    payload: getStream()
   }, (err, res) => {
     t.error(err)
     t.same('{"hello":"world"}', res.payload)
@@ -227,7 +227,7 @@ test('inject get request - reply stream', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.same('{"hello":"world"}', res.payload)
@@ -246,7 +246,7 @@ test('inject promisify - waiting for ready event', t => {
 
   const injectParams = {
     method: 'GET',
-    url: '/',
+    url: '/'
   }
   fastify.inject(injectParams)
     .then(res => {
@@ -269,7 +269,7 @@ test('inject promisify - after the ready event', t => {
 
     const injectParams = {
       method: 'GET',
-      url: '/',
+      url: '/'
     }
     fastify.inject(injectParams)
       .then(res => {
@@ -296,7 +296,7 @@ test('inject promisify - when the server is up', t => {
     setTimeout(() => {
       const injectParams = {
         method: 'GET',
-        url: '/',
+        url: '/'
       }
       fastify.inject(injectParams)
         .then(res => {
@@ -318,7 +318,7 @@ test('should reject in error case', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   })
     .catch(e => {
       t.equal(e, error)
@@ -348,7 +348,7 @@ test('inject a multipart request using form-body', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: form,
+    payload: form
   })
     .then(response => {
       t.equal(response.statusCode, 200)
@@ -384,7 +384,7 @@ test('should error the promise if ready errors', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }).then(() => {
     t.fail('this should not be called')
   }).catch(err => {
@@ -404,7 +404,7 @@ test('should throw error if callback specified and if ready errors', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, err => {
     t.ok(err)
     t.equal(err, error)
@@ -466,7 +466,7 @@ test('Should not throw on access to routeConfig frameworkErrors handler - FST_ER
       t.ok(req.raw instanceof Readable)
       t.same(req.routerPath, undefined)
       res.send(`${err.message} - ${err.code}`)
-    },
+    }
   })
 
   fastify.get('/test/:id', (req, res) => {
@@ -476,7 +476,7 @@ test('Should not throw on access to routeConfig frameworkErrors handler - FST_ER
   fastify.inject(
     {
       method: 'GET',
-      url: '/test/%world',
+      url: '/test/%world'
     },
     (err, res) => {
       t.error(err)

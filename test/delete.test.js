@@ -12,12 +12,12 @@ const schema = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 }
 
 const querySchema = {
@@ -26,11 +26,11 @@ const querySchema = {
       type: 'object',
       properties: {
         hello: {
-          type: 'integer',
-        },
-      },
-    },
-  },
+          type: 'integer'
+        }
+      }
+    }
+  }
 }
 
 const paramsSchema = {
@@ -39,14 +39,14 @@ const paramsSchema = {
       type: 'object',
       properties: {
         foo: {
-          type: 'string',
+          type: 'string'
         },
         test: {
-          type: 'integer',
-        },
-      },
-    },
-  },
+          type: 'integer'
+        }
+      }
+    }
+  }
 }
 
 const headersSchema = {
@@ -55,11 +55,11 @@ const headersSchema = {
       type: 'object',
       properties: {
         'x-test': {
-          type: 'number',
-        },
-      },
-    },
-  },
+          type: 'number'
+        }
+      }
+    }
+  }
 }
 
 const bodySchema = {
@@ -68,21 +68,21 @@ const bodySchema = {
       type: 'object',
       properties: {
         hello: {
-          type: 'string',
-        },
-      },
+          type: 'string'
+        }
+      }
     },
     response: {
       '2xx': {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 }
 
 test('shorthand - delete', t => {
@@ -165,7 +165,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -178,7 +178,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123',
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -191,7 +191,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string',
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -199,7 +199,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'params/test must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -209,9 +209,9 @@ fastify.listen({ port: 0 }, err => {
     sget({
       method: 'DELETE',
       headers: {
-        'x-test': 1,
+        'x-test': 1
       },
-      url: 'http://localhost:' + fastify.server.address().port + '/headers',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -225,9 +225,9 @@ fastify.listen({ port: 0 }, err => {
     sget({
       method: 'DELETE',
       headers: {
-        'x-test': 'abc',
+        'x-test': 'abc'
       },
-      url: 'http://localhost:' + fastify.server.address().port + '/headers',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -235,7 +235,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'headers/x-test must be number',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -244,7 +244,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123',
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -257,7 +257,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world',
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -265,7 +265,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'querystring/hello must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -274,7 +274,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing',
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -289,9 +289,9 @@ fastify.listen({ port: 0 }, err => {
       method: 'DELETE',
       url: 'http://localhost:' + fastify.server.address().port + '/body',
       body: {
-        hello: 'world',
+        hello: 'world'
       },
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -311,7 +311,7 @@ test('shorthand - delete with application/json Content-Type header and null body
     method: 'DELETE',
     url: '/',
     headers: { 'Content-Type': 'application/json' },
-    body: 'null',
+    body: 'null'
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
@@ -332,7 +332,7 @@ test('shorthand - delete with application/json Content-Type header and without b
     method: 'DELETE',
     url: '/',
     headers: { 'Content-Type': 'application/json' },
-    body: null,
+    body: null
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)

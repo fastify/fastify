@@ -17,11 +17,11 @@ test('basic test', t => {
           type: 'object',
           properties: {
             name: { type: 'string' },
-            work: { type: 'string' },
-          },
-        },
-      },
-    },
+            work: { type: 'string' }
+          }
+        }
+      }
+    }
   }, function (req, reply) {
     reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
   })
@@ -38,17 +38,17 @@ test('custom serializer options', t => {
 
   const fastify = Fastify({
     serializerOpts: {
-      rounding: 'ceil',
-    },
+      rounding: 'ceil'
+    }
   })
   fastify.get('/', {
     schema: {
       response: {
         '2xx': {
-          type: 'integer',
-        },
-      },
-    },
+          type: 'integer'
+        }
+      }
+    }
   }, function (req, reply) {
     reply.send(4.2)
   })
@@ -70,8 +70,8 @@ test('Different content types', t => {
     properties: {
       name: { type: 'string' },
       age: { type: 'number' },
-      verified: { type: 'boolean' },
-    },
+      verified: { type: 'boolean' }
+    }
   })
 
   fastify.get('/', {
@@ -83,44 +83,44 @@ test('Different content types', t => {
               schema: {
                 name: { type: 'string' },
                 image: { type: 'string' },
-                address: { type: 'string' },
-              },
+                address: { type: 'string' }
+              }
             },
             'application/vnd.v1+json': {
               schema: {
                 type: 'array',
-                items: { $ref: 'test' },
-              },
-            },
-          },
+                items: { $ref: 'test' }
+              }
+            }
+          }
         },
         201: {
-          content: { type: 'string' },
+          content: { type: 'string' }
         },
         202: {
-          content: { const: 'Processing exclusive content' },
+          content: { const: 'Processing exclusive content' }
         },
         '3xx': {
           content: {
             'application/vnd.v2+json': {
               schema: {
                 fullName: { type: 'string' },
-                phone: { type: 'string' },
-              },
-            },
-          },
+                phone: { type: 'string' }
+              }
+            }
+          }
         },
         default: {
           content: {
             'application/json': {
               schema: {
-                details: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-    },
+                details: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
   }, function (req, reply) {
     switch (req.headers.accept) {
       case 'application/json':
@@ -181,13 +181,13 @@ test('Different content types', t => {
               schema: {
                 name: { type: 'string' },
                 image: { type: 'string' },
-                address: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-    },
+                address: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
   }, function (req, reply) {
     reply.header('Content-Type', 'application/json')
     reply.send({ age: 18, city: 'AU' })
@@ -266,18 +266,18 @@ test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCHEMA 
             'application/json': {
               schema: {
                 fullName: { type: 'string' },
-                phone: { type: 'string' },
+                phone: { type: 'string' }
               },
               example: {
                 fullName: 'John Doe',
-                phone: '201090243795',
-              },
+                phone: '201090243795'
+              }
             },
-            type: 'string',
-          },
-        },
-      },
-    },
+            type: 'string'
+          }
+        }
+      }
+    }
   }, function (req, reply) {
     reply.header('Content-Type', 'application/json')
     reply.send({ fullName: 'Any name', phone: '0109001010' })
@@ -298,8 +298,8 @@ test('Use the same schema id in different places', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' },
-    },
+      id: { type: 'number' }
+    }
   })
 
   fastify.get('/:id', {
@@ -310,15 +310,15 @@ test('Use the same schema id in different places', t => {
       response: {
         200: {
           type: 'array',
-          items: { $ref: 'test' },
-        },
-      },
-    },
+          items: { $ref: 'test' }
+        }
+      }
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/123',
+    url: '/123'
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), [{ id: 1 }, { id: 2 }, { }])
@@ -333,8 +333,8 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     $id: 'http://foo/test',
     type: 'object',
     properties: {
-      id: { type: 'number' },
-    },
+      id: { type: 'number' }
+    }
   })
 
   const complexSchema = {
@@ -346,39 +346,39 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { type: 'string' },
-        },
-      },
+          city: { type: 'string' }
+        }
+      }
     },
     properties: {
       test: { $ref: 'http://foo/test#' },
-      address: { $ref: '#address' },
+      address: { $ref: '#address' }
     },
-    required: ['address', 'test'],
+    required: ['address', 'test']
   }
 
   fastify.post('/', {
     schema: {
       body: complexSchema,
       response: {
-        200: complexSchema,
-      },
+        200: complexSchema
+      }
     },
     handler: (req, reply) => {
       req.body.removeThis = 'it should not be serialized'
       reply.send(req.body)
-    },
+    }
   })
 
   const payload = {
     address: { city: 'New Node' },
-    test: { id: Date.now() },
+    test: { id: Date.now() }
   }
 
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload,
+    payload
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), payload)
@@ -387,7 +387,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: { test: { id: Date.now() } },
+    payload: { test: { id: Date.now() } }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -395,7 +395,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
       error: 'Bad Request',
       message: "body must have required property 'address'",
       statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
+      code: 'FST_ERR_VALIDATION'
     })
   })
 })
@@ -413,25 +413,25 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     required: [
       'id',
       'model',
-      'location',
+      'location'
     ],
     properties: {
       id: {
         type: 'string',
-        format: 'uuid',
+        format: 'uuid'
       },
       model: {
-        type: 'string',
+        type: 'string'
       },
-      location: { $ref: 'http://example.com/point.json#' },
+      location: { $ref: 'http://example.com/point.json#' }
     },
     definitions: {
       inner: {
         $id: '#innerId',
         type: 'string',
-        format: 'email',
-      },
-    },
+        format: 'email'
+      }
+    }
   })
 
   fastify.addSchema({
@@ -442,24 +442,24 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     type: 'object',
     required: [
       'latitude',
-      'longitude',
+      'longitude'
     ],
     properties: {
       email: { $ref: 'http://example.com/asset.json#/definitions/inner' },
       latitude: {
         type: 'number',
         minimum: -90,
-        maximum: 90,
+        maximum: 90
       },
       longitude: {
         type: 'number',
         minimum: -180,
-        maximum: 180,
+        maximum: 180
       },
       altitude: {
-        type: 'number',
-      },
-    },
+        type: 'number'
+      }
+    }
   })
 
   const schemaLocations = {
@@ -467,26 +467,26 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'List of Asset locations',
     type: 'array',
-    items: { $ref: 'http://example.com/asset.json#' },
+    items: { $ref: 'http://example.com/asset.json#' }
   }
 
   fastify.post('/', {
     schema: {
       body: schemaLocations,
-      response: { 200: schemaLocations },
-    },
+      response: { 200: schemaLocations }
+    }
   }, (req, reply) => {
     reply.send(locations.map(_ => Object.assign({ serializer: 'remove me' }, _)))
   })
 
   const locations = [
     { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
-    { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
+    { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
   ]
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: locations,
+    payload: locations
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), locations)
@@ -497,7 +497,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       payload: locations.map(_ => {
         _.location.email = 'not an email'
         return _
-      }),
+      })
     }, (err, res) => {
       t.error(err)
       t.equal(res.statusCode, 400)
@@ -505,7 +505,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
         error: 'Bad Request',
         message: 'body/0/location/email must match format "email"',
         statusCode: 400,
-        code: 'FST_ERR_VALIDATION',
+        code: 'FST_ERR_VALIDATION'
       })
     })
   })
@@ -518,7 +518,7 @@ test('Custom setSerializerCompiler', t => {
   const outSchema = {
     $id: 'test',
     type: 'object',
-    whatever: 'need to be parsed by the custom serializer',
+    whatever: 'need to be parsed by the custom serializer'
   }
 
   fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
@@ -536,9 +536,9 @@ test('Custom setSerializerCompiler', t => {
       },
       schema: {
         response: {
-          200: outSchema,
-        },
-      },
+          200: outSchema
+        }
+      }
     })
     t.ok(instance.serializerCompiler, 'the serializer is set by the parent')
     done()
@@ -546,7 +546,7 @@ test('Custom setSerializerCompiler', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/foo/123',
+    url: '/foo/123'
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ id: 1 }))
@@ -560,7 +560,7 @@ test('Custom setSerializerCompiler returns bad serialized output', t => {
   const outSchema = {
     $id: 'test',
     type: 'object',
-    whatever: 'need to be parsed by the custom serializer',
+    whatever: 'need to be parsed by the custom serializer'
   }
 
   fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
@@ -574,21 +574,21 @@ test('Custom setSerializerCompiler returns bad serialized output', t => {
     handler (req, reply) { throw new Error('ops') },
     schema: {
       response: {
-        500: outSchema,
-      },
-    },
+        500: outSchema
+      }
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/123',
+    url: '/123'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 500)
     t.strictSame(res.json(), {
       code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
       message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
-      statusCode: 500,
+      statusCode: 500
     })
   })
 })
@@ -600,7 +600,7 @@ test('Custom setSerializerCompiler with addSchema', t => {
   const outSchema = {
     $id: 'test',
     type: 'object',
-    whatever: 'need to be parsed by the custom serializer',
+    whatever: 'need to be parsed by the custom serializer'
   }
 
   fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
@@ -620,14 +620,14 @@ test('Custom setSerializerCompiler with addSchema', t => {
     },
     schema: {
       response: {
-        200: outSchema,
-      },
-    },
+        200: outSchema
+      }
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/foo/123',
+    url: '/foo/123'
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ id: 2 }))
@@ -641,13 +641,13 @@ test('Custom serializer per route', async t => {
     $id: 'test',
     type: 'object',
     properties: {
-      mean: { type: 'string' },
-    },
+      mean: { type: 'string' }
+    }
   }
 
   fastify.get('/default', {
     handler (req, reply) { reply.send({ mean: 'default' }) },
-    schema: { response: { 200: outSchema } },
+    schema: { response: { 200: outSchema } }
   })
 
   let hit = 0
@@ -658,7 +658,7 @@ test('Custom serializer per route', async t => {
     })
     instance.get('/custom', {
       handler (req, reply) { reply.send({}) },
-      schema: { response: { 200: outSchema } },
+      schema: { response: { 200: outSchema } }
     })
     instance.get('/route', {
       handler (req, reply) { reply.send({}) },
@@ -666,7 +666,7 @@ test('Custom serializer per route', async t => {
         hit++
         return data => JSON.stringify({ mean: 'route' })
       },
-      schema: { response: { 200: outSchema } },
+      schema: { response: { 200: outSchema } }
     })
 
     done()
@@ -700,10 +700,10 @@ test('Reply serializer win over serializer ', t => {
           type: 'object',
           properties: {
             name: { type: 'string' },
-            work: { type: 'string' },
-          },
-        },
-      },
+            work: { type: 'string' }
+          }
+        }
+      }
     },
     serializerCompiler: ({ schema, method, url, httpPart }) => {
       t.ok(method, 'the custom compiler has been created')
@@ -711,7 +711,7 @@ test('Reply serializer win over serializer ', t => {
         t.fail('the serializer must not be called when there is a reply serializer')
         return 'fail'
       }
-    },
+    }
   }, function (req, reply) {
     reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
   })
@@ -739,10 +739,10 @@ test('Reply serializer win over serializer ', t => {
           type: 'object',
           properties: {
             name: { type: 'string' },
-            work: { type: 'string' },
-          },
-        },
-      },
+            work: { type: 'string' }
+          }
+        }
+      }
     },
     serializerCompiler: ({ schema, method, url, httpPart }) => {
       t.ok(method, 'the custom compiler has been created')
@@ -750,7 +750,7 @@ test('Reply serializer win over serializer ', t => {
         t.fail('the serializer must not be called when there is a reply serializer')
         return 'fail'
       }
-    },
+    }
   }, function (req, reply) {
     reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
   })
@@ -768,25 +768,25 @@ test('The schema compiler recreate itself if needed', t => {
 
   fastify.options('/', {
     schema: {
-      response: { '2xx': { hello: { type: 'string' } } },
-    },
+      response: { '2xx': { hello: { type: 'string' } } }
+    }
   }, echoBody)
 
   fastify.register(function (fastify, options, done) {
     fastify.addSchema({
       $id: 'identifier',
       type: 'string',
-      format: 'uuid',
+      format: 'uuid'
     })
 
     fastify.get('/', {
       schema: {
         response: {
           '2xx': {
-            foobarId: { $ref: 'identifier#' },
-          },
-        },
-      },
+            foobarId: { $ref: 'identifier#' }
+          }
+        }
+      }
     }, echoBody)
 
     done()
@@ -806,19 +806,19 @@ test('The schema changes the default error handler output', async t => {
         501: {
           type: 'object',
           properties: {
-            message: { type: 'string' },
-          },
+            message: { type: 'string' }
+          }
         },
         '5xx': {
           type: 'object',
           properties: {
             customId: { type: 'number' },
             error: { type: 'string' },
-            message: { type: 'string' },
-          },
-        },
-      },
-    },
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
   }, (request, reply) => {
     if (request.params.code === '501') {
       return reply.code(501).send(new Error('501 message'))
@@ -843,15 +843,15 @@ test('do not crash if status code serializer errors', async t => {
   const requiresFoo = {
     type: 'object',
     properties: { foo: { type: 'string' } },
-    required: ['foo'],
+    required: ['foo']
   }
 
   const someUserErrorType2 = {
     type: 'object',
     properties: {
-      customCode: { type: 'number' },
+      customCode: { type: 'number' }
     },
-    required: ['customCode'],
+    required: ['customCode']
   }
 
   fastify.get(
@@ -859,8 +859,8 @@ test('do not crash if status code serializer errors', async t => {
     {
       schema: {
         query: requiresFoo,
-        response: { 400: someUserErrorType2 },
-      },
+        response: { 400: someUserErrorType2 }
+      }
     },
     (request, reply) => {
       t.fail('handler, should not be called')
@@ -870,15 +870,15 @@ test('do not crash if status code serializer errors', async t => {
   const res = await fastify.inject({
     path: '/',
     query: {
-      notfoo: true,
-    },
+      notfoo: true
+    }
   })
   t.equal(res.statusCode, 500)
   t.same(res.json(), {
     statusCode: 500,
     code: 'FST_ERR_FAILED_ERROR_SERIALIZATION',
     message: 'Failed to serialize an error. Error: "customCode" is required!. ' +
-      'Original error: querystring must have required property \'foo\'',
+      'Original error: querystring must have required property \'foo\''
   })
 })
 
@@ -893,11 +893,11 @@ test('custom schema serializer error, empty message', async t => {
         501: {
           type: 'object',
           properties: {
-            message: { type: 'string' },
-          },
-        },
-      },
-    },
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
   }, (request, reply) => {
     if (request.params.code === '501') {
       return reply.code(501).send(new Error(''))
@@ -920,20 +920,20 @@ test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION
         '2xx': {
           type: 'object',
           properties: {
-            some: { type: 'string' },
-          },
+            some: { type: 'string' }
+          }
         },
         500: {
           type: 'object',
           properties: {
-            message: { type: 'string' },
-          },
-        },
-      },
+            message: { type: 'string' }
+          }
+        }
+      }
     },
     serializerCompiler: () => {
       throw new Error('CUSTOM_ERROR')
-    },
+    }
   }, function (req, reply) {
     reply.code(200).send({ some: 'thing' })
   })
@@ -956,12 +956,12 @@ test('Errors in serializer send to errorHandler', async t => {
           type: 'object',
           properties: {
             name: { type: 'string' },
-            power: { type: 'string' },
+            power: { type: 'string' }
           },
-          required: ['name'],
-        },
-      },
-    },
+          required: ['name']
+        }
+      }
+    }
 
   }, function (req, reply) {
     reply.code(200).send({ no: 'thing' })
@@ -979,7 +979,7 @@ test('Errors in serializer send to errorHandler', async t => {
   t.same(res.json(), {
     statusCode: 500,
     error: 'Internal Server Error',
-    message: '"name" is required!',
+    message: '"name" is required!'
   })
   t.ok(savedError, 'error presents')
   t.ok(savedError.serialization, 'Serialization sign presents')
@@ -997,11 +997,11 @@ test('capital X', t => {
           type: 'object',
           properties: {
             name: { type: 'string' },
-            work: { type: 'string' },
-          },
-        },
-      },
-    },
+            work: { type: 'string' }
+          }
+        }
+      }
+    }
   }, function (req, reply) {
     reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
   })
@@ -1026,14 +1026,14 @@ test('allow default as status code and used as last fallback', t => {
           type: 'object',
           properties: {
             name: { type: 'string' },
-            work: { type: 'string' },
-          },
-        },
-      },
+            work: { type: 'string' }
+          }
+        }
+      }
     },
     handler: (req, reply) => {
       reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
-    },
+    }
   })
 
   fastify.inject('/', (err, res) => {

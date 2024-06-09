@@ -38,7 +38,7 @@ test('bodyLimit', t => {
       url: 'http://localhost:' + fastify.server.address().port,
       headers: { 'Content-Type': 'application/json' },
       body: [],
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 413)
@@ -61,7 +61,7 @@ test('bodyLimit is applied to decoded content', t => {
     Object.defineProperty(unzip, 'receivedEncodedLength', {
       get () {
         return unzip.bytesWritten
-      },
+      }
     })
     payload.pipe(unzip)
     return unzip
@@ -71,7 +71,7 @@ test('bodyLimit is applied to decoded content', t => {
     bodyLimit: 40000,
     onError: async (req, res, err) => {
       t.fail('should not be called')
-    },
+    }
   }, (request, reply) => {
     reply.send({ x: request.body.x })
   })
@@ -81,7 +81,7 @@ test('bodyLimit is applied to decoded content', t => {
     onError: async (req, res, err) => {
       t.equal(err.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
       t.equal(err.statusCode, 413)
-    },
+    }
   }, (request, reply) => {
     reply.send({ x: 'handler should not be called' })
   })
@@ -91,9 +91,9 @@ test('bodyLimit is applied to decoded content', t => {
     url: '/body-limit-40k',
     headers: {
       'content-encoding': 'gzip',
-      'content-type': 'application/json',
+      'content-type': 'application/json'
     },
-    payload: encoded,
+    payload: encoded
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -105,9 +105,9 @@ test('bodyLimit is applied to decoded content', t => {
     url: '/body-limit-20k',
     headers: {
       'content-encoding': 'gzip',
-      'content-type': 'application/json',
+      'content-type': 'application/json'
     },
-    payload: encoded,
+    payload: encoded
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 413)
@@ -121,7 +121,7 @@ test('default request.routeOptions.bodyLimit should be 1048576', t => {
     handler (request, reply) {
       t.equal(1048576, request.routeOptions.bodyLimit)
       reply.send({ })
-    },
+    }
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
@@ -132,7 +132,7 @@ test('default request.routeOptions.bodyLimit should be 1048576', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/default-bodylimit',
       headers: { 'Content-Type': 'application/json' },
       body: [],
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -148,7 +148,7 @@ test('request.routeOptions.bodyLimit should be equal to route limit', t => {
     handler (request, reply) {
       t.equal(1000, request.routeOptions.bodyLimit)
       reply.send({})
-    },
+    }
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
@@ -159,7 +159,7 @@ test('request.routeOptions.bodyLimit should be equal to route limit', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/route-limit',
       headers: { 'Content-Type': 'application/json' },
       body: [],
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -174,7 +174,7 @@ test('request.routeOptions.bodyLimit should be equal to server limit', t => {
     handler (request, reply) {
       t.equal(100, request.routeOptions.bodyLimit)
       reply.send({})
-    },
+    }
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
@@ -185,7 +185,7 @@ test('request.routeOptions.bodyLimit should be equal to server limit', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/server-limit',
       headers: { 'Content-Type': 'application/json' },
       body: [],
-      json: true,
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

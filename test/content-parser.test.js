@@ -277,7 +277,7 @@ test('non-Error thrown from content parser is properly handled', t => {
     method: 'POST',
     url: '/',
     headers: { 'Content-Type': 'text/test' },
-    body: 'some text',
+    body: 'some text'
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, payload)
@@ -296,7 +296,7 @@ test('Error thrown 415 from content type is null and make post request to server
   fastify.inject({
     method: 'POST',
     url: '/',
-    body: 'some text',
+    body: 'some text'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 415)
@@ -395,9 +395,9 @@ test('Safeguard against malicious content-type / 1', async t => {
       method: 'POST',
       path: '/',
       headers: {
-        'content-type': prop,
+        'content-type': prop
       },
-      body: '',
+      body: ''
     })
 
     t.same(response.statusCode, 415)
@@ -417,9 +417,9 @@ test('Safeguard against malicious content-type / 2', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': '\\u0063\\u006fnstructor',
+      'content-type': '\\u0063\\u006fnstructor'
     },
-    body: '',
+    body: ''
   })
 
   t.same(response.statusCode, 415)
@@ -438,9 +438,9 @@ test('Safeguard against malicious content-type / 3', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'constructor; charset=utf-8',
+      'content-type': 'constructor; charset=utf-8'
     },
-    body: '',
+    body: ''
   })
 
   t.same(response.statusCode, 415)
@@ -468,9 +468,9 @@ test('Safeguard against content-type spoofing - string', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'text/plain; content-type="application/json"',
+      'content-type': 'text/plain; content-type="application/json"'
     },
-    body: '',
+    body: ''
   })
 })
 
@@ -517,9 +517,9 @@ test('content-type match parameters - string 1', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'application/json; charset=utf8',
+      'content-type': 'application/json; charset=utf8'
     },
-    body: '',
+    body: ''
   })
 })
 
@@ -541,9 +541,9 @@ test('content-type match parameters - regexp', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'application/json; charset=utf8',
+      'content-type': 'application/json; charset=utf8'
     },
-    body: '',
+    body: ''
   })
 })
 
@@ -565,9 +565,9 @@ test('content-type fail when parameters not match - string 1', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'application/json; charset=utf8',
+      'content-type': 'application/json; charset=utf8'
     },
-    body: '',
+    body: ''
   })
 
   t.same(response.statusCode, 415)
@@ -591,9 +591,9 @@ test('content-type fail when parameters not match - string 2', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'application/json; charset=utf8; foo=baz',
+      'content-type': 'application/json; charset=utf8; foo=baz'
     },
-    body: '',
+    body: ''
   })
 
   t.same(response.statusCode, 415)
@@ -617,9 +617,9 @@ test('content-type fail when parameters not match - regexp', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'application/json; charset=utf8',
+      'content-type': 'application/json; charset=utf8'
     },
-    body: '',
+    body: ''
   })
 
   t.same(response.statusCode, 415)
@@ -648,7 +648,7 @@ test('content-type regexp list should be cloned when plugin override', async t =
       method: 'POST',
       path: '/',
       payload: 'jpeg',
-      headers: { 'content-type': 'image/jpeg' },
+      headers: { 'content-type': 'image/jpeg' }
     })
     t.same(statusCode, 200)
     t.same(headers['content-type'], 'image/jpeg')
@@ -660,7 +660,7 @@ test('content-type regexp list should be cloned when plugin override', async t =
       method: 'POST',
       path: '/',
       payload: 'png',
-      headers: { 'content-type': 'image/png' },
+      headers: { 'content-type': 'image/png' }
     })
     t.same(statusCode, 200)
     t.same(headers['content-type'], 'image/png')
@@ -686,18 +686,18 @@ test('edge case content-type - ;', async t => {
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'application/json; foo=bar; charset=utf8',
+      'content-type': 'application/json; foo=bar; charset=utf8'
     },
-    body: '',
+    body: ''
   })
 
   await fastify.inject({
     method: 'POST',
     path: '/',
     headers: {
-      'content-type': 'image/jpeg',
+      'content-type': 'image/jpeg'
     },
-    body: '',
+    body: ''
   })
 
   t.pass('end')

@@ -19,7 +19,7 @@ test('route error handler overrides global custom error handler', t => {
     reply.code(418).send({
       message: 'Make a brew',
       statusCode: 418,
-      error: 'Wrong Pot Error',
+      error: 'Wrong Pot Error'
     })
   }
 
@@ -31,19 +31,19 @@ test('route error handler overrides global custom error handler', t => {
     handler: (req, res) => {
       res.send(new Error('Wrong Pot Error'))
     },
-    errorHandler: customRouteErrorHandler,
+    errorHandler: customRouteErrorHandler
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/more-coffee',
+    url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 418)
     t.same(JSON.parse(res.payload), {
       message: 'Make a brew',
       statusCode: 418,
-      error: 'Wrong Pot Error',
+      error: 'Wrong Pot Error'
     })
   })
 })
@@ -58,7 +58,7 @@ test('throws when route with empty url', async t => {
       url: '',
       handler: (req, res) => {
         res.send('hi!')
-      },
+      }
     })
   } catch (err) {
     t.equal(err.message, 'The path could not be empty')
@@ -91,7 +91,7 @@ test('throws when route-level error handler is not a function', t => {
       handler: (req, res) => {
         res.send('hi!')
       },
-      errorHandler: 'teapot',
+      errorHandler: 'teapot'
     })
   } catch (err) {
     t.equal(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
@@ -118,12 +118,12 @@ test('route child logger factory overrides default child logger factory', t => {
       req.log.customLog('custom')
       res.send()
     },
-    childLoggerFactory: customRouteChildLogger,
+    childLoggerFactory: customRouteChildLogger
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/coffee',
+    url: '/coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)

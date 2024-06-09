@@ -26,7 +26,7 @@ test('plugin metadata - ignore prefix', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, function (err, res) {
     t.error(err)
     t.equal(res.payload, 'hello')
@@ -94,7 +94,7 @@ test('fastify.register with fastify-plugin should not encapsulate his code', t =
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -173,7 +173,7 @@ test('fastify.register with fastify-plugin should provide access to external fas
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -228,7 +228,7 @@ test('fastify.register with fastify-plugin registers fastify level plugins', t =
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -238,7 +238,7 @@ test('fastify.register with fastify-plugin registers fastify level plugins', t =
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/test2',
+      url: 'http://localhost:' + fastify.server.address().port + '/test2'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

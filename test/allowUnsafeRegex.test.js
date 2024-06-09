@@ -9,7 +9,7 @@ test('allow unsafe regex', t => {
   t.plan(4)
 
   const fastify = Fastify({
-    allowUnsafeRegex: false,
+    allowUnsafeRegex: false
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -22,12 +22,12 @@ test('allow unsafe regex', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234',
+      url: 'http://localhost:' + fastify.server.address().port + '/1234'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(JSON.parse(body), {
-        foo: '1234',
+        foo: '1234'
       })
     })
   })
@@ -37,7 +37,7 @@ test('allow unsafe regex not match', t => {
   t.plan(3)
 
   const fastify = Fastify({
-    allowUnsafeRegex: false,
+    allowUnsafeRegex: false
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -50,7 +50,7 @@ test('allow unsafe regex not match', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/a1234',
+      url: 'http://localhost:' + fastify.server.address().port + '/a1234'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)
@@ -62,7 +62,7 @@ test('allow unsafe regex not safe', t => {
   t.plan(1)
 
   const fastify = Fastify({
-    allowUnsafeRegex: false,
+    allowUnsafeRegex: false
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -90,7 +90,7 @@ test('allow unsafe regex allow unsafe', t => {
   t.plan(5)
 
   const fastify = Fastify({
-    allowUnsafeRegex: true,
+    allowUnsafeRegex: true
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -105,12 +105,12 @@ test('allow unsafe regex allow unsafe', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234',
+      url: 'http://localhost:' + fastify.server.address().port + '/1234'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(JSON.parse(body), {
-        foo: '1234',
+        foo: '1234'
       })
     })
   })

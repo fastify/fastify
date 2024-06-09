@@ -43,5 +43,5 @@ function request (url, cleanup = () => { }) {
 
 module.exports = {
   request,
-  createTempFile,
+  createTempFile
 }

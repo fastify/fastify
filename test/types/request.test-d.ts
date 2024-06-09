@@ -12,7 +12,7 @@ import fastify, {
   RequestBodyDefault,
   RequestGenericInterface,
   RouteHandler,
-  RouteHandlerMethod,
+  RouteHandlerMethod
 } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -152,7 +152,7 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
-  child: () => customLogger,
+  child: () => customLogger
 }
 
 const serverWithCustomLogger = fastify({ loggerInstance: customLogger })

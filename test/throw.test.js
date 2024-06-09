@@ -35,9 +35,9 @@ test('Fastify should throw for an invalid schema, printing the error route - hea
     type: 'object',
     properties: {
       bad: {
-        type: 'bad-type',
-      },
-    },
+        type: 'bad-type'
+      }
+    }
   }
 
   const fastify = Fastify()
@@ -57,9 +57,9 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
     type: 'object',
     properties: {
       bad: {
-        type: 'bad-type',
-      },
-    },
+        type: 'bad-type'
+      }
+    }
   }
 
   const fastify = Fastify()
@@ -94,7 +94,7 @@ test('Should throw on unsupported method', t => {
       method: 'TROLL',
       url: '/',
       schema: {},
-      handler: function (req, reply) {},
+      handler: function (req, reply) {}
     })
     t.fail()
   } catch (e) {
@@ -108,7 +108,7 @@ test('Should throw on missing handler', t => {
   try {
     fastify.route({
       method: 'GET',
-      url: '/',
+      url: '/'
     })
     t.fail()
   } catch (e) {
@@ -124,7 +124,7 @@ test('Should throw if one method is unsupported', t => {
       method: ['GET', 'TROLL'],
       url: '/',
       schema: {},
-      handler: function (req, reply) {},
+      handler: function (req, reply) {}
     })
     t.fail()
   } catch (e) {
@@ -366,7 +366,7 @@ test('Should throw if found duplicate handler as the third parameter to the shor
 
   try {
     fastify.get('/foo/abc', {
-      handler: (req, res) => {},
+      handler: (req, res) => {}
     }, (req, res) => {})
     t.fail()
   } catch (e) {

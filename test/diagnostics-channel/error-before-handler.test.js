@@ -28,8 +28,8 @@ test('diagnostics channel handles an error before calling context handler', t =>
   request[symbols.kRouteContext] = {
     config: {
       url: '/foo',
-      method: 'GET',
-    },
+      method: 'GET'
+    }
   }
 
   preHandlerCallback(error, request, reply)

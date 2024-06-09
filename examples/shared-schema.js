@@ -11,19 +11,19 @@ fastify.addSchema({
       properties: {
         hello: {
           $id: '#bar',
-          type: 'string',
-        },
-      },
-    },
-  },
+          type: 'string'
+        }
+      }
+    }
+  }
 })
 
 const opts = {
   schema: {
     response: {
-      200: { $ref: 'https://foo/common.json#reply' },
-    },
-  },
+      200: { $ref: 'https://foo/common.json#reply' }
+    }
+  }
 }
 
 fastify

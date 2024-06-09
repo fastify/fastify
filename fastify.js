@@ -30,7 +30,7 @@ const {
   kErrorHandler,
   kKeepAliveConnections,
   kChildLoggerFactory,
-  kGenReqId,
+  kGenReqId
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -73,7 +73,7 @@ const {
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
-  FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -122,7 +122,7 @@ function fastify (options) {
 
   const ajvOptions = Object.assign({
     customOptions: {},
-    plugins: [],
+    plugins: []
   }, options.ajv)
   const frameworkErrors = options.frameworkErrors
 
@@ -168,8 +168,8 @@ function fastify (options) {
           if (typeof value !== 'string') {
             throw new FST_ERR_VERSION_CONSTRAINT_NOT_STR()
           }
-        },
-      },
+        }
+      }
     }
   }
 
@@ -186,8 +186,8 @@ function fastify (options) {
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
       querystringParser: options.querystringParser,
-      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter,
-    },
+      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
+    }
   })
 
   // 404 router, used for handling encapsulated 404 handlers
@@ -225,7 +225,7 @@ function fastify (options) {
       started: false,
       ready: false,
       booting: false,
-      readyPromise: null,
+      readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
@@ -388,7 +388,7 @@ function fastify (options) {
     initialConfig,
     // constraint strategies
     addConstraintStrategy: router.addConstraintStrategy.bind(router),
-    hasConstraintStrategy: router.hasConstraintStrategy.bind(router),
+    hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
   }
 
   Object.defineProperties(fastify, {
@@ -402,7 +402,7 @@ function fastify (options) {
         }
         const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
         return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
-      },
+      }
     },
     pluginName: {
       configurable: true,
@@ -411,38 +411,38 @@ function fastify (options) {
           return this[kPluginNameChain].join(' -> ')
         }
         return this[kPluginNameChain][0]
-      },
+      }
     },
     prefix: {
       configurable: true,
-      get () { return this[kRoutePrefix] },
+      get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getValidatorCompiler() },
+      get () { return this[kSchemaController].getValidatorCompiler() }
     },
     serializerCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getSerializerCompiler() },
+      get () { return this[kSchemaController].getSerializerCompiler() }
     },
     childLoggerFactory: {
       configurable: true,
-      get () { return this[kChildLoggerFactory] },
+      get () { return this[kChildLoggerFactory] }
     },
     version: {
       configurable: true,
-      get () { return VERSION },
+      get () { return VERSION }
     },
     errorHandler: {
       configurable: true,
       get () {
         return this[kErrorHandler].func
-      },
+      }
     },
     genReqId: {
       configurable: true,
-      get () { return this[kGenReqId] },
-    },
+      get () { return this[kGenReqId] }
+    }
   })
 
   if (options.schemaErrorFormatter) {
@@ -463,8 +463,8 @@ function fastify (options) {
     autostart: false,
     timeout: isNaN(avvioPluginTimeout) === false ? avvioPluginTimeout : defaultInitOptions.pluginTimeout,
     expose: {
-      use: 'register',
-    },
+      use: 'register'
+    }
   })
   // Override to allow the plugin encapsulation
   avvio.override = override
@@ -523,7 +523,7 @@ function fastify (options) {
   // Create bad URL context
   const onBadUrlContext = new Context({
     server: fastify,
-    config: {},
+    config: {}
   })
 
   // Set the default 404 handler
@@ -537,7 +537,7 @@ function fastify (options) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
-    keepAliveConnections,
+    keepAliveConnections
   })
 
   // Delay configuring clientError handler so that it can access fastify state.
@@ -792,7 +792,7 @@ function fastify (options) {
     const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',
-      'Content-Length': body.length,
+      'Content-Length': body.length
     })
     res.end(body)
   }
@@ -817,7 +817,7 @@ function fastify (options) {
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
         res.writeHead(500, {
           'Content-Type': 'application/json',
-          'Content-Length': body.length,
+          'Content-Length': body.length
         })
         res.end(body)
       }

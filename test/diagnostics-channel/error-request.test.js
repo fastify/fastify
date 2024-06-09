@@ -42,7 +42,7 @@ test('diagnostics channel events report on errors', t => {
     url: '/',
     handler: function (req, reply) {
       throw new Error('borked')
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, function (err) {
@@ -52,7 +52,7 @@ test('diagnostics channel events report on errors', t => {
 
     sget({
       method: 'GET',
-      url: getServerUrl(fastify) + '/',
+      url: getServerUrl(fastify) + '/'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)

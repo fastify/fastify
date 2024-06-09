@@ -21,7 +21,7 @@ test('use semicolon delimiter default false', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar',
+      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -34,7 +34,7 @@ test('use semicolon delimiter set to true', t => {
   t.plan(4)
 
   const fastify = Fastify({
-    useSemicolonDelimiter: true,
+    useSemicolonDelimiter: true
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -47,12 +47,12 @@ test('use semicolon delimiter set to true', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar',
+      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(JSON.parse(body), {
-        foo: 'bar',
+        foo: 'bar'
       })
     })
   })
@@ -62,7 +62,7 @@ test('use semicolon delimiter set to false', t => {
   t.plan(4)
 
   const fastify = Fastify({
-    useSemicolonDelimiter: false,
+    useSemicolonDelimiter: false
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -75,7 +75,7 @@ test('use semicolon delimiter set to false', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar',
+      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -88,7 +88,7 @@ test('use semicolon delimiter set to false return 404', t => {
   t.plan(3)
 
   const fastify = Fastify({
-    useSemicolonDelimiter: false,
+    useSemicolonDelimiter: false
   })
   t.teardown(fastify.close.bind(fastify))
 
@@ -101,7 +101,7 @@ test('use semicolon delimiter set to false return 404', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar',
+      url: 'http://localhost:' + fastify.server.address().port + '/1234;foo=bar'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)

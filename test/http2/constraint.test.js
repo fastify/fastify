@@ -20,8 +20,8 @@ test('A route supports host constraints under http2 protocol and secure connecti
       http2: true,
       https: {
         key: global.context.key,
-        cert: global.context.cert,
-      },
+        cert: global.context.cert
+      }
     })
     t.pass('Key/cert successfully loaded')
   } catch (e) {
@@ -35,7 +35,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
     url: '/',
     handler: function (_, reply) {
       reply.code(200).send(alpha)
-    },
+    }
   })
   fastify.route({
     method: 'GET',
@@ -43,7 +43,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
     constraints: { host: constrain },
     handler: function (_, reply) {
       reply.code(200).send(beta)
-    },
+    }
   })
   fastify.route({
     method: 'GET',
@@ -51,7 +51,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
     constraints: { host: constrain },
     handler: function (req, reply) {
       reply.code(200).send({ ...beta, hostname: req.hostname })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, err => {
@@ -76,8 +76,8 @@ test('A route supports host constraints under http2 protocol and secure connecti
       const res = await h2url.concat({
         url,
         headers: {
-          ':authority': constrain,
-        },
+          ':authority': constrain
+        }
       })
 
       t.equal(res.headers[':status'], 200)
@@ -90,7 +90,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
 
       const url = `https://localhost:${fastify.server.address().port}/beta`
       const res = await h2url.concat({
-        url,
+        url
       })
 
       t.equal(res.headers[':status'], 404)
@@ -102,8 +102,8 @@ test('A route supports host constraints under http2 protocol and secure connecti
       const res = await h2url.concat({
         url,
         headers: {
-          ':authority': constrain,
-        },
+          ':authority': constrain
+        }
       })
       const body = JSON.parse(res.body)
       t.equal(body.hostname, constrain)

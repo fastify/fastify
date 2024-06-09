@@ -8,7 +8,7 @@ import { FastifyError } from '@fastify/error'
 import { FastifyBaseLogger } from './logger'
 import {
   FastifyTypeProvider,
-  FastifyTypeProviderDefault,
+  FastifyTypeProviderDefault
 } from './type-provider'
 import { RegisterOptions } from './register'
 import { FastifySchema } from './schema'

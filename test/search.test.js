@@ -11,11 +11,11 @@ const schema = {
       type: 'object',
       properties: {
         hello: {
-          type: 'string',
-        },
-      },
-    },
-  },
+          type: 'string'
+        }
+      }
+    }
+  }
 }
 
 const querySchema = {
@@ -23,10 +23,10 @@ const querySchema = {
     type: 'object',
     properties: {
       hello: {
-        type: 'integer',
-      },
-    },
-  },
+        type: 'integer'
+      }
+    }
+  }
 }
 
 const paramsSchema = {
@@ -34,13 +34,13 @@ const paramsSchema = {
     type: 'object',
     properties: {
       foo: {
-        type: 'string',
+        type: 'string'
       },
       test: {
-        type: 'integer',
-      },
-    },
-  },
+        type: 'integer'
+      }
+    }
+  }
 }
 
 const bodySchema = {
@@ -48,13 +48,13 @@ const bodySchema = {
     type: 'object',
     properties: {
       foo: {
-        type: 'string',
+        type: 'string'
       },
       test: {
-        type: 'integer',
-      },
-    },
-  },
+        type: 'integer'
+      }
+    }
+  }
 }
 
 test('search', t => {
@@ -66,7 +66,7 @@ test('search', t => {
       schema,
       handler: function (request, reply) {
         reply.code(200).send({ hello: 'world' })
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -83,7 +83,7 @@ test('search, params schema', t => {
       schema: paramsSchema,
       handler: function (request, reply) {
         reply.code(200).send(request.params)
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -100,7 +100,7 @@ test('search, querystring schema', t => {
       schema: querySchema,
       handler: function (request, reply) {
         reply.code(200).send(request.query)
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -117,7 +117,7 @@ test('search, body schema', t => {
       schema: bodySchema,
       handler: function (request, reply) {
         reply.code(200).send(request.body)
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -135,7 +135,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'SEARCH',
-      url,
+      url
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -148,7 +148,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'SEARCH',
-      url: `${url}/params/world/123`,
+      url: `${url}/params/world/123`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -161,7 +161,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'SEARCH',
-      url: `${url}/params/world/string`,
+      url: `${url}/params/world/string`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -169,7 +169,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'params/test must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -178,7 +178,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'SEARCH',
-      url: `${url}/query?hello=123`,
+      url: `${url}/query?hello=123`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -191,7 +191,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'SEARCH',
-      url: `${url}/query?hello=world`,
+      url: `${url}/query?hello=world`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -199,7 +199,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'querystring/hello must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -211,7 +211,7 @@ fastify.listen({ port: 0 }, err => {
       method: 'SEARCH',
       url: `${url}/body`,
       body: JSON.stringify(replyBody),
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -226,7 +226,7 @@ fastify.listen({ port: 0 }, err => {
       method: 'SEARCH',
       url: `${url}/body`,
       body: JSON.stringify({ foo: 'bar', test: 'test' }),
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -235,7 +235,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'body/test must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })

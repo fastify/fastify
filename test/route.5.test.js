@@ -24,7 +24,7 @@ test('route child logger factory does not affect other routes', t => {
       req.log.customLog('custom')
       res.send()
     },
-    childLoggerFactory: customRouteChildLogger,
+    childLoggerFactory: customRouteChildLogger
   })
 
   fastify.route({
@@ -33,19 +33,19 @@ test('route child logger factory does not affect other routes', t => {
     handler: (req, res) => {
       t.notMatch(req.log.customLog instanceof Function)
       res.send()
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/coffee',
+    url: '/coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
   })
   fastify.inject({
     method: 'GET',
-    url: '/tea',
+    url: '/tea'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -80,7 +80,7 @@ test('route child logger factory overrides global custom error handler', t => {
       req.log.customLog('custom')
       res.send()
     },
-    childLoggerFactory: customRouteChildLogger,
+    childLoggerFactory: customRouteChildLogger
   })
   fastify.route({
     method: 'GET',
@@ -88,19 +88,19 @@ test('route child logger factory overrides global custom error handler', t => {
     handler: (req, res) => {
       req.log.globalLog('global')
       res.send()
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/coffee',
+    url: '/coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
   })
   fastify.inject({
     method: 'GET',
-    url: '/more-coffee',
+    url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -117,7 +117,7 @@ test('Creates a HEAD route for each GET one (default)', t => {
     path: '/more-coffee',
     handler: (req, reply) => {
       reply.send({ here: 'is coffee' })
-    },
+    }
   })
 
   fastify.route({
@@ -125,12 +125,12 @@ test('Creates a HEAD route for each GET one (default)', t => {
     path: '/some-light',
     handler: (req, reply) => {
       reply.send('Get some light!')
-    },
+    }
   })
 
   fastify.inject({
     method: 'HEAD',
-    url: '/more-coffee',
+    url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -140,7 +140,7 @@ test('Creates a HEAD route for each GET one (default)', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/some-light',
+    url: '/some-light'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -159,7 +159,7 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
     path: '/more-coffee',
     handler: (req, reply) => {
       reply.send({ here: 'is coffee' })
-    },
+    }
   })
 
   fastify.route({
@@ -167,12 +167,12 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
     path: '/some-light',
     handler: (req, reply) => {
       reply.send('Get some light!')
-    },
+    }
   })
 
   fastify.inject({
     method: 'HEAD',
-    url: '/more-coffee',
+    url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 404)
@@ -180,7 +180,7 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
 
   fastify.inject({
     method: 'HEAD',
-    url: '/some-light',
+    url: '/some-light'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 404)
@@ -197,7 +197,7 @@ test('Creates a HEAD route for each GET one', t => {
     path: '/more-coffee',
     handler: (req, reply) => {
       reply.send({ here: 'is coffee' })
-    },
+    }
   })
 
   fastify.route({
@@ -205,12 +205,12 @@ test('Creates a HEAD route for each GET one', t => {
     path: '/some-light',
     handler: (req, reply) => {
       reply.send('Get some light!')
-    },
+    }
   })
 
   fastify.inject({
     method: 'HEAD',
-    url: '/more-coffee',
+    url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -220,7 +220,7 @@ test('Creates a HEAD route for each GET one', t => {
 
   fastify.inject({
     method: 'HEAD',
-    url: '/some-light',
+    url: '/some-light'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)

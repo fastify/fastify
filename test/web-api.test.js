@@ -25,7 +25,7 @@ test('should response with a ReadableStream', async (t) => {
 
   const {
     statusCode,
-    body,
+    body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
@@ -44,15 +44,15 @@ test('should response with a Response', async (t) => {
     reply.send(new Response(Readable.toWeb(stream), {
       status: 200,
       headers: {
-        hello: 'world',
-      },
+        hello: 'world'
+      }
     }))
   })
 
   const {
     statusCode,
     headers,
-    body,
+    body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
@@ -77,15 +77,15 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
     done(null, new Response(payload, {
       status: 200,
       headers: {
-        hello: 'world',
-      },
+        hello: 'world'
+      }
     }))
   })
 
   const {
     statusCode,
     headers,
-    body,
+    body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
@@ -105,8 +105,8 @@ test('able to use in onSend hook - Response', async (t) => {
     reply.send(new Response(Readable.toWeb(stream), {
       status: 500,
       headers: {
-        hello: 'world',
-      },
+        hello: 'world'
+      }
     }))
   })
 
@@ -114,14 +114,14 @@ test('able to use in onSend hook - Response', async (t) => {
     t.equal(Object.prototype.toString.call(payload), '[object Response]')
     done(null, new Response(payload.body, {
       status: 200,
-      headers: payload.headers,
+      headers: payload.headers
     }))
   })
 
   const {
     statusCode,
     headers,
-    body,
+    body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
   const expected = await fs.promises.readFile(__filename)
@@ -143,8 +143,8 @@ test('Error when Response.bodyUsed', async (t) => {
     const response = new Response(Readable.toWeb(stream), {
       status: 200,
       headers: {
-        hello: 'world',
-      },
+        hello: 'world'
+      }
     })
     const file = await response.text()
     t.equal(expected.toString(), file)
@@ -167,7 +167,7 @@ test('allow to pipe with fetch', async (t) => {
 
   fastify.get('/', function (request, reply) {
     return fetch(`${fastify.listeningOrigin}/fetch`, {
-      method: 'GET',
+      method: 'GET'
     })
   })
 
@@ -191,7 +191,7 @@ test('allow to pipe with undici.fetch', async (t) => {
 
   fastify.get('/', function (request, reply) {
     return undiciFetch(`${fastify.listeningOrigin}/fetch`, {
-      method: 'GET',
+      method: 'GET'
     })
   })
 

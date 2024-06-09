@@ -9,7 +9,7 @@ t.test('The request id header key can be customized', async (t) => {
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
-    requestIdHeader: 'my-custom-request-id',
+    requestIdHeader: 'my-custom-request-id'
   })
 
   fastify.get('/', (req, reply) => {
@@ -27,7 +27,7 @@ t.test('The request id header key can be customized', async (t) => {
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
-    requestIdHeader: 'my-custom-request-id',
+    requestIdHeader: 'my-custom-request-id'
   })
 
   fastify.get('/', (req, reply) => {
@@ -45,7 +45,7 @@ t.test('The request id header key can be customized', (t) => {
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
-    requestIdHeader: 'my-custom-request-id',
+    requestIdHeader: 'my-custom-request-id'
   })
 
   fastify.get('/', (req, reply) => {
@@ -61,8 +61,8 @@ t.test('The request id header key can be customized', (t) => {
       method: 'GET',
       url: address,
       headers: {
-        'my-custom-request-id': REQUEST_ID,
-      },
+        'my-custom-request-id': REQUEST_ID
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
@@ -75,7 +75,7 @@ t.test('The request id header key can be customized', (t) => {
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
-    requestIdHeader: 'my-custom-request-id',
+    requestIdHeader: 'my-custom-request-id'
   })
 
   fastify.get('/', (req, reply) => {
@@ -91,8 +91,8 @@ t.test('The request id header key can be customized', (t) => {
       method: 'GET',
       url: address,
       headers: {
-        'MY-CUSTOM-REQUEST-ID': REQUEST_ID,
-      },
+        'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
@@ -105,7 +105,7 @@ t.test('The request id header key can be customized', (t) => {
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
-    requestIdHeader: 'MY-CUSTOM-REQUEST-ID',
+    requestIdHeader: 'MY-CUSTOM-REQUEST-ID'
   })
 
   fastify.get('/', (req, reply) => {
@@ -121,8 +121,8 @@ t.test('The request id header key can be customized', (t) => {
       method: 'GET',
       url: address,
       headers: {
-        'MY-CUSTOM-REQUEST-ID': REQUEST_ID,
-      },
+        'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)

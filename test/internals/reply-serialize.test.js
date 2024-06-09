@@ -10,8 +10,8 @@ function getDefaultSchema () {
     required: ['hello'],
     properties: {
       hello: { type: 'string' },
-      world: { type: 'string' },
-    },
+      world: { type: 'string' }
+    }
   }
 }
 
@@ -23,39 +23,39 @@ function getResponseSchema () {
       properties: {
         status: {
           type: 'string',
-          enum: ['ok'],
+          enum: ['ok']
         },
         message: {
-          type: 'string',
-        },
-      },
+          type: 'string'
+        }
+      }
     },
     '4xx': {
       type: 'object',
       properties: {
         status: {
           type: 'string',
-          enum: ['error'],
+          enum: ['error']
         },
         code: {
           type: 'integer',
-          minimum: 1,
+          minimum: 1
         },
         message: {
-          type: 'string',
-        },
-      },
+          type: 'string'
+        }
+      }
     },
     '3xx': {
       content: {
         'application/json': {
           schema: {
             fullName: { type: 'string' },
-            phone: { type: 'number' },
-          },
-        },
-      },
-    },
+            phone: { type: 'number' }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -85,7 +85,7 @@ test('Reply#compileSerializationSchema', t => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET',
+      method: 'GET'
     })
   })
 
@@ -127,7 +127,7 @@ test('Reply#compileSerializationSchema', t => {
         fastify.inject('/'),
         fastify.inject('/'),
         fastify.inject('/'),
-        fastify.inject('/'),
+        fastify.inject('/')
       ])
 
       t.equal(counter, 4)
@@ -189,12 +189,12 @@ test('Reply#compileSerializationSchema', t => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET',
+        method: 'GET'
       })
 
       await fastify.inject({
         path: '/user',
-        method: 'GET',
+        method: 'GET'
       })
     }
   )
@@ -217,7 +217,7 @@ test('Reply#compileSerializationSchema', t => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET',
+      method: 'GET'
     })
   })
 })
@@ -230,27 +230,27 @@ test('Reply#getSerializationFunction', t => {
       const fastify = Fastify()
       const okInput201 = {
         status: 'ok',
-        message: 'done!',
+        message: 'done!'
       }
       const notOkInput201 = {
-        message: 'created',
+        message: 'created'
       }
       const okInput4xx = {
         status: 'error',
         code: 2,
-        message: 'oops!',
+        message: 'oops!'
       }
       const notOkInput4xx = {
         status: 'error',
-        code: 'something',
+        code: 'something'
       }
       const okInput3xx = {
         fullName: 'Jone',
-        phone: 0,
+        phone: 0
       }
       const noOkInput3xx = {
         fullName: 'Jone',
-        phone: 'phone',
+        phone: 'phone'
       }
       let cached4xx
       let cached201
@@ -265,12 +265,12 @@ test('Reply#getSerializationFunction', t => {
         {
           params: {
             id: {
-              type: 'integer',
-            },
+              type: 'integer'
+            }
           },
           schema: {
-            response: responseSchema,
-          },
+            response: responseSchema
+          }
         },
         (req, reply) => {
           const { id } = req.params
@@ -330,7 +330,7 @@ test('Reply#getSerializationFunction', t => {
 
       await Promise.all([
         fastify.inject('/1'),
-        fastify.inject('/2'),
+        fastify.inject('/2')
       ])
     }
   )
@@ -343,10 +343,10 @@ test('Reply#getSerializationFunction', t => {
 
       const okInput = {
         hello: 'world',
-        world: 'done!',
+        world: 'done!'
       }
       const notOkInput = {
-        world: 'done!',
+        world: 'done!'
       }
       let cached
 
@@ -357,9 +357,9 @@ test('Reply#getSerializationFunction', t => {
         {
           params: {
             id: {
-              type: 'integer',
-            },
-          },
+              type: 'integer'
+            }
+          }
         },
         (req, reply) => {
           const { id } = req.params
@@ -396,7 +396,7 @@ test('Reply#getSerializationFunction', t => {
 
       await Promise.all([
         fastify.inject('/1'),
-        fastify.inject('/2'),
+        fastify.inject('/2')
       ])
     }
   )
@@ -417,7 +417,7 @@ test('Reply#getSerializationFunction', t => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET',
+      method: 'GET'
     })
   })
 })
@@ -438,7 +438,7 @@ test('Reply#serializeInput', t => {
 
       const result = await fastify.inject({
         path: '/',
-        method: 'GET',
+        method: 'GET'
       })
 
       t.equal(result.statusCode, 500)
@@ -446,7 +446,7 @@ test('Reply#serializeInput', t => {
         statusCode: 500,
         code: 'FST_ERR_MISSING_SERIALIZATION_FN',
         error: 'Internal Server Error',
-        message: 'Missing serialization function. Key "201"',
+        message: 'Missing serialization function. Key "201"'
       })
     }
   )
@@ -466,20 +466,20 @@ test('Reply#serializeInput', t => {
                 'application/json': {
                   schema: {
                     fullName: { type: 'string' },
-                    phone: { type: 'number' },
-                  },
-                },
-              },
-            },
-          },
-        },
+                    phone: { type: 'number' }
+                  }
+                }
+              }
+            }
+          }
+        }
       }, (req, reply) => {
         reply.serializeInput({}, '3xx', 'application/vnd.v1+json')
       })
 
       const result = await fastify.inject({
         path: '/',
-        method: 'GET',
+        method: 'GET'
       })
 
       t.equal(result.statusCode, 500)
@@ -487,7 +487,7 @@ test('Reply#serializeInput', t => {
         statusCode: 500,
         code: 'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN',
         error: 'Internal Server Error',
-        message: 'Missing serialization function. Key "3xx:application/vnd.v1+json"',
+        message: 'Missing serialization function. Key "3xx:application/vnd.v1+json"'
       })
     }
   )
@@ -496,27 +496,27 @@ test('Reply#serializeInput', t => {
     const fastify = Fastify()
     const okInput201 = {
       status: 'ok',
-      message: 'done!',
+      message: 'done!'
     }
     const notOkInput201 = {
-      message: 'created',
+      message: 'created'
     }
     const okInput4xx = {
       status: 'error',
       code: 2,
-      message: 'oops!',
+      message: 'oops!'
     }
     const notOkInput4xx = {
       status: 'error',
-      code: 'something',
+      code: 'something'
     }
     const okInput3xx = {
       fullName: 'Jone',
-      phone: 0,
+      phone: 0
     }
     const noOkInput3xx = {
       fullName: 'Jone',
-      phone: 'phone',
+      phone: 'phone'
     }
 
     t.plan(6)
@@ -526,12 +526,12 @@ test('Reply#serializeInput', t => {
       {
         params: {
           id: {
-            type: 'integer',
-          },
+            type: 'integer'
+          }
         },
         schema: {
-          response: getResponseSchema(),
-        },
+          response: getResponseSchema()
+        }
       },
       (req, reply) => {
         t.equal(
@@ -575,7 +575,7 @@ test('Reply#serializeInput', t => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET',
+      method: 'GET'
     })
   })
 
@@ -619,7 +619,7 @@ test('Reply#serializeInput', t => {
 
       await fastify.inject({
         path: '/',
-        method: 'GET',
+        method: 'GET'
       })
 
       t.equal(compilerCalled, 1)
@@ -669,7 +669,7 @@ test('Reply#serializeInput', t => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET',
+      method: 'GET'
     })
 
     t.equal(cached, serializer)
@@ -693,7 +693,7 @@ test('Reply#serializeInput', t => {
 
     await fastify.inject({
       path: '/',
-      method: 'GET',
+      method: 'GET'
     })
   })
 })

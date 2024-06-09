@@ -19,9 +19,9 @@ test('use fluent-json-schema object', t => {
       response: {
         200: S.object()
           .prop('name', S.string())
-          .prop('surname', S.string()),
-      },
-    },
+          .prop('surname', S.string())
+      }
+    }
   })
 
   // check params
@@ -30,7 +30,7 @@ test('use fluent-json-schema object', t => {
     url: '/1',
     headers: { 'x-custom': 'me@me.me' },
     query: { surname: 'bar' },
-    payload: { name: 'foo' },
+    payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -43,7 +43,7 @@ test('use fluent-json-schema object', t => {
     url: '/42',
     headers: { 'x-custom': 'invalid' },
     query: { surname: 'bar' },
-    payload: { name: 'foo' },
+    payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -56,7 +56,7 @@ test('use fluent-json-schema object', t => {
     url: '/42',
     headers: { 'x-custom': 'me@me.me' },
     query: { },
-    payload: { name: 'foo' },
+    payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -69,7 +69,7 @@ test('use fluent-json-schema object', t => {
     url: '/42',
     headers: { 'x-custom': 'me@me.me' },
     query: { surname: 'bar' },
-    payload: { name: [1, 2, 3] },
+    payload: { name: [1, 2, 3] }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -82,7 +82,7 @@ test('use fluent-json-schema object', t => {
     url: '/42',
     headers: { 'x-custom': 'me@me.me' },
     query: { surname: 'bar' },
-    payload: { name: 'foo' },
+    payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -142,8 +142,8 @@ test('use fluent schema and plain JSON schema', t => {
       line2: { type: 'string' },
       country: { type: 'string' },
       city: { type: 'string' },
-      zipcode: { type: 'string' },
-    },
+      zipcode: { type: 'string' }
+    }
   }
 
   fastify.addSchema(commonSchemas)
@@ -187,9 +187,9 @@ test('Should call valueOf internally', t => {
       headers: S.object().prop('hello', S.string()).required(),
       response: {
         200: S.object().prop('hello', S.string()).required(),
-        201: S.object().prop('hello', S.string()).required(),
-      },
-    },
+        201: S.object().prop('hello', S.string()).required()
+      }
+    }
   })
 
   fastify.route({
@@ -203,9 +203,9 @@ test('Should call valueOf internally', t => {
       headers: S.object().prop('hello', S.string()).required(),
       response: {
         200: S.object().prop('hello', S.string()).required(),
-        201: S.object().prop('hello', S.string()).required(),
-      },
-    },
+        201: S.object().prop('hello', S.string()).required()
+      }
+    }
   })
 
   fastify.ready(t.error)

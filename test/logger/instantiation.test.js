@@ -78,8 +78,8 @@ t.test('logger instantiation', (t) => {
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -108,8 +108,8 @@ t.test('logger instantiation', (t) => {
       const fastify = Fastify({
         logger: {
           stream,
-          level: 'info',
-        },
+          level: 'info'
+        }
       })
       t.teardown(fastify.close.bind(fastify))
 
@@ -129,8 +129,8 @@ t.test('logger instantiation', (t) => {
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -147,7 +147,7 @@ t.test('logger instantiation', (t) => {
     const lines = [
       { msg: /Server listening at/ },
       { reqId: /req-/, req: { method: 'GET', url: '/' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' },
+      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
     ]
 
     const { file, cleanup } = createTempFile(t)
@@ -155,7 +155,7 @@ t.test('logger instantiation', (t) => {
     if (process.env.CITGM) { fs.writeFileSync(file, '', { mode: 0o600 }) }
 
     const fastify = Fastify({
-      logger: { file },
+      logger: { file }
     })
 
     t.teardown(async () => {
@@ -210,7 +210,7 @@ t.test('logger instantiation', (t) => {
       info: (msg) => { t.equal(msg, 'info') },
       debug: (msg) => { t.equal(msg, 'debug') },
       trace: (msg) => { t.equal(msg, 'trace') },
-      child: () => loggerInstance,
+      child: () => loggerInstance
     }
 
     const fastify = Fastify({ loggerInstance })
@@ -251,14 +251,14 @@ t.test('logger instantiation', (t) => {
       serializers: {
         req: function (req) {
           return {
-            url: req.url,
+            url: req.url
           }
-        },
-      },
+        }
+      }
     }, stream)
 
     const fastify = Fastify({
-      loggerInstance,
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -287,7 +287,7 @@ t.test('logger instantiation', (t) => {
       { msg: /^Server listening at / },
       { req: { url: '/custom' }, msg: 'incoming request' },
       { res: { statusCode: 500 }, msg: 'kaboom' },
-      { res: { statusCode: 500 }, msg: 'request completed' },
+      { res: { statusCode: 500 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 1)
 
@@ -299,11 +299,11 @@ t.test('logger instantiation', (t) => {
         serializers: {
           req: function (req) {
             return {
-              url: req.url,
+              url: req.url
             }
-          },
-        },
-      },
+          }
+        }
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -331,7 +331,7 @@ t.test('logger instantiation', (t) => {
       debug: console.debug,
       fatal: console.error,
       warn: console.warn,
-      trace: console.trace,
+      trace: console.trace
     }
 
     try {

@@ -9,7 +9,7 @@ const msg = { hello: 'world' }
 let fastify
 try {
   fastify = Fastify({
-    http2: true,
+    http2: true
   })
   t.pass('http2 successfully loaded')
 } catch (e) {

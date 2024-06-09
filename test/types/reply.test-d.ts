@@ -160,7 +160,7 @@ server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async fu
   reply.code(200).send({
     '1xx': 0,
     200: '',
-    999: false,
+    999: false
   })
 })
 

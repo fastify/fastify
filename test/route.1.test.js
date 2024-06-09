@@ -6,7 +6,7 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
-  FST_ERR_ROUTE_METHOD_INVALID,
+  FST_ERR_ROUTE_METHOD_INVALID
 } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
@@ -28,15 +28,15 @@ test('route', t => {
               type: 'object',
               properties: {
                 hello: {
-                  type: 'string',
-                },
-              },
-            },
-          },
+                  type: 'string'
+                }
+              }
+            }
+          }
         },
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       })
     )
 
@@ -45,7 +45,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getServerUrl(fastify) + '/',
+        url: getServerUrl(fastify) + '/'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -64,7 +64,7 @@ test('route', t => {
         url: '/missing',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       })
     )
 
@@ -73,7 +73,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getServerUrl(fastify) + '/missing',
+        url: getServerUrl(fastify) + '/missing'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -99,7 +99,7 @@ test('route', t => {
         url: '/multiple',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       }))
 
     fastify.listen({ port: 0 }, function (err) {
@@ -107,7 +107,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getServerUrl(fastify) + '/multiple',
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -116,7 +116,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple',
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -135,7 +135,7 @@ test('route', t => {
         url: '/multiple',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       }))
 
     fastify.listen({ port: 0 }, function (err) {
@@ -143,7 +143,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getServerUrl(fastify) + '/multiple',
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -152,7 +152,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple',
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -171,7 +171,7 @@ test('route', t => {
         url: '/multiple',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       }))
 
     fastify.listen({ port: 0 }, function (err) {
@@ -179,7 +179,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'GET',
-        url: getServerUrl(fastify) + '/multiple',
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -188,7 +188,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple',
+        url: getServerUrl(fastify) + '/multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -207,7 +207,7 @@ test('route', t => {
         url: '/invalid-method',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       }), new FST_ERR_ROUTE_METHOD_INVALID())
   })
 
@@ -221,7 +221,7 @@ test('route', t => {
         url: '/invalid-method',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       }), new FST_ERR_ROUTE_METHOD_INVALID())
   })
 
@@ -238,7 +238,7 @@ test('route', t => {
         url: '/add-multiple',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       })
     })
 
@@ -247,7 +247,7 @@ test('route', t => {
       t.teardown(() => { fastify.close() })
       sget({
         method: 'PUT',
-        url: getServerUrl(fastify) + '/add-multiple',
+        url: getServerUrl(fastify) + '/add-multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -256,7 +256,7 @@ test('route', t => {
 
       sget({
         method: 'DELETE',
-        url: getServerUrl(fastify) + '/add-multiple',
+        url: getServerUrl(fastify) + '/add-multiple'
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -279,7 +279,7 @@ test('route', t => {
         url: '/another-get-route',
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
-        },
+        }
       }), new FST_ERR_INSTANCE_ALREADY_LISTENING('Cannot add route!'))
     })
   })
@@ -295,9 +295,9 @@ test('invalid schema - route', t => {
     url: '/invalid',
     schema: {
       querystring: {
-        id: 'string',
-      },
-    },
+        id: 'string'
+      }
+    }
   })
   fastify.after(err => {
     t.notOk(err, 'the error is throw on preReady')

@@ -14,8 +14,8 @@ expectAssignable<FastifyInstance>(server.get(
       querystring: { type: 'null' },
       params: { type: 'null' },
       headers: { type: 'null' },
-      response: { type: 'null' },
-    },
+      response: { type: 'null' }
+    }
   },
   () => { }
 ))
@@ -23,7 +23,7 @@ expectAssignable<FastifyInstance>(server.get(
 expectAssignable<FastifyInstance>(server.get(
   '/empty-schema',
   {
-    schema: {},
+    schema: {}
   },
   () => { }
 ))
@@ -50,7 +50,7 @@ expectAssignable<FastifyInstance>(server.post('/test', {
       }
       return { value: data }
     }
-  },
+  }
 }, async req => req.body))
 
 expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
@@ -67,31 +67,31 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
 {
   const factory = StandaloneValidator({
     readMode: false,
-    storeFunction (routeOpts, schemaValidationCode) { },
+    storeFunction (routeOpts, schemaValidationCode) { }
   })
 
   fastify({
     jsonShorthand: false,
     schemaController: {
       compilersFactory: {
-        buildValidator: factory,
-      },
-    },
+        buildValidator: factory
+      }
+    }
   })
 }
 
 {
   const factory = StandaloneSerializer({
     readMode: false,
-    storeFunction (routeOpts, schemaValidationCode) { },
+    storeFunction (routeOpts, schemaValidationCode) { }
   })
 
   fastify({
     jsonShorthand: false,
     schemaController: {
       compilersFactory: {
-        buildSerializer: factory,
-      },
-    },
+        buildSerializer: factory
+      }
+    }
   })
 }

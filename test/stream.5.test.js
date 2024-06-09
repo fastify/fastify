@@ -19,7 +19,7 @@ test('should destroy stream when response is ended', t => {
       destroy: function (err, callback) {
         t.ok('called')
         callback(err)
-      },
+      }
     })
     reply.code(200).send(reallyLongStream)
     reply.raw.end(Buffer.from('hello\n'))
@@ -44,15 +44,15 @@ test('should mark reply as sent before pumping the payload stream into response 
       thenable.then(function (payload) {
         t.equal(reply.sent, true)
       })
-    },
+    }
   })
 
   const route = proxyquire('../lib/route', {
-    './handleRequest': handleRequest,
+    './handleRequest': handleRequest
   })
 
   const Fastify = proxyquire('..', {
-    './lib/route': route,
+    './lib/route': route
   })
 
   const fastify = Fastify()
@@ -64,7 +64,7 @@ test('should mark reply as sent before pumping the payload stream into response 
 
   fastify.inject({
     url: '/',
-    method: 'GET',
+    method: 'GET'
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
@@ -85,10 +85,10 @@ test('reply.send handles aborted requests', t => {
     info: () => { },
     debug: () => { },
     trace: () => { },
-    child: () => { return spyLogger },
+    child: () => { return spyLogger }
   }
   const fastify = Fastify({
-    loggerInstance: spyLogger,
+    loggerInstance: spyLogger
   })
 
   fastify.get('/', (req, reply) => {
@@ -96,7 +96,7 @@ test('reply.send handles aborted requests', t => {
       const stream = new Readable({
         read: function () {
           this.push(null)
-        },
+        }
       })
       reply.send(stream)
     }, 6)
@@ -133,10 +133,10 @@ test('request terminated should not crash fastify', t => {
     info: () => { },
     debug: () => { },
     trace: () => { },
-    child: () => { return spyLogger },
+    child: () => { return spyLogger }
   }
   const fastify = Fastify({
-    loggerInstance: spyLogger,
+    loggerInstance: spyLogger
   })
 
   fastify.get('/', async (req, reply) => {

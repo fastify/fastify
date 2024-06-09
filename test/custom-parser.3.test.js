@@ -28,8 +28,8 @@ test('should be able to use default parser for extra content type', t => {
       url: getServerUrl(fastify),
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'text/json',
-      },
+        'Content-Type': 'text/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -71,8 +71,8 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
         url: getServerUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
-          'Content-Type': 'application/vnd.test+json',
-        },
+          'Content-Type': 'application/vnd.test+json'
+        }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -88,8 +88,8 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
         url: getServerUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
-          'Content-Type': 'weird/content-type+json',
-        },
+          'Content-Type': 'weird/content-type+json'
+        }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -134,8 +134,8 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
       url: '/',
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/vnd.hello+json',
-      },
+        'Content-Type': 'application/vnd.hello+json'
+      }
     })
     t.equal(response.statusCode, 200)
     t.same(response.payload.toString(), '{"hello":"world"}')
@@ -147,8 +147,8 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
       url: '/',
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/test+xml',
-      },
+        'Content-Type': 'application/test+xml'
+      }
     })
     t.equal(response.statusCode, 200)
     t.same(response.payload.toString(), 'xml')
@@ -159,8 +159,8 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
     path: '/',
     payload: 'abcdefg',
     headers: {
-      'Content-Type': 'application/+myExtension',
-    },
+      'Content-Type': 'application/+myExtension'
+    }
   }).then((response) => {
     t.equal(response.statusCode, 200)
     t.same(response.payload.toString(), 'abcdefgmyExtension')
@@ -208,8 +208,8 @@ test('catch all content type parser should not interfere with content type parse
       url: getServerUrl(fastify),
       body: '{"myKey":"myValue"}',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -221,8 +221,8 @@ test('catch all content type parser should not interfere with content type parse
       url: getServerUrl(fastify),
       body: 'body',
       headers: {
-        'Content-Type': 'very-weird-content-type',
-      },
+        'Content-Type': 'very-weird-content-type'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -234,8 +234,8 @@ test('catch all content type parser should not interfere with content type parse
       url: getServerUrl(fastify),
       body: 'my text',
       headers: {
-        'Content-Type': 'text/html',
-      },
+        'Content-Type': 'text/html'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

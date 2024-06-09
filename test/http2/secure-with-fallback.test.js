@@ -20,8 +20,8 @@ test('secure with fallback', (t) => {
       https: {
         allowHTTP1: true,
         key: global.context.key,
-        cert: global.context.cert,
-      },
+        cert: global.context.cert
+      }
     })
     t.pass('Key/cert successfully loaded')
   } catch (e) {
@@ -62,8 +62,8 @@ test('secure with fallback', (t) => {
         method: 'POST',
         body: JSON.stringify({ hello: 'http2' }),
         headers: {
-          'content-type': 'application/json',
-        },
+          'content-type': 'application/json'
+        }
       })
 
       t.equal(res.headers[':status'], 200)
@@ -86,7 +86,7 @@ test('secure with fallback', (t) => {
       sget({
         method: 'GET',
         url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -100,7 +100,7 @@ test('secure with fallback', (t) => {
       sget({
         method: 'GET',
         url: 'https://localhost:' + fastify.server.address().port + '/error',
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 500)

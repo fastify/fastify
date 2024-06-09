@@ -26,23 +26,23 @@ const options = {
     body: {
       type: 'object',
       properties: {
-        id: { type: 'string' },
-      },
+        id: { type: 'string' }
+      }
     },
     response: {
       200: {
         type: 'object',
         properties: {
-          id: { type: 'string' },
-        },
+          id: { type: 'string' }
+        }
       },
       400: {
         description: 'Bad Request',
         content: {
           'application/json': {
-            schema: BadRequestSchema.valueOf(),
-          },
-        },
+            schema: BadRequestSchema.valueOf()
+          }
+        }
       },
       404: {
         description: 'Resource not found',
@@ -52,10 +52,10 @@ const options = {
             example: {
               statusCode: 404,
               error: 'Not Found',
-              message: 'Not Found',
-            },
-          },
-        },
+              message: 'Not Found'
+            }
+          }
+        }
       },
       500: {
         description: 'Internal Server Error',
@@ -63,13 +63,13 @@ const options = {
           'application/json': {
             schema: InternalServerErrorSchema.valueOf(),
             example: {
-              message: 'Internal Server Error',
-            },
-          },
-        },
-      },
-    },
-  },
+              message: 'Internal Server Error'
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 const handler = (request, reply) => {
@@ -78,7 +78,7 @@ const handler = (request, reply) => {
       statusCode: 400,
       error: 'Bad Request',
       message: 'Custom message',
-      extra: 'This should not be in the response',
+      extra: 'This should not be in the response'
     })
   }
 
@@ -87,7 +87,7 @@ const handler = (request, reply) => {
       statusCode: 404,
       error: 'Not Found',
       message: 'Custom Not Found',
-      extra: 'This should not be in the response',
+      extra: 'This should not be in the response'
     })
   }
 
@@ -96,13 +96,13 @@ const handler = (request, reply) => {
       statusCode: 500,
       error: 'Internal Server Error',
       message: 'Custom Internal Server Error',
-      extra: 'This should not be in the response',
+      extra: 'This should not be in the response'
     })
   }
 
   reply.send({
     id: request.body.id,
-    extra: 'This should not be in the response',
+    extra: 'This should not be in the response'
   })
 }
 
@@ -114,14 +114,14 @@ test('serialize the response for a Bad Request error, as defined on the schema',
   fastify.post('/', options, handler)
   const response = await fastify.inject({
     method: 'POST',
-    url: '/',
+    url: '/'
   })
 
   t.equal(response.statusCode, 400)
   t.same(sjson(response.body), {
     statusCode: 400,
     error: 'Bad Request',
-    message: 'body must be object',
+    message: 'body must be object'
   })
 })
 
@@ -135,14 +135,14 @@ test('serialize the response for a Not Found error, as defined on the schema', a
   const response = await fastify.inject({
     method: 'POST',
     url: '/',
-    body: { id: '404' },
+    body: { id: '404' }
   })
 
   t.equal(response.statusCode, 404)
   t.same(sjson(response.body), {
     statusCode: 404,
     error: 'Not Found',
-    message: 'Custom Not Found',
+    message: 'Custom Not Found'
   })
 })
 
@@ -156,14 +156,14 @@ test('serialize the response for a Internal Server Error error, as defined on th
   const response = await fastify.inject({
     method: 'POST',
     url: '/',
-    body: { id: '500' },
+    body: { id: '500' }
   })
 
   t.equal(response.statusCode, 500)
   t.same(sjson(response.body), {
     statusCode: 500,
     error: 'Internal Server Error',
-    message: 'Custom Internal Server Error',
+    message: 'Custom Internal Server Error'
   })
 })
 
@@ -177,11 +177,11 @@ test('serialize the success response, as defined on the schema', async t => {
   const response = await fastify.inject({
     method: 'POST',
     url: '/',
-    body: { id: 'test' },
+    body: { id: 'test' }
   })
 
   t.equal(response.statusCode, 200)
   t.same(sjson(response.body), {
-    id: 'test',
+    id: 'test'
   })
 })

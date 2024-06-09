@@ -28,7 +28,7 @@ t.test('request', (t) => {
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: { stream, level: 'info' },
-      requestIdHeader: 'my-custom-request-id',
+      requestIdHeader: 'my-custom-request-id'
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -57,7 +57,7 @@ t.test('request', (t) => {
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: { stream, level: 'info' },
-      requestIdHeader: false,
+      requestIdHeader: false
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -85,7 +85,7 @@ t.test('request', (t) => {
       { reqId: REQUEST_ID, msg: /request completed/ },
       { reqId: 'foo', msg: /incoming request/ },
       { reqId: 'foo', msg: /some log message 2/ },
-      { reqId: 'foo', msg: /request completed/ },
+      { reqId: 'foo', msg: /request completed/ }
     ]
     t.plan(matches.length + 4)
 
@@ -95,7 +95,7 @@ t.test('request', (t) => {
       requestIdHeader: 'my-custom-request-id',
       genReqId (req) {
         return 'foo'
-      },
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -137,7 +137,7 @@ t.test('request', (t) => {
       { reqId: 'foo', msg: /request completed/ },
       { reqId: 'foo', msg: /incoming request/ },
       { reqId: 'foo', msg: /some log message 2/ },
-      { reqId: 'foo', msg: /request completed/ },
+      { reqId: 'foo', msg: /request completed/ }
     ]
     t.plan(matches.length + 4)
 
@@ -147,7 +147,7 @@ t.test('request', (t) => {
       requestIdHeader: false,
       genReqId (req) {
         return 'foo'
-      },
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -186,7 +186,7 @@ t.test('request', (t) => {
     const matches = [
       { traceId: REQUEST_ID, msg: /incoming request/ },
       { traceId: REQUEST_ID, msg: /some log message/ },
-      { traceId: REQUEST_ID, msg: /request completed/ },
+      { traceId: REQUEST_ID, msg: /request completed/ }
     ]
     t.plan(matches.length + 2)
 
@@ -194,7 +194,7 @@ t.test('request', (t) => {
     const fastify = Fastify({
       logger: { stream, level: 'info' },
       requestIdHeader: 'my-custom-request-id',
-      requestIdLogLabel: 'traceId',
+      requestIdLogLabel: 'traceId'
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -220,7 +220,7 @@ t.test('request', (t) => {
     const lines = [
       { msg: /Server listening at/ },
       { req: { headers: { authorization: '[Redacted]' } }, msg: 'incoming request' },
-      { res: { statusCode: 200 }, msg: 'request completed' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 3)
     const stream = split(JSON.parse)
@@ -237,11 +237,11 @@ t.test('request', (t) => {
               headers: req.headers,
               hostname: req.hostname,
               remoteAddress: req.ip,
-              remotePort: req.socket.remotePort,
+              remotePort: req.socket.remotePort
             }
-          },
-        },
-      },
+          }
+        }
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -259,8 +259,8 @@ t.test('request', (t) => {
       host: localhost,
       port: fastify.server.address().port,
       headers: {
-        authorization: 'Bearer abcde',
-      },
+        authorization: 'Bearer abcde'
+      }
     }, function (response, body) {
       t.equal(response.statusCode, 200)
       t.same(body, JSON.stringify({ hello: 'world' }))
@@ -280,7 +280,7 @@ t.test('request', (t) => {
       write: function (chunk, enc, cb) {
         lines.push(JSON.parse(chunk))
         cb()
-      },
+      }
     })
     const fastify = Fastify({ logger: { level: 'info', stream: dest } })
     t.teardown(fastify.close.bind(fastify))

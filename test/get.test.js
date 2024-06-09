@@ -12,22 +12,22 @@ const schema = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 }
 
 const nullSchema = {
   schema: {
     response: {
       '2xx': {
-        type: 'null',
-      },
-    },
-  },
+        type: 'null'
+      }
+    }
+  }
 }
 
 const numberSchema = {
@@ -37,12 +37,12 @@ const numberSchema = {
         type: 'object',
         properties: {
           hello: {
-            type: 'number',
-          },
-        },
-      },
-    },
-  },
+            type: 'number'
+          }
+        }
+      }
+    }
+  }
 }
 
 const querySchema = {
@@ -51,11 +51,11 @@ const querySchema = {
       type: 'object',
       properties: {
         hello: {
-          type: 'integer',
-        },
-      },
-    },
-  },
+          type: 'integer'
+        }
+      }
+    }
+  }
 }
 
 const paramsSchema = {
@@ -64,14 +64,14 @@ const paramsSchema = {
       type: 'object',
       properties: {
         foo: {
-          type: 'string',
+          type: 'string'
         },
         test: {
-          type: 'integer',
-        },
-      },
-    },
-  },
+          type: 'integer'
+        }
+      }
+    }
+  }
 }
 
 const headersSchema = {
@@ -80,14 +80,14 @@ const headersSchema = {
       type: 'object',
       properties: {
         'x-test': {
-          type: 'number',
+          type: 'number'
         },
         'Y-Test': {
-          type: 'number',
-        },
-      },
-    },
-  },
+          type: 'number'
+        }
+      }
+    }
+  }
 }
 
 test('shorthand - get', t => {
@@ -223,7 +223,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -236,7 +236,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123',
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -249,7 +249,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string',
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -257,7 +257,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'params/test must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -268,10 +268,10 @@ fastify.listen({ port: 0 }, err => {
       method: 'GET',
       headers: {
         'x-test': '1',
-        'Y-Test': '3',
+        'Y-Test': '3'
       },
       json: true,
-      url: 'http://localhost:' + fastify.server.address().port + '/headers',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -285,9 +285,9 @@ fastify.listen({ port: 0 }, err => {
     sget({
       method: 'GET',
       headers: {
-        'x-test': 'abc',
+        'x-test': 'abc'
       },
-      url: 'http://localhost:' + fastify.server.address().port + '/headers',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -295,7 +295,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'headers/x-test must be number',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -304,7 +304,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123',
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -317,7 +317,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world',
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
@@ -325,7 +325,7 @@ fastify.listen({ port: 0 }, err => {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'querystring/hello must be integer',
-        statusCode: 400,
+        statusCode: 400
       })
     })
   })
@@ -334,7 +334,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing',
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -347,7 +347,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer',
+      url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -360,7 +360,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/empty',
+      url: 'http://localhost:' + fastify.server.address().port + '/empty'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -373,7 +373,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/boolean',
+      url: 'http://localhost:' + fastify.server.address().port + '/boolean'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -385,7 +385,7 @@ fastify.listen({ port: 0 }, err => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/null',
+      url: 'http://localhost:' + fastify.server.address().port + '/null'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -398,10 +398,10 @@ fastify.listen({ port: 0 }, err => {
     sget({
       method: 'GET',
       headers: {
-        host: 'example.com',
+        host: 'example.com'
       },
       json: true,
-      url: 'http://localhost:' + fastify.server.address().port + '/port',
+      url: 'http://localhost:' + fastify.server.address().port + '/port'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

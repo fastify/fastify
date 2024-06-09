@@ -11,8 +11,8 @@ const code = FJS({
     statusCode: { type: 'number' },
     code: { type: 'string' },
     error: { type: 'string' },
-    message: { type: 'string' },
-  },
+    message: { type: 'string' }
+  }
 }, { mode: 'standalone' })
 
 const file = path.join(__dirname, '..', 'lib', 'error-serializer.js')
@@ -29,7 +29,7 @@ if (require.main === module) {
   console.log(`Saved ${file} file successfully`)
 } else {
   module.exports = {
-    code: moduleCode,
+    code: moduleCode
   }
 }
 /* c8 ignore stop */

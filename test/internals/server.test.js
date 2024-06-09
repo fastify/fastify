@@ -23,8 +23,8 @@ test('DNS errors does not stop the main server on localhost - promise interface'
     'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(new Error('DNS error'))
-      },
-    },
+      }
+    }
   })
   const { server, listen } = createServer({}, handler)
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
@@ -38,8 +38,8 @@ test('DNS errors does not stop the main server on localhost - callback interface
     'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(new Error('DNS error'))
-      },
-    },
+      }
+    }
   })
   const { server, listen } = createServer({}, handler)
   listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
@@ -55,8 +55,8 @@ test('DNS returns empty binding', t => {
     'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(null, [])
-      },
-    },
+      }
+    }
   })
   const { server, listen } = createServer({}, handler)
   listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
@@ -74,10 +74,10 @@ test('DNS returns more than two binding', t => {
         cb(null, [
           { address: '::1', family: 6 },
           { address: '127.0.0.1', family: 4 },
-          { address: '0.0.0.0', family: 4 },
+          { address: '0.0.0.0', family: 4 }
         ])
-      },
-    },
+      }
+    }
   })
   const { server, listen } = createServer({}, handler)
   listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {

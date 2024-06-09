@@ -12,7 +12,7 @@ test('shorthand - trace', t => {
       url: '/',
       handler: function (request, reply) {
         reply.code(200).send('TRACE OK')
-      },
+      }
     })
     t.pass()
   } catch (e) {

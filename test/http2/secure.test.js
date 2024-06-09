@@ -18,8 +18,8 @@ test('secure', (t) => {
       http2: true,
       https: {
         key: global.context.key,
-        cert: global.context.cert,
-      },
+        cert: global.context.cert
+      }
     })
     t.pass('Key/cert successfully loaded')
   } catch (e) {

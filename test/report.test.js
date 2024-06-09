@@ -65,7 +65,7 @@ test('can be created - report', (t) => {
                 </D:propstat>
               </D:response>
             </D:multistatus>`)
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -84,7 +84,7 @@ fastify.listen({ port: 0 }, (err) => {
     sget(
       {
         url: `http://localhost:${fastify.server.address().port}/`,
-        method: 'REPORT',
+        method: 'REPORT'
       },
       (err, response, body) => {
         t.error(err)
@@ -99,7 +99,7 @@ fastify.listen({ port: 0 }, (err) => {
     sget(
       {
         url: `http://localhost:${fastify.server.address().port}/test`,
-        method: 'REPORT',
+        method: 'REPORT'
       },
       (err, response, body) => {
         t.error(err)
@@ -118,7 +118,7 @@ fastify.listen({ port: 0 }, (err) => {
         url: `http://localhost:${fastify.server.address().port}/test`,
         headers: { 'content-type': 'text/plain' },
         body: bodySample,
-        method: 'REPORT',
+        method: 'REPORT'
       },
       (err, response, body) => {
         t.error(err)
@@ -134,7 +134,7 @@ fastify.listen({ port: 0 }, (err) => {
       {
         url: `http://localhost:${fastify.server.address().port}/test`,
         body: bodySample,
-        method: 'REPORT',
+        method: 'REPORT'
       },
       (err, response, body) => {
         t.error(err)
@@ -149,7 +149,7 @@ fastify.listen({ port: 0 }, (err) => {
     sget(
       {
         url: `http://localhost:${fastify.server.address().port}/test`,
-        method: 'REPORT',
+        method: 'REPORT'
       },
       (err, response, body) => {
         t.error(err)

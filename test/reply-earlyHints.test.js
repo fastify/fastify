@@ -11,12 +11,12 @@ test('sends early hints', (t) => {
   t.plan(6)
 
   const fastify = Fastify({
-    logger: false,
+    logger: false
   })
 
   fastify.get('/', async (request, reply) => {
     reply.writeEarlyHints({
-      link: '</styles.css>; rel=preload; as=style',
+      link: '</styles.css>; rel=preload; as=style'
     }, () => {
       t.pass('callback called')
     })
@@ -55,12 +55,12 @@ test('sends early hints (http2)', (t) => {
 
   const fastify = Fastify({
     http2: true,
-    logger: false,
+    logger: false
   })
 
   fastify.get('/', async (request, reply) => {
     reply.writeEarlyHints({
-      link: '</styles.css>; rel=preload; as=style',
+      link: '</styles.css>; rel=preload; as=style'
     })
 
     return testResBody

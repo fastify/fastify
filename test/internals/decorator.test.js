@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const decorator = require('../../lib/decorate')
 const {
-  kState,
+  kState
 } = require('../../lib/symbols')
 
 test('decorate should add the given method to its instance', t => {
@@ -14,7 +14,7 @@ test('decorate should add the given method to its instance', t => {
     server[kState] = {
       listening: false,
       closing: false,
-      started: false,
+      started: false
     }
     return server
     function server () {}
@@ -32,7 +32,7 @@ test('decorate is chainable', t => {
     server[kState] = {
       listening: false,
       closing: false,
-      started: false,
+      started: false
     }
     return server
     function server () {}
@@ -63,7 +63,7 @@ test('checkExistence should find the instance if not given', t => {
     server[kState] = {
       listening: false,
       closing: false,
-      started: false,
+      started: false
     }
     return server
     function server () {}
@@ -102,7 +102,7 @@ test('decorate should internally call checkDependencies', t => {
     server[kState] = {
       listening: false,
       closing: false,
-      started: false,
+      started: false
     }
     return server
     function server () {}
@@ -126,15 +126,15 @@ test('decorate should recognize getter/setter objects', t => {
     [kState]: {
       listening: false,
       closing: false,
-      started: false,
-    },
+      started: false
+    }
   }
   decorator.add.call(one, 'foo', {
     getter: () => this._a,
     setter: (val) => {
       t.pass()
       this._a = val
-    },
+    }
   })
   t.equal(Object.prototype.hasOwnProperty.call(one, 'foo'), true)
   t.equal(one.foo, undefined)
@@ -146,11 +146,11 @@ test('decorate should recognize getter/setter objects', t => {
     [kState]: {
       listening: false,
       closing: false,
-      started: false,
-    },
+      started: false
+    }
   }
   decorator.add.call(two, 'foo', {
-    getter: () => 'a getter',
+    getter: () => 'a getter'
   })
   t.equal(Object.prototype.hasOwnProperty.call(two, 'foo'), true)
   t.equal(two.foo, 'a getter')

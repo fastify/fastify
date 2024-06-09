@@ -26,15 +26,15 @@ test('Should register a versioned route', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -45,8 +45,8 @@ test('Should register a versioned route', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.2.x',
-    },
+      'Accept-Version': '1.2.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -57,8 +57,8 @@ test('Should register a versioned route', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.2.0',
-    },
+      'Accept-Version': '1.2.0'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -69,8 +69,8 @@ test('Should register a versioned route', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.2.1',
-    },
+      'Accept-Version': '1.2.1'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -87,15 +87,15 @@ test('Should register a versioned route via route constraints', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -106,8 +106,8 @@ test('Should register a versioned route via route constraints', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.2.x',
-    },
+      'Accept-Version': '1.2.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -125,7 +125,7 @@ test('Should register the same route with different versions', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send('1.2.0')
-    },
+    }
   })
 
   fastify.route({
@@ -134,15 +134,15 @@ test('Should register the same route with different versions', t => {
     constraints: { version: '1.3.0' },
     handler: (req, reply) => {
       reply.send('1.3.0')
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -153,8 +153,8 @@ test('Should register the same route with different versions', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.2.x',
-    },
+      'Accept-Version': '1.2.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -165,8 +165,8 @@ test('Should register the same route with different versions', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '2.x',
-    },
+      'Accept-Version': '2.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -182,7 +182,7 @@ test('The versioned route should take precedence', t => {
     url: '/',
     handler: (req, reply) => {
       reply.send({ winter: 'is coming' })
-    },
+    }
   })
 
   fastify.route({
@@ -191,15 +191,15 @@ test('The versioned route should take precedence', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -217,12 +217,12 @@ test('Versioned route but not version header should return a 404', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -239,7 +239,7 @@ test('Should register a versioned route', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, err => {
@@ -250,8 +250,8 @@ test('Should register a versioned route', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Accept-Version': '1.x',
-      },
+        'Accept-Version': '1.x'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -262,8 +262,8 @@ test('Should register a versioned route', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Accept-Version': '2.x',
-      },
+        'Accept-Version': '2.x'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)
@@ -283,8 +283,8 @@ test('Shorthand route declaration', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -295,8 +295,8 @@ test('Shorthand route declaration', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.2.1',
-    },
+      'Accept-Version': '1.2.1'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -328,7 +328,7 @@ test('The not found handler should not erase the Accept-Version header', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
@@ -349,8 +349,8 @@ test('The not found handler should not erase the Accept-Version header', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '2.x',
-    },
+      'Accept-Version': '2.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(res.payload, 'not found handler')
@@ -368,15 +368,15 @@ test('Bad accept version (inject)', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': 'a.b.c',
-    },
+      'Accept-Version': 'a.b.c'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -386,8 +386,8 @@ test('Bad accept version (inject)', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': 12,
-    },
+      'Accept-Version': 12
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -404,7 +404,7 @@ test('Bad accept version (server)', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.listen({ port: 0 }, err => {
@@ -415,8 +415,8 @@ test('Bad accept version (server)', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Accept-Version': 'a.b.c',
-      },
+        'Accept-Version': 'a.b.c'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)
@@ -426,8 +426,8 @@ test('Bad accept version (server)', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'Accept-Version': 12,
-      },
+        'Accept-Version': 12
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)
@@ -441,8 +441,8 @@ test('test log stream', t => {
   const fastify = Fastify({
     logger: {
       stream,
-      level: 'info',
-    },
+      level: 'info'
+    }
   })
 
   fastify.get('/', { constraints: { version: '1.2.0' } }, function (req, reply) {
@@ -459,8 +459,8 @@ test('test log stream', t => {
       path: '/',
       method: 'GET',
       headers: {
-        'Accept-Version': '1.x',
-      },
+        'Accept-Version': '1.x'
+      }
     })
 
     stream.once('data', listenAtLogLine => {
@@ -483,20 +483,20 @@ test('Should register a versioned route with custom versioning strategy', t => {
       const versions = {}
       return {
         get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store },
+        set: (version, store) => { versions[version] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers.accept
     },
     mustMatchWhenDerived: true,
-    validate: () => true,
+    validate: () => true
   }
 
   const fastify = Fastify({
     constraints: {
-      version: customVersioning,
-    },
+      version: customVersioning
+    }
   })
 
   fastify.route({
@@ -505,7 +505,7 @@ test('Should register a versioned route with custom versioning strategy', t => {
     constraints: { version: 'application/vnd.example.api+json;version=2' },
     handler: (req, reply) => {
       reply.send({ hello: 'from route v2' })
-    },
+    }
   })
 
   fastify.route({
@@ -514,15 +514,15 @@ test('Should register a versioned route with custom versioning strategy', t => {
     constraints: { version: 'application/vnd.example.api+json;version=3' },
     handler: (req, reply) => {
       reply.send({ hello: 'from route v3' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      Accept: 'application/vnd.example.api+json;version=2',
-    },
+      Accept: 'application/vnd.example.api+json;version=2'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from route v2' })
@@ -533,8 +533,8 @@ test('Should register a versioned route with custom versioning strategy', t => {
     method: 'GET',
     url: '/',
     headers: {
-      Accept: 'application/vnd.example.api+json;version=3',
-    },
+      Accept: 'application/vnd.example.api+json;version=3'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'from route v3' })
@@ -545,8 +545,8 @@ test('Should register a versioned route with custom versioning strategy', t => {
     method: 'GET',
     url: '/',
     headers: {
-      Accept: 'application/vnd.example.api+json;version=4',
-    },
+      Accept: 'application/vnd.example.api+json;version=4'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -562,13 +562,13 @@ test('Should get error using an invalid a versioned route, using default validat
         const versions = {}
         return {
           get: (version) => { return versions[version] || null },
-          set: (version, store) => { versions[version] = store },
+          set: (version, store) => { versions[version] = store }
         }
       },
       deriveVersion: (req, ctx) => {
         return req.headers.accept
-      },
-    },
+      }
+    }
   })
 
   fastify.route({
@@ -577,7 +577,7 @@ test('Should get error using an invalid a versioned route, using default validat
     constraints: { version: 'application/vnd.example.api+json;version=1' },
     handler: (req, reply) => {
       reply.send({ hello: 'cant match route v1' })
-    },
+    }
   })
 
   try {
@@ -588,7 +588,7 @@ test('Should get error using an invalid a versioned route, using default validat
       constraints: { version: 2 },
       handler: (req, reply) => {
         reply.send({ hello: 'cant match route v2' })
-      },
+      }
     })
   } catch (err) {
     t.equal(err.message, 'Version constraint should be a string.')
@@ -598,8 +598,8 @@ test('Should get error using an invalid a versioned route, using default validat
     method: 'GET',
     url: '/',
     headers: {
-      Accept: 'application/vnd.example.api+json;version=2',
-    },
+      Accept: 'application/vnd.example.api+json;version=2'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
@@ -624,7 +624,7 @@ test('Vary header check (for documentation example)', t => {
     url: '/',
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.route({
@@ -633,15 +633,15 @@ test('Vary header check (for documentation example)', t => {
     constraints: { version: '1.2.0' },
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -651,7 +651,7 @@ test('Vary header check (for documentation example)', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -669,8 +669,8 @@ test('Should trigger a warning when a versioned route is registered via version 
 
   const route = proxyquire('../lib/route', {
     './warnings': {
-      FSTDEP008: onWarning,
-    },
+      FSTDEP008: onWarning
+    }
   })
   const fastify = proxyquire('..', { './lib/route.js': route })({ exposeHeadRoutes: false })
 
@@ -680,15 +680,15 @@ test('Should trigger a warning when a versioned route is registered via version 
     version: '1.2.0',
     handler: (req, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: {
-      'Accept-Version': '1.x',
-    },
+      'Accept-Version': '1.x'
+    }
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })

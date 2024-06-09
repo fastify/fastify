@@ -10,7 +10,7 @@ import { FastifySchema, FastifySchemaCompiler, FastifySerializerCompiler, Schema
 import {
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
-  ResolveFastifyReplyReturnType,
+  ResolveFastifyReplyReturnType
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 

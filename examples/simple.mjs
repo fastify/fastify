@@ -2,7 +2,7 @@
 import { fastify } from '../fastify.js'
 
 const app = fastify({
-  logger: true,
+  logger: true
 })
 
 const schema = {
@@ -12,12 +12,12 @@ const schema = {
         type: 'object',
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
-  },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 }
 
 app.get('/', schema, async function (req, reply) {

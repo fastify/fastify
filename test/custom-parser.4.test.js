@@ -40,8 +40,8 @@ test('should prefer string content types over RegExp ones', t => {
       url: getServerUrl(fastify),
       body: '{"k1":"myValue", "k2": "myValue"}',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -53,8 +53,8 @@ test('should prefer string content types over RegExp ones', t => {
       url: getServerUrl(fastify),
       body: 'javascript',
       headers: {
-        'Content-Type': 'application/javascript',
-      },
+        'Content-Type': 'application/javascript'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -97,8 +97,8 @@ test('removeContentTypeParser should support arrays of content types to remove',
       url: getServerUrl(fastify),
       body: '<?xml version="1.0">',
       headers: {
-        'Content-Type': 'application/xml',
-      },
+        'Content-Type': 'application/xml'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -110,8 +110,8 @@ test('removeContentTypeParser should support arrays of content types to remove',
       url: getServerUrl(fastify),
       body: '',
       headers: {
-        'Content-Type': 'image/png',
-      },
+        'Content-Type': 'image/png'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
@@ -122,8 +122,8 @@ test('removeContentTypeParser should support arrays of content types to remove',
       url: getServerUrl(fastify),
       body: '{test: "test"}',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
@@ -165,8 +165,8 @@ test('removeContentTypeParser should support encapsulation', t => {
       url: getServerUrl(fastify) + '/encapsulated',
       body: '<?xml version="1.0">',
       headers: {
-        'Content-Type': 'application/xml',
-      },
+        'Content-Type': 'application/xml'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
@@ -177,8 +177,8 @@ test('removeContentTypeParser should support encapsulation', t => {
       url: getServerUrl(fastify),
       body: '<?xml version="1.0">',
       headers: {
-        'Content-Type': 'application/xml',
-      },
+        'Content-Type': 'application/xml'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -215,8 +215,8 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
       url: getServerUrl(fastify) + '/encapsulated',
       body: '{}',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
@@ -227,8 +227,8 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
       url: getServerUrl(fastify),
       body: '{"test":1}',
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

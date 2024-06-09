@@ -32,7 +32,7 @@ t.test('logging', (t) => {
     const loggerInstance = pino({ level: 'trace' }, stream)
 
     const fastify = Fastify({
-      loggerInstance,
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -54,15 +54,15 @@ t.test('logging', (t) => {
       { msg: /Server listening at/ },
       { level: 30, msg: 'incoming request' },
       { res: { statusCode: 415 }, msg: 'something happened' },
-      { res: { statusCode: 415 }, msg: 'request completed' },
+      { res: { statusCode: 415 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
     fastify.get('/error', function (req, reply) {
@@ -86,7 +86,7 @@ t.test('logging', (t) => {
       { msg: /Server listening at/ },
       { msg: 'incoming request' },
       { level: 50, msg: 'a generic error' },
-      { res: { statusCode: 500 }, msg: 'request completed' },
+      { res: { statusCode: 500 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 1)
 
@@ -94,8 +94,8 @@ t.test('logging', (t) => {
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -120,15 +120,15 @@ t.test('logging', (t) => {
       { msg: /Server listening at/ },
       { msg: 'incoming request' },
       { level: 30, msg: 'a 400 error' },
-      { res: { statusCode: 400 }, msg: 'request completed' },
+      { res: { statusCode: 400 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -157,15 +157,15 @@ t.test('logging', (t) => {
       { msg: /Server listening at/ },
       { msg: 'incoming request' },
       { level: 50, msg: 'a 503 error' },
-      { res: { statusCode: 503 }, msg: 'request completed' },
+      { res: { statusCode: 503 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
     fastify.get('/503', function (req, reply) {
@@ -188,15 +188,15 @@ t.test('logging', (t) => {
     const lines = [
       { msg: /Server listening at/ },
       { level: 30, msg: 'incoming request' },
-      { res: { statusCode: 200 }, msg: 'request completed' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 2)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
     fastify.get('/error', function (req, reply) {
@@ -224,7 +224,7 @@ t.test('logging', (t) => {
       'incoming request',
       'request completed',
       'Reply was already sent, did you forget to "return reply" in "/" (GET)?',
-      'Reply was already sent, did you forget to "return reply" in "/" (GET)?',
+      'Reply was already sent, did you forget to "return reply" in "/" (GET)?'
     ]
     t.plan(lines.length + 1)
 
@@ -232,7 +232,7 @@ t.test('logging', (t) => {
     const loggerInstance = pino(stream)
 
     const fastify = Fastify({
-      loggerInstance,
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -287,14 +287,14 @@ t.test('logging', (t) => {
   t.test('defaults to info level', async (t) => {
     const lines = [
       { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' },
+      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
     ]
     t.plan(lines.length * 2 + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
-        stream,
-      },
+        stream
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -323,7 +323,7 @@ t.test('logging', (t) => {
     const lines = [
       { msg: /^Server listening at / },
       { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' },
+      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 3)
 
@@ -331,8 +331,8 @@ t.test('logging', (t) => {
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -360,7 +360,7 @@ t.test('logging', (t) => {
       { msg: /^Server listening at / },
       { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
       { reqId: /req-/, res: { statusCode: 500 }, msg: 'kaboom' },
-      { reqId: /req-/, res: { statusCode: 500 }, msg: 'request completed' },
+      { reqId: /req-/, res: { statusCode: 500 }, msg: 'request completed' }
     ]
     t.plan(lines.length + 4)
 
@@ -368,8 +368,8 @@ t.test('logging', (t) => {
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
-      },
+        level: 'info'
+      }
     })
     t.teardown(fastify.close.bind(fastify))
 
@@ -399,9 +399,9 @@ t.test('logging', (t) => {
     const fastify = Fastify({
       logger: {
         stream,
-        level: 'info',
+        level: 'info'
       },
-      disableRequestLogging: true,
+      disableRequestLogging: true
     })
     t.teardown(fastify.close.bind(fastify))
 

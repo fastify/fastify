@@ -48,7 +48,7 @@ test('can be created - lock', t => {
               </D:lockdiscovery>
             </D:prop>`
           )
-      },
+      }
     })
     t.pass()
   } catch (e) {
@@ -70,7 +70,7 @@ fastify.listen({ port: 0 }, err => {
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       headers: { 'content-type': 'text/plain' },
       body: bodySample,
-      method: 'LOCK',
+      method: 'LOCK'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -83,7 +83,7 @@ fastify.listen({ port: 0 }, err => {
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       body: bodySample,
-      method: 'LOCK',
+      method: 'LOCK'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
@@ -96,7 +96,7 @@ fastify.listen({ port: 0 }, err => {
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       headers: { 'content-type': 'text/plain' },
-      method: 'LOCK',
+      method: 'LOCK'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

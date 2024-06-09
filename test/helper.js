@@ -38,12 +38,12 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           type: 'object',
           properties: {
             hello: {
-              type: 'string',
-            },
-          },
-        },
-      },
-    },
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
   }
 
   test(`${upMethod} can be created`, t => {
@@ -109,9 +109,9 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
         body: {
-          hello: 'world',
+          hello: 'world'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -127,7 +127,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
         body: { hello: largeString },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -142,8 +142,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         url: 'http://localhost:' + fastify.server.address().port,
         body: JSON.stringify({ hello: 'world' }),
         headers: {
-          'content-type': 'application/json; charset=utf-8',
-        },
+          'content-type': 'application/json; charset=utf-8'
+        }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -157,9 +157,9 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: {
-          hello: 'world',
+          hello: 'world'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -173,9 +173,9 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/with-query?foo=hello',
         body: {
-          hello: 'world',
+          hello: 'world'
         },
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -189,7 +189,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/missing',
-        headers: { 'Content-Length': '0' },
+        headers: { 'Content-Length': '0' }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
@@ -199,7 +199,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       // Must use inject to make a request without a Content-Length header
       fastify.inject({
         method: upMethod,
-        url: '/missing',
+        url: '/missing'
       }, (err, res) => {
         t.error(err)
         t.equal(res.statusCode, 200)
@@ -212,7 +212,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/missing',
-        body: 'hello world',
+        body: 'hello world'
 
       }, (err, response, body) => {
         t.error(err)
@@ -228,8 +228,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           url: 'http://localhost:' + fastify.server.address().port + '/missing',
           body: 'hello world',
           headers: {
-            'Content-Type': 'text/xml',
-          },
+            'Content-Type': 'text/xml'
+          }
         }, (err, response, body) => {
           t.error(err)
           t.equal(response.statusCode, 415)
@@ -245,8 +245,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         url: 'http://localhost:' + fastify.server.address().port,
         body: 'hello world',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -257,8 +257,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         url: 'http://localhost:' + fastify.server.address().port,
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': '0',
-        },
+          'Content-Length': '0'
+        }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 400)
@@ -273,8 +273,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         url: 'http://localhost:' + fastify.server.address().port,
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': 1024 * 1024 + 1,
-        },
+          'Content-Length': 1024 * 1024 + 1
+        }
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 413)
@@ -287,13 +287,13 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           read () {
             this.push(chunk)
             chunk = null
-          },
+          }
         })
         sget({
           method: upMethod,
           url: 'http://localhost:' + fastify.server.address().port,
           headers: { 'Content-Type': 'application/json' },
-          body: largeStream,
+          body: largeStream
         }, (err, response, body) => {
           t.error(err)
           t.equal(response.statusCode, 413)
@@ -305,7 +305,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         url: `http://localhost:${fastify.server.address().port}/with-limit`,
         headers: { 'Content-Type': 'application/json' },
         body: {},
-        json: true,
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 413)
@@ -321,15 +321,15 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: `${upMethod}`,
         url: '/',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }, (err, res) => {
         t.error(err)
         t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400,
+          statusCode: 400
         })
       })
 
@@ -337,15 +337,15 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: `http://localhost:${fastify.server.address().port}`,
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }, (err, res, body) => {
         t.error(err)
         t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400,
+          statusCode: 400
         })
       })
 
@@ -353,16 +353,16 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: `${upMethod}`,
         url: '/',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        payload: null,
+        payload: null
       }, (err, res) => {
         t.error(err)
         t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400,
+          statusCode: 400
         })
       })
 
@@ -370,16 +370,16 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: `http://localhost:${fastify.server.address().port}`,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        payload: null,
+        payload: null
       }, (err, res, body) => {
         t.error(err)
         t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400,
+          statusCode: 400
         })
       })
 
@@ -387,16 +387,16 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: `${upMethod}`,
         url: '/',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        payload: undefined,
+        payload: undefined
       }, (err, res) => {
         t.error(err)
         t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400,
+          statusCode: 400
         })
       })
 
@@ -404,16 +404,16 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         url: `http://localhost:${fastify.server.address().port}`,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        payload: undefined,
+        payload: undefined
       }, (err, res, body) => {
         t.error(err)
         t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
-          statusCode: 400,
+          statusCode: 400
         })
       })
     })

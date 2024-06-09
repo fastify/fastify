@@ -6,7 +6,7 @@ const { request, setGlobalDispatcher, Agent } = require('undici')
 
 setGlobalDispatcher(new Agent({
   keepAliveTimeout: 10,
-  keepAliveMaxTimeout: 10,
+  keepAliveMaxTimeout: 10
 }))
 
 test('post empty body', async t => {
@@ -21,9 +21,9 @@ test('post empty body', async t => {
   const res = await request(`http://127.0.0.1:${app.server.address().port}/bug`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ foo: 'bar' }),
+    body: JSON.stringify({ foo: 'bar' })
   })
 
   t.equal(res.statusCode, 200)

@@ -51,7 +51,7 @@ test('The schemas should be accessible via getSchemas', t => {
   const schemas = {
     id: { $id: 'id', my: 'schema' },
     abc: { $id: 'abc', my: 'schema' },
-    bcd: { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } },
+    bcd: { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
   }
 
   Object.values(schemas).forEach(schema => { fastify.addSchema(schema) })
@@ -65,7 +65,7 @@ test('The schema should be accessible by id via getSchema', t => {
   const schemas = [
     { $id: 'id', my: 'schema' },
     { $id: 'abc', my: 'schema' },
-    { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } },
+    { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
   ]
   schemas.forEach(schema => { fastify.addSchema(schema) })
   t.same(fastify.getSchema('abc'), schemas[1])
@@ -110,10 +110,10 @@ test('Get compilers is empty when settle on routes', t => {
   fastify.post('/', {
     schema: {
       body: { type: 'object', properties: { hello: { type: 'string' } } },
-      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } },
+      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
     },
     validatorCompiler: ({ schema, method, url, httpPart }) => {},
-    serializerCompiler: ({ schema, method, url, httpPart }) => {},
+    serializerCompiler: ({ schema, method, url, httpPart }) => {}
   }, function (req, reply) {
     reply.send('ok')
   })
@@ -121,7 +121,7 @@ test('Get compilers is empty when settle on routes', t => {
   fastify.inject({
     method: 'POST',
     payload: {},
-    url: '/',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     t.equal(fastify.validatorCompiler, undefined)
@@ -161,8 +161,8 @@ test('Cannot add schema for query and querystring', t => {
     handler: () => {},
     schema: {
       query: { foo: { type: 'string' } },
-      querystring: { foo: { type: 'string' } },
-    },
+      querystring: { foo: { type: 'string' } }
+    }
   })
 
   fastify.ready(err => {
@@ -179,9 +179,9 @@ test('Should throw of the schema does not exists in input', t => {
     handler: echoParams,
     schema: {
       params: {
-        name: { $ref: '#notExist' },
-      },
-    },
+        name: { $ref: '#notExist' }
+      }
+    }
   })
 
   fastify.ready(err => {
@@ -199,10 +199,10 @@ test('Should throw of the schema does not exists in output', t => {
     schema: {
       response: {
         '2xx': {
-          name: { $ref: '#notExist' },
-        },
-      },
-    },
+          name: { $ref: '#notExist' }
+        }
+      }
+    }
   })
 
   fastify.ready(err => {
@@ -218,8 +218,8 @@ test('Should not change the input schemas', t => {
     $id: 'helloSchema',
     type: 'object',
     definitions: {
-      hello: { type: 'string' },
-    },
+      hello: { type: 'string' }
+    }
   }
 
   const fastify = Fastify()
@@ -230,22 +230,22 @@ test('Should not change the input schemas', t => {
         type: 'object',
         additionalProperties: false,
         properties: {
-          name: { $ref: 'helloSchema#/definitions/hello' },
-        },
+          name: { $ref: 'helloSchema#/definitions/hello' }
+        }
       },
       response: {
         '2xx': {
-          name: { $ref: 'helloSchema#/definitions/hello' },
-        },
-      },
-    },
+          name: { $ref: 'helloSchema#/definitions/hello' }
+        }
+      }
+    }
   })
   fastify.addSchema(theSchema)
 
   fastify.inject({
     url: '/',
     method: 'POST',
-    payload: { name: 'Foo', surname: 'Bar' },
+    payload: { name: 'Foo', surname: 'Bar' }
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { name: 'Foo' })
@@ -272,13 +272,13 @@ test('Should emit warning if the schema headers is undefined', t => {
   fastify.post('/:id', {
     handler: echoParams,
     schema: {
-      headers: undefined,
-    },
+      headers: undefined
+    }
   })
 
   fastify.inject({
     method: 'POST',
-    url: '/123',
+    url: '/123'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -303,13 +303,13 @@ test('Should emit warning if the schema body is undefined', t => {
   fastify.post('/:id', {
     handler: echoParams,
     schema: {
-      body: undefined,
-    },
+      body: undefined
+    }
   })
 
   fastify.inject({
     method: 'POST',
-    url: '/123',
+    url: '/123'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -334,13 +334,13 @@ test('Should emit warning if the schema query is undefined', t => {
   fastify.post('/:id', {
     handler: echoParams,
     schema: {
-      querystring: undefined,
-    },
+      querystring: undefined
+    }
   })
 
   fastify.inject({
     method: 'POST',
-    url: '/123',
+    url: '/123'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -365,13 +365,13 @@ test('Should emit warning if the schema params is undefined', t => {
   fastify.post('/:id', {
     handler: echoParams,
     schema: {
-      params: undefined,
-    },
+      params: undefined
+    }
   })
 
   fastify.inject({
     method: 'POST',
-    url: '/123',
+    url: '/123'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -403,20 +403,20 @@ test('Should emit a warning for every route with undefined schema', t => {
   fastify.get('/undefinedParams/:id', {
     handler: echoParams,
     schema: {
-      params: undefined,
-    },
+      params: undefined
+    }
   })
 
   fastify.get('/undefinedBody/:id', {
     handler: echoParams,
     schema: {
-      body: undefined,
-    },
+      body: undefined
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/undefinedParams/123',
+    url: '/undefinedParams/123'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -424,7 +424,7 @@ test('Should emit a warning for every route with undefined schema', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/undefinedBody/123',
+    url: '/undefinedBody/123'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -439,8 +439,8 @@ test('First level $ref', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' },
-    },
+      id: { type: 'number' }
+    }
   })
 
   fastify.get('/:id', {
@@ -450,14 +450,14 @@ test('First level $ref', t => {
     schema: {
       params: { $ref: 'test#' },
       response: {
-        200: { $ref: 'test#' },
-      },
-    },
+        200: { $ref: 'test#' }
+      }
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/123',
+    url: '/123'
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { id: 246 })
@@ -512,9 +512,9 @@ test('Customize validator compiler in instance and route', t => {
       params: { id: { type: 'number' } },
       body: { foo: { type: 'array' } },
       response: {
-        '2xx': { foo: { type: 'array', items: { type: 'string' } } },
-      },
-    },
+        '2xx': { foo: { type: 'array', items: { type: 'string' } } }
+      }
+    }
   })
 
   fastify.get('/wow/:id', {
@@ -528,8 +528,8 @@ test('Customize validator compiler in instance and route', t => {
       query: { lang: { type: 'string', enum: ['it', 'en'] } },
       headers: { x: { type: 'string' } },
       params: { id: { type: 'number' } },
-      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } },
-    },
+      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
+    }
   })
 
   fastify.inject({
@@ -537,7 +537,7 @@ test('Customize validator compiler in instance and route', t => {
     method: 'POST',
     headers: { x: 'hello' },
     query: { lang: 'en' },
-    payload: { foo: ['bar', 'BAR'] },
+    payload: { foo: ['bar', 'BAR'] }
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -548,7 +548,7 @@ test('Customize validator compiler in instance and route', t => {
     url: '/wow/should-be-a-num',
     method: 'GET',
     headers: { x: 'hello' },
-    query: { lang: 'jp' }, // not in the enum
+    query: { lang: 'jp' } // not in the enum
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200) // the validation is always true
@@ -564,31 +564,31 @@ test('Use the same schema across multiple routes', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' },
-    },
+      id: { type: 'number' }
+    }
   })
 
   fastify.get('/first/:id', {
     schema: {
-      params: { id: { $ref: 'test#/properties/id' } },
+      params: { id: { $ref: 'test#/properties/id' } }
     },
     handler: (req, reply) => {
       reply.send(typeof req.params.id)
-    },
+    }
   })
 
   fastify.get('/second/:id', {
     schema: {
-      params: { id: { $ref: 'test#/properties/id' } },
+      params: { id: { $ref: 'test#/properties/id' } }
     },
     handler: (req, reply) => {
       reply.send(typeof req.params.id)
-    },
+    }
   })
 
   fastify.inject({
     method: 'GET',
-    url: '/first/123',
+    url: '/first/123'
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, 'number')
@@ -596,7 +596,7 @@ test('Use the same schema across multiple routes', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/second/123',
+    url: '/second/123'
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, 'number')
@@ -612,8 +612,8 @@ test('Encapsulation should intervene', t => {
       $id: 'encapsulation',
       type: 'object',
       properties: {
-        id: { type: 'number' },
-      },
+        id: { type: 'number' }
+      }
     })
     done()
   })
@@ -622,8 +622,8 @@ test('Encapsulation should intervene', t => {
     instance.get('/:id', {
       handler: echoParams,
       schema: {
-        params: { id: { $ref: 'encapsulation#/properties/id' } },
-      },
+        params: { id: { $ref: 'encapsulation#/properties/id' } }
+      }
     })
     done()
   })
@@ -659,8 +659,8 @@ test('Add schema after register', t => {
     instance.get('/:id', {
       handler: echoParams,
       schema: {
-        params: { $ref: 'test#' },
-      },
+        params: { $ref: 'test#' }
+      }
     })
 
     // add it to the parent instance
@@ -668,8 +668,8 @@ test('Add schema after register', t => {
       $id: 'test',
       type: 'object',
       properties: {
-        id: { type: 'number' },
-      },
+        id: { type: 'number' }
+      }
     })
 
     try {
@@ -683,7 +683,7 @@ test('Add schema after register', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/4242',
+    url: '/4242'
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
@@ -703,7 +703,7 @@ test('Encapsulation isolation for getSchemas', t => {
     z: { $id: 'z', my: 'schema' },
     a: { $id: 'a', my: 'schema' },
     b: { $id: 'b', my: 'schema' },
-    c: { $id: 'c', my: 'schema', properties: { a: 'a', b: 1 } },
+    c: { $id: 'c', my: 'schema', properties: { a: 'a', b: 1 } }
   }
 
   fastify.addSchema(schemas.z)
@@ -742,8 +742,8 @@ test('Use the same schema id in different places', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      id: { type: 'number' },
-    },
+      id: { type: 'number' }
+    }
   })
 
   fastify.get('/:id', {
@@ -752,10 +752,10 @@ test('Use the same schema id in different places', t => {
       response: {
         200: {
           type: 'array',
-          items: { $ref: 'test#/properties/id' },
-        },
-      },
-    },
+          items: { $ref: 'test#/properties/id' }
+        }
+      }
+    }
   })
 
   fastify.post('/:id', {
@@ -763,9 +763,9 @@ test('Use the same schema id in different places', t => {
     schema: {
       body: { id: { $ref: 'test#/properties/id' } },
       response: {
-        200: { id: { $ref: 'test#/properties/id' } },
-      },
-    },
+        200: { id: { $ref: 'test#/properties/id' } }
+      }
+    }
   })
 
   fastify.ready(err => t.error(err))
@@ -779,8 +779,8 @@ test('Get schema anyway should not add `properties` if allOf is present', t => {
     $id: 'first',
     type: 'object',
     properties: {
-      first: { type: 'number' },
-    },
+      first: { type: 'number' }
+    }
   })
 
   fastify.addSchema({
@@ -790,19 +790,19 @@ test('Get schema anyway should not add `properties` if allOf is present', t => {
       {
         type: 'object',
         properties: {
-          second: { type: 'number' },
-        },
+          second: { type: 'number' }
+        }
       },
-      fastify.getSchema('first'),
-    ],
+      fastify.getSchema('first')
+    ]
   })
 
   fastify.get('/', {
     handler: () => {},
     schema: {
       querystring: fastify.getSchema('second'),
-      response: { 200: fastify.getSchema('second') },
-    },
+      response: { 200: fastify.getSchema('second') }
+    }
   })
 
   fastify.ready(err => t.error(err))
@@ -816,8 +816,8 @@ test('Get schema anyway should not add `properties` if oneOf is present', t => {
     $id: 'first',
     type: 'object',
     properties: {
-      first: { type: 'number' },
-    },
+      first: { type: 'number' }
+    }
   })
 
   fastify.addSchema({
@@ -827,19 +827,19 @@ test('Get schema anyway should not add `properties` if oneOf is present', t => {
       {
         type: 'object',
         properties: {
-          second: { type: 'number' },
-        },
+          second: { type: 'number' }
+        }
       },
-      fastify.getSchema('first'),
-    ],
+      fastify.getSchema('first')
+    ]
   })
 
   fastify.get('/', {
     handler: () => {},
     schema: {
       querystring: fastify.getSchema('second'),
-      response: { 200: fastify.getSchema('second') },
-    },
+      response: { 200: fastify.getSchema('second') }
+    }
   })
 
   fastify.ready(err => t.error(err))
@@ -853,8 +853,8 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
     $id: 'first',
     type: 'object',
     properties: {
-      first: { type: 'number' },
-    },
+      first: { type: 'number' }
+    }
   })
 
   fastify.addSchema({
@@ -864,19 +864,19 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
       {
         type: 'object',
         properties: {
-          second: { type: 'number' },
-        },
+          second: { type: 'number' }
+        }
       },
-      fastify.getSchema('first'),
-    ],
+      fastify.getSchema('first')
+    ]
   })
 
   fastify.get('/', {
     handler: () => {},
     schema: {
       querystring: fastify.getSchema('second'),
-      response: { 200: fastify.getSchema('second') },
-    },
+      response: { 200: fastify.getSchema('second') }
+    }
   })
 
   fastify.ready(err => t.error(err))
@@ -894,11 +894,11 @@ test('Shared schema should be ignored in string enum', t => {
         properties: {
           lang: {
             type: 'string',
-            enum: ['Javascript', 'C++', 'C#'],
-          },
-        },
-      },
-    },
+            enum: ['Javascript', 'C++', 'C#']
+          }
+        }
+      }
+    }
   })
 
   fastify.inject('/C%23', (err, res) => {
@@ -917,22 +917,22 @@ test('Shared schema should NOT be ignored in != string enum', t => {
     properties: {
       lang: {
         type: 'string',
-        enum: ['Javascript', 'C++', 'C#'],
-      },
-    },
+        enum: ['Javascript', 'C++', 'C#']
+      }
+    }
   })
 
   fastify.post('/:lang', {
     handler: echoBody,
     schema: {
-      body: fastify.getSchema('C'),
-    },
+      body: fastify.getSchema('C')
+    }
   })
 
   fastify.inject({
     url: '/',
     method: 'POST',
-    payload: { lang: 'C#' },
+    payload: { lang: 'C#' }
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { lang: 'C#' })
@@ -951,17 +951,17 @@ test('Case insensitive header validation', t => {
         type: 'object',
         required: ['FooBar'],
         properties: {
-          FooBar: { type: 'string' },
-        },
-      },
-    },
+          FooBar: { type: 'string' }
+        }
+      }
+    }
   })
   fastify.inject({
     url: '/',
     method: 'GET',
     headers: {
-      FooBar: 'Baz',
-    },
+      FooBar: 'Baz'
+    }
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, 'Baz')
@@ -980,16 +980,16 @@ test('Not evaluate json-schema $schema keyword', t => {
         additionalProperties: false,
         properties: {
           hello: {
-            type: 'string',
-          },
-        },
-      },
-    },
+            type: 'string'
+          }
+        }
+      }
+    }
   })
   fastify.inject({
     url: '/',
     method: 'POST',
-    body: { hello: 'world', foo: 'bar' },
+    body: { hello: 'world', foo: 'bar' }
   }, (err, res) => {
     t.error(err)
     t.same(res.json(), { hello: 'world' })
@@ -1013,15 +1013,15 @@ test('Validation context in validation result', t => {
         type: 'object',
         required: ['hello'],
         properties: {
-          hello: { type: 'string' },
-        },
-      },
-    },
+          hello: { type: 'string' }
+        }
+      }
+    }
   })
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: {}, // body lacks required field, will fail validation
+    payload: {} // body lacks required field, will fail validation
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
@@ -1037,9 +1037,9 @@ test('The schema build should not modify the input', t => {
     type: 'object',
     properties: {
       first: {
-        type: 'number',
-      },
-    },
+        type: 'number'
+      }
+    }
   }
 
   fastify.addSchema(first)
@@ -1052,12 +1052,12 @@ test('The schema build should not modify the input', t => {
         type: 'object',
         properties: {
           second: {
-            type: 'number',
-          },
-        },
+            type: 'number'
+          }
+        }
       },
-      { $ref: 'first#' },
-    ],
+      { $ref: 'first#' }
+    ]
   })
 
   fastify.post('/', {
@@ -1065,12 +1065,12 @@ test('The schema build should not modify the input', t => {
       description: 'get',
       body: { $ref: 'second#' },
       response: {
-        200: { $ref: 'second#' },
-      },
+        200: { $ref: 'second#' }
+      }
     },
     handler: (request, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   fastify.patch('/', {
@@ -1078,12 +1078,12 @@ test('The schema build should not modify the input', t => {
       description: 'patch',
       body: { $ref: 'first#' },
       response: {
-        200: { $ref: 'first#' },
-      },
+        200: { $ref: 'first#' }
+      }
     },
     handler: (request, reply) => {
       reply.send({ hello: 'world' })
-    },
+    }
   })
 
   t.ok(first.$id)
@@ -1100,7 +1100,7 @@ test('Cross schema reference with encapsulation references', t => {
   fastify.addSchema({
     $id: 'http://foo/item',
     type: 'object',
-    properties: { foo: { type: 'string' } },
+    properties: { foo: { type: 'string' } }
   })
 
   const refItem = { $ref: 'http://foo/item#' }
@@ -1108,7 +1108,7 @@ test('Cross schema reference with encapsulation references', t => {
   fastify.addSchema({
     $id: 'itemList',
     type: 'array',
-    items: refItem,
+    items: refItem
   })
 
   fastify.register((instance, opts, done) => {
@@ -1118,8 +1118,8 @@ test('Cross schema reference with encapsulation references', t => {
       properties: {
         id: { type: 'number' },
         item: refItem,
-        secondItem: refItem,
-      },
+        secondItem: refItem
+      }
     })
 
     const multipleRef = {
@@ -1128,8 +1128,8 @@ test('Cross schema reference with encapsulation references', t => {
         a: { $ref: 'itemList#' },
         b: refItem,
         c: refItem,
-        d: refItem,
-      },
+        d: refItem
+      }
     }
 
     instance.get('/get', { schema: { response: { 200: deepClone(multipleRef) } } }, () => { })
@@ -1193,8 +1193,8 @@ test('onReady hook has the compilers ready', t => {
     handler: (req, reply) => reply.send(),
     schema: {
       headers: { type: 'object' },
-      response: { 200: { type: 'object' } },
-    },
+      response: { 200: { type: 'object' } }
+    }
   })
 
   fastify.addHook('onReady', function (done) {
@@ -1298,7 +1298,7 @@ test('Add schema order should not break the startup', t => {
     f.addSchema({
       $id: 'https://example.com/bson/objectId',
       type: 'string',
-      pattern: '\\b[0-9A-Fa-f]{24}\\b',
+      pattern: '\\b[0-9A-Fa-f]{24}\\b'
     })
     return Promise.resolve() // avoid async for node 6
   }))
@@ -1308,10 +1308,10 @@ test('Add schema order should not break the startup', t => {
       params: {
         type: 'object',
         properties: {
-          id: { $ref: 'https://example.com/bson/objectId#' },
-        },
-      },
-    },
+          id: { $ref: 'https://example.com/bson/objectId#' }
+        }
+      }
+    }
   }, () => {})
 
   fastify.ready(err => { t.error(err) })
@@ -1327,15 +1327,15 @@ test('The schema compiler recreate itself if needed', t => {
     fastify.addSchema({
       $id: 'identifier',
       type: 'string',
-      format: 'uuid',
+      format: 'uuid'
     })
 
     fastify.get('/:foobarId', {
       schema: {
         params: {
-          foobarId: { $ref: 'identifier#' },
-        },
-      },
+          foobarId: { $ref: 'identifier#' }
+        }
+      }
     }, echoBody)
 
     done()
@@ -1381,14 +1381,14 @@ test('Schema controller bucket', t => {
         // what is returned by this function, will be the `storeInit` parameter
         initStoreQueue.push(store)
         return store
-      },
+      }
     }
   }
 
   const fastify = Fastify({
     schemaController: {
-      bucket: factoryBucket,
-    },
+      bucket: factoryBucket
+    }
   })
 
   fastify.register(async (instance) => {
@@ -1433,9 +1433,9 @@ test('setSchemaController per instance', t => {
         return {
           add (schema) { t.fail('add is not called') },
           getSchema (id) { t.fail('getSchema is not called') },
-          getSchemas () { t.fail('getSchemas is not called') },
+          getSchemas () { t.fail('getSchemas is not called') }
         }
-      },
+      }
     })
   })
 
@@ -1457,9 +1457,9 @@ test('setSchemaController per instance', t => {
           },
           getSchemas () {
             t.pass('getSchemas is called')
-          },
+          }
         }
-      },
+      }
     })
 
     instance2.addSchema(bSchema)
@@ -1482,20 +1482,20 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
     $id: 'some',
     type: 'array',
     items: {
-      type: 'string',
-    },
+      type: 'string'
+    }
   }
   const errorResponseSchema = {
     $id: 'error_response',
     type: 'object',
     properties: {
       statusCode: {
-        type: 'integer',
+        type: 'integer'
       },
       message: {
-        type: 'string',
-      },
-    },
+        type: 'string'
+      }
+    }
   }
 
   server.addSchema(someSchema)
@@ -1516,8 +1516,8 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
           return function validatorCompiler ({ schema }) {
             return customAjv.compile(schema)
           }
-        },
-      },
+        }
+      }
     })
 
     instance.get(
@@ -1526,15 +1526,15 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
         schema: {
           querystring: {
             msg: {
-              $ref: 'some#',
-            },
+              $ref: 'some#'
+            }
           },
           response: {
             '4xx': {
-              $ref: 'error_response#',
-            },
-          },
-        },
+              $ref: 'error_response#'
+            }
+          }
+        }
       },
       (req, reply) => {
         reply.send({ noop: 'noop' })
@@ -1548,8 +1548,8 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
     method: 'GET',
     url: '/',
     query: {
-      msg: 'string',
-    },
+      msg: 'string'
+    }
   })
   const json = res.json()
 
@@ -1565,20 +1565,20 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     $id: 'some',
     type: 'array',
     items: {
-      type: 'string',
-    },
+      type: 'string'
+    }
   }
   const errorResponseSchema = {
     $id: 'error_response',
     type: 'object',
     properties: {
       statusCode: {
-        type: 'integer',
+        type: 'integer'
       },
       message: {
-        type: 'string',
-      },
-    },
+        type: 'string'
+      }
+    }
   }
   let rootSerializerCalled = 0
   let rootValidatorCalled = 0
@@ -1589,7 +1589,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
       return data => {
         return JSON.stringify({
           statusCode: data.statusCode,
-          message: data.message,
+          message: data.message
         })
       }
     }
@@ -1604,9 +1604,9 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     schemaController: {
       compilersFactory: {
         buildValidator: rootBuildValidator,
-        buildSerializer: rootBuildSerializer,
-      },
-    },
+        buildSerializer: rootBuildSerializer
+      }
+    }
   })
 
   server.addSchema(someSchema)
@@ -1626,8 +1626,8 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
           return function validatorCompiler ({ schema }) {
             return customAjv.compile(schema)
           }
-        },
-      },
+        }
+      }
     })
 
     instance.get(
@@ -1636,15 +1636,15 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
         schema: {
           querystring: {
             msg: {
-              $ref: 'some#',
-            },
+              $ref: 'some#'
+            }
           },
           response: {
             '4xx': {
-              $ref: 'error_response#',
-            },
-          },
-        },
+              $ref: 'error_response#'
+            }
+          }
+        }
       },
       (req, reply) => {
         reply.send({ noop: 'noop' })
@@ -1658,8 +1658,8 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     method: 'GET',
     url: '/',
     query: {
-      msg: 'string',
-    },
+      msg: 'string'
+    }
   })
   const json = res.json()
 
@@ -1678,20 +1678,20 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
     $id: 'some',
     type: 'array',
     items: {
-      type: 'string',
-    },
+      type: 'string'
+    }
   }
   const errorResponseSchema = {
     $id: 'error_response',
     type: 'object',
     properties: {
       statusCode: {
-        type: 'integer',
+        type: 'integer'
       },
       message: {
-        type: 'string',
-      },
-    },
+        type: 'string'
+      }
+    }
   }
   let rootSerializerCalled = 0
   let rootValidatorCalled = 0
@@ -1718,9 +1718,9 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
     schemaController: {
       compilersFactory: {
         buildValidator: rootBuildValidator,
-        buildSerializer: rootBuildSerializer,
-      },
-    },
+        buildSerializer: rootBuildSerializer
+      }
+    }
   })
 
   server.register((instance, _, done) => {
@@ -1733,12 +1733,12 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
               return data => {
                 return JSON.stringify({
                   statusCode: data.statusCode,
-                  message: data.message,
+                  message: data.message
                 })
               }
             }
-          },
-        },
+          }
+        }
       })
 
       subInstance.get(
@@ -1747,15 +1747,15 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
           schema: {
             querystring: {
               msg: {
-                $ref: 'some#',
-              },
+                $ref: 'some#'
+              }
             },
             response: {
               '4xx': {
-                $ref: 'error_response#',
-              },
-            },
-          },
+                $ref: 'error_response#'
+              }
+            }
+          }
         },
         (req, reply) => {
           reply.send({ noop: 'noop' })
@@ -1775,8 +1775,8 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
     method: 'GET',
     url: '/',
     query: {
-      msg: ['string'],
-    },
+      msg: ['string']
+    }
   })
   const json = res.json()
 
@@ -1795,12 +1795,12 @@ test('Should throw if not default validator passed', async t => {
     $id: 'some',
     type: 'array',
     items: {
-      type: 'string',
-    },
+      type: 'string'
+    }
   }
   const anotherSchema = {
     $id: 'another',
-    type: 'integer',
+    type: 'integer'
   }
   const plugin = fp(function (pluginInstance, _, pluginDone) {
     pluginInstance.setSchemaController({
@@ -1818,8 +1818,8 @@ test('Should throw if not default validator passed', async t => {
           return function validatorCompiler ({ schema }) {
             return customAjv.compile(schema)
           }
-        },
-      },
+        }
+      }
     })
 
     pluginDone()
@@ -1839,15 +1839,15 @@ test('Should throw if not default validator passed', async t => {
         schema: {
           query: {
             msg: {
-              $ref: 'some#',
-            },
+              $ref: 'some#'
+            }
           },
           headers: {
             'x-another': {
-              $ref: 'another#',
-            },
-          },
-        },
+              $ref: 'another#'
+            }
+          }
+        }
       },
       (req, reply) => {
         reply.send({ noop: 'noop' })
@@ -1862,8 +1862,8 @@ test('Should throw if not default validator passed', async t => {
       method: 'POST',
       url: '/',
       query: {
-        msg: ['string'],
-      },
+        msg: ['string']
+      }
     })
 
     t.equal(res.json().message, 'querystring/msg must be array')
@@ -1879,12 +1879,12 @@ test('Should coerce the array if the default validator is used', async t => {
     $id: 'some',
     type: 'array',
     items: {
-      type: 'string',
-    },
+      type: 'string'
+    }
   }
   const anotherSchema = {
     $id: 'another',
-    type: 'integer',
+    type: 'integer'
   }
 
   const server = Fastify()
@@ -1900,15 +1900,15 @@ test('Should coerce the array if the default validator is used', async t => {
         schema: {
           query: {
             msg: {
-              $ref: 'some#',
-            },
+              $ref: 'some#'
+            }
           },
           headers: {
             'x-another': {
-              $ref: 'another#',
-            },
-          },
-        },
+              $ref: 'another#'
+            }
+          }
+        }
       },
       (req, reply) => {
         reply.send(req.query)
@@ -1923,8 +1923,8 @@ test('Should coerce the array if the default validator is used', async t => {
       method: 'POST',
       url: '/',
       query: {
-        msg: 'string',
-      },
+        msg: 'string'
+      }
     })
 
     t.equal(res.statusCode, 200)
@@ -1944,12 +1944,12 @@ test('Should return a human-friendly error if response status codes are not spec
     schema: {
       response: {
         // This should be nested under a status code key, e.g { 200: { type: 'array' } }
-        type: 'array',
-      },
+        type: 'array'
+      }
     },
     handler: (req, reply) => {
       reply.send([])
-    },
+    }
   })
 
   fastify.ready(err => {
@@ -1970,14 +1970,14 @@ test('setSchemaController: custom validator instance should not mutate headers s
           t.type(schema, Headers)
           return () => {}
         }
-      },
-    },
+      }
+    }
   })
 
   fastify.get('/', {
     schema: {
-      headers: new Headers(),
-    },
+      headers: new Headers()
+    }
   }, () => {})
 
   await fastify.ready()

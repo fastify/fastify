@@ -47,15 +47,15 @@ test('Should allow defining the bodyLimit per parser', t => {
       url: getServerUrl(fastify),
       body: '1234567890',
       headers: {
-        'Content-Type': 'x/foo',
-      },
+        'Content-Type': 'x/foo'
+      }
     }, (err, response, body) => {
       t.error(err)
       t.strictSame(JSON.parse(body.toString()), {
         statusCode: 413,
         code: 'FST_ERR_CTP_BODY_TOO_LARGE',
         error: 'Payload Too Large',
-        message: 'Request body is too large',
+        message: 'Request body is too large'
       })
       fastify.close()
     })
@@ -87,14 +87,14 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
       method: 'POST',
       url: getServerUrl(fastify),
       body: '1234567890',
-      headers: { 'Content-Type': 'x/foo' },
+      headers: { 'Content-Type': 'x/foo' }
     }, (err, response, body) => {
       t.error(err)
       t.strictSame(JSON.parse(body.toString()), {
         statusCode: 413,
         code: 'FST_ERR_CTP_BODY_TOO_LARGE',
         error: 'Payload Too Large',
-        message: 'Request body is too large',
+        message: 'Request body is too large'
       })
       fastify.close()
     })

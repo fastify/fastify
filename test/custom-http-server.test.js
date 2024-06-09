@@ -24,7 +24,7 @@ async function setup () {
         })
 
         return server
-      },
+      }
     })
 
     t.teardown(fastify.close.bind(fastify))
@@ -40,7 +40,7 @@ async function setup () {
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false,
+        rejectUnauthorized: false
       }, (err, response, body) => {
         if (err) {
           return reject(err)
@@ -63,9 +63,9 @@ async function setup () {
             return {
               on () {
 
-              },
+              }
             }
-          },
+          }
         })
       },
       FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
@@ -77,7 +77,7 @@ async function setup () {
     const server = http.createServer(() => { })
     t.teardown(() => new Promise(resolve => server.close(resolve)))
     const app = await Fastify({
-      serverFactory: () => server,
+      serverFactory: () => server
     })
     t.resolves(async () => {
       await app.listen({ port: 0 })

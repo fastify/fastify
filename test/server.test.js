@@ -49,7 +49,7 @@ test('listen should accept log text resolution function', t => {
       t.equal(address, 'http://127.0.0.1:1234')
       t.pass('executed')
       return 'hardcoded text'
-    },
+    }
   }, (err) => {
     t.error(err)
   })

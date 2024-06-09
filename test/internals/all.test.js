@@ -9,7 +9,7 @@ test('fastify.all should add all the methods to the same url', t => {
   const requirePayload = [
     'POST',
     'PUT',
-    'PATCH',
+    'PATCH'
   ]
 
   t.plan(supportedMethods.length * 2)
@@ -25,7 +25,7 @@ test('fastify.all should add all the methods to the same url', t => {
   function injectRequest (method) {
     const options = {
       url: '/',
-      method,
+      method
     }
 
     if (requirePayload.includes(method)) {

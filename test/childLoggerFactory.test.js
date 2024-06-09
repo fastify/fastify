@@ -23,7 +23,7 @@ test('Should accept a custom childLoggerFactory function', t => {
     t.error(err)
     fastify.inject({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, res) => {
       t.error(err)
       fastify.close()
@@ -50,7 +50,7 @@ test('req.log should be the instance returned by the factory', t => {
     t.error(err)
     fastify.inject({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, res) => {
       t.error(err)
       fastify.close()
@@ -77,7 +77,7 @@ test('should throw error if invalid logger is returned', t => {
       try {
         fastify.inject({
           method: 'GET',
-          url: 'http://localhost:' + fastify.server.address().port,
+          url: 'http://localhost:' + fastify.server.address().port
         }, (err) => {
           t.fail('request should have failed but did not')
           t.error(err)

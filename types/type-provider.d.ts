@@ -11,7 +11,6 @@ export interface FastifyTypeProvider {
   readonly output: unknown,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface FastifyTypeProviderDefault extends FastifyTypeProvider {}
 
 export type CallTypeProvider<F extends FastifyTypeProvider, I> = (F & { input: I })['output']
@@ -65,7 +64,7 @@ type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, Sc
   [K1 in keyof SchemaCompiler['response']]: SchemaCompiler['response'][K1] extends { content: { [keyof: string]: { schema: unknown } } } ? ({
     [K2 in keyof SchemaCompiler['response'][K1]['content']]: CallTypeProvider<TypeProvider, SchemaCompiler['response'][K1]['content'][K2]['schema']>
   } extends infer Result ? Result[keyof Result] : unknown) : CallTypeProvider<TypeProvider, SchemaCompiler['response'][K1]>
-} extends infer Result ? Result[keyof Result] : unknown;
+} extends infer Result ? Result[keyof Result] : unknown
 
 // The target reply type. This type is inferenced on fastify 'replies' via generic argument assignment
 export type FastifyReplyType<Reply = unknown> = Reply
@@ -83,13 +82,13 @@ export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, Sc
 export type ResolveFastifyReplyReturnType<
   TypeProvider extends FastifyTypeProvider,
   SchemaCompiler extends FastifySchema,
-  RouteGeneric extends RouteGenericInterface,
+  RouteGeneric extends RouteGenericInterface
 > = ResolveFastifyReplyType<
 TypeProvider,
 SchemaCompiler,
 RouteGeneric
 > extends infer Return ?
-  (Return | void | Promise<Return | void>)
+    (Return | void | Promise<Return | void>)
 // review: support both async and sync return types
 // (Promise<Return> | Return | Promise<void> | void)
   : unknown

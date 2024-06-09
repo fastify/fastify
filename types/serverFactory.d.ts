@@ -9,8 +9,8 @@ export type FastifyServerFactoryHandler<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > =
 RawServer extends http.Server | https.Server ?
-  (request: http.IncomingMessage & RawRequest, response: http.ServerResponse & RawReply) => void :
-  (request: http2.Http2ServerRequest & RawRequest, response: http2.Http2ServerResponse & RawReply) => void
+    (request: http.IncomingMessage & RawRequest, response: http.ServerResponse & RawReply) => void :
+    (request: http2.Http2ServerRequest & RawRequest, response: http2.Http2ServerResponse & RawReply) => void
 
 export interface FastifyServerFactory<
   RawServer extends RawServerBase = RawServerDefault

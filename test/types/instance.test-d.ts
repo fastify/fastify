@@ -1,4 +1,4 @@
-import { expectAssignable, expectDeprecated, expectError, expectNotDeprecated, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
   FastifyBodyParser,
@@ -12,7 +12,6 @@ import fastify, {
 import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
-import { DefaultRoute } from '../../types/route'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'

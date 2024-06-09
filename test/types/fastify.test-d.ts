@@ -18,7 +18,6 @@ import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
 import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd'
-import { FastifyLoggerInstance } from '../../types/logger'
 import { Socket } from 'net'
 
 // FastifyInstance

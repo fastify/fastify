@@ -22,6 +22,7 @@ declare module '../../fastify' {
     includeMessage?: boolean;
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
     message: ContextConfig extends { includeMessage: true }
       ? string

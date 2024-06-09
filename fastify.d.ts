@@ -35,7 +35,7 @@ declare module '@fastify/error' {
 type Fastify = typeof fastify
 
 declare namespace fastify {
-  export const errorCodes: FastifyErrorCodes;
+  export const errorCodes: FastifyErrorCodes
 
   export type FastifyHttp2SecureOptions<
     Server extends http2.Http2SecureServer,
@@ -167,7 +167,7 @@ declare namespace fastify {
   /**
    * @deprecated use {@link FastifySchemaValidationError}
    */
-  export type ValidationResult = FastifySchemaValidationError;
+  export type ValidationResult = FastifySchemaValidationError
 
   /* Export additional types */
   export type {
@@ -187,7 +187,7 @@ declare namespace fastify {
     DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onListenAsyncHookHandler, onListenHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, onRequestAbortHookHandler, onRequestAbortAsyncHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, // './types/hooks'
     FastifyServerFactory, FastifyServerFactoryHandler, // './types/serverFactory'
     FastifyTypeProvider, FastifyTypeProviderDefault, // './types/type-provider'
-    FastifyErrorCodes, // './types/errors'
+    FastifyErrorCodes // './types/errors'
   }
   // named export
   // import { plugin } from 'plugin'
@@ -211,32 +211,32 @@ declare function fastify<
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts: fastify.FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+> (opts: fastify.FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts: fastify.FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+> (opts: fastify.FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts: fastify.FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+> (opts: fastify.FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts?: fastify.FastifyHttpOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+> (opts?: fastify.FastifyHttpOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 // CJS export
 // const fastify = require('fastify')

@@ -25,7 +25,7 @@ async function runCheck () {
 
   const failures = []
   const successes = []
-  const moduleNameRegex = /^\- \[\`(.+)\`\]/
+  const moduleNameRegex = /^- \[`(.+)`\]/
   let lineNumber = 0
   let modules = []
   let grouping = 'core'
@@ -82,11 +82,11 @@ async function runCheck () {
 
 async function handleResults (scriptLibs, results) {
   const { core } = scriptLibs
-  const { failures, successes } = results;
-  const isError = !!failures.length;
+  const { failures, successes } = results
+  const isError = !!failures.length
 
   await core.summary
-    .addHeading(isError ? `❌ Ecosystem.md Lint (${failures.length} error${failures.length === 1 ? '' : 's' })` : '✅ Ecosystem Lint (no errors found)')
+    .addHeading(isError ? `❌ Ecosystem.md Lint (${failures.length} error${failures.length === 1 ? '' : 's'})` : '✅ Ecosystem Lint (no errors found)')
     .addTable([
       [
         { data: 'Status', header: true },

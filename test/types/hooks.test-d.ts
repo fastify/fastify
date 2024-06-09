@@ -14,6 +14,7 @@ import fastify, {
   RegisterOptions,
   RouteOptions,
   // preClose hook types should be exported correctly https://github.com/fastify/fastify/pull/5335
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   preCloseAsyncHookHandler,
   preCloseHookHandler
 } from '../../fastify'

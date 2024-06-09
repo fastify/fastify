@@ -255,7 +255,6 @@ function testBeforeHandlerHook (hook) {
 
     fastify.get('/', {
       [hook]: async () => {
-        // eslint-disable-next-line no-throw-literal
         throw myError
       }
     }, (req, reply) => {

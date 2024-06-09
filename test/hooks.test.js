@@ -3216,8 +3216,6 @@ test('reply.send should throw if undefined error is thrown', t => {
 })
 
 test('reply.send should throw if undefined error is thrown at preParsing hook', t => {
-  /* eslint prefer-promise-reject-errors: ["error", {"allowEmptyReject": true}] */
-
   t.plan(3)
   const fastify = Fastify()
 
@@ -3245,8 +3243,6 @@ test('reply.send should throw if undefined error is thrown at preParsing hook', 
 })
 
 test('reply.send should throw if undefined error is thrown at onSend hook', t => {
-  /* eslint prefer-promise-reject-errors: ["error", {"allowEmptyReject": true}] */
-
   t.plan(3)
   const fastify = Fastify()
 

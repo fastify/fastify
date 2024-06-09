@@ -61,6 +61,7 @@ expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWith
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: '/test' }))
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 async function testAsync (): Promise<void> {
   await httpsServer
     .register(testPluginOpts)

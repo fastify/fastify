@@ -5,8 +5,7 @@ import fastify, {
   FastifyLoggerInstance,
   FastifyRequest,
   FastifyReply,
-  FastifyBaseLogger,
-  FastifyInstance
+  FastifyBaseLogger
 } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'

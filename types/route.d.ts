@@ -55,7 +55,7 @@ export interface RouteShorthandOptions<
   config?: FastifyContextConfig & ContextConfig;
   version?: string;
   constraints?: RouteConstraint,
-  prefixTrailingSlash?: 'slash'|'no-slash'|'both';
+  prefixTrailingSlash?: 'slash' | 'no-slash' | 'both';
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     error: FastifyError,
@@ -183,4 +183,4 @@ export type RouteHandler<
 export type DefaultRoute<Request, Reply> = (
   req: Request,
   res: Reply,
-) => void;
+) => void

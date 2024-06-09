@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
-import { expectAssignable, expectDeprecated, expectError, expectType } from 'tsd'
-import fastify, { FastifyReplyContext, FastifyReply, FastifyRequest, FastifySchema, FastifySchemaCompiler, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyReplyContext, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
@@ -25,12 +25,12 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void>(reply.writeEarlyHints)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)
   expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
-  expectAssignable<(values: {[key: string]: any}) => FastifyReply>(reply.headers)
+  expectAssignable<(values: { [key: string]: any }) => FastifyReply>(reply.headers)
   expectAssignable<(key: string) => number | string | string[] | undefined>(reply.getHeader)
   expectAssignable<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
   expectAssignable<(key: string) => FastifyReply>(reply.removeHeader)
   expectAssignable<(key: string) => boolean>(reply.hasHeader)
-  expectType<{(statusCode: number, url: string): FastifyReply;(url: string, statusCode?: number): FastifyReply;}>(reply.redirect)
+  expectType<{ (statusCode: number, url: string): FastifyReply;(url: string, statusCode?: number): FastifyReply; }>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
   expectType<(contentType: string) => FastifyReply>(reply.type)
@@ -42,10 +42,10 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(key: string) => FastifyReply>(reply.removeTrailer)
   expectType<FastifyInstance>(reply.server)
   expectAssignable<((httpStatus: string) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
-  expectAssignable<((schema: {[key: string]: unknown}) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
-  expectAssignable<((schema: {[key: string]: unknown}, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
-  expectAssignable<((input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string) => unknown)>(reply.serializeInput)
-  expectAssignable<((input: {[key: string]: unknown}, httpStatus: string) => unknown)>(reply.serializeInput)
+  expectAssignable<((schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
+  expectAssignable<((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
+  expectAssignable<((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)>(reply.serializeInput)
+  expectAssignable<((input: { [key: string]: unknown }, httpStatus: string) => unknown)>(reply.serializeInput)
 }
 
 interface ReplyPayload {
@@ -164,10 +164,12 @@ server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async fu
   })
 })
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   // accept is a header provided by @types/node
   reply.getHeader('accept')
-  reply.getHeaders().accept // eslint-disable-line no-unused-expressions
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
+  reply.getHeaders().accept
   reply.hasHeader('accept')
   reply.header('accept', 'test')
   reply.headers({ accept: 'test' })
@@ -176,7 +178,7 @@ const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   // x-fastify-test is not a header provided by @types/node
   // and should not result in a typing error
   reply.getHeader('x-fastify-test')
-  reply.getHeaders()['x-fastify-test'] // eslint-disable-line no-unused-expressions
+  reply.getHeaders()['x-fastify-test']
   reply.hasHeader('x-fastify-test')
   reply.header('x-fastify-test', 'test')
   reply.headers({ 'x-fastify-test': 'test' })

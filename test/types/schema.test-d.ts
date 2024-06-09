@@ -70,7 +70,7 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
     storeFunction (routeOpts, schemaValidationCode) { }
   })
 
-  const app = fastify({
+  fastify({
     jsonShorthand: false,
     schemaController: {
       compilersFactory: {
@@ -86,7 +86,7 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
     storeFunction (routeOpts, schemaValidationCode) { }
   })
 
-  const app = fastify({
+  fastify({
     jsonShorthand: false,
     schemaController: {
       compilersFactory: {

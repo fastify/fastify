@@ -907,7 +907,7 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 // Reply Type Override
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
@@ -927,7 +927,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 // Reply Type Override (Different Content-types)
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
@@ -955,7 +955,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 // Reply Type Return Override
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {
@@ -975,7 +975,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 // Reply Type Return Override (Different Content-types)
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: boolean }>(
   '/',
   {
     schema: {

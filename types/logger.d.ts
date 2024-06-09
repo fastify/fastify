@@ -43,7 +43,7 @@ export type PinoLoggerOptions = pino.LoggerOptions
 export type ResSerializerReply<
   RawServer extends RawServerBase,
   RawReply extends FastifyReply<RawServer>
-> = Partial<RawReply> & Pick<RawReply, 'statusCode'>;
+> = Partial<RawReply> & Pick<RawReply, 'statusCode'>
 
 /**
  * Fastify Custom Logger options.
@@ -51,7 +51,7 @@ export type ResSerializerReply<
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProvider> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
-  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>,
+  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>
 > {
   serializers?: {
     req?: (req: RawRequest) => {

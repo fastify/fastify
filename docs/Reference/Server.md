@@ -53,8 +53,6 @@ describes the properties available in that options object.
     - [listen](#listen)
   - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
-    - [getDefaultRoute](#getdefaultroute)
-    - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
     - [route](#route)
     - [hasRoute](#hasroute)
@@ -84,6 +82,7 @@ describes the properties available in that options object.
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [setChildLoggerFactory](#setchildloggerfactory)
+    - [setGenReqId](#setGenReqId)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -384,9 +383,15 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
-Please note that this option will also disable an error log written by the
-default `onResponse` hook on reply callback errors. Other log messages 
-emitted by Fastify will stay enabled, like deprecation warnings and messages
+The other log entries that will be disabled are:
+- an error log written by the default `onResponse` hook on reply callback errors
+- the error and info logs written by the `defaultErrorHandler` 
+on error management
+- the info log written by the `fourOhFour` handler when a 
+non existent route is requested
+
+Other log messages emitted by Fastify will stay enabled, 
+like deprecation warnings and messages
 emitted when requests are received while the server is closing.
 
 ```js
@@ -520,7 +525,15 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
-Setting `requestIdHeader` to `false` will always use [genReqId](#genreqid).
+Setting `requestIdHeader` to `true` will set the `requestIdHeader` to
+`"request-id"`.
+Setting `requestIdHeader` to a non-empty string will use
+the specified string as the `requestIdHeader`.
+By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
+Setting `requestIdHeader` to an empty String (`""`) will set the 
+requestIdHeader to `false`.
+
++ Default: `false`
 
 ```js
 const fastify = require('fastify')({
@@ -571,7 +584,7 @@ const fastify = require('fastify')({
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
 + `number`: Trust the nth hop from the front-facing proxy server as the client.
-+ `Function`: Custom trust function that takes `address` as first arg
++ `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
       return address === '1.2.3.4' || hop === 1
@@ -589,14 +602,14 @@ const fastify = Fastify({ trustProxy: true })
 For more examples, refer to the
 [`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
 
-You may access the `ip`, `ips`, `hostname` and `protocol` values on the
+You may access the `ip`, `ips`, `host` and `protocol` values on the
 [`request`](./Request.md) object.
 
 ```js
 fastify.get('/', (request, reply) => {
   console.log(request.ip)
   console.log(request.ips)
-  console.log(request.hostname)
+  console.log(request.host)
   console.log(request.protocol)
 })
 ```
@@ -864,14 +877,14 @@ function rewriteUrl (req) {
 ### `useSemicolonDelimiter`
 <a id="use-semicolon-delimiter"></a>
 
-+ Default `true`
++ Default `false`
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
 separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
 This decision originated from [delvedor/find-my-way#76]
 (https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
-backwards compatiblilty for the need to split on `;`. To disable support for splitting
-on `;` set `useSemicolonDelimiter` to `false`.
+backwards compatiblilty for the need to split on `;`. To enable support for splitting
+on `;` set `useSemicolonDelimiter` to `true`.
 
 ```js
 const fastify = require('fastify')({
@@ -1093,51 +1106,6 @@ const addresses = fastify.addresses()
 ```
 
 Note that the array contains the `fastify.server.address()` too.
-
-#### getDefaultRoute
-<a id="getDefaultRoute"></a>
-
-> **Warning**
-> This method is deprecated and will be removed in the next Fastify
-> major version.
-
-The `defaultRoute` handler handles requests that do not match any URL specified
-by your Fastify application. This defaults to the 404 handler, but can be
-overridden with [setDefaultRoute](#setdefaultroute). Method to get the
-`defaultRoute` for the server:
-
-```js
-const defaultRoute = fastify.getDefaultRoute()
-```
-
-#### setDefaultRoute
-<a id="setDefaultRoute"></a>
-
-> **Warning**
-> This method is deprecated and will be removed in the next Fastify
-> major version. Please, consider using `setNotFoundHandler` or a wildcard
-> matching route.
-
-The default 404 handler, or one set using `setNotFoundHandler`, will
-never trigger if the default route is overridden. This sets the handler for the
-Fastify application, not just the current instance context. Use
-[setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling
-instead.
-
-This method sets the `defaultRoute` for the server. Note that, its purpose is
-to interact with the underlying raw requests. Unlike other Fastify handlers, the
-arguments received are of type [RawRequest](./TypeScript.md#rawrequest) and
-[RawReply](./TypeScript.md#rawreply) respectively.
-
-```js
-const defaultRoute = function (req, res) {
-  // req = RawRequest
-  // res = RawReply
-  res.end('hello world')
-}
-
-fastify.setDefaultRoute(defaultRoute)
-```
 
 #### routing
 <a id="routing"></a>
@@ -1639,6 +1607,45 @@ const fastify = require('fastify')({
 
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
+
+#### setGenReqId
+<a id="set-gen-req-id"></a>
+
+`fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
+for additional Fastify instances. It will receive the _raw_ incoming request as a
+parameter. The provided function should not throw an Error in any case.
+
+Especially in distributed systems, you may want to override the default ID
+generation behavior to handle custom ways of generating different IDs in
+order to handle different use cases. Such as observability or webhooks plugins.
+
+For example:
+```js
+const fastify = require('fastify')({
+  genReqId: (req) => {
+    return 'base'
+  }
+})
+
+fastify.register((instance, opts, done) => {
+  instance.setGenReqId((req) => {
+    // custom request ID for `/webhooks`
+    return 'webhooks-id'
+  })
+  done()
+}, { prefix: '/webhooks' })
+
+fastify.register((instance, opts, done) => {
+  instance.setGenReqId((req) => {
+    // custom request ID for `/observability`
+    return 'observability-id'
+  })
+  done()
+}, { prefix: '/observability' })
+```
+
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set a different request ID.
 
 #### addConstraintStrategy
 <a id="addConstraintStrategy"></a>

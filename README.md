@@ -46,10 +46,8 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-The `main` branch refers to the Fastify `v4` release. Check out the
-[`v3.x` branch](https://github.com/fastify/fastify/tree/3.x) for `v3`.
-
-
+The `main` branch refers to the Fastify `v5` release, which is not released/LTS yet.
+Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v4`.
 
 ### Table of Contents
 
@@ -125,6 +123,7 @@ yarn add fastify
 
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -150,6 +149,7 @@ with async-await:
 ```js
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -323,6 +323,8 @@ listed in alphabetical order.
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 * [__Aras Abbasi__](https://github.com/uzlopak),
   <https://www.npmjs.com/~uzlopak>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina),

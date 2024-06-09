@@ -1,7 +1,8 @@
 # Expense Policy
 
 Fastify collaborators accept donations through the [Open Collective](https://opencollective.com/fastify/)
-platform to enhance the project and support the community.
+platform and [GitHub Sponsors](https://github.com/sponsors/fastify)
+to enhance the project and support the community.
 
 This Collective is run by and for the benefit of the independent contributors to
 the Fastify open source software project.

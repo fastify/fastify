@@ -164,7 +164,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().route({
   }
 }))
 
-// infering schema `as const`
+// inferring schema `as const`
 
 expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
@@ -469,7 +469,9 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expectType<(payload?: string | number | { error: string }) => typeof res>(res.code(200).send)
+    expectType<(payload?: string) => typeof res>(res.code(200).send)
+    expectType<(payload?: number) => typeof res>(res.code(400).send)
+    expectType<(payload?: { error: string }) => typeof res>(res.code(500).send)
     expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
@@ -699,7 +701,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expectType<(payload?: string | number | { [x: string]: unknown, error?: string | undefined }) => typeof res>(res.code(200).send)
+    expectType<(payload?: string) => typeof res>(res.code(200).send)
+    expectType<(payload?: number) => typeof res>(res.code(400).send)
+    expectType<(payload?: { [x: string]: unknown; error?: string }) => typeof res>(res.code(500).send)
     expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))

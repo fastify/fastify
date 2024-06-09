@@ -24,8 +24,28 @@ const opts = {
   }
 }
 
+const optsWithHostnameAndPort = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          },
+          hostname: {
+            type: 'string'
+          },
+          port: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
+}
 test('async await', t => {
-  t.plan(11)
+  t.plan(13)
   const fastify = Fastify()
   try {
     fastify.get('/', opts, async function awaitMyFunc (req, reply) {
@@ -40,6 +60,16 @@ test('async await', t => {
   try {
     fastify.get('/no-await', opts, async function (req, reply) {
       return { hello: 'world' }
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+
+  try {
+    fastify.get('/await/hostname_port', optsWithHostnameAndPort, async function awaitMyFunc (req, reply) {
+      await sleep(200)
+      return { hello: 'world', hostname: req.hostname, port: req.port }
     })
     t.pass()
   } catch (e) {
@@ -68,6 +98,20 @@ test('async await', t => {
       t.equal(response.statusCode, 200)
       t.equal(response.headers['content-length'], '' + body.length)
       t.same(JSON.parse(body), { hello: 'world' })
+    })
+
+    t.test('test for hostname and port in request', t => {
+      t.plan(4)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/await/hostname_port'
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        const parsedBody = JSON.parse(body)
+        t.equal(parsedBody.hostname, 'localhost')
+        t.equal(parseInt(parsedBody.port), fastify.server.address().port)
+      })
     })
   })
 })
@@ -135,7 +179,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   const logger = pino(splitStream)
 
   const fastify = Fastify({
-    logger
+    loggerInstance: logger
   })
 
   fastify.get('/', async (req, reply) => {

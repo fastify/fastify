@@ -19,6 +19,13 @@ declare module '../../fastify' {
   interface FastifyContextConfig {
     foo: string;
     bar: number;
+    includeMessage?: boolean;
+  }
+
+  interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
+    message: ContextConfig extends { includeMessage: true }
+      ? string
+      : null;
   }
 }
 
@@ -36,9 +43,29 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
   return reply.send()
 }
 
-type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options';
+fastify().get(
+  '/',
+  { config: { foo: 'bar', bar: 100, includeMessage: true } },
+  (req) => {
+    expectType<string>(req.message)
+  }
+)
 
-['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
+fastify().get(
+  '/',
+  { config: { foo: 'bar', bar: 100, includeMessage: false } },
+  (req) => {
+    expectType<null>(req.message)
+  }
+)
+
+type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put' |
+'options' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
+'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
+
+;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'PROPFIND',
+  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
+].forEach(method => {
   // route method
   expectType<FastifyInstance>(fastify().route({
     method: method as HTTPMethods,

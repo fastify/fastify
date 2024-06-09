@@ -121,14 +121,52 @@ const serverAutoInferringTypes = fastify({
 
 expectType<FastifyBaseLogger>(serverAutoInferringTypes.log)
 
-const serverWithAutoInferredPino = fastify({
-  logger: P({
+const serverWithLoggerInstance = fastify({
+  loggerInstance: P({
     level: 'info',
     redact: ['x-userinfo']
   })
 })
 
-expectType<P.Logger>(serverWithAutoInferredPino.log)
+expectType<P.Logger>(serverWithLoggerInstance.log)
+
+const serverWithPinoConfig = fastify({
+  logger: {
+    level: 'info',
+    serializers: {
+      req (IncomingMessage) {
+        expectType<FastifyRequest>(IncomingMessage)
+        return {
+          method: 'method',
+          url: 'url',
+          version: 'version',
+          host: 'hostname',
+          remoteAddress: 'remoteAddress',
+          remotePort: 80,
+          other: ''
+        }
+      },
+      res (ServerResponse) {
+        expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
+        expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
+        expectNotAssignable<FastifyReply>(ServerResponse)
+        return {
+          statusCode: 'statusCode'
+        }
+      },
+      err (FastifyError) {
+        return {
+          other: '',
+          type: 'type',
+          message: 'msg',
+          stack: 'stack'
+        }
+      }
+    }
+  }
+})
+
+expectType<FastifyBaseLogger>(serverWithPinoConfig.log)
 
 const serverAutoInferredFileOption = fastify({
   logger: {
@@ -165,7 +203,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
           method: 'method',
           url: 'url',
           version: 'version',
-          hostname: 'hostname',
+          host: 'hostname',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
           other: ''

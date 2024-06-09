@@ -19,7 +19,7 @@ const {
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const { FSTDEP019, FSTDEP010 } = require('../../lib/warnings')
+const { FSTDEP010, FSTDEP019, FSTDEP021 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -36,7 +36,7 @@ const doGet = function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(16)
+  t.plan(15)
   const response = { res: 'res' }
   const context = { config: { onSend: [] }, schema: {} }
   const request = { [kRouteContext]: context, [kPublicRouteContext]: { config: context.config, schema: context.schema } }
@@ -49,7 +49,6 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply.status, 'function')
   t.equal(typeof reply.header, 'function')
   t.equal(typeof reply.serialize, 'function')
-  t.equal(typeof reply.getResponseTime, 'function')
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
@@ -250,7 +249,7 @@ test('within an instance', t => {
   })
 
   fastify.get('/redirect-code', function (req, reply) {
-    reply.redirect(301, '/')
+    reply.redirect('/', 301)
   })
 
   fastify.get('/redirect-code-before-call', function (req, reply) {
@@ -258,7 +257,7 @@ test('within an instance', t => {
   })
 
   fastify.get('/redirect-code-before-call-overwrite', function (req, reply) {
-    reply.code(307).redirect(302, '/')
+    reply.code(307).redirect('/', 302)
   })
 
   fastify.get('/custom-serializer', function (req, reply) {
@@ -1415,9 +1414,9 @@ test('.statusCode is getter and setter', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    t.ok(reply.statusCode, 200, 'default status value')
+    t.equal(reply.statusCode, 200, 'default status value')
     reply.statusCode = 418
-    t.ok(reply.statusCode, 418)
+    t.equal(reply.statusCode, 418)
     reply.send()
   })
 
@@ -1572,14 +1571,14 @@ test('should not throw error when attempting to set reply.sent if the underlinin
   })
 })
 
-test('reply.getResponseTime() should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
+test('reply.elapsedTime should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const reply = new Reply(response, null)
-  t.equal(reply.getResponseTime(), 0)
+  t.equal(reply.elapsedTime, 0)
 })
 
-test('reply.getResponseTime() should return a number greater than 0 after the timer is initialised on the reply by setting up response listeners', t => {
+test('reply.elapsedTime should return a number greater than 0 after the timer is initialised on the reply by setting up response listeners', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.route({
@@ -1591,14 +1590,14 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
   })
 
   fastify.addHook('onResponse', (req, reply) => {
-    t.ok(reply.getResponseTime() > 0)
+    t.ok(reply.elapsedTime > 0)
     t.end()
   })
 
   fastify.inject({ method: 'GET', url: '/' })
 })
 
-test('reply.getResponseTime() should return the time since a request started while inflight', t => {
+test('reply.elapsedTime should return the time since a request started while inflight', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.route({
@@ -1609,19 +1608,23 @@ test('reply.getResponseTime() should return the time since a request started whi
     }
   })
 
+  let preValidationElapsedTime
+
   fastify.addHook('preValidation', (req, reply, done) => {
-    t.not(reply.getResponseTime(), reply.getResponseTime())
+    preValidationElapsedTime = reply.elapsedTime
+
     done()
   })
 
   fastify.addHook('onResponse', (req, reply) => {
+    t.ok(reply.elapsedTime > preValidationElapsedTime)
     t.end()
   })
 
   fastify.inject({ method: 'GET', url: '/' })
 })
 
-test('reply.getResponseTime() should return the same value after a request is finished', t => {
+test('reply.elapsedTime should return the same value after a request is finished', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.route({
@@ -1633,7 +1636,7 @@ test('reply.getResponseTime() should return the same value after a request is fi
   })
 
   fastify.addHook('onResponse', (req, reply) => {
-    t.equal(reply.getResponseTime(), reply.getResponseTime())
+    t.equal(reply.elapsedTime, reply.elapsedTime)
     t.end()
   })
 
@@ -2017,6 +2020,36 @@ test('redirect to an invalid URL should not crash the server', async t => {
   }
 
   await fastify.close()
+})
+
+test('redirect with deprecated signature should warn', t => {
+  t.plan(4)
+
+  process.removeAllListeners('warning')
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'DeprecationWarning')
+    t.equal(warning.code, FSTDEP021.code)
+  }
+
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.redirect(302, '/new')
+  })
+
+  fastify.get('/new', (req, reply) => {
+    reply.send('new')
+  })
+
+  fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
+    t.error(err)
+    t.pass()
+
+    process.removeListener('warning', onWarning)
+  })
+
+  FSTDEP021.emitted = false
 })
 
 test('invalid response headers should not crash the server', async t => {

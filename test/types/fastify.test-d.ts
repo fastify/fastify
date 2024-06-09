@@ -57,7 +57,7 @@ expectAssignable<InjectOptions>({ query: '' })
 fastify({ http2: true, https: {} }).inject().then((resp) => {
   expectAssignable<LightMyRequestResponse>(resp)
 })
-const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: LightMyRequestResponse) => {
+const lightMyRequestCallback: LightMyRequestCallback = (err: Error | undefined, response: LightMyRequestResponse | undefined) => {
   if (err) throw err
 }
 fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
@@ -92,7 +92,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
           method: 'GET',
           url: '/',
           version: '1.0.0',
-          hostname: 'localhost',
+          host: 'localhost',
           remoteAddress: '127.0.0.1',
           remotePort: 3000
         }

@@ -189,9 +189,11 @@ specific header in case of error.
 It is not intended for changing the error, and calling `reply.send` will throw
 an exception.
 
-This hook will be executed only after the `customErrorHandler` has been
-executed, and only if the `customErrorHandler` sends an error back to the user
-*(Note that the default `customErrorHandler` always sends the error back to the
+This hook will be executed only after
+the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler)
+has been executed, and only if the custom error handler sends an error back to the
+user
+*(Note that the default error handler always sends the error back to the
 user)*.
 
 **Notice:** unlike the other hooks, passing an error to the `done` function is not
@@ -232,7 +234,7 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > `null`.
 
 Note: If you change the payload, you may only change it to a `string`, a
-`Buffer`, a `stream`, or `null`.
+`Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
 ### onResponse
@@ -827,18 +829,17 @@ consider creating a custom [Plugin](./Plugins.md) instead.
 ## Diagnostics Channel Hooks
 
 > **Note:** The `diagnostics_channel` is currently experimental on Node.js, so
-> its API is subject to change even in semver-patch releases of Node.js. For
-> versions of Node.js supported by Fastify where `diagnostics_channel` is
-> unavailable, the hook will use the
-> [polyfill](https://www.npmjs.com/package/diagnostics_channel) if it is
-> available. Otherwise, this feature will not be present.
+> its API is subject to change even in semver-patch releases of Node.js. As some
+> versions of Node.js are supported by Fastify where `diagnostics_channel` is
+> unavailable, or with an incomplete feature set, the hook uses the
+> [dc-polyfill](https://www.npmjs.com/package/dc-polyfill) package to provide a
+> polyfill.
 
-Currently, one
-[`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
-event, `'fastify.initialization'`, happens at initialization time. The Fastify
-instance is passed into the hook as a property of the object passed in. At this
-point, the instance can be interacted with to add hooks, plugins, routes, or any
-other sort of modification.
+One [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html)
+publish event, `'fastify.initialization'`, happens at initialization time. The
+Fastify instance is passed into the hook as a property of the object passed in.
+At this point, the instance can be interacted with to add hooks, plugins,
+routes, or any other sort of modification.
 
 For example, a tracing package might do something like the following (which is,
 of course, a simplification). This would be in a file loaded in the
@@ -847,13 +848,13 @@ tools first" fashion.
 
 ```js
 const tracer = /* retrieved from elsewhere in the package */
-const dc = require('node:diagnostics_channel')
+const dc = require('node:diagnostics_channel') // or require('dc-polyfill')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()
 
 channel.subscribe(function ({ fastify }) {
   fastify.addHook('onRequest', (request, reply, done) => {
-    const span = tracer.startSpan('fastify.request')
+    const span = tracer.startSpan('fastify.request.handler')
     spans.set(request, span)
     done()
   })
@@ -863,5 +864,40 @@ channel.subscribe(function ({ fastify }) {
     span.finish()
     done()
   })
+})
+```
+
+Five other events are published on a per-request basis following the
+[Tracing Channel](https://nodejs.org/api/diagnostics_channel.html#class-tracingchannel)
+nomenclature. The list of the channel names and the event they receive is:
+
+- `tracing:fastify.request.handler:start`: Always fires
+  - `{ request: Request, reply: Reply, route: { url, method } }`
+- `tracing:fastify.request.handler:end`: Always fires
+  - `{ request: Request, reply: Reply, route: { url, method }, async: Bool }`
+- `tracing:fastify.request.handler:asyncStart`: Fires for promise/async handlers
+  - `{ request: Request, reply: Reply, route: { url, method } }`
+- `tracing:fastify.request.handler:asyncEnd`: Fires for promise/async handlers
+  - `{ request: Request, reply: Reply, route: { url, method } }`
+- `tracing:fastify.request.handler:error`: Fires when an error occurs
+  - `{ request: Request, reply: Reply, route: { url, method }, error: Error }`
+
+The object instance remains the same for all events associated with a given
+request. All payloads include a `request` and `reply` property which are an
+instance of Fastify's `Request` and `Reply` instances. They also include a
+`route` property which is an object with the matched `url` pattern (e.g.
+`/collection/:id`) and the `method` HTTP method (e.g. `GET`). The `:start` and
+`:end` events always fire for requests. If a request handler is an `async`
+function or one that returns a `Promise` then the `:asyncStart` and `:asyncEnd`
+events also fire. Finally, the `:error` event contains an `error` property
+associated with the request's failure.
+
+These events can be received like so:
+
+```js
+const dc = require('node:diagnostics_channel') // or require('dc-polyfill')
+const channel = dc.channel('tracing:fastify.request.handler:start')
+channel.subscribe((msg) => {
+  console.log(msg.request, msg.reply)
 })
 ```

@@ -55,7 +55,7 @@ test('custom serializer options', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equal(res.payload, '5', 'it must use the ceil rouding')
+    t.equal(res.payload, '5', 'it must use the ceil rounding')
     t.equal(res.statusCode, 200)
   })
 })
@@ -945,7 +945,7 @@ test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION
   })
 })
 
-test('Errors in searilizer sended to errorHandler', async t => {
+test('Errors in serializer send to errorHandler', async t => {
   let savedError
 
   const fastify = Fastify()

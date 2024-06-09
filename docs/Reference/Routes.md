@@ -34,7 +34,8 @@ fastify.route(options)
 
 * `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
   `'POST'`, `'PUT'`, `'OPTIONS'`, `'SEARCH'`, `'TRACE'`, `'PROPFIND'`,
-  `'PROPPATCH'`, `'MKCOL'`, `'COPY'`, `'MOVE'`, `'LOCK'`  and `'UNLOCK'`.
+  `'PROPPATCH'`, `'MKCOL'`, `'COPY'`, `'MOVE'`, `'LOCK'`, `'UNLOCK'`, 
+  `'REPORT'` and `'MKCALENDAR'`.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They
@@ -42,7 +43,7 @@ fastify.route(options)
   [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, PATCH,
-    TRACE, or SEARCH method.
+    TRACE, SEARCH, PROPFIND, PROPPATCH or LOCK method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -188,6 +189,24 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 `fastify.options(path, [options], handler)`
 
 `fastify.patch(path, [options], handler)`
+
+`fastify.propfind(path, [options], handler)`
+
+`fastify.proppatch(path, [options], handler)`
+
+`fastify.mkcol(path, [options], handler)`
+
+`fastify.copy(path, [options], handler)`
+
+`fastify.move(path, [options], handler)`
+
+`fastify.lock(path, [options], handler)`
+
+`fastify.unlock(path, [options], handler)`
+
+`fastify.trace(path, [options], handler)`
+
+`fastify.search(path, [options], handler)`
 
 Example:
 ```js
@@ -467,14 +486,14 @@ const route = {
     schema: {},
 }
 
-fastify.register(function(app, _, done) {
+fastify.register(function (app, _, done) {
   app.get('/users', () => {})
   app.route(route)
 
   done()
 }, { prefix: '/v1' }) // global route prefix
 
-await fastify.listen({ port: 0 })
+await fastify.listen({ port: 3000 })
 ```
 
 ### Route Prefixing and fastify-plugin
@@ -577,7 +596,7 @@ const fastify = Fastify({
           method: req.method,
           url: req.url,
           headers: req.headers,
-          hostname: req.hostname,
+          host: req.host,
           remoteAddress: req.ip,
           remotePort: req.socket.remotePort
         }
@@ -749,7 +768,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }
@@ -798,8 +817,8 @@ const secret = {
 > const Fastify = require('fastify')
 > 
 > const fastify = Fastify({
->   frameworkErrors: function(err, res, res) {
->     if(err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
+>   frameworkErrors: function (err, res, res) {
+>     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")
 >     } else {
@@ -808,25 +827,3 @@ const secret = {
 >   }
 > })
 > ```
-
-
-### ⚠  HTTP version check
-
-Fastify will check the HTTP version of every request, based on configuration
-options ([http2](./Server.md#http2), [https](./Server.md#https), and
-[serverFactory](./Server.md#serverfactory)), to determine if it matches one or
-all of the > following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a
-different HTTP version in the request it will return a `505 HTTP Version Not
-Supported` error.
-
-|                          | 2.0 | 1.1 | 1.0 | skip |
-|:------------------------:|:---:|:---:|:---:|:----:|
-| http2                    | ✓   |     |     |      |
-| http2 + https            | ✓   |     |     |      |
-| http2 + https.allowHTTP1 | ✓   | ✓   | ✓   |      |
-| https                    |     | ✓   | ✓   |      |
-| http                     |     | ✓   | ✓   |      |
-| serverFactory            |     |     |     | ✓    |
-
- Note: The internal HTTP version check will be removed in the future when Node
- implements [this feature](https://github.com/nodejs/node/issues/43115).

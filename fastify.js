@@ -1,9 +1,10 @@
 'use strict'
 
-const VERSION = '4.25.2'
+const VERSION = '5.0.0-alpha.1'
 
 const Avvio = require('avvio')
 const http = require('node:http')
+const diagnostics = require('dc-polyfill')
 let lightMyRequest
 
 const {
@@ -28,10 +29,11 @@ const {
   kSchemaErrorFormatter,
   kErrorHandler,
   kKeepAliveConnections,
-  kChildLoggerFactory
+  kChildLoggerFactory,
+  kGenReqId
 } = require('./lib/symbols.js')
 
-const { createServer, compileValidateHTTPVersion } = require('./lib/server')
+const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
@@ -42,7 +44,7 @@ const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const { reqIdGenFactory } = require('./lib/reqIdGenFactory')
+const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
@@ -70,10 +72,13 @@ const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
-  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
+  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+
+const initChannel = diagnostics.channel('fastify.initialization')
 
 function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
@@ -109,7 +114,7 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = (options.requestIdHeader === false) ? false : (options.requestIdHeader || defaultInitOptions.requestIdHeader).toLowerCase()
+  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -138,7 +143,6 @@ function fastify (options) {
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
-  options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
@@ -248,10 +252,9 @@ function fastify (options) {
     [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
+    [kGenReqId]: genReqId,
     // routing method
     routing: httpHandler,
-    getDefaultRoute: router.getDefaultRoute.bind(router),
-    setDefaultRoute: router.setDefaultRoute.bind(router),
     // routes shorthand methods
     delete: function _delete (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
@@ -273,6 +276,39 @@ function fastify (options) {
     },
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+    },
+    propfind: function _propfind (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PROPFIND', url, options, handler })
+    },
+    proppatch: function _proppatch (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
+    },
+    mkcalendar: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
+    },
+    mkcol: function _mkcol (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
+    },
+    copy: function _copy (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'COPY', url, options, handler })
+    },
+    move: function _move (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'MOVE', url, options, handler })
+    },
+    lock: function _lock (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'LOCK', url, options, handler })
+    },
+    unlock: function _unlock (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'UNLOCK', url, options, handler })
+    },
+    trace: function _trace (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+    },
+    report: function _mkcalendar (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
+    },
+    search: function _search (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
@@ -304,6 +340,8 @@ function fastify (options) {
     setSchemaController,
     setReplySerializer,
     setSchemaErrorFormatter,
+    // set generated request id
+    setGenReqId,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -400,6 +438,10 @@ function fastify (options) {
       get () {
         return this[kErrorHandler].func
       }
+    },
+    genReqId: {
+      configurable: true,
+      get () { return this[kGenReqId] }
     }
   })
 
@@ -495,22 +537,14 @@ function fastify (options) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
-    validateHTTPVersion: compileValidateHTTPVersion(options),
     keepAliveConnections
   })
 
   // Delay configuring clientError handler so that it can access fastify state.
   server.on('clientError', options.clientErrorHandler.bind(fastify))
 
-  try {
-    const dc = require('node:diagnostics_channel')
-    const initChannel = dc.channel('fastify.initialization')
-    if (initChannel.hasSubscribers) {
-      initChannel.publish({ fastify })
-    }
-  } catch (e) {
-    // This only happens if `diagnostics_channel` isn't available, i.e. earlier
-    // versions of Node.js. In that event, we don't care, so ignore the error.
+  if (initChannel.hasSubscribers) {
+    initChannel.publish({ fastify })
   }
 
   // Older nodejs versions may not have asyncDispose
@@ -718,7 +752,7 @@ function fastify (options) {
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the load balancer side.
     this.log.trace({ err }, `client ${errorLabel}`)
-    // Copying standard node behaviour
+    // Copying standard node behavior
     // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
@@ -743,7 +777,7 @@ function fastify (options) {
 
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
-      const id = genReqId(req)
+      const id = getGenReqId(onBadUrlContext.server, req)
       const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -768,7 +802,7 @@ function fastify (options) {
     return function onAsyncConstraintError (err) {
       if (err) {
         if (frameworkErrors) {
-          const id = genReqId(req)
+          const id = getGenReqId(onBadUrlContext.server, req)
           const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
@@ -837,6 +871,10 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
+    if (typeof func !== 'function') {
+      throw new FST_ERR_ERROR_HANDLER_NOT_FN()
+    }
+
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }
@@ -872,9 +910,14 @@ function fastify (options) {
       router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
     }
   }
-}
 
-fastify.errorCodes = errorCodes
+  function setGenReqId (func) {
+    throwIfAlreadyStarted('Cannot call "setGenReqId"!')
+
+    this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
+    return this
+  }
+}
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
@@ -896,5 +939,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
 module.exports = fastify
+module.exports.errorCodes = errorCodes
 module.exports.fastify = fastify
 module.exports.default = fastify

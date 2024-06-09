@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 78 errors', t => {
+test('should expose 84 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +14,11 @@ test('should expose 78 errors', t => {
       counter++
     }
   }
-  t.equal(counter, 78)
+  t.equal(counter, 84)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(78)
+  t.plan(84)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -247,6 +247,16 @@ test('FST_ERR_DEC_AFTER_START', t => {
   t.ok(error instanceof Error)
 })
 
+test('FST_ERR_DEC_REFERENCE_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_REFERENCE_TYPE()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+  t.equal(error.message, "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead.")
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof Error)
+})
+
 test('FST_ERR_HOOK_INVALID_TYPE', t => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_INVALID_TYPE()
@@ -327,6 +337,36 @@ test('FST_ERR_LOG_INVALID_LOGGER', t => {
   t.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_LOG_INVALID_LOGGER_INSTANCE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_INVALID_LOGGER_INSTANCE()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
+  t.equal(error.message, 'loggerInstance only accepts a logger instance.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_INVALID_LOGGER_CONFIG()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LOG_INVALID_LOGGER_CONFIG')
+  t.equal(error.message, 'logger options only accepts a configuration object.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED')
+  t.equal(error.message, 'You cannot provide both logger and loggerInstance. Please provide only one.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
 test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_INVALID_PAYLOAD_TYPE()
@@ -335,6 +375,16 @@ test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
   t.equal(error.message, "Attempted to send payload of invalid type '%s'. Expected a string or Buffer.")
   t.equal(error.statusCode, 500)
   t.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_REP_RESPONSE_BODY_CONSUMED()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
+  t.equal(error.message, 'Response.body is already consumed.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof Error)
 })
 
 test('FST_ERR_REP_ALREADY_SENT', t => {
@@ -577,16 +627,6 @@ test('FST_ERR_ASYNC_CONSTRAINT', t => {
   t.ok(error instanceof Error)
 })
 
-test('FST_ERR_DEFAULT_ROUTE_INVALID_TYPE', t => {
-  t.plan(5)
-  const error = new errors.FST_ERR_DEFAULT_ROUTE_INVALID_TYPE()
-  t.equal(error.name, 'FastifyError')
-  t.equal(error.code, 'FST_ERR_DEFAULT_ROUTE_INVALID_TYPE')
-  t.equal(error.message, 'The defaultRoute type should be a function')
-  t.equal(error.statusCode, 500)
-  t.ok(error instanceof TypeError)
-})
-
 test('FST_ERR_INVALID_URL', t => {
   t.plan(5)
   const error = new errors.FST_ERR_INVALID_URL()
@@ -747,6 +787,16 @@ test('FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE', t => {
   t.ok(error instanceof Error)
 })
 
+test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER('easter-egg')
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER')
+  t.equal(error.message, 'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
 test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_CALLBACK_NOT_FN()
@@ -817,8 +867,18 @@ test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
   t.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ERROR_HANDLER_NOT_FN()
+  t.equal(error.name, 'FastifyError')
+  t.equal(error.code, 'FST_ERR_ERROR_HANDLER_NOT_FN')
+  t.equal(error.message, 'Error Handler must be a function')
+  t.equal(error.statusCode, 500)
+  t.ok(error instanceof TypeError)
+})
+
 test('Ensure that all errors are in Errors.md TOC', t => {
-  t.plan(78)
+  t.plan(84)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -830,7 +890,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md TOC', t => {
-  t.plan(78)
+  t.plan(84)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g
@@ -843,7 +903,7 @@ test('Ensure that non-existing errors are not in Errors.md TOC', t => {
 })
 
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(78)
+  t.plan(84)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -855,7 +915,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(78)
+  t.plan(84)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g

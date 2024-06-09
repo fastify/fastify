@@ -17,10 +17,16 @@ convention, and there are several community ones available as well.
 
 The following inference packages are supported:
 
-- `json-schema-to-ts` -
-  [github](https://github.com/ThomasAribart/json-schema-to-ts)
-- `typebox` - [github](https://github.com/sinclairzx81/typebox)
-- `zod` - [github](https://github.com/colinhacks/zod)
+- [`json-schema-to-ts`](https://github.com/ThomasAribart/json-schema-to-ts)
+- [`typebox`](https://github.com/sinclairzx81/typebox)
+- [`zod`](https://github.com/colinhacks/zod)
+
+See also the Type Provider wrapper packages for each of the packages respectively:
+
+- [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
+- [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
+- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+ (3rd party)
 
 ### Json Schema to Ts
 
@@ -31,29 +37,26 @@ $ npm i @fastify/type-provider-json-schema-to-ts
 ```
 
 ```typescript
-import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
-
 import fastify from 'fastify'
+import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
 
 const server = fastify().withTypeProvider<JsonSchemaToTsProvider>()
 
 server.get('/route', {
-    schema: {
-        querystring: {
-            type: 'object',
-            properties: {
-                foo: { type: 'number' },
-                bar: { type: 'string' },
-            },
-            required: ['foo', 'bar']
-        }
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        foo: { type: 'number' },
+        bar: { type: 'string' },
+      },
+      required: ['foo', 'bar']
     }
-
+  }
 }, (request, reply) => {
 
-    // type Query = { foo: number, bar: string }
-
-    const { foo, bar } = request.query // type safe!
+  // type Query = { foo: number, bar: string }
+  const { foo, bar } = request.query // type safe!
 })
 ```
 
@@ -66,25 +69,23 @@ $ npm i @fastify/type-provider-typebox
 ```
 
 ```typescript
+import fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from '@sinclair/typebox'
-
-import fastify from 'fastify'
 
 const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
-    schema: {
-        querystring: Type.Object({
-            foo: Type.Number(),
-            bar: Type.String()
-        })
-    }
+  schema: {
+    querystring: Type.Object({
+      foo: Type.Number(),
+      bar: Type.String()
+    })
+  }
 }, (request, reply) => {
 
-    // type Query = { foo: number, bar: string }
-
-    const { foo, bar } = request.query // type safe!
+  // type Query = { foo: number, bar: string }
+  const { foo, bar } = request.query // type safe!
 })
 ```
 

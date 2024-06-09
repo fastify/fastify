@@ -4,6 +4,7 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
+  - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
@@ -16,7 +17,7 @@
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
-  - [.redirect([code ,] dest)](#redirectcode--dest)
+  - [.redirect(dest, [code ,])](#redirectdest--code)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
@@ -32,6 +33,8 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
+    - [ReadableStream](#send-readablestream)
+    - [Response](#send-response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -46,6 +49,8 @@ object that exposes the following functions and properties:
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
+- `.elapsedTime` - Returns the amount of time passed
+since the request was received by Fastify.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -53,12 +58,14 @@ object that exposes the following functions and properties:
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
+- `.writeEarlyHints(hints, callback)` - Sends early hints to the user
+  while the response is being prepared.
 - `.trailer(key, function)` - Sets a response trailer.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] dest)` - Redirect to the specified url, the status code is
-  optional (default to `302`).
+- `.redirect(dest, [code,])` - Redirect to the specified URL, the status code is
+  optional (defaults to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default
   JSON serializer or using the custom serializer (if one is set) and returns the
@@ -109,6 +116,19 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 <a id="code"></a>
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
+
+### .elapsedTime
+<a id="elapsedTime"></a>
+
+Invokes the custom response time getter to calculate the amount of time passed
+since the request was received by Fastify.
+
+Note that unless this function is called in the [`onResponse`
+hook](./Hooks.md#onresponse) it will always return `0`.
+
+```js
+const milliseconds = reply.elapsedTime
+```
 
 ### .statusCode
 <a id="statusCode"></a>
@@ -223,6 +243,27 @@ reply.getHeader('x-foo') // undefined
 
 Returns a boolean indicating if the specified header has been set.
 
+### .writeEarlyHints(hints, callback)
+<a id="writeEarlyHints"></a>
+
+Sends early hints to the client. Early hints allow the client to
+start processing resources before the final response is sent.
+This can improve performance by allowing the client to preload
+or preconnect to resources while the server is still generating the response.
+
+The hints parameter is an object containing the early hint key-value pairs.
+
+Example:
+
+```js
+reply.writeEarlyHints({ 
+  Link: '</styles.css>; rel=preload; as=style'
+});
+```
+
+The optional callback parameter is a function that will be called
+once the hint is sent or if an error occurs.
+
 ### .trailer(key, function)
 <a id="trailer"></a>
 
@@ -279,7 +320,7 @@ reply.getTrailer('server-timing') // undefined
 ```
 
 
-### .redirect([code ,] dest)
+### .redirect(dest, [code ,])
 <a id="redirect"></a>
 
 Redirects a request to the specified URL, the status code is optional, default
@@ -300,7 +341,7 @@ reply.redirect('/home')
 Example (no `reply.code()` call) sets status code to `303` and redirects to
 `/home`
 ```js
-reply.redirect(303, '/home')
+reply.redirect('/home', 303)
 ```
 
 Example (`reply.code()` call) sets status code to `303` and redirects to `/home`
@@ -310,7 +351,7 @@ reply.code(303).redirect('/home')
 
 Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
 ```js
-reply.code(303).redirect(302, '/home')
+reply.code(303).redirect('/home', 302)
 ```
 
 ### .callNotFound()
@@ -321,19 +362,6 @@ hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 
 ```js
 reply.callNotFound()
-```
-
-### .getResponseTime()
-<a id="getResponseTime"></a>
-
-Invokes the custom response time getter to calculate the amount of time passed
-since the request was started.
-
-Note that unless this function is called in the [`onResponse`
-hook](./Hooks.md#onresponse) it will always return `0`.
-
-```js
-const milliseconds = reply.getResponseTime()
 ```
 
 ### .type(contentType)
@@ -735,6 +763,52 @@ fastify.get('/streams', function (request, reply) {
 })
 ```
 
+#### ReadableStream
+<a id="send-readablestream"></a>
+
+`ReadableStream` will be treated as a node stream mentioned above,
+the content is considered to be pre-serialized, so they will be 
+sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(ReadableStream.from(stream))
+})
+```
+
+#### Response
+<a id="send-response"></a>
+
+`Response` allows to manage the reply payload, status code and
+headers in one place. The payload provided inside `Response` is
+considered to be pre-serialized, so they will be sent unmodified 
+without response validation.
+
+Please be aware when using `Response`, the status code and headers
+will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
+Such behavior is based on `Response` only allow `readonly` status
+code and headers. The data is not allow to be bi-direction editing,
+and may confuse when checking the `payload` in `onSend` hooks.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  const readableStream = ReadableStream.from(stream)
+  const response = new Response(readableStream, {
+    status: 200,
+    headers: { 'content-type': 'application/octet-stream' }
+  })
+  reply.send(response)
+})
+```
+
+
 #### Errors
 <a id="errors"></a>
 
@@ -773,7 +847,7 @@ To customize the JSON error output you can do it by:
 - add the additional properties to the `Error` instance
 
 Notice that if the returned status code is not in the response schema list, the
-default behaviour will be applied.
+default behavior will be applied.
 
 ```js
 fastify.get('/', {

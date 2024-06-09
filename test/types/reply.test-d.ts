@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectDeprecated, expectError, expectType } from 'tsd'
 import fastify, { FastifyReplyContext, FastifyReply, FastifyRequest, FastifySchema, FastifySchemaCompiler, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -19,8 +19,10 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.code)
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.status)
   expectType<(payload?: unknown) => FastifyReply>(reply.code(100 as number).send)
+  expectType<number>(reply.elapsedTime)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
+  expectType<(hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void>(reply.writeEarlyHints)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)
   expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
   expectAssignable<(values: {[key: string]: any}) => FastifyReply>(reply.headers)
@@ -28,10 +30,9 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectAssignable<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
   expectAssignable<(key: string) => FastifyReply>(reply.removeHeader)
   expectAssignable<(key: string) => boolean>(reply.hasHeader)
-  expectType<{(statusCode: number, url: string): FastifyReply; (url: string): FastifyReply }>(reply.redirect)
+  expectType<{(statusCode: number, url: string): FastifyReply;(url: string, statusCode?: number): FastifyReply;}>(reply.redirect)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
-  expectType<() => number>(reply.getResponseTime)
   expectType<(contentType: string) => FastifyReply>(reply.type)
   expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
   expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)
@@ -40,8 +41,8 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(key: string) => boolean>(reply.hasTrailer)
   expectType<(key: string) => FastifyReply>(reply.removeTrailer)
   expectType<FastifyInstance>(reply.server)
-  expectAssignable<((httpStatus: string) => DefaultSerializationFunction)>(reply.getSerializationFunction)
-  expectAssignable<((schema: {[key: string]: unknown}) => DefaultSerializationFunction)>(reply.getSerializationFunction)
+  expectAssignable<((httpStatus: string) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
+  expectAssignable<((schema: {[key: string]: unknown}) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
   expectAssignable<((schema: {[key: string]: unknown}, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
   expectAssignable<((input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string) => unknown)>(reply.serializeInput)
   expectAssignable<((input: {[key: string]: unknown}, httpStatus: string) => unknown)>(reply.serializeInput)

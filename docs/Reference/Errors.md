@@ -36,6 +36,7 @@
     - [FST_ERR_DEC_DEPENDENCY_INVALID_TYPE](#fst_err_dec_dependency_invalid_type)
     - [FST_ERR_DEC_MISSING_DEPENDENCY](#fst_err_dec_missing_dependency)
     - [FST_ERR_DEC_AFTER_START](#fst_err_dec_after_start)
+    - [FST_ERR_DEC_REFERENCE_TYPE](#fst_err_dec_reference_type)
     - [FST_ERR_HOOK_INVALID_TYPE](#fst_err_hook_invalid_type)
     - [FST_ERR_HOOK_INVALID_HANDLER](#fst_err_hook_invalid_handler)
     - [FST_ERR_HOOK_INVALID_ASYNC_HANDLER](#fst_err_hook_invalid_async_handler)
@@ -44,7 +45,11 @@
     - [FST_ERR_HOOK_TIMEOUT](#fst_err_hook_timeout)
     - [FST_ERR_LOG_INVALID_DESTINATION](#fst_err_log_invalid_destination)
     - [FST_ERR_LOG_INVALID_LOGGER](#fst_err_log_invalid_logger)
+    - [FST_ERR_LOG_INVALID_LOGGER_INSTANCE](#fst_err_log_invalid_logger_instance)
+    - [FST_ERR_LOG_INVALID_LOGGER_CONFIG](#fst_err_log_invalid_logger_config)
+    - [FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED](#fst_err_log_logger_and_logger_instance_provided)
     - [FST_ERR_REP_INVALID_PAYLOAD_TYPE](#fst_err_rep_invalid_payload_type)
+    - [FST_ERR_REP_RESPONSE_BODY_CONSUMED](#fst_err_rep_response_body_consumed)
     - [FST_ERR_REP_ALREADY_SENT](#fst_err_rep_already_sent)
     - [FST_ERR_REP_SENT_VALUE](#fst_err_rep_sent_value)
     - [FST_ERR_SEND_INSIDE_ONERR](#fst_err_send_inside_onerr)
@@ -69,7 +74,6 @@
     - [FST_ERR_DUPLICATED_ROUTE](#fst_err_duplicated_route)
     - [FST_ERR_BAD_URL](#fst_err_bad_url)
     - [FST_ERR_ASYNC_CONSTRAINT](#fst_err_async_constraint)
-    - [FST_ERR_DEFAULT_ROUTE_INVALID_TYPE](#fst_err_default_route_invalid_type)
     - [FST_ERR_INVALID_URL](#fst_err_invalid_url)
     - [FST_ERR_ROUTE_OPTIONS_NOT_OBJ](#fst_err_route_options_not_obj)
     - [FST_ERR_ROUTE_DUPLICATED_HANDLER](#fst_err_route_duplicated_handler)
@@ -89,8 +93,10 @@
     - [FST_ERR_PARENT_PLUGIN_BOOTED](#fst_err_parent_plugin_booted)
     - [FST_ERR_PLUGIN_TIMEOUT](#fst_err_plugin_timeout)
     - [FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE](#fst_err_plugin_not_present_in_instance)
+    - [FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER](#fst_err_plugin_invalid_async_handler)
     - [FST_ERR_VALIDATION](#fst_err_validation)
     - [FST_ERR_LISTEN_OPTIONS_INVALID](#fst_err_listen_options_invalid)
+    - [FST_ERR_ERROR_HANDLER_NOT_FN](#fst_err_error_handler_not_fn)
 
 ### Error Handling In Node.js
 <a id="error-handling"></a>
@@ -169,6 +175,65 @@ Some things to consider in your custom error handler:
     internally monitors the error invocation to avoid infinite loops for errors
     thrown in the reply phases of the lifecycle. (those after the route handler)
 
+When utilizing Fastify's custom error handling through [`setErrorHandler`](./Server.md#seterrorhandler),
+you should be aware of how errors are propagated between custom and default
+error handlers.
+
+If a plugin's error handler re-throws an error, and the error is not an 
+instance of [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+(as seen in the `/bad` route in the following example), it will not propagate
+to the parent context error handler. Instead, it will be caught by the default
+error handler.
+
+To ensure consistent error handling, it is recommended to throw instances of 
+`Error`. For instance, in the following example, replacing `throw 'foo'` with
+`throw new Error('foo')` in the `/bad` route ensures that errors propagate through
+the custom error handling chain as intended. This practice helps avoid potential
+pitfalls when working with custom error handling in Fastify.
+
+For example:
+```js
+const Fastify = require('fastify')
+
+// Instantiate the framework
+const fastify = Fastify({
+  logger: true
+})
+
+// Register parent error handler
+fastify.setErrorHandler((error, request, reply) => {
+  reply.status(500).send({ ok: false })
+})
+
+fastify.register((app, options, next) => {
+  // Register child error handler
+  fastify.setErrorHandler((error, request, reply) => {
+    throw error
+  })
+
+  fastify.get('/bad', async () => {
+    // Throws a non-Error type, 'bar'
+    throw 'foo'
+  })
+
+  fastify.get('/good', async () => {
+    // Throws an Error instance, 'bar'
+    throw new Error('bar')
+  })
+
+  next()
+})
+
+// Run the server
+fastify.listen({ port: 3000 }, function (err, address) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  // Server is listening at ${address}
+})
+```
+
 ### Fastify Error Codes
 <a id="fastify-error-codes"></a>
 
@@ -183,7 +248,7 @@ const errorCodes = require('fastify').errorCodes
 
 For example:
 ```js
-const Fastify = require('./fastify')
+const Fastify = require('fastify')
 
 // Instantiate the framework
 const fastify = Fastify({
@@ -244,6 +309,7 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_dec_dependency_invalid_type">FST_ERR_DEC_DEPENDENCY_INVALID_TYPE</a> | The dependencies of decorator must be of type `Array`. | Use an array for the dependencies. | [#3090](https://github.com/fastify/fastify/pull/3090) |
 | <a id="fst_err_dec_missing_dependency">FST_ERR_DEC_MISSING_DEPENDENCY</a> | The decorator cannot be registered due to a missing dependency. | Register the missing dependency. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_after_start">FST_ERR_DEC_AFTER_START</a> | The decorator cannot be added after start. | Add the decorator before starting the server. | [#2128](https://github.com/fastify/fastify/pull/2128) |
+| <a id="fst_err_dec_reference_type">FST_ERR_DEC_REFERENCE_TYPE</a> | The decorator cannot be a reference type. | Define the decorator with a getter/setter interface or an empty decorator with a hook. | [#5462](https://github.com/fastify/fastify/pull/5462) |
 | <a id="fst_err_hook_invalid_type">FST_ERR_HOOK_INVALID_TYPE</a> | The hook name must be a string. | Use a string for the hook name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_handler">FST_ERR_HOOK_INVALID_HANDLER</a> | The hook callback must be a function. | Use a function for the hook callback. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_async_handler">FST_ERR_HOOK_INVALID_ASYNC_HANDLER</a> | Async function has too many arguments. Async hooks should not use the `done` argument. | Remove the `done` argument from the async hook. | [#4367](https://github.com/fastify/fastify/pull/4367) |
@@ -252,7 +318,11 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_hook_timeout">FST_ERR_HOOK_TIMEOUT</a> | A callback for a hook timed out. | Increase the timeout for the hook. | [#3106](https://github.com/fastify/fastify/pull/3106) |
 | <a id="fst_err_log_invalid_destination">FST_ERR_LOG_INVALID_DESTINATION</a> | The logger does not accept the specified destination. | Use a `'stream'` or a `'file'` as the destination. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_log_invalid_logger">FST_ERR_LOG_INVALID_LOGGER</a> | The logger should have all these methods: `'info'`, `'error'`, `'debug'`, `'fatal'`, `'warn'`, `'trace'`, `'child'`. | Use a logger with all the required methods. | [#4520](https://github.com/fastify/fastify/pull/4520) |
+| <a id="fst_err_log_invalid_logger_instance">FST_ERR_LOG_INVALID_LOGGER_INSTANCE</a> | The `loggerInstance` only accepts a logger instance, not a configuration object. | To pass a configuration object, use `'logger'` instead. | [#5020](https://github.com/fastify/fastify/pull/5020) |
+| <a id="fst_err_log_invalid_logger_config">FST_ERR_LOG_INVALID_LOGGER_CONFIG</a> | The logger option only accepts a configuration object, not a logger instance. | To pass an instance, use `'loggerInstance'` instead.  | [#5020](https://github.com/fastify/fastify/pull/5020) |
+| <a id="fst_err_log_logger_and_logger_instance_provided">FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED</a> | You cannot provide both `'logger'` and `'loggerInstance'`. | Please provide only one option.  | [#5020](https://github.com/fastify/fastify/pull/5020) |
 | <a id="fst_err_rep_invalid_payload_type">FST_ERR_REP_INVALID_PAYLOAD_TYPE</a> | Reply payload can be either a `string` or a `Buffer`. | Use a `string` or a `Buffer` for the payload. | [#1168](https://github.com/fastify/fastify/pull/1168) |
+| <a id="fst_err_rep_response_body_consumed">FST_ERR_REP_RESPONSE_BODY_CONSUMED</a> | Using `Response` as reply payload, but the body is being consumed. | Make sure you don't consume the `Response.body` | [#5286](https://github.com/fastify/fastify/pull/5286) |
 | <a id="fst_err_rep_already_sent">FST_ERR_REP_ALREADY_SENT</a> | A response was already sent. | - | [#1336](https://github.com/fastify/fastify/pull/1336) |
 | <a id="fst_err_rep_sent_value">FST_ERR_REP_SENT_VALUE</a> | The only possible value for `reply.sent` is `true`. | - | [#1336](https://github.com/fastify/fastify/pull/1336) |
 | <a id="fst_err_send_inside_onerr">FST_ERR_SEND_INSIDE_ONERR</a> | You cannot use `send` inside the `onError` hook. | - | [#1348](https://github.com/fastify/fastify/pull/1348) |
@@ -275,9 +345,8 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_init_opts_invalid">FST_ERR_INIT_OPTS_INVALID</a> | Invalid initialization options. | Use valid initialization options. | [#1471](https://github.com/fastify/fastify/pull/1471) |
 | <a id="fst_err_force_close_connections_idle_not_available">FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE</a> | Cannot set forceCloseConnections to `idle` as your HTTP server does not support `closeIdleConnections` method. | Use a different value for `forceCloseConnections`. | [#3925](https://github.com/fastify/fastify/pull/3925) |
 | <a id="fst_err_duplicated_route">FST_ERR_DUPLICATED_ROUTE</a> | The HTTP method already has a registered controller for that URL. | Use a different URL or register the controller for another HTTP method. | [#2954](https://github.com/fastify/fastify/pull/2954) |
-| <a id="fst_err_bad_url">FST_ERR_BAD_URL</a> | The router received an invalid url. | Use a valid URL. | [#2106](https://github.com/fastify/fastify/pull/2106) |
+| <a id="fst_err_bad_url">FST_ERR_BAD_URL</a> | The router received an invalid URL. | Use a valid URL. | [#2106](https://github.com/fastify/fastify/pull/2106) |
 | <a id="fst_err_async_constraint">FST_ERR_ASYNC_CONSTRAINT</a> | The router received an error when using asynchronous constraints. | - | [#4323](https://github.com/fastify/fastify/pull/4323) |
-| <a id="fst_err_default_route_invalid_type">FST_ERR_DEFAULT_ROUTE_INVALID_TYPE</a> | The `defaultRoute` type should be a function. | Use a function for the `defaultRoute`. | [#2733](https://github.com/fastify/fastify/pull/2733) |
 | <a id="fst_err_invalid_url">FST_ERR_INVALID_URL</a> | URL must be a string. | Use a string for the URL. | [#3653](https://github.com/fastify/fastify/pull/3653) |
 | <a id="fst_err_route_options_not_obj">FST_ERR_ROUTE_OPTIONS_NOT_OBJ</a> | Options for the route must be an object. | Use an object for the route options. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_duplicated_handler">FST_ERR_ROUTE_DUPLICATED_HANDLER</a> | Duplicate handler for the route is not allowed. | Use a different handler. | [#4554](https://github.com/fastify/fastify/pull/4554) |
@@ -297,6 +366,8 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_parent_plugin_booted">FST_ERR_PARENT_PLUGIN_BOOTED</a> | Impossible to load plugin because the parent (mapped directly from `avvio`) | - | [#3106](https://github.com/fastify/fastify/pull/3106) |
 | <a id="fst_err_plugin_timeout">FST_ERR_PLUGIN_TIMEOUT</a> | Plugin did not start in time. | Increase the timeout for the plugin. | [#3106](https://github.com/fastify/fastify/pull/3106) |
 | <a id="fst_err_plugin_not_present_in_instance">FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE</a> | The decorator is not present in the instance. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_plugin_invalid_async_handler">FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER</a> | The plugin being registered mixes async and callback styles. | - | [#5141](https://github.com/fastify/fastify/pull/5141) |
 | <a id="fst_err_validation">FST_ERR_VALIDATION</a> | The Request failed the payload validation. | Check the request payload. | [#4824](https://github.com/fastify/fastify/pull/4824) |
 | <a id="fst_err_listen_options_invalid">FST_ERR_LISTEN_OPTIONS_INVALID</a> | Invalid listen options. | Check the listen options. | [#4886](https://github.com/fastify/fastify/pull/4886) |
+| <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) |
 

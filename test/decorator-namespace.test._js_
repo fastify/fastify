@@ -1,0 +1,31 @@
+'use strict'
+
+/* eslint no-prototype-builtins: 0 */
+
+const t = require('tap')
+const test = t.test
+const Fastify = require('..')
+const fp = require('fastify-plugin')
+
+test('plugin namespace', async t => {
+  t.plan(2)
+  const app = Fastify()
+
+  await app.register(async function plugin (app, opts) {
+    app.decorate('utility', function () {
+      return 'utility'
+    })
+
+    app.get('/', function (req, reply) {
+      // ! here the plugin would use app.utility()
+      // ! the plugin does not know about the namespace
+      reply.send({ utility: app.utility() })
+    })
+  }, { namepace: 'foo' })
+
+  // ! but outside the plugin the decorator would be app.foo.utility()
+  t.ok(app.foo.utility)
+
+  const res = await app.inject('/')
+  t.same(res.json(), { utility: 'utility' })
+})

@@ -7,6 +7,7 @@ const test = t.test
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
 const fakeTimer = require('@sinonjs/fake-timers')
+const { FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER } = require('../lib/errors')
 
 test('pluginTimeout', t => {
   t.plan(5)
@@ -22,7 +23,7 @@ test('pluginTimeout', t => {
       "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
-    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+    t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
   })
 })
 
@@ -40,7 +41,7 @@ test('pluginTimeout - named function', t => {
       "fastify-plugin: Plugin did not start in time: 'nameFunction'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
-    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+    t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
   })
 })
 
@@ -60,7 +61,7 @@ test('pluginTimeout default', t => {
       "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
     t.ok(err.cause)
-    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+    t.equal(err.cause.code, 'AVV_ERR_PLUGIN_EXEC_TIMEOUT')
   })
 
   t.teardown(clock.uninstall)
@@ -415,25 +416,28 @@ test('hasPlugin returns true when using encapsulation', async t => {
   await fastify.ready()
 })
 
-test('registering plugins with mixed style should return a warning', async t => {
-  t.plan(12)
+test('registering anonymous plugin with mixed style should throw', async t => {
+  t.plan(2)
 
-  const pluginNames = ['error-plugin', 'anonymous', 'anotherPlugin', 'anotherPluginNamed']
+  const fastify = Fastify()
 
-  const oldWarnings = process.listeners('warning')
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.match(warning.message, new RegExp(`.*${pluginNames.shift()} plugin being registered mixes async and callback styles.*`))
-    t.equal(warning.name, 'FastifyWarning')
-    t.equal(warning.code, 'FSTWRN002')
+  const anonymousPlugin = async (app, opts, done) => {
+    done()
   }
-  t.teardown(() => {
-    process.removeListener('warning', onWarning)
-    for (const warning of oldWarnings) {
-      process.on('warning', warning)
-    }
-  })
+
+  fastify.register(anonymousPlugin)
+
+  try {
+    await fastify.ready()
+    t.fail('should throw')
+  } catch (error) {
+    t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
+    t.equal(error.message, 'The anonymousPlugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  }
+})
+
+test('registering named plugin with mixed style should throw', async t => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -441,23 +445,15 @@ test('registering plugins with mixed style should return a warning', async t => 
   const errorPlugin = async (app, opts, done) => {
     done()
   }
-
   const namedPlugin = fp(errorPlugin, { name: pluginName })
 
-  async function anotherPlugin (app, opts, done) {
-    done()
-  }
-
-  const anotherPluginNamed = async function (app, opts, done) {
-    done()
-  }
-
   fastify.register(namedPlugin)
-  fastify.register(async (app, opts, done) => {
-    done()
-  })
-  fastify.register(anotherPlugin)
-  fastify.register(anotherPluginNamed)
 
-  await fastify.ready()
+  try {
+    await fastify.ready()
+    t.fail('should throw')
+  } catch (error) {
+    t.type(error, FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER)
+    t.equal(error.message, 'The error-plugin plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  }
 })

@@ -1,4 +1,3 @@
-import pino from 'pino'
 import { expectAssignable, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
@@ -70,6 +69,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<Readonly<RequestRouteOptions>>(request.routeOptions)
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
+  expectType<string>(request.host)
+  expectType<number>(request.port)
   expectType<string>(request.ip)
   expectType<string[] | undefined>(request.ips)
   expectType<RawRequestDefaultExpression>(request.raw)
@@ -80,9 +81,10 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeConfig)
   expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeOptions.config)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
-  expectType<FastifySchema>(request.routeSchema)
-  expectType<FastifySchema>(request.routeOptions.schema)
+  expectType<FastifySchema | undefined>(request.routeSchema)
+  expectType<FastifySchema | undefined>(request.routeOptions.schema)
   expectType<RouteHandlerMethod>(request.routeOptions.handler)
+  expectType<string | undefined>(request.routeOptions.url)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}
@@ -153,7 +155,7 @@ const customLogger: CustomLoggerInterface = {
   child: () => customLogger
 }
 
-const serverWithCustomLogger = fastify({ logger: customLogger })
+const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
 expectType<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>

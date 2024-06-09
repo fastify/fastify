@@ -58,7 +58,7 @@ export interface FastifyLoggerOptions<
       method?: string;
       url?: string;
       version?: string;
-      hostname?: string;
+      host?: string;
       remoteAddress?: string;
       remotePort?: number;
       [key: string]: unknown;

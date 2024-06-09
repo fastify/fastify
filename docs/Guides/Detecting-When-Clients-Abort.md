@@ -87,10 +87,12 @@ of `{ ok: true }`.
 - Logic that triggers in the hook when the request is closed.
 - Logging that occurs when the closed request property `aborted` is true.
 
-In the request close event, you should examine the diff between a successful 
-request and one aborted by the client to determine the best property for your 
-use case. You can find details about request properties in the 
-[NodeJS documentation](https://nodejs.org/api/http.html).
+Whilst the `aborted` property has been deprecated, `destroyed` is not a
+suitable replacement as the
+[Node.js documentation suggests](https://nodejs.org/api/http.html#requestaborted).
+A request can be `destroyed` for various reasons, such as when the server closes
+the connection. The `aborted` property is still the most reliable way to detect
+when a client intentionally aborts a request.
 
 You can also perform this logic outside of a hook, directly in a specific route.
 

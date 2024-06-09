@@ -60,7 +60,9 @@ test('Destroying streams prematurely should call abort method', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -110,7 +112,9 @@ test('Destroying streams prematurely, log is disabled', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -140,7 +144,9 @@ test('should respond with a stream1', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
       t.error(err)
@@ -172,7 +178,9 @@ test('return a 404 if the stream emits a 404 error', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -200,7 +208,9 @@ test('should support send module 200 and 404', { skip: semver.gte(process.versio
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     const url = getServerUrl(fastify)
 

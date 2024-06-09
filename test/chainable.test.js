@@ -32,10 +32,13 @@ test('chainable - post', t => {
 
 test('chainable - route', t => {
   t.plan(1)
-  t.type(fastify.route({
-    method: 'GET',
-    url: '/other',
-    schema: opts.schema,
-    handler: noop
-  }), fastify)
+  t.type(
+    fastify.route({
+      method: 'GET',
+      url: '/other',
+      schema: opts.schema,
+      handler: noop
+    }),
+    fastify
+  )
 })

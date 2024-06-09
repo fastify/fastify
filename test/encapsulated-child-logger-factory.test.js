@@ -9,26 +9,26 @@ test('encapsulates an child logger factory', async t => {
 
   const fastify = Fastify()
   fastify.register(async function (fastify) {
-    fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
+    fastify.setChildLoggerFactory(function pluginFactory(logger, bindings, opts) {
       const child = logger.child(bindings, opts)
       child.customLog = function (message) {
         t.equal(message, 'custom')
       }
       return child
     })
-    fastify.get('/encapsulated', async (req) => {
+    fastify.get('/encapsulated', async req => {
       req.log.customLog('custom')
     })
   })
 
-  fastify.setChildLoggerFactory(function globalFactory (logger, bindings, opts) {
+  fastify.setChildLoggerFactory(function globalFactory(logger, bindings, opts) {
     const child = logger.child(bindings, opts)
     child.globalLog = function (message) {
       t.equal(message, 'global')
     }
     return child
   })
-  fastify.get('/not-encapsulated', async (req) => {
+  fastify.get('/not-encapsulated', async req => {
     req.log.globalLog('global')
   })
 
@@ -43,21 +43,23 @@ test('child logger factory set on root scope when using fastify-plugin', async t
   t.plan(4)
 
   const fastify = Fastify()
-  fastify.register(fp(async function (fastify) {
-    // Using fastify-plugin, the factory should be set on the root scope
-    fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
-      const child = logger.child(bindings, opts)
-      child.customLog = function (message) {
-        t.equal(message, 'custom')
-      }
-      return child
+  fastify.register(
+    fp(async function (fastify) {
+      // Using fastify-plugin, the factory should be set on the root scope
+      fastify.setChildLoggerFactory(function pluginFactory(logger, bindings, opts) {
+        const child = logger.child(bindings, opts)
+        child.customLog = function (message) {
+          t.equal(message, 'custom')
+        }
+        return child
+      })
+      fastify.get('/not-encapsulated-1', async req => {
+        req.log.customLog('custom')
+      })
     })
-    fastify.get('/not-encapsulated-1', async (req) => {
-      req.log.customLog('custom')
-    })
-  }))
+  )
 
-  fastify.get('/not-encapsulated-2', async (req) => {
+  fastify.get('/not-encapsulated-2', async req => {
     req.log.customLog('custom')
   })
 

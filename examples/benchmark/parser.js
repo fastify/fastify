@@ -35,12 +35,15 @@ fastify.addContentTypeParser('application/x-www-form-urlencoded', function (requ
 })
 
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/vnd.custom+json' http://localhost:3000/
-fastify.addContentTypeParser(/^application\/.+\+json$/, { parseAs: 'string' }, fastify.getDefaultJsonParser('error', 'ignore'))
+fastify.addContentTypeParser(
+  /^application\/.+\+json$/,
+  { parseAs: 'string' },
+  fastify.getDefaultJsonParser('error', 'ignore')
+)
 
-fastify
-  .post('/', function (req, reply) {
-    reply.send(req.body)
-  })
+fastify.post('/', function (req, reply) {
+  reply.send(req.body)
+})
 
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) throw err

@@ -10,7 +10,7 @@ const msg = { hello: 'world' }
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
-test('secure with fallback', (t) => {
+test('secure with fallback', t => {
   t.plan(7)
 
   let fastify
@@ -42,9 +42,11 @@ test('secure with fallback', (t) => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
-    t.test('https get error', async (t) => {
+    t.test('https get error', async t => {
       t.plan(1)
 
       const url = `https://localhost:${fastify.server.address().port}/error`
@@ -53,7 +55,7 @@ test('secure with fallback', (t) => {
       t.equal(res.headers[':status'], 500)
     })
 
-    t.test('https post', async (t) => {
+    t.test('https post', async t => {
       t.plan(2)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -70,7 +72,7 @@ test('secure with fallback', (t) => {
       t.same(JSON.parse(res.body), { hello: 'http2' })
     })
 
-    t.test('https get request', async (t) => {
+    t.test('https get request', async t => {
       t.plan(3)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -83,28 +85,34 @@ test('secure with fallback', (t) => {
 
     t.test('http1 get request', t => {
       t.plan(4)
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.equal(response.headers['content-length'], '' + body.length)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+      sget(
+        {
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port,
+          rejectUnauthorized: false
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.equal(response.headers['content-length'], '' + body.length)
+          t.same(JSON.parse(body), { hello: 'world' })
+        }
+      )
     })
 
-    t.test('http1 get error', (t) => {
+    t.test('http1 get error', t => {
       t.plan(2)
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port + '/error',
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 500)
-      })
+      sget(
+        {
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port + '/error',
+          rejectUnauthorized: false
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 500)
+        }
+      )
     })
   })
 })

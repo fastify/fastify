@@ -26,7 +26,7 @@ test('add hooks after route declaration', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     instance.decorateRequest('check', null)
     instance.addHook('onRequest', (req, reply, done) => {
       req.check = {}
@@ -37,7 +37,7 @@ test('add hooks after route declaration', t => {
   fastify.register(fp(plugin))
 
   fastify.register((instance, options, done) => {
-    instance.addHook('preHandler', function b (req, res, done) {
+    instance.addHook('preHandler', function b(req, res, done) {
       req.check.hook2 = true
       done()
     })
@@ -46,7 +46,7 @@ test('add hooks after route declaration', t => {
       reply.send(req.check)
     })
 
-    instance.addHook('preHandler', function c (req, res, done) {
+    instance.addHook('preHandler', function c(req, res, done) {
       req.check.hook3 = true
       done()
     })
@@ -54,7 +54,7 @@ test('add hooks after route declaration', t => {
     done()
   })
 
-  fastify.addHook('preHandler', function a (req, res, done) {
+  fastify.addHook('preHandler', function a(req, res, done) {
     req.check.hook1 = true
     done()
   })
@@ -62,14 +62,17 @@ test('add hooks after route declaration', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
-      fastify.close()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
+        fastify.close()
+      }
+    )
   })
 })
 
@@ -80,42 +83,57 @@ test('nested plugins', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(function (fastify, opts, done) {
-    fastify.register((fastify, opts, done) => {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 1')
-      })
-      done()
-    }, { prefix: '/child1' })
+  fastify.register(
+    function (fastify, opts, done) {
+      fastify.register(
+        (fastify, opts, done) => {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 1')
+          })
+          done()
+        },
+        { prefix: '/child1' }
+      )
 
-    fastify.register((fastify, opts, done) => {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 2')
-      })
-      done()
-    }, { prefix: '/child2' })
+      fastify.register(
+        (fastify, opts, done) => {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 2')
+          })
+          done()
+        },
+        { prefix: '/child2' }
+      )
 
-    done()
-  }, { prefix: '/parent' })
+      done()
+    },
+    { prefix: '/parent' }
+  )
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 1')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 1')
+      }
+    )
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 2')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 2')
+      }
+    )
   })
 })
 
@@ -126,38 +144,53 @@ test('nested plugins awaited', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(async function wrap (fastify, opts) {
-    await fastify.register(async function child1 (fastify, opts) {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 1')
-      })
-    }, { prefix: '/child1' })
+  fastify.register(
+    async function wrap(fastify, opts) {
+      await fastify.register(
+        async function child1(fastify, opts) {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 1')
+          })
+        },
+        { prefix: '/child1' }
+      )
 
-    await fastify.register(async function child2 (fastify, opts) {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 2')
-      })
-    }, { prefix: '/child2' })
-  }, { prefix: '/parent' })
+      await fastify.register(
+        async function child2(fastify, opts) {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 2')
+          })
+        },
+        { prefix: '/child2' }
+      )
+    },
+    { prefix: '/parent' }
+  )
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 1')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 1')
+      }
+    )
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 2')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 2')
+      }
+    )
   })
 })
 
@@ -184,7 +217,7 @@ test('plugin metadata - decorators', t => {
     t.ok(fastify.plugin)
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     instance.decorate('plugin', true)
     done()
   }
@@ -207,11 +240,11 @@ test('plugin metadata - decorators - should throw', t => {
   }
 
   fastify.register(plugin)
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.equal(err.message, "The decorator 'plugin1' is not present in Request")
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     instance.decorate('plugin', true)
     done()
   }
@@ -235,11 +268,11 @@ test('plugin metadata - decorators - should throw with plugin name', t => {
   }
 
   fastify.register(plugin)
-  fastify.ready((err) => {
+  fastify.ready(err => {
     t.equal(err.message, "The decorator 'plugin1' required by 'the-plugin' is not present in Request")
   })
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     instance.decorate('plugin', true)
     done()
   }
@@ -266,11 +299,11 @@ test('plugin metadata - dependencies', t => {
     t.pass('everything right')
   })
 
-  function dependency (instance, opts, done) {
+  function dependency(instance, opts, done) {
     done()
   }
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     done()
   }
 })
@@ -296,16 +329,16 @@ test('plugin metadata - dependencies (nested)', t => {
     t.pass('everything right')
   })
 
-  function dependency (instance, opts, done) {
+  function dependency(instance, opts, done) {
     done()
   }
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     instance.register(nested)
     done()
   }
 
-  function nested (instance, opts, done) {
+  function nested(instance, opts, done) {
     done()
   }
 })

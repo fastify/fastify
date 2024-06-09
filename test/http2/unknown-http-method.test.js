@@ -16,9 +16,11 @@ fastify.get('/', function (req, reply) {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
-  test('http UNKNOWN_METHOD request', async (t) => {
+  test('http UNKNOWN_METHOD request', async t => {
     t.plan(2)
 
     const url = `http://localhost:${fastify.server.address().port}`

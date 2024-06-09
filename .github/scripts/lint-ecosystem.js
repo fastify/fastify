@@ -16,7 +16,7 @@ module.exports = async function ({ core }) {
   await handleResults({ core }, results)
 }
 
-async function runCheck () {
+async function runCheck() {
   const stream = await fs.createReadStream(ecosystemDocFile)
   const rl = readline.createInterface({
     input: stream,
@@ -80,36 +80,36 @@ async function runCheck () {
   return { failures, successes }
 }
 
-async function handleResults (scriptLibs, results) {
+async function handleResults(scriptLibs, results) {
   const { core } = scriptLibs
-  const { failures, successes } = results;
-  const isError = !!failures.length;
+  const { failures, successes } = results
+  const isError = !!failures.length
 
   await core.summary
-    .addHeading(isError ? `❌ Ecosystem.md Lint (${failures.length} error${failures.length === 1 ? '' : 's' })` : '✅ Ecosystem Lint (no errors found)')
+    .addHeading(
+      isError
+        ? `❌ Ecosystem.md Lint (${failures.length} error${failures.length === 1 ? '' : 's'})`
+        : '✅ Ecosystem Lint (no errors found)'
+    )
     .addTable([
       [
         { data: 'Status', header: true },
         { data: 'Section', header: true },
         { data: 'Module', header: true },
-        { data: 'Details', header: true }],
-      ...failures.map((failure) => [
+        { data: 'Details', header: true }
+      ],
+      ...failures.map(failure => [
         '❌',
         failure.grouping,
         failure.moduleName,
         `Line Number: ${failure.lineNumber.toString()} - ${failure.type}`
       ]),
-      ...successes.map((success) => [
-        '✅',
-        success.grouping,
-        success.moduleName,
-        '-'
-      ])
+      ...successes.map(success => ['✅', success.grouping, success.moduleName, '-'])
     ])
     .write()
 
   if (isError) {
-    failures.forEach((failure) => {
+    failures.forEach(failure => {
       if (failure.type === failureTypes.improperFormat) {
         core.error('The module name should be enclosed with backticks', {
           title: 'Improper format',
@@ -131,10 +131,6 @@ async function handleResults (scriptLibs, results) {
   }
 }
 
-function compare (current, previous) {
-  return previous.localeCompare(
-    current,
-    'en',
-    { sensitivity: 'base' }
-  )
+function compare(current, previous) {
+  return previous.localeCompare(current, 'en', { sensitivity: 'base' })
 }

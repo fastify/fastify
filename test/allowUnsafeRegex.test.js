@@ -20,16 +20,19 @@ test('allow unsafe regex', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        foo: '1234'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {
+          foo: '1234'
+        })
+      }
+    )
   })
 })
 
@@ -48,13 +51,16 @@ test('allow unsafe regex not match', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/a1234'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/a1234'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })
 
@@ -103,15 +109,18 @@ test('allow unsafe regex allow unsafe', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        foo: '1234'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {
+          foo: '1234'
+        })
+      }
+    )
   })
 })

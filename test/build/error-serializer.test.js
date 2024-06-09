@@ -7,7 +7,7 @@ const path = require('node:path')
 
 const { code } = require('../../build/build-error-serializer')
 
-function unifyLineBreak (str) {
+function unifyLineBreak(str) {
   return str.toString().replace(/\r\n/g, '\n')
 }
 

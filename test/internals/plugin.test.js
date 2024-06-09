@@ -15,8 +15,8 @@ test("shouldSkipOverride should check the 'skip-override' symbol", t => {
   t.ok(pluginUtils.shouldSkipOverride(yes))
   t.notOk(pluginUtils.shouldSkipOverride(no))
 
-  function yes () {}
-  function no () {}
+  function yes() {}
+  function no() {}
 })
 
 test('getPluginName should return plugin name if the file is cached', t => {
@@ -31,7 +31,7 @@ test('getPluginName should return plugin name if the file is cached', t => {
 
 test('getPluginName should not throw when require.cache is undefined', t => {
   t.plan(1)
-  function example () {
+  function example() {
     console.log('is just an example')
   }
   const cache = require.cache
@@ -52,7 +52,7 @@ test("getMeta should return the object stored with the 'plugin-meta' symbol", t 
 
   t.same(meta, pluginUtils.getMeta(fn))
 
-  function fn () {}
+  function fn() {}
 })
 
 test('checkDecorators should check if the given decorator is present in the instance', t => {
@@ -66,7 +66,7 @@ test('checkDecorators should check if the given decorator is present in the inst
     }
   }
 
-  function context () {}
+  function context() {}
   context.plugin = true
   context[symbols.kReply] = { prototype: { plugin: true }, props: [] }
   context[symbols.kRequest] = { prototype: { plugin: true }, props: [] }
@@ -78,7 +78,7 @@ test('checkDecorators should check if the given decorator is present in the inst
     t.fail(err)
   }
 
-  function fn () {}
+  function fn() {}
 })
 
 test('checkDecorators should check if the given decorator is present in the instance (errored)', t => {
@@ -92,7 +92,7 @@ test('checkDecorators should check if the given decorator is present in the inst
     }
   }
 
-  function context () {}
+  function context() {}
   context.plugin = true
   context[symbols.kReply] = { prototype: { plugin: true }, props: [] }
   context[symbols.kRequest] = { prototype: {}, props: [] }
@@ -104,17 +104,17 @@ test('checkDecorators should check if the given decorator is present in the inst
     t.equal(err.message, "The decorator 'plugin' is not present in Request")
   }
 
-  function fn () {}
+  function fn() {}
 })
 
 test('checkDecorators should accept optional decorators', t => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
-    decorators: { }
+    decorators: {}
   }
 
-  function context () {}
+  function context() {}
   context.plugin = true
   context[symbols.kReply] = { prototype: { plugin: true } }
   context[symbols.kRequest] = { prototype: { plugin: true } }
@@ -126,7 +126,7 @@ test('checkDecorators should accept optional decorators', t => {
     t.fail(err)
   }
 
-  function fn () {}
+  function fn() {}
 })
 
 test('checkDependencies should check if the given dependency is present in the instance', t => {
@@ -136,7 +136,7 @@ test('checkDependencies should check if the given dependency is present in the i
     dependencies: ['plugin']
   }
 
-  function context () {}
+  function context() {}
   context[pluginUtilsPublic.kRegisteredPlugins] = ['plugin']
 
   try {
@@ -146,7 +146,7 @@ test('checkDependencies should check if the given dependency is present in the i
     t.fail(err)
   }
 
-  function fn () {}
+  function fn() {}
 })
 
 test('checkDependencies should check if the given dependency is present in the instance (errored)', t => {
@@ -157,7 +157,7 @@ test('checkDependencies should check if the given dependency is present in the i
     dependencies: ['plugin']
   }
 
-  function context () {}
+  function context() {}
   context[pluginUtilsPublic.kRegisteredPlugins] = []
 
   try {
@@ -167,5 +167,5 @@ test('checkDependencies should check if the given dependency is present in the i
     t.equal(err.message, "The dependency 'plugin' of plugin 'test-plugin' is not registered")
   }
 
-  function fn () {}
+  function fn() {}
 })

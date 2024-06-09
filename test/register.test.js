@@ -40,22 +40,27 @@ test('register', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     makeRequest('first')
     makeRequest('second')
   })
 
-  function makeRequest (path) {
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/' + path
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
+  function makeRequest(path) {
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/' + path
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
   }
 })
 
@@ -126,8 +131,10 @@ test('awaitable register and after', async t => {
   t.equal(third, true)
 })
 
-function thenableRejects (t, promise, error) {
-  return t.rejects(async () => { await promise }, error)
+function thenableRejects(t, promise, error) {
+  return t.rejects(async () => {
+    await promise
+  }, error)
 }
 
 test('awaitable register error handling', async t => {
@@ -135,9 +142,13 @@ test('awaitable register error handling', async t => {
 
   const e = new Error('kaboom')
 
-  await thenableRejects(t, fastify.register(async (instance, opts) => {
-    throw e
-  }), e)
+  await thenableRejects(
+    t,
+    fastify.register(async (instance, opts) => {
+      throw e
+    }),
+    e
+  )
 
   fastify.register(async (instance, opts) => {
     t.fail('should not be executed')
@@ -179,13 +190,16 @@ test('chainable register', async t => {
 
   const fastify = Fastify()
 
-  fastify.register(async () => {
-    t.pass('first loaded')
-  }).register(async () => {
-    t.pass('second loaded')
-  }).register(async () => {
-    t.pass('third loaded')
-  })
+  fastify
+    .register(async () => {
+      t.pass('first loaded')
+    })
+    .register(async () => {
+      t.pass('second loaded')
+    })
+    .register(async () => {
+      t.pass('third loaded')
+    })
 
   await fastify.ready()
 })

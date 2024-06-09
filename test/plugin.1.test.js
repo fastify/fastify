@@ -24,15 +24,18 @@ test('plugin metadata - ignore prefix', t => {
   plugin[Symbol.for('skip-override')] = true
   fastify.register(plugin, { prefix: 'foo' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, function (err, res) {
-    t.error(err)
-    t.equal(res.payload, 'hello')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    function (err, res) {
+      t.error(err)
+      t.equal(res.payload, 'hello')
+    }
+  )
 
-  function plugin (instance, opts, done) {
+  function plugin(instance, opts, done) {
     instance.get('/', function (request, reply) {
       reply.send('hello')
     })
@@ -50,7 +53,7 @@ test('plugin metadata - naming plugins', async t => {
     t.equal(fastify.pluginName, 'function (fastify, opts, done) { -- // one line')
     done()
   })
-  fastify.register(function fooBar (fastify, opts, done) {
+  fastify.register(function fooBar(fastify, opts, done) {
     t.equal(fastify.pluginName, 'fooBar')
     done()
   })
@@ -63,11 +66,13 @@ test('fastify.register with fastify-plugin should not encapsulate his code', t =
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
-    instance.register(fp((i, o, n) => {
-      i.decorate('test', () => {})
-      t.ok(i.test)
-      n()
-    }))
+    instance.register(
+      fp((i, o, n) => {
+        i.decorate('test', () => {})
+        t.ok(i.test)
+        n()
+      })
+    )
 
     t.notOk(instance.test)
 
@@ -90,17 +95,22 @@ test('fastify.register with fastify-plugin should not encapsulate his code', t =
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
   })
 })
 
@@ -109,45 +119,66 @@ test('fastify.register with fastify-plugin should provide access to external fas
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
-    instance.register(fp((i, o, n) => {
-      i.decorate('global', () => {})
-      t.ok(i.global)
-      n()
-    }))
+    instance.register(
+      fp((i, o, n) => {
+        i.decorate('global', () => {})
+        t.ok(i.global)
+        n()
+      })
+    )
 
-    instance.register((i, o, n) => n(), p => {
-      t.notOk(p === instance || p === fastify)
-      t.ok(instance.isPrototypeOf(p))
-      t.ok(fastify.isPrototypeOf(p))
-      t.ok(p.global)
-    })
+    instance.register(
+      (i, o, n) => n(),
+      p => {
+        t.notOk(p === instance || p === fastify)
+        t.ok(instance.isPrototypeOf(p))
+        t.ok(fastify.isPrototypeOf(p))
+        t.ok(p.global)
+      }
+    )
 
     instance.register((i, o, n) => {
       i.decorate('local', () => {})
       n()
     })
 
-    instance.register((i, o, n) => n(), p => t.notOk(p.local))
+    instance.register(
+      (i, o, n) => n(),
+      p => t.notOk(p.local)
+    )
 
-    instance.register((i, o, n) => {
-      t.ok(i.local)
-      n()
-    }, p => p.decorate('local', () => {}))
+    instance.register(
+      (i, o, n) => {
+        t.ok(i.local)
+        n()
+      },
+      p => p.decorate('local', () => {})
+    )
 
-    instance.register((i, o, n) => n(), p => t.notOk(p.local))
+    instance.register(
+      (i, o, n) => n(),
+      p => t.notOk(p.local)
+    )
 
-    instance.register(fp((i, o, n) => {
-      t.ok(i.global_2)
-      n()
-    }), p => p.decorate('global_2', () => 'hello'))
+    instance.register(
+      fp((i, o, n) => {
+        t.ok(i.global_2)
+        n()
+      }),
+      p => p.decorate('global_2', () => 'hello')
+    )
 
-    instance.register((i, o, n) => {
-      i.decorate('global_2', () => 'world')
-      n()
-    }, p => p.get('/', (req, reply) => {
-      t.ok(p.global_2)
-      reply.send({ hello: p.global_2() })
-    }))
+    instance.register(
+      (i, o, n) => {
+        i.decorate('global_2', () => 'world')
+        n()
+      },
+      p =>
+        p.get('/', (req, reply) => {
+          t.ok(p.global_2)
+          reply.send({ hello: p.global_2() })
+        })
+    )
 
     t.notOk(instance.global)
     t.notOk(instance.global_2)
@@ -169,17 +200,22 @@ test('fastify.register with fastify-plugin should provide access to external fas
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
   })
 })
 
@@ -187,13 +223,13 @@ test('fastify.register with fastify-plugin registers fastify level plugins', t =
   t.plan(15)
   const fastify = Fastify()
 
-  function fastifyPlugin (instance, opts, done) {
+  function fastifyPlugin(instance, opts, done) {
     instance.decorate('test', 'first')
     t.ok(instance.test)
     done()
   }
 
-  function innerPlugin (instance, opts, done) {
+  function innerPlugin(instance, opts, done) {
     instance.decorate('test2', 'second')
     done()
   }
@@ -224,26 +260,34 @@ test('fastify.register with fastify-plugin registers fastify level plugins', t =
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { test: 'first' })
+    t.teardown(() => {
+      fastify.close()
     })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/test2'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { test2: 'second' })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { test: 'first' })
+      }
+    )
+
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/test2'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { test2: 'second' })
+      }
+    )
   })
 })

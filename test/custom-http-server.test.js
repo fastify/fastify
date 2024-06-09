@@ -8,7 +8,7 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 
-async function setup () {
+async function setup() {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
   test('Should support a custom http server', { skip: localAddresses.length < 1 }, async t => {
@@ -37,18 +37,21 @@ async function setup () {
     await fastify.listen({ port: 0 })
 
     await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
+      sget(
+        {
+          method: 'GET',
+          url: 'http://localhost:' + fastify.server.address().port,
+          rejectUnauthorized: false
+        },
+        (err, response, body) => {
+          if (err) {
+            return reject(err)
+          }
+          t.equal(response.statusCode, 200)
+          t.same(JSON.parse(body), { hello: 'world' })
+          resolve()
         }
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
+      )
     })
   })
 
@@ -59,11 +62,9 @@ async function setup () {
       () => {
         Fastify({
           forceCloseConnections: 'idle',
-          serverFactory (handler, opts) {
+          serverFactory(handler, opts) {
             return {
-              on () {
-
-              }
+              on() {}
             }
           }
         })
@@ -74,7 +75,7 @@ async function setup () {
   })
 
   test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
-    const server = http.createServer(() => { })
+    const server = http.createServer(() => {})
     t.teardown(() => new Promise(resolve => server.close(resolve)))
     const app = await Fastify({
       serverFactory: () => server
@@ -115,7 +116,7 @@ async function setup () {
     t.same(fastify.addresses(), [address])
 
     await new Promise((resolve, reject) => {
-      server.close((err) => {
+      server.close(err => {
         if (err) {
           return reject(err)
         }

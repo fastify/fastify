@@ -31,18 +31,23 @@ test('bodyLimit', t => {
 
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 413)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: { 'Content-Type': 'application/json' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 413)
+      }
+    )
   })
 })
 
@@ -59,7 +64,7 @@ test('bodyLimit is applied to decoded content', t => {
     t.equal(req.headers['content-length'], `${encoded.length}`)
     const unzip = zlib.createGunzip()
     Object.defineProperty(unzip, 'receivedEncodedLength', {
-      get () {
+      get() {
         return unzip.bytesWritten
       }
     })
@@ -67,76 +72,95 @@ test('bodyLimit is applied to decoded content', t => {
     return unzip
   })
 
-  fastify.post('/body-limit-40k', {
-    bodyLimit: 40000,
-    onError: async (req, res, err) => {
-      t.fail('should not be called')
-    }
-  }, (request, reply) => {
-    reply.send({ x: request.body.x })
-  })
-
-  fastify.post('/body-limit-20k', {
-    bodyLimit: 20000,
-    onError: async (req, res, err) => {
-      t.equal(err.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
-      t.equal(err.statusCode, 413)
-    }
-  }, (request, reply) => {
-    reply.send({ x: 'handler should not be called' })
-  })
-
-  fastify.inject({
-    method: 'POST',
-    url: '/body-limit-40k',
-    headers: {
-      'content-encoding': 'gzip',
-      'content-type': 'application/json'
+  fastify.post(
+    '/body-limit-40k',
+    {
+      bodyLimit: 40000,
+      onError: async (req, res, err) => {
+        t.fail('should not be called')
+      }
     },
-    payload: encoded
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(res.json(), body)
-  })
+    (request, reply) => {
+      reply.send({ x: request.body.x })
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    url: '/body-limit-20k',
-    headers: {
-      'content-encoding': 'gzip',
-      'content-type': 'application/json'
+  fastify.post(
+    '/body-limit-20k',
+    {
+      bodyLimit: 20000,
+      onError: async (req, res, err) => {
+        t.equal(err.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
+        t.equal(err.statusCode, 413)
+      }
     },
-    payload: encoded
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 413)
-  })
+    (request, reply) => {
+      reply.send({ x: 'handler should not be called' })
+    }
+  )
+
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/body-limit-40k',
+      headers: {
+        'content-encoding': 'gzip',
+        'content-type': 'application/json'
+      },
+      payload: encoded
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.same(res.json(), body)
+    }
+  )
+
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/body-limit-20k',
+      headers: {
+        'content-encoding': 'gzip',
+        'content-type': 'application/json'
+      },
+      payload: encoded
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 413)
+    }
+  )
 })
 
 test('default request.routeOptions.bodyLimit should be 1048576', t => {
   t.plan(4)
   const fastify = Fastify()
   fastify.post('/default-bodylimit', {
-    handler (request, reply) {
+    handler(request, reply) {
       t.equal(1048576, request.routeOptions.bodyLimit)
-      reply.send({ })
+      reply.send({})
     }
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/default-bodylimit',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port + '/default-bodylimit',
+        headers: { 'Content-Type': 'application/json' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -145,25 +169,30 @@ test('request.routeOptions.bodyLimit should be equal to route limit', t => {
   const fastify = Fastify({ bodyLimit: 1 })
   fastify.post('/route-limit', {
     bodyLimit: 1000,
-    handler (request, reply) {
+    handler(request, reply) {
       t.equal(1000, request.routeOptions.bodyLimit)
       reply.send({})
     }
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/route-limit',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port + '/route-limit',
+        headers: { 'Content-Type': 'application/json' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })
 
@@ -171,24 +200,29 @@ test('request.routeOptions.bodyLimit should be equal to server limit', t => {
   t.plan(4)
   const fastify = Fastify({ bodyLimit: 100 })
   fastify.post('/server-limit', {
-    handler (request, reply) {
+    handler(request, reply) {
       t.equal(100, request.routeOptions.bodyLimit)
       reply.send({})
     }
   })
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/server-limit',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port + '/server-limit',
+        headers: { 'Content-Type': 'application/json' },
+        body: [],
+        json: true
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+      }
+    )
   })
 })

@@ -17,7 +17,9 @@ test('should respond with a stream', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
@@ -43,7 +45,9 @@ test('should respond with a stream (error)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
@@ -66,14 +70,17 @@ test('should trigger the onSend hook', t => {
     done()
   })
 
-  fastify.inject({
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['content-type'], 'application/javascript')
-    t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
-    fastify.close()
-  })
+  fastify.inject(
+    {
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.headers['content-type'], 'application/javascript')
+      t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
+      fastify.close()
+    }
+  )
 })
 
 test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', t => {
@@ -98,7 +105,9 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.error(err)

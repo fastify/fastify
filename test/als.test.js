@@ -34,41 +34,50 @@ app.post('/', function (request, reply) {
 app.listen({ port: 0 }, function (err, address) {
   t.error(err)
 
-  sget({
-    method: 'POST',
-    url: 'http://localhost:' + app.server.address().port,
-    body: {
-      hello: 'world'
-    },
-    json: true
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(body, { id: 0 })
-
-    sget({
+  sget(
+    {
       method: 'POST',
       url: 'http://localhost:' + app.server.address().port,
       body: {
         hello: 'world'
       },
       json: true
-    }, (err, response, body) => {
+    },
+    (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
-      t.same(body, { id: 1 })
+      t.same(body, { id: 0 })
 
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + app.server.address().port,
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { id: 2 })
-        app.close()
-        t.end()
-      })
-    })
-  })
+      sget(
+        {
+          method: 'POST',
+          url: 'http://localhost:' + app.server.address().port,
+          body: {
+            hello: 'world'
+          },
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body, { id: 1 })
+
+          sget(
+            {
+              method: 'GET',
+              url: 'http://localhost:' + app.server.address().port,
+              json: true
+            },
+            (err, response, body) => {
+              t.error(err)
+              t.equal(response.statusCode, 200)
+              t.same(body, { id: 2 })
+              app.close()
+              t.end()
+            }
+          )
+        }
+      )
+    }
+  )
 })

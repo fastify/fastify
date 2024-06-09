@@ -20,14 +20,19 @@ test('route-shorthand', t => {
       })
       fastify.listen({ port: 0 }, function (err) {
         if (err) t.error(err)
-        t.teardown(() => { fastify.close() })
-        sget({
-          method,
-          url: 'http://localhost:' + fastify.server.address().port
-        }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
+        t.teardown(() => {
+          fastify.close()
         })
+        sget(
+          {
+            method,
+            url: 'http://localhost:' + fastify.server.address().port
+          },
+          (err, response, body) => {
+            t.error(err)
+            t.equal(response.statusCode, 200)
+          }
+        )
       })
     })
   }
@@ -42,17 +47,23 @@ test('route-shorthand', t => {
     })
     fastify.listen({ port: 0 }, async function (err) {
       if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
+      t.teardown(() => {
+        fastify.close()
+      })
       for (const method of supportedMethods) {
         currentMethod = method
-        await new Promise(resolve => sget({
-          method,
-          url: 'http://localhost:' + fastify.server.address().port
-        }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
-          resolve()
-        })
+        await new Promise(resolve =>
+          sget(
+            {
+              method,
+              url: 'http://localhost:' + fastify.server.address().port
+            },
+            (err, response, body) => {
+              t.error(err)
+              t.equal(response.statusCode, 200)
+              resolve()
+            }
+          )
         )
       }
     })

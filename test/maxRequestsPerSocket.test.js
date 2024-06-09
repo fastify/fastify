@@ -91,14 +91,14 @@ test('maxRequestsPerSocket zero should behave same as null', { skip }, t => {
   })
 })
 
-test('maxRequestsPerSocket should be set', async (t) => {
+test('maxRequestsPerSocket should be set', async t => {
   t.plan(1)
 
   const initialConfig = Fastify({ maxRequestsPerSocket: 5 }).initialConfig
   t.same(initialConfig.maxRequestsPerSocket, 5)
 })
 
-test('maxRequestsPerSocket should 0', async (t) => {
+test('maxRequestsPerSocket should 0', async t => {
   t.plan(1)
 
   const initialConfig = Fastify().initialConfig

@@ -6,20 +6,14 @@ const { S } = require('fluent-json-schema')
 const Fastify = require('../fastify')
 const sjson = require('secure-json-parse')
 
-const BadRequestSchema = S.object()
-  .prop('statusCode', S.number())
-  .prop('error', S.string())
-  .prop('message', S.string())
+const BadRequestSchema = S.object().prop('statusCode', S.number()).prop('error', S.string()).prop('message', S.string())
 
 const InternalServerErrorSchema = S.object()
   .prop('statusCode', S.number())
   .prop('error', S.string())
   .prop('message', S.string())
 
-const NotFoundSchema = S.object()
-  .prop('statusCode', S.number())
-  .prop('error', S.string())
-  .prop('message', S.string())
+const NotFoundSchema = S.object().prop('statusCode', S.number()).prop('error', S.string()).prop('message', S.string())
 
 const options = {
   schema: {

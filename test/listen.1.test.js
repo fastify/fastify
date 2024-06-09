@@ -8,7 +8,7 @@ let localhost
 let localhostForURL
 
 before(async function () {
-  [localhost, localhostForURL] = await helper.getLoopbackHost()
+  ;[localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
 test('listen works without arguments', async t => {
@@ -49,7 +49,7 @@ test('listen accepts a callback', t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
@@ -63,29 +63,31 @@ test('listen accepts options and a callback', t => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({
-    port: 0,
-    host: 'localhost',
-    backlog: 511,
-    exclusive: false,
-    readableAll: false,
-    writableAll: false,
-    ipv6Only: false
-  }, (err) => {
-    t.error(err)
-  })
+  fastify.listen(
+    {
+      port: 0,
+      host: 'localhost',
+      backlog: 511,
+      exclusive: false,
+      readableAll: false,
+      writableAll: false,
+      ipv6Only: false
+    },
+    err => {
+      t.error(err)
+    }
+  )
 })
 
 test('listen after Promise.resolve()', t => {
   t.plan(2)
   const f = Fastify()
   t.teardown(f.close.bind(f))
-  Promise.resolve()
-    .then(() => {
-      f.listen({ port: 0 }, (err, address) => {
-        f.server.unref()
-        t.equal(address, `http://${localhostForURL}:${f.server.address().port}`)
-        t.error(err)
-      })
+  Promise.resolve().then(() => {
+    f.listen({ port: 0 }, (err, address) => {
+      f.server.unref()
+      t.equal(address, `http://${localhostForURL}:${f.server.address().port}`)
+      t.error(err)
     })
+  })
 })

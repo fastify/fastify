@@ -15,23 +15,26 @@ test('default 413 with bodyLimit option', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 413)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Payload Too Large',
+        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+        message: 'Request body is too large',
+        statusCode: 413
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 413)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Payload Too Large',
-      code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-      message: 'Request body is too large',
-      statusCode: 413
-    })
-  })
+  )
 })
 
 test('default 400 with wrong content-length', t => {
@@ -43,26 +46,29 @@ test('default 400 with wrong content-length', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'content-length': 20
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      headers: {
+        'content-length': 20
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
     },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Bad Request',
+        code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
+        message: 'Request body size did not match Content-Length',
+        statusCode: 400
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Bad Request',
-      code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
-      message: 'Request body size did not match Content-Length',
-      statusCode: 400
-    })
-  })
+  )
 })
 
 test('custom 413 with bodyLimit option', t => {
@@ -77,29 +83,29 @@ test('custom 413 with bodyLimit option', t => {
   })
 
   fastify.setErrorHandler(function (err, request, reply) {
-    reply
-      .code(err.statusCode)
-      .type('application/json; charset=utf-8')
-      .send(err)
+    reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 413)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Payload Too Large',
+        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+        message: 'Request body is too large',
+        statusCode: 413
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 413)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Payload Too Large',
-      code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-      message: 'Request body is too large',
-      statusCode: 413
-    })
-  })
+  )
 })
 
 test('custom 400 with wrong content-length', t => {
@@ -112,32 +118,32 @@ test('custom 400 with wrong content-length', t => {
   })
 
   fastify.setErrorHandler(function (err, request, reply) {
-    reply
-      .code(err.statusCode)
-      .type('application/json; charset=utf-8')
-      .send(err)
+    reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'content-length': 20
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      headers: {
+        'content-length': 20
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
     },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Bad Request',
+        code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
+        message: 'Request body size did not match Content-Length',
+        statusCode: 400
+      })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Bad Request',
-      code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
-      message: 'Request body size did not match Content-Length',
-      statusCode: 400
-    })
-  })
+  )
 })
 
 test('#2214 - wrong content-length', t => {
@@ -151,10 +157,11 @@ test('#2214 - wrong content-length', t => {
     throw error
   })
 
-  fastify.inject({
-    method: 'GET',
-    path: '/'
-  })
+  fastify
+    .inject({
+      method: 'GET',
+      path: '/'
+    })
     .then(response => {
       t.equal(response.headers['content-length'], '' + response.rawPayload.length)
       t.end()
@@ -176,10 +183,11 @@ test('#2543 - wrong content-length with errorHandler', t => {
     throw error
   })
 
-  fastify.inject({
-    method: 'GET',
-    path: '/'
-  })
+  fastify
+    .inject({
+      method: 'GET',
+      path: '/'
+    })
     .then(res => {
       t.equal(res.statusCode, 500)
       t.equal(res.headers['content-length'], '' + res.rawPayload.length)

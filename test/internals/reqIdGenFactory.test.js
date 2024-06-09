@@ -74,7 +74,7 @@ test('should use optGenReqId to generate ids', t => {
 
   let i = 1
   let gotCalled = false
-  function optGenReqId () {
+  function optGenReqId() {
     gotCalled = true
     return (i++).toString(16)
   }
@@ -91,7 +91,7 @@ test('should use optGenReqId to generate ids if requestIdHeader is used but not 
 
   let i = 1
   let gotCalled = false
-  function optGenReqId () {
+  function optGenReqId() {
     gotCalled = true
     return (i++).toString(16)
   }
@@ -106,7 +106,7 @@ test('should use optGenReqId to generate ids if requestIdHeader is used but not 
 test('should not use optGenReqId to generate ids if requestIdHeader is used and provided', t => {
   t.plan(2)
 
-  function optGenReqId () {
+  function optGenReqId() {
     t.fail()
   }
   const reqIdGen = reqIdGenFactory('reqId', optGenReqId)
@@ -120,7 +120,7 @@ test('should fallback to use optGenReqId to generate ids if requestIdHeader is s
 
   let i = 1
   let gotCalled = false
-  function optGenReqId () {
+  function optGenReqId() {
     gotCalled = true
     return (i++).toString(16)
   }

@@ -15,7 +15,7 @@ const { FST_ERR_LOG_INVALID_LOGGER } = require('../../lib/errors')
 const { once, on } = stream
 const { createTempFile, request } = require('./logger-test-utils')
 
-t.test('logger instantiation', (t) => {
+t.test('logger instantiation', t => {
   t.setTimeout(60000)
 
   let localhost
@@ -23,10 +23,10 @@ t.test('logger instantiation', (t) => {
 
   t.plan(11)
   t.before(async function () {
-    [localhost, localhostForURL] = await helper.getLoopbackHost()
+    ;[localhost, localhostForURL] = await helper.getLoopbackHost()
   })
 
-  t.test('can use external logger instance', async (t) => {
+  t.test('can use external logger instance', async t => {
     const lines = [/^Server listening at /, /^incoming request$/, /^log success$/, /^request completed$/]
     t.plan(lines.length + 1)
 
@@ -54,7 +54,7 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('should create a default logger if provided one is invalid', (t) => {
+  t.test('should create a default logger if provided one is invalid', t => {
     t.plan(8)
 
     const logger = new Date()
@@ -72,7 +72,7 @@ t.test('logger instantiation', (t) => {
     t.equal(typeof fastify.log.child, 'function')
   })
 
-  t.test('expose the logger', async (t) => {
+  t.test('expose the logger', async t => {
     t.plan(2)
     const stream = split(JSON.parse)
     const fastify = Fastify({
@@ -89,7 +89,7 @@ t.test('logger instantiation', (t) => {
     t.same(typeof fastify.log, 'object')
   })
 
-  t.test('Wrap IPv6 address in listening log message', async (t) => {
+  t.test('Wrap IPv6 address in listening log message', async t => {
     t.plan(1)
 
     const interfaces = os.networkInterfaces()
@@ -123,7 +123,7 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('Do not wrap IPv4 address', async (t) => {
+  t.test('Do not wrap IPv4 address', async t => {
     t.plan(1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
@@ -143,7 +143,7 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('file option', async (t) => {
+  t.test('file option', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { reqId: /req-/, req: { method: 'GET', url: '/' }, msg: 'incoming request' },
@@ -152,7 +152,9 @@ t.test('logger instantiation', (t) => {
 
     const { file, cleanup } = createTempFile(t)
     // 0600 permissions (read/write for owner only)
-    if (process.env.CITGM) { fs.writeFileSync(file, '', { mode: 0o600 }) }
+    if (process.env.CITGM) {
+      fs.writeFileSync(file, '', { mode: 0o600 })
+    }
 
     const fastify = Fastify({
       logger: { file }
@@ -200,16 +202,28 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('should be able to use a custom logger', (t) => {
+  t.test('should be able to use a custom logger', t => {
     t.plan(7)
 
     const loggerInstance = {
-      fatal: (msg) => { t.equal(msg, 'fatal') },
-      error: (msg) => { t.equal(msg, 'error') },
-      warn: (msg) => { t.equal(msg, 'warn') },
-      info: (msg) => { t.equal(msg, 'info') },
-      debug: (msg) => { t.equal(msg, 'debug') },
-      trace: (msg) => { t.equal(msg, 'trace') },
+      fatal: msg => {
+        t.equal(msg, 'fatal')
+      },
+      error: msg => {
+        t.equal(msg, 'error')
+      },
+      warn: msg => {
+        t.equal(msg, 'warn')
+      },
+      info: msg => {
+        t.equal(msg, 'info')
+      },
+      debug: msg => {
+        t.equal(msg, 'debug')
+      },
+      trace: msg => {
+        t.equal(msg, 'trace')
+      },
       child: () => loggerInstance
     }
 
@@ -226,7 +240,7 @@ t.test('logger instantiation', (t) => {
     t.equal(child, loggerInstance)
   })
 
-  t.test('should throw in case a partially matching logger is provided', async (t) => {
+  t.test('should throw in case a partially matching logger is provided', async t => {
     t.plan(1)
 
     try {
@@ -241,21 +255,29 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('can use external logger instance with custom serializer', async (t) => {
-    const lines = [['level', 30], ['req', { url: '/foo' }], ['level', 30], ['res', { statusCode: 200 }]]
+  t.test('can use external logger instance with custom serializer', async t => {
+    const lines = [
+      ['level', 30],
+      ['req', { url: '/foo' }],
+      ['level', 30],
+      ['res', { statusCode: 200 }]
+    ]
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
-    const loggerInstance = require('pino')({
-      level: 'info',
-      serializers: {
-        req: function (req) {
-          return {
-            url: req.url
+    const loggerInstance = require('pino')(
+      {
+        level: 'info',
+        serializers: {
+          req: function (req) {
+            return {
+              url: req.url
+            }
           }
         }
-      }
-    }, stream)
+      },
+      stream
+    )
 
     const fastify = Fastify({
       loggerInstance
@@ -282,7 +304,7 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('The logger should accept custom serializer', async (t) => {
+  t.test('The logger should accept custom serializer', async t => {
     const lines = [
       { msg: /^Server listening at / },
       { req: { url: '/custom' }, msg: 'incoming request' },
@@ -323,7 +345,7 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('should throw in case the external logger provided does not have a child method', async (t) => {
+  t.test('should throw in case the external logger provided does not have a child method', async t => {
     t.plan(1)
     const loggerInstance = {
       info: console.info,

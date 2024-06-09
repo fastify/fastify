@@ -80,76 +80,76 @@ test('#compileValidationSchema', subtest => {
     })
   })
 
-  subtest.test('Validate function errors property should be an array of errors after validation when input is valid', async t => {
-    const fastify = Fastify()
-
-    t.plan(4)
-
-    fastify.get('/', (req, reply) => {
-      const validate = req.compileValidationSchema(defaultSchema)
-
-      t.notOk(validate({ world: 'foo' }))
-      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
-      t.ok(Array.isArray(validate.errors))
-      t.ok(validate.errors.length > 0)
-
-      reply.send({ hello: 'world' })
-    })
-
-    await fastify.inject({
-      path: '/',
-      method: 'GET'
-    })
-  })
-
   subtest.test(
-    'Should reuse the validate fn across multiple invocations - Route without schema',
+    'Validate function errors property should be an array of errors after validation when input is valid',
     async t => {
       const fastify = Fastify()
-      let validate = null
-      let counter = 0
 
-      t.plan(16)
+      t.plan(4)
 
       fastify.get('/', (req, reply) => {
-        counter++
-        if (counter > 1) {
-          const newValidate = req.compileValidationSchema(defaultSchema)
-          t.equal(validate, newValidate, 'Are the same validate function')
-          validate = newValidate
-        } else {
-          validate = req.compileValidationSchema(defaultSchema)
-        }
+        const validate = req.compileValidationSchema(defaultSchema)
 
-        t.type(validate, Function)
-        t.ok(validate({ hello: 'world' }))
         t.notOk(validate({ world: 'foo' }))
+        t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+        t.ok(Array.isArray(validate.errors))
+        t.ok(validate.errors.length > 0)
 
         reply.send({ hello: 'world' })
       })
 
-      await Promise.all([
-        fastify.inject({
-          path: '/',
-          method: 'GET'
-        }),
-        fastify.inject({
-          path: '/',
-          method: 'GET'
-        }),
-        fastify.inject({
-          path: '/',
-          method: 'GET'
-        }),
-        fastify.inject({
-          path: '/',
-          method: 'GET'
-        })
-      ])
-
-      t.equal(counter, 4)
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
     }
   )
+
+  subtest.test('Should reuse the validate fn across multiple invocations - Route without schema', async t => {
+    const fastify = Fastify()
+    let validate = null
+    let counter = 0
+
+    t.plan(16)
+
+    fastify.get('/', (req, reply) => {
+      counter++
+      if (counter > 1) {
+        const newValidate = req.compileValidationSchema(defaultSchema)
+        t.equal(validate, newValidate, 'Are the same validate function')
+        validate = newValidate
+      } else {
+        validate = req.compileValidationSchema(defaultSchema)
+      }
+
+      t.type(validate, Function)
+      t.ok(validate({ hello: 'world' }))
+      t.notOk(validate({ world: 'foo' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await Promise.all([
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    ])
+
+    t.equal(counter, 4)
+  })
 
   subtest.test('Should return a function - Route with schema', async t => {
     const fastify = Fastify()
@@ -184,68 +184,62 @@ test('#compileValidationSchema', subtest => {
     })
   })
 
-  subtest.test(
-    'Should use the custom validator compiler for the route',
-    async t => {
-      const fastify = Fastify()
-      let called = 0
-      const custom = ({ schema, httpPart, url, method }) => {
-        t.equal(schema, defaultSchema)
-        t.equal(url, '/')
-        t.equal(method, 'GET')
-        t.equal(httpPart, 'querystring')
+  subtest.test('Should use the custom validator compiler for the route', async t => {
+    const fastify = Fastify()
+    let called = 0
+    const custom = ({ schema, httpPart, url, method }) => {
+      t.equal(schema, defaultSchema)
+      t.equal(url, '/')
+      t.equal(method, 'GET')
+      t.equal(httpPart, 'querystring')
 
-        return input => {
-          called++
-          t.same(input, { hello: 'world' })
-          return true
-        }
+      return input => {
+        called++
+        t.same(input, { hello: 'world' })
+        return true
       }
-
-      t.plan(10)
-
-      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
-        const first = req.compileValidationSchema(defaultSchema, 'querystring')
-        const second = req.compileValidationSchema(defaultSchema, 'querystring')
-
-        t.equal(first, second)
-        t.ok(first({ hello: 'world' }))
-        t.ok(second({ hello: 'world' }))
-        t.equal(called, 2)
-
-        reply.send({ hello: 'world' })
-      })
-
-      await fastify.inject({
-        path: '/',
-        method: 'GET'
-      })
     }
-  )
 
-  subtest.test(
-    'Should instantiate a WeakMap when executed for first time',
-    async t => {
-      const fastify = Fastify()
+    t.plan(10)
 
-      t.plan(5)
+    fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      const first = req.compileValidationSchema(defaultSchema, 'querystring')
+      const second = req.compileValidationSchema(defaultSchema, 'querystring')
 
-      fastify.get('/', (req, reply) => {
-        t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
-        t.type(req.compileValidationSchema(defaultSchema), Function)
-        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
-        t.type(req.compileValidationSchema(Object.assign({}, defaultSchema)), Function)
-        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
+      t.equal(first, second)
+      t.ok(first({ hello: 'world' }))
+      t.ok(second({ hello: 'world' }))
+      t.equal(called, 2)
 
-        reply.send({ hello: 'world' })
-      })
+      reply.send({ hello: 'world' })
+    })
 
-      await fastify.inject({
-        path: '/',
-        method: 'GET'
-      })
-    }
-  )
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should instantiate a WeakMap when executed for first time', async t => {
+    const fastify = Fastify()
+
+    t.plan(5)
+
+    fastify.get('/', (req, reply) => {
+      t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
+      t.type(req.compileValidationSchema(defaultSchema), Function)
+      t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
+      t.type(req.compileValidationSchema(Object.assign({}, defaultSchema)), Function)
+      t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('#getValidationFunction', subtest => {
@@ -293,28 +287,31 @@ test('#getValidationFunction', subtest => {
     })
   })
 
-  subtest.test('Validate function errors property should be an array of errors after validation when input is valid', async t => {
-    const fastify = Fastify()
+  subtest.test(
+    'Validate function errors property should be an array of errors after validation when input is valid',
+    async t => {
+      const fastify = Fastify()
 
-    t.plan(4)
+      t.plan(4)
 
-    fastify.get('/', (req, reply) => {
-      req.compileValidationSchema(defaultSchema)
-      const validate = req.getValidationFunction(defaultSchema)
+      fastify.get('/', (req, reply) => {
+        req.compileValidationSchema(defaultSchema)
+        const validate = req.getValidationFunction(defaultSchema)
 
-      t.notOk(validate({ world: 'foo' }))
-      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
-      t.ok(Array.isArray(validate.errors))
-      t.ok(validate.errors.length > 0)
+        t.notOk(validate({ world: 'foo' }))
+        t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+        t.ok(Array.isArray(validate.errors))
+        t.ok(validate.errors.length > 0)
 
-      reply.send({ hello: 'world' })
-    })
+        reply.send({ hello: 'world' })
+      })
 
-    await fastify.inject({
-      path: '/',
-      method: 'GET'
-    })
-  })
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
 
   subtest.test('Should return undefined if no schema compiled', async t => {
     const fastify = Fastify()
@@ -334,86 +331,78 @@ test('#getValidationFunction', subtest => {
     await fastify.inject('/')
   })
 
-  subtest.test(
-    'Should return the validation function from each HTTP part',
-    async t => {
-      const fastify = Fastify()
-      let headerValidation = null
-      let customValidation = null
+  subtest.test('Should return the validation function from each HTTP part', async t => {
+    const fastify = Fastify()
+    let headerValidation = null
+    let customValidation = null
 
-      t.plan(15)
+    t.plan(15)
 
-      fastify.post(
-        '/:id',
-        {
-          schema: requestSchema
-        },
-        (req, reply) => {
-          const { params } = req
+    fastify.post(
+      '/:id',
+      {
+        schema: requestSchema
+      },
+      (req, reply) => {
+        const { params } = req
 
-          switch (params.id) {
-            case 1:
-              customValidation = req.compileValidationSchema(defaultSchema)
-              t.ok(req.getValidationFunction('body'))
-              t.ok(req.getValidationFunction('body')({ hello: 'world' }))
-              t.notOk(req.getValidationFunction('body')({ world: 'hello' }))
-              break
-            case 2:
-              headerValidation = req.getValidationFunction('headers')
-              t.ok(headerValidation)
-              t.ok(headerValidation({ 'x-foo': 'world' }))
-              t.notOk(headerValidation({ 'x-foo': [] }))
-              break
-            case 3:
-              t.ok(req.getValidationFunction('params'))
-              t.ok(req.getValidationFunction('params')({ id: 123 }))
-              t.notOk(req.getValidationFunction('params'({ id: 1.2 })))
-              break
-            case 4:
-              t.ok(req.getValidationFunction('querystring'))
-              t.ok(req.getValidationFunction('querystring')({ foo: 'bar' }))
-              t.notOk(
-                req.getValidationFunction('querystring')({ foo: 'not-bar' })
-              )
-              break
-            case 5:
-              t.equal(
-                customValidation,
-                req.getValidationFunction(defaultSchema)
-              )
-              t.ok(customValidation({ hello: 'world' }))
-              t.notOk(customValidation({}))
-              t.equal(headerValidation, req.getValidationFunction('headers'))
-              break
-            default:
-              t.fail('Invalid id')
-          }
-
-          reply.send({ hello: 'world' })
+        switch (params.id) {
+          case 1:
+            customValidation = req.compileValidationSchema(defaultSchema)
+            t.ok(req.getValidationFunction('body'))
+            t.ok(req.getValidationFunction('body')({ hello: 'world' }))
+            t.notOk(req.getValidationFunction('body')({ world: 'hello' }))
+            break
+          case 2:
+            headerValidation = req.getValidationFunction('headers')
+            t.ok(headerValidation)
+            t.ok(headerValidation({ 'x-foo': 'world' }))
+            t.notOk(headerValidation({ 'x-foo': [] }))
+            break
+          case 3:
+            t.ok(req.getValidationFunction('params'))
+            t.ok(req.getValidationFunction('params')({ id: 123 }))
+            t.notOk(req.getValidationFunction('params'({ id: 1.2 })))
+            break
+          case 4:
+            t.ok(req.getValidationFunction('querystring'))
+            t.ok(req.getValidationFunction('querystring')({ foo: 'bar' }))
+            t.notOk(req.getValidationFunction('querystring')({ foo: 'not-bar' }))
+            break
+          case 5:
+            t.equal(customValidation, req.getValidationFunction(defaultSchema))
+            t.ok(customValidation({ hello: 'world' }))
+            t.notOk(customValidation({}))
+            t.equal(headerValidation, req.getValidationFunction('headers'))
+            break
+          default:
+            t.fail('Invalid id')
         }
-      )
 
-      const promises = []
-
-      for (let i = 1; i < 6; i++) {
-        promises.push(
-          fastify.inject({
-            path: `/${i}`,
-            method: 'post',
-            query: { foo: 'bar' },
-            payload: {
-              hello: 'world'
-            },
-            headers: {
-              'x-foo': 'x-bar'
-            }
-          })
-        )
+        reply.send({ hello: 'world' })
       }
+    )
 
-      await Promise.all(promises)
+    const promises = []
+
+    for (let i = 1; i < 6; i++) {
+      promises.push(
+        fastify.inject({
+          path: `/${i}`,
+          method: 'post',
+          query: { foo: 'bar' },
+          payload: {
+            hello: 'world'
+          },
+          headers: {
+            'x-foo': 'x-bar'
+          }
+        })
+      )
     }
-  )
+
+    await Promise.all(promises)
+  })
 
   subtest.test('Should not set a WeakMap if there is no schema', async t => {
     const fastify = Fastify()
@@ -438,234 +427,215 @@ test('#getValidationFunction', subtest => {
 test('#validate', subtest => {
   subtest.plan(7)
 
-  subtest.test(
-    'Should return true/false if input valid - Route without schema',
-    async t => {
-      const fastify = Fastify()
+  subtest.test('Should return true/false if input valid - Route without schema', async t => {
+    const fastify = Fastify()
 
-      t.plan(2)
+    t.plan(2)
 
-      fastify.get('/', (req, reply) => {
-        const isNotValid = req.validateInput({ world: 'string' }, defaultSchema)
-        const isValid = req.validateInput({ hello: 'string' }, defaultSchema)
+    fastify.get('/', (req, reply) => {
+      const isNotValid = req.validateInput({ world: 'string' }, defaultSchema)
+      const isValid = req.validateInput({ hello: 'string' }, defaultSchema)
 
-        t.notOk(isNotValid)
-        t.ok(isValid)
+      t.notOk(isNotValid)
+      t.ok(isValid)
 
-        reply.send({ hello: 'world' })
-      })
+      reply.send({ hello: 'world' })
+    })
 
-      await fastify.inject({
-        path: '/',
-        method: 'GET'
-      })
-    }
-  )
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 
-  subtest.test(
-    'Should use the custom validator compiler for the route',
-    async t => {
-      const fastify = Fastify()
-      let called = 0
-      const custom = ({ schema, httpPart, url, method }) => {
-        t.equal(schema, defaultSchema)
-        t.equal(url, '/')
-        t.equal(method, 'GET')
-        t.equal(httpPart, 'querystring')
+  subtest.test('Should use the custom validator compiler for the route', async t => {
+    const fastify = Fastify()
+    let called = 0
+    const custom = ({ schema, httpPart, url, method }) => {
+      t.equal(schema, defaultSchema)
+      t.equal(url, '/')
+      t.equal(method, 'GET')
+      t.equal(httpPart, 'querystring')
 
-        return input => {
-          called++
-          t.same(input, { hello: 'world' })
-          return true
-        }
+      return input => {
+        called++
+        t.same(input, { hello: 'world' })
+        return true
       }
+    }
 
-      t.plan(9)
+    t.plan(9)
 
-      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
-        const ok = req.validateInput(
-          { hello: 'world' },
-          defaultSchema,
-          'querystring'
-        )
-        const ok2 = req.validateInput({ hello: 'world' }, defaultSchema)
+    fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      const ok = req.validateInput({ hello: 'world' }, defaultSchema, 'querystring')
+      const ok2 = req.validateInput({ hello: 'world' }, defaultSchema)
 
-        t.ok(ok)
-        t.ok(ok2)
-        t.equal(called, 2)
+      t.ok(ok)
+      t.ok(ok2)
+      t.equal(called, 2)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should return true/false if input valid - With Schema for Route defined', async t => {
+    const fastify = Fastify()
+
+    t.plan(8)
+
+    fastify.post(
+      '/:id',
+      {
+        schema: requestSchema
+      },
+      (req, reply) => {
+        const { params } = req
+
+        switch (params.id) {
+          case 1:
+            t.ok(req.validateInput({ hello: 'world' }, 'body'))
+            t.notOk(req.validateInput({ hello: [], world: 'foo' }, 'body'))
+            break
+          case 2:
+            t.notOk(req.validateInput({ foo: 'something' }, 'querystring'))
+            t.ok(req.validateInput({ foo: 'bar' }, 'querystring'))
+            break
+          case 3:
+            t.notOk(req.validateInput({ 'x-foo': [] }, 'headers'))
+            t.ok(req.validateInput({ 'x-foo': 'something' }, 'headers'))
+            break
+          case 4:
+            t.ok(req.validateInput({ id: params.id }, 'params'))
+            t.notOk(req.validateInput({ id: 0 }, 'params'))
+            break
+          default:
+            t.fail('Invalid id')
+        }
 
         reply.send({ hello: 'world' })
-      })
+      }
+    )
 
-      await fastify.inject({
-        path: '/',
-        method: 'GET'
-      })
-    }
-  )
+    const promises = []
 
-  subtest.test(
-    'Should return true/false if input valid - With Schema for Route defined',
-    async t => {
-      const fastify = Fastify()
-
-      t.plan(8)
-
-      fastify.post(
-        '/:id',
-        {
-          schema: requestSchema
-        },
-        (req, reply) => {
-          const { params } = req
-
-          switch (params.id) {
-            case 1:
-              t.ok(req.validateInput({ hello: 'world' }, 'body'))
-              t.notOk(req.validateInput({ hello: [], world: 'foo' }, 'body'))
-              break
-            case 2:
-              t.notOk(req.validateInput({ foo: 'something' }, 'querystring'))
-              t.ok(req.validateInput({ foo: 'bar' }, 'querystring'))
-              break
-            case 3:
-              t.notOk(req.validateInput({ 'x-foo': [] }, 'headers'))
-              t.ok(req.validateInput({ 'x-foo': 'something' }, 'headers'))
-              break
-            case 4:
-              t.ok(req.validateInput({ id: params.id }, 'params'))
-              t.notOk(req.validateInput({ id: 0 }, 'params'))
-              break
-            default:
-              t.fail('Invalid id')
+    for (let i = 1; i < 5; i++) {
+      promises.push(
+        fastify.inject({
+          path: `/${i}`,
+          method: 'post',
+          query: { foo: 'bar' },
+          payload: {
+            hello: 'world'
+          },
+          headers: {
+            'x-foo': 'x-bar'
           }
-
-          reply.send({ hello: 'world' })
-        }
+        })
       )
+    }
 
-      const promises = []
+    await Promise.all(promises)
+  })
 
-      for (let i = 1; i < 5; i++) {
-        promises.push(
-          fastify.inject({
-            path: `/${i}`,
-            method: 'post',
-            query: { foo: 'bar' },
-            payload: {
-              hello: 'world'
-            },
-            headers: {
-              'x-foo': 'x-bar'
-            }
+  subtest.test('Should throw if missing validation fn for HTTP part and not schema provided', async t => {
+    const fastify = Fastify()
+
+    t.plan(10)
+
+    fastify.get('/:id', (req, reply) => {
+      const { params } = req
+
+      switch (parseInt(params.id)) {
+        case 1:
+          req.validateInput({}, 'body')
+          break
+        case 2:
+          req.validateInput({}, 'querystring')
+          break
+        case 3:
+          req.validateInput({}, 'query')
+          break
+        case 4:
+          req.validateInput({ 'x-foo': [] }, 'headers')
+          break
+        case 5:
+          req.validateInput({ id: 0 }, 'params')
+          break
+        default:
+          t.fail('Invalid id')
+      }
+    })
+
+    const promises = []
+
+    for (let i = 1; i < 6; i++) {
+      promises.push(
+        (async j => {
+          const response = await fastify.inject(`/${j}`)
+
+          const result = response.json()
+          t.equal(result.statusCode, 500)
+          t.equal(result.code, 'FST_ERR_REQ_INVALID_VALIDATION_INVOCATION')
+        })(i)
+      )
+    }
+
+    await Promise.all(promises)
+  })
+
+  subtest.test('Should throw if missing validation fn for HTTP part and not valid schema provided', async t => {
+    const fastify = Fastify()
+
+    t.plan(10)
+
+    fastify.get('/:id', (req, reply) => {
+      const { params } = req
+
+      switch (parseInt(params.id)) {
+        case 1:
+          req.validateInput({}, 1, 'body')
+          break
+        case 2:
+          req.validateInput({}, [], 'querystring')
+          break
+        case 3:
+          req.validateInput({}, '', 'query')
+          break
+        case 4:
+          req.validateInput({ 'x-foo': [] }, null, 'headers')
+          break
+        case 5:
+          req.validateInput({ id: 0 }, () => {}, 'params')
+          break
+        default:
+          t.fail('Invalid id')
+      }
+    })
+
+    const promises = []
+
+    for (let i = 1; i < 6; i++) {
+      promises.push(
+        (async j => {
+          const response = await fastify.inject({
+            path: `/${j}`,
+            method: 'GET'
           })
-        )
-      }
 
-      await Promise.all(promises)
+          const result = response.json()
+          t.equal(result.statusCode, 500)
+          t.equal(result.code, 'FST_ERR_REQ_INVALID_VALIDATION_INVOCATION')
+        })(i)
+      )
     }
-  )
 
-  subtest.test(
-    'Should throw if missing validation fn for HTTP part and not schema provided',
-    async t => {
-      const fastify = Fastify()
-
-      t.plan(10)
-
-      fastify.get('/:id', (req, reply) => {
-        const { params } = req
-
-        switch (parseInt(params.id)) {
-          case 1:
-            req.validateInput({}, 'body')
-            break
-          case 2:
-            req.validateInput({}, 'querystring')
-            break
-          case 3:
-            req.validateInput({}, 'query')
-            break
-          case 4:
-            req.validateInput({ 'x-foo': [] }, 'headers')
-            break
-          case 5:
-            req.validateInput({ id: 0 }, 'params')
-            break
-          default:
-            t.fail('Invalid id')
-        }
-      })
-
-      const promises = []
-
-      for (let i = 1; i < 6; i++) {
-        promises.push(
-          (async j => {
-            const response = await fastify.inject(`/${j}`)
-
-            const result = response.json()
-            t.equal(result.statusCode, 500)
-            t.equal(result.code, 'FST_ERR_REQ_INVALID_VALIDATION_INVOCATION')
-          })(i)
-        )
-      }
-
-      await Promise.all(promises)
-    }
-  )
-
-  subtest.test(
-    'Should throw if missing validation fn for HTTP part and not valid schema provided',
-    async t => {
-      const fastify = Fastify()
-
-      t.plan(10)
-
-      fastify.get('/:id', (req, reply) => {
-        const { params } = req
-
-        switch (parseInt(params.id)) {
-          case 1:
-            req.validateInput({}, 1, 'body')
-            break
-          case 2:
-            req.validateInput({}, [], 'querystring')
-            break
-          case 3:
-            req.validateInput({}, '', 'query')
-            break
-          case 4:
-            req.validateInput({ 'x-foo': [] }, null, 'headers')
-            break
-          case 5:
-            req.validateInput({ id: 0 }, () => {}, 'params')
-            break
-          default:
-            t.fail('Invalid id')
-        }
-      })
-
-      const promises = []
-
-      for (let i = 1; i < 6; i++) {
-        promises.push(
-          (async j => {
-            const response = await fastify.inject({
-              path: `/${j}`,
-              method: 'GET'
-            })
-
-            const result = response.json()
-            t.equal(result.statusCode, 500)
-            t.equal(result.code, 'FST_ERR_REQ_INVALID_VALIDATION_INVOCATION')
-          })(i)
-        )
-      }
-
-      await Promise.all(promises)
-    }
-  )
+    await Promise.all(promises)
+  })
 
   subtest.test('Should throw if invalid schema passed', async t => {
     const fastify = Fastify()
@@ -716,27 +686,24 @@ test('#validate', subtest => {
     await Promise.all(promises)
   })
 
-  subtest.test(
-    'Should set a WeakMap if compiling the very first schema',
-    async t => {
-      const fastify = Fastify()
+  subtest.test('Should set a WeakMap if compiling the very first schema', async t => {
+    const fastify = Fastify()
 
-      t.plan(3)
+    t.plan(3)
 
-      fastify.get('/', (req, reply) => {
-        t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
-        t.equal(req.validateInput({ hello: 'world' }, defaultSchema), true)
-        t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
+    fastify.get('/', (req, reply) => {
+      t.equal(req[kRouteContext][kRequestCacheValidateFns], null)
+      t.equal(req.validateInput({ hello: 'world' }, defaultSchema), true)
+      t.type(req[kRouteContext][kRequestCacheValidateFns], WeakMap)
 
-        reply.send({ hello: 'world' })
-      })
+      reply.send({ hello: 'world' })
+    })
 
-      await fastify.inject({
-        path: '/',
-        method: 'GET'
-      })
-    }
-  )
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('Nested Context', subtest => {
@@ -772,46 +739,38 @@ test('Nested Context', subtest => {
         })
       })
 
-      ntst.test(
-        'Should reuse the validate fn across multiple invocations - Route without schema',
-        async t => {
-          const fastify = Fastify()
-          let validate = null
-          let counter = 0
+      ntst.test('Should reuse the validate fn across multiple invocations - Route without schema', async t => {
+        const fastify = Fastify()
+        let validate = null
+        let counter = 0
 
-          t.plan(16)
+        t.plan(16)
 
-          fastify.register((instance, opts, next) => {
-            instance.get('/', (req, reply) => {
-              counter++
-              if (counter > 1) {
-                const newValidate = req.compileValidationSchema(defaultSchema)
-                t.equal(validate, newValidate, 'Are the same validate function')
-                validate = newValidate
-              } else {
-                validate = req.compileValidationSchema(defaultSchema)
-              }
+        fastify.register((instance, opts, next) => {
+          instance.get('/', (req, reply) => {
+            counter++
+            if (counter > 1) {
+              const newValidate = req.compileValidationSchema(defaultSchema)
+              t.equal(validate, newValidate, 'Are the same validate function')
+              validate = newValidate
+            } else {
+              validate = req.compileValidationSchema(defaultSchema)
+            }
 
-              t.type(validate, Function)
-              t.ok(validate({ hello: 'world' }))
-              t.notOk(validate({ world: 'foo' }))
+            t.type(validate, Function)
+            t.ok(validate({ hello: 'world' }))
+            t.notOk(validate({ world: 'foo' }))
 
-              reply.send({ hello: 'world' })
-            })
-
-            next()
+            reply.send({ hello: 'world' })
           })
 
-          await Promise.all([
-            fastify.inject('/'),
-            fastify.inject('/'),
-            fastify.inject('/'),
-            fastify.inject('/')
-          ])
+          next()
+        })
 
-          t.equal(counter, 4)
-        }
-      )
+        await Promise.all([fastify.inject('/'), fastify.inject('/'), fastify.inject('/'), fastify.inject('/')])
+
+        t.equal(counter, 4)
+      })
 
       ntst.test('Should return a function - Route with schema', async t => {
         const fastify = Fastify()
@@ -850,52 +809,43 @@ test('Nested Context', subtest => {
         })
       })
 
-      ntst.test(
-        'Should use the custom validator compiler for the route',
-        async t => {
-          const fastify = Fastify()
-          let called = 0
+      ntst.test('Should use the custom validator compiler for the route', async t => {
+        const fastify = Fastify()
+        let called = 0
 
-          t.plan(10)
+        t.plan(10)
 
-          fastify.register((instance, opts, next) => {
-            const custom = ({ schema, httpPart, url, method }) => {
-              t.equal(schema, defaultSchema)
-              t.equal(url, '/')
-              t.equal(method, 'GET')
-              t.equal(httpPart, 'querystring')
+        fastify.register((instance, opts, next) => {
+          const custom = ({ schema, httpPart, url, method }) => {
+            t.equal(schema, defaultSchema)
+            t.equal(url, '/')
+            t.equal(method, 'GET')
+            t.equal(httpPart, 'querystring')
 
-              return input => {
-                called++
-                t.same(input, { hello: 'world' })
-                return true
-              }
+            return input => {
+              called++
+              t.same(input, { hello: 'world' })
+              return true
             }
+          }
 
-            fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
-              const first = req.compileValidationSchema(
-                defaultSchema,
-                'querystring'
-              )
-              const second = req.compileValidationSchema(
-                defaultSchema,
-                'querystring'
-              )
+          fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+            const first = req.compileValidationSchema(defaultSchema, 'querystring')
+            const second = req.compileValidationSchema(defaultSchema, 'querystring')
 
-              t.equal(first, second)
-              t.ok(first({ hello: 'world' }))
-              t.ok(second({ hello: 'world' }))
-              t.equal(called, 2)
+            t.equal(first, second)
+            t.ok(first({ hello: 'world' }))
+            t.ok(second({ hello: 'world' }))
+            t.equal(called, 2)
 
-              reply.send({ hello: 'world' })
-            })
-
-            next()
+            reply.send({ hello: 'world' })
           })
 
-          await fastify.inject('/')
-        }
-      )
+          next()
+        })
+
+        await fastify.inject('/')
+      })
 
       ntst.test('Should compile the custom validation - nested with schema.headers', async t => {
         const fastify = Fastify()
@@ -981,100 +931,85 @@ test('Nested Context', subtest => {
         await fastify.inject('/')
       })
 
-      ntst.test(
-        'Should return the validation function from each HTTP part',
-        async t => {
-          const fastify = Fastify()
-          let headerValidation = null
-          let customValidation = null
+      ntst.test('Should return the validation function from each HTTP part', async t => {
+        const fastify = Fastify()
+        let headerValidation = null
+        let customValidation = null
 
-          t.plan(15)
+        t.plan(15)
 
-          fastify.register((instance, opts, next) => {
-            instance.post(
-              '/:id',
-              {
-                schema: requestSchema
-              },
-              (req, reply) => {
-                const { params } = req
+        fastify.register((instance, opts, next) => {
+          instance.post(
+            '/:id',
+            {
+              schema: requestSchema
+            },
+            (req, reply) => {
+              const { params } = req
 
-                switch (params.id) {
-                  case 1:
-                    customValidation = req.compileValidationSchema(
-                      defaultSchema
-                    )
-                    t.ok(req.getValidationFunction('body'))
-                    t.ok(req.getValidationFunction('body')({ hello: 'world' }))
-                    t.notOk(
-                      req.getValidationFunction('body')({ world: 'hello' })
-                    )
-                    break
-                  case 2:
-                    headerValidation = req.getValidationFunction('headers')
-                    t.ok(headerValidation)
-                    t.ok(headerValidation({ 'x-foo': 'world' }))
-                    t.notOk(headerValidation({ 'x-foo': [] }))
-                    break
-                  case 3:
-                    t.ok(req.getValidationFunction('params'))
-                    t.ok(req.getValidationFunction('params')({ id: 123 }))
-                    t.notOk(req.getValidationFunction('params'({ id: 1.2 })))
-                    break
-                  case 4:
-                    t.ok(req.getValidationFunction('querystring'))
-                    t.ok(
-                      req.getValidationFunction('querystring')({ foo: 'bar' })
-                    )
-                    t.notOk(
-                      req.getValidationFunction('querystring')({
-                        foo: 'not-bar'
-                      })
-                    )
-                    break
-                  case 5:
-                    t.equal(
-                      customValidation,
-                      req.getValidationFunction(defaultSchema)
-                    )
-                    t.ok(customValidation({ hello: 'world' }))
-                    t.notOk(customValidation({}))
-                    t.equal(
-                      headerValidation,
-                      req.getValidationFunction('headers')
-                    )
-                    break
-                  default:
-                    t.fail('Invalid id')
-                }
-
-                reply.send({ hello: 'world' })
+              switch (params.id) {
+                case 1:
+                  customValidation = req.compileValidationSchema(defaultSchema)
+                  t.ok(req.getValidationFunction('body'))
+                  t.ok(req.getValidationFunction('body')({ hello: 'world' }))
+                  t.notOk(req.getValidationFunction('body')({ world: 'hello' }))
+                  break
+                case 2:
+                  headerValidation = req.getValidationFunction('headers')
+                  t.ok(headerValidation)
+                  t.ok(headerValidation({ 'x-foo': 'world' }))
+                  t.notOk(headerValidation({ 'x-foo': [] }))
+                  break
+                case 3:
+                  t.ok(req.getValidationFunction('params'))
+                  t.ok(req.getValidationFunction('params')({ id: 123 }))
+                  t.notOk(req.getValidationFunction('params'({ id: 1.2 })))
+                  break
+                case 4:
+                  t.ok(req.getValidationFunction('querystring'))
+                  t.ok(req.getValidationFunction('querystring')({ foo: 'bar' }))
+                  t.notOk(
+                    req.getValidationFunction('querystring')({
+                      foo: 'not-bar'
+                    })
+                  )
+                  break
+                case 5:
+                  t.equal(customValidation, req.getValidationFunction(defaultSchema))
+                  t.ok(customValidation({ hello: 'world' }))
+                  t.notOk(customValidation({}))
+                  t.equal(headerValidation, req.getValidationFunction('headers'))
+                  break
+                default:
+                  t.fail('Invalid id')
               }
-            )
 
-            next()
-          })
-          const promises = []
+              reply.send({ hello: 'world' })
+            }
+          )
 
-          for (let i = 1; i < 6; i++) {
-            promises.push(
-              fastify.inject({
-                path: `/${i}`,
-                method: 'post',
-                query: { foo: 'bar' },
-                payload: {
-                  hello: 'world'
-                },
-                headers: {
-                  'x-foo': 'x-bar'
-                }
-              })
-            )
-          }
+          next()
+        })
+        const promises = []
 
-          await Promise.all(promises)
+        for (let i = 1; i < 6; i++) {
+          promises.push(
+            fastify.inject({
+              path: `/${i}`,
+              method: 'post',
+              query: { foo: 'bar' },
+              payload: {
+                hello: 'world'
+              },
+              headers: {
+                'x-foo': 'x-bar'
+              }
+            })
+          )
         }
-      )
+
+        await Promise.all(promises)
+      })
 
       ntst.test('Should return a validation function - nested', async t => {
         const fastify = Fastify()
@@ -1110,48 +1045,45 @@ test('Nested Context', subtest => {
         await fastify.inject('/')
       })
 
-      ntst.test(
-        'Should return undefined if no schema compiled - nested',
-        async t => {
-          const fastify = Fastify()
-          let called = 0
-          const custom = ({ schema, httpPart, url, method }) => {
-            called++
-            return () => true
-          }
-
-          t.plan(3)
-
-          fastify.setValidatorCompiler(custom)
-
-          fastify.get('/', (req, reply) => {
-            const validate = req.compileValidationSchema(defaultSchema)
-
-            t.equal(typeof validate, 'function')
-
-            reply.send({ hello: 'world' })
-          })
-
-          fastify.register(
-            (instance, opts, next) => {
-              instance.get('/', (req, reply) => {
-                const validate = req.getValidationFunction(defaultSchema)
-
-                t.notOk(validate)
-                t.equal(called, 1)
-
-                reply.send({ hello: 'world' })
-              })
-
-              next()
-            },
-            { prefix: '/nested' }
-          )
-
-          await fastify.inject('/')
-          await fastify.inject('/nested')
+      ntst.test('Should return undefined if no schema compiled - nested', async t => {
+        const fastify = Fastify()
+        let called = 0
+        const custom = ({ schema, httpPart, url, method }) => {
+          called++
+          return () => true
         }
-      )
+
+        t.plan(3)
+
+        fastify.setValidatorCompiler(custom)
+
+        fastify.get('/', (req, reply) => {
+          const validate = req.compileValidationSchema(defaultSchema)
+
+          t.equal(typeof validate, 'function')
+
+          reply.send({ hello: 'world' })
+        })
+
+        fastify.register(
+          (instance, opts, next) => {
+            instance.get('/', (req, reply) => {
+              const validate = req.getValidationFunction(defaultSchema)
+
+              t.notOk(validate)
+              t.equal(called, 1)
+
+              reply.send({ hello: 'world' })
+            })
+
+            next()
+          },
+          { prefix: '/nested' }
+        )
+
+        await fastify.inject('/')
+        await fastify.inject('/nested')
+      })
 
       ntst.test('Should per-route defined validation compiler', async t => {
         const fastify = Fastify()
@@ -1214,90 +1146,73 @@ test('Nested Context', subtest => {
     tst.test('#validate', ntst => {
       ntst.plan(3)
 
-      ntst.test(
-        'Should return true/false if input valid - Route without schema',
-        async t => {
-          const fastify = Fastify()
+      ntst.test('Should return true/false if input valid - Route without schema', async t => {
+        const fastify = Fastify()
 
-          t.plan(2)
+        t.plan(2)
 
-          fastify.register((instance, opts, next) => {
-            instance.get('/', (req, reply) => {
-              const isNotValid = req.validateInput(
-                { world: 'string' },
-                defaultSchema
-              )
-              const isValid = req.validateInput({ hello: 'string' }, defaultSchema)
+        fastify.register((instance, opts, next) => {
+          instance.get('/', (req, reply) => {
+            const isNotValid = req.validateInput({ world: 'string' }, defaultSchema)
+            const isValid = req.validateInput({ hello: 'string' }, defaultSchema)
 
-              t.notOk(isNotValid)
-              t.ok(isValid)
+            t.notOk(isNotValid)
+            t.ok(isValid)
 
-              reply.send({ hello: 'world' })
-            })
-
-            next()
+            reply.send({ hello: 'world' })
           })
 
-          await fastify.inject('/')
+          next()
+        })
+
+        await fastify.inject('/')
+      })
+
+      ntst.test('Should use the custom validator compiler for the route', async t => {
+        const fastify = Fastify()
+        let parentCalled = 0
+        let childCalled = 0
+        const customParent = () => {
+          parentCalled++
+
+          return () => true
         }
-      )
 
-      ntst.test(
-        'Should use the custom validator compiler for the route',
-        async t => {
-          const fastify = Fastify()
-          let parentCalled = 0
-          let childCalled = 0
-          const customParent = () => {
-            parentCalled++
+        const customChild = ({ schema, httpPart, url, method }) => {
+          t.equal(schema, defaultSchema)
+          t.equal(url, '/')
+          t.equal(method, 'GET')
+          t.equal(httpPart, 'querystring')
 
-            return () => true
+          return input => {
+            childCalled++
+            t.same(input, { hello: 'world' })
+            return true
           }
+        }
 
-          const customChild = ({ schema, httpPart, url, method }) => {
-            t.equal(schema, defaultSchema)
-            t.equal(url, '/')
-            t.equal(method, 'GET')
-            t.equal(httpPart, 'querystring')
+        t.plan(10)
 
-            return input => {
-              childCalled++
-              t.same(input, { hello: 'world' })
-              return true
-            }
-          }
+        fastify.setValidatorCompiler(customParent)
 
-          t.plan(10)
+        fastify.register((instance, opts, next) => {
+          instance.get('/', { validatorCompiler: customChild }, (req, reply) => {
+            const ok = req.validateInput({ hello: 'world' }, defaultSchema, 'querystring')
+            const ok2 = req.validateInput({ hello: 'world' }, defaultSchema)
 
-          fastify.setValidatorCompiler(customParent)
+            t.ok(ok)
+            t.ok(ok2)
+            t.equal(childCalled, 2)
+            t.equal(parentCalled, 0)
 
-          fastify.register((instance, opts, next) => {
-            instance.get(
-              '/',
-              { validatorCompiler: customChild },
-              (req, reply) => {
-                const ok = req.validateInput(
-                  { hello: 'world' },
-                  defaultSchema,
-                  'querystring'
-                )
-                const ok2 = req.validateInput({ hello: 'world' }, defaultSchema)
-
-                t.ok(ok)
-                t.ok(ok2)
-                t.equal(childCalled, 2)
-                t.equal(parentCalled, 0)
-
-                reply.send({ hello: 'world' })
-              }
-            )
-
-            next()
+            reply.send({ hello: 'world' })
           })
 
-          await fastify.inject('/')
-        }
-      )
+          next()
+        })
+
+        await fastify.inject('/')
+      })
 
       ntst.test(
         'Should return true/false if input valid - With Schema for Route defined and scoped validator compiler',

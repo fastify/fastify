@@ -4,17 +4,18 @@ const { test } = require('tap')
 const fastify = require('../')
 const { request, setGlobalDispatcher, Agent } = require('undici')
 
-setGlobalDispatcher(new Agent({
-  keepAliveTimeout: 10,
-  keepAliveMaxTimeout: 10
-}))
+setGlobalDispatcher(
+  new Agent({
+    keepAliveTimeout: 10,
+    keepAliveMaxTimeout: 10
+  })
+)
 
 test('post empty body', async t => {
   const app = fastify()
   t.teardown(app.close.bind(app))
 
-  app.post('/bug', async (request, reply) => {
-  })
+  app.post('/bug', async (request, reply) => {})
 
   await app.listen({ port: 0 })
 

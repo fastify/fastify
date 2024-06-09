@@ -2,9 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
-const {
-  FST_ERR_DEC_ALREADY_PRESENT
-} = require('../lib/errors')
+const { FST_ERR_DEC_ALREADY_PRESENT } = require('../lib/errors')
 
 test('Should be able to override the default use API', t => {
   t.plan(1)

@@ -8,25 +8,31 @@ test('same route definition object on multiple prefixes', async t => {
   t.plan(2)
 
   const routeObject = {
-    handler: () => { },
+    handler: () => {},
     method: 'GET',
     url: '/simple'
   }
 
   const fastify = Fastify({ exposeHeadRoutes: false })
 
-  fastify.register(async function (f) {
-    f.addHook('onRoute', (routeOptions) => {
-      t.equal(routeOptions.url, '/v1/simple')
-    })
-    f.route(routeObject)
-  }, { prefix: '/v1' })
-  fastify.register(async function (f) {
-    f.addHook('onRoute', (routeOptions) => {
-      t.equal(routeOptions.url, '/v2/simple')
-    })
-    f.route(routeObject)
-  }, { prefix: '/v2' })
+  fastify.register(
+    async function (f) {
+      f.addHook('onRoute', routeOptions => {
+        t.equal(routeOptions.url, '/v1/simple')
+      })
+      f.route(routeObject)
+    },
+    { prefix: '/v1' }
+  )
+  fastify.register(
+    async function (f) {
+      f.addHook('onRoute', routeOptions => {
+        t.equal(routeOptions.url, '/v2/simple')
+      })
+      f.route(routeObject)
+    },
+    { prefix: '/v2' }
+  )
 
   await fastify.ready()
 })
@@ -88,12 +94,15 @@ test('handler function in options of shorthand route should works correctly', t 
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.same(JSON.parse(res.payload), { hello: 'world' })
+    }
+  )
 })

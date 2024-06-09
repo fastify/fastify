@@ -5,9 +5,9 @@ const test = t.test
 const fastifySuccess = require('./dist/success')
 const fastifyFailPlugin = require('./dist/failPlugin')
 
-test('Bundled package should work', (t) => {
+test('Bundled package should work', t => {
   t.plan(4)
-  fastifySuccess.ready((err) => {
+  fastifySuccess.ready(err => {
     t.error(err)
     fastifySuccess.inject(
       {
@@ -23,9 +23,9 @@ test('Bundled package should work', (t) => {
   })
 })
 
-test('Bundled package should not work with bad plugin version', (t) => {
+test('Bundled package should not work with bad plugin version', t => {
   t.plan(1)
-  fastifyFailPlugin.ready((err) => {
+  fastifyFailPlugin.ready(err => {
     t.match(err.message, /expected '9.x' fastify version/i)
   })
 })

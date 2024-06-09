@@ -17,8 +17,8 @@ let localhost
 let localhostForURL
 
 before(async function () {
-  await buildCertificate();
-  [localhost, localhostForURL] = await helper.getLoopbackHost()
+  await buildCertificate()
+  ;[localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
 test('Fastify.initialConfig is an object', t => {
@@ -71,14 +71,20 @@ test('Fastify.initialConfig should expose all options', t => {
     storage: function () {
       const versions = {}
       return {
-        get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
+        get: version => {
+          return versions[version] || null
+        },
+        set: (version, store) => {
+          versions[version] = store
+        }
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers.accept
     },
-    validate () { return true }
+    validate() {
+      return true
+    }
   }
 
   let reqId = 0
@@ -109,7 +115,7 @@ test('Fastify.initialConfig should expose all options', t => {
     constraints: {
       version: versionStrategy
     },
-    trustProxy: function myTrustFn (address, hop) {
+    trustProxy: function myTrustFn(address, hop) {
       return address === '1.2.3.4' || hop === 1
     }
   }
@@ -174,9 +180,13 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.type(error, TypeError)
     t.equal(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
     t.ok(error.stack)
-    t.same(fastify.initialConfig.https, {
-      allowHTTP1: true
-    }, 'key cert removed')
+    t.same(
+      fastify.initialConfig.https,
+      {
+        allowHTTP1: true
+      },
+      'key cert removed'
+    )
   }
 })
 
@@ -325,7 +335,9 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
   fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
     http.get(`http://${localhostForURL}:${fastify.server.address().port}`)
   })
@@ -365,7 +377,7 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
 test('Fastify.initialConfig should accept the deprecated versioning option', t => {
   t.plan(1)
 
-  function onWarning (warning) {
+  function onWarning(warning) {
     t.equal(warning.code, 'FSTDEP009')
   }
 
@@ -375,8 +387,12 @@ test('Fastify.initialConfig should accept the deprecated versioning option', t =
     storage: function () {
       const versions = {}
       return {
-        get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
+        get: version => {
+          return versions[version] || null
+        },
+        set: (version, store) => {
+          versions[version] = store
+        }
       }
     },
     deriveVersion: (req, ctx) => {

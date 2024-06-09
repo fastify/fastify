@@ -15,19 +15,22 @@ test('default 500', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Internal Server Error',
-      message: 'kaboom',
-      statusCode: 500
-    })
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Internal Server Error',
+        message: 'kaboom',
+        statusCode: 500
+      })
+    }
+  )
 })
 
 test('custom 500', t => {
@@ -49,15 +52,18 @@ test('custom 500', t => {
       .send('an error happened: ' + err.message)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.equal(res.headers['content-type'], 'text/plain')
-    t.same(res.payload.toString(), 'an error happened: kaboom')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.headers['content-type'], 'text/plain')
+      t.same(res.payload.toString(), 'an error happened: kaboom')
+    }
+  )
 })
 
 test('encapsulated 500', t => {
@@ -70,46 +76,55 @@ test('encapsulated 500', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.register(function (f, opts, done) {
-    f.get('/', function (req, reply) {
-      reply.send(new Error('kaboom'))
-    })
+  fastify.register(
+    function (f, opts, done) {
+      f.get('/', function (req, reply) {
+        reply.send(new Error('kaboom'))
+      })
 
-    f.setErrorHandler(function (err, request, reply) {
-      t.type(request, 'object')
-      t.type(request, fastify[symbols.kRequest].parent)
-      reply
-        .code(500)
-        .type('text/plain')
-        .send('an error happened: ' + err.message)
-    })
+      f.setErrorHandler(function (err, request, reply) {
+        t.type(request, 'object')
+        t.type(request, fastify[symbols.kRequest].parent)
+        reply
+          .code(500)
+          .type('text/plain')
+          .send('an error happened: ' + err.message)
+      })
 
-    done()
-  }, { prefix: 'test' })
+      done()
+    },
+    { prefix: 'test' }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/test'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.equal(res.headers['content-type'], 'text/plain')
-    t.same(res.payload.toString(), 'an error happened: kaboom')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.headers['content-type'], 'text/plain')
+      t.same(res.payload.toString(), 'an error happened: kaboom')
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
-      error: 'Internal Server Error',
-      message: 'kaboom',
-      statusCode: 500
-    })
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(res.payload), {
+        error: 'Internal Server Error',
+        message: 'kaboom',
+        statusCode: 500
+      })
+    }
+  )
 })
 
 test('custom 500 with hooks', t => {
@@ -142,15 +157,18 @@ test('custom 500 with hooks', t => {
     done()
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.equal(res.headers['content-type'], 'text/plain')
-    t.same(res.payload.toString(), 'an error happened: kaboom')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.headers['content-type'], 'text/plain')
+      t.same(res.payload.toString(), 'an error happened: kaboom')
+    }
+  )
 })
 
 test('cannot set errorHandler after binding', t => {
@@ -163,7 +181,7 @@ test('cannot set errorHandler after binding', t => {
     t.error(err)
 
     try {
-      fastify.setErrorHandler(() => { })
+      fastify.setErrorHandler(() => {})
       t.fail()
     } catch (e) {
       t.pass()
@@ -181,7 +199,7 @@ test('cannot set childLoggerFactory after binding', t => {
     t.error(err)
 
     try {
-      fastify.setChildLoggerFactory(() => { })
+      fastify.setChildLoggerFactory(() => {})
       t.fail()
     } catch (e) {
       t.pass()
@@ -203,20 +221,23 @@ test('catch synchronous errors', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'Content-Type': 'application/json'
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      payload: JSON.stringify({ hello: 'world' }).substring(0, 5)
     },
-    payload: JSON.stringify({ hello: 'world' }).substring(0, 5)
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.same(res.json(), {
-      error: 'Internal Server Error',
-      message: 'kaboom2',
-      statusCode: 500
-    })
-  })
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.same(res.json(), {
+        error: 'Internal Server Error',
+        message: 'kaboom2',
+        statusCode: 500
+      })
+    }
+  )
 })

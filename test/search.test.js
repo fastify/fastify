@@ -127,116 +127,139 @@ test('search, body schema', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   const url = `http://localhost:${fastify.server.address().port}`
 
   test('request - search', t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
   })
 
   test('request search params schema', t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/params/world/123`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { foo: 'world', test: 123 })
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url: `${url}/params/world/123`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { foo: 'world', test: 123 })
+      }
+    )
   })
 
   test('request search params schema error', t => {
     t.plan(3)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/params/world/string`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'params/test must be integer',
-        statusCode: 400
-      })
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url: `${url}/params/world/string`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.same(JSON.parse(body), {
+          error: 'Bad Request',
+          code: 'FST_ERR_VALIDATION',
+          message: 'params/test must be integer',
+          statusCode: 400
+        })
+      }
+    )
   })
 
   test('request search querystring schema', t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/query?hello=123`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 123 })
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url: `${url}/query?hello=123`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 123 })
+      }
+    )
   })
 
   test('request search querystring schema error', t => {
     t.plan(3)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/query?hello=world`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'querystring/hello must be integer',
-        statusCode: 400
-      })
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url: `${url}/query?hello=world`
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.same(JSON.parse(body), {
+          error: 'Bad Request',
+          code: 'FST_ERR_VALIDATION',
+          message: 'querystring/hello must be integer',
+          statusCode: 400
+        })
+      }
+    )
   })
 
   test('request search body schema', t => {
     t.plan(4)
     const replyBody = { foo: 'bar', test: 5 }
-    sget({
-      method: 'SEARCH',
-      url: `${url}/body`,
-      body: JSON.stringify(replyBody),
-      headers: { 'content-type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), replyBody)
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url: `${url}/body`,
+        body: JSON.stringify(replyBody),
+        headers: { 'content-type': 'application/json' }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), replyBody)
+      }
+    )
   })
 
   test('request search body schema error', t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/body`,
-      body: JSON.stringify({ foo: 'bar', test: 'test' }),
-      headers: { 'content-type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'body/test must be integer',
-        statusCode: 400
-      })
-    })
+    sget(
+      {
+        method: 'SEARCH',
+        url: `${url}/body`,
+        body: JSON.stringify({ foo: 'bar', test: 'test' }),
+        headers: { 'content-type': 'application/json' }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), {
+          error: 'Bad Request',
+          code: 'FST_ERR_VALIDATION',
+          message: 'body/test must be integer',
+          statusCode: 400
+        })
+      }
+    )
   })
 })

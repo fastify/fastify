@@ -152,7 +152,10 @@ test('FST_ERR_CTP_INVALID_PARSE_TYPE', t => {
   const error = new errors.FST_ERR_CTP_INVALID_PARSE_TYPE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
-  t.equal(error.message, "The body parser can only parse your data as 'string' or 'buffer', you asked '%s' which is not supported.")
+  t.equal(
+    error.message,
+    "The body parser can only parse your data as 'string' or 'buffer', you asked '%s' which is not supported."
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof TypeError)
 })
@@ -252,7 +255,10 @@ test('FST_ERR_DEC_REFERENCE_TYPE', t => {
   const error = new errors.FST_ERR_DEC_REFERENCE_TYPE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_DEC_REFERENCE_TYPE')
-  t.equal(error.message, "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead.")
+  t.equal(
+    error.message,
+    "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead."
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -302,7 +308,10 @@ test('FST_ERR_MISSING_MIDDLEWARE', t => {
   const error = new errors.FST_ERR_MISSING_MIDDLEWARE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_MISSING_MIDDLEWARE')
-  t.equal(error.message, 'You must register a plugin for handling middlewares, visit fastify.dev/docs/latest/Reference/Middleware/ for more info.')
+  t.equal(
+    error.message,
+    'You must register a plugin for handling middlewares, visit fastify.dev/docs/latest/Reference/Middleware/ for more info.'
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -312,7 +321,10 @@ test('FST_ERR_HOOK_TIMEOUT', t => {
   const error = new errors.FST_ERR_HOOK_TIMEOUT()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_HOOK_TIMEOUT')
-  t.equal(error.message, "A callback for '%s' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+  t.equal(
+    error.message,
+    "A callback for '%s' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise"
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -492,7 +504,10 @@ test('FST_ERR_REQ_INVALID_VALIDATION_INVOCATION', t => {
   const error = new errors.FST_ERR_REQ_INVALID_VALIDATION_INVOCATION()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_REQ_INVALID_VALIDATION_INVOCATION')
-  t.equal(error.message, 'Invalid validation invocation. Missing validation function for HTTP part "%s" nor schema provided.')
+  t.equal(
+    error.message,
+    'Invalid validation invocation. Missing validation function for HTTP part "%s" nor schema provided.'
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -592,7 +607,10 @@ test('FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE', t => {
   const error = new errors.FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE()
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE')
-  t.equal(error.message, "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method")
+  t.equal(
+    error.message,
+    "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof Error)
 })
@@ -792,7 +810,10 @@ test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', t => {
   const error = new errors.FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER('easter-egg')
   t.equal(error.name, 'FastifyError')
   t.equal(error.code, 'FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER')
-  t.equal(error.message, 'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  t.equal(
+    error.message,
+    'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.'
+  )
   t.equal(error.statusCode, 500)
   t.ok(error instanceof TypeError)
 })

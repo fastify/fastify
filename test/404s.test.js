@@ -27,45 +27,54 @@ test('default 404', t => {
 
     test('unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify),
-        body: {},
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify),
+          body: {},
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+        }
+      )
     })
 
     // Return 404 instead of 405 see https://github.com/fastify/fastify/pull/862 for discussion
     test('framework-unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PROPFIND',
-        url: getServerUrl(fastify),
-        body: {},
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      })
+      sget(
+        {
+          method: 'PROPFIND',
+          url: getServerUrl(fastify),
+          body: {},
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+        }
+      )
     })
 
     test('unsupported route', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/notSupported',
-        body: {},
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/notSupported',
+          body: {},
+          json: true
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+        }
+      )
     })
 
     test('using post method and multipart/formdata', t => {
@@ -73,16 +82,19 @@ test('default 404', t => {
       const form = FormData()
       form.append('test-field', 'just some field')
 
-      sget({
-        method: 'POST',
-        url: getServerUrl(fastify) + '/notSupported',
-        body: form,
-        json: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      })
+      sget(
+        {
+          method: 'POST',
+          url: getServerUrl(fastify) + '/notSupported',
+          body: form,
+          json: false
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+        }
+      )
     })
   })
 })
@@ -118,75 +130,90 @@ test('customized 404', t => {
 
     test('unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify),
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify),
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
 
     test('framework-unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PROPFIND',
-        url: getServerUrl(fastify),
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'PROPFIND',
+          url: getServerUrl(fastify),
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
 
     test('unsupported route', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/notSupported'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/notSupported'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
 
     test('with error object', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/with-error'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.same(JSON.parse(body), {
-          error: 'Not Found',
-          message: 'Not Found',
-          statusCode: 404
-        })
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/with-error'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.same(JSON.parse(body), {
+            error: 'Not Found',
+            message: 'Not Found',
+            statusCode: 404
+          })
+        }
+      )
     })
 
     test('error object with headers property', t => {
       t.plan(4)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/with-error-custom-header'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(response.headers['x-foo'], 'bar')
-        t.same(JSON.parse(body), {
-          error: 'Not Found',
-          message: 'Not Found',
-          statusCode: 404
-        })
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/with-error-custom-header'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(response.headers['x-foo'], 'bar')
+          t.same(JSON.parse(body), {
+            error: 'Not Found',
+            message: 'Not Found',
+            statusCode: 404
+          })
+        }
+      )
     })
   })
 })
@@ -208,15 +235,18 @@ test('custom header in notFound handler', t => {
 
     test('not found with custom header', t => {
       t.plan(4)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/notSupported'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(response.headers['x-foo'], 'bar')
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/notSupported'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(response.headers['x-foo'], 'bar')
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
   })
 })
@@ -236,7 +266,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
       t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
     } catch (err) {
       t.type(err, Error)
-      t.equal(err.message, 'Not found handler already set for Fastify instance with prefix: \'/\'')
+      t.equal(err.message, "Not found handler already set for Fastify instance with prefix: '/'")
     }
   })
 
@@ -245,19 +275,22 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     const fastify = Fastify()
 
-    fastify.register((instance, options, done) => {
-      instance.setNotFoundHandler(() => {})
-
-      try {
+    fastify.register(
+      (instance, options, done) => {
         instance.setNotFoundHandler(() => {})
-        t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
-      } catch (err) {
-        t.type(err, Error)
-        t.equal(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
-      }
 
-      done()
-    }, { prefix: '/prefix' })
+        try {
+          instance.setNotFoundHandler(() => {})
+          t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
+        } catch (err) {
+          t.type(err, Error)
+          t.equal(err.message, "Not found handler already set for Fastify instance with prefix: '/prefix'")
+        }
+
+        done()
+      },
+      { prefix: '/prefix' }
+    )
 
     fastify.listen({ port: 0 }, err => {
       t.error(err)
@@ -276,7 +309,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
         t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
       } catch (err) {
         t.type(err, Error)
-        t.equal(err.message, 'Not found handler already set for Fastify instance with prefix: \'/\'')
+        t.equal(err.message, "Not found handler already set for Fastify instance with prefix: '/'")
       }
       done()
     })
@@ -294,22 +327,25 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     const fastify = Fastify()
 
-    fastify.register((instance, options, done) => {
-      instance.setNotFoundHandler(() => {})
+    fastify.register(
+      (instance, options, done) => {
+        instance.setNotFoundHandler(() => {})
 
-      instance.register((instance2, options, done) => {
-        try {
-          instance2.setNotFoundHandler(() => {})
-          t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
-        } catch (err) {
-          t.type(err, Error)
-          t.equal(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
-        }
+        instance.register((instance2, options, done) => {
+          try {
+            instance2.setNotFoundHandler(() => {})
+            t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
+          } catch (err) {
+            t.type(err, Error)
+            t.equal(err.message, "Not found handler already set for Fastify instance with prefix: '/prefix'")
+          }
+          done()
+        })
+
         done()
-      })
-
-      done()
-    }, { prefix: '/prefix' })
+      },
+      { prefix: '/prefix' }
+    )
 
     fastify.setNotFoundHandler(() => {})
 
@@ -324,25 +360,28 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     const fastify = Fastify()
 
-    fastify.register((instance, options, done) => {
-      instance.register((instance2A, options, done) => {
-        instance2A.setNotFoundHandler(() => {})
-        done()
-      })
+    fastify.register(
+      (instance, options, done) => {
+        instance.register((instance2A, options, done) => {
+          instance2A.setNotFoundHandler(() => {})
+          done()
+        })
 
-      instance.register((instance2B, options, done) => {
-        try {
-          instance2B.setNotFoundHandler(() => {})
-          t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
-        } catch (err) {
-          t.type(err, Error)
-          t.equal(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
-        }
-        done()
-      })
+        instance.register((instance2B, options, done) => {
+          try {
+            instance2B.setNotFoundHandler(() => {})
+            t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
+          } catch (err) {
+            t.type(err, Error)
+            t.equal(err.message, "Not found handler already set for Fastify instance with prefix: '/prefix'")
+          }
+          done()
+        })
 
-      done()
-    }, { prefix: '/prefix' })
+        done()
+      },
+      { prefix: '/prefix' }
+    )
 
     fastify.setNotFoundHandler(() => {})
 
@@ -367,26 +406,35 @@ test('encapsulated 404', t => {
     reply.code(404).send('this was not found')
   })
 
-  fastify.register(function (f, opts, done) {
-    f.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('this was not found 2')
-    })
-    done()
-  }, { prefix: '/test' })
+  fastify.register(
+    function (f, opts, done) {
+      f.setNotFoundHandler(function (req, reply) {
+        reply.code(404).send('this was not found 2')
+      })
+      done()
+    },
+    { prefix: '/test' }
+  )
 
-  fastify.register(function (f, opts, done) {
-    f.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('this was not found 3')
-    })
-    done()
-  }, { prefix: '/test2' })
+  fastify.register(
+    function (f, opts, done) {
+      f.setNotFoundHandler(function (req, reply) {
+        reply.code(404).send('this was not found 3')
+      })
+      done()
+    },
+    { prefix: '/test2' }
+  )
 
-  fastify.register(function (f, opts, done) {
-    f.setNotFoundHandler(function (request, reply) {
-      reply.code(404).send('this was not found 4')
-    })
-    done()
-  }, { prefix: '/test3/' })
+  fastify.register(
+    function (f, opts, done) {
+      f.setNotFoundHandler(function (request, reply) {
+        reply.code(404).send('this was not found 4')
+      })
+      done()
+    },
+    { prefix: '/test3/' }
+  )
 
   t.teardown(fastify.close.bind(fastify))
 
@@ -395,162 +443,198 @@ test('encapsulated 404', t => {
 
     test('root unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify),
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify),
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
 
     test('root framework-unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PROPFIND',
-        url: getServerUrl(fastify),
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'PROPFIND',
+          url: getServerUrl(fastify),
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
 
     test('root unsupported route', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/notSupported'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/notSupported'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found')
+        }
+      )
     })
 
     test('unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify) + '/test',
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 2')
-      })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify) + '/test',
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 2')
+        }
+      )
     })
 
     test('framework-unsupported method', t => {
       t.plan(3)
-      sget({
-        method: 'PROPFIND',
-        url: getServerUrl(fastify) + '/test',
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 2')
-      })
+      sget(
+        {
+          method: 'PROPFIND',
+          url: getServerUrl(fastify) + '/test',
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 2')
+        }
+      )
     })
 
     test('unsupported route', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/test/notSupported'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 2')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/test/notSupported'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 2')
+        }
+      )
     })
 
     test('unsupported method 2', t => {
       t.plan(3)
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify) + '/test2',
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 3')
-      })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify) + '/test2',
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 3')
+        }
+      )
     })
 
     test('framework-unsupported method 2', t => {
       t.plan(3)
-      sget({
-        method: 'PROPFIND',
-        url: getServerUrl(fastify) + '/test2',
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 3')
-      })
+      sget(
+        {
+          method: 'PROPFIND',
+          url: getServerUrl(fastify) + '/test2',
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 3')
+        }
+      )
     })
 
     test('unsupported route 2', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/test2/notSupported'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 3')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/test2/notSupported'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 3')
+        }
+      )
     })
 
     test('unsupported method 3', t => {
       t.plan(3)
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify) + '/test3/',
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 4')
-      })
+      sget(
+        {
+          method: 'PUT',
+          url: getServerUrl(fastify) + '/test3/',
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 4')
+        }
+      )
     })
 
     test('framework-unsupported method 3', t => {
       t.plan(3)
-      sget({
-        method: 'PROPFIND',
-        url: getServerUrl(fastify) + '/test3/',
-        body: JSON.stringify({ hello: 'world' }),
-        headers: { 'Content-Type': 'application/json' }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 4')
-      })
+      sget(
+        {
+          method: 'PROPFIND',
+          url: getServerUrl(fastify) + '/test3/',
+          body: JSON.stringify({ hello: 'world' }),
+          headers: { 'Content-Type': 'application/json' }
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 4')
+        }
+      )
     })
 
     test('unsupported route 3', t => {
       t.plan(3)
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/test3/notSupported'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-        t.equal(body.toString(), 'this was not found 4')
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getServerUrl(fastify) + '/test3/notSupported'
+        },
+        (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 404)
+          t.equal(body.toString(), 'this was not found 4')
+        }
+      )
     })
   })
 })
@@ -584,34 +668,37 @@ test('custom 404 hook and handler context', t => {
     reply.code(404).send('this was not found')
   })
 
-  fastify.register(function (instance, opts, done) {
-    instance.decorate('bar', 84)
+  fastify.register(
+    function (instance, opts, done) {
+      instance.decorate('bar', 84)
 
-    instance.addHook('onRequest', function (req, res, done) {
-      t.equal(this.bar, 84)
-      done()
-    })
-    instance.addHook('preHandler', function (request, reply, done) {
-      t.equal(this.bar, 84)
-      done()
-    })
-    instance.addHook('onSend', function (request, reply, payload, done) {
-      t.equal(this.bar, 84)
-      done()
-    })
-    instance.addHook('onResponse', function (request, reply, done) {
-      t.equal(this.bar, 84)
-      done()
-    })
+      instance.addHook('onRequest', function (req, res, done) {
+        t.equal(this.bar, 84)
+        done()
+      })
+      instance.addHook('preHandler', function (request, reply, done) {
+        t.equal(this.bar, 84)
+        done()
+      })
+      instance.addHook('onSend', function (request, reply, payload, done) {
+        t.equal(this.bar, 84)
+        done()
+      })
+      instance.addHook('onResponse', function (request, reply, done) {
+        t.equal(this.bar, 84)
+        done()
+      })
 
-    instance.setNotFoundHandler(function (req, reply) {
-      t.equal(this.foo, 42)
-      t.equal(this.bar, 84)
-      reply.code(404).send('encapsulated was not found')
-    })
+      instance.setNotFoundHandler(function (req, reply) {
+        t.equal(this.foo, 42)
+        t.equal(this.bar, 84)
+        reply.code(404).send('encapsulated was not found')
+      })
 
-    done()
-  }, { prefix: '/encapsulated' })
+      done()
+    },
+    { prefix: '/encapsulated' }
+  )
 
   fastify.inject('/not-found', (err, res) => {
     t.error(err)
@@ -707,15 +794,18 @@ test('run hooks on default 404', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify),
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'PUT',
+        url: getServerUrl(fastify),
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })
 
@@ -724,42 +814,47 @@ test('run non-encapsulated plugin hooks on default 404', t => {
 
   const fastify = Fastify()
 
-  fastify.register(fp(function (instance, options, done) {
-    instance.addHook('onRequest', function (req, res, done) {
-      t.pass('onRequest called')
+  fastify.register(
+    fp(function (instance, options, done) {
+      instance.addHook('onRequest', function (req, res, done) {
+        t.pass('onRequest called')
+        done()
+      })
+
+      instance.addHook('preHandler', function (request, reply, done) {
+        t.pass('preHandler called')
+        done()
+      })
+
+      instance.addHook('onSend', function (request, reply, payload, done) {
+        t.pass('onSend called')
+        done()
+      })
+
+      instance.addHook('onResponse', function (request, reply, done) {
+        t.pass('onResponse called')
+        done()
+      })
+
       done()
     })
-
-    instance.addHook('preHandler', function (request, reply, done) {
-      t.pass('preHandler called')
-      done()
-    })
-
-    instance.addHook('onSend', function (request, reply, payload, done) {
-      t.pass('onSend called')
-      done()
-    })
-
-    instance.addHook('onResponse', function (request, reply, done) {
-      t.pass('onResponse called')
-      done()
-    })
-
-    done()
-  }))
+  )
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 404)
+    }
+  )
 })
 
 test('run non-encapsulated plugin hooks on custom 404', t => {
@@ -835,48 +930,54 @@ test('run hook with encapsulated 404', t => {
     done()
   })
 
-  fastify.register(function (f, opts, done) {
-    f.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('this was not found 2')
-    })
+  fastify.register(
+    function (f, opts, done) {
+      f.setNotFoundHandler(function (req, reply) {
+        reply.code(404).send('this was not found 2')
+      })
 
-    f.addHook('onRequest', function (req, res, done) {
-      t.pass('onRequest 2 called')
+      f.addHook('onRequest', function (req, res, done) {
+        t.pass('onRequest 2 called')
+        done()
+      })
+
+      f.addHook('preHandler', function (request, reply, done) {
+        t.pass('preHandler 2 called')
+        done()
+      })
+
+      f.addHook('onSend', function (request, reply, payload, done) {
+        t.pass('onSend 2 called')
+        done()
+      })
+
+      f.addHook('onResponse', function (request, reply, done) {
+        t.pass('onResponse 2 called')
+        done()
+      })
+
       done()
-    })
-
-    f.addHook('preHandler', function (request, reply, done) {
-      t.pass('preHandler 2 called')
-      done()
-    })
-
-    f.addHook('onSend', function (request, reply, payload, done) {
-      t.pass('onSend 2 called')
-      done()
-    })
-
-    f.addHook('onResponse', function (request, reply, done) {
-      t.pass('onResponse 2 called')
-      done()
-    })
-
-    done()
-  }, { prefix: '/test' })
+    },
+    { prefix: '/test' }
+  )
 
   t.teardown(fastify.close.bind(fastify))
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify) + '/test',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'PUT',
+        url: getServerUrl(fastify) + '/test',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })
 
@@ -905,48 +1006,54 @@ test('run hook with encapsulated 404 and framework-unsupported method', t => {
     done()
   })
 
-  fastify.register(function (f, opts, done) {
-    f.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('this was not found 2')
-    })
+  fastify.register(
+    function (f, opts, done) {
+      f.setNotFoundHandler(function (req, reply) {
+        reply.code(404).send('this was not found 2')
+      })
 
-    f.addHook('onRequest', function (req, res, done) {
-      t.pass('onRequest 2 called')
+      f.addHook('onRequest', function (req, res, done) {
+        t.pass('onRequest 2 called')
+        done()
+      })
+
+      f.addHook('preHandler', function (request, reply, done) {
+        t.pass('preHandler 2 called')
+        done()
+      })
+
+      f.addHook('onSend', function (request, reply, payload, done) {
+        t.pass('onSend 2 called')
+        done()
+      })
+
+      f.addHook('onResponse', function (request, reply, done) {
+        t.pass('onResponse 2 called')
+        done()
+      })
+
       done()
-    })
-
-    f.addHook('preHandler', function (request, reply, done) {
-      t.pass('preHandler 2 called')
-      done()
-    })
-
-    f.addHook('onSend', function (request, reply, payload, done) {
-      t.pass('onSend 2 called')
-      done()
-    })
-
-    f.addHook('onResponse', function (request, reply, done) {
-      t.pass('onResponse 2 called')
-      done()
-    })
-
-    done()
-  }, { prefix: '/test' })
+    },
+    { prefix: '/test' }
+  )
 
   t.teardown(fastify.close.bind(fastify))
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'PROPFIND',
-      url: getServerUrl(fastify) + '/test',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'PROPFIND',
+        url: getServerUrl(fastify) + '/test',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })
 
@@ -978,23 +1085,29 @@ test('hooks check 404', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify) + '?foo=asd',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'PUT',
+        url: getServerUrl(fastify) + '?foo=asd',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported?foo=asd'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: getServerUrl(fastify) + '/notSupported?foo=asd'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })
 
@@ -1047,20 +1160,23 @@ test('log debug for 404', t => {
 
   t.test('log debug', t => {
     t.plan(7)
-    fastify.inject({
-      method: 'GET',
-      url: '/not-found'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
+    fastify.inject(
+      {
+        method: 'GET',
+        url: '/not-found'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
 
-      const INFO_LEVEL = 30
-      t.equal(JSON.parse(logStream.logs[0]).msg, 'incoming request')
-      t.equal(JSON.parse(logStream.logs[1]).msg, 'Route GET:/not-found not found')
-      t.equal(JSON.parse(logStream.logs[1]).level, INFO_LEVEL)
-      t.equal(JSON.parse(logStream.logs[2]).msg, 'request completed')
-      t.equal(logStream.logs.length, 3)
-    })
+        const INFO_LEVEL = 30
+        t.equal(JSON.parse(logStream.logs[0]).msg, 'incoming request')
+        t.equal(JSON.parse(logStream.logs[1]).msg, 'Route GET:/not-found not found')
+        t.equal(JSON.parse(logStream.logs[1]).level, INFO_LEVEL)
+        t.equal(JSON.parse(logStream.logs[2]).msg, 'request completed')
+        t.equal(logStream.logs.length, 3)
+      }
+    )
   })
 })
 
@@ -1080,23 +1196,33 @@ test('Unknown method', t => {
 
     const handler = () => {}
     // See https://github.com/fastify/light-my-request/pull/20
-    t.throws(() => fastify.inject({
-      method: 'UNKNOWN_METHOD',
-      url: '/'
-    }, handler), Error)
+    t.throws(
+      () =>
+        fastify.inject(
+          {
+            method: 'UNKNOWN_METHOD',
+            url: '/'
+          },
+          handler
+        ),
+      Error
+    )
 
-    sget({
-      method: 'UNKNOWN_METHOD',
-      url: getServerUrl(fastify)
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(body), {
-        error: 'Bad Request',
-        message: 'Client Error',
-        statusCode: 400
-      })
-    })
+    sget(
+      {
+        method: 'UNKNOWN_METHOD',
+        url: getServerUrl(fastify)
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.strictSame(JSON.parse(body), {
+          error: 'Bad Request',
+          message: 'Client Error',
+          statusCode: 400
+        })
+      }
+    )
   })
 })
 
@@ -1114,23 +1240,26 @@ test('recognizes errors from the http-errors module', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 404)
-
-      sget(getServerUrl(fastify), (err, response, body) => {
+    fastify.inject(
+      {
+        method: 'GET',
+        url: '/'
+      },
+      (err, res) => {
         t.error(err)
-        const obj = JSON.parse(body.toString())
-        t.strictSame(obj, {
-          error: 'Not Found',
-          message: 'Not Found',
-          statusCode: 404
+        t.equal(res.statusCode, 404)
+
+        sget(getServerUrl(fastify), (err, response, body) => {
+          t.error(err)
+          const obj = JSON.parse(body.toString())
+          t.strictSame(obj, {
+            error: 'Not Found',
+            message: 'Not Found',
+            statusCode: 404
+          })
         })
-      })
-    })
+      }
+    )
   })
 })
 
@@ -1139,13 +1268,16 @@ test('the default 404 handler can be invoked inside a prefixed plugin', t => {
 
   const fastify = Fastify()
 
-  fastify.register(function (instance, opts, done) {
-    instance.get('/path', function (request, reply) {
-      reply.send(new errors.NotFound())
-    })
+  fastify.register(
+    function (instance, opts, done) {
+      instance.get('/path', function (request, reply) {
+        reply.send(new errors.NotFound())
+      })
 
-    done()
-  }, { prefix: '/v1' })
+      done()
+    },
+    { prefix: '/v1' }
+  )
 
   fastify.inject('/v1/path', (err, res) => {
     t.error(err)
@@ -1167,13 +1299,16 @@ test('an inherited custom 404 handler can be invoked inside a prefixed plugin', 
     reply.code(404).send('custom handler')
   })
 
-  fastify.register(function (instance, opts, done) {
-    instance.get('/path', function (request, reply) {
-      reply.send(new errors.NotFound())
-    })
+  fastify.register(
+    function (instance, opts, done) {
+      instance.get('/path', function (request, reply) {
+        reply.send(new errors.NotFound())
+      })
 
-    done()
-  }, { prefix: '/v1' })
+      done()
+    },
+    { prefix: '/v1' }
+  )
 
   fastify.inject('/v1/path', (err, res) => {
     t.error(err)
@@ -1199,16 +1334,19 @@ test('encapsulated custom 404 handler without a prefix is the handler for the en
     done()
   })
 
-  fastify.register(function (instance, opts, done) {
-    instance.register(function (instance2, opts, done) {
-      instance2.setNotFoundHandler(function (request, reply) {
-        reply.code(404).send('custom handler 2')
+  fastify.register(
+    function (instance, opts, done) {
+      instance.register(function (instance2, opts, done) {
+        instance2.setNotFoundHandler(function (request, reply) {
+          reply.code(404).send('custom handler 2')
+        })
+        done()
       })
-      done()
-    })
 
-    done()
-  }, { prefix: 'prefixed' })
+      done()
+    },
+    { prefix: 'prefixed' }
+  )
 
   fastify.inject('/not-found', (err, res) => {
     t.error(err)
@@ -1233,7 +1371,7 @@ test('cannot set notFoundHandler after binding', t => {
     t.error(err)
 
     try {
-      fastify.setNotFoundHandler(() => { })
+      fastify.setNotFoundHandler(() => {})
       t.fail()
     } catch (e) {
       t.pass()
@@ -1266,13 +1404,16 @@ test('404 inside onSend', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify)
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: getServerUrl(fastify)
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+      }
+    )
   })
 })
 
@@ -1308,24 +1449,30 @@ test('preHandler option for setNotFoundHandler', t => {
     t.plan(2)
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        req.body.preHandler = true
-        done()
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          req.body.preHandler = true
+          done()
+        }
+      },
+      function (req, reply) {
+        reply.code(404).send(req.body)
       }
-    }, function (req, reply) {
-      reply.code(404).send(req.body)
-    })
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { preHandler: true, hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { preHandler: true, hello: 'world' })
+      }
+    )
   })
 
   // https://github.com/fastify/fastify/issues/2229
@@ -1333,63 +1480,78 @@ test('preHandler option for setNotFoundHandler', t => {
     t.plan(3)
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        req.body.preHandler = true
-        done()
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          req.body.preHandler = true
+          done()
+        }
+      },
+      function (req, reply) {
+        reply.code(404).send(req.body)
       }
-    }, function (req, reply) {
-      reply.code(404).send(req.body)
-    })
+    )
 
     fastify.post('/', function (req, reply) {
       t.equal(reply.callNotFound(), reply)
     })
 
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { preHandler: true, hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { preHandler: true, hello: 'world' })
+      }
+    )
   })
 
-  t.test('preHandler hook in setNotFoundHandler should accept an array of functions and be called when callNotFound', t => {
-    t.plan(2)
-    const fastify = Fastify()
+  t.test(
+    'preHandler hook in setNotFoundHandler should accept an array of functions and be called when callNotFound',
+    t => {
+      t.plan(2)
+      const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: [
-        (req, reply, done) => {
-          req.body.preHandler1 = true
-          done()
+      fastify.setNotFoundHandler(
+        {
+          preHandler: [
+            (req, reply, done) => {
+              req.body.preHandler1 = true
+              done()
+            },
+            (req, reply, done) => {
+              req.body.preHandler2 = true
+              done()
+            }
+          ]
         },
-        (req, reply, done) => {
-          req.body.preHandler2 = true
-          done()
+        function (req, reply) {
+          reply.code(404).send(req.body)
         }
-      ]
-    }, function (req, reply) {
-      reply.code(404).send(req.body)
-    })
+      )
 
-    fastify.post('/', function (req, reply) {
-      reply.callNotFound()
-    })
+      fastify.post('/', function (req, reply) {
+        reply.callNotFound()
+      })
 
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { preHandler1: true, preHandler2: true, hello: 'world' })
-    })
-  })
+      fastify.inject(
+        {
+          method: 'POST',
+          url: '/',
+          payload: { hello: 'world' }
+        },
+        (err, res) => {
+          t.error(err)
+          const payload = JSON.parse(res.payload)
+          t.same(payload, { preHandler1: true, preHandler2: true, hello: 'world' })
+        }
+      )
+    }
+  )
 
   t.test('preHandler option should be called after preHandler hook', t => {
     t.plan(2)
@@ -1400,153 +1562,189 @@ test('preHandler option for setNotFoundHandler', t => {
       done()
     })
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        req.body.check += 'b'
-        done()
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          req.body.check += 'b'
+          done()
+        }
+      },
+      (req, reply) => {
+        reply.send(req.body)
       }
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { check: 'ab', hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { check: 'ab', hello: 'world' })
+      }
+    )
   })
 
   t.test('preHandler option should be unique per prefix', t => {
     t.plan(4)
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        req.body.hello = 'earth'
-        done()
-      }
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
-
-    fastify.register(function (i, o, n) {
-      i.setNotFoundHandler((req, reply) => {
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          req.body.hello = 'earth'
+          done()
+        }
+      },
+      (req, reply) => {
         reply.send(req.body)
-      })
+      }
+    )
 
-      n()
-    }, { prefix: '/no' })
+    fastify.register(
+      function (i, o, n) {
+        i.setNotFoundHandler((req, reply) => {
+          reply.send(req.body)
+        })
 
-    fastify.inject({
-      method: 'POST',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { hello: 'earth' })
-    })
+        n()
+      },
+      { prefix: '/no' }
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/no/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { hello: 'earth' })
+      }
+    )
+
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/no/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { hello: 'world' })
+      }
+    )
   })
 
   t.test('preHandler option should handle errors', t => {
     t.plan(3)
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        done(new Error('kaboom'))
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          done(new Error('kaboom'))
+        }
+      },
+      (req, reply) => {
+        reply.send(req.body)
       }
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.equal(res.statusCode, 500)
-      t.same(payload, {
-        message: 'kaboom',
-        error: 'Internal Server Error',
-        statusCode: 500
-      })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.equal(res.statusCode, 500)
+        t.same(payload, {
+          message: 'kaboom',
+          error: 'Internal Server Error',
+          statusCode: 500
+        })
+      }
+    )
   })
 
   t.test('preHandler option should handle errors with custom status code', t => {
     t.plan(3)
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        reply.code(401)
-        done(new Error('go away'))
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          reply.code(401)
+          done(new Error('go away'))
+        }
+      },
+      (req, reply) => {
+        reply.send(req.body)
       }
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.equal(res.statusCode, 401)
-      t.same(payload, {
-        message: 'go away',
-        error: 'Unauthorized',
-        statusCode: 401
-      })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.equal(res.statusCode, 401)
+        t.same(payload, {
+          message: 'go away',
+          error: 'Unauthorized',
+          statusCode: 401
+        })
+      }
+    )
   })
 
   t.test('preHandler option could accept an array of functions', t => {
     t.plan(2)
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler({
-      preHandler: [
-        (req, reply, done) => {
-          req.body.preHandler = 'a'
-          done()
-        },
-        (req, reply, done) => {
-          req.body.preHandler += 'b'
-          done()
-        }
-      ]
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
+    fastify.setNotFoundHandler(
+      {
+        preHandler: [
+          (req, reply, done) => {
+            req.body.preHandler = 'a'
+            done()
+          },
+          (req, reply, done) => {
+            req.body.preHandler += 'b'
+            done()
+          }
+        ]
+      },
+      (req, reply) => {
+        reply.send(req.body)
+      }
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { preHandler: 'ab', hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { preHandler: 'ab', hello: 'world' })
+      }
+    )
   })
 
   t.test('preHandler option does not interfere with preHandler', t => {
@@ -1558,42 +1756,54 @@ test('preHandler option for setNotFoundHandler', t => {
       done()
     })
 
-    fastify.setNotFoundHandler({
-      preHandler: (req, reply, done) => {
-        req.body.check += 'b'
-        done()
-      }
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
-
-    fastify.register(function (i, o, n) {
-      i.setNotFoundHandler((req, reply) => {
+    fastify.setNotFoundHandler(
+      {
+        preHandler: (req, reply, done) => {
+          req.body.check += 'b'
+          done()
+        }
+      },
+      (req, reply) => {
         reply.send(req.body)
-      })
+      }
+    )
 
-      n()
-    }, { prefix: '/no' })
+    fastify.register(
+      function (i, o, n) {
+        i.setNotFoundHandler((req, reply) => {
+          reply.send(req.body)
+        })
 
-    fastify.inject({
-      method: 'post',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { check: 'ab', hello: 'world' })
-    })
+        n()
+      },
+      { prefix: '/no' }
+    )
 
-    fastify.inject({
-      method: 'post',
-      url: '/no/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { check: 'a', hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'post',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { check: 'ab', hello: 'world' })
+      }
+    )
+
+    fastify.inject(
+      {
+        method: 'post',
+        url: '/no/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { check: 'a', hello: 'world' })
+      }
+    )
   })
 
   t.test('preHandler option should keep the context', t => {
@@ -1602,26 +1812,32 @@ test('preHandler option for setNotFoundHandler', t => {
 
     fastify.decorate('foo', 42)
 
-    fastify.setNotFoundHandler({
-      preHandler: function (req, reply, done) {
-        t.equal(this.foo, 42)
-        this.foo += 1
-        req.body.foo = this.foo
-        done()
+    fastify.setNotFoundHandler(
+      {
+        preHandler: function (req, reply, done) {
+          t.equal(this.foo, 42)
+          this.foo += 1
+          req.body.foo = this.foo
+          done()
+        }
+      },
+      (req, reply) => {
+        reply.send(req.body)
       }
-    }, (req, reply) => {
-      reply.send(req.body)
-    })
+    )
 
-    fastify.inject({
-      method: 'POST',
-      url: '/not-found',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { foo: 43, hello: 'world' })
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/not-found',
+        payload: { hello: 'world' }
+      },
+      (err, res) => {
+        t.error(err)
+        const payload = JSON.parse(res.payload)
+        t.same(payload, { foo: 43, hello: 'world' })
+      }
+    )
   })
 })
 
@@ -1638,18 +1854,21 @@ test('reply.notFound invoked the notFound handler', t => {
     reply.callNotFound()
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-    t.same(JSON.parse(res.payload), {
-      error: 'Not Found',
-      message: 'kaboom',
-      statusCode: 404
-    })
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 404)
+      t.same(JSON.parse(res.payload), {
+        error: 'Not Found',
+        message: 'kaboom',
+        statusCode: 404
+      })
+    }
+  )
 })
 
 test('The custom error handler should be invoked after the custom not found handler', t => {
@@ -1673,18 +1892,21 @@ test('The custom error handler should be invoked after the custom not found hand
     reply.callNotFound()
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-    t.same(JSON.parse(res.payload), {
-      error: 'Not Found',
-      message: 'kaboom',
-      statusCode: 404
-    })
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 404)
+      t.same(JSON.parse(res.payload), {
+        error: 'Not Found',
+        message: 'kaboom',
+        statusCode: 404
+      })
+    }
+  )
 })
 
 test('If the custom not found handler does not use an Error, the custom error handler should not be called', t => {
@@ -1704,14 +1926,17 @@ test('If the custom not found handler does not use an Error, the custom error ha
     reply.callNotFound()
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-    t.equal(res.payload, 'kaboom')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 404)
+      t.equal(res.payload, 'kaboom')
+    }
+  )
 })
 
 test('preValidation option', t => {
@@ -1720,54 +1945,66 @@ test('preValidation option', t => {
 
   fastify.decorate('foo', true)
 
-  fastify.setNotFoundHandler({
-    preValidation: function (req, reply, done) {
-      t.ok(this.foo)
-      done()
+  fastify.setNotFoundHandler(
+    {
+      preValidation: function (req, reply, done) {
+        t.ok(this.foo)
+        done()
+      }
+    },
+    function (req, reply) {
+      reply.code(404).send(req.body)
     }
-  }, function (req, reply) {
-    reply.code(404).send(req.body)
-  })
+  )
 
-  fastify.inject({
-    method: 'POST',
-    url: '/not-found',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.same(payload, { hello: 'world' })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/not-found',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.same(payload, { hello: 'world' })
+    }
+  )
 })
 
 t.test('preValidation option could accept an array of functions', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.setNotFoundHandler({
-    preValidation: [
-      (req, reply, done) => {
-        t.ok('called')
-        done()
-      },
-      (req, reply, done) => {
-        t.ok('called')
-        done()
-      }
-    ]
-  }, (req, reply) => {
-    reply.send(req.body)
-  })
+  fastify.setNotFoundHandler(
+    {
+      preValidation: [
+        (req, reply, done) => {
+          t.ok('called')
+          done()
+        },
+        (req, reply, done) => {
+          t.ok('called')
+          done()
+        }
+      ]
+    },
+    (req, reply) => {
+      reply.send(req.body)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    url: '/not-found',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.same(payload, { hello: 'world' })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/not-found',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.same(payload, { hello: 'world' })
+    }
+  )
 })
 
 test('Should fail to invoke callNotFound inside a 404 handler', t => {
@@ -1799,14 +2036,17 @@ test('Should fail to invoke callNotFound inside a 404 handler', t => {
     t.equal(line.level, 40)
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-    t.equal(res.payload, '404 Not Found')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 404)
+      t.equal(res.payload, '404 Not Found')
+    }
+  )
 })
 
 test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
@@ -1814,73 +2054,85 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('/hello/:id', () => t.fail('we should not be here'))
-    fastify.inject({
-      url: '/hello/%world',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(response.payload), {
-        error: 'Bad Request',
-        message: "'/hello/%world' is not a valid url component",
-        statusCode: 400,
-        code: 'FST_ERR_BAD_URL'
-      })
-    })
+    fastify.inject(
+      {
+        url: '/hello/%world',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.same(JSON.parse(response.payload), {
+          error: 'Bad Request',
+          message: "'/hello/%world' is not a valid url component",
+          statusCode: 400,
+          code: 'FST_ERR_BAD_URL'
+        })
+      }
+    )
   })
 
   t.test('Wildcard', t => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('*', () => t.fail('we should not be here'))
-    fastify.inject({
-      url: '/hello/%world',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(response.payload), {
-        error: 'Bad Request',
-        message: "'/hello/%world' is not a valid url component",
-        statusCode: 400,
-        code: 'FST_ERR_BAD_URL'
-      })
-    })
+    fastify.inject(
+      {
+        url: '/hello/%world',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.same(JSON.parse(response.payload), {
+          error: 'Bad Request',
+          message: "'/hello/%world' is not a valid url component",
+          statusCode: 400,
+          code: 'FST_ERR_BAD_URL'
+        })
+      }
+    )
   })
 
   t.test('No route registered', t => {
     t.plan(3)
     const fastify = Fastify()
-    fastify.inject({
-      url: '/%c0',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.same(JSON.parse(response.payload), {
-        error: 'Not Found',
-        message: 'Route GET:/%c0 not found',
-        statusCode: 404
-      })
-    })
+    fastify.inject(
+      {
+        url: '/%c0',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.same(JSON.parse(response.payload), {
+          error: 'Not Found',
+          message: 'Route GET:/%c0 not found',
+          statusCode: 404
+        })
+      }
+    )
   })
 
   t.test('Only / is registered', t => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('/', () => t.fail('we should not be here'))
-    fastify.inject({
-      url: '/non-existing',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.same(JSON.parse(response.payload), {
-        error: 'Not Found',
-        message: 'Route GET:/non-existing not found',
-        statusCode: 404
-      })
-    })
+    fastify.inject(
+      {
+        url: '/non-existing',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.same(JSON.parse(response.payload), {
+          error: 'Not Found',
+          message: 'Route GET:/non-existing not found',
+          statusCode: 404
+        })
+      }
+    )
   })
 
   t.test('customized 404', t => {
@@ -1889,14 +2141,17 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
     fastify.setNotFoundHandler(function (req, reply) {
       reply.code(404).send('this was not found')
     })
-    fastify.inject({
-      url: '/%c0',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.same(response.payload, 'this was not found')
-    })
+    fastify.inject(
+      {
+        url: '/%c0',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.same(response.payload, 'this was not found')
+      }
+    )
   })
 
   t.end()
@@ -1906,29 +2161,37 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
   t.test('Register route after setNotFoundHandler', t => {
     t.plan(6)
     const fastify = Fastify()
-    fastify.setNotFoundHandler(function (_req, reply) {
-      reply.code(404).send('this was not found')
-    }).get('/valid-route', function (_req, reply) {
-      reply.send('valid route')
-    })
+    fastify
+      .setNotFoundHandler(function (_req, reply) {
+        reply.code(404).send('this was not found')
+      })
+      .get('/valid-route', function (_req, reply) {
+        reply.send('valid route')
+      })
 
-    fastify.inject({
-      url: '/invalid-route',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.equal(response.payload, 'this was not found')
-    })
+    fastify.inject(
+      {
+        url: '/invalid-route',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(response.payload, 'this was not found')
+      }
+    )
 
-    fastify.inject({
-      url: '/valid-route',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.payload, 'valid route')
-    })
+    fastify.inject(
+      {
+        url: '/valid-route',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.payload, 'valid route')
+      }
+    )
   })
 
   t.end()
@@ -1944,14 +2207,17 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
       }
     })
     fastify.get('/hello/:id', () => t.fail('we should not be here'))
-    fastify.inject({
-      url: '/hello/%world',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.equal(response.payload, '404 Not Found')
-    })
+    fastify.inject(
+      {
+        url: '/hello/%world',
+        method: 'GET'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(response.payload, '404 Not Found')
+      }
+    )
   })
 
   t.end()
@@ -1961,8 +2227,7 @@ test('hooks are applied to not found handlers /1', async ({ equal }) => {
   const fastify = Fastify()
 
   // adding await here is fundamental for this test
-  await fastify.register(async function (fastify) {
-  })
+  await fastify.register(async function (fastify) {})
 
   fastify.setErrorHandler(function (_, request, reply) {
     return reply.code(401).send({ error: 'Unauthorized' })
@@ -1979,7 +2244,7 @@ test('hooks are applied to not found handlers /1', async ({ equal }) => {
 test('hooks are applied to not found handlers /2', async ({ equal }) => {
   const fastify = Fastify()
 
-  async function plugin (fastify) {
+  async function plugin(fastify) {
     fastify.setErrorHandler(function (_, request, reply) {
       return reply.code(401).send({ error: 'Unauthorized' })
     })
@@ -2000,12 +2265,12 @@ test('hooks are applied to not found handlers /2', async ({ equal }) => {
 test('hooks are applied to not found handlers /3', async ({ equal, fail }) => {
   const fastify = Fastify()
 
-  async function plugin (fastify) {
+  async function plugin(fastify) {
     fastify.setNotFoundHandler({ errorHandler }, async () => {
       fail('this should never be called')
     })
 
-    function errorHandler (_, request, reply) {
+    function errorHandler(_, request, reply) {
       return reply.code(401).send({ error: 'Unauthorized' })
     }
   }

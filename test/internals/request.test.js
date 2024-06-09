@@ -4,12 +4,7 @@ const { test } = require('tap')
 
 const Request = require('../../lib/request')
 const Context = require('../../lib/context')
-const {
-  kPublicRouteContext,
-  kReply,
-  kRequest,
-  kOptions
-} = require('../../lib/symbols')
+const { kPublicRouteContext, kReply, kRequest, kOptions } = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
 

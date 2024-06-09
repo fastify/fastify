@@ -19,9 +19,7 @@ test('Symbols', t => {
   t.equal(typeof symbols.paramsSchema, 'symbol')
   t.equal(typeof symbols.headersSchema, 'symbol')
 })
-
-;['compileSchemasForValidation',
-  'compileSchemasForSerialization'].forEach(func => {
+;['compileSchemasForValidation', 'compileSchemasForSerialization'].forEach(func => {
   test(`${func} schema - missing schema`, t => {
     t.plan(2)
     const context = {}
@@ -199,7 +197,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
     opts.schema = normalizeSchema(opts.schema, serverConfig)
   } catch (err) {
     t.equal(err.code, 'FST_ERR_SCH_DUPLICATE')
-    t.equal(err.message, 'Schema with \'querystring\' already present!')
+    t.equal(err.message, "Schema with 'querystring' already present!")
   }
 })
 
@@ -277,10 +275,14 @@ test('build schema - headers are not lowercased in case of custom validator prov
       headers: new Headers()
     }
   }
-  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
-    t.type(schema, Headers)
-    return () => {}
-  }, true)
+  validation.compileSchemasForValidation(
+    opts,
+    ({ schema, method, url, httpPart }) => {
+      t.type(schema, Headers)
+      return () => {}
+    },
+    true
+  )
 })
 
 test('build schema - uppercased headers are not included', t => {
@@ -313,47 +315,52 @@ test('build schema - mixed schema types are individually skipped or normalized',
     properties: nonNormalizedSchema
   }
 
-  const testCases = [{
-    schema: {
-      body: new CustomSchemaClass()
-    },
-    assertions: (schema) => {
-      t.type(schema.body, CustomSchemaClass)
-    }
-  }, {
-    schema: {
-      response: {
-        200: new CustomSchemaClass()
+  const testCases = [
+    {
+      schema: {
+        body: new CustomSchemaClass()
+      },
+      assertions: schema => {
+        t.type(schema.body, CustomSchemaClass)
       }
     },
-    assertions: (schema) => {
-      t.type(schema.response[200], CustomSchemaClass)
-    }
-  }, {
-    schema: {
-      body: nonNormalizedSchema,
-      response: {
-        200: new CustomSchemaClass()
+    {
+      schema: {
+        response: {
+          200: new CustomSchemaClass()
+        }
+      },
+      assertions: schema => {
+        t.type(schema.response[200], CustomSchemaClass)
       }
     },
-    assertions: (schema) => {
-      t.same(schema.body, normalizedSchema)
-      t.type(schema.response[200], CustomSchemaClass)
-    }
-  }, {
-    schema: {
-      body: new CustomSchemaClass(),
-      response: {
-        200: nonNormalizedSchema
+    {
+      schema: {
+        body: nonNormalizedSchema,
+        response: {
+          200: new CustomSchemaClass()
+        }
+      },
+      assertions: schema => {
+        t.same(schema.body, normalizedSchema)
+        t.type(schema.response[200], CustomSchemaClass)
       }
     },
-    assertions: (schema) => {
-      t.type(schema.body, CustomSchemaClass)
-      t.same(schema.response[200], normalizedSchema)
+    {
+      schema: {
+        body: new CustomSchemaClass(),
+        response: {
+          200: nonNormalizedSchema
+        }
+      },
+      assertions: schema => {
+        t.type(schema.body, CustomSchemaClass)
+        t.same(schema.response[200], normalizedSchema)
+      }
     }
-  }]
+  ]
 
-  testCases.forEach((testCase) => {
+  testCases.forEach(testCase => {
     const result = normalizeSchema(testCase.schema, { jsonShorthand: true })
     testCase.assertions(result)
   })

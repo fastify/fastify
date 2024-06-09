@@ -12,7 +12,7 @@ test('listen should accept null port', t => {
 
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: null }, (err) => {
+  fastify.listen({ port: null }, err => {
     t.error(err)
   })
 })
@@ -22,7 +22,7 @@ test('listen should accept undefined port', t => {
 
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: undefined }, (err) => {
+  fastify.listen({ port: undefined }, err => {
     t.error(err)
   })
 })
@@ -32,7 +32,7 @@ test('listen should accept stringified number port', t => {
 
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({ port: '1234' }, (err) => {
+  fastify.listen({ port: '1234' }, err => {
     t.error(err)
   })
 })
@@ -42,20 +42,23 @@ test('listen should accept log text resolution function', t => {
 
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen({
-    host: '127.0.0.1',
-    port: '1234',
-    listenTextResolver: (address) => {
-      t.equal(address, 'http://127.0.0.1:1234')
-      t.pass('executed')
-      return 'hardcoded text'
+  fastify.listen(
+    {
+      host: '127.0.0.1',
+      port: '1234',
+      listenTextResolver: address => {
+        t.equal(address, 'http://127.0.0.1:1234')
+        t.pass('executed')
+        return 'hardcoded text'
+      }
+    },
+    err => {
+      t.error(err)
     }
-  }, (err) => {
-    t.error(err)
-  })
+  )
 })
 
-test('listen should reject string port', async (t) => {
+test('listen should reject string port', async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -84,14 +87,16 @@ test('Test for hostname and port', t => {
     res.send('ok')
   })
   app.listen({ port: 8000 }, () => {
-    sget('http://localhost:8000/host', () => { t.end() })
+    sget('http://localhost:8000/host', () => {
+      t.end()
+    })
   })
 })
 
 test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
   t.test('listen should not start server', t => {
     t.plan(2)
-    function onClose (instance, done) {
+    function onClose(instance, done) {
       t.type(fastify, instance)
       done()
     }
@@ -99,7 +104,7 @@ test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
 
     const fastify = Fastify()
     fastify.addHook('onClose', onClose)
-    fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
+    fastify.listen({ port: 1234, signal: controller.signal }, err => {
       t.error(err)
     })
     controller.abort()
@@ -108,7 +113,7 @@ test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
 
   t.test('listen should not start server if already aborted', t => {
     t.plan(2)
-    function onClose (instance, done) {
+    function onClose(instance, done) {
       t.type(fastify, instance)
       done()
     }
@@ -117,7 +122,7 @@ test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
     controller.abort()
     const fastify = Fastify()
     fastify.addHook('onClose', onClose)
-    fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
+    fastify.listen({ port: 1234, signal: controller.signal }, err => {
       t.error(err)
     })
     t.equal(fastify.server.listening, false)
@@ -128,13 +133,13 @@ test('abort signal', { skip: semver.lt(process.version, '16.0.0') }, t => {
     const fastify = Fastify()
 
     try {
-      fastify.listen({ port: 1234, signal: {} }, (err) => {
+      fastify.listen({ port: 1234, signal: {} }, err => {
         t.error(err)
       })
       t.fail()
     } catch (e) {
       t.equal(e.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
-      t.equal(e.message, 'Invalid listen options: \'Invalid options.signal\'')
+      t.equal(e.message, "Invalid listen options: 'Invalid options.signal'")
     }
   })
 
@@ -152,14 +157,14 @@ t.test('#5180 - preClose should be called before closing secondary server', t =>
   })
 
   fastify.get('/', async (req, reply) => {
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       setTimeout(() => resolve(1), 1000)
     })
 
     return { hello: 'world' }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     const addresses = fastify.addresses()
     const mainServerAddress = fastify.server.address()
@@ -167,9 +172,8 @@ t.test('#5180 - preClose should be called before closing secondary server', t =>
     for (const addr of addresses) {
       if (addr.family !== mainServerAddress.family) {
         secondaryAddress = addr
-        secondaryAddress.address = secondaryAddress.family === 'IPv6'
-          ? `[${secondaryAddress.address}]`
-          : secondaryAddress.address
+        secondaryAddress.address =
+          secondaryAddress.family === 'IPv6' ? `[${secondaryAddress.address}]` : secondaryAddress.address
         break
       }
     }
@@ -179,11 +183,14 @@ t.test('#5180 - preClose should be called before closing secondary server', t =>
       return
     }
 
-    undici.request(`http://${secondaryAddress.address}:${secondaryAddress.port}/`)
-      .then(
-        () => { t.fail('Request should not succeed') },
-        () => { t.ok(flag) }
-      )
+    undici.request(`http://${secondaryAddress.address}:${secondaryAddress.port}/`).then(
+      () => {
+        t.fail('Request should not succeed')
+      },
+      () => {
+        t.ok(flag)
+      }
+    )
 
     setTimeout(() => {
       fastify.close()

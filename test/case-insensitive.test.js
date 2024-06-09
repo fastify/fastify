@@ -20,16 +20,19 @@ test('case insensitive', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FOO'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        hello: 'world'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/FOO'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {
+          hello: 'world'
+        })
+      }
+    )
   })
 })
 
@@ -48,16 +51,19 @@ test('case insensitive inject', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FOO'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(response.payload), {
-        hello: 'world'
-      })
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/FOO'
+      },
+      (err, response) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(response.payload), {
+          hello: 'world'
+        })
+      }
+    )
   })
 })
 
@@ -77,16 +83,19 @@ test('case insensitive (parametric)', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        hello: 'world'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {
+          hello: 'world'
+        })
+      }
+    )
   })
 })
 
@@ -106,15 +115,18 @@ test('case insensitive (wildcard)', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        hello: 'world'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), {
+          hello: 'world'
+        })
+      }
+    )
   })
 })

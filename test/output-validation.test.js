@@ -92,72 +92,89 @@ test('unlisted response code', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.teardown(() => {
+    fastify.close()
+  })
 
   test('shorthand - string get ok', t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/string'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/string'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
   })
 
   test('shorthand - number get ok', t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/number'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 201)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 55 })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/number'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 201)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 55 })
+      }
+    )
   })
 
   test('shorthand - wrong-object-for-schema', t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'The value "world" cannot be converted to a number.'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 500)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), {
+          statusCode: 500,
+          error: 'Internal Server Error',
+          message: 'The value "world" cannot be converted to a number.'
+        })
+      }
+    )
   })
 
   test('shorthand - empty', t => {
     t.plan(2)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/empty'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 204)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/empty'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 204)
+      }
+    )
   })
 
   test('shorthand - 400', t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/400'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'DOOM' })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/400'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'DOOM' })
+      }
+    )
   })
 })

@@ -6,7 +6,7 @@ const { connect } = require('node:net')
 const { once } = require('node:events')
 const dns = require('node:dns').promises
 
-async function setup () {
+async function setup() {
   const localAddresses = await dns.lookup('localhost', { all: true })
   if (localAddresses.length === 1) {
     skip('requires both IPv4 and IPv6')
@@ -20,8 +20,7 @@ async function setup () {
       t.pass(`upgrade event ${JSON.stringify(socket.address())}`)
       socket.end()
     })
-    app.get('/', (req, res) => {
-    })
+    app.get('/', (req, res) => {})
     await app.listen()
     t.teardown(app.close.bind(app))
 

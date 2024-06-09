@@ -14,21 +14,21 @@ test('diagnostics channel events report on errors', t => {
   let callOrder = 0
   let firstEncounteredMessage
 
-  diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
+  diagnostics.subscribe('tracing:fastify.request.handler:start', msg => {
     t.equal(callOrder++, 0)
     firstEncounteredMessage = msg
     t.ok(msg.request instanceof Request)
     t.ok(msg.reply instanceof Reply)
   })
 
-  diagnostics.subscribe('tracing:fastify.request.handler:end', (msg) => {
+  diagnostics.subscribe('tracing:fastify.request.handler:end', msg => {
     t.ok(msg.request instanceof Request)
     t.ok(msg.reply instanceof Reply)
     t.equal(callOrder++, 2)
     t.equal(msg, firstEncounteredMessage)
   })
 
-  diagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {
+  diagnostics.subscribe('tracing:fastify.request.handler:error', msg => {
     t.ok(msg.request instanceof Request)
     t.ok(msg.reply instanceof Reply)
     t.ok(msg.error instanceof Error)
@@ -48,14 +48,19 @@ test('diagnostics channel events report on errors', t => {
   fastify.listen({ port: 0 }, function (err) {
     if (err) t.error(err)
 
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
+    t.teardown(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: getServerUrl(fastify) + '/'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 500)
+      }
+    )
   })
 })

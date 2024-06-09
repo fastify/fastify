@@ -10,11 +10,11 @@ test('diagnostics_channel when present and subscribers', t => {
   let fastifyInHook
 
   const diagnostics = {
-    channel (name) {
+    channel(name) {
       t.equal(name, 'fastify.initialization')
       return {
         hasSubscribers: true,
-        publish (event) {
+        publish(event) {
           t.ok(event.fastify)
           fastifyInHook = event.fastify
         }
@@ -33,11 +33,11 @@ test('diagnostics_channel when present and no subscribers', t => {
   t.plan(1)
 
   const diagnostics = {
-    channel (name) {
+    channel(name) {
       t.equal(name, 'fastify.initialization')
       return {
         hasSubscribers: false,
-        publish () {
+        publish() {
           t.fail('publish should not be called')
         }
       }

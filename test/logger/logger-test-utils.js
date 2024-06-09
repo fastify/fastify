@@ -6,7 +6,7 @@ const fs = require('node:fs')
 
 const path = require('node:path')
 
-function createDeferredPromise () {
+function createDeferredPromise() {
   const promise = {}
   promise.promise = new Promise(function (resolve) {
     promise.resolve = resolve
@@ -15,19 +15,19 @@ function createDeferredPromise () {
 }
 
 let count = 0
-function createTempFile () {
+function createTempFile() {
   const file = path.join(os.tmpdir(), `sonic-boom-${process.pid}-${count++}`)
-  function cleanup () {
+  function cleanup() {
     try {
       fs.unlinkSync(file)
-    } catch { }
+    } catch {}
   }
   return { file, cleanup }
 }
 
-function request (url, cleanup = () => { }) {
+function request(url, cleanup = () => {}) {
   const promise = createDeferredPromise()
-  http.get(url, (res) => {
+  http.get(url, res => {
     const chunks = []
     // we consume the response
     res.on('data', function (chunk) {

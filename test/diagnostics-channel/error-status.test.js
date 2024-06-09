@@ -13,7 +13,7 @@ test('Error.status property support', t => {
   const err = new Error('winter is coming')
   err.status = 418
 
-  diagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {
+  diagnostics.subscribe('tracing:fastify.request.handler:error', msg => {
     t.equal(msg.error.message, 'winter is coming')
   })
 
@@ -21,19 +21,22 @@ test('Error.status property support', t => {
     return Promise.reject(err)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 418)
-    t.same(
-      {
-        error: statusCodes['418'],
-        message: err.message,
-        statusCode: 418
-      },
-      JSON.parse(res.payload)
-    )
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 418)
+      t.same(
+        {
+          error: statusCodes['418'],
+          message: err.message,
+          statusCode: 418
+        },
+        JSON.parse(res.payload)
+      )
+    }
+  )
 })

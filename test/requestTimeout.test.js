@@ -38,14 +38,14 @@ test('requestTimeout passed to server', t => {
   t.equal(customServer.requestTimeout, 5000)
 })
 
-test('requestTimeout should be set', async (t) => {
+test('requestTimeout should be set', async t => {
   t.plan(1)
 
   const initialConfig = Fastify({ requestTimeout: 5000 }).initialConfig
   t.same(initialConfig.requestTimeout, 5000)
 })
 
-test('requestTimeout should 0', async (t) => {
+test('requestTimeout should 0', async t => {
   t.plan(1)
 
   const initialConfig = Fastify().initialConfig

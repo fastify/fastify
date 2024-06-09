@@ -11,7 +11,7 @@ const beta = { res: 'beta' }
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
-test('A route supports host constraints under http2 protocol and secure connection', (t) => {
+test('A route supports host constraints under http2 protocol and secure connection', t => {
   t.plan(6)
 
   let fastify
@@ -56,9 +56,11 @@ test('A route supports host constraints under http2 protocol and secure connecti
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.teardown(() => {
+      fastify.close()
+    })
 
-    t.test('https get request - no constrain', async (t) => {
+    t.test('https get request - no constrain', async t => {
       t.plan(3)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -69,7 +71,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
       t.same(JSON.parse(res.body), alpha)
     })
 
-    t.test('https get request - constrain', async (t) => {
+    t.test('https get request - constrain', async t => {
       t.plan(3)
 
       const url = `https://localhost:${fastify.server.address().port}/beta`
@@ -85,7 +87,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
       t.same(JSON.parse(res.body), beta)
     })
 
-    t.test('https get request - constrain - not found', async (t) => {
+    t.test('https get request - constrain - not found', async t => {
       t.plan(1)
 
       const url = `https://localhost:${fastify.server.address().port}/beta`
@@ -95,7 +97,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
 
       t.equal(res.headers[':status'], 404)
     })
-    t.test('https get request - constrain - verify hostname and port from request', async (t) => {
+    t.test('https get request - constrain - verify hostname and port from request', async t => {
       t.plan(1)
 
       const url = `https://localhost:${fastify.server.address().port}/hostname_port`

@@ -17,7 +17,7 @@ const schema = {
   }
 }
 
-function result () {
+function result() {
   return Promise.resolve({ hello: 'world' })
 }
 

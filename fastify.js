@@ -51,11 +51,7 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const { FSTDEP009 } = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
-const {
-  appendStackTrace,
-  AVVIO_ERRORS_MAP,
-  ...errorCodes
-} = require('./lib/errors')
+const { appendStackTrace, AVVIO_ERRORS_MAP, ...errorCodes } = require('./lib/errors')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -80,7 +76,7 @@ const { buildErrorHandler } = require('./lib/error-handler.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
-function defaultBuildPrettyMeta (route) {
+function defaultBuildPrettyMeta(route) {
   // return a shallow copy of route's sanitized context
 
   const cleanKeys = {}
@@ -96,7 +92,7 @@ function defaultBuildPrettyMeta (route) {
 /**
  * @param {import('./fastify.js').FastifyServerOptions} options
  */
-function fastify (options) {
+function fastify(options) {
   // Options validations
   options = options || {}
 
@@ -108,22 +104,32 @@ function fastify (options) {
     throw new FST_ERR_QSP_NOT_FN(typeof options.querystringParser)
   }
 
-  if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
+  if (
+    options.schemaController &&
+    options.schemaController.bucket &&
+    typeof options.schemaController.bucket !== 'function'
+  ) {
     throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
   }
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
+  const requestIdHeader =
+    typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0
+      ? options.requestIdHeader.toLowerCase()
+      : options.requestIdHeader === true && 'request-id'
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
 
-  const ajvOptions = Object.assign({
-    customOptions: {},
-    plugins: []
-  }, options.ajv)
+  const ajvOptions = Object.assign(
+    {
+      customOptions: {},
+      plugins: []
+    },
+    options.ajv
+  )
   const frameworkErrors = options.frameworkErrors
 
   // Ajv options
@@ -164,7 +170,7 @@ function fastify (options) {
         mustMatchWhenDerived: true,
         storage: options.versioning.storage,
         deriveConstraint: options.versioning.deriveVersion,
-        validate (value) {
+        validate(value) {
           if (typeof value !== 'string') {
             throw new FST_ERR_VERSION_CONSTRAINT_NOT_STR()
           }
@@ -243,8 +249,8 @@ function fastify (options) {
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
-      (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+      options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning,
+      options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
@@ -256,73 +262,73 @@ function fastify (options) {
     // routing method
     routing: httpHandler,
     // routes shorthand methods
-    delete: function _delete (url, options, handler) {
+    delete: function _delete(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
     },
-    get: function _get (url, options, handler) {
+    get: function _get(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'GET', url, options, handler })
     },
-    head: function _head (url, options, handler) {
+    head: function _head(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
     },
-    patch: function _patch (url, options, handler) {
+    patch: function _patch(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
     },
-    post: function _post (url, options, handler) {
+    post: function _post(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'POST', url, options, handler })
     },
-    put: function _put (url, options, handler) {
+    put: function _put(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PUT', url, options, handler })
     },
-    options: function _options (url, options, handler) {
+    options: function _options(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
     },
-    propfind: function _propfind (url, options, handler) {
+    propfind: function _propfind(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PROPFIND', url, options, handler })
     },
-    proppatch: function _proppatch (url, options, handler) {
+    proppatch: function _proppatch(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
     },
-    mkcalendar: function _mkcalendar (url, options, handler) {
+    mkcalendar: function _mkcalendar(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
     },
-    mkcol: function _mkcol (url, options, handler) {
+    mkcol: function _mkcol(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
     },
-    copy: function _copy (url, options, handler) {
+    copy: function _copy(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'COPY', url, options, handler })
     },
-    move: function _move (url, options, handler) {
+    move: function _move(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'MOVE', url, options, handler })
     },
-    lock: function _lock (url, options, handler) {
+    lock: function _lock(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'LOCK', url, options, handler })
     },
-    unlock: function _unlock (url, options, handler) {
+    unlock: function _unlock(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'UNLOCK', url, options, handler })
     },
-    trace: function _trace (url, options, handler) {
+    trace: function _trace(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
     },
-    report: function _mkcalendar (url, options, handler) {
+    report: function _mkcalendar(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
     },
-    search: function _search (url, options, handler) {
+    search: function _search(url, options, handler) {
       return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
-    all: function _all (url, options, handler) {
+    all: function _all(url, options, handler) {
       return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
     },
     // extended route
-    route: function _route (options) {
+    route: function _route(options) {
       // we need the fastify object that we are producing so we apply a lazy loading of the function,
       // otherwise we should bind it after the declaration
       return router.route.call(this, { options })
     },
-    hasRoute: function _route (options) {
+    hasRoute: function _route(options) {
       return router.hasRoute.call(this, { options })
     },
-    findRoute: function _findRoute (options) {
+    findRoute: function _findRoute(options) {
       return router.findRoute(options)
     },
     // expose logger instance
@@ -393,7 +399,7 @@ function fastify (options) {
 
   Object.defineProperties(fastify, {
     listeningOrigin: {
-      get () {
+      get() {
         const address = this.addresses().slice(-1).pop()
         /* ignore if windows: unix socket is not testable on Windows platform */
         /* c8 ignore next 3 */
@@ -406,7 +412,7 @@ function fastify (options) {
     },
     pluginName: {
       configurable: true,
-      get () {
+      get() {
         if (this[kPluginNameChain].length > 1) {
           return this[kPluginNameChain].join(' -> ')
         }
@@ -415,33 +421,45 @@ function fastify (options) {
     },
     prefix: {
       configurable: true,
-      get () { return this[kRoutePrefix] }
+      get() {
+        return this[kRoutePrefix]
+      }
     },
     validatorCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getValidatorCompiler() }
+      get() {
+        return this[kSchemaController].getValidatorCompiler()
+      }
     },
     serializerCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getSerializerCompiler() }
+      get() {
+        return this[kSchemaController].getSerializerCompiler()
+      }
     },
     childLoggerFactory: {
       configurable: true,
-      get () { return this[kChildLoggerFactory] }
+      get() {
+        return this[kChildLoggerFactory]
+      }
     },
     version: {
       configurable: true,
-      get () { return VERSION }
+      get() {
+        return VERSION
+      }
     },
     errorHandler: {
       configurable: true,
-      get () {
+      get() {
         return this[kErrorHandler].func
       }
     },
     genReqId: {
       configurable: true,
-      get () { return this[kGenReqId] }
+      get() {
+        return this[kGenReqId]
+      }
     }
   })
 
@@ -485,7 +503,7 @@ function fastify (options) {
           if (forceCloseConnections === 'idle') {
             // Not needed in Node 19
             instance.server.closeIdleConnections()
-          /* istanbul ignore next: Cannot test this without Node.js core support */
+            /* istanbul ignore next: Cannot test this without Node.js core support */
           } else if (serverHasCloseAllConnections && forceCloseConnections) {
             instance.server.closeAllConnections()
           } else if (forceCloseConnections === true) {
@@ -549,21 +567,21 @@ function fastify (options) {
 
   // Older nodejs versions may not have asyncDispose
   if ('asyncDispose' in Symbol) {
-    fastify[Symbol.asyncDispose] = function dispose () {
+    fastify[Symbol.asyncDispose] = function dispose() {
       return fastify.close()
     }
   }
 
   return fastify
 
-  function throwIfAlreadyStarted (msg) {
+  function throwIfAlreadyStarted(msg) {
     if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
   }
 
   // HTTP injection handling
   // If the server is not ready yet, this
   // utility will automatically force it.
-  function inject (opts, cb) {
+  function inject(opts, cb) {
     // lightMyRequest is dynamically loaded as it seems very expensive
     // because of Ajv
     if (lightMyRequest === undefined) {
@@ -602,7 +620,7 @@ function fastify (options) {
     }
   }
 
-  function ready (cb) {
+  function ready(cb) {
     if (this[kState].readyPromise !== null) {
       if (cb != null) {
         this[kState].readyPromise.then(() => cb(null, fastify), cb)
@@ -633,7 +651,7 @@ function fastify (options) {
       this[kState].readyPromise.then(() => cb(null, fastify), cb)
     }
 
-    function runHooks () {
+    function runHooks() {
       // start loading
       fastify[kAvvioBoot]((err, done) => {
         if (err || fastify[kState].started || fastify[kState].ready || fastify[kState].booting) {
@@ -646,13 +664,14 @@ function fastify (options) {
       })
     }
 
-    function manageErr (err) {
+    function manageErr(err) {
       // If the error comes out of Avvio's Error codes
       // We create a make and preserve the previous error
       // as cause
-      err = err != null && AVVIO_ERRORS_MAP[err.code] != null
-        ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
-        : err
+      err =
+        err != null && AVVIO_ERRORS_MAP[err.code] != null
+          ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
+          : err
 
       if (err) {
         return rejectReady(err)
@@ -666,12 +685,12 @@ function fastify (options) {
   }
 
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
-  function withTypeProvider () {
+  function withTypeProvider() {
     return this
   }
 
   // wrapper that we expose to the user for hooks handling
-  function addHook (name, fn) {
+  function addHook(name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook"!')
 
     if (fn == null) {
@@ -708,21 +727,21 @@ function fastify (options) {
     }
     return this
 
-    function _addHook (name, fn) {
+    function _addHook(name, fn) {
       this[kHooks].add(name, fn)
       this[kChildren].forEach(child => _addHook.call(child, name, fn))
     }
   }
 
   // wrapper that we expose to the user for schemas handling
-  function addSchema (schema) {
+  function addSchema(schema) {
     throwIfAlreadyStarted('Cannot call "addSchema"!')
     this[kSchemaController].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this
   }
 
-  function defaultClientErrorHandler (err, socket) {
+  function defaultClientErrorHandler(err, socket) {
     // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
     // https://nodejs.org/api/http.html#http_event_clienterror
     if (err.code === 'ECONNRESET' || socket.destroyed) {
@@ -757,14 +776,16 @@ function fastify (options) {
 
     // If the socket is not writable, there is no reason to try to send data.
     if (socket.writable) {
-      socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+      socket.write(
+        `HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`
+      )
     }
     socket.destroy(err)
   }
 
   // If the router does not match any route, every request will land here
   // req and res are Node.js core objects
-  function defaultRoute (req, res) {
+  function defaultRoute(req, res) {
     if (req.headers['accept-version'] !== undefined) {
       // we remove the accept-version header for performance result
       // because we do not want to go through the constraint checking
@@ -775,7 +796,7 @@ function fastify (options) {
     fourOhFour.router.lookup(req, res)
   }
 
-  function onBadUrl (path, req, res) {
+  function onBadUrl(path, req, res) {
     if (frameworkErrors) {
       const id = getGenReqId(onBadUrlContext.server, req)
       const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
@@ -797,9 +818,9 @@ function fastify (options) {
     res.end(body)
   }
 
-  function buildAsyncConstraintCallback (isAsync, req, res) {
+  function buildAsyncConstraintCallback(isAsync, req, res) {
     if (isAsync === false) return undefined
-    return function onAsyncConstraintError (err) {
+    return function onAsyncConstraintError(err) {
       if (err) {
         if (frameworkErrors) {
           const id = getGenReqId(onBadUrlContext.server, req)
@@ -814,7 +835,8 @@ function fastify (options) {
 
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
-        const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
+        const body =
+          '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
         res.writeHead(500, {
           'Content-Type': 'application/json',
           'Content-Length': body.length
@@ -824,43 +846,46 @@ function fastify (options) {
     }
   }
 
-  function setNotFoundHandler (opts, handler) {
+  function setNotFoundHandler(opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler"!')
 
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
     return this
   }
 
-  function setValidatorCompiler (validatorCompiler) {
+  function setValidatorCompiler(validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler"!')
     this[kSchemaController].setValidatorCompiler(validatorCompiler)
     return this
   }
 
-  function setSchemaErrorFormatter (errorFormatter) {
+  function setSchemaErrorFormatter(errorFormatter) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter"!')
     validateSchemaErrorFormatter(errorFormatter)
     this[kSchemaErrorFormatter] = errorFormatter.bind(this)
     return this
   }
 
-  function setSerializerCompiler (serializerCompiler) {
+  function setSerializerCompiler(serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler"!')
     this[kSchemaController].setSerializerCompiler(serializerCompiler)
     return this
   }
 
-  function setSchemaController (schemaControllerOpts) {
+  function setSchemaController(schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController"!')
     const old = this[kSchemaController]
-    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(
+      old,
+      Object.assign({}, old.opts, schemaControllerOpts)
+    )
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
     return this
   }
 
-  function setReplySerializer (replySerializer) {
+  function setReplySerializer(replySerializer) {
     throwIfAlreadyStarted('Cannot call "setReplySerializer"!')
 
     this[kReplySerializerDefault] = replySerializer
@@ -868,7 +893,7 @@ function fastify (options) {
   }
 
   // wrapper that we expose to the user for configure the custom error handler
-  function setErrorHandler (func) {
+  function setErrorHandler(func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
     if (typeof func !== 'function') {
@@ -879,22 +904,26 @@ function fastify (options) {
     return this
   }
 
-  function setChildLoggerFactory (factory) {
+  function setChildLoggerFactory(factory) {
     throwIfAlreadyStarted('Cannot call "setChildLoggerFactory"!')
 
     this[kChildLoggerFactory] = factory
     return this
   }
 
-  function printRoutes (opts = {}) {
+  function printRoutes(opts = {}) {
     // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
-    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    opts.includeMeta = opts.includeHooks
+      ? opts.includeMeta
+        ? supportedHooks.concat(opts.includeMeta)
+        : supportedHooks
+      : opts.includeMeta
     return router.printRoutes(opts)
   }
 
-  function wrapRouting (router, { rewriteUrl, logger }) {
+  function wrapRouting(router, { rewriteUrl, logger }) {
     let isAsync
-    return function preRouting (req, res) {
+    return function preRouting(req, res) {
       // only call isAsyncConstraint once
       if (isAsync === undefined) isAsync = router.isAsyncConstraint()
       if (rewriteUrl) {
@@ -911,7 +940,7 @@ function fastify (options) {
     }
   }
 
-  function setGenReqId (func) {
+  function setGenReqId(func) {
     throwIfAlreadyStarted('Cannot call "setGenReqId"!')
 
     this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
@@ -919,7 +948,7 @@ function fastify (options) {
   }
 }
 
-function validateSchemaErrorFormatter (schemaErrorFormatter) {
+function validateSchemaErrorFormatter(schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
     throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN(typeof schemaErrorFormatter)
   } else if (schemaErrorFormatter.constructor.name === 'AsyncFunction') {

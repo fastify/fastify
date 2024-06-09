@@ -10,17 +10,17 @@ const helper = require('../helper')
 const { on } = stream
 const { request } = require('./logger-test-utils')
 
-t.test('request', (t) => {
+t.test('request', t => {
   t.setTimeout(60000)
 
   let localhost
 
   t.plan(7)
   t.before(async function () {
-    [localhost] = await helper.getLoopbackHost()
+    ;[localhost] = await helper.getLoopbackHost()
   })
 
-  t.test('The request id header key can be customized', async (t) => {
+  t.test('The request id header key can be customized', async t => {
     const lines = ['incoming request', 'some log message', 'request completed']
     t.plan(lines.length * 2 + 2)
     const REQUEST_ID = '42'
@@ -49,7 +49,7 @@ t.test('request', (t) => {
     }
   })
 
-  t.test('The request id header key can be ignored', async (t) => {
+  t.test('The request id header key can be ignored', async t => {
     const lines = ['incoming request', 'some log message', 'request completed']
     t.plan(lines.length * 2 + 2)
     const REQUEST_ID = 'ignore-me'
@@ -77,7 +77,7 @@ t.test('request', (t) => {
     }
   })
 
-  t.test('The request id header key can be customized along with a custom id generator', async (t) => {
+  t.test('The request id header key can be customized along with a custom id generator', async t => {
     const REQUEST_ID = '42'
     const matches = [
       { reqId: REQUEST_ID, msg: /incoming request/ },
@@ -93,7 +93,7 @@ t.test('request', (t) => {
     const fastify = Fastify({
       logger: { stream, level: 'info' },
       requestIdHeader: 'my-custom-request-id',
-      genReqId (req) {
+      genReqId(req) {
         return 'foo'
       }
     })
@@ -112,7 +112,11 @@ t.test('request', (t) => {
     })
 
     {
-      const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
+      const response = await fastify.inject({
+        method: 'GET',
+        url: '/one',
+        headers: { 'my-custom-request-id': REQUEST_ID }
+      })
       const body = await response.json()
       t.equal(body.id, REQUEST_ID)
     }
@@ -129,7 +133,7 @@ t.test('request', (t) => {
     }
   })
 
-  t.test('The request id header key can be ignored along with a custom id generator', async (t) => {
+  t.test('The request id header key can be ignored along with a custom id generator', async t => {
     const REQUEST_ID = 'ignore-me'
     const matches = [
       { reqId: 'foo', msg: /incoming request/ },
@@ -145,7 +149,7 @@ t.test('request', (t) => {
     const fastify = Fastify({
       logger: { stream, level: 'info' },
       requestIdHeader: false,
-      genReqId (req) {
+      genReqId(req) {
         return 'foo'
       }
     })
@@ -181,7 +185,7 @@ t.test('request', (t) => {
     }
   })
 
-  t.test('The request id log label can be changed', async (t) => {
+  t.test('The request id log label can be changed', async t => {
     const REQUEST_ID = '42'
     const matches = [
       { traceId: REQUEST_ID, msg: /incoming request/ },
@@ -205,7 +209,11 @@ t.test('request', (t) => {
     })
 
     {
-      const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
+      const response = await fastify.inject({
+        method: 'GET',
+        url: '/one',
+        headers: { 'my-custom-request-id': REQUEST_ID }
+      })
       const body = await response.json()
       t.equal(body.id, REQUEST_ID)
     }
@@ -216,7 +224,7 @@ t.test('request', (t) => {
     }
   })
 
-  t.test('should redact the authorization header if so specified', async (t) => {
+  t.test('should redact the authorization header if so specified', async t => {
     const lines = [
       { msg: /Server listening at/ },
       { req: { headers: { authorization: '[Redacted]' } }, msg: 'incoming request' },
@@ -230,7 +238,7 @@ t.test('request', (t) => {
         redact: ['req.headers.authorization'],
         level: 'info',
         serializers: {
-          req (req) {
+          req(req) {
             return {
               method: req.method,
               url: req.url,
@@ -253,18 +261,21 @@ t.test('request', (t) => {
     await fastify.ready()
     await fastify.listen({ port: 0, host: localhost })
 
-    await request({
-      method: 'GET',
-      path: '/',
-      host: localhost,
-      port: fastify.server.address().port,
-      headers: {
-        authorization: 'Bearer abcde'
+    await request(
+      {
+        method: 'GET',
+        path: '/',
+        host: localhost,
+        port: fastify.server.address().port,
+        headers: {
+          authorization: 'Bearer abcde'
+        }
+      },
+      function (response, body) {
+        t.equal(response.statusCode, 200)
+        t.same(body, JSON.stringify({ hello: 'world' }))
       }
-    }, function (response, body) {
-      t.equal(response.statusCode, 200)
-      t.same(body, JSON.stringify({ hello: 'world' }))
-    })
+    )
 
     for await (const [line] of on(stream, 'data')) {
       t.match(line, lines.shift())
@@ -272,7 +283,7 @@ t.test('request', (t) => {
     }
   })
 
-  t.test('should not throw error when serializing custom req', (t) => {
+  t.test('should not throw error when serializing custom req', t => {
     t.plan(1)
 
     const lines = []

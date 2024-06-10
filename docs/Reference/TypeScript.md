@@ -662,7 +662,7 @@ However, there are a couple of suggestions to help improve this experience:
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.
 - In case you've the `@typescript-eslint/no-floating-promises` enabled,
-please double-check that your `.eslintrc` includes `allowForKnownSafePromises`
+please double-check that your ESLint configuration includes a `allowForKnownSafePromises`
 property as described on the [`typescript-eslint no-floating-promises allowForKnownSafePromises
 documentation`](https://typescript-eslint.io/rules/no-floating-promises/#allowforknownsafepromises):
 ```

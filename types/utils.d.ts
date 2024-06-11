@@ -88,3 +88,8 @@ type OmitIndexSignature<T> = {
  * Use this type only for input values, not for output values.
  */
 export type HttpHeader = keyof OmitIndexSignature<http.OutgoingHttpHeaders> | (string & Record<never, never>);
+
+// cheat for similar (same?) behavior as NoInfer but for TS <5.4
+export type NoInferCompat<SC> = {
+  [K in keyof SC]: SC[K]
+};

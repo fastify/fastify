@@ -1052,7 +1052,7 @@ expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
 // Handlers: Auxiliary
 // -------------------------------------------------------------------
 
-interface AuxiliaryHandlerProvider extends FastifyTypeProvider { output: 'handler-auxiliary' }
+interface AuxiliaryHandlerProvider extends FastifyTypeProvider { output: this['input'] }
 
 // Auxiliary handlers are likely shared for multiple routes and thus should infer as unknown due to potential varying parameters
 function auxiliaryHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void {
@@ -1063,7 +1063,7 @@ expectAssignable(server.withTypeProvider<AuxiliaryHandlerProvider>().get(
   '/',
   {
     onRequest: auxiliaryHandler,
-    schema: { body: null }
+    schema: { body: 'handler-auxiliary' }
   },
   (req) => {
     expectType<'handler-auxiliary'>(req.body)

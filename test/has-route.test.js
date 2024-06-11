@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('../fastify')
 
 test('hasRoute', t => {
-  t.plan(4)
+  t.plan(5)
   const test = t.test
   const fastify = Fastify()
 
@@ -72,6 +72,22 @@ test('hasRoute', t => {
     t.equal(fastify.hasRoute({
       method: 'GET',
       url: '/example/12345.png'
+    }), true)
+  })
+
+  test('hasRoute - finds a route even if method is not uppercased', t => {
+    t.plan(1)
+    fastify.route({
+      method: 'GET',
+      url: '/equal',
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    t.equal(fastify.hasRoute({
+      method: 'get',
+      url: '/equal'
     }), true)
   })
 })

@@ -87,6 +87,28 @@ fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => 
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
 
+### Using addContentTypeParser with fastify.register
+When using `addContentTypeParser` in combination with `fastify.register`,
+`await` should not be used when registering routes. Using `await` causes
+the route registration to be asynchronous and can lead to routes being registered
+before the addContentTypeParser has been set.
+
+#### Correct Usage
+```js
+const fastify = require('fastify')();
+
+
+fastify.register((fastify, opts) => {
+  fastify.addContentTypeParser('application/json', function (request, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.get('/hello', async (req, res) => {});
+});
+```
+
 Besides the `addContentTypeParser` API there are further APIs that can be used.
 These are `hasContentTypeParser`, `removeContentTypeParser` and
 `removeAllContentTypeParsers`.

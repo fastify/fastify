@@ -12,7 +12,7 @@ import {
   FastifyTypeProviderDefault,
   ResolveFastifyReplyReturnType
 } from './type-provider'
-import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { ContextConfigDefault, HTTPMethods, NoInferCompat, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
 export interface FastifyRouteConfig {
   url: string;
@@ -48,8 +48,8 @@ export interface RouteShorthandOptions<
   attachValidation?: boolean;
   exposeHeadRoute?: boolean;
 
-  validatorCompiler?: FastifySchemaCompiler<SchemaCompiler>;
-  serializerCompiler?: FastifySerializerCompiler<SchemaCompiler>;
+  validatorCompiler?: FastifySchemaCompiler<NoInferCompat<SchemaCompiler>>;
+  serializerCompiler?: FastifySerializerCompiler<NoInferCompat<SchemaCompiler>>;
   bodyLimit?: number;
   logLevel?: LogLevel;
   config?: Omit<FastifyRequestContext<ContextConfig>['config'], 'url' | 'method'>;
@@ -59,33 +59,33 @@ export interface RouteShorthandOptions<
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     error: FastifyError,
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, NoInferCompat<SchemaCompiler>, TypeProvider, ContextConfig, Logger>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider>
   ) => void;
   childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   schemaErrorFormatter?: SchemaErrorFormatter;
 
   // hooks
-  onRequest?: onRequestMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | onRequestMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  preParsing?: preParsingMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | preParsingMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  preValidation?: preValidationMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | preValidationMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  preHandler?: preHandlerMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | preHandlerMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  preSerialization?: preSerializationMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | preSerializationMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  onSend?: onSendMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | onSendMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  onResponse?: onResponseMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | onResponseMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  onTimeout?: onTimeoutMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | onTimeoutMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
-  onError?: onErrorMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError, SchemaCompiler, TypeProvider, Logger>
-  | onErrorMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError, SchemaCompiler, TypeProvider, Logger>[];
-  onRequestAbort?: onRequestAbortMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
-  | onRequestAbortMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[];
+  onRequest?: onRequestMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | onRequestMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  preParsing?: preParsingMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | preParsingMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  preValidation?: preValidationMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | preValidationMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  preHandler?: preHandlerMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | preHandlerMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  preSerialization?: preSerializationMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | preSerializationMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  onSend?: onSendMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | onSendMetaHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  onResponse?: onResponseMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | onResponseMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  onTimeout?: onTimeoutMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | onTimeoutMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  onError?: onErrorMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | onErrorMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
+  onRequestAbort?: onRequestAbortMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>
+  | onRequestAbortMetaHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>[];
 }
 /**
  * Route handler method declaration.
@@ -162,7 +162,7 @@ export interface RouteOptions<
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger> {
   method: HTTPMethods | HTTPMethods[];
   url: string;
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>;
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInferCompat<SchemaCompiler>, TypeProvider, Logger>;
 }
 
 export type RouteHandler<

@@ -54,7 +54,6 @@ Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v
  - [Quick start](#quick-start)
  - [Install](#install)
  - [Example](#example)
- - [Fastify v1.x and v2.x](#fastify-v1x-and-v2x)
  - [Core features](#core-features)
  - [Benchmarks](#benchmarks)
  - [Documentation](#documentation)

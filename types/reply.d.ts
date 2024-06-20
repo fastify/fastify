@@ -5,7 +5,7 @@ import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
-import { FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType, CallTypeProvider } from './type-provider'
+import { CallSerializerTypeProvider, FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType } from './type-provider'
 import { CodeToReplyKey, ContextConfigDefault, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes, HttpHeader } from './utils'
 
 export interface ReplyGenericInterface {
@@ -24,7 +24,7 @@ export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends Rep
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault> =
   Code extends keyof SchemaCompiler['response'] ?
-    CallTypeProvider<TypeProvider, SchemaCompiler['response'][Code]> :
+    CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][Code]> :
     ResolveFastifyReplyType<TypeProvider, SchemaCompiler, { Reply: ReplyTypeConstrainer<RouteGenericReply, Code> }>
 /**
  * FastifyReply is an instance of the standard http or http2 reply types.

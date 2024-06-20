@@ -72,7 +72,7 @@ expectAssignable<ServerWithHttp2>(serverWithHttp2.register(async (instance: Serv
 }))
 
 // With Type Provider
-type TestTypeProvider = { input: 'test', output: 'test' }
+type TestTypeProvider = { schema: 'test', validator: 'test', serializer: 'test' }
 const serverWithTypeProvider = fastify().withTypeProvider<TestTypeProvider>()
 type ServerWithTypeProvider = FastifyInstance<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance, TestTypeProvider>
 const testPluginWithTypeProvider: FastifyPluginCallback<TestOptions, RawServerDefault, TestTypeProvider> = function (instance, opts, done) { }

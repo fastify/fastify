@@ -19,7 +19,8 @@ For example, `FastifyTypeProviderDefault` will not be assignable to the followin
 ```ts
 export interface NotSubstitutableTypeProvider extends FastifyTypeProvider {
    // bad, nothing is assignable to `never` (except for itself)
-  output: this['input'] extends /** custom check here**/ ? /** narrowed type here **/ : never;
+  validator: this['schema'] extends /** custom check here**/ ? /** narrowed type here **/ : never;
+  serializer: this['schema'] extends /** custom check here**/ ? /** narrowed type here **/ : never;
 }
 ```
 
@@ -27,6 +28,7 @@ Unless changed to:
 ```ts
 export interface SubstitutableTypeProvider extends FastifyTypeProvider {
   // good, anything can be assigned to `unknown`
-  output: this['input'] extends /** custom check here**/ ? /** narrowed type here **/ : unknown; 
+  validator: this['schema'] extends /** custom check here**/ ? /** narrowed type here **/ : unknown;
+  serializer: this['schema'] extends /** custom check here**/ ? /** narrowed type here **/ : unknown;
 }
 ```

@@ -7,13 +7,15 @@ import { RecordKeysToLowercase } from './utils'
 // -----------------------------------------------------------------------------------------------
 
 export interface FastifyTypeProvider {
-  readonly input: unknown,
-  readonly output: unknown,
+  readonly schema: unknown,
+  readonly validator: unknown,
+  readonly serializer: unknown,
 }
 
 export interface FastifyTypeProviderDefault extends FastifyTypeProvider {}
 
-export type CallTypeProvider<F extends FastifyTypeProvider, I> = (F & { input: I })['output']
+export type CallValidatorTypeProvider<F extends FastifyTypeProvider, S> = (F & { schema: S })['validator']
+export type CallSerializerTypeProvider<F extends FastifyTypeProvider, S> = (F & { schema: S })['serializer']
 
 // -----------------------------------------------------------------------------------------------
 // FastifyRequestType
@@ -31,13 +33,13 @@ type KeysOf<T> = T extends any ? keyof T : never
 
 // Resolves Request types either from generic argument or Type Provider.
 type ResolveRequestParams<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<KeysOf<RouteGeneric['Params']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['params']> : RouteGeneric['Params']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Params']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['params']> : RouteGeneric['Params']>
 type ResolveRequestQuerystring<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<KeysOf<RouteGeneric['Querystring']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Querystring']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']>
 type ResolveRequestHeaders<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<KeysOf<RouteGeneric['Headers']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Headers']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']>
 type ResolveRequestBody<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<KeysOf<RouteGeneric['Body']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Body']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
 
 // The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
 export interface FastifyRequestType<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {
@@ -62,9 +64,9 @@ export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvi
 // Resolves the Reply type by taking a union of response status codes and content-types
 type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema> = {
   [K1 in keyof SchemaCompiler['response']]: SchemaCompiler['response'][K1] extends { content: { [keyof: string]: { schema: unknown } } } ? ({
-    [K2 in keyof SchemaCompiler['response'][K1]['content']]: CallTypeProvider<TypeProvider, SchemaCompiler['response'][K1]['content'][K2]['schema']>
-  } extends infer Result ? Result[keyof Result] : unknown) : CallTypeProvider<TypeProvider, SchemaCompiler['response'][K1]>
-} extends infer Result ? Result[keyof Result] : unknown
+    [K2 in keyof SchemaCompiler['response'][K1]['content']]: CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][K1]['content'][K2]['schema']>
+  } extends infer Result ? Result[keyof Result] : unknown) : CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][K1]>
+} extends infer Result ? Result[keyof Result] : unknown;
 
 // The target reply type. This type is inferenced on fastify 'replies' via generic argument assignment
 export type FastifyReplyType<Reply = unknown> = Reply

@@ -24,7 +24,10 @@ expectAssignable(server.get('/', (req) => expectType<unknown>(req.body)))
 // Remapping
 // -------------------------------------------------------------------
 
-interface NumberProvider extends FastifyTypeProvider { output: number } // remap all schemas to numbers
+interface NumberProvider extends FastifyTypeProvider {
+  validator: number
+  serializer: number
+} // remap all schemas to numbers
 
 expectAssignable(server.withTypeProvider<NumberProvider>().get(
   '/',
@@ -48,7 +51,7 @@ expectAssignable(server.withTypeProvider<NumberProvider>().get(
 // Override
 // -------------------------------------------------------------------
 
-interface OverriddenProvider extends FastifyTypeProvider { output: 'inferenced' }
+interface OverriddenProvider extends FastifyTypeProvider { validator: 'inferenced' }
 
 expectAssignable(server.withTypeProvider<OverriddenProvider>().get<{ Body: 'override' }>(
   '/',
@@ -70,7 +73,10 @@ expectAssignable(server.withTypeProvider<OverriddenProvider>().get<{ Body: 'over
 // TypeBox
 // -------------------------------------------------------------------
 
-interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : unknown }
+interface TypeBoxProvider extends FastifyTypeProvider {
+  validator: this['schema'] extends TSchema ? Static<this['schema']> : unknown
+  serializer: this['schema'] extends TSchema ? Static<this['schema']> : unknown
+}
 
 expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   '/',
@@ -104,7 +110,10 @@ expectAssignable<FastifyInstance>(server.withTypeProvider<TypeBoxProvider>())
 // JsonSchemaToTs
 // -------------------------------------------------------------------
 
-interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : unknown }
+interface JsonSchemaToTsProvider extends FastifyTypeProvider {
+  validator: this['schema'] extends JSONSchema ? FromSchema<this['schema']> : unknown
+  serializer: this['schema'] extends JSONSchema ? FromSchema<this['schema']> : unknown
+}
 
 // explicitly setting schema `as const`
 
@@ -1004,7 +1013,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: 
 // FastifyPlugin: Auxiliary
 // -------------------------------------------------------------------
 
-interface AuxiliaryPluginProvider extends FastifyTypeProvider { output: 'plugin-auxiliary' }
+interface AuxiliaryPluginProvider extends FastifyTypeProvider { validator: 'plugin-auxiliary' }
 
 // Auxiliary plugins may have varying server types per application. Recommendation would be to explicitly remap instance provider context within plugin if required.
 function plugin<T extends FastifyInstance> (instance: T) {
@@ -1033,7 +1042,7 @@ expectAssignable(server.withTypeProvider<AuxiliaryPluginProvider>().register(plu
 // Handlers: Inline
 // -------------------------------------------------------------------
 
-interface InlineHandlerProvider extends FastifyTypeProvider { output: 'handler-inline' }
+interface InlineHandlerProvider extends FastifyTypeProvider { validator: 'handler-inline' }
 
 // Inline handlers should infer for the request parameters (non-shared)
 expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
@@ -1053,7 +1062,7 @@ expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
 // Handlers: Auxiliary
 // -------------------------------------------------------------------
 
-interface AuxiliaryHandlerProvider extends FastifyTypeProvider { output: this['input'] }
+interface AuxiliaryHandlerProvider extends FastifyTypeProvider { validator: 'handler-auxiliary' }
 
 // Auxiliary handlers are likely shared for multiple routes and thus should infer as unknown due to potential varying parameters
 function auxiliaryHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void {
@@ -1081,3 +1090,29 @@ const safePromiseLike = {
 expectAssignable<SafePromiseLike<string>>(safePromiseLike)
 expectAssignable<PromiseLike<string>>(safePromiseLike)
 expectError<Promise<string>>(safePromiseLike)
+
+// -------------------------------------------------------------------
+// Separate Providers
+// -------------------------------------------------------------------
+
+interface SeparateProvider extends FastifyTypeProvider {
+  validator: string
+  serializer: Date
+}
+
+expectAssignable(server.withTypeProvider<SeparateProvider>().get(
+  '/',
+  {
+    schema: {
+      body: null,
+      response: {
+        200: { type: 'string' }
+      }
+    }
+  },
+  (req, res) => {
+    expectType<string>(req.body)
+
+    res.send(new Date())
+  }
+))

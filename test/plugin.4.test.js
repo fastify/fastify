@@ -132,6 +132,9 @@ test('plugin metadata - version not matching requirement', t => {
 test('plugin metadata - version not matching requirement 2', t => {
   t.plan(2)
   const fastify = Fastify()
+  Object.defineProperty(fastify, 'version', {
+    value: '99.0.0'
+  })
 
   plugin[Symbol.for('skip-override')] = true
   plugin[Symbol.for('plugin-meta')] = {
@@ -197,36 +200,75 @@ test('plugin metadata - release candidate', t => {
   }
 })
 
-test('fastify-rc loads prior version plugins', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  Object.defineProperty(fastify, 'version', {
-    value: '99.0.0-rc.1'
+test('fastify-rc loads prior version plugins', async t => {
+  t.test('baseline (rc)', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    Object.defineProperty(fastify, 'version', {
+      value: '99.0.0-rc.1'
+    })
+
+    plugin[Symbol.for('plugin-meta')] = {
+      name: 'plugin',
+      fastify: '^98.1.0'
+    }
+    plugin2[Symbol.for('plugin-meta')] = {
+      name: 'plugin2',
+      fastify: '98.x'
+    }
+
+    fastify.register(plugin)
+
+    fastify.ready((err) => {
+      t.error(err)
+      t.pass('everything right')
+    })
+
+    function plugin (instance, opts, done) {
+      done()
+    }
+
+    function plugin2 (instance, opts, done) {
+      done()
+    }
   })
 
-  plugin[Symbol.for('plugin-meta')] = {
-    name: 'plugin',
-    fastify: '^98.1.0'
-  }
-  plugin2[Symbol.for('plugin-meta')] = {
-    name: 'plugin2',
-    fastify: '98.x'
-  }
+  t.test('pre', t => {
+    t.plan(2)
 
-  fastify.register(plugin)
+    const fastify = Fastify()
+    Object.defineProperty(fastify, 'version', { value: '99.0.0-pre.1' })
 
-  fastify.ready((err) => {
-    t.error(err)
-    t.pass('everything right')
+    plugin[Symbol.for('plugin-meta')] = { name: 'plugin', fastify: '^98.x' }
+
+    fastify.register(plugin)
+
+    fastify.ready((err) => {
+      t.error(err)
+      t.pass()
+    })
+
+    function plugin (instance, opts, done) { done() }
   })
 
-  function plugin (instance, opts, done) {
-    done()
-  }
+  t.test('alpha', t => {
+    t.plan(2)
 
-  function plugin2 (instance, opts, done) {
-    done()
-  }
+    const fastify = Fastify()
+    Object.defineProperty(fastify, 'version', { value: '99.0.0-pre.1' })
+
+    plugin[Symbol.for('plugin-meta')] = { name: 'plugin', fastify: '^98.x' }
+
+    fastify.register(plugin)
+
+    fastify.ready((err) => {
+      t.error(err)
+      t.pass()
+    })
+
+    function plugin (instance, opts, done) { done() }
+  })
 })
 
 test('hasPlugin method exists as a function', t => {

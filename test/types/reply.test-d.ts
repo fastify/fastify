@@ -72,6 +72,7 @@ interface ReplyHttpCodes {
     200: 'abc',
     201: boolean,
     300: { foo: string },
+    204: undefined
   }
 }
 
@@ -80,6 +81,7 @@ interface InvalidReplyHttpCodes {
     '1xx': number,
     200: string,
     999: boolean,
+    204: undefined
   }
 }
 
@@ -97,8 +99,11 @@ server.get<ReplyPayload>('/get-generic-send', async function handler (request, r
 server.get<ReplyPayload>('/get-generic-return', async function handler (request, reply) {
   return { test: false }
 })
-expectError(server.get<ReplyPayload>('/get-generic-send-error', async function handler (request, reply) {
+expectError(server.get<ReplyPayload>('/get-generic-send-error-1', async function handler (request, reply) {
   reply.send({ foo: 'bar' })
+}))
+expectError(server.get<ReplyPayload>('/get-generic-send-error-2', async function handler (request, reply) {
+  reply.send()
 }))
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
   return { foo: 'bar' }
@@ -134,6 +139,8 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send', async function handle
   reply.code(201).send(true)
   reply.code(300).send({ foo: 'bar' })
   reply.code(101).send(123)
+  reply.code(204).send()
+  reply.code(204).send(undefined)
 })
 expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-1', async function handler (request, reply) {
   reply.code(200).send('def')
@@ -149,6 +156,9 @@ expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', a
 }))
 expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
   reply.code(401).send({ foo: 123 })
+}))
+expectError(server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-6', async function handler (request, reply) {
+  reply.code(204).send('anything')
 }))
 server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler (request, reply) {
   reply.code(200).send([''])

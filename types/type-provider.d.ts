@@ -25,6 +25,9 @@ export type CallSerializerTypeProvider<F extends FastifyTypeProvider, S> = (F & 
 //   Without brackets, UndefinedToUnknown<undefined | null> => unknown
 type UndefinedToUnknown<T> = [T] extends [undefined] ? unknown : T
 
+// Used to map undefined R
+type UndefinedToUndefinedOrVoid<T> = [T] extends [undefined] ? undefined | void : T
+
 // union-aware keyof operator
 //    keyof ({ a: number} | { b: number}) => never
 //    KeysOf<{a: number} | {b: number}>   => "a" | "b"
@@ -74,8 +77,7 @@ export type FastifyReplyType<Reply = unknown> = Reply
 // Resolves the Reply type either via generic argument or from response schema. This type uses a different
 // resolution strategy to Requests where the Reply will infer a union of each status code type specified
 // by the user. The Reply can be explicitly overridden by users providing a generic Reply type on the route.
-export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> = UndefinedToUnknown<KeysOf<RouteGeneric['Reply']> extends never ? ResolveReplyFromSchemaCompiler<TypeProvider, SchemaCompiler> : RouteGeneric['Reply']>
-
+export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> = UndefinedToUndefinedOrVoid<KeysOf<RouteGeneric['Reply']> extends never ? ResolveReplyFromSchemaCompiler<TypeProvider, SchemaCompiler> : RouteGeneric['Reply']>
 // -----------------------------------------------------------------------------------------------
 // FastifyReplyReturnType
 // -----------------------------------------------------------------------------------------------

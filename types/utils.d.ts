@@ -53,8 +53,8 @@ export type ReplyDefault = unknown
 type StringAsNumber<T extends string> = T extends `${infer N extends number}` ? N : never
 type CodeClasses = 1 | 2 | 3 | 4 | 5
 type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-type HttpCodes = StringAsNumber<`${CodeClasses}${Digit}${Digit}`>
-type HttpKeys = HttpCodes | `${Digit}xx`
+export type HttpCodes = StringAsNumber<`${CodeClasses}${Digit}${Digit}`>
+export type HttpKeys = HttpCodes | `${Digit}xx`
 export type StatusCodeReply = {
 
   [Key in HttpKeys]?: unknown;

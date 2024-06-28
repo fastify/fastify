@@ -5,6 +5,14 @@ const net = require('node:net')
 const Fastify = require('../fastify')
 const { once } = require('node:events')
 
+function createDeferredPromise () {
+  const promise = {}
+  promise.promise = new Promise((resolve) => {
+    promise.resolve = resolve
+  })
+  return promise
+}
+
 test('same port conflict and success should not fire callback multiple times - callback', async (t) => {
   t.plan(7)
   const server = net.createServer()
@@ -13,6 +21,7 @@ test('same port conflict and success should not fire callback multiple times - c
   const option = { port: server.address().port, host: server.address().address }
   let count = 0
   const fastify = Fastify()
+  const promise = createDeferredPromise()
   function callback (err) {
     switch (count) {
       case 6: {
@@ -20,6 +29,7 @@ test('same port conflict and success should not fire callback multiple times - c
         t.error(err)
         fastify.close((err) => {
           t.error(err)
+          promise.resolve()
         })
         break
       }
@@ -41,6 +51,7 @@ test('same port conflict and success should not fire callback multiple times - c
     count++
   }
   fastify.listen(option, callback)
+  await promise.promise
 })
 
 test('same port conflict and success should not fire callback multiple times - promise', async (t) => {

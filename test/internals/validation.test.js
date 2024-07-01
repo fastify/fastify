@@ -100,7 +100,7 @@ test('build schema - body with multiple content type schemas', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, ({ schema }) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.bodySchema]['application/json'], 'function')
   t.type(opts[symbols.bodySchema]['text/plain'], 'function')
 })

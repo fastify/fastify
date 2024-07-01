@@ -27,10 +27,10 @@ expectAssignable<FastifyInstance>(server.post(
       body: {
         content: {
           "application/json": {
-            schema: {ype: 'object' }
+            schema: { type: 'object' }
           },
           "text/plain": {
-            schema: {type: 'string' }
+            schema: { type: 'string' }
           }
         }
       }

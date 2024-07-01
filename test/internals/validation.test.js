@@ -81,7 +81,6 @@ test('build schema - body schema', t => {
 
 test('build schema - body with multiple content type schemas', t => {
   t.plan(2)
-
   const opts = {
     schema: {
       body: {

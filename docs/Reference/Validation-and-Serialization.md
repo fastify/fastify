@@ -887,12 +887,12 @@ fastify.setErrorHandler(function (error, request, reply) {
 JSON Schema provides utilities to optimize your schemas that, in conjunction
 with Fastify's shared schema, let you reuse all your schemas easily.
 
-| Use Case                               | Validator | Serializer |
-| -------------------------------------- | --------- | ---------- |
-| `$ref` to `$id`                        | ️️✔️        | ✔️          |
-| `$ref` to `/definitions`               | ✔️         | ✔️          |
-| `$ref` to shared schema `$id`          | ✔️         | ✔️          |
-| `$ref` to shared schema `/definitions` | ✔️         | ✔️          |
+| Use Case                          | Validator | Serializer |
+|-----------------------------------|-----------|------------|
+| `$ref` to `$id`                   | ️️✔️ | ✔️ |
+| `$ref` to `/definitions`          | ✔️ | ✔️ |
+| `$ref` to shared schema `$id`          | ✔️ | ✔️ |
+| `$ref` to shared schema `/definitions` | ✔️ | ✔️ |
 
 #### Examples
 

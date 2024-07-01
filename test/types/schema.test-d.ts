@@ -21,7 +21,7 @@ expectAssignable<FastifyInstance>(server.get(
 ))
 
 expectAssignable<FastifyInstance>(server.post(
-  '/multi-content-schema',
+  '/multiple-content-schema',
   {
     schema: {
       body: {

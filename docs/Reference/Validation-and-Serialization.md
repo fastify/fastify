@@ -235,6 +235,28 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
+For `body` schema, it's further possible to differentiate the schema per content
+type by nesting the schemas inside `content` property. The schema validation
+will be applied based on the `Content-Type` header in the request.
+
+```js
+fastify.post('/the/url', {
+  schema: {
+    body: {
+      content: {
+        'application/json': {
+          schema: { type: 'object' }
+        },
+        'text/plain': {
+          schema: { type: 'string' }
+        }
+        // Other content types will not be validated
+      }
+    }
+  }
+}, handler)
+```
+
 *Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) the values
 to the types specified in your schema `type` keywords, both to pass the
 validation and to use the correctly typed data afterwards.*
@@ -865,12 +887,12 @@ fastify.setErrorHandler(function (error, request, reply) {
 JSON Schema provides utilities to optimize your schemas that, in conjunction
 with Fastify's shared schema, let you reuse all your schemas easily.
 
-| Use Case                          | Validator | Serializer |
-|-----------------------------------|-----------|------------|
-| `$ref` to `$id`                   | ️️✔️ | ✔️ |
-| `$ref` to `/definitions`          | ✔️ | ✔️ |
-| `$ref` to shared schema `$id`          | ✔️ | ✔️ |
-| `$ref` to shared schema `/definitions` | ✔️ | ✔️ |
+| Use Case                               | Validator | Serializer |
+| -------------------------------------- | --------- | ---------- |
+| `$ref` to `$id`                        | ️️✔️        | ✔️          |
+| `$ref` to `/definitions`               | ✔️         | ✔️          |
+| `$ref` to shared schema `$id`          | ✔️         | ✔️          |
+| `$ref` to shared schema `/definitions` | ✔️         | ✔️          |
 
 #### Examples
 

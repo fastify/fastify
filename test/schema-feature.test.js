@@ -190,6 +190,27 @@ test('Should throw of the schema does not exists in input', t => {
   })
 })
 
+test('Should throw if schema is missing for content type', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.post('/', {
+    handler: echoBody,
+    schema: {
+      body: {
+        content: {
+          'application/json': {}
+        }
+      }
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCHEMA')
+    t.equal(err.message, "Schema is missing for the content type 'application/json'")
+  })
+})
+
 test('Should throw of the schema does not exists in output', t => {
   t.plan(2)
   const fastify = Fastify()

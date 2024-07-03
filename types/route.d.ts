@@ -1,6 +1,6 @@
 import { FastifyError } from '@fastify/error'
 import { ConstraintStrategy } from 'find-my-way'
-import { FastifyRequestContext } from './context'
+import { FastifyContextConfig } from './context'
 import { onErrorMetaHookHandler, onRequestAbortMetaHookHandler, onRequestMetaHookHandler, onResponseMetaHookHandler, onSendMetaHookHandler, onTimeoutMetaHookHandler, preHandlerMetaHookHandler, preParsingMetaHookHandler, preSerializationMetaHookHandler, preValidationMetaHookHandler } from './hooks'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
@@ -52,7 +52,7 @@ export interface RouteShorthandOptions<
   serializerCompiler?: FastifySerializerCompiler<NoInferCompat<SchemaCompiler>>;
   bodyLimit?: number;
   logLevel?: LogLevel;
-  config?: Omit<FastifyRequestContext<ContextConfig>['config'], 'url' | 'method'>;
+  config?: FastifyContextConfig & ContextConfig;
   version?: string;
   constraints?: RouteConstraint,
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';

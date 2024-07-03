@@ -19,6 +19,13 @@ declare module '../../fastify' {
   interface FastifyContextConfig {
     foo: string;
     bar: number;
+    includeMessage?: boolean;
+  }
+
+  interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
+    message: ContextConfig extends { includeMessage: true }
+      ? string
+      : null;
   }
 }
 
@@ -35,6 +42,22 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
 
   return reply.send()
 }
+
+fastify().get(
+  '/',
+  { config: { foo: 'bar', bar: 100, includeMessage: true } },
+  (req) => {
+    expectType<string>(req.message)
+  }
+)
+
+fastify().get(
+  '/',
+  { config: { foo: 'bar', bar: 100, includeMessage: false } },
+  (req) => {
+    expectType<null>(req.message)
+  }
+)
 
 type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options';
 

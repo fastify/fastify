@@ -235,7 +235,7 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
-For `body` schema, it's further possible to differentiate the schema per content
+For `body` schema, it is further possible to differentiate the schema per content
 type by nesting the schemas inside `content` property. The schema validation
 will be applied based on the `Content-Type` header in the request.
 

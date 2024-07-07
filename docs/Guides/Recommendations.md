@@ -212,16 +212,18 @@ server {
 # server group via port 3000.
 server {
   # This listen directive asks NGINX to accept requests
-  # coming to any address, port 443, with SSL, and HTTP/2
-  # if possible.
-  listen 443 ssl http2 default_server;
-  listen [::]:443 ssl http2 default_server;
+  # coming to any address, port 443, with SSL.
+  listen 443 ssl default_server;
+  listen [::]:443 ssl default_server;
 
   # With a server_name directive you can also ask NGINX to
   # use this server block only with matching server name(s)
-  # listen 443 ssl http2;
-  # listen [::]:443 ssl http2;
+  # listen 443 ssl;
+  # listen [::]:443 ssl;
   # server_name example.tld;
+
+  # Enable HTTP/2 support
+  http2 on;
 
   # Your SSL/TLS certificate (chain) and secret key in the PEM format
   ssl_certificate /path/to/fullchain.pem;

@@ -12,7 +12,7 @@ test('can be created - mkcol', t => {
       method: 'MKCOL',
       url: '*',
       handler: function (req, reply) {
-        reply.code(201).send()
+        reply.code(201).header('body', req.body.toString()).send()
       }
     })
     t.pass()
@@ -26,12 +26,15 @@ fastify.listen({ port: 0 }, err => {
   t.teardown(() => { fastify.close() })
 
   test('request - mkcol', t => {
-    t.plan(2)
+    t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/`,
-      method: 'MKCOL'
-    }, (err, response, body) => {
+      method: 'MKCOL',
+      headers: { 'Content-Type': 'text/plain' },
+      body: '/test.txt'
+    }, (err, response) => {
       t.error(err)
+      t.equal(response.headers.body, '/test.txt')
       t.equal(response.statusCode, 201)
     })
   })

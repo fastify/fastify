@@ -12,7 +12,10 @@ test('can be created - copy', t => {
       method: 'COPY',
       url: '*',
       handler: function (req, reply) {
-        reply.code(204).send()
+        reply.code(204)
+          .header('location', req.headers.destination)
+          .header('body', req.body.toString())
+          .send()
       }
     })
     t.pass()
@@ -26,15 +29,19 @@ fastify.listen({ port: 0 }, err => {
   t.teardown(() => { fastify.close() })
 
   test('request - copy', t => {
-    t.plan(2)
+    t.plan(4)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test.txt`,
       method: 'COPY',
       headers: {
-        Destination: '/test2.txt'
-      }
-    }, (err, response, body) => {
+        destination: '/test2.txt',
+        'Content-Type': 'text/plain'
+      },
+      body: '/test3.txt'
+    }, (err, response) => {
       t.error(err)
+      t.equal(response.headers.location, '/test2.txt')
+      t.equal(response.headers.body, '/test3.txt')
       t.equal(response.statusCode, 204)
     })
   })

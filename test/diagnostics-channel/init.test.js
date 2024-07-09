@@ -24,7 +24,7 @@ test('diagnostics_channel when present and subscribers', t => {
   }
 
   const fastify = proxyquire('../../fastify', {
-    'dc-polyfill': diagnostics
+    'node:diagnostics_channel': diagnostics
   })()
   t.equal(fastifyInHook, fastify)
 })
@@ -46,6 +46,6 @@ test('diagnostics_channel when present and no subscribers', t => {
   }
 
   proxyquire('../../fastify', {
-    'dc-polyfill': diagnostics
+    'node:diagnostics_channel': diagnostics
   })()
 })

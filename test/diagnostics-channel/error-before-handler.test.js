@@ -1,7 +1,7 @@
 'use strict'
 
 const t = require('tap')
-const diagnostics = require('dc-polyfill')
+const diagnostics = require('node:diagnostics_channel')
 const test = t.test
 require('../../lib/hooks').onSendHookRunner = function Stub () {}
 const Request = require('../../lib/request')

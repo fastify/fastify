@@ -12,6 +12,7 @@ const {
   kChildren,
   kServerBindings,
   kBodyLimit,
+  kAcceptedHTTPMethods,
   kRoutePrefix,
   kLogLevel,
   kLogSerializers,
@@ -37,7 +38,6 @@ const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
-const { supportedMethods } = require('./lib/httpMethods')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
@@ -228,6 +228,36 @@ function fastify (options) {
       readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
+    [kAcceptedHTTPMethods]: {
+      bodyless: new Set([
+        // Standard
+        'GET',
+        'HEAD',
+        'TRACE',
+
+        // WebDAV
+        'UNLOCK'
+      ]),
+      bodywith: new Set([
+        // Standard
+        'DELETE',
+        'OPTIONS',
+        'PATCH',
+        'PUT',
+        'POST',
+
+        // WebDAV
+        'COPY',
+        'LOCK',
+        'MOVE',
+        'MKCOL',
+        'PROPFIND',
+        'PROPPATCH',
+        'REPORT',
+        'SEARCH',
+        'MKCALENDAR'
+      ])
+    },
     [kOptions]: options,
     [kChildren]: [],
     [kServerBindings]: [],
@@ -311,7 +341,7 @@ function fastify (options) {
       return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
     all: function _all (url, options, handler) {
-      return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
+      return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
     },
     // extended route
     route: function _route (options) {
@@ -375,6 +405,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
+    acceptHTTPMethod,
     // fake http injection
     inject,
     // pretty print of the registered routes
@@ -442,6 +473,15 @@ function fastify (options) {
     genReqId: {
       configurable: true,
       get () { return this[kGenReqId] }
+    },
+    supportedMethods: {
+      configurable: false,
+      get () {
+        return [
+          ...this[kAcceptedHTTPMethods].bodyless,
+          ...this[kAcceptedHTTPMethods].bodywith
+        ]
+      }
     }
   })
 
@@ -915,6 +955,19 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "setGenReqId"!')
 
     this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
+    return this
+  }
+
+  function acceptHTTPMethod (method, { hasBody = false } = {}) {
+    if (typeof method !== 'string') {
+      throw new FST_ERR_ROUTE_METHOD_INVALID()
+    }
+
+    if (hasBody === true) {
+      this[kAcceptedHTTPMethods].bodywith.add(method)
+    } else {
+      this[kAcceptedHTTPMethods].bodyless.add(method)
+    }
     return this
   }
 }

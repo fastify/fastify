@@ -234,10 +234,7 @@ function fastify (options) {
         // Standard
         'GET',
         'HEAD',
-        'TRACE',
-
-        // WebDAV
-        'UNLOCK'
+        'TRACE'
       ]),
       bodywith: new Set([
         // Standard
@@ -245,18 +242,7 @@ function fastify (options) {
         'OPTIONS',
         'PATCH',
         'PUT',
-        'POST',
-
-        // WebDAV
-        'COPY',
-        'LOCK',
-        'MOVE',
-        'MKCOL',
-        'PROPFIND',
-        'PROPPATCH',
-        'REPORT',
-        'SEARCH',
-        'MKCALENDAR'
+        'POST'
       ])
     },
     [kOptions]: options,
@@ -296,6 +282,9 @@ function fastify (options) {
     head: function _head (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
     },
+    trace: function _trace (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+    },
     patch: function _patch (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
     },
@@ -307,39 +296,6 @@ function fastify (options) {
     },
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
-    },
-    propfind: function _propfind (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PROPFIND', url, options, handler })
-    },
-    proppatch: function _proppatch (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
-    },
-    mkcalendar: function _mkcalendar (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
-    },
-    mkcol: function _mkcol (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
-    },
-    copy: function _copy (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'COPY', url, options, handler })
-    },
-    move: function _move (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'MOVE', url, options, handler })
-    },
-    lock: function _lock (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'LOCK', url, options, handler })
-    },
-    unlock: function _unlock (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'UNLOCK', url, options, handler })
-    },
-    trace: function _trace (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
-    },
-    report: function _mkcalendar (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
-    },
-    search: function _search (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
     },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
@@ -969,6 +925,11 @@ function fastify (options) {
     } else {
       this[kAcceptedHTTPMethods].bodyless.add(method)
     }
+
+    this[method.toLowerCase()] = function (url, options, handler) {
+      return router.prepareRoute.call(this, { method, url, options, handler })
+    }
+
     return this
   }
 }

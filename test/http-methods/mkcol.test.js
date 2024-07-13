@@ -3,16 +3,17 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const fastify = require('..')()
+const fastify = require('../../')()
+fastify.acceptHTTPMethod('MKCOL')
 
-test('can be created - copy', t => {
+test('can be created - mkcol', t => {
   t.plan(1)
   try {
     fastify.route({
-      method: 'COPY',
+      method: 'MKCOL',
       url: '*',
       handler: function (req, reply) {
-        reply.code(204).send()
+        reply.code(201).send()
       }
     })
     t.pass()
@@ -25,17 +26,14 @@ fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => { fastify.close() })
 
-  test('request - copy', t => {
+  test('request - mkcol', t => {
     t.plan(2)
     sget({
-      url: `http://localhost:${fastify.server.address().port}/test.txt`,
-      method: 'COPY',
-      headers: {
-        Destination: '/test2.txt'
-      }
+      url: `http://localhost:${fastify.server.address().port}/test/`,
+      method: 'MKCOL'
     }, (err, response, body) => {
       t.error(err)
-      t.equal(response.statusCode, 204)
+      t.equal(response.statusCode, 201)
     })
   })
 })

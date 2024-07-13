@@ -13,7 +13,7 @@ test('fastify.all should add all the methods to the same url', t => {
     'PATCH'
   ]
 
-  const supportedMethods = fastify.supportedMethods;
+  const supportedMethods = fastify.supportedMethods
   t.plan(supportedMethods.length * 2)
 
   fastify.all('/', (req, reply) => {

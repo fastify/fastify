@@ -1,7 +1,8 @@
 'use strict'
 
+const http = require('node:http')
 const { test } = require('tap')
-const Fastify = require('../fastify')
+const Fastify = require('../../fastify')
 
 function addEcho (fastify, method) {
   fastify.route({
@@ -12,6 +13,51 @@ function addEcho (fastify, method) {
     }
   })
 }
+
+test('missing method from http client', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.listen({ port: 3000 }, (err) => {
+    t.error(err)
+
+    const port = fastify.server.address().port
+    const req = http.request({
+      port,
+      method: 'REBIND',
+      path: '/'
+    }, (res) => {
+      t.equal(res.statusCode, 404)
+      fastify.close()
+    })
+
+    req.end()
+  })
+})
+
+test('acceptHTTPMethod increase the supported HTTP methods supported', t => {
+  t.plan(8)
+  const app = Fastify()
+
+  t.throws(() => { addEcho(app, 'REBIND') }, /REBIND method is not supported./)
+  t.notOk(app.supportedMethods.includes('REBIND'))
+  t.notOk(app.rebind)
+
+  app.acceptHTTPMethod('REBIND')
+  t.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
+  t.ok(app.supportedMethods.includes('REBIND'))
+  t.ok(app.rebind)
+
+  app.rebind('/foo', () => 'hello')
+
+  app.inject({
+    method: 'REBIND',
+    url: '/foo'
+  }, (err, response) => {
+    t.error(err)
+    t.equal(response.payload, 'hello')
+  })
+})
 
 test('acceptHTTPMethod adds a new custom method without body', t => {
   t.plan(3)

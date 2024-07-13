@@ -73,7 +73,8 @@ const {
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
-  FST_ERR_ERROR_HANDLER_NOT_FN
+  FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ROUTE_METHOD_INVALID
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -959,7 +960,7 @@ function fastify (options) {
   }
 
   function acceptHTTPMethod (method, { hasBody = false } = {}) {
-    if (typeof method !== 'string') {
+    if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
     }
 

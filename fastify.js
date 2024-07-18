@@ -921,11 +921,11 @@ function fastify (options) {
     }
 
     if (hasBody === true) {
-      this[kAcceptedHTTPMethods].bodywith.add(method)
-      this[kAcceptedHTTPMethods].bodyless.delete(method)
+      this[kSupportedHTTPMethods].bodywith.add(method)
+      this[kSupportedHTTPMethods].bodyless.delete(method)
     } else {
-      this[kAcceptedHTTPMethods].bodywith.delete(method)
-      this[kAcceptedHTTPMethods].bodyless.add(method)
+      this[kSupportedHTTPMethods].bodywith.delete(method)
+      this[kSupportedHTTPMethods].bodyless.add(method)
     }
 
     this[method.toLowerCase()] = function (url, options, handler) {

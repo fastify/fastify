@@ -4,7 +4,7 @@ const t = require('tap')
 const sget = require('simple-get').concat
 const test = t.test
 const fastify = require('../../fastify')()
-fastify.acceptHTTPMethod('SEARCH', { hasBody: true })
+fastify.addHttpMethod('SEARCH', { hasBody: true })
 
 const schema = {
   response: {

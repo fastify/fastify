@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
-fastify.acceptHTTPMethod('REPORT', { hasBody: true })
+fastify.addHttpMethod('REPORT', { hasBody: true })
 
 const bodySample = `<?xml version="1.0" encoding="UTF-8"?>
   <B:calendar-query xmlns:B="urn:ietf:params:xml:ns:caldav">

@@ -35,7 +35,7 @@ test('missing method from http client', t => {
   })
 })
 
-test('acceptHTTPMethod increase the supported HTTP methods supported', t => {
+test('addHttpMethod increase the supported HTTP methods supported', t => {
   t.plan(8)
   const app = Fastify()
 
@@ -43,7 +43,7 @@ test('acceptHTTPMethod increase the supported HTTP methods supported', t => {
   t.notOk(app.supportedMethods.includes('REBIND'))
   t.notOk(app.rebind)
 
-  app.acceptHTTPMethod('REBIND')
+  app.addHttpMethod('REBIND')
   t.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
   t.ok(app.supportedMethods.includes('REBIND'))
   t.ok(app.rebind)
@@ -59,13 +59,13 @@ test('acceptHTTPMethod increase the supported HTTP methods supported', t => {
   })
 })
 
-test('acceptHTTPMethod adds a new custom method without body', t => {
+test('addHttpMethod adds a new custom method without body', t => {
   t.plan(3)
   const app = Fastify()
 
   t.throws(() => { addEcho(app, 'REBIND') }, /REBIND method is not supported./)
 
-  app.acceptHTTPMethod('REBIND')
+  app.addHttpMethod('REBIND')
   t.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
 
   t.throws(() => {
@@ -87,11 +87,11 @@ test('acceptHTTPMethod adds a new custom method without body', t => {
   }, /Body validation schema for REBIND:\/ route is not supported!/)
 })
 
-test('acceptHTTPMethod adds a new custom method with body', t => {
+test('addHttpMethod adds a new custom method with body', t => {
   t.plan(3)
   const app = Fastify()
 
-  app.acceptHTTPMethod('REBIND', { hasBody: true })
+  app.addHttpMethod('REBIND', { hasBody: true })
   t.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
 
   app.inject({
@@ -104,8 +104,8 @@ test('acceptHTTPMethod adds a new custom method with body', t => {
   })
 })
 
-test('acceptHTTPMethod rejects fake http method', t => {
+test('addHttpMethod rejects fake http method', t => {
   t.plan(1)
   const fastify = Fastify()
-  t.throws(() => { fastify.acceptHTTPMethod('FOOO') }, /Provided method is invalid!/)
+  t.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
 })

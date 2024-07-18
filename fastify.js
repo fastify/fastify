@@ -12,7 +12,7 @@ const {
   kChildren,
   kServerBindings,
   kBodyLimit,
-  kAcceptedHTTPMethods,
+  kSupportedHTTPMethods,
   kRoutePrefix,
   kLogLevel,
   kLogSerializers,
@@ -229,7 +229,7 @@ function fastify (options) {
       readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
-    [kAcceptedHTTPMethods]: {
+    [kSupportedHTTPMethods]: {
       bodyless: new Set([
         // Standard
         'GET',
@@ -362,7 +362,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
-    acceptHTTPMethod,
+    addHttpMethod,
     // fake http injection
     inject,
     // pretty print of the registered routes
@@ -435,8 +435,8 @@ function fastify (options) {
       configurable: false,
       get () {
         return [
-          ...this[kAcceptedHTTPMethods].bodyless,
-          ...this[kAcceptedHTTPMethods].bodywith
+          ...this[kSupportedHTTPMethods].bodyless,
+          ...this[kSupportedHTTPMethods].bodywith
         ]
       }
     }
@@ -915,14 +915,16 @@ function fastify (options) {
     return this
   }
 
-  function acceptHTTPMethod (method, { hasBody = false } = {}) {
+  function addHttpMethod (method, { hasBody = false } = {}) {
     if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
     }
 
     if (hasBody === true) {
       this[kAcceptedHTTPMethods].bodywith.add(method)
+      this[kAcceptedHTTPMethods].bodyless.delete(method)
     } else {
+      this[kAcceptedHTTPMethods].bodywith.delete(method)
       this[kAcceptedHTTPMethods].bodyless.add(method)
     }
 

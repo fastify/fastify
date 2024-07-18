@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
-fastify.acceptHTTPMethod('MKCALENDAR', { hasBody: true })
+fastify.addHttpMethod('MKCALENDAR', { hasBody: true })
 
 const bodySample = `<?xml version="1.0" encoding="UTF-8"?>
   <B:mkcalendar xmlns:B="urn:ietf:params:xml:ns:caldav">

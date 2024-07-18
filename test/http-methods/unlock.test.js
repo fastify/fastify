@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
-fastify.acceptHTTPMethod('UNLOCK')
+fastify.addHttpMethod('UNLOCK')
 
 test('can be created - unlock', t => {
   t.plan(1)

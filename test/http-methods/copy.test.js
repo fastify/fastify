@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
-fastify.acceptHTTPMethod('COPY')
+fastify.addHttpMethod('COPY')
 
 test('can be created - copy', t => {
   t.plan(1)

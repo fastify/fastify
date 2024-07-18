@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../')()
-fastify.acceptHTTPMethod('PROPPATCH', { hasBody: true })
+fastify.addHttpMethod('PROPPATCH', { hasBody: true })
 
 const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
         <D:propertyupdate xmlns:D="DAV:"

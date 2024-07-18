@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../')()
-fastify.acceptHTTPMethod('MKCOL')
+fastify.addHttpMethod('MKCOL')
 
 test('can be created - mkcol', t => {
   t.plan(1)

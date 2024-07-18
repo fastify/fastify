@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('../../')()
-fastify.acceptHTTPMethod('MOVE')
+fastify.addHttpMethod('MOVE')
 
 test('shorthand - move', t => {
   t.plan(1)

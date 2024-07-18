@@ -32,10 +32,7 @@ fastify.route(options)
 ### Routes options
 <a id="options"></a>
 
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
-  `'POST'`, `'PUT'`, `'OPTIONS'`, `'SEARCH'`, `'TRACE'`, `'PROPFIND'`,
-  `'PROPPATCH'`, `'MKCOL'`, `'COPY'`, `'MOVE'`, `'LOCK'`, `'UNLOCK'`, 
-  `'REPORT'` and `'MKCALENDAR'`.
+* `method`: currently it supports `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`, `PATCH`, `PUT` and `POST`. To accept more methods, the [`addHttpMethod`](./Server.md#addHttpMethod) must be used.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They
@@ -189,24 +186,6 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 `fastify.options(path, [options], handler)`
 
 `fastify.patch(path, [options], handler)`
-
-`fastify.propfind(path, [options], handler)`
-
-`fastify.proppatch(path, [options], handler)`
-
-`fastify.mkcol(path, [options], handler)`
-
-`fastify.copy(path, [options], handler)`
-
-`fastify.move(path, [options], handler)`
-
-`fastify.lock(path, [options], handler)`
-
-`fastify.unlock(path, [options], handler)`
-
-`fastify.trace(path, [options], handler)`
-
-`fastify.search(path, [options], handler)`
 
 Example:
 ```js

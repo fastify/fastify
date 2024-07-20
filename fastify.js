@@ -928,8 +928,11 @@ function fastify (options) {
       this[kSupportedHTTPMethods].bodyless.add(method)
     }
 
-    this[method.toLowerCase()] = function (url, options, handler) {
-      return router.prepareRoute.call(this, { method, url, options, handler })
+    const _method = method.toLowerCase()
+    if (!this.hasDecorator(_method)) {
+      this.decorate(_method, function (url, options, handler) {
+        return router.prepareRoute.call(this, { method, url, options, handler })
+      })
     }
 
     return this

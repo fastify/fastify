@@ -32,7 +32,9 @@ fastify.route(options)
 ### Routes options
 <a id="options"></a>
 
-* `method`: currently it supports `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`, `PATCH`, `PUT` and `POST`. To accept more methods, the [`addHttpMethod`](./Server.md#addHttpMethod) must be used.
+* `method`: currently it supports `GET`, `HEAD`, `TRACE`, `DELETE`,
+  `OPTIONS`, `PATCH`, `PUT` and `POST`. To accept more methods,
+  the [`addHttpMethod`](./Server.md#addHttpMethod) must be used.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They

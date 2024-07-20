@@ -1309,7 +1309,10 @@ Fake HTTP injection (for testing purposes)
 #### addHttpMethod
 <a id="addHttpMethod"></a>
 
-Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`, `PATCH`, `PUT` and `POST` HTTP methods by default. The `addHttpMethod` method allows to add any non standard HTTP methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
+Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
+`PATCH`, `PUT` and `POST` HTTP methods by default.
+The `addHttpMethod` method allows to add any non standard HTTP
+methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
 
 ```js
 // Add a new HTTP method called 'MKCOL' that supports a request body
@@ -1319,7 +1322,8 @@ fastify.addHttpMethod('MKCOL', { hasBody: true,  })
 fastify.addHttpMethod('COPY')
 ```
 
-After calling `addHttpMethod`, it is possible to use the route shorthand methods to define routes for the new HTTP method:
+After calling `addHttpMethod`, it is possible to use the route shorthand
+methods to define routes for the new HTTP method:
 
 ```js
 fastify.addHttpMethod('MKCOL', { hasBody: true })

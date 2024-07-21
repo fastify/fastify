@@ -105,20 +105,3 @@ jobs:
       - name: Test esbuild bundle
         run: |
           cd test/bundler/esbuild && npm run test
-
-  automerge:
-    if: >
-        github.event_name == 'pull_request' &&
-        github.event.pull_request.user.login == 'dependabot[bot]'
-    needs:
-      - test-typescript
-      - test-unit
-      - package
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - uses: fastify/github-action-merge-dependabot@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}

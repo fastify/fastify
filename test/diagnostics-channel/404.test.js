@@ -1,7 +1,7 @@
 'use strict'
 
 const t = require('tap')
-const diagnostics = require('dc-polyfill')
+const diagnostics = require('node:diagnostics_channel')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../..')

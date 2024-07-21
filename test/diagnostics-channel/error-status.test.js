@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
 const statusCodes = require('node:http').STATUS_CODES
-const diagnostics = require('dc-polyfill')
+const diagnostics = require('node:diagnostics_channel')
 
 test('Error.status property support', t => {
   t.plan(4)

@@ -66,7 +66,7 @@ type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, Sc
   [K1 in keyof SchemaCompiler['response']]: SchemaCompiler['response'][K1] extends { content: { [keyof: string]: { schema: unknown } } } ? ({
     [K2 in keyof SchemaCompiler['response'][K1]['content']]: CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][K1]['content'][K2]['schema']>
   } extends infer Result ? Result[keyof Result] : unknown) : CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][K1]>
-} extends infer Result ? Result[keyof Result] : unknown;
+} extends infer Result ? Result[keyof Result] : unknown
 
 // The target reply type. This type is inferenced on fastify 'replies' via generic argument assignment
 export type FastifyReplyType<Reply = unknown> = Reply

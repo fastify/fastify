@@ -63,7 +63,7 @@ test('build schema - output schema', t => {
   t.equal(typeof opts[symbols.responseSchema]['201'], 'function')
 })
 
-test('build schema - payload schema', t => {
+test('build schema - body schema', t => {
   t.plan(1)
   const opts = {
     schema: {
@@ -77,6 +77,32 @@ test('build schema - payload schema', t => {
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.equal(typeof opts[symbols.bodySchema], 'function')
+})
+
+test('build schema - body with multiple content type schemas', t => {
+  t.plan(2)
+  const opts = {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                hello: { type: 'string' }
+              }
+            }
+          },
+          'text/plain': {
+            schema: { type: 'string' }
+          }
+        }
+      }
+    }
+  }
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
+  t.type(opts[symbols.bodySchema]['application/json'], 'function')
+  t.type(opts[symbols.bodySchema]['text/plain'], 'function')
 })
 
 test('build schema - avoid repeated normalize schema', t => {

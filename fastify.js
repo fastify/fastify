@@ -4,7 +4,7 @@ const VERSION = '5.0.0-alpha.3'
 
 const Avvio = require('avvio')
 const http = require('node:http')
-const diagnostics = require('dc-polyfill')
+const diagnostics = require('node:diagnostics_channel')
 let lightMyRequest
 
 const {

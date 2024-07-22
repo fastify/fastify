@@ -3,18 +3,18 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
-const { supportedMethods } = require('../../lib/httpMethods')
 
 test('fastify.all should add all the methods to the same url', t => {
+  const fastify = Fastify()
+
   const requirePayload = [
     'POST',
     'PUT',
     'PATCH'
   ]
 
+  const supportedMethods = fastify.supportedMethods
   t.plan(supportedMethods.length * 2)
-
-  const fastify = Fastify()
 
   fastify.all('/', (req, reply) => {
     reply.send({ method: req.raw.method })

@@ -12,6 +12,7 @@ const {
   kChildren,
   kServerBindings,
   kBodyLimit,
+  kSupportedHTTPMethods,
   kRoutePrefix,
   kLogLevel,
   kLogSerializers,
@@ -37,7 +38,6 @@ const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
-const { supportedMethods } = require('./lib/httpMethods')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
@@ -73,7 +73,8 @@ const {
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
-  FST_ERR_ERROR_HANDLER_NOT_FN
+  FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ROUTE_METHOD_INVALID
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -228,6 +229,22 @@ function fastify (options) {
       readyPromise: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
+    [kSupportedHTTPMethods]: {
+      bodyless: new Set([
+        // Standard
+        'GET',
+        'HEAD',
+        'TRACE'
+      ]),
+      bodywith: new Set([
+        // Standard
+        'DELETE',
+        'OPTIONS',
+        'PATCH',
+        'PUT',
+        'POST'
+      ])
+    },
     [kOptions]: options,
     [kChildren]: [],
     [kServerBindings]: [],
@@ -265,6 +282,9 @@ function fastify (options) {
     head: function _head (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
     },
+    trace: function _trace (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+    },
     patch: function _patch (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
     },
@@ -277,41 +297,8 @@ function fastify (options) {
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
     },
-    propfind: function _propfind (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PROPFIND', url, options, handler })
-    },
-    proppatch: function _proppatch (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PROPPATCH', url, options, handler })
-    },
-    mkcalendar: function _mkcalendar (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'MKCALENDAR', url, options, handler })
-    },
-    mkcol: function _mkcol (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'MKCOL', url, options, handler })
-    },
-    copy: function _copy (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'COPY', url, options, handler })
-    },
-    move: function _move (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'MOVE', url, options, handler })
-    },
-    lock: function _lock (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'LOCK', url, options, handler })
-    },
-    unlock: function _unlock (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'UNLOCK', url, options, handler })
-    },
-    trace: function _trace (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
-    },
-    report: function _mkcalendar (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'REPORT', url, options, handler })
-    },
-    search: function _search (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'SEARCH', url, options, handler })
-    },
     all: function _all (url, options, handler) {
-      return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
+      return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
     },
     // extended route
     route: function _route (options) {
@@ -375,6 +362,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
+    addHttpMethod,
     // fake http injection
     inject,
     // pretty print of the registered routes
@@ -442,6 +430,15 @@ function fastify (options) {
     genReqId: {
       configurable: true,
       get () { return this[kGenReqId] }
+    },
+    supportedMethods: {
+      configurable: false,
+      get () {
+        return [
+          ...this[kSupportedHTTPMethods].bodyless,
+          ...this[kSupportedHTTPMethods].bodywith
+        ]
+      }
     }
   })
 
@@ -915,6 +912,29 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "setGenReqId"!')
 
     this[kGenReqId] = reqIdGenFactory(this[kOptions].requestIdHeader, func)
+    return this
+  }
+
+  function addHttpMethod (method, { hasBody = false } = {}) {
+    if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
+      throw new FST_ERR_ROUTE_METHOD_INVALID()
+    }
+
+    if (hasBody === true) {
+      this[kSupportedHTTPMethods].bodywith.add(method)
+      this[kSupportedHTTPMethods].bodyless.delete(method)
+    } else {
+      this[kSupportedHTTPMethods].bodywith.delete(method)
+      this[kSupportedHTTPMethods].bodyless.add(method)
+    }
+
+    const _method = method.toLowerCase()
+    if (!this.hasDecorator(_method)) {
+      this.decorate(_method, function (url, options, handler) {
+        return router.prepareRoute.call(this, { method, url, options, handler })
+      })
+    }
+
     return this
   }
 }

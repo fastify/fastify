@@ -160,7 +160,7 @@ section.
 #### [Community](#community)
 
 - [`@aaroncadillac/crudify-mongo`](https://github.com/aaroncadillac/crudify-mongo)
-  A simple way to add a crud in your fastify proyect.
+  A simple way to add a crud in your fastify project.
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
 - [`@blastorg/fastify-aws-dynamodb-cache`](https://github.com/blastorg/fastify-aws-dynamodb-cache)

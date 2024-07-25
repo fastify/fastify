@@ -61,7 +61,7 @@ test('custom serializer options', t => {
 })
 
 test('Different content types', t => {
-  t.plan(38)
+  t.plan(43)
 
   const fastify = Fastify()
   fastify.addSchema({
@@ -235,12 +235,35 @@ test('Different content types', t => {
               }
             }
           }
+        },
+        default: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  details: { type: 'string' }
+                }
+              }
+            }
+          }
         }
       }
     }
   }, function (req, reply) {
-    reply.header('Content-Type', 'application/json')
-    reply.send({ age: 18, city: 'AU' })
+    console.log(req.headers)
+    switch (req.headers['code']) {
+      case '200': {
+        reply.header('Content-Type', 'application/json')
+        reply.code(200).send({ age: 18, city: 'AU' })
+        break
+      }
+      case '201': {
+        reply.header('Content-Type', 'application/json')
+        reply.code(201).send({ details: 'validation error' })
+        break
+      }
+    }
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/json' } }, (err, res) => {
@@ -309,10 +332,16 @@ test('Different content types', t => {
     t.equal(res.statusCode, 500)
   })
 
-  fastify.inject({ method: 'GET', url: '/test' }, (err, res) => {
+  fastify.inject({ method: 'GET', url: '/test', headers: { Code: '200' } }, (err, res) => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ age: 18, city: 'AU' }))
     t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({ method: 'GET', url: '/test', headers: { Code: '201' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.equal(res.statusCode, 201)
   })
 })
 

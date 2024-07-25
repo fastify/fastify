@@ -251,7 +251,6 @@ test('Different content types', t => {
       }
     }
   }, function (req, reply) {
-    console.log(req.headers)
     switch (req.headers['code']) {
       case '200': {
         reply.header('Content-Type', 'application/json')

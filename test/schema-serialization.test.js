@@ -408,7 +408,7 @@ test('Use the same schema id in different places', t => {
   })
 
   fastify.get('/:id', {
-    handler(req, reply) {
+    handler (req, reply) {
       reply.send([{ id: 1 }, { id: 2 }, { what: 'is this' }])
     },
     schema: {
@@ -636,7 +636,7 @@ test('Custom setSerializerCompiler', t => {
 
   fastify.register((instance, opts, done) => {
     instance.get('/:id', {
-      handler(req, reply) {
+      handler (req, reply) {
         reply.send({ id: 1 })
       },
       schema: {
@@ -676,7 +676,7 @@ test('Custom setSerializerCompiler returns bad serialized output', t => {
   })
 
   fastify.get('/:id', {
-    handler(req, reply) { throw new Error('ops') },
+    handler (req, reply) { throw new Error('ops') },
     schema: {
       response: {
         500: outSchema
@@ -720,7 +720,7 @@ test('Custom setSerializerCompiler with addSchema', t => {
   fastify.addSchema({ $id: 'dummy', type: 'object' })
 
   fastify.get('/foo/:id', {
-    handler(_req, reply) {
+    handler (_req, reply) {
       reply.send({ id: 1 })
     },
     schema: {
@@ -751,7 +751,7 @@ test('Custom serializer per route', async t => {
   }
 
   fastify.get('/default', {
-    handler(req, reply) { reply.send({ mean: 'default' }) },
+    handler (req, reply) { reply.send({ mean: 'default' }) },
     schema: { response: { 200: outSchema } }
   })
 
@@ -762,11 +762,11 @@ test('Custom serializer per route', async t => {
       return data => JSON.stringify({ mean: 'custom' })
     })
     instance.get('/custom', {
-      handler(req, reply) { reply.send({}) },
+      handler (req, reply) { reply.send({}) },
       schema: { response: { 200: outSchema } }
     })
     instance.get('/route', {
-      handler(req, reply) { reply.send({}) },
+      handler (req, reply) { reply.send({}) },
       serializerCompiler: ({ schema, method, url, httpPart }) => {
         hit++
         return data => JSON.stringify({ mean: 'route' })

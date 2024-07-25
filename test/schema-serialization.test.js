@@ -61,7 +61,7 @@ test('custom serializer options', t => {
 })
 
 test('Different content types', t => {
-  t.plan(32)
+  t.plan(38)
 
   const fastify = Fastify()
   fastify.addSchema({
@@ -81,9 +81,12 @@ test('Different content types', t => {
           content: {
             'application/json': {
               schema: {
-                name: { type: 'string' },
-                image: { type: 'string' },
-                address: { type: 'string' }
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  image: { type: 'string' },
+                  address: { type: 'string' }
+                }
               }
             },
             'application/vnd.v1+json': {
@@ -95,17 +98,40 @@ test('Different content types', t => {
           }
         },
         201: {
-          content: { type: 'string' }
+          content: {
+            '*/*': {
+              schema: { type: 'string' }
+            }
+          }
         },
         202: {
-          content: { const: 'Processing exclusive content' }
+          content: {
+            '*/*': {
+              schema: { const: 'Processing exclusive content' }
+            }
+          }
         },
         '3xx': {
           content: {
             'application/vnd.v2+json': {
               schema: {
-                fullName: { type: 'string' },
-                phone: { type: 'string' }
+                type: 'object',
+                properties: {
+                  fullName: { type: 'string' },
+                  phone: { type: 'string' }
+                }
+              }
+            }
+          }
+        },
+        '4xx': {
+          content: {
+            '*/*': {
+              schema: {
+                type: 'object',
+                properties: {
+                  details: { type: 'string' }
+                }
               }
             }
           }
@@ -114,7 +140,19 @@ test('Different content types', t => {
           content: {
             'application/json': {
               schema: {
-                details: { type: 'string' }
+                type: 'object',
+                properties: {
+                  details: { type: 'string' }
+                }
+              }
+            },
+            '*/*': {
+              schema: {
+                type: 'object',
+                properties: {
+                  desc: { type: 'string' },
+                  details: { type: 'string' }
+                }
               }
             }
           }
@@ -160,6 +198,15 @@ test('Different content types', t => {
         reply.code(400)
         reply.send({ details: 'validation error' })
         break
+      case 'application/vnd.v8+json':
+        reply.header('Content-Type', 'application/vnd.v8+json')
+        reply.code(500)
+        reply.send({ desc: 'age is missing', details: 'validation error' })
+        break
+      case 'application/vnd.v9+json':
+        reply.code(500)
+        reply.send({ details: 'validation error' })
+        break
       default:
         // to test if schema not found
         reply.header('Content-Type', 'application/vnd.v3+json')
@@ -179,9 +226,12 @@ test('Different content types', t => {
           content: {
             'application/json': {
               schema: {
-                name: { type: 'string' },
-                image: { type: 'string' },
-                address: { type: 'string' }
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  image: { type: 'string' },
+                  address: { type: 'string' }
+                }
               }
             }
           }
@@ -225,19 +275,19 @@ test('Different content types', t => {
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify({ content: 'Games' }))
+    t.equal(res.payload, '"[object Object]"')
     t.equal(res.statusCode, 201)
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v5+json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify({ content: 'Processing exclusive content' }))
+    t.equal(res.payload, '"Processing exclusive content"')
     t.equal(res.statusCode, 202)
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v6+json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify({ desc: 'age is missing', details: 'validation error' }))
+    t.equal(res.payload, JSON.stringify({ details: 'validation error' }))
     t.equal(res.statusCode, 400)
   })
 
@@ -245,6 +295,18 @@ test('Different content types', t => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ details: 'validation error' }))
     t.equal(res.statusCode, 400)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v8+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ desc: 'age is missing', details: 'validation error' }))
+    t.equal(res.statusCode, 500)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v9+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.equal(res.statusCode, 500)
   })
 
   fastify.inject({ method: 'GET', url: '/test' }, (err, res) => {
@@ -265,8 +327,11 @@ test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCHEMA 
           content: {
             'application/json': {
               schema: {
-                fullName: { type: 'string' },
-                phone: { type: 'string' }
+                type: 'object',
+                properties: {
+                  fullName: { type: 'string' },
+                  phone: { type: 'string' }
+                }
               },
               example: {
                 fullName: 'John Doe',
@@ -321,7 +386,7 @@ test('Use the same schema id in different places', t => {
     url: '/123'
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), [{ id: 1 }, { id: 2 }, { }])
+    t.same(res.json(), [{ id: 1 }, { id: 2 }, {}])
   })
 })
 

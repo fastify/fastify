@@ -16,21 +16,30 @@ const defaultSchema = {
 
 const requestSchema = {
   params: {
-    id: {
-      type: 'integer',
-      minimum: 1
+    type: 'object',
+    properties: {
+      id: {
+        type: 'integer',
+        minimum: 1
+      }
     }
   },
   querystring: {
-    foo: {
-      type: 'string',
-      enum: ['bar']
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string',
+        enum: ['bar']
+      }
     }
   },
   body: defaultSchema,
   headers: {
-    'x-foo': {
-      type: 'string'
+    type: 'object',
+    properties: {
+      'x-foo': {
+        type: 'string'
+      }
     }
   }
 }

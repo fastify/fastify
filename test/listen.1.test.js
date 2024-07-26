@@ -89,3 +89,29 @@ test('listen after Promise.resolve()', t => {
       })
     })
 })
+
+test('listen works with undefined host', async t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  await fastify.listen({ host: undefined, port: 0 })
+  const address = fastify.server.address()
+  t.equal(address.address, localhost)
+  t.ok(address.port > 0)
+})
+
+test('listen works with null host', async t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  await fastify.listen({ host: null, port: 0 })
+  const address = fastify.server.address()
+  t.equal(address.address, localhost)
+  t.ok(address.port > 0)
+})

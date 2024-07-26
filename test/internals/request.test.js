@@ -74,8 +74,6 @@ test('Regular request', t => {
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in request)
 
-  // This will be removed, it's deprecated
-  t.equal(request.connection, req.connection)
   t.end()
 })
 
@@ -136,8 +134,6 @@ test('Request with undefined config', t => {
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in request)
 
-  // This will be removed, it's deprecated
-  t.equal(request.connection, req.connection)
   t.end()
 })
 

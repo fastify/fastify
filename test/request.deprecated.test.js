@@ -13,7 +13,10 @@ test('Should expose router options via getters on request and reply', t => {
   const fastify = Fastify()
   const expectedSchema = {
     params: {
-      id: { type: 'integer' }
+      type: 'object',
+      properties: {
+        id: { type: 'integer' }
+      }
     }
   }
 

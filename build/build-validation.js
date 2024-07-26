@@ -32,7 +32,6 @@ const defaultInitOptions = {
   caseSensitive: true,
   allowUnsafeRegex: false,
   disableRequestLogging: false,
-  jsonShorthand: true,
   ignoreTrailingSlash: false,
   ignoreDuplicateSlashes: false,
   maxParamLength: 100,
@@ -94,7 +93,6 @@ const schema = {
       type: 'boolean',
       default: false
     },
-    jsonShorthand: { type: 'boolean', default: defaultInitOptions.jsonShorthand },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },

@@ -640,37 +640,47 @@ You can even have a specific response schema for different content types.
 For example:
 ```js
 const schema = {
-      response: {
-        200: {
-          description: 'Response schema that support different content types'
-          content: {
-            'application/json': {
-              schema: {
-                name: { type: 'string' },
-                image: { type: 'string' },
-                address: { type: 'string' }
-              }
-            },
-            'application/vnd.v1+json': {
-              schema: {
-                type: 'array',
-                items: { $ref: 'test' }
-              }
-            }
+  response: {
+    200: {
+      description: 'Response schema that support different content types'
+      content: {
+        'application/json': {
+          schema: {
+            name: { type: 'string' },
+            image: { type: 'string' },
+            address: { type: 'string' }
           }
         },
-        '3xx': {
-          content: {
-            'application/vnd.v2+json': {
-              schema: {
-                fullName: { type: 'string' },
-                phone: { type: 'string' }
-              }
-            }
+        'application/vnd.v1+json': {
+          schema: {
+            type: 'array',
+            items: { $ref: 'test' }
+          }
+        }
+      }
+    },
+    '3xx': {
+      content: {
+        'application/vnd.v2+json': {
+          schema: {
+            fullName: { type: 'string' },
+            phone: { type: 'string' }
+          }
+        }
+      }
+    },
+    default: {
+      content: {
+        // */* is match-all content-type
+        '*/*': {
+          schema: {
+            desc: { type: 'string' }
           }
         }
       }
     }
+  }
+}
 
 fastify.post('/url', { schema }, handler)
 ```
@@ -695,8 +705,11 @@ fastify.get('/user', {
   schema: {
     response: {
       '2xx': {
-        id: { type: 'number' },
-        name: { type: 'string' }
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          name: { type: 'string' }
+        }
       }
     }
   }

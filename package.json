@@ -22,7 +22,7 @@
     "test:ci": "npm run unit -- --coverage-report=lcovonly && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
-    "test:typescript": "tsc test/types/import.ts && tsd",
+    "test:typescript": "tsc test/types/import.ts --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
     "unit": "tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",

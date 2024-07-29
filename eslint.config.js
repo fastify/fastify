@@ -7,7 +7,8 @@ module.exports = [
     ignores: [
       'lib/configValidator.js',
       'lib/error-serializer.js',
-      'test/same-shape.test.js'
+      'test/same-shape.test.js',
+      'test/types/import.js'
     ]
   },
   ...neo({

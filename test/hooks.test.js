@@ -3075,9 +3075,9 @@ test('onRegister hook should be called / 1', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', (instance, opts) => {
+  fastify.addHook('onRegister', function (opts) {
     // duck typing for the win!
-    t.ok(instance.addHook)
+    t.ok(this.addHook)
     t.same(opts, pluginOpts)
   })
 
@@ -3093,9 +3093,9 @@ test('onRegister hook should be called / 2', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', instance => {
+  fastify.addHook('onRegister', function () {
     // duck typing for the win!
-    t.ok(instance.addHook)
+    t.ok(this.addHook)
   })
 
   fastify.register((instance, opts, done) => {
@@ -3120,8 +3120,8 @@ test('onRegister hook should be called / 3', t => {
 
   fastify.decorate('data', [])
 
-  fastify.addHook('onRegister', instance => {
-    instance.data = instance.data.slice()
+  fastify.addHook('onRegister', function () {
+    this.data = this.data.slice()
   })
 
   fastify.register((instance, opts, done) => {
@@ -3154,7 +3154,7 @@ test('onRegister hook should be called (encapsulation)', t => {
   }
   plugin[Symbol.for('skip-override')] = true
 
-  fastify.addHook('onRegister', (instance, opts) => {
+  fastify.addHook('onRegister', (opts) => {
     t.fail('This should not be called')
   })
 

@@ -594,7 +594,7 @@ your plugin.
    }
 
    module.exports = fp(myPlugin, {
-     fastify: '3.x',
+     fastify: '5.x',
      name: 'my-plugin' // this is used by fastify-plugin to derive the property name
    })
    ```

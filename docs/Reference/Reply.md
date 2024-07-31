@@ -700,8 +700,9 @@ As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
 
 ```js
+const fs = require('node:fs')
+
 fastify.get('/streams', function (request, reply) {
-  const fs = require('node:fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.header('Content-Type', 'application/octet-stream')
   reply.send(stream)
@@ -709,8 +710,9 @@ fastify.get('/streams', function (request, reply) {
 ```
 When using async-await you will need to return or await the reply object:
 ```js
+const fs = require('node:fs')
+
 fastify.get('/streams', async function (request, reply) {
-  const fs = require('node:fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.header('Content-Type', 'application/octet-stream')
   return reply.send(stream)
@@ -728,6 +730,7 @@ sent unmodified without response validation.
 
 ```js
 const fs = require('node:fs')
+
 fastify.get('/streams', function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
@@ -738,6 +741,7 @@ fastify.get('/streams', function (request, reply) {
 When using async-await you will need to return or await the reply object:
 ```js
 const fs = require('node:fs')
+
 fastify.get('/streams', async function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
@@ -757,6 +761,7 @@ will be sent unmodified without response validation.
 
 ```js
 const fs = require('node:fs')
+
 fastify.get('/streams', function (request, reply) {
   const typedArray = new Uint16Array(10)
   reply.send(typedArray)
@@ -773,6 +778,7 @@ sent unmodified without response validation.
 ```js
 const fs = require('node:fs')
 const { ReadableStream } = require('node:stream/web')
+
 fastify.get('/streams', function (request, reply) {
   const stream = fs.createReadStream('some-file')
   reply.header('Content-Type', 'application/octet-stream')
@@ -797,6 +803,7 @@ and may confuse when checking the `payload` in `onSend` hooks.
 ```js
 const fs = require('node:fs')
 const { ReadableStream } = require('node:stream/web')
+
 fastify.get('/streams', function (request, reply) {
   const stream = fs.createReadStream('some-file')
   const readableStream = ReadableStream.from(stream)

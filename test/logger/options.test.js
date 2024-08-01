@@ -15,7 +15,7 @@ t.test('logger options', (t) => {
   t.plan(12)
 
   t.test('logger can be silenced', (t) => {
-    t.plan(17)
+    t.plan(19)
     const fastify = Fastify({
       logger: false
     })
@@ -28,6 +28,7 @@ t.test('logger options', (t) => {
     t.equal(typeof fastify.log.info, 'function')
     t.equal(typeof fastify.log.debug, 'function')
     t.equal(typeof fastify.log.trace, 'function')
+    t.equal(fastify.log.setBindings(), undefined)
     t.equal(typeof fastify.log.child, 'function')
 
     const childLog = fastify.log.child()
@@ -39,6 +40,7 @@ t.test('logger options', (t) => {
     t.equal(typeof childLog.info, 'function')
     t.equal(typeof childLog.debug, 'function')
     t.equal(typeof childLog.trace, 'function')
+    t.equal(childLog.setBindings(), undefined)
     t.equal(typeof childLog.child, 'function')
   })
 

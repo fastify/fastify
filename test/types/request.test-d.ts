@@ -150,6 +150,7 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
+  setBindings: () => { },
   child: () => customLogger
 }
 

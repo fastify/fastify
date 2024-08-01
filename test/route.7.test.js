@@ -5,7 +5,6 @@ const split = require('split2')
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const proxyquire = require('proxyquire')
 
 test("HEAD route should handle stream.on('error')", t => {
   t.plan(6)

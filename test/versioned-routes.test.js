@@ -7,7 +7,6 @@ const sget = require('simple-get').concat
 const http = require('node:http')
 const split = require('split2')
 const append = require('vary').append
-const proxyquire = require('proxyquire')
 
 process.removeAllListeners('warning')
 
@@ -553,59 +552,6 @@ test('Should register a versioned route with custom versioning strategy', t => {
   })
 })
 
-test('Should get error using an invalid a versioned route, using default validation (deprecated versioning option)', t => {
-  t.plan(3)
-
-  const fastify = Fastify({
-    versioning: {
-      storage: function () {
-        const versions = {}
-        return {
-          get: (version) => { return versions[version] || null },
-          set: (version, store) => { versions[version] = store }
-        }
-      },
-      deriveVersion: (req, ctx) => {
-        return req.headers.accept
-      }
-    }
-  })
-
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    constraints: { version: 'application/vnd.example.api+json;version=1' },
-    handler: (req, reply) => {
-      reply.send({ hello: 'cant match route v1' })
-    }
-  })
-
-  try {
-    fastify.route({
-      method: 'GET',
-      url: '/',
-      // not a string version
-      constraints: { version: 2 },
-      handler: (req, reply) => {
-        reply.send({ hello: 'cant match route v2' })
-      }
-    })
-  } catch (err) {
-    t.equal(err.message, 'Version constraint should be a string.')
-  }
-
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      Accept: 'application/vnd.example.api+json;version=2'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
-})
-
 test('Vary header check (for documentation example)', t => {
   t.plan(8)
   const fastify = Fastify()
@@ -657,41 +603,5 @@ test('Vary header check (for documentation example)', t => {
     t.same(JSON.parse(res.payload), { hello: 'world' })
     t.equal(res.statusCode, 200)
     t.equal(res.headers.vary, undefined)
-  })
-})
-
-test('Should trigger a warning when a versioned route is registered via version option', t => {
-  t.plan(4)
-
-  function onWarning () {
-    t.pass('FSTDEP008 has been emitted')
-  }
-
-  const route = proxyquire('../lib/route', {
-    './warnings': {
-      FSTDEP008: onWarning
-    }
-  })
-  const fastify = proxyquire('..', { './lib/route.js': route })({ exposeHeadRoutes: false })
-
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    version: '1.2.0',
-    handler: (req, reply) => {
-      reply.send({ hello: 'world' })
-    }
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'Accept-Version': '1.x'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
   })
 })

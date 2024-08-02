@@ -140,17 +140,6 @@ expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: ['bar', 'fuzz'] }) }))
-expectAssignable<FastifyInstance>(fastify({
-  versioning: {
-    storage: () => ({
-      get: () => 'foo',
-      set: () => { },
-      del: () => { },
-      empty: () => { }
-    }),
-    deriveVersion: () => 'foo'
-  }
-}))
 expectAssignable<FastifyInstance>(fastify({ constraints: {} }))
 expectAssignable<FastifyInstance>(fastify({
   constraints: {

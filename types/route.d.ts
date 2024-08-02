@@ -19,7 +19,7 @@ export interface FastifyRouteConfig {
   method: HTTPMethods | HTTPMethods[];
 }
 
-export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
+export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface { }
 
 export type RouteConstraintType = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
   deriveConstraint<Context>(req: RawRequestDefaultExpression<RawServerDefault>, ctx?: Context, done?: (err: Error, ...args: any) => any): any,
@@ -53,7 +53,6 @@ export interface RouteShorthandOptions<
   bodyLimit?: number;
   logLevel?: LogLevel;
   config?: FastifyContextConfig & ContextConfig;
-  version?: string;
   constraints?: RouteConstraint,
   prefixTrailingSlash?: 'slash' | 'no-slash' | 'both';
   errorHandler?: (

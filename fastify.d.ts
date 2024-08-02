@@ -114,18 +114,6 @@ declare namespace fastify {
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: unknown },
-    /**
-     * @deprecated Prefer using the `constraints.version` property
-     */
-    versioning?: {
-      storage(): {
-        get(version: string): string | null,
-        set(version: string, store: Function): void
-        del(version: string): void,
-        empty(): void
-      },
-      deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
-    },
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
     },

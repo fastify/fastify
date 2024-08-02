@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 84 errors', t => {
+test('should expose 83 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +14,11 @@ test('should expose 84 errors', t => {
       counter++
     }
   }
-  t.equal(counter, 84)
+  t.equal(counter, 83)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(84)
+  t.plan(83)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {

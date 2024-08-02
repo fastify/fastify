@@ -8,8 +8,6 @@
     - [FSTWRN001](#FSTWRN001)
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
-    - [FSTDEP008](#FSTDEP008)
-    - [FSTDEP009](#FSTDEP009)
     - [FSTDEP010](#FSTDEP010)
     - [FSTDEP012](#FSTDEP012)
     - [FSTDEP013](#FSTDEP013)
@@ -69,8 +67,6 @@ Deprecation codes are further supported by the Node.js CLI options:
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
-| <a id="FSTDEP008">FSTDEP008</a> | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
-| <a id="FSTDEP009">FSTDEP009</a> | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | <a id="FSTDEP010">FSTDEP010</a> | Modifying the `reply.sent` property is deprecated. | Use the `reply.hijack()` method. | [#3140](https://github.com/fastify/fastify/pull/3140) |
 | <a id="FSTDEP012">FSTDEP012</a> | You are trying to access the deprecated `request.context` property. | Use `request.routeOptions.config` or `request.routeOptions.schema`. | [#4216](https://github.com/fastify/fastify/pull/4216) [#5084](https://github.com/fastify/fastify/pull/5084) |
 | <a id="FSTDEP013">FSTDEP013</a> | Direct return of "trailers" function is deprecated. | Use "callback" or "async-await" for return value. | [#4380](https://github.com/fastify/fastify/pull/4380) |

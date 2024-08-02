@@ -102,16 +102,6 @@ const schema = {
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
-    // deprecated style of passing the versioning constraint
-    versioning: {
-      type: 'object',
-      additionalProperties: true,
-      required: ['storage', 'deriveVersion'],
-      properties: {
-        storage: { },
-        deriveVersion: { }
-      }
-    },
     constraints: {
       type: 'object',
       additionalProperties: {
@@ -120,9 +110,9 @@ const schema = {
         additionalProperties: true,
         properties: {
           name: { type: 'string' },
-          storage: { },
-          validate: { },
-          deriveConstraint: { }
+          storage: {},
+          validate: {},
+          deriveConstraint: {}
         }
       }
     }

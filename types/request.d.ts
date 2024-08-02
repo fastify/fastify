@@ -1,8 +1,8 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { FastifyRequestContext, FastifyContextConfig } from './context'
+import { FastifyContextConfig, FastifyRequestContext } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
-import { RouteGenericInterface, FastifyRouteConfig, RouteHandlerMethod } from './route'
+import { FastifyRouteConfig, RouteGenericInterface, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
 import { ContextConfigDefault, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
@@ -27,7 +27,6 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   bodyLimit: number;
   attachValidation: boolean;
   logLevel: string;
-  version: string | undefined;
   exposeHeadRoute: boolean;
   prefixTrailingSlash: string;
   config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
@@ -47,12 +46,12 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
-  // ^ Temporary Note: RequestType has been re-ordered to be the last argument in
-  //   generic list. This generic argument is now considered optional as it can be
-  //   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
-  //   arguments. Implementations that already pass this argument can either omit
-  //   the RequestType (preferred) or swap Logger and RequestType arguments when
-  //   creating custom types of FastifyRequest. Related issue #4123
+// ^ Temporary Note: RequestType has been re-ordered to be the last argument in
+//   generic list. This generic argument is now considered optional as it can be
+//   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
+//   arguments. Implementations that already pass this argument can either omit
+//   the RequestType (preferred) or swap Logger and RequestType arguments when
+//   creating custom types of FastifyRequest. Related issue #4123
 > {
   id: string;
   params: RequestType['params']; // deferred inference

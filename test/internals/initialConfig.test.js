@@ -360,35 +360,6 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   }
 })
 
-test('Fastify.initialConfig should accept the deprecated versioning option', t => {
-  t.plan(1)
-
-  function onWarning (warning) {
-    t.equal(warning.code, 'FSTDEP009')
-  }
-
-  process.on('warning', onWarning)
-
-  const versioning = {
-    storage: function () {
-      const versions = {}
-      return {
-        get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
-      }
-    },
-    deriveVersion: (req, ctx) => {
-      return req.headers.accept
-    }
-  }
-
-  Fastify({ versioning })
-  setImmediate(function () {
-    process.removeListener('warning', onWarning)
-    t.end()
-  })
-})
-
 test('pluginTimeout should be parsed correctly', t => {
   const withDisabledTimeout = Fastify({ pluginTimeout: '0' })
   t.equal(withDisabledTimeout.initialConfig.pluginTimeout, 0)

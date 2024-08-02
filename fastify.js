@@ -49,7 +49,6 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
-const { FSTDEP009 } = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
@@ -68,7 +67,6 @@ const {
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
-  FST_ERR_VERSION_CONSTRAINT_NOT_STR,
   FST_ERR_INSTANCE_ALREADY_LISTENING,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
@@ -155,31 +153,12 @@ function fastify (options) {
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
-  let constraints = options.constraints
-  if (options.versioning) {
-    FSTDEP009()
-    constraints = {
-      ...constraints,
-      version: {
-        name: 'version',
-        mustMatchWhenDerived: true,
-        storage: options.versioning.storage,
-        deriveConstraint: options.versioning.deriveVersion,
-        validate (value) {
-          if (typeof value !== 'string') {
-            throw new FST_ERR_VERSION_CONSTRAINT_NOT_STR()
-          }
-        }
-      }
-    }
-  }
-
   // Default router
   const router = buildRouting({
     config: {
       defaultRoute,
       onBadUrl,
-      constraints,
+      constraints: options.constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       ignoreDuplicateSlashes: options.ignoreDuplicateSlashes || defaultInitOptions.ignoreDuplicateSlashes,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
@@ -482,7 +461,7 @@ function fastify (options) {
           if (forceCloseConnections === 'idle') {
             // Not needed in Node 19
             instance.server.closeIdleConnections()
-          /* istanbul ignore next: Cannot test this without Node.js core support */
+            /* istanbul ignore next: Cannot test this without Node.js core support */
           } else if (serverHasCloseAllConnections && forceCloseConnections) {
             instance.server.closeAllConnections()
           } else if (forceCloseConnections === true) {

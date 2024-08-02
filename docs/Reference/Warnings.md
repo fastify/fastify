@@ -8,7 +8,6 @@
     - [FSTWRN001](#FSTWRN001)
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
-    - [FSTDEP007](#FSTDEP007)
     - [FSTDEP008](#FSTDEP008)
     - [FSTDEP009](#FSTDEP009)
     - [FSTDEP010](#FSTDEP010)
@@ -70,7 +69,6 @@ Deprecation codes are further supported by the Node.js CLI options:
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
-| <a id="FSTDEP007">FSTDEP007</a> | You are trying to set a HEAD route using `exposeHeadRoute` route flag when a sibling route is already set. | Remove `exposeHeadRoutes` or explicitly set `exposeHeadRoutes` to `false` | [#2700](https://github.com/fastify/fastify/pull/2700) |
 | <a id="FSTDEP008">FSTDEP008</a> | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | <a id="FSTDEP009">FSTDEP009</a> | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | <a id="FSTDEP010">FSTDEP010</a> | Modifying the `reply.sent` property is deprecated. | Use the `reply.hijack()` method. | [#3140](https://github.com/fastify/fastify/pull/3140) |

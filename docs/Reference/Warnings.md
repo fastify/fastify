@@ -25,6 +25,7 @@
     - [FSTDEP019](#FSTDEP019)
     - [FSTDEP020](#FSTDEP020)
     - [FSTDEP021](#FSTDEP021)
+    - [FSTDEP022](#FSTDEP022)
 
 
 ## Warnings
@@ -92,3 +93,4 @@ Deprecation codes are further supported by the Node.js CLI options:
 | <a id="FSTDEP019">FSTDEP019</a> | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. | [#5032](https://github.com/fastify/fastify/pull/5032) [#5084](https://github.com/fastify/fastify/pull/5084) |
 | <a id="FSTDEP020">FSTDEP020</a> | You are using the deprecated `reply.getReponseTime()` method. | Use the `reply.elapsedTime` property instead. | [#5263](https://github.com/fastify/fastify/pull/5263) |
 | <a id="FSTDEP021">FSTDEP021</a> | The `reply.redirect()` method has a new signature: `reply.redirect(url: string, code?: number)`. It will be enforced in `fastify@v5`'. | [#5483](https://github.com/fastify/fastify/pull/5483) |
+| <a id="FSTDEP022">FSTDEP022</a> | You are using the deprecated json shorthand schema on route %s. Specify full object schema instead. It will be removed in `fastify@v5` | [#5483](https://github.com/fastify/fastify/pull/0000) |

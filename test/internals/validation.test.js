@@ -120,10 +120,10 @@ test('build schema - avoid repeated normalize schema', t => {
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema, serverConfig)
+  opts.schema = normalizeSchema({}, opts.schema, serverConfig)
   t.not(kSchemaVisited, undefined)
   t.equal(opts.schema[kSchemaVisited], true)
-  t.equal(opts.schema, normalizeSchema(opts.schema, serverConfig))
+  t.equal(opts.schema, normalizeSchema({}, opts.schema, serverConfig))
 })
 
 test('build schema - query schema', t => {
@@ -141,7 +141,7 @@ test('build schema - query schema', t => {
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema, serverConfig)
+  opts.schema = normalizeSchema({}, opts.schema, serverConfig)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.equal(typeof opts[symbols.querystringSchema], 'function')
@@ -159,7 +159,7 @@ test('build schema - query schema abbreviated', t => {
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema, serverConfig)
+  opts.schema = normalizeSchema({}, opts.schema, serverConfig)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.equal(typeof opts[symbols.querystringSchema], 'function')
@@ -194,7 +194,7 @@ test('build schema - querystring schema abbreviated', t => {
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema, serverConfig)
+  opts.schema = normalizeSchema({}, opts.schema, serverConfig)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.equal(typeof opts[symbols.querystringSchema], 'function')
@@ -222,7 +222,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
         }
       }
     }
-    opts.schema = normalizeSchema(opts.schema, serverConfig)
+    opts.schema = normalizeSchema({}, opts.schema, serverConfig)
   } catch (err) {
     t.equal(err.code, 'FST_ERR_SCH_DUPLICATE')
     t.equal(err.message, 'Schema with \'querystring\' already present!')
@@ -380,7 +380,7 @@ test('build schema - mixed schema types are individually skipped or normalized',
   }]
 
   testCases.forEach((testCase) => {
-    const result = normalizeSchema(testCase.schema, { jsonShorthand: true })
+    const result = normalizeSchema({}, testCase.schema, { jsonShorthand: true })
     testCase.assertions(result)
   })
 })

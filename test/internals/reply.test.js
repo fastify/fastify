@@ -19,7 +19,7 @@ const {
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const { FSTDEP010, FSTDEP019, FSTDEP021 } = require('../../lib/warnings')
+const { FSTDEP019, FSTDEP021 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -1461,30 +1461,22 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
   })
 })
 
-test('should emit deprecation warning when trying to modify the reply.sent property', t => {
-  t.plan(4)
+test('should throw when trying to modify the reply.sent property', t => {
+  t.plan(3)
   const fastify = Fastify()
 
-  FSTDEP010.emitted = false
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP010.code)
-  }
-
-  fastify.get('/', (req, reply) => {
-    reply.sent = true
-
-    reply.raw.end()
+  fastify.get('/', function (req, reply) {
+    try {
+      reply.sent = true
+    } catch (err) {
+      t.ok(err)
+      reply.send()
+    }
   })
 
   fastify.inject('/', (err, res) => {
     t.error(err)
     t.pass()
-
-    process.removeListener('warning', onWarning)
   })
 })
 
@@ -1510,64 +1502,6 @@ test('should emit deprecation warning when trying to use the reply.context.confi
     t.pass()
 
     process.removeListener('warning', onWarning)
-  })
-})
-
-test('should throw error when passing falsy value to reply.sent', t => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    try {
-      reply.sent = false
-    } catch (err) {
-      t.equal(err.code, 'FST_ERR_REP_SENT_VALUE')
-      t.equal(err.message, 'The only possible value for reply.sent is true.')
-      reply.send()
-    }
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-  })
-})
-
-test('should throw error when attempting to set reply.sent more than once', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    reply.sent = true
-    try {
-      reply.sent = true
-      t.fail('must throw')
-    } catch (err) {
-      t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
-    }
-    reply.raw.end()
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-  })
-})
-
-test('should not throw error when attempting to set reply.sent if the underlining request was sent', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    reply.raw.end()
-    t.doesNotThrow(() => {
-      reply.sent = true
-    })
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
   })
 })
 

@@ -19,7 +19,7 @@ const lifecycleHooks = [
   'onError'
 ]
 
-test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
+test('skip automatic reply.send() with reply.hijack and a body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
@@ -33,7 +33,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   })
 
   app.get('/', (req, reply) => {
-    reply.sent = true
+    reply.hijack()
     reply.raw.end('hello world')
 
     return Promise.resolve('this will be skipped')
@@ -48,7 +48,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   })
 })
 
-test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
+test('skip automatic reply.send() with reply.hijack and no body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
@@ -62,7 +62,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   })
 
   app.get('/', (req, reply) => {
-    reply.sent = true
+    reply.hijack()
     reply.raw.end('hello world')
 
     return Promise.resolve()
@@ -77,7 +77,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   })
 })
 
-test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
+test('skip automatic reply.send() with reply.hijack and an error', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
@@ -96,7 +96,7 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
   })
 
   app.get('/', (req, reply) => {
-    reply.sent = true
+    reply.hijack()
     reply.raw.end('hello world')
 
     return Promise.reject(new Error('kaboom'))

@@ -614,7 +614,7 @@ retrieve it in the handler.
 const fastify = require('fastify')()
 
 function handler (req, reply) {
-  reply.send(reply.context.config.output)
+  reply.send(reply.routeOptions.config.output)
 }
 
 fastify.get('/en', { config: { output: 'hello world!' } }, handler)

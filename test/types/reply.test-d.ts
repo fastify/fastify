@@ -1,10 +1,10 @@
 import { Buffer } from 'buffer'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import fastify, { FastifyReplyContext, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
+import fastify, { FastifyContextConfig, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
-import { RouteGenericInterface } from '../../types/route'
+import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
@@ -12,8 +12,6 @@ type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RouteGeneri
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
-  expectType<FastifyReplyContext<ContextConfigDefault>>(reply.context)
-  expectType<FastifyReplyContext<ContextConfigDefault>['config']>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.code)
@@ -46,6 +44,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectAssignable<((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
   expectAssignable<((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)>(reply.serializeInput)
   expectAssignable<((input: { [key: string]: unknown }, httpStatus: string) => unknown)>(reply.serializeInput)
+  expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(reply.routeOptions.config)
 }
 
 interface ReplyPayload {

@@ -7,7 +7,7 @@ const Fastify = require('../fastify')
 const { FST_ERR_INVALID_URL } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
-test('Request and Reply share the route config', async t => {
+test('Request and Reply share the route options', async t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -22,9 +22,9 @@ test('Request and Reply share the route config', async t => {
     url: '/',
     config,
     handler: (req, reply) => {
-      t.same(req.context, reply.context)
-      t.same(req.context.config, reply.context.config)
-      t.match(req.context.config, config, 'there are url and method additional properties')
+      t.same(req.routeOptions, reply.routeOptions)
+      t.same(req.routeOptions.config, reply.routeOptions.config)
+      t.match(req.routeOptions.config, config, 'there are url and method additional properties')
 
       reply.send({ hello: 'world' })
     }

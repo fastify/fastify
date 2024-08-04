@@ -250,7 +250,7 @@ expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: s
   errorHandler: (error, request, reply) => {
     expectAssignable<FastifyError>(error)
     expectAssignable<FastifyRequest>(request)
-    expectAssignable<{ contextKey: string }>(request.routeConfig)
+    expectAssignable<{ contextKey: string }>(request.routeOptions.config)
     expectAssignable<FastifyReply>(reply)
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }

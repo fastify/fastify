@@ -19,7 +19,6 @@ const {
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const { FSTDEP019 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -1477,31 +1476,6 @@ test('should throw when trying to modify the reply.sent property', t => {
   fastify.inject('/', (err, res) => {
     t.error(err)
     t.pass()
-  })
-})
-
-test('should emit deprecation warning when trying to use the reply.context.config property', t => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  FSTDEP019.emitted = false
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP019.code)
-  }
-
-  fastify.get('/', (req, reply) => {
-    req.log(reply.context.config)
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-
-    process.removeListener('warning', onWarning)
   })
 })
 

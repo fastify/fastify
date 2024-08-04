@@ -77,7 +77,7 @@ test('#compileValidationSchema', subtest => {
       const validate = req.compileValidationSchema(defaultSchema)
 
       t.ok(validate({ hello: 'world' }))
-      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.ok(Object.hasOwn(validate, 'errors'))
       t.equal(validate.errors, null)
 
       reply.send({ hello: 'world' })
@@ -98,7 +98,7 @@ test('#compileValidationSchema', subtest => {
       const validate = req.compileValidationSchema(defaultSchema)
 
       t.notOk(validate({ world: 'foo' }))
-      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.ok(Object.hasOwn(validate, 'errors'))
       t.ok(Array.isArray(validate.errors))
       t.ok(validate.errors.length > 0)
 
@@ -290,7 +290,7 @@ test('#getValidationFunction', subtest => {
       const validate = req.getValidationFunction(defaultSchema)
 
       t.ok(validate({ hello: 'world' }))
-      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.ok(Object.hasOwn(validate, 'errors'))
       t.equal(validate.errors, null)
 
       reply.send({ hello: 'world' })
@@ -312,7 +312,7 @@ test('#getValidationFunction', subtest => {
       const validate = req.getValidationFunction(defaultSchema)
 
       t.notOk(validate({ world: 'foo' }))
-      t.ok(Object.prototype.hasOwnProperty.call(validate, 'errors'))
+      t.ok(Object.hasOwn(validate, 'errors'))
       t.ok(Array.isArray(validate.errors))
       t.ok(validate.errors.length > 0)
 

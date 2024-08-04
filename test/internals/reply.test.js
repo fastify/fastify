@@ -5,6 +5,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const http = require('node:http')
 const NotFound = require('http-errors').NotFound
+const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const Fastify = require('../..')
 const { Readable, Writable } = require('node:stream')
@@ -14,8 +15,7 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext,
-  kPublicRouteContext
+  kRouteContext
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -37,8 +37,8 @@ const doGet = function (url) {
 test('Once called, Reply should return an object with methods', t => {
   t.plan(15)
   const response = { res: 'res' }
-  const context = { config: { onSend: [] }, schema: {} }
-  const request = { [kRouteContext]: context, [kPublicRouteContext]: { config: context.config, schema: context.schema } }
+  const context = { config: { onSend: [] }, schema: {}, _parserOptions: {}, server: { hasConstraintStrategy: () => false, initialConfig: {} } }
+  const request = new Request(null, null, null, null, null, context)
   const reply = new Reply(response, request)
   t.equal(typeof reply, 'object')
   t.equal(typeof reply[kReplyIsError], 'boolean')
@@ -51,8 +51,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
-  t.equal(reply[kPublicRouteContext].config, context.config)
-  t.equal(reply[kPublicRouteContext].schema, context.schema)
+  t.equal(reply.routeOptions.config, context.config)
+  t.equal(reply.routeOptions.schema, context.schema)
   t.equal(reply.request, request)
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in reply)
@@ -62,7 +62,7 @@ test('reply.send will logStream error and destroy the stream', t => {
   t.plan(1)
   let destroyCalled
   const payload = new Readable({
-    read () {},
+    read () { },
     destroy (err, cb) {
       destroyCalled = true
       cb(err)
@@ -71,16 +71,16 @@ test('reply.send will logStream error and destroy the stream', t => {
 
   const response = new Writable()
   Object.assign(response, {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
-    writeHead: () => {},
-    write: () => {},
+    writeHead: () => { },
+    write: () => { },
     headersSent: true
   })
 
   const log = {
-    warn: () => {}
+    warn: () => { }
   }
 
   const reply = new Reply(response, { [kRouteContext]: { onSend: null } }, log)
@@ -93,12 +93,12 @@ test('reply.send will logStream error and destroy the stream', t => {
 test('reply.send throw with circular JSON', t => {
   t.plan(1)
   const response = {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
-    writeHead: () => {},
-    write: () => {},
-    end: () => {}
+    writeHead: () => { },
+    write: () => { },
+    end: () => { }
   }
   const reply = new Reply(response, { [kRouteContext]: { onSend: [] } })
   t.throws(() => {
@@ -111,12 +111,12 @@ test('reply.send throw with circular JSON', t => {
 test('reply.send returns itself', t => {
   t.plan(1)
   const response = {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
-    writeHead: () => {},
-    write: () => {},
-    end: () => {}
+    writeHead: () => { },
+    write: () => { },
+    end: () => { }
   }
   const reply = new Reply(response, { [kRouteContext]: { onSend: [] } })
   t.equal(reply.send('hello'), reply)
@@ -1118,7 +1118,7 @@ test('reply.hasHeader returns correct values', t => {
     sget({
       method: 'GET',
       url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {})
+    }, () => { })
   })
 })
 
@@ -1150,18 +1150,18 @@ test('reply.getHeader returns correct values', t => {
     sget({
       method: 'GET',
       url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {})
+    }, () => { })
   })
 })
 
 test('reply.getHeader returns raw header if there is not in the reply headers', t => {
   t.plan(1)
   const response = {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => true,
     getHeader: () => 'bar',
-    writeHead: () => {},
-    end: () => {}
+    writeHead: () => { },
+    end: () => { }
   }
   const reply = new Reply(response, { onSend: [] }, null)
   t.equal(reply.getHeader('foo'), 'bar')
@@ -1751,7 +1751,7 @@ test('cannot set the replySerializer when the server is running', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
     try {
-      fastify.setReplySerializer(() => {})
+      fastify.setReplySerializer(() => { })
       t.fail('this serializer should not be setup')
     } catch (e) {
       t.equal(e.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
@@ -1801,7 +1801,7 @@ test('reply should not call the custom serializer for errors and not found', t =
 test('reply.then', t => {
   t.plan(4)
 
-  function request () {}
+  function request () { }
 
   t.test('without an error', t => {
     t.plan(1)
@@ -2031,7 +2031,7 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
 
   const response = new Writable()
   Object.assign(response, {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
     writeHead: () => {
@@ -2039,7 +2039,7 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
       err.code = 'ERR_HTTP_HEADERS_SENT'
       throw err
     },
-    write: () => {},
+    write: () => { },
     headersSent: true
   })
 

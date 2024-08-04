@@ -19,7 +19,7 @@ const {
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const { FSTDEP019, FSTDEP021 } = require('../../lib/warnings')
+const { FSTDEP019 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -1954,36 +1954,6 @@ test('redirect to an invalid URL should not crash the server', async t => {
   }
 
   await fastify.close()
-})
-
-test('redirect with deprecated signature should warn', t => {
-  t.plan(4)
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP021.code)
-  }
-
-  const fastify = Fastify()
-
-  fastify.get('/', (req, reply) => {
-    reply.redirect(302, '/new')
-  })
-
-  fastify.get('/new', (req, reply) => {
-    reply.send('new')
-  })
-
-  fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
-    t.error(err)
-    t.pass()
-
-    process.removeListener('warning', onWarning)
-  })
-
-  FSTDEP021.emitted = false
 })
 
 test('invalid response headers should not crash the server', async t => {

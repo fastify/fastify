@@ -5,7 +5,6 @@ const { test } = require('tap')
 const Request = require('../../lib/request')
 const Context = require('../../lib/context')
 const {
-  kPublicRouteContext,
   kReply,
   kRequest,
   kOptions
@@ -67,10 +66,6 @@ test('Regular request', t => {
   t.equal(request.originalUrl, '/')
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
-  t.equal(request.routerPath, context.config.url)
-  t.equal(request.routerMethod, context.config.method)
-  t.equal(request.routeConfig, context[kPublicRouteContext].config)
-  t.equal(request.routeSchema, context[kPublicRouteContext].schema)
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in request)
 
@@ -126,10 +121,6 @@ test('Request with undefined config', t => {
   t.equal(request.originalUrl, '/')
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
-  t.equal(request.routeSchema, context[kPublicRouteContext].schema)
-  t.equal(request.routerPath, undefined)
-  t.equal(request.routerMethod, undefined)
-  t.equal(request.routeConfig, undefined)
 
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in request)
@@ -174,7 +165,7 @@ test('Regular request - host header has precedence over authority', t => {
 })
 
 test('Request with trust proxy', t => {
-  t.plan(22)
+  t.plan(18)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -229,10 +220,6 @@ test('Request with trust proxy', t => {
   t.type(request.validateInput, Function)
   t.type(request.getValidationFunction, Function)
   t.type(request.compileValidationSchema, Function)
-  t.equal(request.routerPath, context.config.url)
-  t.equal(request.routerMethod, context.config.method)
-  t.equal(request.routeConfig, context[kPublicRouteContext].config)
-  t.equal(request.routeSchema, context[kPublicRouteContext].schema)
 })
 
 test('Request with trust proxy, encrypted', t => {

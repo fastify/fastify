@@ -1,5 +1,5 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { FastifyContextConfig, FastifyRequestContext } from './context'
+import { FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRouteConfig, RouteGenericInterface, RouteHandlerMethod } from './route'
@@ -61,9 +61,6 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   log: Logger;
   server: FastifyInstance;
   body: RequestType['body'];
-  context: FastifyRequestContext<ContextConfig>;
-  routeConfig: FastifyRequestContext<ContextConfig>['config'];
-  routeSchema?: FastifySchema; // it is empty for 404 requests
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
@@ -81,8 +78,6 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly originalUrl: string;
   readonly protocol: 'http' | 'https';
   readonly method: string;
-  readonly routerPath: string;
-  readonly routerMethod: string;
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];

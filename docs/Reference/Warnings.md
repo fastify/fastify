@@ -8,13 +8,7 @@
     - [FSTWRN001](#FSTWRN001)
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
-    - [FSTDEP012](#FSTDEP012)
     - [FSTDEP013](#FSTDEP013)
-    - [FSTDEP015](#FSTDEP015)
-    - [FSTDEP016](#FSTDEP016)
-    - [FSTDEP017](#FSTDEP017)
-    - [FSTDEP018](#FSTDEP018)
-    - [FSTDEP019](#FSTDEP019)
 
 
 ## Warnings
@@ -65,10 +59,4 @@ Deprecation codes are further supported by the Node.js CLI options:
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
-| <a id="FSTDEP012">FSTDEP012</a> | You are trying to access the deprecated `request.context` property. | Use `request.routeOptions.config` or `request.routeOptions.schema`. | [#4216](https://github.com/fastify/fastify/pull/4216) [#5084](https://github.com/fastify/fastify/pull/5084) |
 | <a id="FSTDEP013">FSTDEP013</a> | Direct return of "trailers" function is deprecated. | Use "callback" or "async-await" for return value. | [#4380](https://github.com/fastify/fastify/pull/4380) |
-| <a id="FSTDEP015">FSTDEP015</a> | You are accessing the deprecated `request.routeSchema` property. | Use `request.routeOptions.schema`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
-| <a id="FSTDEP016">FSTDEP016</a> | You are accessing the deprecated `request.routeConfig` property. | Use `request.routeOptions.config`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
-| <a id="FSTDEP017">FSTDEP017</a> | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
-| <a id="FSTDEP018">FSTDEP018</a> | You are accessing the deprecated `request.routerMethod` property. | Use `request.routeOptions.method`. | [#4470](https://github.com/fastify/fastify/pull/4470) |
-| <a id="FSTDEP019">FSTDEP019</a> | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. | [#5032](https://github.com/fastify/fastify/pull/5032) [#5084](https://github.com/fastify/fastify/pull/5084) |

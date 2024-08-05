@@ -92,7 +92,6 @@ since the request was received by Fastify.
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Deprecated, access the [Request's context](./Request.md) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -101,14 +100,6 @@ fastify.get('/', options, function (request, reply) {
     .code(200)
     .header('Content-Type', 'application/json; charset=utf-8')
     .send({ hello: 'world' })
-})
-```
-
-Additionally, `Reply` provides access to the context of the request:
-
-```js
-fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
-  reply.send('handler config.foo = ' + reply.context.config.foo)
 })
 ```
 

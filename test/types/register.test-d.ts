@@ -111,6 +111,7 @@ const customLogger = {
   fatal: () => { },
   trace: () => { },
   debug: () => { },
+  setBindings: () => { },
   child: () => customLogger,
   silent: () => { }
 }

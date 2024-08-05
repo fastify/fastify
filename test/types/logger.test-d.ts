@@ -45,6 +45,7 @@ class CustomLoggerImpl implements CustomLogger {
   debug (...args: unknown[]) { console.log(args) }
   silent (...args: unknown[]) { }
 
+  setBindings (bindings: P.Bindings) { }
   child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
 }
 

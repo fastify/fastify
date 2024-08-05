@@ -186,37 +186,6 @@ test('error in trailers should be ignored', t => {
   })
 })
 
-test('should emit deprecation warning when using direct return', t => {
-  t.plan(7)
-
-  const fastify = Fastify()
-
-  fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload) {
-      return 'custom-etag'
-    })
-    reply.send('')
-  })
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, 'FSTDEP013')
-  }
-  t.teardown(() => process.removeListener('warning', onWarning))
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
-  })
-})
-
 test('trailer handler counter', t => {
   t.plan(2)
 
@@ -412,7 +381,7 @@ test('throw error when trailer header name is not allowed', t => {
   fastify.get('/', function (request, reply) {
     for (const key of INVALID_TRAILERS) {
       try {
-        reply.trailer(key, () => {})
+        reply.trailer(key, () => { })
       } catch (err) {
         t.equal(err.message, `Called reply.trailer with an invalid header name: ${key}`)
       }

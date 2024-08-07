@@ -2,6 +2,9 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
+const {
+  FST_ERR_DUPLICATED_ROUTE
+} = require('../lib/errors')
 
 test('Fastify should throw on wrong options', t => {
   t.plan(2)
@@ -20,12 +23,9 @@ test('Fastify should throw on multiple assignment to the same route', t => {
 
   fastify.get('/', () => {})
 
-  try {
+  t.throws(() => {
     fastify.get('/', () => {})
-    t.fail('Should throw on duplicated route declaration')
-  } catch (error) {
-    t.equal(error.message, "Method 'GET' already declared for route '/'")
-  }
+  }, new FST_ERR_DUPLICATED_ROUTE('GET', '/'))
 })
 
 test('Fastify should throw for an invalid schema, printing the error route - headers', t => {

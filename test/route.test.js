@@ -11,7 +11,8 @@ const proxyquire = require('proxyquire')
 const {
   FST_ERR_INVALID_URL,
   FST_ERR_INSTANCE_ALREADY_LISTENING,
-  FST_ERR_ROUTE_METHOD_INVALID
+  FST_ERR_ROUTE_METHOD_INVALID,
+  FST_ERR_DUPLICATED_ROUTE
 } = require('../lib/errors')
 
 function getUrl (app) {
@@ -1759,4 +1760,28 @@ test('using fastify.all when a catchall is defined does not degrade performance'
   }
 
   t.pass()
+})
+
+test('Adding manually HEAD route after GET with the same path throws Fastify duplicated route instance error', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/:param1',
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  t.throws(() => {
+    fastify.route({
+      method: 'HEAD',
+      path: '/:param2',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  }, new FST_ERR_DUPLICATED_ROUTE('HEAD', '/:param2'))
 })

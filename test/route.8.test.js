@@ -4,7 +4,10 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
-const { FST_ERR_INVALID_URL } = require('../lib/errors')
+const { 
+  FST_ERR_INVALID_URL,
+  FST_ERR_DUPLICATED_ROUTE
+ } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
 test('Request and Reply share the route options', async t => {
@@ -139,4 +142,28 @@ test('using fastify.all when a catchall is defined does not degrade performance'
   }
 
   t.pass()
+})
+
+test('Adding manually HEAD route after GET with the same path throws Fastify duplicated route instance error', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/:param1',
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  t.throws(() => {
+    fastify.route({
+      method: 'HEAD',
+      path: '/:param2',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+  }, new FST_ERR_DUPLICATED_ROUTE('HEAD', '/:param2'))
 })

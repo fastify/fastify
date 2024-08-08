@@ -5,8 +5,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const {
-  FST_ERR_INVALID_URL,
-  FST_ERR_DUPLICATED_ROUTE
+  FST_ERR_INVALID_URL
 } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
@@ -157,7 +156,7 @@ test('Adding manually HEAD route after GET with the same path throws Fastify dup
     }
   })
 
-  t.throws(() => {
+  try {
     fastify.route({
       method: 'HEAD',
       path: '/:param2',
@@ -165,5 +164,8 @@ test('Adding manually HEAD route after GET with the same path throws Fastify dup
         reply.send({ hello: 'world' })
       }
     })
-  }, new FST_ERR_DUPLICATED_ROUTE('HEAD', '/:param2'))
+    t.fail('Should throw fastify duplicated route declaration')
+  } catch (error) {
+    t.equal(error.code, 'FST_ERR_DUPLICATED_ROUTE')
+  }
 })

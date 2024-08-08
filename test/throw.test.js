@@ -22,9 +22,9 @@ test('Fastify should throw on multiple assignment to the same route', t => {
 
   try {
     fastify.get('/', () => {})
-    t.fail('Should throw on duplicated route declaration')
+    t.fail('Should throw fastify duplicated route declaration')
   } catch (error) {
-    t.equal(error.message, "Method 'GET' already declared for route '/'")
+    t.equal(error.code, 'FST_ERR_DUPLICATED_ROUTE')
   }
 })
 

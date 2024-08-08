@@ -25,6 +25,7 @@ describes the properties available in that options object.
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
   - [`disableRequestLogging`](#disablerequestlogging)
+  - [`createRequestLogMessage`](#createRequestLogMessage)
   - [`serverFactory`](#serverfactory)
   - [`caseSensitive`](#casesensitive)
   - [`allowUnsafeRegex`](#allowunsaferegex)
@@ -1957,6 +1958,7 @@ The properties that can currently be exposed are:
   explicitly passed)
 - ignoreTrailingSlash
 - disableRequestLogging
+- createRequestLogMessage
 - maxParamLength
 - onProtoPoisoning
 - onConstructorPoisoning

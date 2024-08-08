@@ -18,6 +18,7 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |

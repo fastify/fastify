@@ -52,6 +52,7 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -77,6 +78,7 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -125,6 +127,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -153,6 +156,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -181,6 +185,7 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
       - name: install fastify
         run: |
           npm install --ignore-scripts

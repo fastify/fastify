@@ -55,6 +55,7 @@ jobs:
             node-version: ${{ inputs.node-version }}
             cache: 'npm'
             cache-dependency-path: package.json
+            check-latest: true
 
         - name: Install Dependencies for Fastify
           run: |

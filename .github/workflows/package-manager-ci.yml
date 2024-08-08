@@ -28,6 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
 
       - name: Install with pnpm
         uses: pnpm/action-setup@v4
@@ -60,6 +61,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
 
       - name: Install with yarn
         run: |

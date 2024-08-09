@@ -4,9 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
-const {
-  FST_ERR_INVALID_URL
-} = require('../lib/errors')
+const { FST_ERR_INVALID_URL } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
 test('Request and Reply share the route config', async t => {

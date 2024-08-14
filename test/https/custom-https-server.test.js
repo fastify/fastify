@@ -1,7 +1,7 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const test = require('node:test')
+const assert = require('node:assert')
 const Fastify = require('../..')
 const https = require('node:https')
 const dns = require('node:dns').promises
@@ -9,16 +9,16 @@ const sget = require('simple-get').concat
 const { buildCertificate } = require('../build-certificate')
 
 async function setup () {
-  await buildCertificate()
+  test.before(() => {
+    buildCertificate()
+  })
 
   const localAddresses = await dns.lookup('localhost', { all: true })
 
   test('Should support a custom https server', { skip: localAddresses.length < 1 }, async t => {
-    t.plan(4)
-
     const fastify = Fastify({
       serverFactory: (handler, opts) => {
-        t.ok(opts.serverFactory, 'it is called once for localhost')
+        assert.ok(opts.serverFactory, 'it is called once for localhost')
 
         const options = {
           key: global.context.key,
@@ -34,10 +34,12 @@ async function setup () {
       }
     })
 
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close(() => {
+      process.exit(0)
+    }))
 
     fastify.get('/', (req, reply) => {
-      t.ok(req.raw.custom)
+      assert.ok(req.raw.custom)
       reply.send({ hello: 'world' })
     })
 
@@ -52,8 +54,8 @@ async function setup () {
         if (err) {
           return reject(err)
         }
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+        assert.strictEqual(response.statusCode, 200)
+        assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
         resolve()
       })
     })

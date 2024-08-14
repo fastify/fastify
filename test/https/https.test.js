@@ -1,16 +1,14 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { before, test } = require('node:test')
+const assert = require('node:assert')
 const sget = require('simple-get').concat
 const Fastify = require('../..')
-
 const { buildCertificate } = require('../build-certificate')
-t.before(buildCertificate)
 
-test('https', (t) => {
-  t.plan(4)
+before(buildCertificate)
 
+test('https', async (t) => {
   let fastify
   try {
     fastify = Fastify({
@@ -19,58 +17,78 @@ test('https', (t) => {
         cert: global.context.cert
       }
     })
-    t.pass('Key/cert successfully loaded')
+    assert.ok('Key/cert successfully loaded')
   } catch (e) {
-    t.fail('Key/cert loading failed', e)
+    assert.fail('Key/cert loading failed: ' + e.message)
   }
 
-  fastify.get('/', function (req, reply) {
+  fastify.get('/', (req, reply) => {
     reply.code(200).send({ hello: 'world' })
   })
 
-  fastify.get('/proto', function (req, reply) {
+  fastify.get('/proto', (req, reply) => {
     reply.code(200).send({ proto: req.protocol })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    t.test('https get request', t => {
-      t.plan(4)
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.equal(response.headers['content-length'], '' + body.length)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+  await new Promise((resolve, reject) => {
+    fastify.listen({ port: 0 }, err => {
+      if (err) return reject(err)
+      resolve()
     })
+  })
 
-    t.test('https get request without trust proxy - protocol', t => {
-      t.plan(4)
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port + '/proto',
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.same(JSON.parse(body), { proto: 'https' })
+  t.after(() => fastify.close())
+
+  await t.test('https get request', async t => {
+    try {
+      await new Promise((resolve, reject) => {
+        sget({
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port,
+          rejectUnauthorized: false
+        }, (err, response, body) => {
+          if (err) return reject(err)
+          assert.strictEqual(response.statusCode, 200)
+          assert.strictEqual(response.headers['content-length'], '' + body.length)
+          assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+          resolve()
+        })
       })
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port + '/proto',
-        rejectUnauthorized: false,
-        headers: {
-          'x-forwarded-proto': 'lorem'
-        }
-      }, (err, response, body) => {
-        t.error(err)
-        t.same(JSON.parse(body), { proto: 'https' })
+    } catch (err) {
+      t.fail('Request failed: ' + err.message)
+    }
+  })
+
+  await t.test('https get request without trust proxy - protocol', async t => {
+    try {
+      await new Promise((resolve, reject) => {
+        sget({
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port + '/proto',
+          rejectUnauthorized: false
+        }, (err, response, body) => {
+          if (err) return reject(err)
+          assert.deepStrictEqual(JSON.parse(body), { proto: 'https' })
+          resolve()
+        })
       })
-    })
+
+      await new Promise((resolve, reject) => {
+        sget({
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port + '/proto',
+          rejectUnauthorized: false,
+          headers: {
+            'x-forwarded-proto': 'lorem'
+          }
+        }, (err, response, body) => {
+          if (err) return reject(err)
+          assert.deepStrictEqual(JSON.parse(body), { proto: 'https' })
+          resolve()
+        })
+      })
+    } catch (err) {
+      t.fail('Request failed: ' + err.message)
+    }
   })
 })

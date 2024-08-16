@@ -62,6 +62,81 @@ test('should response with a Response', async (t) => {
   t.equal(headers.hello, 'world')
 })
 
+test('should response with a Response 204', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.send(new Response(null, {
+      status: 204,
+      headers: {
+        hello: 'world'
+      }
+    }))
+  })
+
+  const {
+    statusCode,
+    headers,
+    body
+  } = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.equal(statusCode, 204)
+  t.equal(body, '')
+  t.equal(headers.hello, 'world')
+})
+
+test('should response with a Response 304', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.send(new Response(null, {
+      status: 304,
+      headers: {
+        hello: 'world'
+      }
+    }))
+  })
+
+  const {
+    statusCode,
+    headers,
+    body
+  } = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.equal(statusCode, 304)
+  t.equal(body, '')
+  t.equal(headers.hello, 'world')
+})
+
+test('should response with a Response without body', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.send(new Response(null, {
+      status: 200,
+      headers: {
+        hello: 'world'
+      }
+    }))
+  })
+
+  const {
+    statusCode,
+    headers,
+    body
+  } = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.equal(statusCode, 200)
+  t.equal(body, '')
+  t.equal(headers.hello, 'world')
+})
+
 test('able to use in onSend hook - ReadableStream', async (t) => {
   t.plan(4)
 

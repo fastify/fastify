@@ -107,9 +107,7 @@ test('build schema - body with multiple content type schemas', t => {
 
 test('build schema - avoid repeated normalize schema', t => {
   t.plan(3)
-  const serverConfig = {
-    jsonShorthand: true
-  }
+  const serverConfig = {}
   const opts = {
     schema: {
       query: {
@@ -128,9 +126,7 @@ test('build schema - avoid repeated normalize schema', t => {
 
 test('build schema - query schema', t => {
   t.plan(2)
-  const serverConfig = {
-    jsonShorthand: true
-  }
+  const serverConfig = {}
   const opts = {
     schema: {
       query: {
@@ -149,13 +145,14 @@ test('build schema - query schema', t => {
 
 test('build schema - query schema abbreviated', t => {
   t.plan(2)
-  const serverConfig = {
-    jsonShorthand: true
-  }
+  const serverConfig = {}
   const opts = {
     schema: {
       query: {
-        hello: { type: 'string' }
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
       }
     }
   }
@@ -184,13 +181,14 @@ test('build schema - querystring schema', t => {
 
 test('build schema - querystring schema abbreviated', t => {
   t.plan(2)
-  const serverConfig = {
-    jsonShorthand: true
-  }
+  const serverConfig = {}
   const opts = {
     schema: {
       querystring: {
-        hello: { type: 'string' }
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
       }
     }
   }
@@ -203,9 +201,7 @@ test('build schema - querystring schema abbreviated', t => {
 test('build schema - must throw if querystring and query schema exist', t => {
   t.plan(2)
   try {
-    const serverConfig = {
-      jsonShorthand: true
-    }
+    const serverConfig = {}
     const opts = {
       schema: {
         query: {
@@ -275,14 +271,14 @@ test('build schema - headers are lowercase', t => {
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.ok(schema.properties['content-type'], 'lowercase content-type exists')
-    return () => {}
+    return () => { }
   })
 })
 
 test('build schema - headers are not lowercased in case of custom object', t => {
   t.plan(1)
 
-  class Headers {}
+  class Headers { }
   const opts = {
     schema: {
       headers: new Headers()
@@ -290,14 +286,14 @@ test('build schema - headers are not lowercased in case of custom object', t => 
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.type(schema, Headers)
-    return () => {}
+    return () => { }
   })
 })
 
 test('build schema - headers are not lowercased in case of custom validator provided', t => {
   t.plan(1)
 
-  class Headers {}
+  class Headers { }
   const opts = {
     schema: {
       headers: new Headers()
@@ -305,7 +301,7 @@ test('build schema - headers are not lowercased in case of custom validator prov
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.type(schema, Headers)
-    return () => {}
+    return () => { }
   }, true)
 })
 
@@ -323,21 +319,14 @@ test('build schema - uppercased headers are not included', t => {
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.notOk('Content-Type' in schema.properties, 'uppercase does not exist')
-    return () => {}
+    return () => { }
   })
 })
 
 test('build schema - mixed schema types are individually skipped or normalized', t => {
-  t.plan(6)
+  t.plan(2)
 
-  class CustomSchemaClass {}
-  const nonNormalizedSchema = {
-    hello: { type: 'string' }
-  }
-  const normalizedSchema = {
-    type: 'object',
-    properties: nonNormalizedSchema
-  }
+  class CustomSchemaClass { }
 
   const testCases = [{
     schema: {
@@ -355,32 +344,10 @@ test('build schema - mixed schema types are individually skipped or normalized',
     assertions: (schema) => {
       t.type(schema.response[200], CustomSchemaClass)
     }
-  }, {
-    schema: {
-      body: nonNormalizedSchema,
-      response: {
-        200: new CustomSchemaClass()
-      }
-    },
-    assertions: (schema) => {
-      t.same(schema.body, normalizedSchema)
-      t.type(schema.response[200], CustomSchemaClass)
-    }
-  }, {
-    schema: {
-      body: new CustomSchemaClass(),
-      response: {
-        200: nonNormalizedSchema
-      }
-    },
-    assertions: (schema) => {
-      t.type(schema.body, CustomSchemaClass)
-      t.same(schema.response[200], normalizedSchema)
-    }
   }]
 
   testCases.forEach((testCase) => {
-    const result = normalizeSchema(testCase.schema, { jsonShorthand: true })
+    const result = normalizeSchema(testCase.schema, {})
     testCase.assertions(result)
   })
 })

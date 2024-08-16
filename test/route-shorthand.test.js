@@ -4,9 +4,11 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
-const supportedMethods = require('../lib/httpMethods').supportedMethods
 
 test('route-shorthand', t => {
+  const methodsReader = new Fastify()
+  const supportedMethods = methodsReader.supportedMethods
+
   t.plan(supportedMethods.length + 1)
   const test = t.test
 

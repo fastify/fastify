@@ -5,7 +5,6 @@ const split = require('split2')
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const proxyquire = require('proxyquire')
 
 test("HEAD route should handle stream.on('error')", t => {
   t.plan(6)
@@ -176,18 +175,9 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
 })
 
 test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', t => {
-  t.plan(7)
+  t.plan(6)
 
-  function onWarning () {
-    t.pass('warning emitted')
-  }
-
-  const route = proxyquire('../lib/route', {
-    './warnings': {
-      FSTDEP007: onWarning
-    }
-  })
-  const fastify = proxyquire('..', { './lib/route.js': route })()
+  const fastify = Fastify()
 
   const resBuffer = Buffer.from('I am a coffee!')
 

@@ -3,13 +3,14 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const fastify = require('..')()
+const fastify = require('../../fastify')()
+fastify.addHttpMethod('UNLOCK')
 
-test('can be created - copy', t => {
+test('can be created - unlock', t => {
   t.plan(1)
   try {
     fastify.route({
-      method: 'COPY',
+      method: 'UNLOCK',
       url: '*',
       handler: function (req, reply) {
         reply.code(204).send()
@@ -25,13 +26,13 @@ fastify.listen({ port: 0 }, err => {
   t.error(err)
   t.teardown(() => { fastify.close() })
 
-  test('request - copy', t => {
+  test('request - unlock', t => {
     t.plan(2)
     sget({
-      url: `http://localhost:${fastify.server.address().port}/test.txt`,
-      method: 'COPY',
+      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+      method: 'UNLOCK',
       headers: {
-        Destination: '/test2.txt'
+        'Lock-Token': 'urn:uuid:a515cfa4-5da4-22e1-f5b5-00a0451e6bf7'
       }
     }, (err, response, body) => {
       t.error(err)

@@ -965,7 +965,12 @@ test('Custom AJV settings - pt1', t => {
 
   fastify.post('/', {
     schema: {
-      body: { num: { type: 'integer' } }
+      body: {
+        type: 'object',
+        properties: {
+          num: { type: 'integer' }
+        }
+      }
     },
     handler: (req, reply) => {
       t.equal(req.body.num, 12)
@@ -998,7 +1003,12 @@ test('Custom AJV settings - pt2', t => {
 
   fastify.post('/', {
     schema: {
-      body: { num: { type: 'integer' } }
+      body: {
+        type: 'object',
+        properties: {
+          num: { type: 'integer' }
+        }
+      }
     },
     handler: (req, reply) => {
       t.fail('the handler is not called because the "12" is not coerced to number')
@@ -1025,7 +1035,12 @@ test('Custom AJV settings on different parameters - pt1', t => {
 
   fastify.post('/api/:id', {
     schema: {
-      querystring: { id: { type: 'integer' } },
+      querystring: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' }
+        }
+      },
       body: {
         type: 'object',
         properties: {

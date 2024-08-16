@@ -110,7 +110,14 @@ test('Get compilers is empty when settle on routes', t => {
   fastify.post('/', {
     schema: {
       body: { type: 'object', properties: { hello: { type: 'string' } } },
-      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            foo: { type: 'array', items: { type: 'string' } }
+          }
+        }
+      }
     },
     validatorCompiler: ({ schema, method, url, httpPart }) => {},
     serializerCompiler: ({ schema, method, url, httpPart }) => {}
@@ -160,8 +167,18 @@ test('Cannot add schema for query and querystring', t => {
   fastify.get('/', {
     handler: () => {},
     schema: {
-      query: { foo: { type: 'string' } },
-      querystring: { foo: { type: 'string' } }
+      query: {
+        type: 'object',
+        properties: {
+          foo: { type: 'string' }
+        }
+      },
+      querystring: {
+        type: 'object',
+        properties: {
+          foo: { type: 'string' }
+        }
+      }
     }
   })
 
@@ -179,7 +196,10 @@ test('Should throw of the schema does not exists in input', t => {
     handler: echoParams,
     schema: {
       params: {
-        name: { $ref: '#notExist' }
+        type: 'object',
+        properties: {
+          name: { $ref: '#notExist' }
+        }
       }
     }
   })
@@ -220,7 +240,10 @@ test('Should throw of the schema does not exists in output', t => {
     schema: {
       response: {
         '2xx': {
-          name: { $ref: '#notExist' }
+          type: 'object',
+          properties: {
+            name: { $ref: '#notExist' }
+          }
         }
       }
     }
@@ -256,7 +279,10 @@ test('Should not change the input schemas', t => {
       },
       response: {
         '2xx': {
-          name: { $ref: 'helloSchema#/definitions/hello' }
+          type: 'object',
+          properties: {
+            name: { $ref: 'helloSchema#/definitions/hello' }
+          }
         }
       }
     }
@@ -528,12 +554,37 @@ test('Customize validator compiler in instance and route', t => {
   fastify.post('/:id', {
     handler: echoBody,
     schema: {
-      query: { lang: { type: 'string', enum: ['it', 'en'] } },
-      headers: { x: { type: 'string' } },
-      params: { id: { type: 'number' } },
-      body: { foo: { type: 'array' } },
+      query: {
+        type: 'object',
+        properties: {
+          lang: { type: 'string', enum: ['it', 'en'] }
+        }
+      },
+      headers: {
+        type: 'object',
+        properties: {
+          x: { type: 'string' }
+        }
+      },
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' }
+        }
+      },
+      body: {
+        type: 'object',
+        properties: {
+          foo: { type: 'array' }
+        }
+      },
       response: {
-        '2xx': { foo: { type: 'array', items: { type: 'string' } } }
+        '2xx': {
+          type: 'object',
+          properties: {
+            foo: { type: 'array', items: { type: 'string' } }
+          }
+        }
       }
     }
   })
@@ -546,10 +597,32 @@ test('Customize validator compiler in instance and route', t => {
       return () => { return true } // ignore the validation
     },
     schema: {
-      query: { lang: { type: 'string', enum: ['it', 'en'] } },
-      headers: { x: { type: 'string' } },
-      params: { id: { type: 'number' } },
-      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
+      query: {
+        type: 'object',
+        properties: {
+          lang: { type: 'string', enum: ['it', 'en'] }
+        }
+      },
+      headers: {
+        type: 'object',
+        properties: {
+          x: { type: 'string' }
+        }
+      },
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' }
+        }
+      },
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            foo: { type: 'array', items: { type: 'string' } }
+          }
+        }
+      }
     }
   })
 
@@ -591,7 +664,12 @@ test('Use the same schema across multiple routes', t => {
 
   fastify.get('/first/:id', {
     schema: {
-      params: { id: { $ref: 'test#/properties/id' } }
+      params: {
+        type: 'object',
+        properties: {
+          id: { $ref: 'test#/properties/id' }
+        }
+      }
     },
     handler: (req, reply) => {
       reply.send(typeof req.params.id)
@@ -600,7 +678,12 @@ test('Use the same schema across multiple routes', t => {
 
   fastify.get('/second/:id', {
     schema: {
-      params: { id: { $ref: 'test#/properties/id' } }
+      params: {
+        type: 'object',
+        properties: {
+          id: { $ref: 'test#/properties/id' }
+        }
+      }
     },
     handler: (req, reply) => {
       reply.send(typeof req.params.id)
@@ -643,7 +726,12 @@ test('Encapsulation should intervene', t => {
     instance.get('/:id', {
       handler: echoParams,
       schema: {
-        params: { id: { $ref: 'encapsulation#/properties/id' } }
+        params: {
+          type: 'object',
+          properties: {
+            id: { $ref: 'encapsulation#/properties/id' }
+          }
+        }
       }
     })
     done()
@@ -782,9 +870,19 @@ test('Use the same schema id in different places', t => {
   fastify.post('/:id', {
     handler: echoBody,
     schema: {
-      body: { id: { $ref: 'test#/properties/id' } },
+      body: {
+        type: 'object',
+        properties: {
+          id: { $ref: 'test#/properties/id' }
+        }
+      },
       response: {
-        200: { id: { $ref: 'test#/properties/id' } }
+        200: {
+          type: 'object',
+          properties: {
+            id: { $ref: 'test#/properties/id' }
+          }
+        }
       }
     }
   })
@@ -1354,7 +1452,10 @@ test('The schema compiler recreate itself if needed', t => {
     fastify.get('/:foobarId', {
       schema: {
         params: {
-          foobarId: { $ref: 'identifier#' }
+          type: 'object',
+          properties: {
+            foobarId: { $ref: 'identifier#' }
+          }
         }
       }
     }, echoBody)
@@ -1546,8 +1647,11 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
       {
         schema: {
           querystring: {
-            msg: {
-              $ref: 'some#'
+            type: 'object',
+            properties: {
+              msg: {
+                $ref: 'some#'
+              }
             }
           },
           response: {
@@ -1656,8 +1760,11 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
       {
         schema: {
           querystring: {
-            msg: {
-              $ref: 'some#'
+            type: 'object',
+            properties: {
+              msg: {
+                $ref: 'some#'
+              }
             }
           },
           response: {
@@ -1767,8 +1874,11 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
         {
           schema: {
             querystring: {
-              msg: {
-                $ref: 'some#'
+              type: 'object',
+              properties: {
+                msg: {
+                  $ref: 'some#'
+                }
               }
             },
             response: {
@@ -1859,13 +1969,19 @@ test('Should throw if not default validator passed', async t => {
       {
         schema: {
           query: {
-            msg: {
-              $ref: 'some#'
+            type: 'object',
+            properties: {
+              msg: {
+                $ref: 'some#'
+              }
             }
           },
           headers: {
-            'x-another': {
-              $ref: 'another#'
+            type: 'object',
+            properties: {
+              'x-another': {
+                $ref: 'another#'
+              }
             }
           }
         }
@@ -1920,13 +2036,19 @@ test('Should coerce the array if the default validator is used', async t => {
       {
         schema: {
           query: {
-            msg: {
-              $ref: 'some#'
+            type: 'object',
+            properties: {
+              msg: {
+                $ref: 'some#'
+              }
             }
           },
           headers: {
-            'x-another': {
-              $ref: 'another#'
+            type: 'object',
+            properties: {
+              'x-another': {
+                $ref: 'another#'
+              }
             }
           }
         }

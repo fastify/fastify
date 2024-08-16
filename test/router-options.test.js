@@ -96,15 +96,18 @@ test('Should expose router options via getters on request and reply', t => {
   const fastify = Fastify()
   const expectedSchema = {
     params: {
-      id: { type: 'integer' }
+      type: 'object',
+      properties: {
+        id: { type: 'integer' }
+      }
     }
   }
 
   fastify.get('/test/:id', {
     schema: expectedSchema
   }, (req, reply) => {
-    t.equal(reply.context.config.url, '/test/:id')
-    t.equal(reply.context.config.method, 'GET')
+    t.equal(reply.routeOptions.config.url, '/test/:id')
+    t.equal(reply.routeOptions.config.method, 'GET')
     t.same(req.routeOptions.schema, expectedSchema)
     t.equal(typeof req.routeOptions.handler, 'function')
     t.equal(req.routeOptions.config.url, '/test/:id')

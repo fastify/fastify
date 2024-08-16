@@ -450,8 +450,6 @@ Data validation is extremely important and a core concept of the framework.
 To validate incoming requests, Fastify uses [JSON
 Schema](https://json-schema.org/).
 
-(JTD schemas are loosely supported, but `jsonShorthand` must be disabled first)
-
 Let's look at an example demonstrating validation for routes:
 ```js
 /**

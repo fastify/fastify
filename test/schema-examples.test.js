@@ -137,13 +137,19 @@ test('Example - validation', t => {
   }
 
   const queryStringJsonSchema = {
-    name: { type: 'string' },
-    excitement: { type: 'integer' }
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      excitement: { type: 'integer' }
+    }
   }
 
   const paramsJsonSchema = {
-    par1: { type: 'string' },
-    par2: { type: 'number' }
+    type: 'object',
+    properties: {
+      par1: { type: 'string' },
+      par2: { type: 'number' }
+    }
   }
 
   const headersJsonSchema = {
@@ -345,8 +351,11 @@ test('Example - serializator', t => {
     schema: {
       response: {
         '2xx': {
-          id: { type: 'number' },
-          name: { type: 'string' }
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+            name: { type: 'string' }
+          }
         }
       }
     }

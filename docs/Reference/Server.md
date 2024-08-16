@@ -26,7 +26,6 @@ describes the properties available in that options object.
   - [`logger`](#logger)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
-  - [`jsonShorthand`](#jsonshorthand)
   - [`caseSensitive`](#casesensitive)
   - [`allowUnsafeRegex`](#allowunsaferegex)
   - [`requestIdHeader`](#requestidheader)
@@ -68,6 +67,7 @@ describes the properties available in that options object.
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
+    - [addHttpMethod](#addHttpMethod)
     - [addSchema](#addschema)
     - [getSchemas](#getschemas)
     - [getSchema](#getschema)
@@ -439,45 +439,6 @@ Internally Fastify uses the API of Node core HTTP server, so if you are using a
 custom server you must be sure to have the same API exposed. If not, you can
 enhance the server instance inside the `serverFactory` function before the
 `return` statement.
-
-
-### `jsonShorthand`
-<a id="schema-json-shorthand"></a>
-
-+ Default: `true`
-
-By default, Fastify will automatically infer the root properties
-of JSON Schemas if it does not find valid root properties according to the JSON
-Schema spec. If you wish to implement your own schema validation compiler, to 
-parse schemas as JTD instead of JSON Schema for example, then you can explicitly
-set this option to `false` to make sure the schemas you receive are unmodified
-and are not being treated internally as JSON Schema.
-
-Fastify does not throw on invalid schemas so if this option is set to `false`
-in an existing project, check that none of your existing schemas become
-invalid as a result, as they will be treated as catch-alls.
-
-```js
-const AjvJTD = require('ajv/dist/jtd'/* only valid for AJV v7+ */)
-const ajv = new AjvJTD({
-  // This would let you throw at start for invalid JTD schema objects
-  allErrors: process.env.NODE_ENV === 'development'
-})
-const fastify = Fastify({ jsonShorthand: false })
-fastify.setValidatorCompiler(({ schema }) => {
-  return ajv.compile(schema)
-})
-fastify.post('/', {
-  schema: {
-    body: {
-      properties: {
-        foo: { type: 'uint8' }
-      }
-    }
-  },
-  handler (req, reply) { reply.send({ ok: 1 }) }
-})
-```
 
 ### `caseSensitive`
 <a id="factory-case-sensitive"></a>
@@ -1304,6 +1265,33 @@ used by plugins.
 
 Fake HTTP injection (for testing purposes)
 [here](../Guides/Testing.md#benefits-of-using-fastifyinject).
+
+#### addHttpMethod
+<a id="addHttpMethod"></a>
+
+Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
+`PATCH`, `PUT` and `POST` HTTP methods by default.
+The `addHttpMethod` method allows to add any non standard HTTP
+methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
+
+```js
+// Add a new HTTP method called 'MKCOL' that supports a request body
+fastify.addHttpMethod('MKCOL', { hasBody: true,  })
+
+// Add a new HTTP method called 'COPY' that does not support a request body
+fastify.addHttpMethod('COPY')
+```
+
+After calling `addHttpMethod`, it is possible to use the route shorthand
+methods to define routes for the new HTTP method:
+
+```js
+fastify.addHttpMethod('MKCOL', { hasBody: true })
+fastify.mkcol('/', (req, reply) => {
+  // Handle the 'MKCOL' request
+})
+```
+
 
 #### addSchema
 <a id="add-schema"></a>

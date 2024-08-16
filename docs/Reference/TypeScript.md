@@ -210,24 +210,23 @@ And a `zod` wrapper by a third party called [`fastify-type-provider-zod`](https:
 They simplify schema validation setup and you can read more about them in [Type
 Providers](./Type-Providers.md) page.
 
-Below is how to setup schema validation using _vanilla_ `typebox` and
-`json-schema-to-ts` packages.
+Below is how to setup schema validation using the `typebox`,
+`json-schema-to-typescript`, and `json-schema-to-ts` packages without type
+providers.
 
 #### TypeBox
 
-A useful library for building types and a schema at once is
-[TypeBox](https://www.npmjs.com/package/@sinclair/typebox) along with 
-[fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox).
-With TypeBox you define your schema within your code and use them
-directly as types or schemas as you need them.
+A useful library for building types and a schema at once is [TypeBox](https://www.npmjs.com/package/@sinclair/typebox).
+With TypeBox you define your schema within your code and use them directly as
+types or schemas as you need them.
 
 When you want to use it for validation of some payload in a fastify route you
 can do it as follows:
 
-1. Install `typebox` and `fastify-type-provider-typebox` in your project.
+1. Install `typebox` in your project.
 
     ```bash
-    npm i @sinclair/typebox @fastify/type-provider-typebox
+    npm i @sinclair/typebox
     ```
 
 2. Define the schema you need with `Type` and create the respective type  with
@@ -248,10 +247,9 @@ can do it as follows:
 
     ```typescript
     import Fastify from 'fastify'
-    import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
     // ...
 
-    const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>()
+    const fastify = Fastify()
 
     fastify.post<{ Body: UserType, Reply: UserType }>(
       '/',
@@ -271,12 +269,12 @@ can do it as follows:
     )
     ```
 
-#### Schemas in JSON Files
+#### json-schema-to-typescript
 
-In the last example we used interfaces to define the types for the request
-querystring and headers. Many users will already be using JSON Schemas to define
-these properties, and luckily there is a way to transform existing JSON Schemas
-into TypeScript interfaces!
+In the last example we used Typebox to define the types and schemas for our
+route. Many users will already be using JSON Schemas to define these properties,
+and luckily there is a way to transform existing JSON Schemas into TypeScript
+interfaces!
 
 1. If you did not complete the 'Getting Started' example, go back and follow
    steps 1-4 first.
@@ -596,7 +594,7 @@ your plugin.
    }
 
    module.exports = fp(myPlugin, {
-     fastify: '3.x',
+     fastify: '5.x',
      name: 'my-plugin' // this is used by fastify-plugin to derive the property name
    })
    ```
@@ -1137,7 +1135,7 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 
 #### Reply
 
-##### fastify.FastifyReply< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
+##### fastify.FastifyReply<[RequestGeneric][FastifyRequestGenericInterface], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [ContextConfig][ContextConfigGeneric]>
 [src](https://github.com/fastify/fastify/blob/main/types/reply.d.ts#L32)
 
 This interface contains the custom properties that Fastify adds to the standard

@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+          check-latest: true
 
       - name: Install Linter
         run: npm install --ignore-scripts

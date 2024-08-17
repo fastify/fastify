@@ -272,6 +272,8 @@ fastify.get('///foo//bar//', function (req, reply) {
 ### `maxParamLength`
 <a id="factory-max-param-length"></a>
 
++ Default: `100`
+
 You can set a custom length for parameters in parametric (standard, regex, and
 multi) routes by using `maxParamLength` option; the default value is 100
 characters. If the maximum length limit is reached, the not found route will

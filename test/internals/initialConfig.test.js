@@ -38,7 +38,6 @@ test('without options passed to Fastify, initialConfig should expose default val
     caseSensitive: true,
     allowUnsafeRegex: false,
     disableRequestLogging: false,
-    jsonShorthand: true,
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,
     maxParamLength: 100,
@@ -278,7 +277,6 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       caseSensitive: true,
       allowUnsafeRegex: false,
       disableRequestLogging: false,
-      jsonShorthand: true,
       ignoreTrailingSlash: true,
       ignoreDuplicateSlashes: false,
       maxParamLength: 100,
@@ -360,35 +358,6 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   } catch (error) {
     t.fail()
   }
-})
-
-test('Fastify.initialConfig should accept the deprecated versioning option', t => {
-  t.plan(1)
-
-  function onWarning (warning) {
-    t.equal(warning.code, 'FSTDEP009')
-  }
-
-  process.on('warning', onWarning)
-
-  const versioning = {
-    storage: function () {
-      const versions = {}
-      return {
-        get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
-      }
-    },
-    deriveVersion: (req, ctx) => {
-      return req.headers.accept
-    }
-  }
-
-  Fastify({ versioning })
-  setImmediate(function () {
-    process.removeListener('warning', onWarning)
-    t.end()
-  })
 })
 
 test('pluginTimeout should be parsed correctly', t => {

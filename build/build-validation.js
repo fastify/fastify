@@ -32,7 +32,6 @@ const defaultInitOptions = {
   caseSensitive: true,
   allowUnsafeRegex: false,
   disableRequestLogging: false,
-  jsonShorthand: true,
   ignoreTrailingSlash: false,
   ignoreDuplicateSlashes: false,
   maxParamLength: 100,
@@ -94,7 +93,6 @@ const schema = {
       type: 'boolean',
       default: false
     },
-    jsonShorthand: { type: 'boolean', default: defaultInitOptions.jsonShorthand },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
@@ -104,16 +102,6 @@ const schema = {
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
-    // deprecated style of passing the versioning constraint
-    versioning: {
-      type: 'object',
-      additionalProperties: true,
-      required: ['storage', 'deriveVersion'],
-      properties: {
-        storage: { },
-        deriveVersion: { }
-      }
-    },
     constraints: {
       type: 'object',
       additionalProperties: {
@@ -122,9 +110,9 @@ const schema = {
         additionalProperties: true,
         properties: {
           name: { type: 'string' },
-          storage: { },
-          validate: { },
-          deriveConstraint: { }
+          storage: {},
+          validate: {},
+          deriveConstraint: {}
         }
       }
     }

@@ -1,7 +1,6 @@
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
-  FastifyRequestContext,
   FastifyContextConfig,
   FastifyLogFn,
   FastifySchema,
@@ -65,8 +64,6 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.url)
   expectType<string>(request.originalUrl)
   expectType<string>(request.method)
-  expectType<string>(request.routerPath)
-  expectType<string>(request.routerMethod)
   expectType<Readonly<RequestRouteOptions>>(request.routeOptions)
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
@@ -77,12 +74,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<RawRequestDefaultExpression>(request.raw)
   expectType<RequestBodyDefault>(request.body)
   expectType<RequestParamsDefault>(request.params)
-  expectType<FastifyRequestContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.context.config)
-  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeConfig)
-  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.routeOptions.config)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
-  expectType<FastifySchema | undefined>(request.routeSchema)
   expectType<FastifySchema | undefined>(request.routeOptions.schema)
   expectType<RouteHandlerMethod>(request.routeOptions.handler)
   expectType<string | undefined>(request.routeOptions.url)
@@ -116,8 +108,7 @@ const postHandler: Handler = function (request) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
-  expectType<FastifyRequestContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<FastifyContextConfig & FastifyRouteConfig>(request.routeOptions.config)
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
@@ -134,8 +125,7 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
-  expectType<FastifyRequestContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyRequestContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
 }
 
 const server = fastify()

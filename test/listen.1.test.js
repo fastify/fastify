@@ -12,12 +12,16 @@ before(async function () {
 })
 
 test('listen works without arguments', async t => {
-  process.on('warning', () => {
+  const doNotWarn = () => {
     t.fail('should not be deprecated')
-  })
+  }
+  process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.teardown(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
   await fastify.listen()
   const address = fastify.server.address()
   t.equal(address.address, localhost)
@@ -25,12 +29,16 @@ test('listen works without arguments', async t => {
 })
 
 test('Async/await listen with arguments', async t => {
-  process.on('warning', () => {
+  const doNotWarn = () => {
     t.fail('should not be deprecated')
-  })
+  }
+  process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.teardown(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
   const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
   const address = fastify.server.address()
   t.equal(addr, `http://127.0.0.1:${address.port}`)
@@ -42,13 +50,17 @@ test('Async/await listen with arguments', async t => {
 })
 
 test('listen accepts a callback', t => {
-  process.on('warning', () => {
-    t.fail('should not be deprecated')
-  })
-
   t.plan(2)
+  const doNotWarn = () => {
+    t.fail('should not be deprecated')
+  }
+  process.on('warning', doNotWarn)
+
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.teardown(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
   fastify.listen({ port: 0 }, (err) => {
     t.equal(fastify.server.address().address, localhost)
     t.error(err)
@@ -56,13 +68,17 @@ test('listen accepts a callback', t => {
 })
 
 test('listen accepts options and a callback', t => {
-  process.on('warning', () => {
-    t.fail('should not be deprecated')
-  })
-
   t.plan(1)
+  const doNotWarn = () => {
+    t.fail('should not be deprecated')
+  }
+  process.on('warning', doNotWarn)
+
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.teardown(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
   fastify.listen({
     port: 0,
     host: 'localhost',
@@ -88,4 +104,40 @@ test('listen after Promise.resolve()', t => {
         t.error(err)
       })
     })
+})
+
+test('listen works with undefined host', async t => {
+  const doNotWarn = () => {
+    t.fail('should not be deprecated')
+  }
+  process.on('warning', doNotWarn)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  t.teardown(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
+  await fastify.listen({ host: undefined, port: 0 })
+  const address = fastify.server.address()
+  t.equal(address.address, localhost)
+  t.ok(address.port > 0)
+})
+
+test('listen works with null host', async t => {
+  const doNotWarn = () => {
+    t.fail('should not be deprecated')
+  }
+  process.on('warning', doNotWarn)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  t.teardown(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
+  await fastify.listen({ host: null, port: 0 })
+  const address = fastify.server.address()
+  t.equal(address.address, localhost)
+  t.ok(address.port > 0)
 })

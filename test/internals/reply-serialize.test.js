@@ -50,8 +50,11 @@ function getResponseSchema () {
       content: {
         'application/json': {
           schema: {
-            fullName: { type: 'string' },
-            phone: { type: 'number' }
+            type: 'object',
+            properties: {
+              fullName: { type: 'string' },
+              phone: { type: 'number' }
+            }
           }
         }
       }
@@ -264,8 +267,11 @@ test('Reply#getSerializationFunction', t => {
         '/:id',
         {
           params: {
-            id: {
-              type: 'integer'
+            type: 'object',
+            properites: {
+              id: {
+                type: 'integer'
+              }
             }
           },
           schema: {
@@ -356,8 +362,11 @@ test('Reply#getSerializationFunction', t => {
         '/:id',
         {
           params: {
-            id: {
-              type: 'integer'
+            type: 'object',
+            properites: {
+              id: {
+                type: 'integer'
+              }
             }
           }
         },
@@ -465,8 +474,11 @@ test('Reply#serializeInput', t => {
               content: {
                 'application/json': {
                   schema: {
-                    fullName: { type: 'string' },
-                    phone: { type: 'number' }
+                    type: 'object',
+                    properites: {
+                      fullName: { type: 'string' },
+                      phone: { type: 'number' }
+                    }
                   }
                 }
               }
@@ -525,8 +537,11 @@ test('Reply#serializeInput', t => {
       '/',
       {
         params: {
-          id: {
-            type: 'integer'
+          type: 'object',
+          properites: {
+            id: {
+              type: 'integer'
+            }
           }
         },
         schema: {

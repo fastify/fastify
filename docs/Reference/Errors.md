@@ -20,7 +20,6 @@
     - [FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN](#fst_err_schema_error_formatter_not_fn)
     - [FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ](#fst_err_ajv_custom_options_opt_not_obj)
     - [FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR](#fst_err_ajv_custom_options_opt_not_arr)
-    - [FST_ERR_VERSION_CONSTRAINT_NOT_STR](#fst_err_version_constraint_not_str)
     - [FST_ERR_CTP_ALREADY_PRESENT](#fst_err_ctp_already_present)
     - [FST_ERR_CTP_INVALID_TYPE](#fst_err_ctp_invalid_type)
     - [FST_ERR_CTP_EMPTY_TYPE](#fst_err_ctp_empty_type)
@@ -293,7 +292,6 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_schema_error_formatter_not_fn">FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN</a> | SchemaErrorFormatter option wrongly specified. | SchemaErrorFormatter option should be a non async function. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_ajv_custom_options_opt_not_obj">FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ</a> | ajv.customOptions wrongly specified. | ajv.customOptions option should be an object. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_ajv_custom_options_opt_not_arr">FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR</a> | ajv.plugins option wrongly specified. | ajv.plugins option should be an array. | [#4554](https://github.com/fastify/fastify/pull/4554) |
-| <a id="fst_err_version_constraint_not_str">FST_ERR_VERSION_CONSTRAINT_NOT_STR</a> | Version constraint wrongly specified. | Version constraint should be a string. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_ctp_already_present">FST_ERR_CTP_ALREADY_PRESENT</a> | The parser for this content type was already registered. | Use a different content type or delete the already registered parser. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_invalid_type">FST_ERR_CTP_INVALID_TYPE</a> | `Content-Type` wrongly specified | The `Content-Type` should be a string. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_empty_type">FST_ERR_CTP_EMPTY_TYPE</a> | `Content-Type` is an empty string. | `Content-Type` cannot be an empty string. | [#1168](https://github.com/fastify/fastify/pull/1168) |

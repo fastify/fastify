@@ -5,6 +5,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const http = require('node:http')
 const NotFound = require('http-errors').NotFound
+const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const Fastify = require('../..')
 const { Readable, Writable } = require('node:stream')
@@ -14,12 +15,10 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext,
-  kPublicRouteContext
+  kRouteContext
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
-const { FSTDEP010, FSTDEP019, FSTDEP021 } = require('../../lib/warnings')
 
 const agent = new http.Agent({ keepAlive: false })
 
@@ -38,8 +37,8 @@ const doGet = function (url) {
 test('Once called, Reply should return an object with methods', t => {
   t.plan(15)
   const response = { res: 'res' }
-  const context = { config: { onSend: [] }, schema: {} }
-  const request = { [kRouteContext]: context, [kPublicRouteContext]: { config: context.config, schema: context.schema } }
+  const context = { config: { onSend: [] }, schema: {}, _parserOptions: {}, server: { hasConstraintStrategy: () => false, initialConfig: {} } }
+  const request = new Request(null, null, null, null, null, context)
   const reply = new Reply(response, request)
   t.equal(typeof reply, 'object')
   t.equal(typeof reply[kReplyIsError], 'boolean')
@@ -52,8 +51,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
-  t.equal(reply[kPublicRouteContext].config, context.config)
-  t.equal(reply[kPublicRouteContext].schema, context.schema)
+  t.equal(reply.routeOptions.config, context.config)
+  t.equal(reply.routeOptions.schema, context.schema)
   t.equal(reply.request, request)
   // Aim to not bad property keys (including Symbols)
   t.notOk('undefined' in reply)
@@ -63,7 +62,7 @@ test('reply.send will logStream error and destroy the stream', t => {
   t.plan(1)
   let destroyCalled
   const payload = new Readable({
-    read () {},
+    read () { },
     destroy (err, cb) {
       destroyCalled = true
       cb(err)
@@ -72,16 +71,16 @@ test('reply.send will logStream error and destroy the stream', t => {
 
   const response = new Writable()
   Object.assign(response, {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
-    writeHead: () => {},
-    write: () => {},
+    writeHead: () => { },
+    write: () => { },
     headersSent: true
   })
 
   const log = {
-    warn: () => {}
+    warn: () => { }
   }
 
   const reply = new Reply(response, { [kRouteContext]: { onSend: null } }, log)
@@ -94,12 +93,12 @@ test('reply.send will logStream error and destroy the stream', t => {
 test('reply.send throw with circular JSON', t => {
   t.plan(1)
   const response = {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
-    writeHead: () => {},
-    write: () => {},
-    end: () => {}
+    writeHead: () => { },
+    write: () => { },
+    end: () => { }
   }
   const reply = new Reply(response, { [kRouteContext]: { onSend: [] } })
   t.throws(() => {
@@ -112,12 +111,12 @@ test('reply.send throw with circular JSON', t => {
 test('reply.send returns itself', t => {
   t.plan(1)
   const response = {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
-    writeHead: () => {},
-    write: () => {},
-    end: () => {}
+    writeHead: () => { },
+    write: () => { },
+    end: () => { }
   }
   const reply = new Reply(response, { [kRouteContext]: { onSend: [] } })
   t.equal(reply.send('hello'), reply)
@@ -1119,7 +1118,7 @@ test('reply.hasHeader returns correct values', t => {
     sget({
       method: 'GET',
       url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {})
+    }, () => { })
   })
 })
 
@@ -1151,18 +1150,18 @@ test('reply.getHeader returns correct values', t => {
     sget({
       method: 'GET',
       url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {})
+    }, () => { })
   })
 })
 
 test('reply.getHeader returns raw header if there is not in the reply headers', t => {
   t.plan(1)
   const response = {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => true,
     getHeader: () => 'bar',
-    writeHead: () => {},
-    end: () => {}
+    writeHead: () => { },
+    end: () => { }
   }
   const reply = new Reply(response, { onSend: [] }, null)
   t.equal(reply.getHeader('foo'), 'bar')
@@ -1461,108 +1460,17 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
   })
 })
 
-test('should emit deprecation warning when trying to modify the reply.sent property', t => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  FSTDEP010.emitted = false
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP010.code)
-  }
-
-  fastify.get('/', (req, reply) => {
-    reply.sent = true
-
-    reply.raw.end()
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-
-    process.removeListener('warning', onWarning)
-  })
-})
-
-test('should emit deprecation warning when trying to use the reply.context.config property', t => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  FSTDEP019.emitted = false
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP019.code)
-  }
-
-  fastify.get('/', (req, reply) => {
-    req.log(reply.context.config)
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-
-    process.removeListener('warning', onWarning)
-  })
-})
-
-test('should throw error when passing falsy value to reply.sent', t => {
-  t.plan(4)
+test('should throw when trying to modify the reply.sent property', t => {
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     try {
-      reply.sent = false
+      reply.sent = true
     } catch (err) {
-      t.equal(err.code, 'FST_ERR_REP_SENT_VALUE')
-      t.equal(err.message, 'The only possible value for reply.sent is true.')
+      t.ok(err)
       reply.send()
     }
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-  })
-})
-
-test('should throw error when attempting to set reply.sent more than once', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    reply.sent = true
-    try {
-      reply.sent = true
-      t.fail('must throw')
-    } catch (err) {
-      t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
-    }
-    reply.raw.end()
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-  })
-})
-
-test('should not throw error when attempting to set reply.sent if the underlining request was sent', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    reply.raw.end()
-    t.doesNotThrow(() => {
-      reply.sent = true
-    })
   })
 
   fastify.inject('/', (err, res) => {
@@ -1843,7 +1751,7 @@ test('cannot set the replySerializer when the server is running', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
     try {
-      fastify.setReplySerializer(() => {})
+      fastify.setReplySerializer(() => { })
       t.fail('this serializer should not be setup')
     } catch (e) {
       t.equal(e.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
@@ -1893,7 +1801,7 @@ test('reply should not call the custom serializer for errors and not found', t =
 test('reply.then', t => {
   t.plan(4)
 
-  function request () {}
+  function request () { }
 
   t.test('without an error', t => {
     t.plan(1)
@@ -2022,36 +1930,6 @@ test('redirect to an invalid URL should not crash the server', async t => {
   await fastify.close()
 })
 
-test('redirect with deprecated signature should warn', t => {
-  t.plan(4)
-
-  process.removeAllListeners('warning')
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'DeprecationWarning')
-    t.equal(warning.code, FSTDEP021.code)
-  }
-
-  const fastify = Fastify()
-
-  fastify.get('/', (req, reply) => {
-    reply.redirect(302, '/new')
-  })
-
-  fastify.get('/new', (req, reply) => {
-    reply.send('new')
-  })
-
-  fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
-    t.error(err)
-    t.pass()
-
-    process.removeListener('warning', onWarning)
-  })
-
-  FSTDEP021.emitted = false
-})
-
 test('invalid response headers should not crash the server', async t => {
   const fastify = Fastify()
   fastify.route({
@@ -2153,7 +2031,7 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
 
   const response = new Writable()
   Object.assign(response, {
-    setHeader: () => {},
+    setHeader: () => { },
     hasHeader: () => false,
     getHeader: () => undefined,
     writeHead: () => {
@@ -2161,7 +2039,7 @@ test('reply.send will intercept ERR_HTTP_HEADERS_SENT and log an error message',
       err.code = 'ERR_HTTP_HEADERS_SENT'
       throw err
     },
-    write: () => {},
+    write: () => { },
     headersSent: true
   })
 

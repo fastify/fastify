@@ -22,9 +22,9 @@ test('Fastify should throw on multiple assignment to the same route', t => {
 
   try {
     fastify.get('/', () => {})
-    t.fail('Should throw on duplicated route declaration')
+    t.fail('Should throw fastify duplicated route declaration')
   } catch (error) {
-    t.equal(error.message, "Method 'GET' already declared for route '/'")
+    t.equal(error.code, 'FST_ERR_DUPLICATED_ROUTE')
   }
 })
 
@@ -72,18 +72,6 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
     t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
     t.match(err.message, /Failed building the validation schema for POST: \/hello\/form/)
   })
-})
-
-test('Fastify should throw for an invalid shorthand option type', t => {
-  t.plan(3)
-  try {
-    Fastify({ jsonShorthand: 'hello' })
-    t.fail()
-  } catch (e) {
-    t.equal(e.code, 'FST_ERR_INIT_OPTS_INVALID')
-    t.match(e.message, /must be boolean/)
-    t.pass()
-  }
 })
 
 test('Should throw on unsupported method', t => {

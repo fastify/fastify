@@ -273,83 +273,83 @@ server.route<RouteGenericInterface, CustomContextConfig>({
   url: '/',
   handler: () => { },
   onRequest: (request, reply, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preParsing: (request, reply, payload, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preValidation: (request, reply, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preHandler: (request, reply, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preSerialization: (request, reply, payload, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onSend: (request, reply, payload, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onResponse: (request, reply, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onTimeout: (request, reply, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onError: (request, reply, error, done) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   }
 })
 
 server.get<RouteGenericInterface, CustomContextConfig>('/', {
   onRequest: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preParsing: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preValidation: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preHandler: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preSerialization: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onSend: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onResponse: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onTimeout: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onError: async (request, reply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   }
 }, async (request, reply) => {
-  expectType<CustomContextConfigWithDefault>(request.context.config)
-  expectType<CustomContextConfigWithDefault>(reply.context.config)
+  expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+  expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
 })
 
 type CustomContextRequest = FastifyRequest<any, any, any, any, any, CustomContextConfig, any>
@@ -359,40 +359,40 @@ server.route<RouteGenericInterface, CustomContextConfig>({
   url: '/',
   handler: () => { },
   onRequest: async (request: CustomContextRequest, reply: CustomContextReply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preParsing: async (request: CustomContextRequest, reply: CustomContextReply, payload: RequestPayload) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preValidation: async (request: CustomContextRequest, reply: CustomContextReply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preHandler: async (request: CustomContextRequest, reply: CustomContextReply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   preSerialization: async (request: CustomContextRequest, reply: CustomContextReply, payload: any) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onSend: async (request: CustomContextRequest, reply: CustomContextReply, payload: any) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onResponse: async (request: CustomContextRequest, reply: CustomContextReply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onTimeout: async (request: CustomContextRequest, reply: CustomContextReply) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   },
   onError: async (request: CustomContextRequest, reply: CustomContextReply, error: FastifyError) => {
-    expectType<CustomContextConfigWithDefault>(request.context.config)
-    expectType<CustomContextConfigWithDefault>(reply.context.config)
+    expectType<CustomContextConfigWithDefault>(request.routeOptions.config)
+    expectType<CustomContextConfigWithDefault>(reply.routeOptions.config)
   }
 })
 

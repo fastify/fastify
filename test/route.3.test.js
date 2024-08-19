@@ -54,7 +54,10 @@ test('multiple routes with one schema', t => {
 
   const schema = {
     query: {
-      id: { type: 'number' }
+      type: 'object',
+      properties: {
+        id: { type: 'number' }
+      }
     }
   }
 

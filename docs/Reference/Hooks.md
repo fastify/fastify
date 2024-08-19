@@ -828,13 +828,6 @@ consider creating a custom [Plugin](./Plugins.md) instead.
 
 ## Diagnostics Channel Hooks
 
-> **Note:** The `diagnostics_channel` is currently experimental on Node.js, so
-> its API is subject to change even in semver-patch releases of Node.js. As some
-> versions of Node.js are supported by Fastify where `diagnostics_channel` is
-> unavailable, or with an incomplete feature set, the hook uses the
-> [dc-polyfill](https://www.npmjs.com/package/dc-polyfill) package to provide a
-> polyfill.
-
 One [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html)
 publish event, `'fastify.initialization'`, happens at initialization time. The
 Fastify instance is passed into the hook as a property of the object passed in.
@@ -848,7 +841,7 @@ tools first" fashion.
 
 ```js
 const tracer = /* retrieved from elsewhere in the package */
-const dc = require('node:diagnostics_channel') // or require('dc-polyfill')
+const dc = require('node:diagnostics_channel')
 const channel = dc.channel('fastify.initialization')
 const spans = new WeakMap()
 
@@ -866,6 +859,9 @@ channel.subscribe(function ({ fastify }) {
   })
 })
 ```
+
+> **Note:** The TracingChannel class API is currently experimental and may undergo
+> breaking changes even in semver-patch releases of Node.js.
 
 Five other events are published on a per-request basis following the
 [Tracing Channel](https://nodejs.org/api/diagnostics_channel.html#class-tracingchannel)
@@ -895,7 +891,7 @@ associated with the request's failure.
 These events can be received like so:
 
 ```js
-const dc = require('node:diagnostics_channel') // or require('dc-polyfill')
+const dc = require('node:diagnostics_channel')
 const channel = dc.channel('tracing:fastify.request.handler:start')
 channel.subscribe((msg) => {
   console.log(msg.request, msg.reply)

@@ -235,6 +235,28 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
+For `body` schema, it is further possible to differentiate the schema per content
+type by nesting the schemas inside `content` property. The schema validation
+will be applied based on the `Content-Type` header in the request.
+
+```js
+fastify.post('/the/url', {
+  schema: {
+    body: {
+      content: {
+        'application/json': {
+          schema: { type: 'object' }
+        },
+        'text/plain': {
+          schema: { type: 'string' }
+        }
+        // Other content types will not be validated
+      }
+    }
+  }
+}, handler)
+```
+
 *Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) the values
 to the types specified in your schema `type` keywords, both to pass the
 validation and to use the correctly typed data afterwards.*
@@ -618,37 +640,47 @@ You can even have a specific response schema for different content types.
 For example:
 ```js
 const schema = {
-      response: {
-        200: {
-          description: 'Response schema that support different content types'
-          content: {
-            'application/json': {
-              schema: {
-                name: { type: 'string' },
-                image: { type: 'string' },
-                address: { type: 'string' }
-              }
-            },
-            'application/vnd.v1+json': {
-              schema: {
-                type: 'array',
-                items: { $ref: 'test' }
-              }
-            }
+  response: {
+    200: {
+      description: 'Response schema that support different content types'
+      content: {
+        'application/json': {
+          schema: {
+            name: { type: 'string' },
+            image: { type: 'string' },
+            address: { type: 'string' }
           }
         },
-        '3xx': {
-          content: {
-            'application/vnd.v2+json': {
-              schema: {
-                fullName: { type: 'string' },
-                phone: { type: 'string' }
-              }
-            }
+        'application/vnd.v1+json': {
+          schema: {
+            type: 'array',
+            items: { $ref: 'test' }
+          }
+        }
+      }
+    },
+    '3xx': {
+      content: {
+        'application/vnd.v2+json': {
+          schema: {
+            fullName: { type: 'string' },
+            phone: { type: 'string' }
+          }
+        }
+      }
+    },
+    default: {
+      content: {
+        // */* is match-all content-type
+        '*/*': {
+          schema: {
+            desc: { type: 'string' }
           }
         }
       }
     }
+  }
+}
 
 fastify.post('/url', { schema }, handler)
 ```
@@ -673,8 +705,11 @@ fastify.get('/user', {
   schema: {
     response: {
       '2xx': {
-        id: { type: 'number' },
-        name: { type: 'string' }
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          name: { type: 'string' }
+        }
       }
     }
   }

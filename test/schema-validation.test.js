@@ -105,6 +105,142 @@ test('Basic validation test', t => {
   })
 })
 
+test('Different schema per content type', t => {
+  t.plan(12)
+
+  const fastify = Fastify()
+  fastify.addContentTypeParser('application/octet-stream', {
+    parseAs: 'buffer'
+  }, async function (_, payload) {
+    return payload
+  })
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: schemaArtist
+          },
+          'application/octet-stream': {
+            schema: {} // Skip validation
+          },
+          'text/plain': {
+            schema: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, async function (req, reply) {
+    return reply.send(req.body)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: {
+      name: 'michelangelo',
+      work: 'sculptor, painter, architect and poet'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload).name, 'michelangelo')
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: { name: 'michelangelo' }
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
+    t.equal(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream' },
+    body: Buffer.from('AAAAAAAA')
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'AAAAAAAA')
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: 'AAAAAAAA'
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'AAAAAAAA')
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Skip validation if no schema for content type', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: schemaArtist
+          }
+          // No schema for 'text/plain'
+        }
+      }
+    }
+  }, async function (req, reply) {
+    return reply.send(req.body)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: 'AAAAAAAA'
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'AAAAAAAA')
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Skip validation if no content type schemas', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          // No schemas
+        }
+      }
+    }
+  }, async function (req, reply) {
+    return reply.send(req.body)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: 'AAAAAAAA'
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'AAAAAAAA')
+    t.equal(res.statusCode, 200)
+  })
+})
+
 test('External AJV instance', t => {
   t.plan(5)
 
@@ -829,7 +965,12 @@ test('Custom AJV settings - pt1', t => {
 
   fastify.post('/', {
     schema: {
-      body: { num: { type: 'integer' } }
+      body: {
+        type: 'object',
+        properties: {
+          num: { type: 'integer' }
+        }
+      }
     },
     handler: (req, reply) => {
       t.equal(req.body.num, 12)
@@ -862,7 +1003,12 @@ test('Custom AJV settings - pt2', t => {
 
   fastify.post('/', {
     schema: {
-      body: { num: { type: 'integer' } }
+      body: {
+        type: 'object',
+        properties: {
+          num: { type: 'integer' }
+        }
+      }
     },
     handler: (req, reply) => {
       t.fail('the handler is not called because the "12" is not coerced to number')
@@ -889,7 +1035,12 @@ test('Custom AJV settings on different parameters - pt1', t => {
 
   fastify.post('/api/:id', {
     schema: {
-      querystring: { id: { type: 'integer' } },
+      querystring: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' }
+        }
+      },
       body: {
         type: 'object',
         properties: {

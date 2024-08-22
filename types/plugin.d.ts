@@ -17,7 +17,7 @@ export type FastifyPluginCallback<
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
-  opts: Options,
+  opts: Partial<Options>,
   done: (err?: Error) => void
 ) => void
 
@@ -33,7 +33,7 @@ export type FastifyPluginAsync<
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
-  opts: Options
+  opts: Partial<Options>
 ) => Promise<void>
 
 /**

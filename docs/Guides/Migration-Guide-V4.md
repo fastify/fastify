@@ -6,6 +6,25 @@ Before migrating to v4, please ensure that you have fixed all deprecation
 warnings from v3. All v3 deprecations have been removed and they will no longer
 work after upgrading.
 
+## Codemods
+### Fastify v4 Codemods
+
+Run the following codemods to automatically update your code for Fastify v4 migration:
+
+```
+npx codemod@latest fastify/4/migration-recipe
+```
+
+This will run the following codemods from the Fastify Codemod repository:
+
+- **fastify/4/remove-app-use**
+- **fastify/4/reply-raw-access**
+- **fastify/4/wrap-routes-plugin**
+- **fastify/4/await-register-calls**
+
+Each of these codemods automates the changes listed in the v4 migration guide. For a complete list of available Fastify codemods and further details, see the [codemod registry](https://codemod.com/registry?q=fastify).
+
+
 ## Breaking Changes
 
 ### Error handling composition ([#3261](https://github.com/fastify/fastify/pull/3261))
@@ -55,10 +74,22 @@ If you need to use middleware, use
 continue to be maintained.
 However, it is strongly recommended that you migrate to Fastify's [hooks](../Reference/Hooks.md).
 
+> **Note**: Codemod remove `app.use()` with:
+>
+> ```bash
+> npx codemod@latest fastify/4/remove-app-use
+> ```
+
 ### `reply.res` moved to `reply.raw`
 
 If you previously used the `reply.res` attribute to access the underlying Request
 object you will now need to use `reply.raw`.
+
+> **Note**: Codemod `reply.res` to `reply.raw` with:
+>
+> ```bash
+> npx codemod@latest fastify/4/reply-raw-access
+> ```
 
 ### Need to `return reply` to signal a "fork" of the promise chain
 
@@ -105,6 +136,11 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
+> **Note**: Codemod synchronous route definitions with:
+>
+> ```bash
+> npx codemod@latest fastify/4/wrap-routes-plugin
+> ```
 
 * use `await register(...)`
 
@@ -129,6 +165,13 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
+
+> **Note**: Codemod 'await register(...)' with:
+>
+> ```bash
+> npx codemod@latest fastify/4/await-register-calls
+> ```
+
 
 ### Optional URL parameters
 

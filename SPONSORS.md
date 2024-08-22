@@ -15,7 +15,7 @@ _Be the first!_
 
 - [Mercedes-Benz Group](https://github.com/mercedes-benz)
 - [Val Town, Inc.](https://opencollective.com/valtown)
-- [Handsontable - JavaScript Data Grid](https://handsontable.com/)
+- [Handsontable - JavaScript Data Grid]([https://handsontable.com/](https://handsontable.com/docs/react-data-grid/?utm_source=Fastify_GH&utm_medium=sponsorship&utm_campaign=library_sponsorship_2024))
 
 ## Tier 2
 

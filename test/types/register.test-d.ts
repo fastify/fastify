@@ -48,14 +48,18 @@ const testPluginWithHttp2: FastifyPluginCallback<TestOptions, Http2Server> = fun
 const testPluginWithHttp2Async: FastifyPluginAsync<TestOptions, Http2Server> = async function (instance, opts) { }
 const testPluginWithHttp2WithType = (instance: ServerWithHttp2, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
 const testPluginWithHttp2WithTypeAsync = async (instance: ServerWithHttp2, opts: FastifyPluginOptions) => { }
+const testOptions: TestOptions = {
+  option1: "a",
+  option2: false,
+}
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginCallback))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginAsync))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOpts))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsAsync))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsWithType))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsWithTypeAsync))
-expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2))
-expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2Async))
+expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2, testOptions))
+expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2Async, testOptions))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2WithType))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2WithTypeAsync))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register((instance) => {

@@ -9,6 +9,9 @@ work after upgrading.
 ## Codemods
 ### Fastify v4 Codemods
 
+To help with the upgrade, we’ve worked with the team at codemod.com to
+publish codemods that will automatically update your code to many of 
+the new APIs and patterns in Fastify v4.
 Run the following codemods to automatically update your code for Fastify v4 migration:
 
 ```
@@ -22,7 +25,9 @@ This will run the following codemods from the Fastify Codemod repository:
 - **fastify/4/wrap-routes-plugin**
 - **fastify/4/await-register-calls**
 
-Each of these codemods automates the changes listed in the v4 migration guide. For a complete list of available Fastify codemods and further details, see the [codemod registry](https://codemod.com/registry?q=fastify).
+Each of these codemods automates the changes listed in the v4 migration guide.
+For a complete list of available Fastify codemods and further details, 
+see the [codemod registry](https://codemod.com/registry?q=fastify).
 
 
 ## Breaking Changes

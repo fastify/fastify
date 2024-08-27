@@ -1,4 +1,4 @@
-import { FastifyInstance } from './instance'
+import { FastifyDecorators, FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyBaseLogger } from './logger'
@@ -14,12 +14,14 @@ export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Decorators extends FastifyDecorators = FastifyDecorators,
+  NewDecorators extends FastifyDecorators = FastifyDecorators
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators>,
   opts: Options,
   done: (err?: Error) => void
-) => void
+) => FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators & NewDecorators>
 
 /**
  * FastifyPluginAsync
@@ -30,11 +32,12 @@ export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Decorators extends FastifyDecorators = FastifyDecorators
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators>,
   opts: Options
-) => Promise<void>
+) => Promise<FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators>>
 
 /**
  * Generic plugin type.

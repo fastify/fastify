@@ -1,6 +1,6 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
 import { FastifyContextConfig } from './context'
-import { FastifyInstance } from './instance'
+import { FastifyDecorators, FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRouteConfig, RouteGenericInterface, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
@@ -38,7 +38,35 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
  */
-export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+export type FastifyRequest<
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  ContextConfig = ContextConfigDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Decorators extends FastifyDecorators['request'] = FastifyDecorators['request'],
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
+// ^ Temporary Note: RequestType has been re-ordered to be the last argument in
+//   generic list. This generic argument is now considered optional as it can be
+//   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
+//   arguments. Implementations that already pass this argument can either omit
+//   the RequestType (preferred) or swap Logger and RequestType arguments when
+//   creating custom types of FastifyRequest. Related issue #4123
+> = Decorators & BaseFastifyRequest<
+  RouteGeneric,
+  RawServer,
+  RawRequest,
+  SchemaCompiler,
+  TypeProvider,
+  ContextConfig,
+  Logger,
+  RequestType
+>
+
+type BaseFastifyRequest<
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   SchemaCompiler extends FastifySchema = FastifySchema,
@@ -52,7 +80,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
 //   arguments. Implementations that already pass this argument can either omit
 //   the RequestType (preferred) or swap Logger and RequestType arguments when
 //   creating custom types of FastifyRequest. Related issue #4123
-> {
+> = {
   id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;

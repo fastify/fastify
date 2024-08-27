@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import { FastifyInstance } from './instance'
+import { FastifyDecorators, FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest, RequestRouteOptions } from './request'
 import { RouteGenericInterface } from './route'
@@ -29,7 +29,29 @@ export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends Rep
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
  */
-export interface FastifyReply<
+
+export type FastifyReply<
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  ContextConfig = ContextConfigDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Decorators extends FastifyDecorators['reply'] = FastifyDecorators['reply'],
+  ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
+> = Decorators & BaseFastifyReply<
+  RouteGeneric,
+  RawServer,
+  RawRequest,
+  RawReply,
+  ContextConfig,
+  SchemaCompiler,
+  TypeProvider,
+  ReplyType
+>
+
+export type BaseFastifyReply<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
@@ -38,7 +60,7 @@ export interface FastifyReply<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
-> {
+> = {
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
 
   raw: RawReply;

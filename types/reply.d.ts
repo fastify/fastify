@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
+import { MixinAssertions } from './mixin-helpers'
+import { FastifyReplyMixins } from './mixins'
 import { FastifyRequest, RequestRouteOptions } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
@@ -38,7 +40,7 @@ export interface FastifyReply<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
-> {
+> extends MixinAssertions<FastifyReplyMixins> {
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
 
   raw: RawReply;

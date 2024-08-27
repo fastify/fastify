@@ -1,9 +1,20 @@
 import fastify from '../../fastify'
-import { expectType } from 'tsd'
+import { FastifyReplyMixin, FastifyRequestMixin } from '../../types/mixins'
+import { expectType, expectError } from 'tsd'
 
 type TestType = void
 
 declare module '../../fastify' {
+  interface FastifyRequestMixins {
+    testRequestMixin: FastifyRequestMixin<'testRequestMixin', {
+      testRequestMixinTestProp: TestType
+    }>
+  }
+  interface FastifyReplyMixins {
+    testReplyMixin: FastifyReplyMixin<'testReplyMixin', {
+      testReplyMixinTestProp: TestType
+    }>
+  }
   interface FastifyRequest {
     testProp: TestType;
   }
@@ -15,4 +26,16 @@ declare module '../../fastify' {
 fastify().get('/', (req, res) => {
   expectType<TestType>(req.testProp)
   expectType<TestType>(res.testProp)
+
+  expectError(req.testRequestMixinTestProp)
+
+  if (req.hasMixin('testRequestMixin')) {
+    expectType<TestType>(req.testRequestMixinTestProp)
+  }
+
+  expectError(res.testReplyMixinTestProp)
+
+  if (res.hasMixin('testReplyMixin')) {
+    expectType<TestType>(res.testReplyMixinTestProp)
+  }
 })

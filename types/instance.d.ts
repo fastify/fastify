@@ -5,6 +5,8 @@ import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMy
 import { AddressInfo } from 'net'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
+import { AnyMixinValue, MixinAssertions } from './mixin-helpers'
+import { FastifyInstanceMixins, FastifyReplyMixins, FastifyRequestMixins } from './mixins'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
@@ -94,11 +96,11 @@ type GetterSetter<This, T> = T | {
   setter?: (this: This, value: T) => void
 }
 
-type DecorationMethod<This, Return = This> = {
+type DecorationMethod<This, Mixins extends object, Return> = {
   <
     // Need to disable "no-use-before-define" to maintain backwards compatibility, as else decorate<Foo> would suddenly mean something new
 
-    T extends (P extends keyof This ? This[P] : unknown),
+    T extends (P extends keyof (Return & AnyMixinValue<Mixins>) ? (Return & AnyMixinValue<Mixins>)[P] : (P extends keyof This ? This[P] : unknown)),
     P extends string | symbol = string | symbol
   >(property: P,
     value: GetterSetter<This, T extends (...args: any[]) => any
@@ -122,7 +124,7 @@ export interface FastifyInstance<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> {
+> extends MixinAssertions<FastifyInstanceMixins> {
   server: RawServer;
   pluginName: string;
   prefix: string;
@@ -148,9 +150,9 @@ export interface FastifyInstance<
   [Symbol.asyncDispose](): Promise<undefined>;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
-  decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
-  decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
-  decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+  decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, FastifyInstanceMixins, this>;
+  decorateRequest: DecorationMethod<FastifyRequest, FastifyRequestMixins, this>;
+  decorateReply: DecorationMethod<FastifyReply, FastifyReplyMixins, this>;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;

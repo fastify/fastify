@@ -154,8 +154,8 @@ fastify.register(pluginWithJsonSchema)
 fastify.register(pluginWithTypebox)
 ```
 
-It's also important to mention that once the types don't propagate globally,
-_currently_ is not possible to avoid multiple registrations on routes when
+It's also important to mention that since the types don't propagate globally,
+_currently_ it is not possible to avoid multiple registrations on routes when
 dealing with several scopes, see below:
 
 ```ts

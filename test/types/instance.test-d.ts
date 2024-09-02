@@ -413,6 +413,9 @@ if (server.hasMixin('testMixin')) {
   expectError(server.decorate('typedMixinTestProperty', null))
   expectError(server.decorate('typedMixinTestProperty', 'foo'))
 }
+const serverWithAllMixins = server as unknown as FastifyInstance['withMixins']
+expectError(serverWithAllMixins.decorate('typedMixinTestProperty', null))
+expectError(serverWithAllMixins.decorate('typedMixinTestProperty', 'foo'))
 
 server.decorate('typedTestProperty', false)
 server.decorate('typedTestProperty', {

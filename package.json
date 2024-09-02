@@ -153,7 +153,7 @@
   "devDependencies": {
     "@fastify/pre-commit": "^2.1.0",
     "@sinclair/typebox": "^0.33.4",
-    "@sinonjs/fake-timers": "^11.2.2",
+    "@sinonjs/fake-timers": "^13.0.1",
     "@stylistic/eslint-plugin": "^2.1.0",
     "@stylistic/eslint-plugin-js": "^2.1.0",
     "@types/node": "^22.0.0",

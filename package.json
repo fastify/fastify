@@ -197,7 +197,7 @@
     "avvio": "^8.3.0",
     "fast-json-stringify": "^6.0.0",
     "find-my-way": "^9.0.0",
-    "light-my-request": "^5.13.0",
+    "light-my-request": "^6.0.0",
     "pino": "^9.0.0",
     "process-warning": "^4.0.0",
     "proxy-addr": "^2.0.7",

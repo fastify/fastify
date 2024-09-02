@@ -25,9 +25,10 @@ export type AnyMixin<MixinCollection extends object> = ValidMixinCollection<Mixi
 
 export type AnyMixinName<MixinCollection extends object> = AnyMixin<MixinCollection>['name']
 export type AnyMixinValue<MixinCollection extends object> = AnyMixin<MixinCollection>['value']
+export type AllMixinValues<MixinCollection extends object> = UnionToIntersection<MixinCollection[AnyMixinName<MixinCollection>]['value']>
 
 // Taken from type-fest
-type UnionToIntersection<Union> = (
+export type UnionToIntersection<Union> = (
   // `extends unknown` is always going to be the case and is used to convert the
   // `Union` into a [distributive conditional
   // type](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types).
@@ -47,5 +48,5 @@ type UnionToIntersection<Union> = (
 export interface MixinAssertions<MixinCollection extends object> {
   hasMixin<T extends AnyMixinName<MixinCollection>>(name: T): this is MixinCollection[T]['value']
   assertMixin<T extends AnyMixinName<MixinCollection>>(name: T): asserts this is MixinCollection[T]['value']
-  withMixins: this & UnionToIntersection<MixinCollection[AnyMixinName<MixinCollection>]['value']>
+  withMixins: this & AllMixinValues<MixinCollection>
 }

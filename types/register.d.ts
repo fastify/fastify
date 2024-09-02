@@ -23,36 +23,31 @@ export type FastifyRegisterOptions<Options> =
 export interface FastifyRegister<
   RawServer extends RawServerBase = RawServerDefault,
   TypeProviderDefault extends FastifyTypeProvider = FastifyTypeProvider,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Decorators extends FastifyDecorators = FastifyDecorators
 > {
   <
     Options extends FastifyPluginOptions,
-    Server extends RawServerBase = RawServer,
-    TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
-    Logger extends FastifyBaseLogger = FastifyBaseLogger,
     Plugin extends FastifyPluginCallback<
       Options,
-      Server,
-      TypeProvider,
+      RawServer,
+      TypeProviderDefault,
       Logger,
       Decorators
-    > = FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators>
+    > = FastifyPluginCallback<Options, RawServer, TypeProviderDefault, Logger, Decorators>
   >(
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>,
-  ): ReturnType<Plugin> & PromiseLike<undefined>;
+  ): ReturnType<Plugin>;
   <
     Options extends FastifyPluginOptions,
-    Server extends RawServerBase = RawServer,
-    TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
-    Logger extends FastifyBaseLogger = FastifyBaseLogger,
     Plugin extends FastifyPluginAsync<
       Options,
-      Server,
-      TypeProvider,
+      RawServer,
+      TypeProviderDefault,
       Logger,
       Decorators
-    > = FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators>
+    > = FastifyPluginAsync<Options, RawServer, TypeProviderDefault, Logger, Decorators>
   >(
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>,

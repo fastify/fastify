@@ -130,7 +130,7 @@ type DecorationMethod<
     RawReply,
     Logger,
     TypeProvider,
-    Decorators & Record<Decorating, Record<TProp, never>>
+    Decorators & Record<Decorating, Record<TProp, void>>
   >
 
   <TProp extends string | symbol, TVal extends null | undefined>(property: TProp, value: TVal, dependencies: string[]): FastifyInstance<
@@ -199,15 +199,18 @@ export type BaseFastifyInstance<
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
   decorate: DecorationMethod<
     FastifyInstance,
-    RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators, 'fastify'
+    RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators,
+    'fastify'
   >;
   decorateRequest: DecorationMethod<
     FastifyRequest,
-    RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators, 'request'
+    RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators,
+    'request'
   >;
   decorateReply: DecorationMethod<
     FastifyReply,
-    RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators, 'reply'
+    RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators,
+    'reply'
   >;
 
   hasDecorator(decorator: string | symbol): boolean;
@@ -229,7 +232,7 @@ export type BaseFastifyInstance<
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & SafePromiseLike<undefined>;
   ready(readyListener: (err: Error | null) => void | Promise<void>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
-  register: FastifyRegister<RawServer, TypeProvider, Decorators>;
+  register: FastifyRegister<RawServer, TypeProvider, Logger, Decorators>;
 
   routing(req: RawRequest, res: RawReply): void;
 
@@ -582,7 +585,7 @@ export type BaseFastifyInstance<
   /**
    * Set the schema controller for all routes.
    */
-  setSchemaController(schemaControllerOpts: FastifySchemaControllerOptions): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Decorators>;
+  setSchemaController(schemaControllerOpts: FastifySchemaControllerOptions): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
   * Set the reply serializer for all routes.

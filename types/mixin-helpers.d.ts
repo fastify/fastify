@@ -28,6 +28,5 @@ export type AnyMixinValue<MixinCollection extends object> = AnyMixin<MixinCollec
 
 export interface MixinAssertions<MixinCollection extends object> {
   hasMixin<T extends AnyMixinName<MixinCollection>>(name: T): this is MixinCollection[T]['value']
-  // Should be possible to get working
-  // assertMixin<T extends AnyMixinName<MixinCollection>>(name: T): asserts this is MixinCollection[T]['value']
+  assertMixin<T extends AnyMixinName<MixinCollection>>(name: T): asserts this is MixinCollection[T]['value']
 }

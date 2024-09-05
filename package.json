@@ -192,7 +192,7 @@
   "dependencies": {
     "@fastify/ajv-compiler": "^4.0.0",
     "@fastify/error": "^4.0.0",
-    "@fastify/fast-json-stringify-compiler": "^4.3.0",
+    "@fastify/fast-json-stringify-compiler": "^5.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^9.0.0",
     "fast-json-stringify": "^6.0.0",

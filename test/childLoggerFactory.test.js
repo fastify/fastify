@@ -31,6 +31,35 @@ test('Should accept a custom childLoggerFactory function', t => {
   })
 })
 
+test('Should accept a custom childLoggerFactory function as option', t => {
+  t.plan(2)
+
+  const fastify = Fastify({
+    childLoggerFactory: function (logger, bindings, opts) {
+      t.ok(bindings.reqId)
+      t.ok(opts)
+      this.log.debug(bindings, 'created child logger')
+      return logger.child(bindings, opts)
+    }
+  })
+
+  fastify.get('/', (req, reply) => {
+    req.log.info('log message')
+    reply.send()
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, res) => {
+      t.error(err)
+      fastify.close()
+    })
+  })
+})
+
 test('req.log should be the instance returned by the factory', t => {
   t.plan(3)
 

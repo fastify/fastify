@@ -1,4 +1,5 @@
-import fastify from '../../fastify'
+// import fastify from '../../fastify'
+import { instance } from "./decorate-request-reply.test-d";
 import { expectType } from 'tsd'
 
 type TestType = void

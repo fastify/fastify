@@ -2,6 +2,7 @@ import { FastifyDecorators, FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyBaseLogger } from './logger'
+import {AnyFastifyInstance} from "./register";
 
 export type FastifyPluginOptions = Record<string, any>
 
@@ -12,17 +13,9 @@ export type FastifyPluginOptions = Record<string, any>
  */
 export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = FastifyPluginOptions,
-  Server extends RawServerBase = RawServerDefault,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  Decorators extends FastifyDecorators = FastifyDecorators,
-  NewDecorators extends FastifyDecorators = Decorators,
-  NewTypeProvider extends FastifyTypeProvider = TypeProvider
-> = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators>,
-  opts: Options,
-  done: (err?: Error) => void
-) => FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, NewTypeProvider, NewDecorators>
+  TIn extends AnyFastifyInstance = AnyFastifyInstance,
+  TOut extends FastifyInstance = FastifyInstance
+> = (instance: TIn, opts: Options, done: (err?: Error) => void) => void | TOut
 
 /**
  * FastifyPluginAsync
@@ -30,17 +23,10 @@ export type FastifyPluginCallback<
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
 export type FastifyPluginAsync<
-  Options extends FastifyPluginOptions = Record<never, never>,
-  Server extends RawServerBase = RawServerDefault,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  Decorators extends FastifyDecorators = FastifyDecorators,
-  NewDecorators extends FastifyDecorators = Decorators,
-  NewTypeProvider extends FastifyTypeProvider = TypeProvider
-> = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, NewDecorators>,
-  opts: Options
-) => Promise<FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, NewTypeProvider, NewDecorators>>
+  Options extends FastifyPluginOptions = FastifyPluginOptions,
+  TIn extends AnyFastifyInstance = AnyFastifyInstance,
+  TOut extends FastifyInstance = FastifyInstance
+> = (instance: TIn, opts: Options, done: (err?: Error) => void) => Promise<void | TOut>
 
 /**
  * Generic plugin type.

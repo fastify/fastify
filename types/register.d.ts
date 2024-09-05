@@ -1,8 +1,8 @@
 import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from './plugin'
 import { LogLevel } from './logger'
 import { FastifyDecorators, FastifyInstance } from './instance'
-import { RawServerBase } from './utils'
-import { FastifyBaseLogger, FastifyTypeProvider, RawServerDefault } from '../fastify'
+import {RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase} from './utils'
+import {FastifyBaseLogger, FastifyTypeProvider, FastifyTypeProviderDefault, RawServerDefault} from '../fastify'
 
 export interface RegisterOptions {
   prefix?: string;
@@ -14,6 +14,32 @@ export type FastifyRegisterOptions<Options> =
   | (RegisterOptions & Options)
   | ((instance: FastifyInstance) => RegisterOptions & Options)
 
+export type AnyFastifyInstance = FastifyInstance<any, any, any, any, any, any>
+
+export type ExtractDecorators<T extends AnyFastifyInstance> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : never
+
+export type ExtractTypeProvider<T extends FastifyInstance> = T extends FastifyInstance<any, any, any, any, infer U, any> ? U : never
+
+export type ExtractLogger<T extends FastifyInstance> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : never
+
+export type ApplyPluginChanges<
+  TInstance extends FastifyInstance = FastifyInstance,
+  PluginReturnType extends FastifyInstance = FastifyInstance
+> = FastifyInstance<
+  any,
+  any,
+  any,
+  any,
+  ExtractTypeProvider<TInstance>,
+  ExtractDecorators<TInstance> & ExtractDecorators<PluginReturnType>
+>
+
+type TypeWithGeneric<T> = T[]
+type extractGeneric<Type> = Type extends TypeWithGeneric<infer X> ? X : never
+
+// type extracted = extractGeneric<TypeWithGeneric<number>>
+// extracted === number
+
 /**
  * FastifyRegister
  *
@@ -21,37 +47,41 @@ export type FastifyRegisterOptions<Options> =
  */
 
 export interface FastifyRegister<
-  RawServer extends RawServerBase = RawServerDefault,
-  TypeProviderDefault extends FastifyTypeProvider = FastifyTypeProvider,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  Decorators extends FastifyDecorators = FastifyDecorators
+  TInstance extends AnyFastifyInstance = AnyFastifyInstance,
+  // RawServer extends RawServerBase = RawServerDefault,
+  // RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  // RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  // TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  // Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  // Decorators extends FastifyDecorators = FastifyDecorators
 > {
   <
     Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginCallback<
-      Options,
-      RawServer,
-      TypeProviderDefault,
-      Logger,
-      Decorators
-    > = FastifyPluginCallback<Options, RawServer, TypeProviderDefault, Logger, Decorators>
+    Plugin extends FastifyPluginCallback<Options, TInstance> = FastifyPluginCallback<Options, TInstance>
   >(
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>,
-  ): ReturnType<Plugin>;
-  <
-    Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginAsync<
-      Options,
-      RawServer,
-      TypeProviderDefault,
-      Logger,
-      Decorators
-    > = FastifyPluginAsync<Options, RawServer, TypeProviderDefault, Logger, Decorators>
-  >(
-    plugin: Plugin,
-    opts?: FastifyRegisterOptions<Options>,
-  ): Awaited<ReturnType<Plugin>>;
+  ): ApplyPluginChanges<TInstance, ReturnType<Plugin>>
+  // <
+  //   Options extends FastifyPluginOptions,
+  //   Plugin extends FastifyPluginAsync<
+  //     Options,
+  //     RawServer,
+  //     TypeProvider,
+  //     Logger,
+  //     Decorators
+  //   > = FastifyPluginAsync<Options, RawServer, TypeProvider, Logger, Decorators>
+  // >(
+  //   plugin: Plugin,
+  //   opts?: FastifyRegisterOptions<Options>,
+  // ): FastifyInstance<
+  //   RawServer,
+  //   RawRequest,
+  //   RawReply,
+  //   Logger,
+  //   TypeProvider,
+  //   Decorators & ExtractDecorators<Awaited<ReturnType<Plugin>>>
+  // >
   // TODO:
   // <
   //   Options extends FastifyPluginOptions,

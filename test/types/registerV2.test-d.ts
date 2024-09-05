@@ -1,73 +1,84 @@
 import { expectType } from 'tsd'
-import fastify from '../../fastify'
+import fastify, { FastifyInstance } from '../../fastify'
 
-const syncWithDecorators = fastify().register(instance =>
+const plugin = (instance: FastifyInstance) =>
   instance
-    .decorate('testProp')
-    .decorate('testValue', 'testValue')
-    .decorate('testFn', () => 12345)
-    .decorateRequest('testProp')
-    .decorateRequest('testValue', 'testValue')
-    .decorateRequest('testFn', () => 12345)
-    .decorateReply('testProp')
-    .decorateReply('testValue', 'testValue')
-    .decorateReply('testFn', () => 12345)
-)
+    .decorate('testPropSync')
+    .decorate('testValueSync', 'testValue')
+    .decorate('testFnSync', () => 12345)
+    .decorateRequest('testPropSync')
+    .decorateRequest('testValueSync', 'testValue')
+    .decorateRequest('testFnSync', () => 12345)
+    .decorateReply('testPropSync')
+    .decorateReply('testValueSync', 'testValue')
+    .decorateReply('testFnSync', () => 12345)
+
+const asyncPlugin = async (instance: FastifyInstance) =>
+  instance
+    .decorate('testPropAsync')
+    .decorate('testValueAsync', 'testValue')
+    .decorate('testFnAsync', () => 12345)
+    .decorateRequest('testPropAsync')
+    .decorateRequest('testValueAsync', 'testValue')
+    .decorateRequest('testFnAsync', () => 12345)
+    .decorateReply('testPropAsync')
+    .decorateReply('testValueAsync', 'testValue')
+    .decorateReply('testFnAsync', () => 12345)
+
+const syncWithDecorators = fastify().register(plugin)
 
 syncWithDecorators.get('/', (req, res) => {
-  expectType<void>(req.testProp)
-  expectType<string>(req.testValue)
-  expectType<number>(req.testFn())
+  expectType<void>(req.testPropSync)
+  expectType<string>(req.testValueSync)
+  expectType<number>(req.testFnSync())
 
-  expectType<void>(res.testProp)
-  expectType<string>(res.testValue)
-  expectType<number>(res.testFn())
+  expectType<void>(res.testPropSync)
+  expectType<string>(res.testValueSync)
+  expectType<number>(res.testFnSync())
 })
 
-expectType<void>(syncWithDecorators.testProp)
-expectType<string>(syncWithDecorators.testValue)
-expectType<number>(syncWithDecorators.testFn())
+expectType<void>(syncWithDecorators.testPropSync)
+expectType<string>(syncWithDecorators.testValueSync)
+expectType<number>(syncWithDecorators.testFnSync())
 
-const asyncWithDecorators = fastify().register(async (instance) =>
-  instance.decorate('testProp')
-    .decorate('testValue', 'testValue')
-    .decorate('testFn', () => 12345)
-    .decorateRequest('testProp')
-    .decorateRequest('testValue', 'testValue')
-    .decorateRequest('testFn', () => 12345)
-    .decorateReply('testProp')
-    .decorateReply('testValue', 'testValue')
-    .decorateReply('testFn', () => 12345)
-)
+const asyncWithDecorators = fastify().register(asyncPlugin)
 
 asyncWithDecorators.get('/', (req, res) => {
-  expectType<void>(req.testProp)
-  expectType<string>(req.testValue)
-  expectType<number>(req.testFn())
+  expectType<void>(req.testPropAsync)
+  expectType<string>(req.testValueAsync)
+  expectType<number>(req.testFnAsync())
 
-  expectType<void>(res.testProp)
-  expectType<string>(res.testValue)
-  expectType<number>(res.testFn())
+  expectType<void>(res.testPropAsync)
+  expectType<string>(res.testValueAsync)
+  expectType<number>(res.testFnAsync())
 })
 
-expectType<void>(asyncWithDecorators.testProp)
-expectType<string>(asyncWithDecorators.testValue)
-expectType<number>(asyncWithDecorators.testFn())
+expectType<void>(asyncWithDecorators.testPropAsync)
+expectType<string>(asyncWithDecorators.testValueAsync)
+expectType<number>(asyncWithDecorators.testFnAsync())
 
-const multiplePlugins = fastify()
-  .register(instance =>
-    instance.decorate('instance1').decorateRequest('req1').decorateReply('res1')
-  )
-  .register(async (instance) =>
-    instance.decorate('instance2').decorateRequest('req2').decorateReply('res2')
-  )
+const plugin1 = (instance: FastifyInstance) =>
+  instance
+    .decorate('testPropSync2')
 
-multiplePlugins.get('/', (req, res) => {
-  expectType<void>(req.req1)
-  expectType<void>(req.req2)
-  expectType<void>(res.res1)
-  expectType<void>(res.res2)
+const plugin2 = (instance: FastifyInstance) =>
+  instance
+    .decorate('testPropSync3')
+
+const pluginComposition = fastify()
+  .register(plugin)
+  .register(plugin1)
+  .register(plugin2)
+  .register(asyncPlugin)
+
+pluginComposition.get('/', (req, res) => {
+  expectType<void>(req.testPropSync)
+  expectType<void>(req.testPropAsync)
+  expectType<void>(req.testPropSync)
+  expectType<void>(res.testPropAsync)
 })
 
-expectType<void>(multiplePlugins.instance1)
-expectType<void>(multiplePlugins.instance2)
+expectType<void>(pluginComposition.testPropSync)
+expectType<void>(pluginComposition.testPropSync2)
+expectType<void>(pluginComposition.testPropSync3)
+expectType<void>(pluginComposition.testPropAsync)

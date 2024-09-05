@@ -6,7 +6,7 @@ import { AddressInfo } from 'net'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
-import { FastifyRegister } from './register'
+import {ApplyPluginChanges, ExtractDecorators, FastifyRegisterOptions} from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteShorthandMethod } from './route'
@@ -23,6 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import {FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions} from "./plugin";
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -164,31 +165,37 @@ export type FastifyInstance<
   Decorators
 >
 
-export type BaseFastifyInstance<
+export interface BaseFastifyInstance<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Decorators extends FastifyDecorators = FastifyDecorators
-> = {
+> {
   server: RawServer;
   pluginName: string;
   prefix: string;
   version: string;
   log: Logger;
   listeningOrigin: string;
+
   addresses(): AddressInfo[]
+
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider, Decorators>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
+
   getSchema(schemaId: string): unknown;
+
   getSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & SafePromiseLike<undefined>;
+
   after(afterListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   close(): Promise<undefined>;
+
   close(closeListener: () => void): undefined;
 
   /** Alias for {@linkcode FastifyInstance.close()} */
@@ -214,25 +221,48 @@ export type BaseFastifyInstance<
   >;
 
   hasDecorator(decorator: string | symbol): boolean;
+
   hasRequestDecorator(decorator: string | symbol): boolean;
+
   hasReplyDecorator(decorator: string | symbol): boolean;
+
   hasPlugin(name: string): boolean;
 
   addConstraintStrategy(strategy: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>): void;
+
   hasConstraintStrategy(strategyName: string): boolean;
 
   inject(opts: InjectOptions | string, cb: LightMyRequestCallback): void;
+
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
+
   inject(): LightMyRequestChain;
 
   listen(opts: FastifyListenOptions, callback: (err: Error | null, address: string) => void): void;
+
   listen(opts?: FastifyListenOptions): Promise<string>;
+
   listen(callback: (err: Error | null, address: string) => void): void;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & SafePromiseLike<undefined>;
+
   ready(readyListener: (err: Error | null) => void | Promise<void>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
-  register: FastifyRegister<RawServer, TypeProvider, Logger, Decorators>;
+  register<
+    Options extends FastifyPluginOptions,
+    Plugin extends FastifyPluginCallback<Options, this> = FastifyPluginCallback<Options, this>
+  >(
+    plugin: Plugin,
+    opts?: FastifyRegisterOptions<Options>,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & ExtractDecorators<ReturnType<Plugin>>>;
+
+  register<
+    Options extends FastifyPluginOptions,
+    Plugin extends FastifyPluginAsync<Options, this> = FastifyPluginAsync<Options, this>
+  >(
+    plugin: Plugin,
+    opts?: FastifyRegisterOptions<Options>,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & ExtractDecorators<Awaited<ReturnType<Plugin>>>>;
 
   routing(req: RawRequest, res: RawReply): void;
 
@@ -402,7 +432,7 @@ export type BaseFastifyInstance<
    * `onRequestAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
    * The `onRequestAbort` hook is executed when a client closes the connection before the entire request has been received. Therefore, you will not be able to send data to the client.
    * Notice: client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md
-  */
+   */
   addHook<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
@@ -447,18 +477,18 @@ export type BaseFastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-  * Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed before the registered code.
-  * This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
-  * Note: This hook will not be called if a plugin is wrapped inside fastify-plugin.
-  */
+   * Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed before the registered code.
+   * This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
+   * Note: This hook will not be called if a plugin is wrapped inside fastify-plugin.
+   */
   addHook(
     name: 'onRegister',
     hook: onRegisterHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-  * Triggered when fastify.listen() or fastify.ready() is invoked to start the server. It is useful when plugins need a "ready" event, for example to load data before the server start listening for requests.
-  */
+   * Triggered when fastify.listen() or fastify.ready() is invoked to start the server. It is useful when plugins need a "ready" event, for example to load data before the server start listening for requests.
+   */
   addHook<
     Fn extends onReadyHookHandler | onReadyAsyncHookHandler = onReadyHookHandler
   >(
@@ -467,8 +497,8 @@ export type BaseFastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-  * Triggered when fastify.listen() is invoked to start the server. It is useful when plugins need a "onListen" event, for example to run logics after the server start listening for requests.
-  */
+   * Triggered when fastify.listen() is invoked to start the server. It is useful when plugins need a "onListen" event, for example to run logics after the server start listening for requests.
+   */
   addHook<
     Fn extends onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> | onListenAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> = onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   >(
@@ -477,8 +507,8 @@ export type BaseFastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
-  */
+   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
+   */
   addHook<
     Fn extends onCloseHookHandler | onCloseAsyncHookHandler = onCloseHookHandler
   >(
@@ -487,8 +517,8 @@ export type BaseFastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need to cancel some state to allow the server to close successfully.
-  */
+   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need to cancel some state to allow the server to close successfully.
+   */
   addHook<
     Fn extends preCloseHookHandler | preCloseAsyncHookHandler = preCloseHookHandler
   >(
@@ -499,19 +529,19 @@ export type BaseFastifyInstance<
   addHook<
     K extends ApplicationHook | LifecycleHook,
     Fn extends (...args: any) => Promise<any> | any
-  > (
+  >(
     name: K,
     hook: Fn extends unknown ? Fn extends AsyncFunction ? HookAsyncLookup<K> : HookLookup<K> : Fn
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-     * Set the 404 handler
-     */
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema> (
+   * Set the 404 handler
+   */
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema> (
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
     opts: {
       preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[] | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
       preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[] | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
@@ -588,14 +618,15 @@ export type BaseFastifyInstance<
   setSchemaController(schemaControllerOpts: FastifySchemaControllerOptions): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**
-  * Set the reply serializer for all routes.
-  */
+   * Set the reply serializer for all routes.
+   */
   setReplySerializer(replySerializer: (payload: unknown, statusCode: number) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /*
   * Set the schema error formatter for all routes.
   */
   setSchemaErrorFormatter(errorFormatter: SchemaErrorFormatter): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
+
   /**
    * Add a content type parser
    */

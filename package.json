@@ -17,6 +17,8 @@
     "lint:fix": "eslint --fix",
     "lint:markdown": "markdownlint-cli2",
     "lint:eslint": "eslint",
+    "lint:engines-range": "installed-check --verbose --engine-check",
+    "lint:engines-range:fix": "installed-check --verbose --engine-check --fix",
     "prepublishOnly": "cross-env PREPUBLISH=true tap --allow-incomplete-coverage test/build/**.test.js && npm run test:validator:integrity",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run unit -- --coverage-report=lcovonly && npm run test:typescript",
@@ -150,6 +152,9 @@
       "url": "https://opencollective.com/fastify"
     }
   ],
+  "engines": {
+    "node": "^20.9.0 || >=22.0.0"
+  },
   "devDependencies": {
     "@fastify/pre-commit": "^2.1.0",
     "@sinclair/typebox": "^0.33.4",
@@ -172,6 +177,7 @@
     "fluent-json-schema": "^5.0.0",
     "h2url": "^0.2.0",
     "http-errors": "^2.0.0",
+    "installed-check": "^9.3.0",
     "joi": "^17.12.3",
     "json-schema-to-ts": "^3.0.1",
     "JSONStream": "^1.3.5",

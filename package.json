@@ -17,8 +17,8 @@
     "lint:fix": "eslint --fix",
     "lint:markdown": "markdownlint-cli2",
     "lint:eslint": "eslint",
-    "lint:engines-range": "installed-check --verbose --engine-check",
-    "lint:engines-range:fix": "installed-check --verbose --engine-check --fix",
+    "lint:engines-range": "installed-check --verbose --engine-check --ignore-dev",
+    "lint:engines-range:fix": "npm run lint:engines-range -- --fix",
     "prepublishOnly": "cross-env PREPUBLISH=true tap --allow-incomplete-coverage test/build/**.test.js && npm run test:validator:integrity",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run unit -- --coverage-report=lcovonly && npm run test:typescript",
@@ -153,7 +153,7 @@
     }
   ],
   "engines": {
-    "node": "^20.9.0 || >=22.0.0"
+    "node": ">=20"
   },
   "devDependencies": {
     "@fastify/pre-commit": "^2.1.0",

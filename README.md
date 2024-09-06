@@ -346,6 +346,8 @@ listed in alphabetical order.
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 * [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
   <https://www.npmjs.com/~gurgunday>
+* [__Dan Castillo__](https://github.com/dancastillo),
+  <https://www.npmjs.com/~dancastillo>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited

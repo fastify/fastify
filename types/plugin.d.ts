@@ -1,8 +1,4 @@
-import { FastifyDecorators, FastifyInstance } from './instance'
-import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
-import { FastifyBaseLogger } from './logger'
-import {AnyFastifyInstance} from "./register";
+import { AnyFastifyInstance } from './register'
 
 export type FastifyPluginOptions = Record<string, any>
 
@@ -13,9 +9,8 @@ export type FastifyPluginOptions = Record<string, any>
  */
 export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = FastifyPluginOptions,
-  TIn extends AnyFastifyInstance = AnyFastifyInstance,
-  TOut extends FastifyInstance = FastifyInstance
-> = (instance: TIn, opts: Options, done: (err?: Error) => void) => void | TOut
+  TIn extends AnyFastifyInstance = AnyFastifyInstance
+> = (instance: TIn, opts: Options, done: (err?: Error) => void) => void | AnyFastifyInstance
 
 /**
  * FastifyPluginAsync
@@ -24,13 +19,15 @@ export type FastifyPluginCallback<
  */
 export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = FastifyPluginOptions,
-  TIn extends AnyFastifyInstance = AnyFastifyInstance,
-  TOut extends FastifyInstance = FastifyInstance
-> = (instance: TIn, opts: Options, done: (err?: Error) => void) => Promise<void | TOut>
+  TIn extends AnyFastifyInstance = AnyFastifyInstance
+> = (instance: TIn, opts: Options, done: (err?: Error) => void) => Promise<void | AnyFastifyInstance>
 
 /**
  * Generic plugin type.
  * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. Use `FastifyPluginCallback` or `FastifyPluginAsync` instead. To activate
  * plugins use `FastifyRegister`. https://fastify.dev/docs/latest/Reference/TypeScript/#register
  */
-export type FastifyPlugin<Options extends FastifyPluginOptions = Record<never, never>> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>
+export type FastifyPlugin<
+  Options extends FastifyPluginOptions = Record<never, never>,
+  Instance extends AnyFastifyInstance = AnyFastifyInstance
+> = FastifyPluginCallback<Options, Instance> | FastifyPluginAsync<Options, Instance>

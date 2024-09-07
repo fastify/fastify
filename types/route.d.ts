@@ -180,7 +180,7 @@ export type RouteHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Decorators extends FastifyDecorators = FastifyDecorators
 > = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, Decorators['request']>,
   reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Decorators['reply']>
 ) => RouteGeneric['Reply'] | void | Promise<RouteGeneric['Reply'] | void>

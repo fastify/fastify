@@ -11,6 +11,7 @@ import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
+import { AnyFastifyInstance } from '../../types/register'
 
 const server = fastify()
 
@@ -1016,7 +1017,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: 
 interface AuxiliaryPluginProvider extends FastifyTypeProvider { validator: 'plugin-auxiliary' }
 
 // Auxiliary plugins may have varying server types per application. Recommendation would be to explicitly remap instance provider context within plugin if required.
-function plugin<T extends FastifyInstance> (instance: T) {
+function plugin (instance: AnyFastifyInstance) {
   expectAssignable(instance.withTypeProvider<AuxiliaryPluginProvider>().get(
     '/',
     {

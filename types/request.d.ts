@@ -65,7 +65,7 @@ export type FastifyRequest<
   RequestType
 >
 
-type BaseFastifyRequest<
+export interface BaseFastifyRequest<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
@@ -80,7 +80,7 @@ type BaseFastifyRequest<
 //   arguments. Implementations that already pass this argument can either omit
 //   the RequestType (preferred) or swap Logger and RequestType arguments when
 //   creating custom types of FastifyRequest. Related issue #4123
-> = {
+> {
   id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;
@@ -110,11 +110,15 @@ type BaseFastifyRequest<
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 
-  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction
-  compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
-  validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
-  validateInput(input: any, httpPart?: HTTPRequestPart): boolean
+  getValidationFunction (httpPart: HTTPRequestPart): ValidationFunction
+
+  getValidationFunction (schema: { [key: string]: any }): ValidationFunction
+
+  compileValidationSchema (schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
+
+  validateInput (input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
+
+  validateInput (input: any, httpPart?: HTTPRequestPart): boolean
 
   // Prefer `socket` over deprecated `connection` property in node 13.0.0 or higher
   // @deprecated

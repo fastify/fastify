@@ -1,7 +1,16 @@
-import { expectType } from 'tsd'
-import fastify, { FastifyInstance } from '../../fastify'
+import { expectError, expectType } from 'tsd'
+import fastify, { FastifyInstance, FastifyPlugin } from '../../fastify'
+import { AnyFastifyInstance, UnEncapsulatedPlugin } from '../../types/register'
 
-const plugin = (instance: FastifyInstance) =>
+// export function createPlugin<TPlugin extends FastifyPlugin> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin> {
+//   return plugin as UnEncapsulatedPlugin<TPlugin>
+// }
+
+export function createPlugin<TPlugin extends FastifyPlugin<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin> {
+  return plugin as UnEncapsulatedPlugin<TPlugin>
+}
+
+const plugin = createPlugin((instance) =>
   instance
     .decorate('testPropSync')
     .decorate('testValueSync', 'testValue')
@@ -11,9 +20,9 @@ const plugin = (instance: FastifyInstance) =>
     .decorateRequest('testFnSync', () => 12345)
     .decorateReply('testPropSync')
     .decorateReply('testValueSync', 'testValue')
-    .decorateReply('testFnSync', () => 12345)
+    .decorateReply('testFnSync', () => 12345))
 
-const asyncPlugin = async (instance: FastifyInstance) =>
+const asyncPlugin = createPlugin(async (instance: FastifyInstance) =>
   instance
     .decorate('testPropAsync')
     .decorate('testValueAsync', 'testValue')
@@ -24,6 +33,7 @@ const asyncPlugin = async (instance: FastifyInstance) =>
     .decorateReply('testPropAsync')
     .decorateReply('testValueAsync', 'testValue')
     .decorateReply('testFnAsync', () => 12345)
+)
 
 const syncWithDecorators = fastify().register(plugin)
 
@@ -69,6 +79,14 @@ const pluginComposition = fastify()
   .register(plugin)
   .register(plugin1)
   .register(plugin2)
+  .register(createPlugin((instance) => instance.decorate('testPropSync4')))
+  .register(createPlugin(async (instance) => instance.decorate('testPropSync5')))
+  .register(instance => {
+    instance.decorate('testPropSync6')
+  })
+  .register(async instance => {
+    instance.decorate('testPropSync7')
+  })
   .register(asyncPlugin)
 
 pluginComposition.get('/', (req, res) => {
@@ -79,6 +97,10 @@ pluginComposition.get('/', (req, res) => {
 })
 
 expectType<void>(pluginComposition.testPropSync)
-expectType<void>(pluginComposition.testPropSync2)
-expectType<void>(pluginComposition.testPropSync3)
+expectError(pluginComposition.testPropSync2)
+expectError(pluginComposition.testPropSync3)
 expectType<void>(pluginComposition.testPropAsync)
+expectType<void>(pluginComposition.testPropSync4)
+expectType<void>(pluginComposition.testPropSync5)
+expectError<void>(pluginComposition.testPropSync6)
+expectError<void>(pluginComposition.testPropSync7)

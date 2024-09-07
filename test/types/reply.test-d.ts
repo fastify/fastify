@@ -1,14 +1,29 @@
 import { Buffer } from 'buffer'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyContextConfig, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
-import { FastifyInstance } from '../../types/instance'
+import { FastifyDecorators, FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
-type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ResolveReplyTypeWithRouteGeneric<RouteGenericInterface['Reply'], Code, FastifySchema, FastifyTypeProviderDefault>>
+type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<
+  RouteGenericInterface,
+  RawServerDefault,
+  RawRequestDefaultExpression,
+  RawReplyDefaultExpression,
+  ContextConfigDefault,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  FastifyDecorators['reply'],
+  ResolveReplyTypeWithRouteGeneric<
+    RouteGenericInterface['Reply'],
+    Code,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >
+>
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)

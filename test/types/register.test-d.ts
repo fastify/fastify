@@ -9,8 +9,8 @@ const testPluginAsync: FastifyPluginAsync = async function (instance, opts) { }
 const testPluginOpts: FastifyPluginCallback = function (instance, opts, done) { }
 const testPluginOptsAsync: FastifyPluginAsync = async function (instance, opts) { }
 
-const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
-const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { }
+const testPluginOptsWithType = (instance: FastifyInstance<any>, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
+const testPluginOptsWithTypeAsync = async (instance: FastifyInstance<any>, opts: FastifyPluginOptions) => { }
 
 interface TestOptions extends FastifyPluginOptions {
   option1: string;
@@ -44,8 +44,8 @@ expectAssignable<FastifyInstance>(
 // With Http2
 const serverWithHttp2 = fastify({ http2: true })
 type ServerWithHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
-const testPluginWithHttp2: FastifyPluginCallback<TestOptions, Http2Server> = function (instance, opts, done) { }
-const testPluginWithHttp2Async: FastifyPluginAsync<TestOptions, Http2Server> = async function (instance, opts) { }
+const testPluginWithHttp2: FastifyPluginCallback<TestOptions, typeof serverWithHttp2> = function (instance, opts, done) { }
+const testPluginWithHttp2Async: FastifyPluginAsync<TestOptions, typeof serverWithHttp2> = async function (instance, opts) { }
 const testPluginWithHttp2WithType = (instance: ServerWithHttp2, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
 const testPluginWithHttp2WithTypeAsync = async (instance: ServerWithHttp2, opts: FastifyPluginOptions) => { }
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginCallback))
@@ -61,13 +61,13 @@ expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2Wi
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register((instance) => {
   expectAssignable<FastifyInstance>(instance)
 }))
-expectAssignable<ServerWithHttp2>(serverWithHttp2.register((instance: ServerWithHttp2) => {
+expectAssignable<ServerWithHttp2>(serverWithHttp2.register((instance) => {
   expectAssignable<ServerWithHttp2>(instance)
 }))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(async (instance) => {
   expectAssignable<FastifyInstance>(instance)
 }))
-expectAssignable<ServerWithHttp2>(serverWithHttp2.register(async (instance: ServerWithHttp2) => {
+expectAssignable<ServerWithHttp2>(serverWithHttp2.register(async (instance) => {
   expectAssignable<ServerWithHttp2>(instance)
 }))
 
@@ -89,16 +89,10 @@ expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPlu
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderAsync))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderWithType))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderWithTypeAsync))
-expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register((instance) => {
-  expectAssignable<FastifyInstance>(instance)
-}))
-expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register((instance: ServerWithTypeProvider) => {
+expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(instance => {
   expectAssignable<ServerWithTypeProvider>(instance)
 }))
-expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(async (instance) => {
-  expectAssignable<FastifyInstance>(instance)
-}))
-expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(async (instance: ServerWithTypeProvider) => {
+expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(async instance => {
   expectAssignable<ServerWithTypeProvider>(instance)
 }))
 
@@ -132,15 +126,9 @@ expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogge
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerWithType))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerWithTypeAsync))
-expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register((instance) => {
-  expectAssignable<FastifyInstance>(instance)
-}))
-expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register((instance: ServerWithTypeProviderAndLogger) => {
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(instance => {
   expectAssignable<ServerWithTypeProviderAndLogger>(instance)
 }))
-expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(async (instance) => {
-  expectAssignable<FastifyInstance>(instance)
-}))
-expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(async (instance: ServerWithTypeProviderAndLogger) => {
+expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(async instance => {
   expectAssignable<ServerWithTypeProviderAndLogger>(instance)
 }))

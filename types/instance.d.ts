@@ -6,7 +6,7 @@ import { AddressInfo } from 'net'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
-import {ApplyPluginChanges, ExtractDecorators, FastifyRegisterOptions} from './register'
+import { ApplyPluginChanges, FastifyRegisterOptions } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteShorthandMethod } from './route'
@@ -23,7 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
-import {FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions} from "./plugin";
+import { FastifyPlugin, FastifyPluginOptions } from './plugin'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -250,19 +250,20 @@ export interface BaseFastifyInstance<
 
   register<
     Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginCallback<Options, this> = FastifyPluginCallback<Options, this>
-  >(
+    Plugin extends FastifyPlugin<Options, this>
+  > (
     plugin: Plugin,
-    opts?: FastifyRegisterOptions<Options>,
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & ExtractDecorators<ReturnType<Plugin>>>;
+    opts?: FastifyRegisterOptions<Options>
+  ): ApplyPluginChanges<this, Options, Awaited<Plugin>>
 
   register<
     Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginAsync<Options, this> = FastifyPluginAsync<Options, this>
-  >(
+    Instance extends this,
+    Plugin extends Promise<{ default: FastifyPlugin<Options, Instance> }>
+  > (
     plugin: Plugin,
-    opts?: FastifyRegisterOptions<Options>,
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & ExtractDecorators<Awaited<ReturnType<Plugin>>>>;
+    opts?: FastifyRegisterOptions<Options>
+  ): ApplyPluginChanges<Instance, Options, Awaited<Plugin>['default']>
 
   routing(req: RawRequest, res: RawReply): void;
 

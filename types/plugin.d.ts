@@ -9,8 +9,9 @@ export type FastifyPluginOptions = Record<string, any>
  */
 export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = FastifyPluginOptions,
-  TIn extends AnyFastifyInstance = AnyFastifyInstance
-> = (instance: TIn, opts: Options, done: (err?: Error) => void) => void | AnyFastifyInstance
+  TIn extends AnyFastifyInstance = AnyFastifyInstance,
+  TOut extends void | AnyFastifyInstance = void | AnyFastifyInstance
+> = (instance: TIn, opts: Options, done: (err?: Error) => void) => TOut
 
 /**
  * FastifyPluginAsync
@@ -19,8 +20,9 @@ export type FastifyPluginCallback<
  */
 export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = FastifyPluginOptions,
-  TIn extends AnyFastifyInstance = AnyFastifyInstance
-> = (instance: TIn, opts: Options, done: (err?: Error) => void) => Promise<void | AnyFastifyInstance>
+  TIn extends AnyFastifyInstance = AnyFastifyInstance,
+  TOut extends void | AnyFastifyInstance = void | AnyFastifyInstance
+> = (instance: TIn, opts: Options, done: (err?: Error) => void) => Promise<TOut>
 
 /**
  * Generic plugin type.

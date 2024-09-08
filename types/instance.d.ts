@@ -192,7 +192,7 @@ export interface BaseFastifyInstance<
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & SafePromiseLike<undefined>;
 
-  after(afterListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
+  after(afterListener: (err: Error | null, instance: this) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   close(): Promise<undefined>;
 

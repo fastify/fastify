@@ -1,7 +1,6 @@
 import { FastifyPluginOptions, FastifyPlugin } from './plugin'
 import { LogLevel } from './logger'
 import { FastifyDecorators, FastifyInstance } from './instance'
-import { Awaited } from '@sinclair/typebox'
 
 export interface RegisterOptions {
   prefix?: string;

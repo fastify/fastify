@@ -254,7 +254,7 @@ export interface BaseFastifyInstance<
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<this, Options, Awaited<Plugin>>
+  ): ApplyPluginChanges<this, Options, Awaited<Plugin>> & SafePromiseLike<undefined>
 
   register<
     Options extends FastifyPluginOptions,
@@ -263,7 +263,7 @@ export interface BaseFastifyInstance<
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<Instance, Options, Awaited<Plugin>['default']>
+  ): ApplyPluginChanges<Instance, Options, Awaited<Plugin>['default']> & SafePromiseLike<undefined>
 
   routing(req: RawRequest, res: RawReply): void;
 
@@ -559,7 +559,7 @@ export interface BaseFastifyInstance<
    * Set a function that will be called whenever an error happens
    */
   setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, Decorators>, reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, TypeProvider, Decorators>) => any | Promise<any>
+    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, Decorators>, reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, TypeProvider, Decorators['reply']>) => any | Promise<any>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   /**

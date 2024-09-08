@@ -47,28 +47,25 @@ expectAssignable<FastifyInstance<https.Server, http.IncomingMessage, http.Server
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
 
 // Chainable
-// TODO
-// httpsServer
-//   .register(testPluginOpts)
-//   .after((_error) => { })
-//   .ready((_error) => { })
-//   .close(() => { })
+httpsServer
+  .register(testPluginOpts, { option1: '', option2: true })
+  .after((_error) => { })
+  .ready((_error) => { })
+  .close(() => { })
 
 // Thenable
 expectAssignable<PromiseLike<undefined>>(httpsServer.after())
 expectAssignable<PromiseLike<undefined>>(httpsServer.close())
 expectAssignable<PromiseLike<undefined>>(httpsServer.ready())
-// TODO
-// expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts))
-// expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType))
-// expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync))
-// expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
-// expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: '/test' }))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts, { option1: '', option2: true }))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: '/test' }))
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// TODO
-// async function testAsync (): Promise<void> {
-//   await httpsServer
-//     .register(testPluginOpts)
-//     .register(testPluginOpts)
-// }
+async function testAsync (): Promise<void> {
+  await httpsServer
+    .register(testPluginOpts, { option1: '', option2: true })
+    .register(testPluginOpts, { option1: '', option2: true })
+}

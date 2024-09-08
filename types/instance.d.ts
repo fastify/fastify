@@ -23,7 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
-import { FastifyPlugin, FastifyPluginOptions } from './plugin'
+import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './plugin'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -250,7 +250,15 @@ export interface BaseFastifyInstance<
 
   register<
     Options extends FastifyPluginOptions,
-    Plugin extends FastifyPlugin<Options, this>
+    Plugin extends FastifyPluginCallback<Options, this>
+  > (
+    plugin: Plugin,
+    opts?: FastifyRegisterOptions<Options>
+  ): ApplyPluginChanges<this, Options, Awaited<Plugin>> & SafePromiseLike<undefined>
+
+  register<
+    Options extends FastifyPluginOptions,
+    Plugin extends FastifyPluginAsync<Options, this>
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>

@@ -1,11 +1,9 @@
 import { expectError, expectType } from 'tsd'
-import fastify, { FastifyInstance, FastifyPlugin } from '../../fastify'
+import fastify, { FastifyInstance, FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback } from '../../fastify'
 import { AnyFastifyInstance, UnEncapsulatedPlugin } from '../../types/register'
 
-// export function createPlugin<TPlugin extends FastifyPlugin> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin> {
-//   return plugin as UnEncapsulatedPlugin<TPlugin>
-// }
-
+export function createPlugin<TPlugin extends FastifyPluginCallback<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin>
+export function createPlugin<TPlugin extends FastifyPluginAsync<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin>
 export function createPlugin<TPlugin extends FastifyPlugin<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin> {
   return plugin as UnEncapsulatedPlugin<TPlugin>
 }

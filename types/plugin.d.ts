@@ -22,7 +22,7 @@ export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = FastifyPluginOptions,
   TIn extends AnyFastifyInstance = AnyFastifyInstance,
   TOut extends void | AnyFastifyInstance = void | AnyFastifyInstance
-> = (instance: TIn, opts: Options, done: (err?: Error) => void) => Promise<TOut>
+> = (instance: TIn, opts: Options) => Promise<TOut>
 
 /**
  * Generic plugin type.
@@ -31,5 +31,6 @@ export type FastifyPluginAsync<
  */
 export type FastifyPlugin<
   Options extends FastifyPluginOptions = Record<never, never>,
-  Instance extends AnyFastifyInstance = AnyFastifyInstance
-> = FastifyPluginCallback<Options, Instance> | FastifyPluginAsync<Options, Instance>
+  Instance extends AnyFastifyInstance = AnyFastifyInstance,
+  TOut extends void | AnyFastifyInstance = void | AnyFastifyInstance
+> = FastifyPluginCallback<Options, Instance, TOut> | FastifyPluginAsync<Options, Instance, TOut>

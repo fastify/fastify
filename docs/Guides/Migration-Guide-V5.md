@@ -96,7 +96,7 @@ fastify.get('/route', (req, reply) => {
 ```js
 // v5
 fastify.get('/route', (req, reply) => {
-  console.log(Object.prototype.hasOwnProperty.call(req.params, 'name'));
+  console.log(Object.hasOwn(req.params, 'name'));
   return { hello: req.params.name };
 });
 ```

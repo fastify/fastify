@@ -710,6 +710,7 @@ export interface onRegisterHookHandler<
   Options extends FastifyPluginOptions = FastifyPluginOptions
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     opts: RegisterOptions & Options,
     done: HookHandlerDoneFunction

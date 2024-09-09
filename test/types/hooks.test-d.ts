@@ -152,7 +152,8 @@ server.addHook('onListen', function (done) {
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
 })
 
-server.addHook('onClose', (instance, done) => {
+server.addHook('onClose', function (instance, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyInstance>(instance)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
@@ -237,7 +238,8 @@ server.addHook('onListen', async function () {
   expectType<FastifyInstance>(this)
 })
 
-server.addHook('onClose', async (instance) => {
+server.addHook('onClose', async function (instance) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyInstance>(instance)
 })
 

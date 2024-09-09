@@ -130,7 +130,7 @@ the following:
 
 ### Changes to the .listen() method
 
-The have removed the variable argument signature from the `.listen()` method. This means that you can no longer call `.listen()` with a variable number of arguments.
+The variadic argument signature of the `.listen()` method has been removed. This means that you can no longer call `.listen()` with a variable number of arguments.
 
 ```js
 // v4

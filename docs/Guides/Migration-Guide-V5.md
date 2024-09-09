@@ -101,7 +101,7 @@ fastify.get('/route', (req, reply) => {
 });
 ```
 
-This increase the security of the application by hardening against prototype pollution attacks.
+This increases the security of the application by hardening against prototype pollution attacks.
 
 ### Type Providers now differentiate between validator and serializer schemas
 

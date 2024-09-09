@@ -246,7 +246,7 @@ We changed the signature for route versioning constraints. The `version` and `ve
 ### `exposeHeadRoutes: false` is now required to disable automatic `HEAD` routes
 
 Fastify automatically registers a `HEAD` route for every `GET` route.
-You know must explicitly set `exposeHeadRoutes` to `false`.
+You now must explicitly set `exposeHeadRoutes` to `false`.
 
 ```js
 // v4

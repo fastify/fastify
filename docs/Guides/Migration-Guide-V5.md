@@ -11,16 +11,18 @@ work after upgrading.
 Fastify v5 will only support Node.js v20+. If you are using an older version of
 Node.js, you will need to upgrade to a newer version to use Fastify v5.
 
-Fastify v4 is still supported until June 30, 2025. If you are unable to upgrade, you can
-consider buying an end-of-life support plan from HeroDevs.
+Fastify v4 is still supported until June 30, 2025. If you are unable to upgrade,
+you can consider buying an end-of-life support plan from HeroDevs.
 
 ### Why Node.js v20?
 
-Fastify v5 will only support Node.js v20+ because it has significant differences compared to v18, such as
-better support for `node:test`. This allows us to provide a better developer experience and streamline
-maintenance.
+Fastify v5 will only support Node.js v20+ because it has significant differences
+compared to v18, such as
+better support for `node:test`. This allows us to provide a better developer
+experience and streamline maintenance.
 
-Node.js v18 will exit Long Term Support on April 30, 2025, so you should be planning to upgrade to v20 anyway.
+Node.js v18 will exit Long Term Support on April 30, 2025, so you should be planning
+to upgrade to v20 anyway.
 
 ## Breaking Changes
 
@@ -82,8 +84,8 @@ const fastify = require('fastify')({
 ### The parameters object no longer has a prototype
 
 In v4, the `parameters` object had a prototype. This is no longer the case in v5.
-This means that you can no longer access properties inherited from `Object` on the `parameters` object,
-such as `toString` or `hasOwnProperty`.
+This means that you can no longer access properties inherited from `Object` on
+the `parameters` object, such as `toString` or `hasOwnProperty`.
 
 ```js
 // v4
@@ -101,12 +103,14 @@ fastify.get('/route', (req, reply) => {
 });
 ```
 
-This increases the security of the application by hardening against prototype pollution attacks.
+This increases the security of the application by hardening against prototype
+pollution attacks.
 
 ### Type Providers now differentiate between validator and serializer schemas
 
 In v4, the type providers had the same types for both validation and serialization.
-In v5, the type providers have been split into two separate types: `ValidatorSchema` and `SerializerSchema`.
+In v5, the type providers have been split into two separate types: `ValidatorSchema`
+and `SerializerSchema`.
 
 [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 and
@@ -121,7 +125,9 @@ the following:
 @@ -11,7 +11,8 @@ import {
  import { FromSchema, FromSchemaDefaultOptions, FromSchemaOptions, JSONSchema } from 'json-schema-to-ts'
  
- export interface JsonSchemaToTsProvider<Options extends FromSchemaOptions = FromSchemaDefaultOptions> extends FastifyTypeProvider {
+ export interface JsonSchemaToTsProvider<
+   Options extends FromSchemaOptions = FromSchemaDefaultOptions
+ > extends FastifyTypeProvider {
 -  output: this['input'] extends JSONSchema ? FromSchema<this['input'], Options> : unknown;
 +  validator: this['schema'] extends JSONSchema ? FromSchema<this['schema'], Options> : unknown;
 +  serializer: this['schema'] extends JSONSchema ? FromSchema<this['schema'], Options> : unknown;
@@ -130,7 +136,8 @@ the following:
 
 ### Changes to the .listen() method
 
-The variadic argument signature of the `.listen()` method has been removed. This means that you can no longer call `.listen()` with a variable number of arguments.
+The variadic argument signature of the `.listen()` method has been removed.
+This means that you can no longer call `.listen()` with a variable number of arguments.
 
 ```js
 // v4
@@ -144,11 +151,13 @@ Will become:
 fastify.listen({ port: 8000 })
 ```
 
-This was already deprecated in v4 as `FSTDEP011`, so you should have already updated your code to use the new signature.
+This was already deprecated in v4 as `FSTDEP011`, so you should have already updated
+your code to use the new signature.
 
 ### Direct return of trailers has been removed
 
-In v4, you could directly return trailers from a handler. This is no longer possible in v5.
+In v4, you could directly return trailers from a handler.
+This is no longer possible in v5.
 
 ```js
 // v4
@@ -192,7 +201,8 @@ See [#5616](https://github.com/fastify/fastify/pull/5616) for more information.
 
 ### `reply.redirect()` has a new signature
 
-The `reply.redirect()` method has a new signature: `reply.redirect(url: string, code?: number)`.
+The `reply.redirect()` method has a new signature:
+`reply.redirect(url: string, code?: number)`.
 
 ```js
 // v4
@@ -206,12 +216,14 @@ Change it to:
 reply.redirect('/new-route', 301)
 ```
 
-This was already deprecated in v4 as `FSTDEP021`, so you should have already updated your code to use the new signature.
+This was already deprecated in v4 as `FSTDEP021`, so you should have already
+updated your code to use the new signature.
 
 
 ### Modifying `reply.sent` is now forbidden
 
-In v4, you could modify the `reply.sent` property to prevent the response from being sent.
+In v4, you could modify the `reply.sent` property to prevent the response from
+being sent.
 This is no longer possible in v5, use `reply.hijack()` instead.
 
 ```js
@@ -232,11 +244,14 @@ fastify.get('/route', (req, reply) => {
 });
 ```
 
-This was already deprecated in v4 as `FSTDEP010`, so you should have already updated your code to use the new signature.
+This was already deprecated in v4 as `FSTDEP010`, so you should have already
+updated your code to use the new signature.
 
 ### Constraints for route versioning signature changes
 
-We changed the signature for route versioning constraints. The `version` and `versioning` options have been removed and you should use the `constraints` option instead.
+We changed the signature for route versioning constraints.
+The `version` and `versioning` options have been removed and you should
+use the `constraints` option instead.
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
@@ -277,11 +292,13 @@ fastify.get('/route', {
 
 ```
 
-This was changed in [#2700](https://github.com/fastify/fastify/pull/2700), and the old behavior was deprecated in v4 as `FSTDEP007`.
+This was changed in [#2700](https://github.com/fastify/fastify/pull/2700),
+and the old behavior was deprecated in v4 as `FSTDEP007`.
 
 ### Removed `request.connection`
 
-The `request.connection` property has been removed in v5. You should use `request.socket` instead.
+The `request.connection` property has been removed in v5.
+You should use `request.socket` instead.
 
 ```js
 // v4
@@ -299,11 +316,13 @@ fastify.get('/route', (req, reply) => {
 });
 ```
 
-This was already deprecated in v4 as `FSTDEP05`, so you should have already updated your code to use the new signature.
+This was already deprecated in v4 as `FSTDEP05`, so you should
+have already updated your code to use the new signature.
 
 ### `reply.getResponseTime()` has been removed, use `reply.elapsedTime` instead
 
-The `reply.getResponseTime()` method has been removed in v5. You should use `reply.elapsedTime` instead.
+The `reply.getResponseTime()` method has been removed in v5.
+You should use `reply.elapsedTime` instead.
 
 ```js
 // v4
@@ -321,12 +340,13 @@ fastify.get('/route', (req, reply) => {
 });
 ```
 
-This was already deprecated in v4 as `FSTDEP20`, so you should have already updated your code to use the new signature.
+This was already deprecated in v4 as `FSTDEP20`, so you should have already
+updated your code to use the new signature.
 
 ### `fastify.hasRoute()` now matches the behavior of `find-my-way`
 
-The `fastify.hasRoute()` method now matches the behavior of `find-my-way` and requires the route definition to be
-passed as it is defined in the route.
+The `fastify.hasRoute()` method now matches the behavior of `find-my-way`
+and requires the route definition to be passed as it is defined in the route.
 
 ```js
 // v4

@@ -26,11 +26,15 @@ to upgrade to v20 anyway.
 
 ## Breaking Changes
 
-### Full JSON Schema is now required for `querystring` schema
+### Full JSON Schema is now required for `querystring`, `params` and `body` and response schemas
 
 Starting with v5, Fastify will require a full JSON schema for the `querystring`
-schema. This means that you will need to provide a full JSON schema for the
-`querystring` schema, including the `type` property.
+schema. Note that the `jsonShortHand` option has been removed as well.
+
+If the detault JSON Schema validator is used, you will need
+to provide a full JSON schema for the
+`querystring`, `params`, `body`, and `response` schemas,
+including the `type` property.
 
 ```js
 // v4
@@ -62,8 +66,38 @@ fastify.get('/route', {
 });
 ```
 
+See [#5586](https://github.com/fastify/fastify/pull/5586) for more details
+
+Note that it's still possible to override the JSON Schema validator to
+use a different format, such as Zod. This change simplify that as well.
+
 This change helps with integration of other tools, such as
 [`@fastify/swagger`](https://github.com/fastify/fastify-swagger).
+
+### New logger constructor signature
+
+In Fastify v4, Fastify accepted the options to build a pino
+logger in the `logger` option, as well as a custom logger instance.
+This was the source of significant confusion.
+
+As a result, the `logger` option will not accept a custom logger anymore in in v5.
+to use a custom logger, you should use the `loggerInstance` option instead:
+
+```js
+// v4
+const logger = require('pino')();
+const fastify = require('fastify')({
+  logger
+});
+```
+
+```js
+// v5
+const loggerInstance = require('pino')();
+const fastify = require('fastify')({
+  loggerInstance
+});
+```
 
 ### `useSemicolonDelimiter` false by default
 
@@ -368,3 +402,159 @@ console.log(fastify.hasRoute({
   url: '/example/:file(^\\d+).png'
 )); // true
 ```
+### Removal of some unused HTTP methods
+
+We have removed the following HTTP methods from Fastify:
+- `PROPFIND`
+- `PROPPATCH`
+- `MKCOL`
+- `COPY`
+- `MOVE`
+- `LOCK`
+- `UNLOCK`
+- `TRACE`
+- `SEARCH`
+
+It's now possible to add them back using the `addHook` method.
+
+```js
+const fastify = Fastify()
+
+// add a new http method on top of the defaul ones:
+fastify.acceptHTTPMethod('REBIND')
+
+// add a new HTTP method that accepts a body:
+fastify.acceptHTTPMethod('REBIND', { hasBody: true })
+
+// reads the HTTP methods list:
+fastify.supportedMethods // returns a string array
+```
+
+See [#5567](https://github.com/fastify/fastify/pull/5567) for more
+information.
+
+### Removed support from reference types in decorators
+
+Decorating Request/Reply with a reference type (`Array`, `Object`)
+is now prohibited as this reference is shared amongst all requests.
+
+```js
+// v4
+fastify.decorateRequest('myObject', { hello: 'world' });
+```
+
+```js
+// v5
+fastify.decorateRequest('myObject');
+fastify.addHook('onRequest', async (req, reply) => {
+  req.myObject = { hello: 'world' };
+});
+```
+
+or turn into a function
+
+```js
+// v5
+fastify.decorateRequest('myObject', () => { hello: 'world' });
+```
+
+See [#5462](https://github.com/fastify/fastify/pull/5462) for more information.
+
+### Remove support for DELETE with a `Content-Type: application/json` header and an empty body
+
+In v4, Fastify allowed `DELETE` requests with a `Content-Type: application/json`
+header and an empty body was accepted.
+This is no longer allowed in v5.
+
+See [#5419](https://github.com/fastify/fastify/pull/5419) for more information.
+
+### Plugins cannot mix callback/promise API anymore
+
+In v4, plugins could mix the callback and promise API, leading to unexpected behavior.
+This is no longer allowed in v5.
+
+```js
+// v4
+fastify.register(async function (instance, opts, done) {
+  done();
+});
+```
+
+```js
+// v5
+fastify.register(async function (instance, opts) {
+  return;
+});
+```
+
+or
+
+```js
+// v5
+fastify.register(async function (instance, opts, done) {
+  done();
+});
+```
+
+### Removes `getDefaultRoute` and `setDefaultRoute` methods
+
+The `getDefaultRoute` and `setDefaultRoute` methods have been removed in v5.
+
+See [#4485](https://github.com/fastify/fastify/pull/4485)
+and [#4480](https://github.com/fastify/fastify/pull/4485)
+for more information.
+This was already deprecated in v4 as `FSTDEP014`,
+so you should have already updated your code.
+
+## New Features
+
+### Diagnostic Channel support
+
+Fastify v5 now supports the [Diagnostic Channel](https://nodejs.org/api/diagnostic_channel.html)
+API natively
+and provides a way to trace the lifecycle of a request.
+
+```js
+'use strict'
+
+const diagnostics = require('node:diagnostics_channel')
+const sget = require('simple-get').concat
+const Fastify = require('fastify')
+
+diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
+  console.log(msg.route.url) // '/:id'
+  console.log(msg.route.method) // 'GET'
+})
+
+diagnostics.subscribe('tracing:fastify.request.handler:end', (msg) => {
+  // msg is the same as the one emitted by the 'tracing:fastify.request.handler:start' channel
+  console.log(msg)
+})
+
+diagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {
+  // in case of error
+})
+
+const fastify = Fastify()
+fastify.route({
+  method: 'GET',
+  url: '/:id',
+  handler: function (req, reply) {
+    return { hello: 'world' }
+  }
+})
+
+fastify.listen({ port: 0 }, function () {
+  sget({
+    method: 'GET',
+    url: fastify.listeningOrigin + '/7'
+  }, (err, response, body) => {
+    t.error(err)
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(body), { hello: 'world' })
+  })
+})
+```
+
+See the [documentation](https://github.com/fastify/fastify/blob/main/docs/Reference/Hooks.md#diagnostics-channel-hooks)
+and [#5252](https://github.com/fastify/fastify/pull/5252) for additional details.

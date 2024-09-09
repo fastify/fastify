@@ -20,7 +20,7 @@ Fastify v5 will only support Node.js v20+ because it has significant differences
 better support for `node:test`. This allows us to provide a better developer experience and streamline
 maintenance.
 
-Node.js v18 will drop out of Long Term Support on April 30, 2025, so you should be planning to upgrade to v20 anyway.
+Node.js v18 will exit Long Term Support on April 30, 2025, so you should be planning to upgrade to v20 anyway.
 
 ## Breaking Changes
 

@@ -79,7 +79,7 @@ const fastify = require('fastify')({
 });
 ```
 
-### The parameters object does no longer have a prototype
+### The parameters object no longer has a prototype
 
 In v4, the `parameters` object had a prototype. This is no longer the case in v5.
 This means that you can no longer access properties inherited from `Object` on the `parameters` object,

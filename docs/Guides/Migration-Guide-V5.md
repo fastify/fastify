@@ -458,6 +458,17 @@ or turn into a function
 fastify.decorateRequest('myObject', () => { hello: 'world' });
 ```
 
+or as a getter
+
+```js
+// v5
+fastify.decorateRequest('myObject', {
+  getter () { 
+    return { hello: 'world' }
+  }
+});
+```
+
 See [#5462](https://github.com/fastify/fastify/pull/5462) for more information.
 
 ### Remove support for DELETE with a `Content-Type: application/json` header and an empty body
@@ -491,7 +502,7 @@ or
 
 ```js
 // v5
-fastify.register(async function (instance, opts, done) {
+fastify.register(function (instance, opts, done) {
   done();
 });
 ```

@@ -415,7 +415,7 @@ We have removed the following HTTP methods from Fastify:
 - `TRACE`
 - `SEARCH`
 
-It's now possible to add them back using the `addHook` method.
+It's now possible to add them back using the `acceptHTTPMethod` method.
 
 ```js
 const fastify = Fastify()

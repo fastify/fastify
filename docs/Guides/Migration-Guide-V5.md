@@ -402,7 +402,7 @@ console.log(fastify.hasRoute({
   url: '/example/:file(^\\d+).png'
 )); // true
 ```
-### Removal of some unused HTTP methods
+### Removal of some non-standard HTTP methods
 
 We have removed the following HTTP methods from Fastify:
 - `PROPFIND`

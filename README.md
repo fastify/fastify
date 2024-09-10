@@ -348,6 +348,8 @@ listed in alphabetical order.
   <https://www.npmjs.com/~gurgunday>
 * [__Dan Castillo__](https://github.com/dancastillo),
   <https://www.npmjs.com/~dancastillo>
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited

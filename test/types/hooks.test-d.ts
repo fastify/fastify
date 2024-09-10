@@ -131,8 +131,8 @@ server.addHook('onRoute', function (opts) {
   expectType<RouteOptions & { routePath: string; path: string; prefix: string }>(opts)
 })
 
-server.addHook('onRegister', (instance, opts, done) => {
-  expectType<FastifyInstance>(instance)
+server.addHook('onRegister', function (opts, done) {
+  expectType<FastifyInstance>(this)
   expectType<RegisterOptions & FastifyPluginOptions>(opts)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
@@ -224,8 +224,8 @@ server.addHook('onRequestAbort', async function (request) {
   expectType<FastifyRequest>(request)
 })
 
-server.addHook('onRegister', async (instance, opts) => {
-  expectType<FastifyInstance>(instance)
+server.addHook('onRegister', async function (opts) {
+  expectType<FastifyInstance>(this)
   expectType<RegisterOptions & FastifyPluginOptions>(opts)
 })
 

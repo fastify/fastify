@@ -710,7 +710,7 @@ export interface onRegisterHookHandler<
   Options extends FastifyPluginOptions = FastifyPluginOptions
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     opts: RegisterOptions & Options,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void; // documentation is missing the `done` method

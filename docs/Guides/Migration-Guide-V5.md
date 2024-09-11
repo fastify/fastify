@@ -81,7 +81,7 @@ logger in the `logger` option, as well as a custom logger instance.
 This was the source of significant confusion.
 
 As a result, the `logger` option will not accept a custom logger anymore in v5.
-to use a custom logger, you should use the `loggerInstance` option instead:
+To use a custom logger, you should use the `loggerInstance` option instead:
 
 ```js
 // v4

@@ -221,7 +221,7 @@ so you should have already updated your code to use the new signature.
 ### Streamlined access to route definition
 
 All deprecated properties relating to accessing the route definition have been removed
-It can now be accessed via `request.routeOptions`.
+and are now accessed via `request.routeOptions`.
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |

@@ -3079,6 +3079,7 @@ test('onRegister hook should be called / 1', t => {
     t.ok(this.addHook)
     t.ok(instance.addHook)
     t.same(opts, pluginOpts)
+    t.notOk(done)
   })
 
   const pluginOpts = { prefix: 'hello', custom: 'world' }

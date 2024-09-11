@@ -69,7 +69,7 @@ fastify.get('/route', {
 See [#5586](https://github.com/fastify/fastify/pull/5586) for more details
 
 Note that it's still possible to override the JSON Schema validator to
-use a different format, such as Zod. This change simplify that as well.
+use a different format, such as Zod. This change simplifies that as well.
 
 This change helps with integration of other tools, such as
 [`@fastify/swagger`](https://github.com/fastify/fastify-swagger).

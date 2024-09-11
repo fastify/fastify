@@ -132,7 +132,7 @@ fastify.get('/route/:name', (req, reply) => {
 
 ```js
 // v5
-fastify.get('/route', (req, reply) => {
+fastify.get('/route/:name', (req, reply) => {
   console.log(Object.hasOwn(req.params, 'name')); // true
   return { hello: req.params.name };
 });
@@ -293,38 +293,52 @@ use the `constraints` option instead.
 | FSTDEP008 | You are using route constraints via the route `{version: "..."}` option.  |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 | FSTDEP009 | You are using a custom route versioning strategy via the server `{versioning: "..."}` option. |  Use `{constraints: {version: "..."}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |
 
-### `exposeHeadRoutes: false` is now required to disable automatic `HEAD` routes
+### `HEAD` routes requires to register before `GET` when `exposeHeadRoutes: true`
 
-Fastify automatically registers a `HEAD` route for every `GET` route.
-You now must explicitly set `exposeHeadRoutes` to `false`.
+We have a more strict requirement for custom `HEAD` route when `exposeHeadRoutes: true`.
+
+When you provides a custom `HEAD` route, you must either explicitly 
+set `exposeHeadRoutes` to `false`
 
 ```js
 // v4
+fastify.get('/route', {
+
+}, (req, reply) => {
+  reply.send({ hello: 'world' });
+});
 
 fastify.head('/route', (req, reply) => {
   // ...
-});
-
-fastify.get('/route', {
-    
-}, (req, reply) => {
-  reply.send({ hello: 'world' });
 });
 ```
 
 ```js
 // v5
-
-fastify.head('/route', (req, reply) => {
-  // ...
-});
-
 fastify.get('/route', {
   exposeHeadRoutes: false
 }, (req, reply) => {
   reply.send({ hello: 'world' });
 });
 
+fastify.head('/route', (req, reply) => {
+  // ...
+});
+```
+
+or place the `HEAD` route before `GET`.
+
+```js
+// v5
+fastify.head('/route', (req, reply) => {
+  // ...
+});
+
+fastify.get('/route', {
+
+}, (req, reply) => {
+  reply.send({ hello: 'world' });
+});
 ```
 
 This was changed in [#2700](https://github.com/fastify/fastify/pull/2700),

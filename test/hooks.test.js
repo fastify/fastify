@@ -3072,7 +3072,7 @@ test('preSerialization hooks should support encapsulation', t => {
 })
 
 test('onRegister hook should be called / 1', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.addHook('onRegister', function (instance, opts, done) {

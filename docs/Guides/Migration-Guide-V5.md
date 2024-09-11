@@ -124,7 +124,7 @@ the `parameters` object, such as `toString` or `hasOwnProperty`.
 
 ```js
 // v4
-fastify.get('/route', (req, reply) => {
+fastify.get('/route/:name', (req, reply) => {
   console.log(req.params.hasOwnProperty('name'));
   return { hello: req.params.name };
 });

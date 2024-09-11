@@ -28,8 +28,9 @@ to upgrade to v20 anyway.
 
 ### Full JSON Schema is now required for `querystring`, `params` and `body` and response schemas
 
-Starting with v5, Fastify will require a full JSON schema for the `querystring`
-schema. Note that the `jsonShortHand` option has been removed as well.
+Starting with v5, Fastify will require a full JSON schema for the `querystring`,
+`params` and `body` schema. Note that the `jsonShortHand` option has been
+removed as well.
 
 If the default JSON Schema validator is used, you will need
 to provide a full JSON schema for the

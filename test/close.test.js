@@ -10,11 +10,14 @@ const split = require('split2')
 const { sleep } = require('./helper')
 
 test('close callback', t => {
-  t.plan(4)
+  t.plan(7)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
   function onClose (instance, done) {
+    t.type(fastify, this)
     t.type(fastify, instance)
+    t.equal(fastify, this)
+    t.equal(fastify, instance)
     done()
   }
 

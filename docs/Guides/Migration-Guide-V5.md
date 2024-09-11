@@ -452,7 +452,7 @@ fastify.addHook('onRequest', async (req, reply) => {
 });
 ```
 
-or turn into a function
+or turn it into a function
 
 ```js
 // v5

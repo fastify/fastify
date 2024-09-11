@@ -3075,7 +3075,7 @@ test('onRegister hook should be called / 1', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', function (instance, opts) {
+  fastify.addHook('onRegister', function (instance, opts, done) {
     t.ok(this.addHook)
     t.ok(instance.addHook)
     t.same(opts, pluginOpts)

@@ -295,7 +295,8 @@ use the `constraints` option instead.
 
 ### `HEAD` routes requires to register before `GET` when `exposeHeadRoutes: true`
 
-We have a more strict requirement for custom `HEAD` route when `exposeHeadRoutes: true`.
+We have a more strict requirement for custom `HEAD` route when
+`exposeHeadRoutes: true`.
 
 When you provides a custom `HEAD` route, you must either explicitly 
 set `exposeHeadRoutes` to `false`

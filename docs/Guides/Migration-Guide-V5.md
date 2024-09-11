@@ -3,7 +3,7 @@
 This guide is intended to help with migration from Fastify v4 to v5.
 
 Before migrating to v5, please ensure that you have fixed all deprecation
-warnings from v4. All v4 deprecations have been removed and they will no longer
+warnings from v4. All v4 deprecations have been removed and will no longer
 work after upgrading.
 
 ## Long Term Support Cycle
@@ -12,7 +12,7 @@ Fastify v5 will only support Node.js v20+. If you are using an older version of
 Node.js, you will need to upgrade to a newer version to use Fastify v5.
 
 Fastify v4 is still supported until June 30, 2025. If you are unable to upgrade,
-you can consider buying an end-of-life support plan from HeroDevs.
+you should consider buying an end-of-life support plan from HeroDevs.
 
 ### Why Node.js v20?
 

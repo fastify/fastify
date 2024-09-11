@@ -133,7 +133,7 @@ fastify.get('/route/:name', (req, reply) => {
 ```js
 // v5
 fastify.get('/route', (req, reply) => {
-  console.log(Object.hasOwn(req.params, 'name'));
+  console.log(Object.hasOwn(req.params, 'name')); // true
   return { hello: req.params.name };
 });
 ```

@@ -31,7 +31,7 @@ to upgrade to v20 anyway.
 Starting with v5, Fastify will require a full JSON schema for the `querystring`
 schema. Note that the `jsonShortHand` option has been removed as well.
 
-If the detault JSON Schema validator is used, you will need
+If the default JSON Schema validator is used, you will need
 to provide a full JSON schema for the
 `querystring`, `params`, `body`, and `response` schemas,
 including the `type` property.

@@ -436,7 +436,7 @@ It's now possible to add them back using the `acceptHTTPMethod` method.
 ```js
 const fastify = Fastify()
 
-// add a new http method on top of the defaul ones:
+// add a new http method on top of the default ones:
 fastify.acceptHTTPMethod('REBIND')
 
 // add a new HTTP method that accepts a body:

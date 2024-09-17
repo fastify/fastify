@@ -143,7 +143,7 @@ declaration](../Reference/Routes.md) docs).
 ```js
 // ESM
 import Fastify from 'fastify'
-import firstRoute from './our-first-route'
+import firstRoute from './our-first-route.js'
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
  */
@@ -232,8 +232,8 @@ npm i fastify-plugin @fastify/mongodb
 ```js
 // ESM
 import Fastify from 'fastify'
-import dbConnector from './our-db-connector'
-import firstRoute from './our-first-route'
+import dbConnector from './our-db-connector.js'
+import firstRoute from './our-first-route.js'
 
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify

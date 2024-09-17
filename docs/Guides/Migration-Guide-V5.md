@@ -589,7 +589,8 @@ and [#5252](https://github.com/fastify/fastify/pull/5252) for additional details
 
 ## Contributors
 
-The complete list of contributors, across all of the core Fastify packages, is provided below. Please consider
+The complete list of contributors, across all of the core
+Fastify packages, is provided below. Please consider
 contributing to those that are capable of accepting sponsorships.
 
 | Contributor | Sponsor Link | Packages |

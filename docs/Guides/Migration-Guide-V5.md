@@ -586,3 +586,126 @@ fastify.listen({ port: 0 }, function () {
 
 See the [documentation](https://github.com/fastify/fastify/blob/main/docs/Reference/Hooks.md#diagnostics-channel-hooks)
 and [#5252](https://github.com/fastify/fastify/pull/5252) for additional details.
+
+## Contributors
+
+The complete list of contributors, across all of the core Fastify packages, is provided below. Please consider
+contributing to those that are capable of accepting sponsorships.
+
+| Contributor | Sponsor Link | Packages |
+| --- | --- | --- |
+| 10xLaCroixDrinker | [❤️ sponsor](https://github.com/sponsors/10xLaCroixDrinker) | fastify-cli |
+| Bram-dc |  | fastify; fastify-swagger |
+| BrianValente |  | fastify |
+| BryanAbate |  | fastify-cli |
+| Cadienvan | [❤️ sponsor](https://github.com/sponsors/Cadienvan) | fastify |
+| Cangit |  | fastify |
+| Cyberlane |  | fastify-elasticsearch |
+| Eomm | [❤️ sponsor](https://github.com/sponsors/Eomm) | ajv-compiler; fastify; fastify-awilix; fastify-diagnostics-channel; fastify-elasticsearch; fastify-hotwire; fastify-mongodb; fastify-nextjs; fastify-swagger-ui; under-pressure |
+| EstebanDalelR | [❤️ sponsor](https://github.com/sponsors/EstebanDalelR) | fastify-cli |
+| Fdawgs | [❤️ sponsor](https://github.com/sponsors/Fdawgs) | aws-lambda-fastify; csrf-protection; env-schema; fastify; fastify-accepts; fastify-accepts-serializer; fastify-auth; fastify-awilix; fastify-basic-auth; fastify-bearer-auth; fastify-caching; fastify-circuit-breaker; fastify-cli; fastify-cookie; fastify-cors; fastify-diagnostics-channel; fastify-elasticsearch; fastify-env; fastify-error; fastify-etag; fastify-express; fastify-flash; fastify-formbody; fastify-funky; fastify-helmet; fastify-hotwire; fastify-http-proxy; fastify-jwt; fastify-kafka; fastify-leveldb; fastify-mongodb; fastify-multipart; fastify-mysql; fastify-nextjs; fastify-oauth2; fastify-passport; fastify-plugin; fastify-postgres; fastify-rate-limit; fastify-redis; fastify-reply-from; fastify-request-context; fastify-response-validation; fastify-routes; fastify-routes-stats; fastify-schedule; fastify-secure-session; fastify-sensible; fastify-swagger-ui; fastify-url-data; fastify-websocket; fastify-zipkin; fluent-json-schema; forwarded; middie; point-of-view; process-warning; proxy-addr; safe-regex2; secure-json-parse; under-pressure |
+| Gehbt |  | fastify-secure-session |
+| Gesma94 |  | fastify-routes-stats |
+| H4ad | [❤️ sponsor](https://github.com/sponsors/H4ad) | aws-lambda-fastify |
+| JohanManders |  | fastify-secure-session |
+| LiviaMedeiros |  | fastify |
+| Momy93 |  | fastify-secure-session |
+| MunifTanjim |  | fastify-swagger-ui |
+| Nanosync |  | fastify-secure-session |
+| RafaelGSS | [❤️ sponsor](https://github.com/sponsors/RafaelGSS) | fastify; under-pressure |
+| Rantoledo |  | fastify |
+| SMNBLMRR |  | fastify |
+| SimoneDevkt |  | fastify-cli |
+| Tony133 |  | fastify |
+| Uzlopak | [❤️ sponsor](https://github.com/sponsors/Uzlopak) | fastify; fastify-autoload; fastify-diagnostics-channel; fastify-hotwire; fastify-nextjs; fastify-passport; fastify-plugin; fastify-rate-limit; fastify-routes; fastify-static; fastify-swagger-ui; point-of-view; under-pressure |
+| Zamiell |  | fastify-secure-session |
+| aadito123 |  | fastify |
+| aaroncadillac | [❤️ sponsor](https://github.com/sponsors/aaroncadillac) | fastify |
+| aarontravass |  | fastify |
+| acro5piano | [❤️ sponsor](https://github.com/sponsors/acro5piano) | fastify-secure-session |
+| adamward459 |  | fastify-cli |
+| adrai | [❤️ sponsor](https://github.com/sponsors/adrai) | aws-lambda-fastify |
+| alenap93 |  | fastify |
+| alexandrucancescu |  | fastify-nextjs |
+| anthonyringoet |  | aws-lambda-fastify |
+| arshcodemod |  | fastify |
+| autopulated |  | point-of-view |
+| barbieri |  | fastify |
+| beyazit |  | fastify |
+| big-kahuna-burger | [❤️ sponsor](https://github.com/sponsors/big-kahuna-burger) | fastify-cli; fastify-compress; fastify-helmet |
+| bilalshareef |  | fastify-routes |
+| blue86321 |  | fastify-swagger-ui |
+| bodinsamuel |  | fastify-rate-limit |
+| busybox11 | [❤️ sponsor](https://github.com/sponsors/busybox11) | fastify |
+| climba03003 |  | csrf-protection; fastify; fastify-accepts; fastify-accepts-serializer; fastify-auth; fastify-basic-auth; fastify-bearer-auth; fastify-caching; fastify-circuit-breaker; fastify-compress; fastify-cors; fastify-env; fastify-etag; fastify-flash; fastify-formbody; fastify-http-proxy; fastify-mongodb; fastify-swagger-ui; fastify-url-data; fastify-websocket; middie |
+| dancastillo | [❤️ sponsor](https://github.com/sponsors/dancastillo) | fastify; fastify-basic-auth; fastify-caching; fastify-circuit-breaker; fastify-cors; fastify-helmet; fastify-passport; fastify-response-validation; fastify-routes; fastify-schedule |
+| danny-andrews |  | fastify-kafka |
+| davidcralph | [❤️ sponsor](https://github.com/sponsors/davidcralph) | csrf-protection |
+| davideroffo |  | under-pressure |
+| dhensby |  | fastify-cli |
+| dmkng |  | fastify |
+| domdomegg |  | fastify |
+| faustman |  | fastify-cli |
+| floridemai |  | fluent-json-schema |
+| fox1t |  | fastify-autoload |
+| giuliowaitforitdavide |  | fastify |
+| gunters63 |  | fastify-reply-from |
+| gurgunday |  | fastify; fastify-circuit-breaker; fastify-cookie; fastify-multipart; fastify-mysql; fastify-rate-limit; fastify-response-validation; fastify-sensible; fastify-swagger-ui; fluent-json-schema; middie; proxy-addr; safe-regex2; secure-json-parse |
+| ildella |  | under-pressure |
+| james-kaguru |  | fastify |
+| jcbain |  | fastify-http-proxy |
+| jdhollander |  | fastify-swagger-ui |
+| jean-michelet |  | fastify; fastify-autoload; fastify-cli; fastify-mysql; fastify-sensible |
+| johaven |  | fastify-multipart |
+| jordanebelanger |  | fastify-plugin |
+| jscheffner |  | fastify |
+| jsprw |  | fastify-secure-session |
+| jsumners | [❤️ sponsor](https://github.com/sponsors/jsumners) | ajv-compiler; avvio; csrf-protection; env-schema; fast-json-stringify; fastify; fastify-accepts; fastify-accepts-serializer; fastify-auth; fastify-autoload; fastify-awilix; fastify-basic-auth; fastify-bearer-auth; fastify-caching; fastify-circuit-breaker; fastify-compress; fastify-cookie; fastify-cors; fastify-env; fastify-error; fastify-etag; fastify-express; fastify-flash; fastify-formbody; fastify-funky; fastify-helmet; fastify-http-proxy; fastify-jwt; fastify-kafka; fastify-leveldb; fastify-multipart; fastify-mysql; fastify-oauth2; fastify-plugin; fastify-postgres; fastify-redis; fastify-reply-from; fastify-request-context; fastify-response-validation; fastify-routes; fastify-routes-stats; fastify-schedule; fastify-secure-session; fastify-sensible; fastify-static; fastify-swagger; fastify-swagger-ui; fastify-url-data; fastify-websocket; fastify-zipkin; fluent-json-schema; forwarded; light-my-request; middie; process-warning; proxy-addr; safe-regex2; secure-json-parse; under-pressure |
+| karankraina |  | under-pressure |
+| kerolloz | [❤️ sponsor](https://github.com/sponsors/kerolloz) | fastify-jwt |
+| kibertoad |  | fastify-rate-limit |
+| kukidon-dev |  | fastify-passport |
+| kunal097 |  | fastify |
+| lamweili |  | fastify-sensible |
+| lemonclown |  | fastify-mongodb |
+| liuhanqu |  | fastify |
+| matthyk |  | fastify-plugin |
+| mch-dsk |  | fastify |
+| mcollina | [❤️ sponsor](https://github.com/sponsors/mcollina) | ajv-compiler; avvio; csrf-protection; fastify; fastify-accepts; fastify-accepts-serializer; fastify-auth; fastify-autoload; fastify-awilix; fastify-basic-auth; fastify-bearer-auth; fastify-caching; fastify-circuit-breaker; fastify-cli; fastify-compress; fastify-cookie; fastify-cors; fastify-diagnostics-channel; fastify-elasticsearch; fastify-env; fastify-etag; fastify-express; fastify-flash; fastify-formbody; fastify-funky; fastify-helmet; fastify-http-proxy; fastify-jwt; fastify-kafka; fastify-leveldb; fastify-multipart; fastify-mysql; fastify-oauth2; fastify-passport; fastify-plugin; fastify-postgres; fastify-rate-limit; fastify-redis; fastify-reply-from; fastify-request-context; fastify-response-validation; fastify-routes; fastify-routes-stats; fastify-schedule; fastify-secure-session; fastify-static; fastify-swagger; fastify-swagger-ui; fastify-url-data; fastify-websocket; fastify-zipkin; fluent-json-schema; light-my-request; middie; point-of-view; proxy-addr; secure-json-parse; under-pressure |
+| melroy89 | [❤️ sponsor](https://github.com/sponsors/melroy89) | under-pressure |
+| metcoder95 | [❤️ sponsor](https://github.com/sponsors/metcoder95) | fastify-elasticsearch |
+| mhamann |  | fastify-cli |
+| mihaur |  | fastify-elasticsearch |
+| mikesamm |  | fastify |
+| mikhael-abdallah |  | secure-json-parse |
+| miquelfire | [❤️ sponsor](https://github.com/sponsors/miquelfire) | fastify-routes |
+| miraries |  | fastify-swagger-ui |
+| mohab-sameh |  | fastify |
+| monish001 |  | fastify |
+| moradebianchetti81 |  | fastify |
+| mouhannad-sh |  | aws-lambda-fastify |
+| multivoltage |  | point-of-view |
+| muya | [❤️ sponsor](https://github.com/sponsors/muya) | under-pressure |
+| mweberxyz |  | point-of-view |
+| nflaig |  | fastify |
+| nickfla1 |  | avvio |
+| o-az |  | process-warning |
+| ojeytonwilliams |  | csrf-protection |
+| onosendi |  | fastify-formbody |
+| philippviereck |  | fastify |
+| pip77 |  | fastify-mongodb |
+| puskin94 |  | fastify |
+| remidewitte |  | fastify |
+| rozzilla |  | fastify |
+| samialdury |  | fastify-cli |
+| sknetl |  | fastify-cors |
+| sourcecodeit |  | fastify |
+| synapse |  | env-schema |
+| timursaurus |  | secure-json-parse |
+| tlhunter |  | fastify |
+| tlund101 |  | fastify-rate-limit |
+| ttshivers |  | fastify-http-proxy |
+| voxpelli | [❤️ sponsor](https://github.com/sponsors/voxpelli) | fastify |
+| weixinwu |  | fastify-cli |
+| zetaraku |  | fastify-cli |
+

@@ -268,7 +268,7 @@ test('Reply#getSerializationFunction', t => {
         {
           params: {
             type: 'object',
-            properites: {
+            properties: {
               id: {
                 type: 'integer'
               }
@@ -363,7 +363,7 @@ test('Reply#getSerializationFunction', t => {
         {
           params: {
             type: 'object',
-            properites: {
+            properties: {
               id: {
                 type: 'integer'
               }
@@ -475,7 +475,7 @@ test('Reply#serializeInput', t => {
                 'application/json': {
                   schema: {
                     type: 'object',
-                    properites: {
+                    properties: {
                       fullName: { type: 'string' },
                       phone: { type: 'number' }
                     }
@@ -538,7 +538,7 @@ test('Reply#serializeInput', t => {
       {
         params: {
           type: 'object',
-          properites: {
+          properties: {
             id: {
               type: 'integer'
             }

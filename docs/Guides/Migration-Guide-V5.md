@@ -538,7 +538,7 @@ so you should have already updated your code.
 
 ### Diagnostic Channel support
 
-Fastify v5 now supports the [Diagnostic Channel](https://nodejs.org/api/diagnostic_channel.html)
+Fastify v5 now supports the [Diagnostics Channel](https://nodejs.org/api/diagnostics_channel.html)
 API natively
 and provides a way to trace the lifecycle of a request.
 

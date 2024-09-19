@@ -2,6 +2,8 @@ import { ErrorObject } from '@fastify/ajv-compiler'
 import { FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
+import { MixinAssertions } from './mixin-helpers'
+import { FastifyRequestMixins } from './mixins'
 import { FastifyRouteConfig, RouteGenericInterface, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
@@ -52,7 +54,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
 //   arguments. Implementations that already pass this argument can either omit
 //   the RequestType (preferred) or swap Logger and RequestType arguments when
 //   creating custom types of FastifyRequest. Related issue #4123
-> {
+> extends MixinAssertions<FastifyRequestMixins> {
   id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;

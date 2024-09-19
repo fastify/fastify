@@ -10,6 +10,7 @@ import fastify, {
   RouteGenericInterface
 } from '../../fastify'
 import { HookHandlerDoneFunction } from '../../types/hooks'
+import { FastifyInstanceMixin } from '../../types/mixins'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
@@ -381,6 +382,12 @@ expectError(server.decorate<string>('test', {
 }))
 
 declare module '../../fastify' {
+  interface FastifyInstanceMixins {
+    testMixin: FastifyInstanceMixin<'testMixin', {
+      typedMixinTestProperty: boolean
+    }>
+  }
+
   interface FastifyInstance {
     typedTestProperty: boolean
     typedTestPropertyGetterSetter: string
@@ -399,6 +406,17 @@ declare module '../../fastify' {
     typedTestReplyMethod (x: string): string
   }
 }
+
+server.decorate('typedMixinTestProperty', false)
+server.decorate('typedMixinTestProperty', null)
+server.decorate('typedMixinTestProperty', 'foo')
+if (server.hasMixin('testMixin')) {
+  expectError(server.decorate('typedMixinTestProperty', null))
+  expectError(server.decorate('typedMixinTestProperty', 'foo'))
+}
+const serverWithAllMixins = server as unknown as FastifyInstance['withMixins']
+expectError(serverWithAllMixins.decorate('typedMixinTestProperty', null))
+expectError(serverWithAllMixins.decorate('typedMixinTestProperty', 'foo'))
 
 server.decorate('typedTestProperty', false)
 server.decorate('typedTestProperty', {

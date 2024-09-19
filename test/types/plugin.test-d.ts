@@ -48,7 +48,7 @@ expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerRespon
 
 // Chainable
 httpsServer
-  .register(testPluginOpts)
+  .register(testPluginOpts, { option1: '', option2: true })
   .after((_error) => { })
   .ready((_error) => { })
   .close(() => { })
@@ -57,7 +57,7 @@ httpsServer
 expectAssignable<PromiseLike<undefined>>(httpsServer.after())
 expectAssignable<PromiseLike<undefined>>(httpsServer.close())
 expectAssignable<PromiseLike<undefined>>(httpsServer.ready())
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts, { option1: '', option2: true }))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
@@ -66,6 +66,6 @@ expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWith
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function testAsync (): Promise<void> {
   await httpsServer
-    .register(testPluginOpts)
-    .register(testPluginOpts)
+    .register(testPluginOpts, { option1: '', option2: true })
+    .register(testPluginOpts, { option1: '', option2: true })
 }

@@ -432,16 +432,16 @@ We have removed the following HTTP methods from Fastify:
 - `TRACE`
 - `SEARCH`
 
-It's now possible to add them back using the `acceptHTTPMethod` method.
+It's now possible to add them back using the `addHttpMethod` method.
 
 ```js
 const fastify = Fastify()
 
 // add a new http method on top of the default ones:
-fastify.acceptHTTPMethod('REBIND')
+fastify.addHttpMethod('REBIND')
 
 // add a new HTTP method that accepts a body:
-fastify.acceptHTTPMethod('REBIND', { hasBody: true })
+fastify.addHttpMethod('REBIND', { hasBody: true })
 
 // reads the HTTP methods list:
 fastify.supportedMethods // returns a string array

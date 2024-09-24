@@ -233,7 +233,9 @@ test('listen without callback (port zero)', t => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(() => {
       t.equal(fastify.server.address().address, localhost)
     })
@@ -283,7 +285,9 @@ test('listen without callback with (address)', t => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(address => {
       t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     })
@@ -293,9 +297,13 @@ test('double listen without callback rejects', t => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(() => {
-      fastify.listen(0)
+      fastify.listen({
+        port: 0
+      })
         .catch(err => {
           t.ok(err)
         })
@@ -307,10 +315,14 @@ test('double listen without callback with (address)', t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(address => {
       t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
-      fastify.listen(0)
+      fastify.listen({
+        port: 0
+      })
         .catch(err => {
           t.ok(err)
         })
@@ -323,7 +335,9 @@ test('listen twice on the same port without callback rejects', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(() => {
       const s2 = Fastify()
       t.teardown(s2.close.bind(s2))
@@ -339,7 +353,9 @@ test('listen twice on the same port without callback rejects with (address)', t 
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(address => {
       const s2 = Fastify()
       t.teardown(s2.close.bind(s2))
@@ -372,7 +388,9 @@ test('listen logs the port as info', t => {
     msgs.push(msg)
   }
 
-  fastify.listen(0)
+  fastify.listen({
+    port: 0
+  })
     .then(() => {
       t.ok(/http:\/\//.test(msgs[0]))
     })

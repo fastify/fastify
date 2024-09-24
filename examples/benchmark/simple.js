@@ -1,7 +1,7 @@
 'use strict'
 
 const fastify = require('../../fastify')({
-  logger: false
+  loggerInstance: false
 })
 
 const schema = {

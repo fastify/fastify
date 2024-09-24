@@ -101,7 +101,7 @@ test('The logger should error if both stream and file destination are given', t 
 
   try {
     Fastify({
-      logger: {
+      loggerInstance: {
         level: 'info',
         stream,
         file: '/test'

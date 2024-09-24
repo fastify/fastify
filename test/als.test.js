@@ -11,7 +11,7 @@ if (!AsyncLocalStorage) {
 }
 
 const storage = new AsyncLocalStorage()
-const app = Fastify({ logger: false })
+const app = Fastify({ loggerInstance: false })
 
 let counter = 0
 app.addHook('onRequest', (req, reply, next) => {

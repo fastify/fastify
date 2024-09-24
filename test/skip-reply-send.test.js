@@ -22,7 +22,7 @@ const lifecycleHooks = [
 test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
-    logger: {
+    loggerInstance: {
       stream
     }
   })
@@ -33,7 +33,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   })
 
   app.get('/', (req, reply) => {
-    reply.sent = true
+    reply.hijack();
     reply.raw.end('hello world')
 
     return Promise.resolve('this will be skipped')
@@ -51,7 +51,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
 test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
-    logger: {
+    loggerInstance: {
       stream
     }
   })
@@ -62,7 +62,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   })
 
   app.get('/', (req, reply) => {
-    reply.sent = true
+    reply.hijack();
     reply.raw.end('hello world')
 
     return Promise.resolve()
@@ -80,7 +80,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
 test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
-    logger: {
+    loggerInstance: {
       stream
     }
   })
@@ -96,7 +96,7 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
   })
 
   app.get('/', (req, reply) => {
-    reply.sent = true
+    reply.hijack();
     reply.raw.end('hello world')
 
     return Promise.reject(new Error('kaboom'))
@@ -124,7 +124,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
     test('Sending a response using reply.raw => onResponse hook is called', t => {
       const stream = split(JSON.parse)
       const app = Fastify({
-        logger: {
+        loggerInstance: {
           stream
         }
       })
@@ -169,7 +169,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
     test('Sending a response using req.socket => onResponse not called', t => {
       const stream = split(JSON.parse)
       const app = Fastify({
-        logger: {
+        loggerInstance: {
           stream
         }
       })
@@ -223,7 +223,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
     test('Throwing an error doesnt trigger any hooks', t => {
       const stream = split(JSON.parse)
       const app = Fastify({
-        logger: {
+        loggerInstance: {
           stream
         }
       })
@@ -273,7 +273,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
     test('Calling reply.send() after hijacking logs a warning', t => {
       const stream = split(JSON.parse)
       const app = Fastify({
-        logger: {
+        loggerInstance: {
           stream
         }
       })

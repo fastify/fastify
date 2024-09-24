@@ -28,15 +28,15 @@ test('close callback', t => {
 test('inside register', t => {
   t.plan(5)
   const fastify = Fastify()
-  fastify.register(function (f, opts, done) {
+  fastify.register(function(f, opts) {
     f.addHook('onClose', onClose)
     function onClose (instance, done) {
       t.ok(instance.prototype === fastify.prototype)
       t.equal(instance, f)
-      done()
+      return;;
     }
 
-    done()
+    return;;
   })
 
   fastify.listen(0, err => {
@@ -54,13 +54,13 @@ test('close order', t => {
   const fastify = Fastify()
   const order = [1, 2, 3]
 
-  fastify.register(function (f, opts, done) {
+  fastify.register(function(f, opts) {
     f.addHook('onClose', (instance, done) => {
       t.equal(order.shift(), 1)
-      done()
+      return;;
     })
 
-    done()
+    return;;
   })
 
   fastify.addHook('onClose', (instance, done) => {
@@ -83,19 +83,21 @@ test('close order - async', async t => {
   const fastify = Fastify()
   const order = [1, 2, 3]
 
-  fastify.register(function (f, opts, done) {
+  fastify.register(function(f, opts) {
     f.addHook('onClose', async instance => {
       t.equal(order.shift(), 1)
     })
 
-    done()
+    return;;
   })
 
   fastify.addHook('onClose', () => {
     t.equal(order.shift(), 2)
   })
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
   await fastify.close()
 
   t.equal(order.shift(), 3)
@@ -264,11 +266,15 @@ test('Cannot be reopened the closed server without listen callback', async t => 
   t.plan(2)
   const fastify = Fastify()
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
   await fastify.close()
 
   try {
-    await fastify.listen(0)
+    await fastify.listen({
+      port: 0
+    })
   } catch (err) {
     t.ok(err)
     t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
@@ -279,7 +285,9 @@ test('Cannot be reopened the closed server has listen callback', async t => {
   t.plan(2)
   const fastify = Fastify()
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
   await fastify.close()
 
   await new Promise((resolve, reject) => {

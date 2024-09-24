@@ -20,7 +20,7 @@ const server: FastifyInstance<
   Server,
   IncomingMessage,
   ServerResponse
-> = fastify({ logger: true });
+> = fastify({ loggerInstance: true });
 
 // Define interfaces for our request. We can create these automatically
 // off our JSON Schema files (See TypeScript.md) but for the purpose of this

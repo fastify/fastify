@@ -129,7 +129,7 @@ const customLogger: CustomLoggerInterface = {
   child: () => customLogger
 }
 
-const serverWithCustomLogger = fastify({ logger: customLogger })
+const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
 expectType<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>

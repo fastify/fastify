@@ -1,6 +1,6 @@
 'use strict'
 
-const fastify = require('../fastify')({ logger: true })
+const fastify = require('../fastify')({ loggerInstance: true })
 
 const opts = {
   schema: {
@@ -15,20 +15,20 @@ const opts = {
   }
 }
 
-fastify.register(function (instance, options, done) {
+fastify.register(function(instance, options) {
   // the route will be '/english/hello'
   instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'hello' })
   })
-  done()
+  return;;
 }, { prefix: '/english' })
 
-fastify.register(function (instance, options, done) {
+fastify.register(function(instance, options) {
   // the route will be '/italian/hello'
   instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'ciao' })
   })
-  done()
+  return;;
 }, { prefix: '/italian' })
 
 fastify.listen(8000, function (err) {

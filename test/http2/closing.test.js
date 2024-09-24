@@ -122,7 +122,9 @@ t.test('http/2 closes successfully with async await', { skip: semver.lt(process.
     http2: true
   })
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
 
   const url = getUrl(fastify)
   const session = await connect(url)
@@ -142,7 +144,9 @@ t.test('https/2 closes successfully with async await', { skip: semver.lt(process
     }
   })
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
 
   const url = getUrl(fastify)
   const session = await connect(url)
@@ -166,7 +170,9 @@ t.test('http/2 server side session emits a timeout event', { skip: semver.lt(pro
     return {}
   })
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
 
   const url = getUrl(fastify)
   const session = await connect(url)

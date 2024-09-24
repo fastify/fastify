@@ -1,6 +1,6 @@
 'use strict'
 
-const fastify = require('../fastify')({ logger: true })
+const fastify = require('../fastify')({ loggerInstance: true })
 
 fastify.addSchema({
   $id: 'https://foo/common.json',

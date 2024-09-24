@@ -45,7 +45,7 @@ Server,
 IncomingMessage,
 ServerResponse,
 CustomLoggerImpl
->({ logger: customLogger })
+>({ loggerInstance: customLogger })
 
 expectType<CustomLoggerImpl>(serverWithCustomLogger.log)
 
@@ -55,7 +55,7 @@ IncomingMessage,
 ServerResponse,
 pino.Logger
 >({
-  logger: pino({
+  loggerInstance: pino({
     level: 'info',
     redact: ['x-userinfo']
   })
@@ -68,7 +68,7 @@ Server,
 IncomingMessage,
 ServerResponse
 >({
-  logger: {
+  loggerInstance: {
     level: 'info'
   }
 })
@@ -80,7 +80,7 @@ Server,
 IncomingMessage,
 ServerResponse
 >({
-  logger: {
+  loggerInstance: {
     level: 'info',
     file: '/path/to/file'
   }
@@ -89,7 +89,7 @@ ServerResponse
 expectType<FastifyLoggerInstance>(serverWithFileOption.log)
 
 const serverAutoInferringTypes = fastify({
-  logger: {
+  loggerInstance: {
     level: 'info'
   }
 })
@@ -97,7 +97,7 @@ const serverAutoInferringTypes = fastify({
 expectType<FastifyLoggerInstance>(serverAutoInferringTypes.log)
 
 const serverWithAutoInferredPino = fastify({
-  logger: pino({
+  loggerInstance: pino({
     level: 'info',
     redact: ['x-userinfo']
   })
@@ -106,7 +106,7 @@ const serverWithAutoInferredPino = fastify({
 expectType<pino.Logger>(serverWithAutoInferredPino.log)
 
 const serverAutoInferredFileOption = fastify({
-  logger: {
+  loggerInstance: {
     level: 'info',
     file: '/path/to/file'
   }
@@ -115,7 +115,7 @@ const serverAutoInferredFileOption = fastify({
 expectType<FastifyLoggerInstance>(serverAutoInferredFileOption.log)
 
 const serverAutoInferredPinoPrettyBooleanOption = fastify({
-  logger: {
+  loggerInstance: {
     prettyPrint: true
   }
 })
@@ -123,7 +123,7 @@ const serverAutoInferredPinoPrettyBooleanOption = fastify({
 expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyBooleanOption.log)
 
 const serverAutoInferredPinoPrettyObjectOption = fastify({
-  logger: {
+  loggerInstance: {
     prettyPrint: {
       translateTime: true,
       levelFirst: false,
@@ -144,7 +144,7 @@ const serverAutoInferredPinoPrettyObjectOption = fastify({
 expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyObjectOption.log)
 
 const serverAutoInferredSerializerObjectOption = fastify({
-  logger: {
+  loggerInstance: {
     serializers: {
       req (IncomingMessage) {
         expectType<FastifyRequest>(IncomingMessage)
@@ -179,7 +179,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
 expectType<FastifyLoggerInstance>(serverAutoInferredSerializerObjectOption.log)
 
 const passStreamAsOption = fastify({
-  logger: {
+  loggerInstance: {
     stream: fs.createWriteStream('/tmp/stream.out')
   }
 })

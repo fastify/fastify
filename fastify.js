@@ -132,7 +132,7 @@ function fastify (options) {
   }
 
   // Instance Fastify components
-  const { logger, hasLogger } = createLogger(options)
+  const { loggerInstance, hasLogger } = createLogger(options)
 
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
@@ -140,7 +140,7 @@ function fastify (options) {
   options.forceCloseConnections = typeof options.forceCloseConnections === 'boolean' ? options.forceCloseConnections : defaultInitOptions.forceCloseConnections
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
-  options.logger = logger
+  options.loggerInstance = loggerInstance
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
   options.querystringParser = querystringParser
@@ -266,7 +266,7 @@ function fastify (options) {
       return router.route.call(this, opts)
     },
     // expose logger instance
-    log: logger,
+    log: loggerInstance,
     // hooks
     addHook,
     // schemas
@@ -405,7 +405,7 @@ function fastify (options) {
   router.setup(options, {
     avvio,
     fourOhFour,
-    logger,
+    loggerInstance,
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted
@@ -606,7 +606,7 @@ function fastify (options) {
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = genReqId(req)
-      const childLogger = logger.child({ reqId: id })
+      const childLogger = loggerInstance.child({ reqId: id })
 
       childLogger.info({ req }, 'incoming request')
 
@@ -688,7 +688,7 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
   }
 }
 
-function wrapRouting (httpHandler, { rewriteUrl, logger }) {
+function wrapRouting (httpHandler, { rewriteUrl, loggerInstance }) {
   if (!rewriteUrl) {
     return httpHandler
   }
@@ -696,7 +696,7 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
     const originalUrl = req.url
     const url = rewriteUrl(req)
     if (originalUrl !== url) {
-      logger.debug({ originalUrl, url }, 'rewrite url')
+      loggerInstance.debug({ originalUrl, url }, 'rewrite url')
       if (typeof url === 'string') {
         req.url = url
       } else {
@@ -704,7 +704,7 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
       }
     }
     httpHandler(req, res)
-  }
+  };
 }
 
 /**

@@ -629,7 +629,7 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
   const fastify = Fastify()
 
   const arr = []
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts) => {
     instance.addHook('onRoute', (routeOptions) => {
       arr.push(`${routeOptions.method} ${routeOptions.url}`)
     })
@@ -916,7 +916,9 @@ test('no warning for exposeHeadRoute', async t => {
 
   process.on('warning', listener)
 
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
 
   process.removeListener('warning', listener)
 
@@ -930,7 +932,7 @@ test("HEAD route should handle stream.on('error')", t => {
   const logStream = split(JSON.parse)
   const expectedError = new Error('Hello!')
   const fastify = Fastify({
-    logger: {
+    loggerInstance: {
       stream: logStream,
       level: 'error'
     }
@@ -1144,7 +1146,7 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
 
   const fastify = Fastify()
 
-  fastify.register(function routes (f, opts, next) {
+  fastify.register(function routes(f, opts) {
     f.route({
       method: 'GET',
       url: '/',
@@ -1169,7 +1171,7 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
 
   const fastify = Fastify()
 
-  fastify.register(function routes (f, opts, next) {
+  fastify.register(function routes(f, opts) {
     f.route({
       method: 'GET',
       url: '/',
@@ -1223,7 +1225,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
-  fastify.register((scope, opts, next) => {
+  fastify.register((scope, opts) => {
     scope.route({
       method: 'HEAD',
       path: '/route',

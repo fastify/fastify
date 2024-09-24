@@ -12,7 +12,7 @@ test('send trailers when payload is empty string', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', async function(reply, payload) {
       return 'custom-etag'
     })
     reply.send('')
@@ -36,7 +36,7 @@ test('send trailers when payload is empty buffer', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', async function(reply, payload) {
       return 'custom-etag'
     })
     reply.send(Buffer.alloc(0))
@@ -60,7 +60,7 @@ test('send trailers when payload is undefined', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', async function(reply, payload) {
       return 'custom-etag'
     })
     reply.send(undefined)
@@ -88,7 +88,7 @@ test('send trailers when payload is json', t => {
   const md5 = hash.digest('hex')
 
   fastify.get('/', function (request, reply) {
-    reply.trailer('Content-MD5', function (reply, payload) {
+    reply.trailer('Content-MD5', async function(reply, payload) {
       t.equal(data, payload)
       const hash = createHash('md5')
       hash.update(payload)
@@ -116,7 +116,7 @@ test('send trailers when payload is stream', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', async function(reply, payload) {
       t.same(payload, null)
       return 'custom-etag'
     })
@@ -144,10 +144,10 @@ test('removeTrailer', t => {
 
   fastify.get('/', function (request, reply) {
     reply.removeTrailer('ETag') // remove nothing
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', async function(reply, payload) {
       return 'custom-etag'
     })
-    reply.trailer('Should-Not-Call', function (reply, payload) {
+    reply.trailer('Should-Not-Call', async function(reply, payload) {
       t.fail('it should not called as this trailer is removed')
       return 'should-not-call'
     })
@@ -175,11 +175,11 @@ test('hasTrailer', t => {
 
   fastify.get('/', function (request, reply) {
     t.equal(reply.hasTrailer('ETag'), false)
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', async function(reply, payload) {
       return 'custom-etag'
     })
     t.equal(reply.hasTrailer('ETag'), true)
-    reply.trailer('Should-Not-Call', function (reply, payload) {
+    reply.trailer('Should-Not-Call', async function(reply, payload) {
       t.fail('it should not called as this trailer is removed')
       return 'should-not-call'
     })

@@ -298,7 +298,7 @@ test('Custom setSerializerCompiler', t => {
     return data => JSON.stringify(data)
   })
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.get('/:id', {
       handler (req, reply) {
         reply.send({ id: 1 })
@@ -310,7 +310,7 @@ test('Custom setSerializerCompiler', t => {
       }
     })
     t.ok(instance.serializerCompiler, 'the serializer is set by the parent')
-    done()
+    return;;
   }, { prefix: '/foo' })
 
   fastify.inject({
@@ -380,7 +380,7 @@ test('Custom serializer per route', async t => {
   })
 
   let hit = 0
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
       hit++
       return data => JSON.stringify({ mean: 'custom' })
@@ -398,7 +398,7 @@ test('Custom serializer per route', async t => {
       schema: { response: { 200: outSchema } }
     })
 
-    done()
+    return;;
   })
 
   let res = await fastify.inject('/default')
@@ -501,7 +501,7 @@ test('The schema compiler recreate itself if needed', t => {
     }
   }, echoBody)
 
-  fastify.register(function (fastify, options, done) {
+  fastify.register(function(fastify, options) {
     fastify.addSchema({
       $id: 'identifier',
       type: 'string',
@@ -518,7 +518,7 @@ test('The schema compiler recreate itself if needed', t => {
       }
     }, echoBody)
 
-    done()
+    return;;
   })
 
   fastify.ready(err => { t.error(err) })

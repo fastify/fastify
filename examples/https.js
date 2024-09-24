@@ -7,7 +7,7 @@ const fastify = require('../fastify')({
     key: fs.readFileSync(path.join(__dirname, '../test/https/fastify.key')),
     cert: fs.readFileSync(path.join(__dirname, '../test/https/fastify.cert'))
   },
-  logger: true
+  loggerInstance: true
 })
 
 const opts = {

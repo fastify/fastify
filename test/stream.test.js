@@ -176,7 +176,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
     child: () => { return spyLogger }
   }
 
-  const fastify = Fastify({ logger: spyLogger })
+  const fastify = Fastify({ loggerInstance: spyLogger })
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
@@ -205,7 +205,7 @@ test('onSend hook stream should work on payload with "close" ending function', t
     './lib/reply.js': reply
   })
 
-  const fastify = Fastify({ logger: false })
+  const fastify = Fastify({ loggerInstance: false })
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
@@ -233,7 +233,7 @@ test('Destroying streams prematurely', t => {
   const logStream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream: logStream,
         level: 'info'
       }
@@ -295,7 +295,7 @@ test('Destroying streams prematurely should call close method', t => {
   const logStream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream: logStream,
         level: 'info'
       }
@@ -357,7 +357,7 @@ test('Destroying streams prematurely should call close method when destroy is no
   const logStream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream: logStream,
         level: 'info'
       }
@@ -419,7 +419,7 @@ test('Destroying streams prematurely should call abort method', t => {
   const logStream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream: logStream,
         level: 'info'
       }
@@ -481,7 +481,7 @@ test('Destroying streams prematurely, log is disabled', t => {
   let fastify = null
   try {
     fastify = Fastify({
-      logger: false
+      loggerInstance: false
     })
   } catch (e) {
     t.fail()
@@ -700,7 +700,7 @@ test('reply.send handles aborted requests', t => {
     child: () => { return spyLogger }
   }
   const fastify = Fastify({
-    logger: spyLogger
+    loggerInstance: spyLogger
   })
 
   fastify.get('/', (req, reply) => {

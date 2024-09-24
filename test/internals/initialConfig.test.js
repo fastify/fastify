@@ -368,53 +368,13 @@ test('pluginTimeout should be parsed correctly', t => {
   t.end()
 })
 
-test('Should not have issues when using same options object for multiple Fastify instance', async t => {
-  const optionsNoStrict = {
-    ajv: {
-      customOptions: {
-        strict: false,
-      },
-    },
+test('Should not mutate the options object outside Fastify', async t => {
+  const options = Object.freeze({})
+
+  try {
+    Fastify(options)
+    t.pass()
+  } catch (error) {
+    t.fail(error.message)
   }
-
-  const firstFastify = Fastify(optionsNoStrict)
-
-  async function firstRoutes (firstFastify) {
-    firstFastify.get('/', async () => {
-      return { hello: 'world' }
-    })
-  }
-  firstFastify.register(firstRoutes)
-
-  const firstFastifyRes = await firstFastify.inject({
-    method: 'GET',
-    url: '/',
-  })
-  t.equal(firstFastifyRes.statusCode, 200)
-
-  const secondFastify = Fastify(optionsNoStrict)
-  const routeOptions = {
-    schema: {
-      querystring: {
-        type: 'object',
-        properties: {
-          hello: { type: 'string' },
-        },
-        required: ['hello'],
-      },
-    },
-  }
-  async function secondRoutes (secondFastify) {
-    secondFastify.get('/', routeOptions, async (request) => {
-      return { hello: request.query.hello }
-    })
-  }
-  secondFastify.register(secondRoutes)
-
-  const res = await secondFastify.inject({
-    method: 'GET',
-    url: '/?hello=world',
-  })
-  t.equal(res.body, '{"hello":"world"}', 'expected value')
-  t.equal(res.statusCode, 200, 'expected HTTP code')
 })

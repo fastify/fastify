@@ -149,7 +149,7 @@ test('Reply#compileSerializationSchema', async t => {
 
         return input => {
           called++
-          t.assert.deepEqual(input, { hello: 'world' })
+          t.assert.deepStrictEqual(input, { hello: 'world' })
           return JSON.stringify(input)
         }
       }
@@ -162,7 +162,7 @@ test('Reply#compileSerializationSchema', async t => {
         t.assert.strictEqual(contentType, 'application/json')
 
         return input => {
-          t.assert.deepEqual(input, { fullName: 'Jone', phone: 1090243795 })
+          t.assert.deepStrictEqual(input, { fullName: 'Jone', phone: 1090243795 })
           return JSON.stringify(input)
         }
       }
@@ -451,7 +451,7 @@ test('Reply#serializeInput', async t => {
       })
 
       t.assert.strictEqual(result.statusCode, 500)
-      t.assert.deepEqual(result.json(), {
+      t.assert.deepStrictEqual(result.json(), {
         statusCode: 500,
         code: 'FST_ERR_MISSING_SERIALIZATION_FN',
         error: 'Internal Server Error',
@@ -495,7 +495,7 @@ test('Reply#serializeInput', async t => {
       })
 
       t.assert.strictEqual(result.statusCode, 500)
-      t.assert.deepEqual(result.json(), {
+      t.assert.deepStrictEqual(result.json(), {
         statusCode: 500,
         code: 'FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN',
         error: 'Internal Server Error',

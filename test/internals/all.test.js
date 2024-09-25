@@ -35,7 +35,7 @@ test('fastify.all should add all the methods to the same url', async t => {
       fastify.inject(options, (err, res) => {
         t.assert.ifError(err)
         const payload = JSON.parse(res.payload)
-        t.assert.deepEqual(payload, { method })
+        t.assert.deepStrictEqual(payload, { method })
         resolve()
       })
     })

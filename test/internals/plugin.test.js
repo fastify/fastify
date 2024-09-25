@@ -49,7 +49,7 @@ test("getMeta should return the object stored with the 'plugin-meta' symbol", t 
   const meta = { hello: 'world' }
   fn[Symbol.for('plugin-meta')] = meta
 
-  t.assert.deepEqual(meta, pluginUtils.getMeta(fn))
+  t.assert.deepStrictEqual(meta, pluginUtils.getMeta(fn))
 
   function fn () {}
 })

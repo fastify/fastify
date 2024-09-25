@@ -22,7 +22,7 @@ test('default 500', async t => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 500)
       t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepEqual(JSON.parse(res.payload), {
+      t.assert.deepStrictEqual(JSON.parse(res.payload), {
         error: 'Internal Server Error',
         message: 'kaboom',
         statusCode: 500
@@ -59,7 +59,7 @@ test('custom 500', async t => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 500)
       t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-      t.assert.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+      t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
       resolve()
     })
   })
@@ -100,7 +100,7 @@ test('encapsulated 500', async t => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 500)
       t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-      t.assert.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+      t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
       resolve()
     })
   })
@@ -113,7 +113,7 @@ test('encapsulated 500', async t => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 500)
       t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepEqual(JSON.parse(res.payload), {
+      t.assert.deepStrictEqual(JSON.parse(res.payload), {
         error: 'Internal Server Error',
         message: 'kaboom',
         statusCode: 500
@@ -162,7 +162,7 @@ test('custom 500 with hooks', async t => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 500)
       t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-      t.assert.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+      t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
       resolve()
     })
   })
@@ -237,7 +237,7 @@ test('catch synchronous errors', async t => {
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 500)
-      t.assert.deepEqual(res.json(), {
+      t.assert.deepStrictEqual(res.json(), {
         error: 'Internal Server Error',
         message: 'kaboom2',
         statusCode: 500

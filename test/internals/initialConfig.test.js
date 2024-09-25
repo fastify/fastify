@@ -51,7 +51,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     useSemicolonDelimiter: false
   }
 
-  t.assert.deepEqual(Fastify().initialConfig, fastifyDefaultOptions)
+  t.assert.deepStrictEqual(Fastify().initialConfig, fastifyDefaultOptions)
 })
 
 test('Fastify.initialConfig should expose all options', t => {
@@ -173,7 +173,7 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.assert.ok(error instanceof TypeError)
     t.assert.strictEqual(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
     t.assert.ok(error.stack)
-    t.assert.deepEqual(fastify.initialConfig.https, {
+    t.assert.deepStrictEqual(fastify.initialConfig.https, {
       allowHTTP1: true
     }, 'key cert removed')
   }
@@ -241,8 +241,8 @@ test('Original options must not be altered (test deep cloning)', t => {
   t.assert.strictEqual(Object.isFrozen(fastify.initialConfig), true)
 
   // originalOptions must not have been altered
-  t.assert.deepEqual(originalOptions.https.key, originalOptionsClone.https.key)
-  t.assert.deepEqual(originalOptions.https.cert, originalOptionsClone.https.cert)
+  t.assert.deepStrictEqual(originalOptions.https.key, originalOptionsClone.https.key)
+  t.assert.deepStrictEqual(originalOptions.https.cert, originalOptionsClone.https.cert)
 })
 
 test('Should not have issues when passing stream options to Pino.js', async t => {
@@ -268,7 +268,7 @@ test('Should not have issues when passing stream options to Pino.js', async t =>
     })
 
     t.assert.ok(typeof fastify === 'object')
-    t.assert.deepEqual(fastify.initialConfig, {
+    t.assert.deepStrictEqual(fastify.initialConfig, {
       connectionTimeout: 0,
       keepAliveTimeout: 72000,
       maxRequestsPerSocket: 0,

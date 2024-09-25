@@ -206,7 +206,7 @@ test('#compileValidationSchema', async subtest => {
 
         return input => {
           called++
-          t.assert.deepEqual(input, { hello: 'world' })
+          t.assert.deepStrictEqual(input, { hello: 'world' })
           return true
         }
       }
@@ -483,7 +483,7 @@ test('#validate', async subtest => {
 
         return input => {
           called++
-          t.assert.deepEqual(input, { hello: 'world' })
+          t.assert.deepStrictEqual(input, { hello: 'world' })
           return true
         }
       }
@@ -875,7 +875,7 @@ test('Nested Context', async subtest => {
 
               return input => {
                 called++
-                t.assert.deepEqual(input, { hello: 'world' })
+                t.assert.deepStrictEqual(input, { hello: 'world' })
                 return true
               }
             }
@@ -1199,7 +1199,7 @@ test('Nested Context', async subtest => {
                 validateChild = req.getValidationFunction(defaultSchema)
 
                 t.assert.strictEqual(validate1, validateChild)
-                t.assert.notEqual(validateParent, validateChild)
+                t.assert.notStrictEqual(validateParent, validateChild)
                 t.assert.strictEqual(calledParent, 1)
                 t.assert.strictEqual(calledChild, 1)
 
@@ -1268,7 +1268,7 @@ test('Nested Context', async subtest => {
 
             return input => {
               childCalled++
-              t.assert.deepEqual(input, { hello: 'world' })
+              t.assert.deepStrictEqual(input, { hello: 'world' })
               return true
             }
           }

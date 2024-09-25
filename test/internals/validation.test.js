@@ -118,7 +118,7 @@ test('build schema - avoid repeated normalize schema', t => {
     }
   }
   opts.schema = normalizeSchema(opts.schema, serverConfig)
-  t.assert.notEqual(kSchemaVisited, undefined)
+  t.assert.notStrictEqual(kSchemaVisited, undefined)
   t.assert.strictEqual(opts.schema[kSchemaVisited], true)
   t.assert.strictEqual(opts.schema, normalizeSchema(opts.schema, serverConfig))
 })

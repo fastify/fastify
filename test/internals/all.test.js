@@ -1,10 +1,9 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../..')
 
-test('fastify.all should add all the methods to the same url', t => {
+test('fastify.all should add all the methods to the same url', async t => {
   const fastify = Fastify()
 
   const requirePayload = [
@@ -20,9 +19,9 @@ test('fastify.all should add all the methods to the same url', t => {
     reply.send({ method: req.raw.method })
   })
 
-  supportedMethods.forEach(injectRequest)
+  await Promise.all(supportedMethods.map(async method => injectRequest(method)))
 
-  function injectRequest (method) {
+  async function injectRequest (method) {
     const options = {
       url: '/',
       method
@@ -32,10 +31,13 @@ test('fastify.all should add all the methods to the same url', t => {
       options.payload = { hello: 'world' }
     }
 
-    fastify.inject(options, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.same(payload, { method })
+    return new Promise((resolve) => {
+      fastify.inject(options, (err, res) => {
+        t.assert.ifError(err)
+        const payload = JSON.parse(res.payload)
+        t.assert.deepEqual(payload, { method })
+        resolve()
+      })
     })
   }
 })

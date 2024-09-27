@@ -24,6 +24,44 @@ experience and streamline maintenance.
 Node.js v18 will exit Long Term Support on April 30, 2025, so you should be planning
 to upgrade to v20 anyway.
 
+## Codemods
+### Fastify v5 Codemods
+
+To help with the upgrade, we’ve worked with the team at 
+[Codemod](https://github.com/codemod-com/codemod) to
+publish codemods that will automatically update your code to many of 
+the new APIs and patterns in Fastify v5.
+
+Run the following 
+[migration recipe](https://codemod.com/registry/fastify-5-migrationRecipe) to 
+automatically update your code to Fastify v5:
+
+```
+npx codemod@latest fastify/5/migrationRecipe
+```
+
+This will run the following codemods:
+
+- [`fastify/5/rename-logger-to-logger-instance`](https://codemod.com/registry/fastify-5-rename-logger-to-logger-instance)
+- [`fastify/5/remove-done-callback`](https://codemod.com/registry/fastify-5-remove-done-callback)
+- [`fastify/5/make-reply-trailer-async`](https://codemod.com/registry/fastify-5-make-reply-trailer-async)
+- [`fastify/5/redirect-arg-order`](https://codemod.com/registry/fastify-5-redirect-arg-order)
+- [`fastify/5/getResponseTime-to-elapsedTime`](https://codemod.com/registry/fastify-5-getResponseTime-to-elapsedTime)
+- [`fastify/5/req-connection-to-socket`](https://codemod.com/registry/fastify-5-req-connection-to-socket)
+- [`fastify/5/route-schema-enhancement`](https://codemod.com/registry/fastify-5-route-schema-enhancement)
+- [`fastify/5/decorate-request-to-getter-method`](https://codemod.com/registry/fastify-5-decorate-request-to-getter-method)
+- [`fastify/5/add-expose-head-routes-option`](https://codemod.com/registry/fastify-5-add-expose-head-routes-option)
+- [`fastify/5/replace-reply-sent-with-hijack`](https://codemod.com/registry/fastify-5-replace-reply-sent-with-hijack)
+- [`fastify/5/replace-hardcoded-url-in-hasroute`](https://codemod.com/registry/fastify-5-replace-hardcoded-url-in-hasroute)
+- [`fastify/5/listen-arg-transformation`](https://codemod.com/registry/fastify-5-listen-arg-transformation)
+- [`fastify/5/req-params-hasOwnProperty-to-objectHasOwn`](https://codemod.com/registry/fastify-5-req-params-hasOwnProperty-to-objectHasOwn)
+
+
+
+Each of these codemods automates the changes listed in the v5 migration guide.
+For a complete list of available Fastify codemods and further details, 
+see [Codemod Registry](https://codemod.com/registry?q=fastify%2F5).
+
 ## Breaking Changes
 
 ### Full JSON Schema is now required for `querystring`, `params` and `body` and response schemas
@@ -75,6 +113,12 @@ use a different format, such as Zod. This change simplifies that as well.
 This change helps with integration of other tools, such as
 [`@fastify/swagger`](https://github.com/fastify/fastify-swagger).
 
+> **Note**: Codemod to enhance route schemas with:
+>
+> ```bash
+> npx codemod@latest fastify/5/route-schema-enhancement
+> ```
+
 ### New logger constructor signature
 
 In Fastify v4, Fastify accepted the options to build a pino
@@ -99,6 +143,11 @@ const fastify = require('fastify')({
   loggerInstance
 });
 ```
+> **Note**: Codemod for `logger` to `loggerInstance`:
+>
+> ```bash
+> npx codemod@latest fastify/5/rename-logger-to-logger-instance
+> ```
 
 ### `useSemicolonDelimiter` false by default
 
@@ -140,6 +189,11 @@ fastify.get('/route/:name', (req, reply) => {
 
 This increases the security of the application by hardening against prototype
 pollution attacks.
+> **Note**: Codemod `req.params.hasOwnProperty` to `Object.hasOwn` with:
+>
+> ```bash
+> npx codemod@latest fastify/5/req-params-hasOwnProperty-to-objectHasOwn
+> ```
 
 ### Type Providers now differentiate between validator and serializer schemas
 
@@ -189,6 +243,12 @@ fastify.listen({ port: 8000 })
 This was already deprecated in v4 as `FSTDEP011`, so you should have already updated
 your code to use the new signature.
 
+> **Note**: Codemod the `listen` method arguments with:
+>
+> ```bash
+> npx codemod@latest fastify/5/listen-arg-transformation
+> ```
+
 ### Direct return of trailers has been removed
 
 In v4, you could directly return trailers from a handler.
@@ -217,6 +277,12 @@ fastify.get('/route', (req, reply) => {
 A callback could also be used.
 This was already deprecated in v4 as `FSTDEP013`,
 so you should have already updated your code to use the new signature.
+
+> **Note**: Codemod `reply.trailer` to an async method with:
+>
+> ```bash
+> npx codemod@latest fastify/5/make-reply-trailer-async
+> ```
 
 ### Streamlined access to route definition
 
@@ -253,7 +319,11 @@ reply.redirect('/new-route', 301)
 
 This was already deprecated in v4 as `FSTDEP021`, so you should have already
 updated your code to use the new signature.
-
+> **Note**: Codemod the `redirect` argument order with:
+>
+> ```bash
+> npx codemod@latest fastify/5/redirect-arg-order
+> ```
 
 ### Modifying `reply.sent` is now forbidden
 
@@ -281,6 +351,12 @@ fastify.get('/route', (req, reply) => {
 
 This was already deprecated in v4 as `FSTDEP010`, so you should have already
 updated your code to use the new signature.
+
+> **Note**: Codemod `reply.sent` to `reply.hijack()` with:
+>
+> ```bash
+> npx codemod@latest fastify/5/replace-reply-sent-with-hijack
+> ```
 
 ### Constraints for route versioning signature changes
 
@@ -345,6 +421,12 @@ fastify.get('/route', {
 This was changed in [#2700](https://github.com/fastify/fastify/pull/2700),
 and the old behavior was deprecated in v4 as `FSTDEP007`.
 
+> **Note**: Codemod to add the `exposeHeadRoutes` option where necessary:
+>
+> ```bash
+> npx codemod@latest fastify/5/add-expose-head-routes-option
+> ```
+
 ### Removed `request.connection`
 
 The `request.connection` property has been removed in v5.
@@ -369,6 +451,12 @@ fastify.get('/route', (req, reply) => {
 This was already deprecated in v4 as `FSTDEP05`, so you should
 have already updated your code to use the new signature.
 
+> **Note**: Codemod `req.connection` to `req.socket` with:
+>
+> ```bash
+> npx codemod@latest fastify/5/req-connection-to-socket
+> ```
+
 ### `reply.getResponseTime()` has been removed, use `reply.elapsedTime` instead
 
 The `reply.getResponseTime()` method has been removed in v5.
@@ -392,6 +480,13 @@ fastify.get('/route', (req, reply) => {
 
 This was already deprecated in v4 as `FSTDEP20`, so you should have already
 updated your code to use the new signature.
+
+> **Note**: Codemod `getResponseTime` to `elapsedTime` with:
+>
+> ```bash
+> npx codemod@latest fastify/5/getResponseTime-to-elapsedTime
+> ```
+
 
 ### `fastify.hasRoute()` now matches the behavior of `find-my-way`
 
@@ -418,6 +513,12 @@ console.log(fastify.hasRoute({
   url: '/example/:file(^\\d+).png'
 )); // true
 ```
+
+> **Note**: Codemod hardcoded URLs in `hasRoute` checks with:
+>
+> ```bash
+> npx codemod@latest fastify/5/replace-hardcoded-url-in-hasroute
+> ```
 
 ### Removal of some non-standard HTTP methods
 
@@ -488,6 +589,13 @@ fastify.decorateRequest('myObject', {
 
 See [#5462](https://github.com/fastify/fastify/pull/5462) for more information.
 
+
+> **Note**: Codemod request decorators to getter methods with:
+>
+> ```bash
+> npx codemod@latest fastify/5/decorate-request-to-getter-method
+> ```
+
 ### Remove support for DELETE with a `Content-Type: application/json` header and an empty body
 
 In v4, Fastify allowed `DELETE` requests with a `Content-Type: application/json`
@@ -523,7 +631,11 @@ fastify.register(function (instance, opts, done) {
   done();
 });
 ```
-
+> **Note**: Codemod to remove the `done` callback from async plugins with:
+>
+> ```bash
+> npx codemod@latest fastify/5/remove-done-callback
+> ```
 ### Removes `getDefaultRoute` and `setDefaultRoute` methods
 
 The `getDefaultRoute` and `setDefaultRoute` methods have been removed in v5.

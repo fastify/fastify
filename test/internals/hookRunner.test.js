@@ -33,7 +33,7 @@ test('hookRunner - Basic', t => {
   }
 
   function done (err, a, b) {
-    t.assert.ok(!(err instanceof Error))
+    t.assert.ifError(err)
     t.assert.strictEqual(a, 'a')
     t.assert.strictEqual(b, 'b')
   }
@@ -137,7 +137,7 @@ test('hookRunner - Should handle promises', t => {
   }
 
   function done (err, a, b) {
-    t.assert.ok(!(err instanceof Error))
+    t.assert.ifError(err)
     t.assert.strictEqual(a, 'a')
     t.assert.strictEqual(b, 'b')
   }
@@ -243,7 +243,7 @@ test('hookRunner - Promises that resolve to a value do not change the state', t 
   }
 
   function done (err, state, b) {
-    t.assert.ok(!(err instanceof Error))
+    t.assert.ifError(err)
     t.assert.strictEqual(state, originalState)
   }
 })
@@ -279,7 +279,7 @@ test('onSendHookRunner - Basic', t => {
   }
 
   function done (err, request, reply, payload) {
-    t.assert.ok(!(err instanceof Error))
+    t.assert.ifError(err)
     t.assert.deepStrictEqual(request, originalRequest)
     t.assert.deepStrictEqual(reply, originalReply)
     t.assert.strictEqual(payload, originalPayload)
@@ -314,7 +314,7 @@ test('onSendHookRunner - Can change the payload', t => {
   }
 
   function done (err, request, reply, payload) {
-    t.assert.ok(!(err instanceof Error))
+    t.assert.ifError(err)
     t.assert.deepStrictEqual(request, originalRequest)
     t.assert.deepStrictEqual(reply, originalReply)
     t.assert.deepStrictEqual(payload, v4)
@@ -381,7 +381,7 @@ test('onSendHookRunner - Should handle promises', t => {
   }
 
   function done (err, request, reply, payload) {
-    t.assert.ok(!(err instanceof Error))
+    t.assert.ifError(err)
     t.assert.deepStrictEqual(request, originalRequest)
     t.assert.deepStrictEqual(reply, originalReply)
     t.assert.deepStrictEqual(payload, v4)

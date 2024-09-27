@@ -13,7 +13,7 @@ test('fastify.all should add all the methods to the same url', async t => {
   ]
 
   const supportedMethods = fastify.supportedMethods
-  t.plan(supportedMethods.length * 2)
+  t.plan(supportedMethods.length)
 
   fastify.all('/', (req, reply) => {
     reply.send({ method: req.raw.method })
@@ -31,13 +31,8 @@ test('fastify.all should add all the methods to the same url', async t => {
       options.payload = { hello: 'world' }
     }
 
-    return new Promise((resolve) => {
-      fastify.inject(options, (err, res) => {
-        t.assert.ifError(err)
-        const payload = JSON.parse(res.payload)
-        t.assert.deepStrictEqual(payload, { method })
-        resolve()
-      })
-    })
+    const res = await fastify.inject(options)
+    const payload = JSON.parse(res.payload)
+    t.assert.deepStrictEqual(payload, { method })
   }
 })

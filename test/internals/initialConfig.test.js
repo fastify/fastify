@@ -245,7 +245,7 @@ test('Original options must not be altered (test deep cloning)', t => {
   t.assert.deepStrictEqual(originalOptions.https.cert, originalOptionsClone.https.cert)
 })
 
-test('Should not have issues when passing stream options to Pino.js', async t => {
+test('Should not have issues when passing stream options to Pino.js', (t, done) => {
   t.plan(17)
 
   const stream = split(JSON.parse)
@@ -321,14 +321,12 @@ test('Should not have issues when passing stream options to Pino.js', async t =>
     })
   })
 
-  await new Promise((resolve) => {
-    fastify.listen({ port: 0, host: localhost }, err => {
-      t.assert.ifError(err)
-      t.after(() => { fastify.close() })
+  fastify.listen({ port: 0, host: localhost }, err => {
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
 
-      http.get(`http://${localhostForURL}:${fastify.server.address().port}`, () => {
-        resolve()
-      })
+    http.get(`http://${localhostForURL}:${fastify.server.address().port}`, () => {
+      done()
     })
   })
 })

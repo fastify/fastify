@@ -97,9 +97,7 @@ function defaultBuildPrettyMeta (route) {
  */
 function fastify (options) {
   // Options validations
-  options = options || {}
-
-  if (typeof options !== 'object') {
+  if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
   }
 

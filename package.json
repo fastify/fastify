@@ -24,7 +24,7 @@
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
-    "unit": "tap",
+    "unit": "borp --coverage --check-coverage --lines 100 --reporter ./test/test-reporter.mjs",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "unit:report": "tap --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "citgm": "tap --jobs=1 --timeout=120"
@@ -163,6 +163,7 @@
     "ajv-i18n": "^4.2.0",
     "ajv-merge-patch": "^5.0.1",
     "autocannon": "^7.15.0",
+    "borp": "^0.17.0",
     "branch-comparer": "^1.1.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",

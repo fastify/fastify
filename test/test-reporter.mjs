@@ -1,14 +1,16 @@
 function colorize (type, text) {
   if (type === 'pass') {
-    const whiteText = `\x1b[30m${text}`
+    const blackText = `\x1b[30m${text}`
+    const boldblackText = `\x1b[1m${blackText}`
     // Green background with black text
-    return `\x1b[42m${whiteText}\x1b[0m`
+    return `\x1b[42m${boldblackText}\x1b[0m`
   }
 
   if (type === 'fail') {
-    const blackText = `\x1b[37m${text}`
+    const whiteText = `\x1b[37m${text}`
+    const boldWhiteText = `\x1b[1m${whiteText}`
     // Red background with white text
-    return `\x1b[41m${blackText}\x1b[0m`
+    return `\x1b[41m${boldWhiteText}\x1b[0m`
   }
 
   return text
@@ -23,18 +25,17 @@ function formatDiagnosticStr (str) {
 async function * reporter (source) {
   const failed = new Set()
   const diagnostics = new Set()
-  diagnostics.add('\n\n')
 
   for await (const event of source) {
     switch (event.type) {
       case 'test:pass': {
-        yield `${colorize('pass', 'PASSED')}: ${event.data.file}\n`
+        yield `${colorize('pass', 'PASSED')}: ${event.data.file || event.data.name}\n`
         break
       }
 
       case 'test:fail': {
-        failed.add(event.data.file)
-        yield `${colorize('fail', 'FAILED')}: ${event.data.file}\n`
+        failed.add(event.data.name || event.data.file)
+        yield `${colorize('fail', 'FAILED')}: ${event.data.file || event.data.name}\n`
         break
       }
 
@@ -56,11 +57,12 @@ async function * reporter (source) {
     }
   }
 
-  diagnostics.add('\n')
+  yield '\n'
 
   for (const diagnostic of diagnostics) {
     yield `${diagnostic}`
   }
+  yield '\n'
 }
 
 export default reporter

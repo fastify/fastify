@@ -19,7 +19,6 @@
   - [.removeTrailer(key)](#removetrailerkey)
   - [.redirect(dest, [code ,])](#redirectdest--code)
   - [.callNotFound()](#callnotfound)
-  - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
   - [.getSerializationFunction(schema | httpStatus, [contentType])](#getserializationfunctionschema--httpstatus)
   - [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschemaschema-httpstatus)
@@ -113,9 +112,6 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 Invokes the custom response time getter to calculate the amount of time passed
 since the request was received by Fastify.
-
-Note that unless this function is called in the [`onResponse`
-hook](./Hooks.md#onresponse) it will always return `0`.
 
 ```js
 const milliseconds = reply.elapsedTime

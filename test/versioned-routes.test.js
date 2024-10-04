@@ -432,7 +432,7 @@ test('test log stream', t => {
   t.plan(3)
   const stream = split(JSON.parse)
   const fastify = Fastify({
-    logger: {
+    loggerInstance: {
       stream,
       level: 'info'
     }

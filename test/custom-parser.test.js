@@ -307,7 +307,7 @@ test('contentTypeParser should support encapsulation', t => {
   t.plan(6)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.addContentTypeParser('application/jsoff', () => {})
     t.ok(instance.hasContentTypeParser('application/jsoff'))
 
@@ -315,10 +315,10 @@ test('contentTypeParser should support encapsulation', t => {
       instance.addContentTypeParser('application/ffosj', () => {})
       t.ok(instance.hasContentTypeParser('application/jsoff'))
       t.ok(instance.hasContentTypeParser('application/ffosj'))
-      done()
+      return;;
     })
 
-    done()
+    return;;
   })
 
   fastify.ready(err => {
@@ -332,18 +332,18 @@ test('contentTypeParser should support encapsulation, second try', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.post('/', (req, reply) => {
       reply.send(req.body)
     })
 
     instance.addContentTypeParser('application/jsoff', function (req, payload, done) {
       jsonParser(payload, function (err, body) {
-        done(err, body)
+        return;;
       })
     })
 
-    done()
+    return;;
   })
 
   fastify.listen(0, err => {
@@ -671,11 +671,11 @@ test('Can override the default json parser in a plugin', t => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.addContentTypeParser('application/json', function (req, payload, done) {
       t.ok('called')
       jsonParser(payload, function (err, body) {
-        done(err, body)
+        return;;
       })
     })
 
@@ -683,7 +683,7 @@ test('Can override the default json parser in a plugin', t => {
       reply.send(req.body)
     })
 
-    done()
+    return;;
   })
 
   fastify.listen(0, err => {
@@ -1597,14 +1597,14 @@ test('removeContentTypeParser should support encapsulation', t => {
     reply.send(req.body)
   })
 
-  fastify.register(function (instance, options, done) {
+  fastify.register(function(instance, options) {
     instance.removeContentTypeParser('application/xml')
 
     instance.post('/encapsulated', (req, reply) => {
       reply.send(req.body)
     })
 
-    done()
+    return;;
   })
 
   fastify.listen(0, err => {
@@ -1647,14 +1647,14 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
     reply.send(req.body)
   })
 
-  fastify.register(function (instance, options, done) {
+  fastify.register(function(instance, options) {
     instance.removeAllContentTypeParsers()
 
     instance.post('/encapsulated', (req, reply) => {
       reply.send(req.body)
     })
 
-    done()
+    return;;
   })
 
   fastify.listen(0, err => {

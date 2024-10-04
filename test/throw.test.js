@@ -60,9 +60,9 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
   }
 
   const fastify = Fastify()
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.post('/form', { schema: { body: badSchema } }, () => {})
-    done()
+    return;;
   }, { prefix: 'hello' })
 
   fastify.ready(err => {
@@ -167,11 +167,11 @@ test('Should not throw on duplicate decorator encapsulation', t => {
 
   fastify.decorate('foo2', foo2Obj)
 
-  fastify.register(function (fastify, opts, done) {
+  fastify.register(function(fastify, opts) {
     t.doesNotThrow(() => {
       fastify.decorate('foo2', foo2Obj)
     })
-    done()
+    return;;
   })
 
   fastify.ready()

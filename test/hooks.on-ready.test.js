@@ -90,7 +90,7 @@ t.test('listen and onReady order', async t => {
   const fastify = Fastify()
   let order = 0
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.ready(checkOrder.bind(null, 0))
     instance.addHook('onReady', checkOrder.bind(null, 4))
 
@@ -101,18 +101,20 @@ t.test('listen and onReady order', async t => {
       subinstance.register((realSubInstance, opts, done) => {
         realSubInstance.ready(checkOrder.bind(null, 2))
         realSubInstance.addHook('onReady', checkOrder.bind(null, 6))
-        done()
+        return;;
       })
-      done()
+      return;;
     })
-    done()
+    return;;
   })
 
   fastify.addHook('onReady', checkOrder.bind(null, 3))
 
   await fastify.ready()
   t.pass('trigger the onReady')
-  await fastify.listen(0)
+  await fastify.listen({
+    port: 0
+  })
   t.pass('do not trigger the onReady')
 
   await fastify.close()
@@ -347,19 +349,19 @@ t.test('ready return registered', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.register((one, opts, done) => {
+  fastify.register((one, opts) => {
     one.ready().then(itself => { t.same(itself, one) })
-    done()
+    return;;
   })
 
-  fastify.register((two, opts, done) => {
+  fastify.register((two, opts) => {
     two.ready().then(itself => { t.same(itself, two) })
 
     two.register((twoDotOne, opts, done) => {
       twoDotOne.ready().then(itself => { t.same(itself, twoDotOne) })
-      done()
+      return;;
     })
-    done()
+    return;;
   })
 
   fastify.ready()

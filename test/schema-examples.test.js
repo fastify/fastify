@@ -73,7 +73,7 @@ test('Example - get schema encapsulated', async t => {
   // will return only `one` schema
   fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.addSchema({ $id: 'two', my: 'ciao' })
     // will return `one` and `two` schemas
     instance.get('/sub', (request, reply) => { reply.send(instance.getSchemas()) })
@@ -82,9 +82,9 @@ test('Example - get schema encapsulated', async t => {
       subinstance.addSchema({ $id: 'three', my: 'hola' })
       // will return `one`, `two` and `three`
       subinstance.get('/deep', (request, reply) => { reply.send(subinstance.getSchemas()) })
-      done()
+      return;;
     })
-    done()
+    return;;
   })
 
   const r1 = await fastify.inject('/')

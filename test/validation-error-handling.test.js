@@ -692,7 +692,7 @@ test('plugin override', t => {
     }
   })
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.setSchemaErrorFormatter((errors, dataVar) => {
       return new Error('C')
     })
@@ -710,10 +710,10 @@ test('plugin override', t => {
 
     instance.register((subinstance, opts, done) => {
       subinstance.post('/stillC', { schema }, echoBody)
-      done()
+      return;;
     })
 
-    done()
+    return;;
   })
 
   fastify.post('/b', { schema }, echoBody)

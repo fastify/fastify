@@ -219,7 +219,7 @@ test('within an instance', t => {
   })
 
   fastify.get('/redirect-code', function (req, reply) {
-    reply.redirect(301, '/')
+    reply.redirect('/', 301)
   })
 
   fastify.get('/redirect-code-before-call', function (req, reply) {
@@ -239,15 +239,15 @@ test('within an instance', t => {
     reply.send({ hello: 'world!' })
   })
 
-  fastify.register(function (instance, options, done) {
+  fastify.register(function(instance, options) {
     fastify.addHook('onSend', function (req, reply, payload, done) {
       reply.header('x-onsend', 'yes')
-      done()
+      return;;
     })
     fastify.get('/redirect-onsend', function (req, reply) {
       reply.redirect('/')
     })
-    done()
+    return;;
   })
 
   fastify.listen(0, err => {
@@ -876,12 +876,12 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
     reply.send(new NotFound())
   })
 
-  fastify.register(function (instance, options, done) {
+  fastify.register(function(instance, options) {
     instance.get('/not-found', function (req, reply) {
       reply.send(new NotFound())
     })
 
-    done()
+    return;;
   }, { prefix: '/prefixed' })
 
   fastify.listen(0, err => {
@@ -1328,9 +1328,9 @@ test('should throw error when attempting to set reply.sent more than once', t =>
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
-    reply.sent = true
+    reply.hijack();
     try {
-      reply.sent = true
+      reply.hijack();
     } catch (err) {
       t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
       t.equal(err.message, 'Reply was already sent.')
@@ -1348,7 +1348,7 @@ test('reply.getResponseTime() should return 0 before the timer is initialised on
   t.plan(1)
   const response = { statusCode: 200 }
   const reply = new Reply(response, null)
-  t.equal(reply.getResponseTime(), 0)
+  t.equal(reply.elapsedTime, 0)
 })
 
 test('reply.getResponseTime() should return a number greater than 0 after the timer is initialised on the reply by setting up response listeners', t => {
@@ -1363,7 +1363,7 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
   })
 
   fastify.addHook('onResponse', (req, reply) => {
-    t.ok(reply.getResponseTime() > 0)
+    t.ok(reply.elapsedTime > 0)
     t.end()
   })
 
@@ -1382,7 +1382,7 @@ test('reply.getResponseTime() should return the time since a request started whi
   })
 
   fastify.addHook('preValidation', (req, reply, done) => {
-    t.not(reply.getResponseTime(), reply.getResponseTime())
+    t.not(reply.elapsedTime, reply.elapsedTime)
     done()
   })
 
@@ -1405,7 +1405,7 @@ test('reply.getResponseTime() should return the same value after a request is fi
   })
 
   fastify.addHook('onResponse', (req, reply) => {
-    t.equal(reply.getResponseTime(), reply.getResponseTime())
+    t.equal(reply.elapsedTime, reply.elapsedTime)
     t.end()
   })
 
@@ -1455,7 +1455,7 @@ test('reply should use the right serializer in encapsulated context', t => {
     handler: (req, reply) => { reply.send({ foo: 'bar' }) }
   })
 
-  fastify.register(function (instance, opts, done) {
+  fastify.register(function(instance, opts) {
     instance.route({
       method: 'GET',
       url: '/sub',
@@ -1466,10 +1466,10 @@ test('reply should use the right serializer in encapsulated context', t => {
       payload.john = 'too too'
       return JSON.stringify(payload)
     })
-    done()
+    return;;
   })
 
-  fastify.register(function (instance, opts, done) {
+  fastify.register(function(instance, opts) {
     instance.route({
       method: 'GET',
       url: '/sub',
@@ -1480,7 +1480,7 @@ test('reply should use the right serializer in encapsulated context', t => {
       payload.sweet = 'potato potato'
       return JSON.stringify(payload)
     })
-    done()
+    return;;
   }, { prefix: 'sub' })
 
   fastify.inject({
@@ -1519,7 +1519,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
     handler: (req, reply) => { reply.send({ foo: 'bar' }) }
   })
 
-  fastify.register(function (instance, opts, done) {
+  fastify.register(function(instance, opts) {
     instance.route({
       method: 'GET',
       url: '/sub',
@@ -1542,9 +1542,9 @@ test('reply should use the right serializer in deep encapsulated context', t => 
         payload.john = 'deep deep'
         return JSON.stringify(payload)
       })
-      done()
+      return;;
     })
-    done()
+    return;;
   })
 
   fastify.inject({

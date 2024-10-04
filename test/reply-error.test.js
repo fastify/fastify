@@ -150,7 +150,7 @@ test('Should set the response from client error handler', t => {
   const logStream = split(JSON.parse)
   const fastify = Fastify({
     clientErrorHandler,
-    logger: {
+    loggerInstance: {
       stream: logStream,
       level: 'warn'
     }
@@ -560,7 +560,9 @@ test('setting content-type on reply object should not hang the server case 2', a
   })
 
   try {
-    await fastify.listen(0)
+    await fastify.listen({
+      port: 0
+    })
     const res = await fastify.inject({
       url: '/',
       method: 'GET'

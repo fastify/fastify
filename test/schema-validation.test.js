@@ -161,7 +161,7 @@ test('Encapsulation', t => {
   fastify.addSchema(schemaA)
   fastify.addSchema(schemaBRefToA)
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     const validator = ({ schema, method, url, httpPart }) => {
       return ajv.compile(schema)
     }
@@ -197,17 +197,17 @@ test('Encapsulation', t => {
           body: ajv.getSchema('urn:schema:response').schema
         }
       })
-      done()
+      return;;
     })
-    done()
+    return;;
   })
 
-  fastify.register((instance, opts, done) => {
+  fastify.register((instance, opts) => {
     instance.post('/clean', function (req, reply) {
       t.equal(instance.validatorCompiler, undefined)
       reply.send({ foo: 'bar' })
     })
-    done()
+    return;;
   })
 
   fastify.inject({

@@ -132,10 +132,10 @@ test('server logs an error if reply.send is called and a value is returned via a
     t.equal(line.msg, lines.shift())
   })
 
-  const logger = pino(splitStream)
+  const loggerInstance = pino(splitStream)
 
   const fastify = Fastify({
-    logger
+    loggerInstance
   })
 
   fastify.get('/', async (req, reply) => {
@@ -214,7 +214,7 @@ test('await reply if we will be calling reply.send in the future', t => {
   })
 
   const server = Fastify({
-    logger: {
+    loggerInstance: {
       stream: splitStream
     }
   })
@@ -248,7 +248,7 @@ test('await reply if we will be calling reply.send in the future (error case)', 
   })
 
   const server = Fastify({
-    logger: {
+    loggerInstance: {
       stream: splitStream
     }
   })
@@ -406,7 +406,7 @@ test('error is logged because promise was fulfilled with undefined', t => {
   const stream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream,
         level: 'error'
       }
@@ -446,7 +446,7 @@ test('error is not logged because promise was fulfilled with undefined but statu
   const stream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream,
         level: 'error'
       }
@@ -487,7 +487,7 @@ test('error is not logged because promise was fulfilled with undefined but respo
   const payload = { hello: 'world' }
   try {
     fastify = Fastify({
-      logger: {
+      loggerInstance: {
         stream,
         level: 'error'
       }

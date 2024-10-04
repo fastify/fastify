@@ -92,7 +92,7 @@ test('Fastify.initialConfig should expose all options', t => {
     genReqId: function (req) {
       return reqId++
     },
-    logger: pino({ level: 'info' }),
+    loggerInstance: pino({ level: 'info' }),
     constraints: {
       version: versionStrategy
     },
@@ -120,7 +120,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.trustProxy, undefined)
   t.equal(fastify.initialConfig.genReqId, undefined)
   t.equal(fastify.initialConfig.querystringParser, undefined)
-  t.equal(fastify.initialConfig.logger, undefined)
+  t.equal(fastify.initialConfig.loggerInstance, undefined)
   t.equal(fastify.initialConfig.trustProxy, undefined)
 })
 
@@ -227,7 +227,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
   const originalOptions = {
     ignoreTrailingSlash: true,
-    logger: {
+    loggerInstance: {
       level: 'trace',
       stream
     }

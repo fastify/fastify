@@ -334,7 +334,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
-  fastify.register((scope, opts, next) => {
+  fastify.register((scope, opts) => {
     scope.route({
       method: 'HEAD',
       path: '/route',
@@ -366,7 +366,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
-  fastify.register((scope, opts, next) => {
+  fastify.register((scope, opts) => {
     scope.route({
       method: 'HEAD',
       path: '/route',

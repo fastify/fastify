@@ -85,7 +85,7 @@ test('default clientError handler ignores ECONNRESET', t => {
   const fastify = Fastify({
     bodyLimit: 1,
     keepAliveTimeout: 100,
-    logger: {
+    loggerInstance: {
       level: 'trace',
       stream: {
         write () {
@@ -134,7 +134,7 @@ test('default clientError handler ignores sockets in destroyed state', t => {
   const fastify = Fastify({
     bodyLimit: 1,
     keepAliveTimeout: 100,
-    logger: {
+    loggerInstance: {
       level: 'trace'
     }
   })
@@ -243,7 +243,7 @@ test('encapsulated error handler binding', t => {
 
   const fastify = Fastify()
 
-  fastify.register(function (app, opts, done) {
+  fastify.register(function(app, opts) {
     app.decorate('hello', 'world')
     t.equal(app.hello, 'world')
     app.post('/', function (req, reply) {
@@ -256,7 +256,7 @@ test('encapsulated error handler binding', t => {
         .type('application/json; charset=utf-8')
         .send(err)
     })
-    done()
+    return;;
   })
 
   fastify.inject({

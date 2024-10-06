@@ -282,8 +282,7 @@ t.test('logging', (t) => {
 
     const fastify = Fastify({
       disableRequestLogging: (context, request) => {
-        const x = request.url !== '/not-logged'
-        return x
+        return request.url !== '/not-logged'
       },
       loggerInstance,
     })

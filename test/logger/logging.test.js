@@ -17,7 +17,7 @@ t.test('logging', (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(13)
+  t.plan(14)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -268,6 +268,44 @@ t.test('logging', (t) => {
 
     // no more readable data
     t.equal(stream.readableLength, 0)
+  })
+
+  t.test('should log incoming request and outgoing response based on resolver', { runOnly: true }, async (t) => {
+    const lines = [
+      'incoming request',
+      'request completed',
+    ]
+    t.plan(lines.length)
+
+    const stream = split(JSON.parse)
+    const loggerInstance = pino(stream)
+
+    const fastify = Fastify({
+      disableRequestLogging: (context, request) => {
+        const x = request.url !== '/not-logged'
+        return x
+      },
+      loggerInstance,
+    })
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.get('/logged', (req, reply) => {
+      return reply.code(200).send({})
+    })
+
+    fastify.get('/not-logged', (req, reply) => {
+      return reply.code(200).send({})
+    })
+
+    await fastify.ready()
+
+    await fastify.inject({ method: 'GET', url: '/not-logged' })
+    await fastify.inject({ method: 'GET', url: '/logged' })
+
+    for await (const [line] of on(stream, 'data')) {
+      t.same(line.msg, lines.shift())
+      if (lines.length === 0) break
+    }
   })
 
   t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {

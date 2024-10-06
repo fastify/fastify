@@ -374,8 +374,8 @@ test('Should not mutate the options object outside Fastify', async t => {
 
   try {
     Fastify(options)
-    t.pass()
+    t.assert.ok(true)
   } catch (error) {
-    t.fail(error.message)
+    t.assert.fail(error.message)
   }
 })

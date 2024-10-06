@@ -97,10 +97,11 @@ function defaultBuildPrettyMeta (route) {
  */
 function fastify (options) {
   // Options validations
-  options = options || {}
-
-  if (typeof options !== 'object') {
+  if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
+  } else {
+    // Shallow copy options object to prevent mutations outside of this function
+    options = Object.assign({}, options)
   }
 
   if (options.querystringParser && typeof options.querystringParser !== 'function') {

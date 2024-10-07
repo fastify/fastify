@@ -3072,11 +3072,11 @@ test('preSerialization hooks should support encapsulation', t => {
 })
 
 test('onRegister hook should be called / 1', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', (instance, opts, done) => {
-    // duck typing for the win!
+  fastify.addHook('onRegister', function (instance, opts, done) {
+    t.ok(this.addHook)
     t.ok(instance.addHook)
     t.same(opts, pluginOpts)
     t.notOk(done)
@@ -3091,11 +3091,11 @@ test('onRegister hook should be called / 1', t => {
 })
 
 test('onRegister hook should be called / 2', t => {
-  t.plan(4)
+  t.plan(7)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', instance => {
-    // duck typing for the win!
+  fastify.addHook('onRegister', function (instance) {
+    t.ok(this.addHook)
     t.ok(instance.addHook)
   })
 

@@ -62,6 +62,32 @@ jobs:
         run: |
           npx license-checker --production --summary --onlyAllow="0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;"
 
+  check-engines-range:
+    name: Check engines range
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install
+        run: |
+          npm install --ignore-scripts
+
+      - name: Check engines range
+        run: |
+          npm run lint:engines-range
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

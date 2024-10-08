@@ -1,0 +1,25 @@
+{
+  "name": "typescript-server",
+  "version": "1.0.0",
+  "description": "A TypeScript server project using fastify",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn index.ts",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.4",
+    "rimraf": "^5.0.0"
+  },
+  "author": {
+    "name": "Jean-Pierre Carvalho",
+    "url": "https://github.com/jeanpierrecarvalho"
+  },
+  "license": "MIT"
+}

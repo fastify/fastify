@@ -10,8 +10,12 @@ interface TestOptions extends FastifyPluginOptions {
   option1: string;
   option2: boolean;
 }
-const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) { }
-const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) { }
+const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) {
+  expectAssignable<typeof opts>({})
+}
+const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) {
+  expectAssignable<typeof opts>({})
+}
 
 const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
 const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { }

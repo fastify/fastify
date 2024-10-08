@@ -1,8 +1,8 @@
-import t from 'tap'
+import { test } from 'node:test'
 import { fastify } from '../../fastify.js'
 
 // This test is executed in index.test.js
-t.test('named exports support', async t => {
+test('named exports support', async t => {
   const app = fastify()
 
   app.register(import('./plugin.mjs'), { foo: 'bar' })
@@ -10,5 +10,5 @@ t.test('named exports support', async t => {
 
   await app.ready()
 
-  t.equal(app.foo, 'bar')
+  t.assert.strictEqual(app.foo, 'bar')
 })

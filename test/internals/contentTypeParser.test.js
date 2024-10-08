@@ -1,8 +1,7 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
-const test = t.test
 const { Readable } = require('node:stream')
 const { kTestInternals, kRouteContext } = require('../../lib/symbols')
 const Request = require('../../lib/request')
@@ -17,8 +16,8 @@ test('rawBody function', t => {
     asString: true,
     asBuffer: false,
     fn (req, bodyInString, done) {
-      t.equal(bodyInString, body.toString())
-      t.equal(typeof done, 'function')
+      t.assert.strictEqual(bodyInString, body.toString())
+      t.assert.strictEqual(typeof done, 'function')
       return {
         then (cb) {
           cb()
@@ -70,8 +69,8 @@ test('Should support Webpack and faux modules', t => {
     asString: true,
     asBuffer: false,
     fn (req, bodyInString, done) {
-      t.equal(bodyInString, body.toString())
-      t.equal(typeof done, 'function')
+      t.assert.strictEqual(bodyInString, body.toString())
+      t.assert.strictEqual(typeof done, 'function')
       return {
         then (cb) {
           cb()

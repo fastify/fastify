@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('TRACE')
 
@@ -15,8 +14,8 @@ test('shorthand - trace', t => {
         reply.code(200).send('TRACE OK')
       }
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })

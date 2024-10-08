@@ -1,8 +1,7 @@
 'use strict'
 
-const t = require('tap')
 const diagnostics = require('node:diagnostics_channel')
-const test = t.test
+const { test } = require('node:test')
 require('../../lib/hooks').onSendHookRunner = function Stub () {}
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
@@ -14,12 +13,12 @@ test('diagnostics channel handles an error before calling context handler', t =>
   let callOrder = 0
 
   diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
-    t.equal(callOrder++, 0)
+    t.assert.strictEqual(callOrder++, 0)
   })
 
   diagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {
-    t.equal(callOrder++, 1)
-    t.equal(msg.error.message, 'oh no')
+    t.assert.strictEqual(callOrder++, 1)
+    t.assert.strictEqual(msg.error.message, 'oh no')
   })
 
   const error = new Error('oh no')

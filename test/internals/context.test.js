@@ -1,23 +1,23 @@
 'use strict'
 
-const { test } = require('tap')
-
+const { test } = require('node:test')
 const { kRouteContext } = require('../../lib/symbols')
 const Context = require('../../lib/context')
 
 const Fastify = require('../..')
 
-test('context', context => {
+test('context', async context => {
   context.plan(1)
 
-  context.test('Should not contain undefined as key prop', async t => {
+  await context.test('Should not contain undefined as key prop', async t => {
+    t.plan(4)
     const app = Fastify()
 
     app.get('/', (req, reply) => {
-      t.type(req[kRouteContext], Context)
-      t.type(reply[kRouteContext], Context)
-      t.notOk('undefined' in reply[kRouteContext])
-      t.notOk('undefined' in req[kRouteContext])
+      t.assert.ok(req[kRouteContext] instanceof Context)
+      t.assert.ok(reply[kRouteContext] instanceof Context)
+      t.assert.ok(!('undefined' in reply[kRouteContext]))
+      t.assert.ok(!('undefined' in req[kRouteContext]))
 
       reply.send('hello world!')
     })
@@ -25,9 +25,7 @@ test('context', context => {
     try {
       await app.inject('/')
     } catch (e) {
-      t.fail(e)
+      t.assert.fail(e)
     }
-
-    t.plan(4)
   })
 })

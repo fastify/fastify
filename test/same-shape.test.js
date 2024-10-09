@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const fastify = require('..')
 
 test('same shape on Request', async (t) => {
@@ -21,7 +21,7 @@ test('same shape on Request', async (t) => {
 
   app.get('/', (req, reply) => {
     if (request) {
-      t.equal(%HaveSameMap(request, req), true)
+      t.assert.deepStrictEqual(request, req)
     }
 
     request = req
@@ -51,7 +51,7 @@ test('same shape on Request when object', async (t) => {
 
   app.get('/', (req, reply) => {
     if (request) {
-      t.equal(%HaveSameMap(request, req), true)
+      t.assert.deepStrictEqual(request, req)
     }
 
     request = req
@@ -81,7 +81,7 @@ test('same shape on Reply', async (t) => {
 
   app.get('/', (req, reply) => {
     if (_reply) {
-      t.equal(%HaveSameMap(_reply, reply), true)
+      t.assert.deepStrictEqual(_reply, reply)
     }
 
     _reply = reply
@@ -111,7 +111,7 @@ test('same shape on Reply when object', async (t) => {
 
   app.get('/', (req, reply) => {
     if (_reply) {
-      t.equal(%HaveSameMap(_reply, reply), true)
+      t.assert.deepStrictEqual(_reply, reply)
     }
 
     _reply = reply

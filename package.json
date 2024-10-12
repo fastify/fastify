@@ -11,7 +11,7 @@
     "benchmark:parser": "concurrently -k -s first \"node ./examples/benchmark/parser.js\" \"autocannon -c 100 -d 30 -p 10 -i ./examples/benchmark/body.json -H \"content-type:application/jsoff\" -m POST localhost:3000/\"",
     "build:validation": "node build/build-error-serializer.js && node build/build-validation.js",
     "coverage": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --lines 100",
-    "coverage:ci": "nyc --coverage-report=html --coverage-report=lcov borp --reporter=./test/test-reporter.mjs --coverage --check-coverage",
+    "coverage:ci": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage",
     "coverage:ci-check-coverage": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --lines 100",
     "lint": "npm run lint:eslint",
     "lint:fix": "eslint --fix",
@@ -24,8 +24,8 @@
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
-    "unit": "borp --reporter=./test/test-reporter.mjs",
-    "unit:report": "nyc --coverage-report=html --reporter=cobertura borp --reporter=./test/test-reporter.mjs --coverage --check-coverage",
+    "unit": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage",
+    "unit:report": "borp --reporter=./test/test-reporter.mjs --coverage > out.test-report",
     "citgm": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --concurrency=1"
   },
   "repository": {
@@ -178,7 +178,6 @@
     "markdownlint-cli2": "^0.13.0",
     "neostandard": "^0.11.3",
     "node-forge": "^1.3.1",
-    "nyc": "^17.1.0",
     "proxyquire": "^2.1.3",
     "simple-get": "^4.0.1",
     "split2": "^4.2.0",

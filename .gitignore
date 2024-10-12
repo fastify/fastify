@@ -163,8 +163,9 @@ profile*
 examples/typescript-server.js
 test/types/index.js
 
-# test tap report
+# test reports
 out.tap
+out.test-reporter
 
 # test certification
 test/https/fastify.cert

@@ -252,6 +252,54 @@ test('add', t => {
   t.end()
 })
 
+test('run', t => {
+  test('should be case-insensitive', t => {
+    t.plan(6)
+
+    const fastify = Fastify()
+
+    fastify.addContentTypeParser('text/html', (req, payload, done) => {
+      done(null, payload)
+    })
+
+    fastify.post('/', (req, reply) => {
+      reply.send(req.body)
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'Content-Type': 'text/html' },
+      payload: 'hello world'
+    }, (err, res) => {
+      t.error(err)
+      t.same(res.payload, 'hello world')
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'Content-Type': 'TEXT/HTML' },
+      payload: 'hello world'
+    }, (err, res) => {
+      t.error(err)
+      t.same(res.payload, 'hello world')
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'Content-Type': 'TEXT/HTML; charset=utf-8' },
+      payload: 'hello world'
+    }, (err, res) => {
+      t.error(err)
+      t.same(res.payload, 'hello world')
+    })
+  })
+
+  t.end()
+})
+
 test('non-Error thrown from content parser is properly handled', t => {
   t.plan(3)
 

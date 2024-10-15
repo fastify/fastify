@@ -208,7 +208,7 @@
     "fast-content-type-parse": "^1.1.0",
     "fast-json-stringify": "^5.8.0",
     "find-my-way": "^8.0.0",
-    "light-my-request": "^5.11.0",
+    "light-my-request": "^6.1.0",
     "pino": "^9.0.0",
     "process-warning": "^3.0.0",
     "proxy-addr": "^2.0.7",

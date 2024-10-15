@@ -5,8 +5,8 @@
 
 Testing is one of the most important parts of developing an application. Fastify
 is very flexible when it comes to testing and is compatible with most testing
-frameworks (such as [Node Test Runner](https://nodejs.org/api/test.html), which is used in
-the examples below).
+frameworks (such as [Node Test Runner](https://nodejs.org/api/test.html),
+which is used in the examples below).
 
 ## Application
 

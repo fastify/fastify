@@ -21,6 +21,7 @@ import fastify, {
   RouteGenericInterface,
   SafePromiseLike
 } from '../../fastify'
+import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 // FastifyInstance
 // http server
@@ -216,6 +217,17 @@ expectAssignable<FastifyInstance>(fastify({
   clientErrorHandler: (err, socket) => {
     expectType<ConnectionError>(err)
     expectType<Socket>(socket)
+  }
+}))
+
+expectAssignable<FastifyInstance>(fastify({
+  childLoggerFactory: function (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+    expectType<FastifyBaseLogger>(logger)
+    expectType<Bindings>(bindings)
+    expectType<ChildLoggerOptions>(opts)
+    expectType<RawRequestDefaultExpression>(req)
+    expectAssignable<FastifyInstance>(this)
+    return logger.child(bindings, opts)
   }
 }))
 

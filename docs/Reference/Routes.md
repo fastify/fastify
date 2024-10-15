@@ -151,8 +151,11 @@ fastify.route({
   url: '/',
   schema: {
     querystring: {
-      name: { type: 'string' },
-      excitement: { type: 'integer' }
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        excitement: { type: 'integer' }
+      }
     },
     response: {
       200: {

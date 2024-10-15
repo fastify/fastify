@@ -367,3 +367,14 @@ test('pluginTimeout should be parsed correctly', t => {
   t.equal(withInvalidTimeout.initialConfig.pluginTimeout, 10000)
   t.end()
 })
+
+test('Should not mutate the options object outside Fastify', async t => {
+  const options = Object.freeze({})
+
+  try {
+    Fastify(options)
+    t.pass()
+  } catch (error) {
+    t.fail(error.message)
+  }
+})

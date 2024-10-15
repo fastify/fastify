@@ -307,8 +307,6 @@ listed in alphabetical order.
   <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
 * [__Carlos Fuentes__](https://github.com/metcoder95),
   <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
-* [__Rafael Gonzaga__](https://github.com/rafaelgss),
-  <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
@@ -348,6 +346,10 @@ listed in alphabetical order.
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 * [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
   <https://www.npmjs.com/~gurgunday>
+* [__Dan Castillo__](https://github.com/dancastillo),
+  <https://www.npmjs.com/~dancastillo>
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -371,6 +373,8 @@ to join this group by Lead Maintainers.
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 * [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
   <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+* [__Rafael Gonzaga__](https://github.com/rafaelgss),
+  <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 
 ## Hosted by
 

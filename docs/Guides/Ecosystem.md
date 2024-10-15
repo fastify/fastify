@@ -12,8 +12,6 @@ section.
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to the `Accept` header.
-- [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save
-  multiple schemas and decide which one to use to serialize the payload.
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
@@ -43,10 +41,7 @@ section.
   [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to
   Fastify.
 - [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel)
-  Plugin to deal with `diagnostics_channel` on Fastify
-- [`@fastify/early-hints`](https://github.com/fastify/fastify-early-hints) Plugin
-  to add HTTP 103 feature based on [RFC
-  8297](https://datatracker.ietf.org/doc/html/rfc8297).
+  Plugin to deal with `diagnostics_channel` on Fastify.
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check
@@ -124,8 +119,6 @@ section.
   HTTP errors and assertions, but also more request and reply methods.
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for
   Fastify.
-- [`@fastify/soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
-  client plugin for Fastify.
 - [`@fastify/static`](https://github.com/fastify/fastify-static) Plugin for
   serving static files as fast as possible.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for

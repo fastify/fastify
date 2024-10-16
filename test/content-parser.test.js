@@ -79,6 +79,23 @@ test('getParser', t => {
   })
 
   test('should return matching parser with caching /2', t => {
+    t.plan(8)
+
+    const fastify = Fastify()
+
+    fastify.addContentTypeParser('text/html', first)
+
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 0)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/HTML').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.equal(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.equal(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
+  })
+
+  test('should return matching parser with caching /3', t => {
     t.plan(6)
 
     const fastify = Fastify()
@@ -247,54 +264,6 @@ test('add', t => {
     } catch (err) {
       t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
     }
-  })
-
-  t.end()
-})
-
-test('run', t => {
-  test('should be case-insensitive', t => {
-    t.plan(6)
-
-    const fastify = Fastify()
-
-    fastify.addContentTypeParser('text/html', (req, payload, done) => {
-      done(null, payload)
-    })
-
-    fastify.post('/', (req, reply) => {
-      reply.send(req.body)
-    })
-
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      headers: { 'Content-Type': 'text/html' },
-      payload: 'hello world'
-    }, (err, res) => {
-      t.error(err)
-      t.same(res.payload, 'hello world')
-    })
-
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      headers: { 'Content-Type': 'TEXT/HTML' },
-      payload: 'hello world'
-    }, (err, res) => {
-      t.error(err)
-      t.same(res.payload, 'hello world')
-    })
-
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      headers: { 'Content-Type': 'TEXT/HTML; charset=utf-8' },
-      payload: 'hello world'
-    }, (err, res) => {
-      t.error(err)
-      t.same(res.payload, 'hello world')
-    })
   })
 
   t.end()

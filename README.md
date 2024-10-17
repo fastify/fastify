@@ -268,7 +268,7 @@ support issues and to ask new support questions.
 
 All previous versions of Fastify besides the latest are end of life and will not receive any security or bug fixes.
 
-Our partner, HeroDevs, provides commercial security fixes for all unsupported versions at https://herodevs.com/fastify-nes.
+Our partner, HeroDevs, provides commercial security fixes for all unsupported versions at https://herodevs.com/fastify-nes. Our supported version matrix is available in our [Long Term Support](link) documentation.
 
 | Version | Supported? | Commercial Support         |
 | :------ | :--------- | :------------------------: |

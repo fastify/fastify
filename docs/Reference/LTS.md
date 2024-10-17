@@ -48,6 +48,13 @@ A "month" is defined as 30 consecutive days.
 > dependency as `"fastify": "~3.15.x"`. This will leave your application
 > vulnerable, so please use with caution.
 
+### Security Support Beyond LTS
+
+Our partner HeroDevs provides commercial security support through the OpenJS Ecosystem
+Sustainability Program for versions of Fastify that are EOL. For more
+information, see their [Never Ending Support][hd-link] service.
+
+
 ### Schedule
 
 `<a id="lts-schedule"></a>`
@@ -81,3 +88,5 @@ Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines`
 flag.
 
 [semver]: https://semver.org/
+
+[hd-link]: https://www.herodevs.com/support/fastify-nes?utm_source=fastify&utm_medium=link&utm_campaign=eol_support_fastify

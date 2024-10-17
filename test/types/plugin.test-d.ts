@@ -10,8 +10,16 @@ interface TestOptions extends FastifyPluginOptions {
   option1: string;
   option2: boolean;
 }
-const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) { }
-const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) { }
+const testOptions: TestOptions = {
+  option1: 'a',
+  option2: false,
+}
+const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) {
+  expectType<TestOptions>(opts)
+}
+const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) {
+  expectType<TestOptions>(opts)
+}
 
 const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
 const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { }
@@ -39,7 +47,7 @@ expectAssignable<FastifyInstance>(fastify().register(function (instance, opts): 
 expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, () => { }))
 expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' }))
 
-expectError(fastify().register(function (instance, opts, done) { }, { logLevel: '' })) // must use a valid logLevel
+expectError(fastify().register(function (instance, opts, done) { }, { ...testOptions, logLevel: '' })) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
 expectError<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & Promise<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
@@ -48,7 +56,7 @@ expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerRespon
 
 // Chainable
 httpsServer
-  .register(testPluginOpts)
+  .register(testPluginOpts, testOptions)
   .after((_error) => { })
   .ready((_error) => { })
   .close(() => { })
@@ -57,7 +65,7 @@ httpsServer
 expectAssignable<PromiseLike<undefined>>(httpsServer.after())
 expectAssignable<PromiseLike<undefined>>(httpsServer.close())
 expectAssignable<PromiseLike<undefined>>(httpsServer.ready())
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts, testOptions))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync))
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
@@ -66,6 +74,6 @@ expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWith
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function testAsync (): Promise<void> {
   await httpsServer
-    .register(testPluginOpts)
-    .register(testPluginOpts)
+    .register(testPluginOpts, testOptions)
+    .register(testPluginOpts, testOptions)
 }

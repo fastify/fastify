@@ -266,18 +266,11 @@ application, you should __always__ benchmark if performance matters to you.
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
 
-All previous versions of Fastify besides the latest are end of life and will not receive any security or bug fixes.
+Version 3 of Fastify and lower are EOL and will not receive any security or bug fixes.
 
-Our partner, HeroDevs, provides commercial security fixes for all unsupported versions at https://herodevs.com/fastify-nes. Our supported version matrix is available in our [Long Term Support](link) documentation.
-
-| Version | Supported? | Commercial Support         |
-| :------ | :--------- | :------------------------: |
-| 5       | Yes        |                            |
-| 4       | Yes        |                            |
-| 3       | No         | [Available here][hd-link]  |
-| 2       | No         | [Available here][hd-link]  |
-| 1       | No         | [Available here][hd-link]  |
-
+Our partner, HeroDevs, provides commercial security fixes for all unsupported versions
+at [https://herodevs.com/support/fastify-nes](hd-link). Our supported version matrix
+is available in our [Long Term Support](lts-link) documentation.
 
 ## Contributing
 
@@ -429,3 +422,4 @@ dependencies:
 - BSD-2-Clause
 
 [hd-link]: https://www.herodevs.com/support/fastify-nes?utm_source=fastify&utm_medium=link&utm_campaign=github_readme
+[lts-link]: https://fastify.dev/docs/latest/Reference/LTS/

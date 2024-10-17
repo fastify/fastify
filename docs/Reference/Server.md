@@ -1559,7 +1559,7 @@ is set. It can be accessed using `fastify.errorHandler` and it logs the error
 with respect to its `statusCode`.
 
 ```js
-var statusCode = error.statusCode
+const statusCode = error.statusCode
 if (statusCode >= 500) {
   log.error(error)
 } else if (statusCode >= 400) {

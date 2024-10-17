@@ -53,7 +53,7 @@ fastify.addContentTypeParser(['text/xml', 'application/xml'], function (request,
 
 // Async is also supported in Node versions >= 8.0.0
 fastify.addContentTypeParser('application/jsoff', async function (request, payload) {
-  var res = await jsoffParserAsync(payload)
+  const res = await jsoffParserAsync(payload)
 
   return res
 })
@@ -181,7 +181,7 @@ limit is exceeded the custom parser will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
-    var json = JSON.parse(body)
+    const json = JSON.parse(body)
     done(null, json)
   } catch (err) {
     err.statusCode = 400
@@ -206,7 +206,7 @@ There are some cases where you need to catch all requests regardless of their
 content type. With Fastify, you can just use the `'*'` content type.
 ```js
 fastify.addContentTypeParser('*', function (request, payload, done) {
-  var data = ''
+  let data = ''
   payload.on('data', chunk => { data += chunk })
   payload.on('end', () => {
     done(null, data)
@@ -266,7 +266,7 @@ only on those that don't have a specific one, you should call the
 fastify.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('*', function (request, payload, done) {
-  var data = ''
+  const data = ''
   payload.on('data', chunk => { data += chunk })
   payload.on('end', () => {
     done(null, data)

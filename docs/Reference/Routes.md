@@ -334,8 +334,8 @@ fastify.post('/name::verb') // will be interpreted as /name:verb
 Are you an `async/await` user? We have you covered!
 ```js
 fastify.get('/', options, async function (request, reply) {
-  var data = await getData()
-  var processed = await processData(data)
+  const data = await getData()
+  const processed = await processData(data)
   return processed
 })
 ```
@@ -349,8 +349,8 @@ handler or you will introduce a race condition in certain situations.
 
 ```js
 fastify.get('/', options, async function (request, reply) {
-  var data = await getData()
-  var processed = await processData(data)
+  const data = await getData()
+  const processed = await processData(data)
   return reply.send(processed)
 })
 ```

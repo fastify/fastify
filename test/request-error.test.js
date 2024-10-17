@@ -6,6 +6,9 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const { kRequest } = require('../lib/symbols.js')
+const split = require('split2')
+const { Readable } = require('node:stream')
+const { getServerUrl } = require('./helper')
 
 test('default 400 on request error', t => {
   t.plan(4)
@@ -531,6 +534,139 @@ test('test request.routeOptions.version', t => {
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('customErrorHandler should throw for json err and stream response', t => {
+  t.plan(7)
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+      }
+    })
+    process.nextTick(() => stream.destroy(new Error('stream error')))
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.equal(err.message, 'stream error')
+    reply.code(400)
+    reply.send({ error: err.message })
+  })
+
+  logStream.once('data', line => {
+    t.equal(line.msg, 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.')
+    t.equal(line.level, 50)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: getServerUrl(fastify) + '/'
+    }, async (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.payload, undefined)
+    })
+  })
+})
+
+test('customErrorHandler should not throw for json err and stream response with content-type defined', t => {
+  t.plan(5)
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+      }
+    })
+    process.nextTick(() => stream.destroy(new Error('stream error')))
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.equal(err.message, 'stream error')
+    reply
+      .code(400)
+      .type('application/json')
+      .send({ error: err.message })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: getServerUrl(fastify) + '/'
+    }, async (err, res, body) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.same(body.toString(), JSON.stringify({ error: 'stream error' }))
+    })
+  })
+})
+
+test('customErrorHandler should not call handler for in-stream error', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+        stream.destroy(new Error('stream error'))
+      }
+    })
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler(() => {
+    t.fail('must not be called')
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: getServerUrl(fastify) + '/'
+    }, async (err, res) => {
+      t.equal(res, undefined)
+      t.equal(err.code, 'ECONNRESET')
+      t.equal(err.message, 'socket hang up')
     })
   })
 })

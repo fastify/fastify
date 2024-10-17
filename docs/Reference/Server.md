@@ -1569,20 +1569,21 @@ if (statusCode >= 500) {
 }
 ```
 
-When you are sending streams you will have to account for that in the custom
-error handler.
+Custom error handler has to account for stream replies.
 
-If you use `res.send(jsonData)` in the error handler it will fail for stream
-response because Fastify will not be able to serialize it. Therefore you may
-want to always reply with string-data in error handler
-(e.g. by manually serializing the error response to JSON).
+If `res.send(jsonData)` is used in the error handler, it will fail for the stream
+response because Fastify will not be able to serialize it.
+Always using string data in error handler replies will avoid this issue.
+For example, manually serializing the error response to JSON
+with `JSON.stringify`.
 
-Also, you will want to manually call `reply.raw.destroy()` to avoid the request
-hanging if aborted from the server side. For example, if you're going to reply
-with stream and abort it after a timeout. If the error happens in the middle of
-the stream (like in the example with timeout) you will not be able to change the
-response status code and headers as those were already sent. Therefore, you will
-have to be able to signal that somehow with custom data in response.
+It is required to manually call `reply.raw.destroy()` to avoid the request
+hanging if aborted from the server side. During HTTP response status code and
+headers are written first, therefore if the error happens in the middle of
+the stream (e.g. request timeout from the server side) errorHandler will not be
+able to change the response status code and headers as they were already sent.
+Therefore, signalling such errors must use custom logic or values in stream
+response.
 
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>

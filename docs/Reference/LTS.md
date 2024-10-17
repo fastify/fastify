@@ -50,7 +50,9 @@ A "month" is defined as 30 consecutive days.
 
 ### Security Support Beyond LTS
 
-Our partner HeroDevs provides commercial security support through the OpenJS Ecosystem Sustainability Program for versions of Fastify that are beyond LTS. For more information, see their [Never Ending Support][hd-link] service.
+Our partner HeroDevs provides commercial security support through the OpenJS Ecosystem
+Sustainability Program for versions of Fastify that are EOL. For more
+information, see their [Never Ending Support][hd-link] service.
 
 
 ### Schedule

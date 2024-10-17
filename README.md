@@ -269,8 +269,8 @@ support issues and to ask new support questions.
 Version 3 of Fastify and lower are EOL and will not receive any security or bug fixes.
 
 Our partner, HeroDevs, provides commercial security fixes for all unsupported versions
-at [https://herodevs.com/support/fastify-nes](hd-link). Our supported version matrix
-is available in our [Long Term Support](lts-link) documentation.
+at [https://herodevs.com/support/fastify-nes][hd-link]. Our supported version matrix
+is available in our [Long Term Support][lts-link] documentation.
 
 ## Contributing
 

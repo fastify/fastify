@@ -1568,6 +1568,23 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+
+Custom error handler has to account for stream replies.
+
+If `res.send(jsonData)` is used in the error handler, it will fail for the stream
+response because Fastify will not be able to serialize it.
+Always using string data in error handler replies will avoid this issue.
+For example, manually serializing the error response to JSON
+with `JSON.stringify`.
+
+It is required to manually call `reply.raw.destroy()` to avoid the request
+hanging if aborted from the server side. During HTTP response status code and
+headers are written first, therefore if the error happens in the middle of
+the stream (e.g. request timeout from the server side) errorHandler will not be
+able to change the response status code and headers as they were already sent.
+Therefore, signalling such errors must use custom logic or values in stream
+response.
+
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>
 

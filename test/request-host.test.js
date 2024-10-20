@@ -2,16 +2,17 @@
 
 const t = require('tap')
 const test = t.test
-const Fastify = require('..')
+const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 
 test('should handle invalid hostname', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
   fastify.post('/', function (req, reply) {
     t.equal(req.hostname, undefined)
+    t.equal(req.port, null)
     reply.send({ hello: 'world' })
   })
 

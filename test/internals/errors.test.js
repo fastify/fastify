@@ -250,6 +250,26 @@ test('FST_ERR_DEC_REFERENCE_TYPE', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_DEC_UNDECLARED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_UNDECLARED('myDecorator')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_UNDECLARED')
+  t.assert.strictEqual(error.message, "No decorator 'myDecorator' has been declared.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_DEC_GET_ACCESS_AFTER_START', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_GET_ACCESS_AFTER_START()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
+  t.assert.strictEqual(error.message, 'Methods getDecorators should be called before the application start.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_HOOK_INVALID_TYPE', t => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_INVALID_TYPE()

@@ -109,6 +109,63 @@ test('should pass error for missing request decorator', t => {
     })
 })
 
+test('getDecorators should return an array of all type of decorators', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorate('a', 'from_instance')
+  fastify.decorateRequest('b', 'from_request')
+  fastify.decorateReply('c', 'from_reply')
+
+  fastify.register((child) => {
+    child.decorate('a', 'from_child_instance')
+
+    const [a, b, c] = child.getDecorators(['a', 'b', 'c'])
+    t.equal(a, 'from_child_instance')
+    t.equal(b, 'from_request')
+    t.equal(c, 'from_reply')
+  })
+
+  const [a, b, c] = fastify.getDecorators(['a', 'b', 'c'])
+  t.equal(a, 'from_instance')
+  t.equal(b, 'from_request')
+  t.equal(c, 'from_reply')
+
+  fastify.ready(() => t.pass())
+})
+
+test('getDecorators should not be called after start', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('a', true)
+  fastify.ready(() => {
+    try {
+      fastify.getDecorators(['a'])
+      t.fail()
+    } catch (e) {
+      t.same(e.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
+      t.same(e.message, 'Methods getDecorators should be called before the application start.')
+    }
+    t.pass()
+  })
+})
+
+test('getDecorators should only return existing decorators', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  try {
+    fastify.getDecorators(['foo'])
+    t.fail()
+  } catch (e) {
+    t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
+    t.same(e.message, "No decorator 'foo' has been declared.")
+  }
+
+  fastify.ready(() => t.pass()
+  )
+})
+
 test('decorateReply inside register', t => {
   t.plan(11)
   const fastify = Fastify()

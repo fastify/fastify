@@ -152,6 +152,9 @@ export interface FastifyInstance<
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
 
+  getDecorators<T extends any[]>(...names: string[]): T;
+  getDecorators<T extends any[]>(names: string[]): T;
+
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;

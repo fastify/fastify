@@ -519,6 +519,18 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
 
+const decoratorsRestParameters = server.getDecorators<[string, number]>('decorator1', 'decorator2')
+expectType<[string, number]>(decoratorsRestParameters)
+
+const decoratorsArray = server.getDecorators<[string, number]>(['decorator1', 'decorator2'])
+expectType<[string, number]>(decoratorsArray)
+
+const decoratorsRestParametersDefault = server.getDecorators('decorator1', 'decorator2')
+expectType<any[]>(decoratorsRestParametersDefault)
+
+const decoratorsDefaultArray = server.getDecorators(['decorator1', 'decorator2'])
+expectType<any[]>(decoratorsDefaultArray)
+
 const versionConstraintStrategy = {
   name: 'version',
   storage: () => ({

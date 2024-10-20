@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 83 errors', t => {
+test('should expose 85 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +14,12 @@ test('should expose 83 errors', t => {
       counter++
     }
   }
-  t.assert.strictEqual(counter, 83)
+
+  t.assert.strictEqual(counter, 85)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(83)
+  t.plan(85)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -868,7 +869,7 @@ test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
 })
 
 test('Ensure that all errors are in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -880,7 +881,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g
@@ -893,7 +894,7 @@ test('Ensure that non-existing errors are not in Errors.md TOC', t => {
 })
 
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -905,7 +906,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g

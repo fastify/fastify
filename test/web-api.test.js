@@ -255,7 +255,6 @@ test('allow to pipe with fetch', async (t) => {
 
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { ok: true })
-  console.log('fjlafjkal')
 })
 
 test('allow to pipe with undici.fetch', async (t) => {

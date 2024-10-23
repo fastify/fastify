@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('MKCALENDAR', { hasBody: true })
@@ -72,19 +71,19 @@ test('can be created - mkcalendar', (t) => {
             </D:multistatus>`)
       }
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, (err) => {
-  t.error(err)
-  t.teardown(() => {
+test('mkcalendar test', async t => {
+  await fastify.listen({ port: 0 })
+  t.after(() => {
     fastify.close()
   })
 
-  test('request - mkcalendar', (t) => {
+  await t.test('request - mkcalendar', (t, done) => {
     t.plan(3)
     sget(
       {
@@ -92,14 +91,15 @@ fastify.listen({ port: 0 }, (err) => {
         method: 'MKCALENDAR'
       },
       (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 207)
-        t.equal(response.headers['content-length'], '' + body.length)
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
       }
     )
   })
 
-  test('request with other path - mkcalendar', (t) => {
+  await t.test('request with other path - mkcalendar', (t, done) => {
     t.plan(3)
     sget(
       {
@@ -107,16 +107,17 @@ fastify.listen({ port: 0 }, (err) => {
         method: 'MKCALENDAR'
       },
       (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 207)
-        t.equal(response.headers['content-length'], '' + body.length)
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
       }
     )
   })
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  test('request with body - mkcalendar', (t) => {
+  await t.test('request with body - mkcalendar', (t, done) => {
     t.plan(3)
     sget(
       {
@@ -126,14 +127,15 @@ fastify.listen({ port: 0 }, (err) => {
         method: 'MKCALENDAR'
       },
       (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 207)
-        t.equal(response.headers['content-length'], '' + body.length)
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
       }
     )
   })
 
-  test('request with body and no content type (415 error) - mkcalendar', (t) => {
+  await t.test('request with body and no content type (415 error) - mkcalendar', (t, done) => {
     t.plan(3)
     sget(
       {
@@ -142,14 +144,15 @@ fastify.listen({ port: 0 }, (err) => {
         method: 'MKCALENDAR'
       },
       (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 415)
-        t.equal(response.headers['content-length'], '' + body.length)
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
       }
     )
   })
 
-  test('request without body - mkcalendar', (t) => {
+  await t.test('request without body - mkcalendar', (t, done) => {
     t.plan(3)
     sget(
       {
@@ -157,9 +160,10 @@ fastify.listen({ port: 0 }, (err) => {
         method: 'MKCALENDAR'
       },
       (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 207)
-        t.equal(response.headers['content-length'], '' + body.length)
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
       }
     )
   })

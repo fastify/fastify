@@ -20,7 +20,7 @@ test('https', async (t) => {
     })
     t.assert.ok('Key/cert successfully loaded')
   } catch (e) {
-    t.assert.fail('Key/cert loading failed', e)
+    t.assert.fail('Key/cert loading failed')
   }
 
   fastify.get('/', function (req, reply) {
@@ -87,7 +87,7 @@ test('https - headers', async (t) => {
     })
     t.assert.ok('Key/cert successfully loaded')
   } catch (e) {
-    t.assert.fail('Key/cert loading failed', e)
+    t.assert.fail('Key/cert loading failed')
   }
 
   fastify.get('/', function (req, reply) {

@@ -5,6 +5,7 @@ const VERSION = '5.0.0'
 const Avvio = require('avvio')
 const http = require('node:http')
 const diagnostics = require('node:diagnostics_channel')
+const nullLogger = require('abstract-logging')
 let lightMyRequest
 
 const {
@@ -42,7 +43,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
+const { createChildLogger, defaultChildLoggerFactory } = require('./lib/logger-utils')
 const pluginUtils = require('./lib/pluginUtils')
 const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
@@ -135,7 +136,17 @@ function fastify (options) {
   }
 
   // Instance Fastify components
-  const { logger, hasLogger } = createLogger(options)
+
+  // create a default logger and then overwrite if valid logger options provided
+  let logger = nullLogger
+  logger.child = () => logger
+  let hasLogger = false
+
+  if (options.loggerInstance || options.logger) {
+    const { createLogger } = require('./lib/logger');
+
+    ({ logger, hasLogger } = createLogger(options))
+  }
 
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
@@ -929,7 +940,7 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
 
 /**
  * These export configurations enable JS and TS developers
- * to consumer fastify in whatever way best suits their needs.
+ * to consume fastify in whatever way best suits their needs.
  * Some examples of supported import syntax includes:
  * - `const fastify = require('fastify')`
  * - `const { fastify } = require('fastify')`

@@ -192,7 +192,7 @@ test('Will pass onSend hook to HEAD method if exposeHeadRoutes is true /1', asyn
   }, { prefix: '/prefix' })
 
   await fastify.ready()
-  
+
   const result = await fastify.inject({
     url: '/prefix/route',
     method: 'HEAD'
@@ -223,7 +223,7 @@ test('Will pass onSend hook to HEAD method if exposeHeadRoutes is true /2', asyn
   }, { prefix: '/prefix' })
 
   await fastify.ready()
-  
+
   const result = await fastify.inject({
     url: '/prefix/route',
     method: 'HEAD'

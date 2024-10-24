@@ -43,3 +43,34 @@ test("pino is require'd if logger is passed", t => {
   })
   t.equal(called, true)
 })
+
+test("pino is require'd if loggerInstance is passed", t => {
+  let called = false
+  const loggerMock = {
+    createLogger: () => {
+      called = true
+      return {
+        logger: nullLogger,
+        hasLogger: true
+      }
+    }
+  }
+  t.plan(1)
+  const fastify = t.mockRequire('..', {
+    '../lib/logger.js': loggerMock,
+  })
+
+  const loggerInstance = {
+    fatal: (msg) => { },
+    error: (msg) => { },
+    warn: (msg) => { },
+    info: (msg) => { },
+    debug: (msg) => { },
+    trace: (msg) => { },
+    child: () => loggerInstance
+  }
+  fastify({
+    loggerInstance
+  })
+  t.equal(called, true)
+})

@@ -263,7 +263,7 @@ test('FST_ERR_DEC_GET_ACCESS_AFTER_START', t => {
   const error = new errors.FST_ERR_DEC_GET_ACCESS_AFTER_START()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
-  t.assert.strictEqual(error.message, 'Methods getDecorators should be called before the application start.')
+  t.assert.strictEqual(error.message, 'Method getDecorators should be called before the application start.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

@@ -217,7 +217,7 @@ test('getDecorators should not be called after start', t => {
       t.fail()
     } catch (e) {
       t.same(e.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
-      t.same(e.message, 'Methods getDecorators should be called before the application start.')
+      t.same(e.message, 'Method getDecorators should be called before the application start.')
     }
     t.pass()
   })
@@ -265,7 +265,7 @@ test('getDecorators should oly return existing decorators on the scope', t => {
       t.fail()
     } catch (e) {
       t.same(e.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
-      t.same(e.message, 'Methods getDecorators should be called before the application start.')
+      t.same(e.message, 'Method getDecorators should be called before the application start.')
     }
     t.pass()
   })

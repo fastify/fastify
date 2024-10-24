@@ -110,7 +110,7 @@ test('should pass error for missing request decorator', t => {
 })
 
 test('getDecorators should return an object containing the decorators', t => {
-  t.plan(7)
+  t.plan(9)
   const fastify = Fastify()
 
   fastify.decorate('a', 'from_instance')
@@ -119,13 +119,15 @@ test('getDecorators should return an object containing the decorators', t => {
 
   fastify.register((child) => {
     child.decorate('a', 'from_child_instance')
-    fastify.decorateRequest('d', 'from_child_request')
-    fastify.decorateReply('e', 'from_child_reply')
+    child.decorateRequest('d', 'from_child_request')
+    child.decorateReply('e', 'from_child_reply')
 
-    const { a, b, c } = child.getDecorators('a', 'b', 'c')
+    const { a, b, c, d, e } = child.getDecorators('a', 'b', 'c', 'd', 'e')
     t.equal(a, 'from_child_instance')
     t.equal(b, 'from_request')
     t.equal(c, 'from_reply')
+    t.equal(d, 'from_child_request')
+    t.equal(e, 'from_child_reply')
   })
 
   const { a, b, c } = fastify.getDecorators(['a', 'b', 'c'])

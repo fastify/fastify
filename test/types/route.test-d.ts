@@ -527,3 +527,12 @@ expectType<FastifyInstance>(fastify().route({
     expectAssignable<string | Array<string>>(req.routeOptions.method)
   }
 }))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: ['HEAD', 'GET'],
+  handler: (req) => {
+    expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.method)
+    expectAssignable<string | Array<string>>(req.routeOptions.method)
+  }
+}))

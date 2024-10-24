@@ -23,7 +23,8 @@ Request is a core Fastify object containing the following fields:
 - `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
-  exists.
+  exists. When you use `requireHostHeader = false` in the server options, it
+  will fallback as empty when the host header is missing.
 - `hostname` - the host of the incoming request without the port
 - `port` - the port that the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)

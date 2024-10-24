@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 
-test('should handle invalid hostname', t => {
+test('should handle empty host headers', t => {
   t.plan(5)
 
   const fastify = Fastify()

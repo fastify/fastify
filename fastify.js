@@ -5,7 +5,6 @@ const VERSION = '5.0.0'
 const Avvio = require('avvio')
 const http = require('node:http')
 const diagnostics = require('node:diagnostics_channel')
-const nullLogger = require('abstract-logging')
 let lightMyRequest
 
 const {
@@ -138,14 +137,17 @@ function fastify (options) {
   // Instance Fastify components
 
   // create a default logger and then overwrite if valid logger options provided
-  let logger = nullLogger
-  logger.child = () => logger
-  let hasLogger = false
+  let logger
+  let hasLogger
 
   if (options.loggerInstance || options.logger) {
     const { createLogger } = require('./lib/logger');
-
     ({ logger, hasLogger } = createLogger(options))
+  } else {
+    const nullLogger = require('abstract-logging')
+    logger = nullLogger
+    logger.child = () => logger
+    hasLogger = false
   }
 
   // Update the options with the fixed values

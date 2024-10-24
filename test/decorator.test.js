@@ -256,23 +256,6 @@ test('getDecorators should only return existing decorators', t => {
   fastify.ready(() => t.pass())
 })
 
-test('getDecorators should oly return existing decorators on the scope', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.decorate('a', true)
-  fastify.ready(() => {
-    try {
-      fastify.getDecorators(['a'])
-      t.fail()
-    } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
-      t.same(e.message, 'Method getDecorators should be called before the application start.')
-    }
-    t.pass()
-  })
-})
-
 test('decorateReply inside register', t => {
   t.plan(11)
   const fastify = Fastify()

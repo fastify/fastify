@@ -15,7 +15,7 @@ before(async function () {
   [localhost] = await helper.getLoopbackHost()
 })
 
-test('Should register a versioned route', (t, done) => {
+test('Should register a versioned route (inject)', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -233,7 +233,7 @@ test('Versioned route but not version header should return a 404', (t, done) => 
   })
 })
 
-test('Should register a versioned route', (t, done) => {
+test('Should register a versioned route (server)', (t, done) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -250,9 +250,6 @@ test('Should register a versioned route', (t, done) => {
     t.assert.ifError(err)
     t.after(() => { fastify.close() })
 
-    let v1Completed = false
-    let v2Completed = false
-
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
@@ -260,28 +257,21 @@ test('Should register a versioned route', (t, done) => {
         'Accept-Version': '1.x'
       }
     }, (err, response, body) => {
-      v1Completed = true
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      if (v1Completed && v2Completed) {
-        done()
-      }
-    })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': '2.x'
-      }
-    }, (err, response, body) => {
-      v2Completed = true
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      if (v1Completed && v2Completed) {
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Accept-Version': '2.x'
+        }
+      }, (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 404)
         done()
-      }
+      })
     })
   })
 })
@@ -438,18 +428,18 @@ test('Bad accept version (server)', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 404)
-    })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': 12
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Accept-Version': 12
+        }
+      }, (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 404)
+        done()
+      })
     })
   })
 })

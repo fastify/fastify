@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 83 errors', t => {
+test('should expose 85 errors', t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +14,12 @@ test('should expose 83 errors', t => {
       counter++
     }
   }
-  t.assert.strictEqual(counter, 83)
+
+  t.assert.strictEqual(counter, 85)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(83)
+  t.plan(85)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -243,6 +244,26 @@ test('FST_ERR_DEC_REFERENCE_TYPE', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_DEC_REFERENCE_TYPE')
   t.assert.strictEqual(error.message, "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_DEC_UNDECLARED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_UNDECLARED('myDecorator')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_UNDECLARED')
+  t.assert.strictEqual(error.message, "No decorator 'myDecorator' has been declared.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_DEC_GET_ACCESS_AFTER_START', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_GET_ACCESS_AFTER_START()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
+  t.assert.strictEqual(error.message, 'Method getDecorators should be called before the application start.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
@@ -868,7 +889,7 @@ test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
 })
 
 test('Ensure that all errors are in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -880,7 +901,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g
@@ -893,7 +914,7 @@ test('Ensure that non-existing errors are not in Errors.md TOC', t => {
 })
 
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -905,7 +926,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(85)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g

@@ -1,6 +1,6 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const Fastify = require('../..')
 const http2 = require('node:http2')
 const { promisify } = require('node:util')
@@ -9,102 +9,94 @@ const { once } = require('node:events')
 const { buildCertificate } = require('../build-certificate')
 const { getServerUrl } = require('../helper')
 
-t.before(buildCertificate)
+test.before(buildCertificate)
 
-t.test('http/2 request while fastify closing', t => {
+test('http/2 request while fastify closing', (t, done) => {
   let fastify
   try {
     fastify = Fastify({
       http2: true
     })
-    t.pass('http2 successfully loaded')
+    t.assert.ok('http2 successfully loaded')
   } catch (e) {
-    t.fail('http2 loading failed', e)
+    t.assert.fail('http2 loading failed')
   }
 
   fastify.get('/', () => Promise.resolve({}))
 
+  t.after(() => { fastify.close() })
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
 
-    t.test('return 200', t => {
-      const url = getServerUrl(fastify)
-      const session = http2.connect(url, function () {
-        this.request({
-          ':method': 'GET',
-          ':path': '/'
-        }).on('response', headers => {
-          t.equal(headers[':status'], 503)
-          t.end()
-          this.destroy()
-        }).on('error', () => {
-          // Nothing to do here,
-          // we are not interested in this error that might
-          // happen or not
-        })
-        fastify.close()
+    const url = getServerUrl(fastify)
+    const session = http2.connect(url, function () {
+      this.request({
+        ':method': 'GET',
+        ':path': '/'
+      }).on('response', headers => {
+        t.assert.strictEqual(headers[':status'], 503)
+        done()
+        this.destroy()
+      }).on('error', () => {
+        // Nothing to do here,
+        // we are not interested in this error that might
+        // happen or not
       })
       session.on('error', () => {
         // Nothing to do here,
         // we are not interested in this error that might
         // happen or not
-        t.end()
+        done()
       })
+      fastify.close()
     })
-
-    t.end()
   })
 })
 
-t.test('http/2 request while fastify closing - return503OnClosing: false', t => {
+test('http/2 request while fastify closing - return503OnClosing: false', (t, done) => {
   let fastify
   try {
     fastify = Fastify({
       http2: true,
       return503OnClosing: false
     })
-    t.pass('http2 successfully loaded')
+    t.assert.ok('http2 successfully loaded')
   } catch (e) {
-    t.fail('http2 loading failed', e)
+    t.assert.fail('http2 loading failed')
   }
+
+  t.after(() => { fastify.close() })
 
   fastify.get('/', () => Promise.resolve({}))
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    t.test('return 200', t => {
-      const url = getServerUrl(fastify)
-      const session = http2.connect(url, function () {
-        this.request({
-          ':method': 'GET',
-          ':path': '/'
-        }).on('response', headers => {
-          t.equal(headers[':status'], 200)
-          t.end()
-          this.destroy()
-        }).on('error', () => {
-          // Nothing to do here,
-          // we are not interested in this error that might
-          // happen or not
-        })
-        fastify.close()
-      })
-      session.on('error', () => {
+    t.assert.ifError(err)
+    const url = getServerUrl(fastify)
+    const session = http2.connect(url, function () {
+      this.request({
+        ':method': 'GET',
+        ':path': '/'
+      }).on('response', headers => {
+        t.assert.strictEqual(headers[':status'], 200)
+        done()
+        this.destroy()
+      }).on('error', () => {
         // Nothing to do here,
         // we are not interested in this error that might
         // happen or not
-        t.end()
       })
+      fastify.close()
     })
-
-    t.end()
+    session.on('error', () => {
+      // Nothing to do here,
+      // we are not interested in this error that might
+      // happen or not
+      done()
+    })
   })
 })
 
-t.test('http/2 closes successfully with async await', async t => {
+test('http/2 closes successfully with async await', async t => {
   const fastify = Fastify({
     http2SessionTimeout: 100,
     http2: true
@@ -119,7 +111,7 @@ t.test('http/2 closes successfully with async await', async t => {
   await fastify.close()
 })
 
-t.test('https/2 closes successfully with async await', async t => {
+test('https/2 closes successfully with async await', async t => {
   const fastify = Fastify({
     http2SessionTimeout: 100,
     http2: true,
@@ -138,7 +130,7 @@ t.test('https/2 closes successfully with async await', async t => {
   await fastify.close()
 })
 
-t.test('http/2 server side session emits a timeout event', async t => {
+test('http/2 server side session emits a timeout event', async t => {
   let _resolve
   const p = new Promise((resolve) => { _resolve = resolve })
 
@@ -162,7 +154,7 @@ t.test('http/2 server side session emits a timeout event', async t => {
   }).end()
 
   const [headers] = await once(req, 'response')
-  t.equal(headers[':status'], 200)
+  t.assert.strictEqual(headers[':status'], 200)
   req.resume()
 
   // An error might or might not happen, as it's OS dependent.

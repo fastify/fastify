@@ -506,3 +506,11 @@ expectType<FastifyInstance>(fastify().route({
   method: ['put', 'patch'],
   handler: routeHandlerWithReturnValue
 }))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: ['HEAD', 'GET'],
+  handler: (req) => {
+    expectType<string | string[]>(req.routeOptions.method)
+  }
+}))

@@ -42,7 +42,8 @@ test('Regular request', t => {
       [kRequest]: Request,
       [kOptions]: {
         requestIdLogLabel: 'reqId'
-      }
+      },
+      server: {}
     }
   })
   req.connection = req.socket
@@ -95,7 +96,8 @@ test('Request with undefined config', t => {
       [kRequest]: Request,
       [kOptions]: {
         requestIdLogLabel: 'reqId'
-      }
+      },
+      server: {}
     }
   })
   req.connection = req.socket
@@ -135,8 +137,32 @@ test('Regular request - hostname from authority', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
 
-  const request = new Request('id', 'params', req, 'query', 'log')
+  const request = new Request('id', 'params', req, 'query', 'log', context)
   t.assert.ok(request instanceof Request)
   t.assert.strictEqual(request.host, 'authority')
   t.assert.strictEqual(request.port, null)
@@ -154,7 +180,31 @@ test('Regular request - host header has precedence over authority', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
-  const request = new Request('id', 'params', req, 'query', 'log')
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
+  const request = new Request('id', 'params', req, 'query', 'log', context)
   t.assert.ok(request instanceof Request)
   t.assert.strictEqual(request.host, 'hostname')
   t.assert.strictEqual(request.port, null)
@@ -249,9 +299,33 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
 
   const TpRequest = Request.buildRequest(Request, true)
-  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  const request = new TpRequest('id', 'params', req, 'query', 'log', context)
   t.assert.ok(request instanceof TpRequest)
   t.assert.strictEqual(request.host, 'hostname')
 })
@@ -268,9 +342,33 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
 
   const TpRequest = Request.buildRequest(Request, true)
-  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  const request = new TpRequest('id', 'params', req, 'query', 'log', context)
   t.assert.ok(request instanceof TpRequest)
   t.assert.strictEqual(request.host, 'authority')
 })
@@ -344,7 +442,31 @@ test('Request with undefined socket', t => {
     socket: undefined,
     headers
   }
-  const request = new Request('id', 'params', req, 'query', 'log')
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
+  const request = new Request('id', 'params', req, 'query', 'log', context)
   t.assert.ok(request instanceof Request)
   t.assert.strictEqual(request.id, 'id')
   t.assert.strictEqual(request.params, 'params')

@@ -21,7 +21,7 @@ export interface ValidationFunction {
 }
 
 export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema> {
-  method: string;
+  method: string | string[];
   // `url` can be `undefined` for instance when `request.is404` is true
   url: string | undefined;
   bodyLimit: number;

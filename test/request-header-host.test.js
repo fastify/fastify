@@ -37,7 +37,7 @@ test('Return 200 when Host header is empty', (t, done) => {
   t.plan(5)
   let data = Buffer.alloc(0)
   const fastify = Fastify({
-    keepAliveTimeout: 1000
+    keepAliveTimeout: 10
   })
 
   t.after(() => fastify.close())
@@ -73,7 +73,7 @@ test('Return 200 when Host header is missing and http.requireHostHeader = false'
     http: {
       requireHostHeader: false
     },
-    keepAliveTimeout: 1000
+    keepAliveTimeout: 10
   })
 
   t.after(() => fastify.close())

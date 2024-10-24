@@ -519,17 +519,28 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
 
-const decoratorsRestParameters = server.getDecorators<[string, number]>('decorator1', 'decorator2')
-expectType<[string, number]>(decoratorsRestParameters)
+interface ReplyDecorators {
+  sendFile(filename: string, rootPath?: string): FastifyReply;
+  download(filepath: string, filename?: string): FastifyReply;
+}
 
-const decoratorsArray = server.getDecorators<[string, number]>(['decorator1', 'decorator2'])
-expectType<[string, number]>(decoratorsArray)
+const replyDecoratorsNames = ['sendFile', 'download']
 
-const decoratorsRestParametersDefault = server.getDecorators('decorator1', 'decorator2')
-expectType<any[]>(decoratorsRestParametersDefault)
+const decoratorsRestParameters = server.getDecorators<ReplyDecorators>(replyDecoratorsNames)
+expectType<{
+  sendFile: (filename: string, rootPath?: string) => FastifyReply;
+  download: (filepath: string, filename?: string) => FastifyReply;
+}>(decoratorsRestParameters)
+expectType<ReplyDecorators>(decoratorsRestParameters)
 
-const decoratorsDefaultArray = server.getDecorators(['decorator1', 'decorator2'])
-expectType<any[]>(decoratorsDefaultArray)
+const decoratorsArray = server.getDecorators<ReplyDecorators>(replyDecoratorsNames)
+expectType<ReplyDecorators>(decoratorsArray)
+
+const decoratorsRestParametersDefault = server.getDecorators(replyDecoratorsNames)
+expectType<Record<string, any>>(decoratorsRestParametersDefault)
+
+const decoratorsDefaultArray = server.getDecorators(replyDecoratorsNames)
+expectType<Record<string, any>>(decoratorsDefaultArray)
 
 const versionConstraintStrategy = {
   name: 'version',

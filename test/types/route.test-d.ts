@@ -398,9 +398,21 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
   })
 })
 
-expectError(fastify().route({
+expectType<FastifyInstance>(fastify().route({
   url: '/',
-  method: 'CONNECT', // not a valid method
+  method: 'CONNECT', // not a valid method but could be implemented by the user
+  handler: routeHandler
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: 'OPTIONS',
+  handler: routeHandler
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: 'OPTION', // OPTION is a typo for OPTIONS
   handler: routeHandler
 }))
 
@@ -410,7 +422,7 @@ expectType<FastifyInstance>(fastify().route({
   handler: routeHandler
 }))
 
-expectError(fastify().route({
+expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS
   handler: routeHandler
@@ -505,4 +517,13 @@ expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: ['put', 'patch'],
   handler: routeHandlerWithReturnValue
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: (req) => {
+    expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.method)
+    expectAssignable<string | Array<string>>(req.routeOptions.method)
+  }
 }))

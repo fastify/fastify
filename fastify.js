@@ -42,7 +42,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createChildLogger, defaultChildLoggerFactory } = require('./lib/logger-factory')
+const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/pluginUtils')
 const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
@@ -136,19 +136,7 @@ function fastify (options) {
 
   // Instance Fastify components
 
-  // create a default logger and then overwrite if valid logger options provided
-  let logger
-  let hasLogger
-
-  if (options.loggerInstance || options.logger) {
-    const { createLogger } = require('./lib/logger');
-    ({ logger, hasLogger } = createLogger(options))
-  } else {
-    const nullLogger = require('abstract-logging')
-    logger = nullLogger
-    logger.child = () => logger
-    hasLogger = false
-  }
+  const { logger, hasLogger } = createLogger(options)
 
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout

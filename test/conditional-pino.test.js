@@ -6,18 +6,17 @@ const test = t.test
 
 test("pino is not require'd if logger is not passed", t => {
   let called = false
-  const loggerMock = {
-    createLogger: () => {
+  const loggerPinoMock = {
+    createPinoLogger: () => {
       called = true
-      return {
-        logger: nullLogger,
-        hasLogger: true
-      }
+      return nullLogger
     }
   }
   t.plan(1)
   const fastify = t.mockRequire('..', {
-    '../lib/logger.js': loggerMock,
+    '../lib/logger-factory.js': t.mockRequire('../lib/logger-factory.js', {
+      '../lib/logger-pino.js': loggerPinoMock
+    }),
   })
   fastify()
   t.equal(called, false)
@@ -25,18 +24,17 @@ test("pino is not require'd if logger is not passed", t => {
 
 test("pino is require'd if logger is passed", t => {
   let called = false
-  const loggerMock = {
-    createLogger: () => {
+  const loggerPinoMock = {
+    createPinoLogger: () => {
       called = true
-      return {
-        logger: nullLogger,
-        hasLogger: true
-      }
+      return nullLogger
     }
   }
   t.plan(1)
   const fastify = t.mockRequire('..', {
-    '../lib/logger.js': loggerMock,
+    '../lib/logger-factory.js': t.mockRequire('../lib/logger-factory.js', {
+      '../lib/logger-pino.js': loggerPinoMock
+    }),
   })
   fastify({
     logger: true
@@ -46,18 +44,17 @@ test("pino is require'd if logger is passed", t => {
 
 test("pino is require'd if loggerInstance is passed", t => {
   let called = false
-  const loggerMock = {
-    createLogger: () => {
+  const loggerPinoMock = {
+    createPinoLogger: () => {
       called = true
-      return {
-        logger: nullLogger,
-        hasLogger: true
-      }
+      return nullLogger
     }
   }
   t.plan(1)
   const fastify = t.mockRequire('..', {
-    '../lib/logger.js': loggerMock,
+    '../lib/logger-factory.js': t.mockRequire('../lib/logger-factory.js', {
+      '../lib/logger-pino.js': loggerPinoMock
+    }),
   })
 
   const loggerInstance = {

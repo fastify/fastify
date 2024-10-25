@@ -1,61 +1,34 @@
 'use strict'
 
-const t = require('tap')
-const nullLogger = require('abstract-logging')
+const t = require('node:test')
 const test = t.test
 
 test("pino is not require'd if logger is not passed", t => {
-  let called = false
-  const loggerPinoMock = {
-    createPinoLogger: () => {
-      called = true
-      return nullLogger
-    }
-  }
   t.plan(1)
-  const fastify = t.mockRequire('..', {
-    '../lib/logger-factory.js': t.mockRequire('../lib/logger-factory.js', {
-      '../lib/logger-pino.js': loggerPinoMock
-    }),
-  })
+
+  const fastify = require('..')
+
   fastify()
-  t.equal(called, false)
+
+  t.assert.equal(!!require.cache[require.resolve('pino')], false)
 })
 
 test("pino is require'd if logger is passed", t => {
-  let called = false
-  const loggerPinoMock = {
-    createPinoLogger: () => {
-      called = true
-      return nullLogger
-    }
-  }
   t.plan(1)
-  const fastify = t.mockRequire('..', {
-    '../lib/logger-factory.js': t.mockRequire('../lib/logger-factory.js', {
-      '../lib/logger-pino.js': loggerPinoMock
-    }),
-  })
+
+  const fastify = require('..')
+
   fastify({
     logger: true
   })
-  t.equal(called, true)
+
+  t.assert.equal(!!require.cache[require.resolve('pino')], true)
 })
 
 test("pino is require'd if loggerInstance is passed", t => {
-  let called = false
-  const loggerPinoMock = {
-    createPinoLogger: () => {
-      called = true
-      return nullLogger
-    }
-  }
   t.plan(1)
-  const fastify = t.mockRequire('..', {
-    '../lib/logger-factory.js': t.mockRequire('../lib/logger-factory.js', {
-      '../lib/logger-pino.js': loggerPinoMock
-    }),
-  })
+
+  const fastify = require('..')
 
   const loggerInstance = {
     fatal: (msg) => { },
@@ -66,8 +39,10 @@ test("pino is require'd if loggerInstance is passed", t => {
     trace: (msg) => { },
     child: () => loggerInstance
   }
+
   fastify({
     loggerInstance
   })
-  t.equal(called, true)
+
+  t.assert.equal(!!require.cache[require.resolve('pino')], true)
 })

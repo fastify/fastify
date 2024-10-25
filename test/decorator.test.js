@@ -154,8 +154,8 @@ test('getDecorators should return function and getter/setter decorators', t => {
     },
   })
 
-  fastify.decorateRequest('holder_e')
-  fastify.decorateRequest('e', {
+  fastify.decorateReply('holder_e')
+  fastify.decorateReply('e', {
     getter () {
       this.holder_e ??= { x: true }
       return this.holder_e

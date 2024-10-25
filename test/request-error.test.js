@@ -363,6 +363,128 @@ test('request.routeOptions should be immutable', t => {
   })
 })
 
+test('request.routeOptions.method is an uppercase string /1', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.equal('POST', req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.post('/', {
+    bodyLimit: 1000,
+    handler
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('request.routeOptions.method is an uppercase string /2', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.equal('POST', req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.route({
+    url: '/',
+    method: 'POST',
+    bodyLimit: 1000,
+    handler
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('request.routeOptions.method is an uppercase string /3', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.equal('POST', req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.route({
+    url: '/',
+    method: 'pOSt',
+    bodyLimit: 1000,
+    handler
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('request.routeOptions.method is an array with uppercase string', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.strictSame(['POST'], req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.route({
+    url: '/',
+    method: ['pOSt'],
+    bodyLimit: 1000,
+    handler
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
 test('test request.routeOptions.version', t => {
   t.plan(7)
   const fastify = Fastify()

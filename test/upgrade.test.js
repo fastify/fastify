@@ -1,6 +1,6 @@
 'use strict'
 
-const { test, skip } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
 const { connect } = require('node:net')
 const { once } = require('node:events')
@@ -8,22 +8,19 @@ const dns = require('node:dns').promises
 
 async function setup () {
   const localAddresses = await dns.lookup('localhost', { all: true })
-  if (localAddresses.length === 1) {
-    skip('requires both IPv4 and IPv6')
-    return
-  }
+  const doesNotSupportIPv6 = localAddresses.length === 1
 
   test('upgrade to both servers', async t => {
     t.plan(2)
     const app = Fastify()
     app.server.on('upgrade', (req, socket, head) => {
-      t.pass(`upgrade event ${JSON.stringify(socket.address())}`)
+      t.assert.ok(`upgrade event ${JSON.stringify(socket.address())}`)
       socket.end()
     })
     app.get('/', (req, res) => {
     })
     await app.listen()
-    t.teardown(app.close.bind(app))
+    t.after(() => app.close())
 
     {
       const client = connect(app.server.address().port, '127.0.0.1')
@@ -47,7 +44,7 @@ async function setup () {
       client.write('Sec-WebSocket-Version: 13\r\n\r\n')
       await once(client, 'close')
     }
-  })
+  }, { skip: doesNotSupportIPv6 })
 }
 
 setup()

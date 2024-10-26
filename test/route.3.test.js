@@ -1,11 +1,10 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const joi = require('joi')
 const Fastify = require('..')
 
-test('does not mutate joi schemas', t => {
+test('does not mutate joi schemas', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -32,7 +31,8 @@ test('does not mutate joi schemas', t => {
       params: { an_id: joi.number() }
     },
     handler (req, res) {
-      t.same(req.params, { an_id: 42 })
+      console.log(req.params)
+      t.assert.deepEqual(req.params, { an_id: 42 })
       res.send({ hello: 'world' })
     }
   })
@@ -40,14 +40,15 @@ test('does not mutate joi schemas', t => {
   fastify.inject({
     method: 'GET',
     url: '/foo/42'
-  }, (err, result) => {
-    t.error(err)
-    t.equal(result.statusCode, 200)
-    t.same(JSON.parse(result.payload), { hello: 'world' })
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    done()
   })
 })
 
-test('multiple routes with one schema', t => {
+test('multiple routes with one schema', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -80,18 +81,19 @@ test('multiple routes with one schema', t => {
   })
 
   fastify.ready(error => {
-    t.error(error)
-    t.same(schema, schema)
+    t.assert.ifError(error)
+    t.assert.deepStrictEqual(schema, schema)
+    done()
   })
 })
 
-test('route error handler overrides default error handler', t => {
+test('route error handler overrides default error handler', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
 
   const customRouteErrorHandler = (error, request, reply) => {
-    t.equal(error.message, 'Wrong Pot Error')
+    t.assert.strictEqual(error.message, 'Wrong Pot Error')
 
     reply.code(418).send({
       message: 'Make a brew',
@@ -113,23 +115,24 @@ test('route error handler overrides default error handler', t => {
     method: 'GET',
     url: '/coffee'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 418)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 418)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       message: 'Make a brew',
       statusCode: 418,
       error: 'Wrong Pot Error'
     })
+    done()
   })
 })
 
-test('route error handler does not affect other routes', t => {
+test('route error handler does not affect other routes', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify()
 
   const customRouteErrorHandler = (error, request, reply) => {
-    t.equal(error.message, 'Wrong Pot Error')
+    t.assert.strictEqual(error.message, 'Wrong Pot Error')
 
     reply.code(418).send({
       message: 'Make a brew',
@@ -159,23 +162,24 @@ test('route error handler does not affect other routes', t => {
     method: 'GET',
     url: '/tea'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 500)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       message: 'No tea today',
       statusCode: 500,
       error: 'Internal Server Error'
     })
+    done()
   })
 })
 
-test('async error handler for a route', t => {
+test('async error handler for a route', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
 
   const customRouteErrorHandler = async (error, request, reply) => {
-    t.equal(error.message, 'Delayed Pot Error')
+    t.assert.strictEqual(error.message, 'Delayed Pot Error')
     reply.code(418)
     return {
       message: 'Make a brew sometime later',
@@ -197,12 +201,13 @@ test('async error handler for a route', t => {
     method: 'GET',
     url: '/late-coffee'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 418)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 418)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       message: 'Make a brew sometime later',
       statusCode: 418,
       error: 'Delayed Pot Error'
     })
+    done()
   })
 })

@@ -1,116 +1,147 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
-test('allow unsafe regex', t => {
+test('allow unsafe regex', async t => {
   t.plan(4)
+  const abortController = new AbortController()
+  const { signal } = abortController
 
   const fastify = Fastify({
     allowUnsafeRegex: false
   })
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.get('/:foo(^[0-9]*$)', (req, reply) => {
-    reply.send({ foo: req.params.foo })
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  await new Promise((resolve) => {
+    fastify.get('/:foo(^[0-9]*$)', (req, reply) => {
+      reply.send({ foo: req.params.foo })
+    })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        foo: '1234'
+    fastify.listen({ port: 0 }, err => {
+      t.assert.ifError(err)
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234',
+        signal
+      }, (err, response, body) => {
+        console.log('jdlafj')
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(body), {
+          foo: '1234'
+        })
+        resolve()
       })
     })
   })
 })
 
-test('allow unsafe regex not match', t => {
+test('allow unsafe regex not match', async t => {
   t.plan(3)
+  const abortController = new AbortController()
+  const { signal } = abortController
 
   const fastify = Fastify({
     allowUnsafeRegex: false
   })
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.get('/:foo(^[0-9]*$)', (req, reply) => {
-    reply.send({ foo: req.params.foo })
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  await new Promise((resolve) => {
+    fastify.get('/:foo(^[0-9]*$)', (req, reply) => {
+      reply.send({ foo: req.params.foo })
+    })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/a1234'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
+    fastify.listen({ port: 0 }, err => {
+      t.assert.ifError(err)
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/a1234',
+        signal
+      }, (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 404)
+        resolve()
+      })
     })
   })
 })
 
 test('allow unsafe regex not safe', t => {
   t.plan(1)
-
   const fastify = Fastify({
     allowUnsafeRegex: false
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(fastify.close())
 
-  t.throws(() => {
-    fastify.get('/:foo(^([0-9]+){4}$)', (req, reply) => {
-      reply.send({ foo: req.params.foo })
-    })
-  })
+  t.assert.throws(
+    () => {
+      fastify.get('/:foo(^([0-9]+){4}$)', (req, reply) => {
+        reply.send({ foo: req.params.foo })
+      })
+    },
+    Error)
 })
 
 test('allow unsafe regex not safe by default', t => {
   t.plan(1)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(
+    fastify.close())
 
-  t.throws(() => {
-    fastify.get('/:foo(^([0-9]+){4}$)', (req, reply) => {
-      reply.send({ foo: req.params.foo })
-    })
-  })
+  t.assert.throws(
+    () => {
+      fastify.get('/:foo(^([0-9]+){4}$)', (req, reply) => {
+        reply.send({ foo: req.params.foo })
+      })
+    },
+    Error)
 })
 
-test('allow unsafe regex allow unsafe', t => {
+test('allow unsafe regex allow unsafe', async t => {
   t.plan(5)
+  const abortController = new AbortController()
+  const { signal } = abortController
 
   const fastify = Fastify({
     allowUnsafeRegex: true
   })
-  t.teardown(fastify.close.bind(fastify))
-
-  t.doesNotThrow(() => {
-    fastify.get('/:foo(^([0-9]+){4}$)', (req, reply) => {
-      reply.send({ foo: req.params.foo })
-    })
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  await new Promise((resolve) => {
+    t.assert.doesNotThrow(() => {
+      fastify.get('/:foo(^([0-9]+){4}$)', (req, reply) => {
+        reply.send({ foo: req.params.foo })
+      })
+    })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
-        foo: '1234'
+    fastify.listen({ port: 0 }, err => {
+      t.assert.ifError(err)
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/1234',
+        signal
+      }, (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(body), {
+          foo: '1234'
+        })
+        resolve()
       })
     })
   })

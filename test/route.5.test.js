@@ -35,21 +35,17 @@ test('route child logger factory does not affect other routes', async t => {
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'GET',
-      url: '/coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-  }
+  let res = await fastify.inject({
+    method: 'GET',
+    url: '/coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
 
-  {
-    const res = await fastify.inject({
-      method: 'GET',
-      url: '/tea'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-  }
+  res = await fastify.inject({
+    method: 'GET',
+    url: '/tea'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
 })
 test('route child logger factory overrides global custom error handler', async t => {
   t.plan(4)
@@ -91,21 +87,17 @@ test('route child logger factory overrides global custom error handler', async t
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'GET',
-      url: '/coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-  }
+  let res = await fastify.inject({
+    method: 'GET',
+    url: '/coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
 
-  {
-    const res = await fastify.inject({
-      method: 'GET',
-      url: '/more-coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-  }
+  res = await fastify.inject({
+    method: 'GET',
+    url: '/more-coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
 test('Creates a HEAD route for each GET one (default)', async t => {
@@ -129,25 +121,21 @@ test('Creates a HEAD route for each GET one (default)', async t => {
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/more-coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.assert.deepStrictEqual(res.body, '')
-  }
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/some-light'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.assert.strictEqual(res.body, '')
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+  t.assert.strictEqual(res.body, '')
 })
 
 test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', async t => {
@@ -171,21 +159,17 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', as
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/more-coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 404)
-  }
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 404)
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/some-light'
-    })
-    t.assert.strictEqual(res.statusCode, 404)
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  })
+  t.assert.strictEqual(res.statusCode, 404)
 })
 
 test('Creates a HEAD route for each GET one', async t => {
@@ -209,23 +193,19 @@ test('Creates a HEAD route for each GET one', async t => {
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/more-coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.assert.deepStrictEqual(res.body, '')
-  }
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/some-light'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.assert.strictEqual(res.body, '')
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+  t.assert.strictEqual(res.body, '')
 })

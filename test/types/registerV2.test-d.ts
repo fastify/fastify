@@ -1,11 +1,28 @@
 import { expectError, expectType } from 'tsd'
-import fastify, { FastifyInstance, FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback } from '../../fastify'
-import { AnyFastifyInstance, UnEncapsulatedPlugin } from '../../types/register'
+import fastify, {
+  FastifyInstance,
+  FastifyPlugin,
+  FastifyPluginAsync,
+  FastifyPluginCallback
+} from '../../fastify'
+import { ApplyDependencies, FastifyDependencies, UnEncapsulatedPlugin } from '../../types/register'
 
-export function createPlugin<TPlugin extends FastifyPluginCallback<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin>
-export function createPlugin<TPlugin extends FastifyPluginAsync<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin>
-export function createPlugin<TPlugin extends FastifyPlugin<any, AnyFastifyInstance>> (plugin: TPlugin): UnEncapsulatedPlugin<TPlugin> {
-  return plugin as UnEncapsulatedPlugin<TPlugin>
+export function createPlugin<
+  TPlugin extends FastifyPluginCallback,
+  TDependencies extends FastifyDependencies,
+  TEnhanced extends ApplyDependencies<TPlugin, TDependencies> = ApplyDependencies<TPlugin, TDependencies>
+> (plugin: TEnhanced, options?: { dependencies?: TDependencies }): UnEncapsulatedPlugin<TEnhanced>
+export function createPlugin<
+  TPlugin extends FastifyPluginAsync,
+  TDependencies extends FastifyDependencies,
+  TEnhanced extends ApplyDependencies<TPlugin, TDependencies> = ApplyDependencies<TPlugin, TDependencies>
+> (plugin: TEnhanced, options?: { dependencies?: TDependencies }): UnEncapsulatedPlugin<TEnhanced>
+export function createPlugin<
+  TPlugin extends FastifyPlugin,
+  TDependencies extends FastifyDependencies,
+  TEnhanced extends ApplyDependencies<TPlugin, TDependencies> = ApplyDependencies<TPlugin, TDependencies>
+> (plugin: TEnhanced, options?: { dependencies?: TDependencies }): UnEncapsulatedPlugin<TEnhanced> {
+  return plugin as UnEncapsulatedPlugin<TEnhanced>
 }
 
 const plugin = createPlugin((instance) =>

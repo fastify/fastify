@@ -35,6 +35,24 @@ export type ApplyPluginChanges<
       : TInstance
     : TInstance
 
+// using a tuple to allow for recursively applying multiple plugins
+export type FastifyDependencies = [FastifyPlugin, ...FastifyPlugin[]]
+
+export type ApplyDependencies<F extends FastifyPlugin, T extends FastifyDependencies> = F extends (first: infer First, ...rest: infer Rest) => infer R
+  ? First extends AnyFastifyInstance
+    ? (instance: EnhanceArray<First, T>, ...rest: Rest) => R
+    : never
+  : F
+
+export type EnhanceArray<U extends AnyFastifyInstance, T extends FastifyDependencies> =
+  T extends [infer First, ...infer Rest]
+    ? First extends FastifyPlugin
+      ? Rest extends FastifyDependencies
+        ? EnhanceArray<ApplyPluginChanges<U, any, First>, Rest>
+        : ApplyPluginChanges<U, any, First>
+      : U
+    : U
+
 export type FastifyRegister = FastifyInstance['register']
 
 // export type FastifyRegisterCallback<Options extends FastifyPluginOptions, Instance ex> =

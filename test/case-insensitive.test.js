@@ -71,7 +71,7 @@ test('case insensitive (parametric)', (t, done) => {
   t.after(() => fastify.close())
 
   fastify.get('/foo/:param', (req, reply) => {
-    t.assert.strictEqual(req.params.param, 'bAr')
+    t.assert.deepStrictEqual(req.params.param, 'bAr')
     reply.send({ hello: 'world' })
   })
 

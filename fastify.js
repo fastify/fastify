@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.0.0-alpha.4'
+const VERSION = '5.0.0'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -97,10 +97,11 @@ function defaultBuildPrettyMeta (route) {
  */
 function fastify (options) {
   // Options validations
-  options = options || {}
-
-  if (typeof options !== 'object') {
+  if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
+  } else {
+    // Shallow copy options object to prevent mutations outside of this function
+    options = Object.assign({}, options)
   }
 
   if (options.querystringParser && typeof options.querystringParser !== 'function') {
@@ -673,7 +674,7 @@ function fastify (options) {
     }
 
     if (name === 'onClose') {
-      this.onClose(fn)
+      this.onClose(fn.bind(this))
     } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
       this[kHooks].add(name, fn)
     } else {

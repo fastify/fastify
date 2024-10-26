@@ -1,20 +1,19 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../..')
 const statusCodes = require('node:http').STATUS_CODES
 const diagnostics = require('node:diagnostics_channel')
 
-test('Error.status property support', t => {
+test('Error.status property support', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
   const err = new Error('winter is coming')
   err.status = 418
 
   diagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {
-    t.equal(msg.error.message, 'winter is coming')
+    t.assert.strictEqual(msg.error.message, 'winter is coming')
   })
 
   fastify.get('/', () => {
@@ -25,9 +24,9 @@ test('Error.status property support', t => {
     method: 'GET',
     url: '/'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 418)
-    t.same(
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 418)
+    t.assert.deepStrictEqual(
       {
         error: statusCodes['418'],
         message: err.message,
@@ -35,5 +34,6 @@ test('Error.status property support', t => {
       },
       JSON.parse(res.payload)
     )
+    done()
   })
 })

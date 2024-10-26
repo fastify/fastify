@@ -14,7 +14,15 @@ import { FastifyContextConfig, FastifyReplyContext, FastifyRequestContext } from
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, RequestPayload } from './types/hooks'
 import { FastifyDecorators, FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './types/instance'
-import { FastifyBaseLogger, FastifyLogFn, FastifyLoggerInstance, FastifyLoggerOptions, LogLevel, PinoLoggerOptions } from './types/logger'
+import {
+  FastifyBaseLogger,
+  FastifyChildLoggerFactory,
+  FastifyLogFn,
+  FastifyLoggerInstance,
+  FastifyLoggerOptions,
+  LogLevel,
+  PinoLoggerOptions
+} from './types/logger'
 import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions, AnyFastifyInstance, UnEncapsulatedPlugin } from './types/register'
 import { FastifyReply } from './types/reply'
@@ -149,6 +157,7 @@ declare namespace fastify {
      * listener to error events emitted by client connections
      */
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
+    childLoggerFactory?: FastifyChildLoggerFactory
   }
 
   /**

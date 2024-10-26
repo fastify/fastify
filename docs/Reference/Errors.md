@@ -5,7 +5,7 @@
 
 **Table of contents**
 - [Errors](#errors)
-  - [Error Handling In Node.js](#error-handling-in-node.js)
+  - [Error Handling In Node.js](#error-handling-in-nodejs)
     - [Uncaught Errors](#uncaught-errors)
     - [Catching Errors In Promises](#catching-errors-in-promises)
   - [Errors In Fastify](#errors-in-fastify)

@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const { S } = require('fluent-json-schema')
 const Fastify = require('..')
 const sget = require('simple-get').concat
@@ -107,15 +106,15 @@ const handler = (request, reply) => {
   })
 }
 
-test('serialize the response for a Bad Request error, as defined on the schema', t => {
+test('serialize the response for a Bad Request error, as defined on the schema', (t, done) => {
   const fastify = Fastify({})
 
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.post('/', options, handler)
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     const url = `http://localhost:${fastify.server.address().port}/`
 
@@ -124,14 +123,14 @@ test('serialize the response for a Bad Request error, as defined on the schema',
       url,
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(body, {
+      t.assert.ifError(err)
+      t.assert.equal(response.statusCode, 400)
+      t.assert.deepEqual(body, {
         statusCode: 400,
         error: 'Bad Request',
         message: 'body must be object'
       })
-      t.end()
+      done()
     })
   })
 })

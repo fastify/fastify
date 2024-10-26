@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const fastify = require('../../')()
 fastify.addHttpMethod('PROPPATCH', { hasBody: true })
@@ -56,19 +55,19 @@ test('shorthand - proppatch', t => {
           )
       }
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+test('proppatch test', async t => {
+  await fastify.listen({ port: 0 })
 
+  t.after(() => { fastify.close() })
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  test('request with body - proppatch', t => {
+  await t.test('request with body - proppatch', (t, done) => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
@@ -76,34 +75,37 @@ fastify.listen({ port: 0 }, err => {
       body: bodySample,
       method: 'PROPPATCH'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 207)
-      t.equal(response.headers['content-length'], '' + body.length)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 207)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      done()
     })
   })
 
-  test('request with body and no content type (415 error) - proppatch', t => {
+  await t.test('request with body and no content type (415 error) - proppatch', (t, done) => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       body: bodySample,
       method: 'PROPPATCH'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
-      t.equal(response.headers['content-length'], '' + body.length)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 415)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      done()
     })
   })
 
-  test('request without body - proppatch', t => {
+  await t.test('request without body - proppatch', (t, done) => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       method: 'PROPPATCH'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 207)
-      t.equal(response.headers['content-length'], '' + body.length)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 207)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      done()
     })
   })
 })

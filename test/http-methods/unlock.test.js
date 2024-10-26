@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('UNLOCK')
@@ -16,17 +15,17 @@ test('can be created - unlock', t => {
         reply.code(204).send()
       }
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+test('unlock test', async t => {
+  await fastify.listen({ port: 0 })
 
-  test('request - unlock', t => {
+  t.after(() => { fastify.close() })
+  await t.test('request - unlock', (t, done) => {
     t.plan(2)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
@@ -35,8 +34,9 @@ fastify.listen({ port: 0 }, err => {
         'Lock-Token': 'urn:uuid:a515cfa4-5da4-22e1-f5b5-00a0451e6bf7'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 204)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 204)
+      done()
     })
   })
 })

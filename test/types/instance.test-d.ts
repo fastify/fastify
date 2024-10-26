@@ -370,12 +370,11 @@ expectError(server.decorate<string>('test', true))
 expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
   return ''
 }))
-// TODO(mcollina): uncomment after https://github.com/tsdjs/tsd/pull/220 lands.
-// expectError(server.decorate<string>('test', {
-//   getter () {
-//     return true
-//   }
-// }))
+expectError(server.decorate<string>('test', {
+  getter () {
+    return true
+  }
+}))
 expectError(server.decorate<string>('test', {
   setter (x) {}
 }))

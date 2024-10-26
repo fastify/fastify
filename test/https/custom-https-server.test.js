@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../..')
 const https = require('node:https')
 const dns = require('node:dns').promises
@@ -18,7 +17,7 @@ async function setup () {
 
     const fastify = Fastify({
       serverFactory: (handler, opts) => {
-        t.ok(opts.serverFactory, 'it is called once for localhost')
+        t.assert.ok(opts.serverFactory, 'it is called once for localhost')
 
         const options = {
           key: global.context.key,
@@ -34,10 +33,10 @@ async function setup () {
       }
     })
 
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => { fastify.close() })
 
     fastify.get('/', (req, reply) => {
-      t.ok(req.raw.custom)
+      t.assert.ok(req.raw.custom)
       reply.send({ hello: 'world' })
     })
 
@@ -52,8 +51,8 @@ async function setup () {
         if (err) {
           return reject(err)
         }
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
         resolve()
       })
     })

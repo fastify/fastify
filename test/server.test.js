@@ -1,6 +1,6 @@
 'use strict'
 
-const { test, describe } = require('node:test')
+const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const undici = require('undici')
@@ -81,8 +81,8 @@ test('Test for hostname and port', (t, end) => {
   })
 })
 
-describe('abort signal', () => {
-  test('listen should not start server', (t, end) => {
+test('abort signal', async t => {
+  await t.test('listen should not start server', (t, end) => {
     t.plan(2)
     function onClose (instance, done) {
       t.assert.equal(instance, fastify)
@@ -100,7 +100,7 @@ describe('abort signal', () => {
     t.assert.strictEqual(fastify.server.listening, false)
   })
 
-  test('listen should not start server if already aborted', (t, end) => {
+  await t.test('listen should not start server if already aborted', (t, end) => {
     t.plan(2)
     function onClose (instance, done) {
       t.assert.equal(instance, fastify)
@@ -118,7 +118,7 @@ describe('abort signal', () => {
     t.assert.strictEqual(fastify.server.listening, false)
   })
 
-  test('listen should throw if received invalid signal', t => {
+  await t.test('listen should throw if received invalid signal', t => {
     t.plan(2)
     const fastify = Fastify()
 

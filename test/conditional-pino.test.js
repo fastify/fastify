@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('node:test')
-const test = t.test
+const { test } = require('node:test')
 
 test("pino is not require'd if logger is not passed", t => {
   t.plan(1)
@@ -10,7 +9,7 @@ test("pino is not require'd if logger is not passed", t => {
 
   fastify()
 
-  t.assert.equal(!!require.cache[require.resolve('pino')], false)
+  t.assert.ok(!require.cache[require.resolve('pino')])
 })
 
 test("pino is require'd if logger is passed", t => {
@@ -22,7 +21,7 @@ test("pino is require'd if logger is passed", t => {
     logger: true
   })
 
-  t.assert.equal(!!require.cache[require.resolve('pino')], true)
+  t.assert.ok(require.cache[require.resolve('pino')])
 })
 
 test("pino is require'd if loggerInstance is passed", t => {
@@ -44,5 +43,5 @@ test("pino is require'd if loggerInstance is passed", t => {
     loggerInstance
   })
 
-  t.assert.equal(!!require.cache[require.resolve('pino')], true)
+  t.assert.ok(require.cache[require.resolve('pino')], true)
 })

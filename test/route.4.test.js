@@ -33,18 +33,16 @@ test('route error handler overrides global custom error handler', async t => {
     errorHandler: customRouteErrorHandler
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'GET',
-      url: '/more-coffee'
-    })
-    t.assert.strictEqual(res.statusCode, 418)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
-      message: 'Make a brew',
-      statusCode: 418,
-      error: 'Wrong Pot Error'
-    })
-  }
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/more-coffee'
+  })
+  t.assert.strictEqual(res.statusCode, 418)
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    message: 'Make a brew',
+    statusCode: 418,
+    error: 'Wrong Pot Error'
+  })
 })
 
 test('throws when route with empty url', async t => {

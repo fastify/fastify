@@ -77,7 +77,6 @@ async function setup () {
     const app = Fastify({
       serverFactory: () => server
     })
-    t.assert.ok(async () => await app.listen({ port: 0 }))
     await t.assert.doesNotReject(async () => { await app.listen({ port: 0 }) })
   })
 

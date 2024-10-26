@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const { Client } = require('undici')
 
@@ -30,7 +29,7 @@ test('Should return 503 while closing - pipelining', async t => {
   ])
   const actual = responses.map(r => r.statusCode)
 
-  t.same(actual, codes)
+  t.assert.deepEqual(actual, codes)
 
   await instance.close()
 })
@@ -61,10 +60,10 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
     instance.request({ path: '/', method: 'GET' })
   ])
 
-  t.equal(responses[0].status, 'fulfilled')
-  t.equal(responses[1].status, 'fulfilled')
-  t.equal(responses[2].status, 'rejected')
-  t.equal(responses[3].status, 'rejected')
+  t.assert.equal(responses[0].status, 'fulfilled')
+  t.assert.equal(responses[1].status, 'fulfilled')
+  t.assert.equal(responses[2].status, 'rejected')
+  t.assert.equal(responses[3].status, 'rejected')
 
   await instance.close()
 })

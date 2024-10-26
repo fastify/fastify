@@ -62,37 +62,31 @@ test('Will not create a HEAD route that is not GET', async t => {
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/more-coffee'
-    })
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  })
 
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.assert.deepStrictEqual(res.body, '')
-  }
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/some-light'
-    })
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  })
 
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], undefined)
-    t.assert.strictEqual(res.headers['content-length'], '0')
-    t.assert.strictEqual(res.body, '')
-  }
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], undefined)
+  t.assert.strictEqual(res.headers['content-length'], '0')
+  t.assert.strictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/something'
-    })
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/something'
+  })
 
-    t.assert.strictEqual(res.statusCode, 404)
-  }
+  t.assert.strictEqual(res.statusCode, 404)
 })
 
 test('HEAD route should handle properly each response type', async t => {
@@ -145,60 +139,50 @@ test('HEAD route should handle properly each response type', async t => {
     }
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/json'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
-    t.assert.deepStrictEqual(res.body, '')
-  }
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/json'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
+  t.assert.deepStrictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/string'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
-    t.assert.strictEqual(res.body, '')
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/string'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+  t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
+  t.assert.strictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/buffer'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.assert.strictEqual(res.body, '')
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/buffer'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/buffer-with-content-type'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'image/jpeg')
-    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.assert.strictEqual(res.body, '')
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/buffer-with-content-type'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'image/jpeg')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/stream'
-    })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], undefined)
-    t.assert.strictEqual(res.headers['content-length'], undefined)
-    t.assert.strictEqual(res.body, '')
-  }
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/stream'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], undefined)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+  t.assert.strictEqual(res.body, '')
 })
 
 test('HEAD route should respect custom onSend handlers', async t => {
@@ -221,18 +205,16 @@ test('HEAD route should respect custom onSend handlers', async t => {
     onSend: [customOnSend, customOnSend]
   })
 
-  {
-    const res = await fastify.inject({
-      method: 'HEAD',
-      url: '/more-coffee'
-    })
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  })
 
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.assert.strictEqual(res.body, '')
-    t.assert.strictEqual(counter, 2)
-  }
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(counter, 2)
 })
 
 test('route onSend can be function or array of functions', async t => {
@@ -264,23 +246,19 @@ test('route onSend can be function or array of functions', async t => {
     onSend: [customOnSend, customOnSend]
   })
 
-  {
-    const res = await fastify.inject({ method: 'HEAD', url: '/coffee' })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.assert.strictEqual(res.body, '')
-    t.assert.strictEqual(counters.single, 1)
-  }
+  let res = await fastify.inject({ method: 'HEAD', url: '/coffee' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(counters.single, 1)
 
-  {
-    const res = await fastify.inject({ method: 'HEAD', url: '/more-coffee' })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.assert.strictEqual(res.body, '')
-    t.assert.strictEqual(counters.multiple, 2)
-  }
+  res = await fastify.inject({ method: 'HEAD', url: '/more-coffee' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(counters.multiple, 2)
 })
 
 test('no warning for exposeHeadRoute', async t => {

@@ -109,51 +109,65 @@ test('should pass error for missing request decorator', t => {
     })
 })
 
-test('getDecorators should return an object containing the decorators', t => {
-  t.plan(9)
+test('decorators should be accessible at registration', t => {
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.decorate('a', 'from_instance')
-  fastify.decorateRequest('b', 'from_request')
-  fastify.decorateReply('c', 'from_reply')
+  fastify.decorateRequest('a', 'from_request')
+  fastify.decorateReply('a', 'from_reply')
 
+  fastify.decorate('b', 'from_instance')
   fastify.register((child) => {
-    child.decorate('a', 'from_child_instance')
-    child.decorateRequest('d', 'from_child_request')
-    child.decorateReply('e', 'from_child_reply')
+    child.decorate('b', 'from_child_instance')
+    child.decorate('c', 'from_child_instance')
 
-    const { a, b, c, d, e } = child.getDecorators('a', 'b', 'c', 'd', 'e')
-    t.equal(a, 'from_child_instance')
-    t.equal(b, 'from_request')
-    t.equal(c, 'from_reply')
-    t.equal(d, 'from_child_request')
-    t.equal(e, 'from_child_reply')
+    // Do not name them `a` because can't be overriden
+    child.decorateRequest('b', 'from_child_request')
+    child.decorateReply('b', 'from_child_reply')
+
+    const fDecs = child.getFastifyDecorators(['a', 'b', 'c'])
+    const reqDecs = child.getRequestDecorators(['a', 'b'])
+    const repDecs = child.getReplyDecorators(['a', 'b'])
+
+    t.equal(fDecs.a, 'from_instance')
+    t.equal(fDecs.b, 'from_child_instance')
+    t.equal(fDecs.c, 'from_child_instance')
+
+    t.equal(reqDecs.a, 'from_request')
+    t.equal(reqDecs.b, 'from_child_request')
+
+    t.equal(repDecs.a, 'from_reply')
+    t.equal(repDecs.b, 'from_child_reply')
   })
 
-  const { a, b, c } = fastify.getDecorators(['a', 'b', 'c'])
-  t.equal(a, 'from_instance')
-  t.equal(b, 'from_request')
-  t.equal(c, 'from_reply')
+  const fDecs = fastify.getFastifyDecorators(['a'])
+  const reqDecs = fastify.getRequestDecorators(['a'])
+  const repDecs = fastify.getReplyDecorators(['a'])
+
+  t.equal(fDecs.a, 'from_instance')
+  t.equal(reqDecs.a, 'from_request')
+  t.equal(repDecs.a, 'from_reply')
 
   fastify.ready(() => t.pass())
 })
 
-test('getDecorators should return function and getter/setter decorators', t => {
+test('function and getter/setter decorators should be accessible at registration', t => {
   t.plan(8)
   const fastify = Fastify()
 
   fastify.decorate('a', () => {})
-  fastify.decorate('b', () => {})
-  fastify.decorate('c', () => {})
 
-  fastify.decorateRequest('holder_d')
-  fastify.decorateRequest('d', {
+  fastify.decorateRequest('b', () => {})
+  fastify.decorateRequest('holder_c')
+  fastify.decorateRequest('c', {
     getter () {
       this.holder_d ??= { x: true }
       return this.holder_d
     },
   })
 
+  fastify.decorateReply('d', () => {})
   fastify.decorateReply('holder_e')
   fastify.decorateReply('e', {
     getter () {
@@ -162,20 +176,24 @@ test('getDecorators should return function and getter/setter decorators', t => {
     },
   })
 
-  const { a, b, c, d, e } = fastify.getDecorators(['a', 'b', 'c', 'd', 'e'])
+  const fDecs = fastify.getFastifyDecorators(['a'])
+  const reqDecs = fastify.getRequestDecorators(['b', 'c'])
+  const repDecs = fastify.getReplyDecorators(['d', 'e'])
 
-  t.type(a, 'function')
-  t.type(b, 'function')
-  t.type(c, 'function')
-  t.type(d, 'object')
-  t.type(d.x, 'boolean')
-  t.type(e, 'object')
-  t.type(e.x, 'boolean')
+  t.type(fDecs.a, 'function')
+
+  t.type(reqDecs.b, 'function')
+  t.type(reqDecs.c, 'object')
+  t.type(reqDecs.c.x, 'boolean')
+
+  t.type(repDecs.d, 'function')
+  t.type(repDecs.e, 'object')
+  t.type(repDecs.e.x, 'boolean')
 
   fastify.ready(() => t.pass())
 })
 
-test('getDecorators should return functionnal request/reply decorators', t => {
+test('request/reply decorators should handle context properly', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -186,12 +204,12 @@ test('getDecorators should return functionnal request/reply decorators', t => {
   })
 
   fastify.decorateReply('b', function () {
-    this.headers['x'] = 'from_reply_decorator'
-
-    return this.headers['x']
+    this.header('x', 'from_reply_decorator')
+    return this.getHeader('x')
   })
 
-  const { a, b } = fastify.getDecorators(['a', 'b'])
+  const { a } = fastify.getRequestDecorators(['a'])
+  const { b } = fastify.getReplyDecorators(['b'])
 
   fastify.get('/', (request, reply) => {
     t.equal(a.call(request), 'from_request_decorator')
@@ -208,52 +226,60 @@ test('getDecorators should return functionnal request/reply decorators', t => {
   })
 })
 
-test('getDecorators should not be called after start', t => {
-  t.plan(3)
+test('should throw an error if try to access undeclared decorator', t => {
+  t.plan(13)
   const fastify = Fastify()
 
-  fastify.decorate('a', true)
-  fastify.ready(() => {
-    try {
-      fastify.getDecorators(['a'])
-      t.fail()
-    } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
-      t.same(e.message, 'Method getDecorators should be called before the application start.')
-    }
-    t.pass()
-  })
-})
-
-test('getDecorators should only return existing decorators', t => {
-  t.plan(9)
-  const fastify = Fastify()
   // Encapsulated, should not be available from parent instance
   fastify.register(child => {
-    child.decorate('a', 'from_child_instance')
-    child.decorateRequest('b', 'from_child_request')
-    child.decorateReply('c', 'from_child_reply')
+    child.decorate('child_dec', 'from_child_instance')
+    child.decorateRequest('child_dec', 'from_child_request')
+    child.decorateReply('child_dec', 'from_child_reply')
   })
 
-  try {
-    fastify.getDecorators(['foo'])
-    t.fail()
-  } catch (e) {
-    t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
-    t.same(e.message, "No decorator 'foo' has been declared.")
-  }
-
-  for (const decorator of ['a', 'b', 'c']) {
+  const accessors = [fastify.getFastifyDecorators, fastify.getRequestDecorators, fastify.getReplyDecorators]
+  for (const access of accessors) {
     try {
-      fastify.getDecorators(decorator)
+      access.call(fastify, ['child_dec'])
       t.fail()
     } catch (e) {
       t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
-      t.same(e.message, `No decorator '${decorator}' has been declared.`)
+      t.same(e.message, "No decorator 'child_dec' has been declared.")
+    }
+
+    try {
+      access.call(fastify, ['undeclared_dec'])
+      t.fail()
+    } catch (e) {
+      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.same(e.message, "No decorator 'undeclared_dec' has been declared.")
     }
   }
 
   fastify.ready(() => t.pass())
+})
+
+test('decorators should not be accessed after start', t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+
+  fastify.decorate('a', true)
+  fastify.decorateRequest('a', true)
+  fastify.decorateReply('a', true)
+  fastify.ready(() => {
+    const accessors = [fastify.getFastifyDecorators, fastify.getRequestDecorators, fastify.getReplyDecorators]
+    for (const access of accessors) {
+      try {
+        access.call(fastify, ['a'])
+        t.fail()
+      } catch (e) {
+        t.same(e.code, 'FST_ERR_DEC_GET_ACCESS_AFTER_START')
+        t.same(e.message, 'Decorators should be accessed before the application start.')
+      }
+    }
+    t.pass()
+  })
 })
 
 test('decorateReply inside register', t => {

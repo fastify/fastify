@@ -519,32 +519,35 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
 
-interface ReplyDecorators {
-  sendFile(filename: string, rootPath?: string): FastifyReply;
-  download(filepath: string, filename?: string): FastifyReply;
+interface FastifyDecorators {
+  log(message: string): void;
 }
 
-const REPLY_DECORATOR_NAMES = ['sendFile', 'download']
+interface RequestDecorators {
+  getUser(): { id: string; name: string };
+}
 
-const decoratorsRestParameters = server.getDecorators<ReplyDecorators>(...REPLY_DECORATOR_NAMES)
-expectType<{
-  sendFile: (filename: string, rootPath?: string) => FastifyReply;
-  download: (filepath: string, filename?: string) => FastifyReply;
-}>(decoratorsRestParameters)
-expectType<ReplyDecorators>(decoratorsRestParameters)
+interface ReplyDecorators {
+  sendFile(filename: string, rootPath?: string): FastifyReply;
+}
+const REPLY_DECORATOR_NAMES = ['sendFile']
+const REQUEST_DECORATOR_NAMES = ['getUser']
+const FASTIFY_DECORATOR_NAMES = ['log']
 
-const { sendFile, download } = server.getDecorators<ReplyDecorators>(REPLY_DECORATOR_NAMES)
-expectType<(filename: string, rootPath?: string) => FastifyReply>(sendFile)
-expectType<(filepath: string, filename?: string) => FastifyReply>(download)
+const fastifyDecorators = server.getFastifyDecorators<FastifyDecorators>(FASTIFY_DECORATOR_NAMES)
+expectType<FastifyDecorators>(fastifyDecorators)
+const fastifyDecoratorsDefault = server.getFastifyDecorators(FASTIFY_DECORATOR_NAMES)
+expectType<Record<string, any>>(fastifyDecoratorsDefault)
 
-const decoratorsArray = server.getDecorators<ReplyDecorators>(REPLY_DECORATOR_NAMES)
-expectType<ReplyDecorators>(decoratorsArray)
+const requestDecorators = server.getRequestDecorators<RequestDecorators>(REQUEST_DECORATOR_NAMES)
+expectType<RequestDecorators>(requestDecorators)
+const requestDecoratorsDefault = server.getRequestDecorators(REQUEST_DECORATOR_NAMES)
+expectType<Record<string, any>>(requestDecoratorsDefault)
 
-const decoratorsRestParametersDefault = server.getDecorators(...REPLY_DECORATOR_NAMES)
-expectType<Record<string, any>>(decoratorsRestParametersDefault)
-
-const decoratorsDefaultArray = server.getDecorators(REPLY_DECORATOR_NAMES)
-expectType<Record<string, any>>(decoratorsDefaultArray)
+const replyDecorators = server.getReplyDecorators<ReplyDecorators>(REPLY_DECORATOR_NAMES)
+expectType<ReplyDecorators>(replyDecorators)
+const replyDecoratorsDefault = server.getReplyDecorators(REPLY_DECORATOR_NAMES)
+expectType<Record<string, any>>(replyDecoratorsDefault)
 
 const versionConstraintStrategy = {
   name: 'version',

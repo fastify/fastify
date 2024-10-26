@@ -342,7 +342,9 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
-    getDecorators: decorator.getDecorators,
+    getFastifyDecorators: decorator.getFastifyDecorators,
+    getRequestDecorators: decorator.getRequestDecorators,
+    getReplyDecorators: decorator.getReplyDecorators,
     addHttpMethod,
     // fake http injection
     inject,

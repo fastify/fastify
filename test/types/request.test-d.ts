@@ -20,6 +20,7 @@ import { FastifyReply } from '../../types/reply'
 import { FastifyRequest, RequestRouteOptions } from '../../types/request'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 import { RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from '../../types/utils'
+import { FastifySchemaValidationError } from '../../types/schema'
 
 interface RequestBody {
   content: string;
@@ -86,7 +87,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.id)
   expectType<FastifyLoggerInstance>(request.log)
   expectType<RawRequestDefaultExpression['socket']>(request.socket)
-  expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
+  expectType<Error & { validation?: FastifySchemaValidationError[]; validationContext: string } | undefined>(request.validationError)
   expectType<FastifyInstance>(request.server)
   expectAssignable<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction>(request.getValidationFunction)
   expectAssignable<(schema: { [key: string]: unknown }) => ExpectedGetValidationFunction>(request.getValidationFunction)

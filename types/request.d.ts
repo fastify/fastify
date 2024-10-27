@@ -3,7 +3,7 @@ import { FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRouteConfig, RouteGenericInterface, RouteHandlerMethod } from './route'
-import { FastifySchema } from './schema'
+import { FastifySchema, FastifySchemaValidationError } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
 
@@ -63,7 +63,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   body: RequestType['body'];
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
-  validationError?: Error & { validation: any; validationContext: string };
+  validationError?: Error & { validation?: FastifySchemaValidationError[]; validationContext: string };
 
   /**
    * @deprecated Use `raw` property

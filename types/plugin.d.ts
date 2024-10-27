@@ -30,7 +30,7 @@ export type FastifyPluginAsync<
  * plugins use `FastifyRegister`. https://fastify.dev/docs/latest/Reference/TypeScript/#register
  */
 export type FastifyPlugin<
-  Options extends FastifyPluginOptions = Record<never, never>,
+  Options extends FastifyPluginOptions = FastifyPluginOptions,
   Instance extends AnyFastifyInstance = AnyFastifyInstance,
   TOut extends void | AnyFastifyInstance = void | AnyFastifyInstance
 > = FastifyPluginCallback<Options, Instance, TOut> | FastifyPluginAsync<Options, Instance, TOut>

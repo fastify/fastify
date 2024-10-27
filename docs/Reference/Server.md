@@ -24,6 +24,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
+  - [`loggerInstance`](#loggerInstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`caseSensitive`](#casesensitive)
@@ -370,6 +371,10 @@ The possible values this property may have are:
 
   const fastify = require('fastify')({logger: customLogger});
   ```
+
+### `loggerInstance`
+
+A pino instance to use as the request logger
 
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>

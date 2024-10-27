@@ -329,9 +329,6 @@ The possible values this property may have are:
 + Default: `false`. The logger is disabled. All logging methods will point to a
   null logger [abstract-logging](https://npm.im/abstract-logging) instance.
 
-+ `pinoInstance`: a previously instantiated instance of Pino. The internal
-  logger will point to this instance.
-
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
   This will be passed directly to the Pino constructor. If the following

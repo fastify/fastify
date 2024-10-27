@@ -1,6 +1,6 @@
 'use strict'
 
-const Fastify = require('..')
+const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 const zlib = require('node:zlib')
 const { test } = require('node:test')
@@ -97,7 +97,7 @@ test('bodyLimit is applied to decoded content', async (t) => {
       payload: encoded
     })
     t.assert.strictEqual(result.statusCode, 200)
-    t.assert.deepEqual(result.json(), body)
+    t.assert.deepStrictEqual(result.json(), body)
   })
 
   await t.test('bodyLimit 20k', async (t) => {

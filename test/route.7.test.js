@@ -2,11 +2,11 @@
 
 const stream = require('node:stream')
 const split = require('split2')
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
+const createError = require('@fastify/error')
 
-test("HEAD route should handle stream.on('error')", t => {
+test("HEAD route should handle stream.on('error')", (t, done) => {
   t.plan(6)
 
   const resStream = stream.Readable.from('Hello with error!')
@@ -31,23 +31,24 @@ test("HEAD route should handle stream.on('error')", t => {
 
   logStream.once('data', line => {
     const { message, stack } = expectedError
-    t.same(line.err, { type: 'Error', message, stack })
-    t.equal(line.msg, 'Error on Stream found for HEAD route')
-    t.equal(line.level, 50)
+    t.assert.deepStrictEqual(line.err, { type: 'Error', message, stack })
+    t.assert.strictEqual(line.msg, 'Error on Stream found for HEAD route')
+    t.assert.strictEqual(line.level, 50)
   })
 
   fastify.inject({
     method: 'HEAD',
     url: '/more-coffee'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], undefined)
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-type'], undefined)
+    done()
   })
 })
 
-test('HEAD route should be exposed by default', t => {
-  t.plan(7)
+test('HEAD route should be exposed by default', async t => {
+  t.plan(5)
 
   const resStream = stream.Readable.from('Hello with error!')
   const resJson = { hello: 'world' }
@@ -70,28 +71,24 @@ test('HEAD route should be exposed by default', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/without-flag'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.strictEqual(res.statusCode, 200)
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/with-flag'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.equal(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJson))}`)
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJson))}`)
+  t.assert.strictEqual(res.body, '')
 })
 
-test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
-  t.plan(7)
+test('HEAD route should be exposed if route exposeHeadRoute is set', async t => {
+  t.plan(5)
 
   const resBuffer = Buffer.from('I am a coffee!')
   const resJson = { hello: 'world' }
@@ -114,27 +111,23 @@ test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/one'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/two'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 404)
   })
+  t.assert.strictEqual(res.statusCode, 404)
 })
 
-test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (global)', t => {
+test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (global)', (t, done) => {
   t.plan(6)
 
   const resBuffer = Buffer.from('I am a coffee!')
@@ -165,16 +158,17 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
     method: 'HEAD',
     url: '/one'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/pdf')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.headers['x-custom-header'], 'some-custom-header')
-    t.equal(res.body, '')
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-type'], 'application/pdf')
+    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.assert.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
+    t.assert.strictEqual(res.body, '')
+    done()
   })
 })
 
-test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', t => {
+test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', (t, done) => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -205,16 +199,17 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
     method: 'HEAD',
     url: '/one'
   }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/pdf')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.headers['x-custom-header'], 'some-custom-header')
-    t.equal(res.body, '')
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-type'], 'application/pdf')
+    t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.assert.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
+    t.assert.strictEqual(res.body, '')
+    done()
   })
 })
 
-test('HEAD routes properly auto created for GET routes when prefixTrailingSlash: \'no-slash\'', t => {
+test('HEAD routes properly auto created for GET routes when prefixTrailingSlash: \'no-slash\'', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -234,8 +229,9 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   }, { prefix: '/prefix' })
 
   fastify.inject({ url: '/prefix/prefix', method: 'HEAD' }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
@@ -262,9 +258,9 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
   const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
 
-  t.equal(doublePrefixReply.statusCode, 404)
-  t.equal(trailingSlashReply.statusCode, 200)
-  t.equal(noneTrailingReply.statusCode, 200)
+  t.assert.strictEqual(doublePrefixReply.statusCode, 404)
+  t.assert.strictEqual(trailingSlashReply.statusCode, 200)
+  t.assert.strictEqual(noneTrailingReply.statusCode, 200)
 })
 
 test('GET route with body schema should throw', t => {
@@ -272,7 +268,7 @@ test('GET route with body schema should throw', t => {
 
   const fastify = Fastify()
 
-  t.throws(() => {
+  t.assert.throws(() => {
     fastify.route({
       method: 'GET',
       path: '/get',
@@ -283,7 +279,7 @@ test('GET route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  }, new Error('Body validation schema for GET:/get route is not supported!'))
+  }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for GET:/get route is not supported!')())
 })
 
 test('HEAD route with body schema should throw', t => {
@@ -291,7 +287,7 @@ test('HEAD route with body schema should throw', t => {
 
   const fastify = Fastify()
 
-  t.throws(() => {
+  t.assert.throws(() => {
     fastify.route({
       method: 'HEAD',
       path: '/shouldThrow',
@@ -302,7 +298,7 @@ test('HEAD route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  }, new Error('Body validation schema for HEAD:/shouldThrow route is not supported!'))
+  }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for HEAD:/shouldThrow route is not supported!')())
 })
 
 test('[HEAD, GET] route with body schema should throw', t => {
@@ -310,7 +306,7 @@ test('[HEAD, GET] route with body schema should throw', t => {
 
   const fastify = Fastify()
 
-  t.throws(() => {
+  t.assert.throws(() => {
     fastify.route({
       method: ['HEAD', 'GET'],
       path: '/shouldThrowHead',
@@ -321,7 +317,7 @@ test('[HEAD, GET] route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  }, new Error('Body validation schema for HEAD:/shouldThrowHead route is not supported!'))
+  }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for HEAD:/shouldThrowHead route is not supported!')())
 })
 
 test('GET route with body schema should throw - shorthand', t => {
@@ -329,7 +325,7 @@ test('GET route with body schema should throw - shorthand', t => {
 
   const fastify = Fastify()
 
-  t.throws(() => {
+  t.assert.throws(() => {
     fastify.get('/shouldThrow', {
       schema: {
         body: {}
@@ -339,7 +335,7 @@ test('GET route with body schema should throw - shorthand', t => {
       reply.send({ hello: 'world' })
     }
     )
-  }, new Error('Body validation schema for GET:/shouldThrow route is not supported!'))
+  }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for GET:/shouldThrow route is not supported!')())
 })
 
 test('HEAD route with body schema should throw - shorthand', t => {
@@ -347,7 +343,7 @@ test('HEAD route with body schema should throw - shorthand', t => {
 
   const fastify = Fastify()
 
-  t.throws(() => {
+  t.assert.throws(() => {
     fastify.head('/shouldThrow2', {
       schema: {
         body: {}
@@ -357,5 +353,5 @@ test('HEAD route with body schema should throw - shorthand', t => {
       reply.send({ hello: 'world' })
     }
     )
-  }, new Error('Body validation schema for HEAD:/shouldThrow2 route is not supported!'))
+  }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for HEAD:/shouldThrow2 route is not supported!')())
 })

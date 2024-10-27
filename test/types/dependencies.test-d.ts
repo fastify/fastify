@@ -25,6 +25,12 @@ export const pluginWithDependencies = createPlugin((instance) => {
   expectType<string>(instance.testValueSync)
   expectType<number>(instance.testFnSync())
 
+  instance.register(childInstance => {
+    expectType<void>(childInstance.testPropSync)
+    expectType<string>(childInstance.testValueSync)
+    expectType<number>(childInstance.testFnSync())
+  })
+
   return instance.get('/', (req, res) => {
     expectType<void>(req.testPropSync)
     expectType<string>(req.testValueSync)

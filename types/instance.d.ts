@@ -254,7 +254,7 @@ export interface BaseFastifyInstance<
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<this, Options, Awaited<Plugin>> & SafePromiseLike<undefined>
+  ): ApplyPluginChanges<this, Awaited<Plugin>> & SafePromiseLike<undefined>
 
   register<
     Options extends FastifyPluginOptions,
@@ -262,7 +262,7 @@ export interface BaseFastifyInstance<
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<this, Options, Awaited<Plugin>> & SafePromiseLike<undefined>
+  ): ApplyPluginChanges<this, Awaited<Plugin>> & SafePromiseLike<undefined>
 
   register<
     Options extends FastifyPluginOptions,
@@ -271,7 +271,7 @@ export interface BaseFastifyInstance<
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<Instance, Options, Awaited<Plugin>['default']> & SafePromiseLike<undefined>
+  ): ApplyPluginChanges<Instance, Awaited<Plugin>['default']> & SafePromiseLike<undefined>
 
   routing(req: RawRequest, res: RawReply): void;
 

@@ -1,4 +1,4 @@
-import { FastifyPluginOptions, FastifyPlugin } from './plugin'
+import { FastifyPlugin } from './plugin'
 import { LogLevel } from './logger'
 import { FastifyDecorators, FastifyInstance } from './instance'
 
@@ -16,18 +16,14 @@ export type AnyFastifyInstance = FastifyInstance<any, any, any, any, any, Fastif
 
 export type ExtractDecorators<T extends AnyFastifyInstance> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : never
 
-export type ExtractTypeProvider<T extends FastifyInstance> = T extends FastifyInstance<any, any, any, any, infer U, any> ? U : never
-
-export type ExtractLogger<T extends FastifyInstance> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : never
-
 type Flavor<T, FlavorT> = T & { __flavor: FlavorT }
 
-export type UnEncapsulatedPlugin<Plugin extends FastifyPlugin<any, any>> = Flavor<Plugin, 'unEncapsulated'>
+export type UnEncapsulatedPlugin<Plugin extends FastifyPlugin<any, any>> =
+  Flavor<Plugin, 'unEncapsulated'>
 
 export type ApplyPluginChanges<
   TInstance extends AnyFastifyInstance,
-  Options extends FastifyPluginOptions,
-  Plugin extends FastifyPlugin<Options, TInstance>
+  Plugin extends FastifyPlugin<any, TInstance>
 > =
   Plugin extends UnEncapsulatedPlugin<Plugin>
     ? Awaited<ReturnType<Plugin>> extends FastifyInstance
@@ -36,7 +32,7 @@ export type ApplyPluginChanges<
     : TInstance
 
 // using a tuple to allow for recursively applying multiple plugins
-export type FastifyDependencies = [FastifyPlugin, ...FastifyPlugin[]]
+export type FastifyDependencies = [FastifyPlugin<any>, ...FastifyPlugin<any>[]]
 
 export type ApplyDependencies<F extends FastifyPlugin, T extends FastifyDependencies> = F extends (first: infer First, ...rest: infer Rest) => infer R
   ? First extends AnyFastifyInstance
@@ -46,10 +42,10 @@ export type ApplyDependencies<F extends FastifyPlugin, T extends FastifyDependen
 
 export type EnhanceArray<U extends AnyFastifyInstance, T extends FastifyDependencies> =
   T extends [infer First, ...infer Rest]
-    ? First extends FastifyPlugin
+    ? First extends FastifyDependencies[0]
       ? Rest extends FastifyDependencies
-        ? EnhanceArray<ApplyPluginChanges<U, any, First>, Rest>
-        : ApplyPluginChanges<U, any, First>
+        ? EnhanceArray<ApplyPluginChanges<U, First>, Rest>
+        : ApplyPluginChanges<U, First>
       : U
     : U
 

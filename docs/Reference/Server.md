@@ -349,9 +349,12 @@ The possible values this property may have are:
         ```
       Any user-supplied serializer will override the default serializer of the
       corresponding property.
-+ `loggerInstance`: a custom logger instance. The logger must conform to the
-  Pino interface by having the following methods: `info`, `error`, `debug`,
-  `fatal`, `warn`, `trace`, `child`. For example:
+
+### `loggerInstance`
+
+a custom logger instance. The logger must be a pino instance or  conform to the
+Pino interface by having the following methods: `info`, `error`, `debug`,
+`fatal`, `warn`, `trace`, `child`. For example:
   ```js
   const pino = require('pino')();
 
@@ -371,10 +374,6 @@ The possible values this property may have are:
 
   const fastify = require('fastify')({logger: customLogger});
   ```
-
-### `loggerInstance`
-
-A pino instance to use as the request logger
 
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>

@@ -355,7 +355,7 @@ The possible values this property may have are:
 
 + Default: `null`
 
-a custom logger instance. The logger must be a pino instance or  conform to the
+A custom logger instance. The logger must be a Pino instance or conform to the
 Pino interface by having the following methods: `info`, `error`, `debug`,
 `fatal`, `warn`, `trace`, `child`. For example:
   ```js

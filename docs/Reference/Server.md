@@ -351,6 +351,9 @@ The possible values this property may have are:
       corresponding property.
 
 ### `loggerInstance`
+<a id="factory-logger-instance"></a>
+
++ Default: `null`
 
 a custom logger instance. The logger must be a pino instance or  conform to the
 Pino interface by having the following methods: `info`, `error`, `debug`,

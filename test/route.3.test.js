@@ -31,7 +31,6 @@ test('does not mutate joi schemas', (t, done) => {
       params: { an_id: joi.number() }
     },
     handler (req, res) {
-      console.log(req.params)
       t.assert.deepEqual(req.params, { an_id: 42 })
       res.send({ hello: 'world' })
     }

@@ -42,7 +42,7 @@ test('does not mutate joi schemas', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.deepStrictEqual(res.json(), { hello: 'world' })
     done()
   })
 })
@@ -116,7 +116,7 @@ test('route error handler overrides default error handler', (t, done) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 418)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    t.assert.deepStrictEqual(res.json(), {
       message: 'Make a brew',
       statusCode: 418,
       error: 'Wrong Pot Error'
@@ -163,7 +163,7 @@ test('route error handler does not affect other routes', (t, done) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 500)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    t.assert.deepStrictEqual(res.json(), {
       message: 'No tea today',
       statusCode: 500,
       error: 'Internal Server Error'
@@ -202,7 +202,7 @@ test('async error handler for a route', (t, done) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 418)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    t.assert.deepStrictEqual(res.json(), {
       message: 'Make a brew sometime later',
       statusCode: 418,
       error: 'Delayed Pot Error'

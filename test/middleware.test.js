@@ -10,7 +10,7 @@ test('Should be able to override the default use API', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.decorate('use', () => true)
-  t.assert.equal(fastify.use(), true)
+  t.assert.strictEqual(fastify.use(), true)
 })
 
 test('Cannot decorate use twice', t => {

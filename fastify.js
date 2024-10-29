@@ -119,13 +119,12 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-
+  // const createRequestLogMessage = options.createRequestLogMessage
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
   }, options.ajv)
   const frameworkErrors = options.frameworkErrors
-
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
     throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
@@ -752,6 +751,11 @@ function fastify (options) {
     fourOhFour.router.lookup(req, res)
   }
 
+  function createRequestLogMessage () {
+  // Return incoming request prompt
+    return 'incoming request'
+  }
+
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = getGenReqId(onBadUrlContext.server, req)
@@ -761,8 +765,16 @@ function fastify (options) {
       const reply = new Reply(res, request, childLogger)
 
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
+        childLogger.info({ req: request }, createRequestLogMessage())
       }
+      /*
+      if (disableRequestLogging === false) {
+        // eslint-disable-next-line no-useless-call
+        childLogger.info.call(childLogger, createRequestLogMessage(req))
+      }
+      */
+
+      console.log('FST_ERR_BAD_URL(path): ', FST_ERR_BAD_URL(path))
 
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }

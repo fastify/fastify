@@ -1,5 +1,5 @@
 import { expectError, expectType } from 'tsd'
-import { createPlugin } from './registerV2.test-d'
+import { createPlugin } from './createPlugin'
 import fastify from '../../fastify'
 
 export const plugin1 = createPlugin((instance) =>
@@ -51,5 +51,40 @@ expectError(fastify().register(plugin3).register(pluginWithDependencies))
 fastify()
   .register(plugin1)
   .register(plugin2)
+  .register(plugin3)
+  .register(pluginWithDependencies)
+
+const deepPluginDependency = createPlugin((instance) =>
+  instance
+    .decorateReply('deep_dependency_reply', true))
+
+const pluginDependecy = createPlugin((instance) => {
+  return instance
+    .decorateRequest('dependency_request', true)
+}, { dependencies: [deepPluginDependency] })
+
+const dependantPlugin = createPlugin((instance) => {
+  return instance.get('/', (req, res) => {
+    expectType<boolean>(req.dependency_request)
+    expectType<boolean>(res.deep_dependency_reply)
+  })
+}, { dependencies: [pluginDependecy] })
+
+expectError(fastify().register(dependantPlugin))
+expectError(fastify().register(pluginDependecy).register(dependantPlugin))
+expectError(fastify().register(deepPluginDependency).register(dependantPlugin))
+
+fastify()
+  .register(deepPluginDependency)
+  .register(pluginDependecy)
+  .register(dependantPlugin)
+
+// putting it all together, in random order
+fastify()
+  .register(deepPluginDependency)
+  .register(plugin1)
+  .register(plugin2)
+  .register(pluginDependecy)
+  .register(dependantPlugin)
   .register(plugin3)
   .register(pluginWithDependencies)

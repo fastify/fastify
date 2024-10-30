@@ -32,7 +32,7 @@ export type ApplyPluginChanges<
     : TInstance
 
 // using a tuple to allow for recursively applying multiple plugins
-export type FastifyDependencies = [FastifyPlugin<any>, ...FastifyPlugin<any>[]]
+export type FastifyDependencies = [FastifyPlugin<any, any>, ...FastifyPlugin<any, any>[]]
 
 export type ApplyDependencies<F extends FastifyPlugin, T extends FastifyDependencies> = F extends (first: infer First, ...rest: infer Rest) => infer R
   ? First extends AnyFastifyInstance

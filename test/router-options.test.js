@@ -171,7 +171,7 @@ test('Should honor frameworkErrors option - FST_ERR_BAD_URL', t => {
     }
   )
 })
-
+//
 test('Should supply Fastify request to the logger in frameworkErrors wrapper - FST_ERR_BAD_URL', t => {
   t.plan(8)
 
@@ -217,7 +217,7 @@ test('Should supply Fastify request to the logger in frameworkErrors wrapper - F
     }
   )
 })
-
+//
 test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST_ERR_BAD_URL', t => {
   t.plan(2)
 

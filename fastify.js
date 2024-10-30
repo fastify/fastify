@@ -119,7 +119,8 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  // const createRequestLogMessage = options.createRequestLogMessage
+  const createRequestLogMessage = options.createRequestLogMessage ||
+  function createRequestLogMessage (customMessage) { return customMessage }
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
@@ -751,11 +752,6 @@ function fastify (options) {
     fourOhFour.router.lookup(req, res)
   }
 
-  function createRequestLogMessage () {
-  // Return incoming request prompt
-    return 'incoming request'
-  }
-
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
       const id = getGenReqId(onBadUrlContext.server, req)
@@ -764,8 +760,9 @@ function fastify (options) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
+      const customMessage = 'incoming request'
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, createRequestLogMessage())
+        childLogger.info({ req: request }, createRequestLogMessage(customMessage))
       }
       /*
       if (disableRequestLogging === false) {

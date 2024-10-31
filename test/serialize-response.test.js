@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const { S } = require('fluent-json-schema')
 const Fastify = require('../fastify')
 const sjson = require('secure-json-parse')
@@ -117,8 +116,8 @@ test('serialize the response for a Bad Request error, as defined on the schema',
     url: '/'
   })
 
-  t.equal(response.statusCode, 400)
-  t.same(sjson(response.body), {
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.deepStrictEqual(sjson(response.body), {
     statusCode: 400,
     error: 'Bad Request',
     message: 'body must be object'
@@ -138,8 +137,8 @@ test('serialize the response for a Not Found error, as defined on the schema', a
     body: { id: '404' }
   })
 
-  t.equal(response.statusCode, 404)
-  t.same(sjson(response.body), {
+  t.assert.strictEqual(response.statusCode, 404)
+  t.assert.deepStrictEqual(sjson(response.body), {
     statusCode: 404,
     error: 'Not Found',
     message: 'Custom Not Found'
@@ -159,8 +158,8 @@ test('serialize the response for a Internal Server Error error, as defined on th
     body: { id: '500' }
   })
 
-  t.equal(response.statusCode, 500)
-  t.same(sjson(response.body), {
+  t.assert.strictEqual(response.statusCode, 500)
+  t.assert.deepStrictEqual(sjson(response.body), {
     statusCode: 500,
     error: 'Internal Server Error',
     message: 'Custom Internal Server Error'
@@ -180,8 +179,8 @@ test('serialize the success response, as defined on the schema', async t => {
     body: { id: 'test' }
   })
 
-  t.equal(response.statusCode, 200)
-  t.same(sjson(response.body), {
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(sjson(response.body), {
     id: 'test'
   })
 })

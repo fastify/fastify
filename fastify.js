@@ -764,12 +764,6 @@ function fastify (options) {
       if (disableRequestLogging === false) {
         childLogger.info({ req: request }, createRequestLogMessage(customMessage))
       }
-      /*
-      if (disableRequestLogging === false) {
-        // eslint-disable-next-line no-useless-call
-        childLogger.info.call(childLogger, createRequestLogMessage(req))
-      }
-      */
 
       console.log('FST_ERR_BAD_URL(path): ', FST_ERR_BAD_URL(path))
 

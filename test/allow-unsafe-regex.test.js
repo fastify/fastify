@@ -24,7 +24,7 @@ test('allow unsafe regex', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/1234'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), {
         foo: '1234'
       })
@@ -53,7 +53,7 @@ test('allow unsafe regex not match', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/a1234'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 404)
+      t.assert.strictEqual(response.statusCode, 404)
       done()
     })
   })
@@ -111,7 +111,7 @@ test('allow unsafe regex allow unsafe', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/1234'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepEqual(JSON.parse(body), {
         foo: '1234'
       })

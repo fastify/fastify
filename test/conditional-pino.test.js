@@ -9,7 +9,7 @@ test("pino is not require'd if logger is not passed", t => {
 
   fastify()
 
-  t.assert.equal(require.cache[require.resolve('pino')], undefined)
+  t.assert.strictEqual(require.cache[require.resolve('pino')], undefined)
 })
 
 test("pino is require'd if logger is passed", t => {

@@ -124,7 +124,7 @@ test('serialize the response for a Bad Request error, as defined on the schema',
       json: true
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 400)
+      t.assert.strictEqual(response.statusCode, 400)
       t.assert.deepEqual(body, {
         statusCode: 400,
         error: 'Bad Request',

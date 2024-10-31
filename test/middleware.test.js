@@ -29,7 +29,7 @@ test('Encapsulation works', t => {
 
   fastify.register((instance, opts, done) => {
     instance.decorate('use', () => true)
-    t.assert.equal(instance.use(), true)
+    t.assert.strictEqual(instance.use(), true)
     done()
   })
 

@@ -28,7 +28,7 @@ test('keepAliveTimeout', t => {
   t.assert.strictEqual(httpsServer.keepAliveTimeout, 2)
 
   const http2Server = Fastify({ keepAliveTimeout: 3, http2: true }).server
-  t.assert.notEqual(http2Server.keepAliveTimeout, 3)
+  t.assert.notStrictEqual(http2Server.keepAliveTimeout, 3)
 
   const serverFactory = (handler, _) => {
     const server = http.createServer((req, res) => {

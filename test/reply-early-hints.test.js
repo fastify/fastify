@@ -1,15 +1,13 @@
 'use strict'
 
 const Fastify = require('..')
-const { test } = require('tap')
+const { test } = require('node:test')
 const http = require('http')
 const http2 = require('http2')
 
 const testResBody = 'Hello, world!'
 
 test('sends early hints', (t) => {
-  t.plan(6)
-
   const fastify = Fastify({
     logger: false
   })
@@ -18,24 +16,24 @@ test('sends early hints', (t) => {
     reply.writeEarlyHints({
       link: '</styles.css>; rel=preload; as=style'
     }, () => {
-      t.pass('callback called')
+      t.assert.ok('callback called')
     })
 
     return testResBody
   })
 
   fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
+    t.assert.ifError(err)
 
     const req = http.get(address)
 
     req.on('information', (res) => {
-      t.equal(res.statusCode, 103)
-      t.equal(res.headers.link, '</styles.css>; rel=preload; as=style')
+      t.assert.strictEqual(res.statusCode, 103)
+      t.assert.strictEqual(res.headers.link, '</styles.css>; rel=preload; as=style')
     })
 
     req.on('response', (res) => {
-      t.equal(res.statusCode, 200)
+      t.assert.strictEqual(res.statusCode, 200)
 
       let data = ''
       res.on('data', (chunk) => {
@@ -43,7 +41,7 @@ test('sends early hints', (t) => {
       })
 
       res.on('end', () => {
-        t.equal(data, testResBody)
+        t.assert.strictEqual(data, testResBody)
         fastify.close(t.end)
       })
     })
@@ -51,8 +49,6 @@ test('sends early hints', (t) => {
 })
 
 test('sends early hints (http2)', (t) => {
-  t.plan(6)
-
   const fastify = Fastify({
     http2: true,
     logger: false
@@ -67,19 +63,19 @@ test('sends early hints (http2)', (t) => {
   })
 
   fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
+    t.assert.ifError(err)
 
     const client = http2.connect(address)
     const req = client.request()
 
     req.on('headers', (headers) => {
-      t.not(headers, undefined)
-      t.equal(headers[':status'], 103)
-      t.equal(headers.link, '</styles.css>; rel=preload; as=style')
+      t.assert.notStrictEqual(headers, undefined)
+      t.assert.strictEqual(headers[':status'], 103)
+      t.assert.strictEqual(headers.link, '</styles.css>; rel=preload; as=style')
     })
 
     req.on('response', (headers) => {
-      t.equal(headers[':status'], 200)
+      t.assert.strictEqual(headers[':status'], 200)
     })
 
     let data = ''
@@ -88,7 +84,7 @@ test('sends early hints (http2)', (t) => {
     })
 
     req.on('end', () => {
-      t.equal(data, testResBody)
+      t.assert.strictEqual(data, testResBody)
       client.close()
       fastify.close(t.end)
     })

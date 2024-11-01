@@ -24,7 +24,7 @@ test('case insensitive', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/FOO'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepEqual(JSON.parse(body), {
         hello: 'world'
       })
@@ -53,7 +53,7 @@ test('case insensitive inject', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/FOO'
     }, (err, response) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepEqual(JSON.parse(response.payload), {
         hello: 'world'
       })
@@ -71,7 +71,7 @@ test('case insensitive (parametric)', (t, done) => {
   t.after(() => fastify.close())
 
   fastify.get('/foo/:param', (req, reply) => {
-    t.assert.equal(req.params.param, 'bAr')
+    t.assert.strictEqual(req.params.param, 'bAr')
     reply.send({ hello: 'world' })
   })
 
@@ -83,7 +83,7 @@ test('case insensitive (parametric)', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepEqual(JSON.parse(body), {
         hello: 'world'
       })
@@ -101,7 +101,7 @@ test('case insensitive (wildcard)', (t, done) => {
   t.after(() => fastify.close())
 
   fastify.get('/foo/*', (req, reply) => {
-    t.assert.equal(req.params['*'], 'bAr/baZ')
+    t.assert.strictEqual(req.params['*'], 'bAr/baZ')
     reply.send({ hello: 'world' })
   })
 
@@ -113,7 +113,7 @@ test('case insensitive (wildcard)', (t, done) => {
       url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepEqual(JSON.parse(body), {
         hello: 'world'
       })

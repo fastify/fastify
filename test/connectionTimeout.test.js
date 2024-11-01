@@ -2,34 +2,33 @@
 
 const Fastify = require('..')
 const http = require('node:http')
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 
-test('connectionTimeout', t => {
+test('connectionTimeout', async t => {
   t.plan(6)
 
   try {
     Fastify({ connectionTimeout: 1.3 })
-    t.fail('option must be an integer')
+    t.assert.fail('option must be an integer')
   } catch (err) {
-    t.ok(err)
+    t.assert.ok(err)
   }
 
   try {
     Fastify({ connectionTimeout: [] })
-    t.fail('option must be an integer')
+    t.assert.fail('option must be an integer')
   } catch (err) {
-    t.ok(err)
+    t.assert.ok(err)
   }
 
   const httpServer = Fastify({ connectionTimeout: 1 }).server
-  t.equal(httpServer.timeout, 1)
+  t.assert.strictEqual(httpServer.timeout, 1)
 
   const httpsServer = Fastify({ connectionTimeout: 2, https: {} }).server
-  t.equal(httpsServer.timeout, 2)
+  t.assert.strictEqual(httpsServer.timeout, 2)
 
   const http2Server = Fastify({ connectionTimeout: 3, http2: true }).server
-  t.equal(http2Server.timeout, 3)
+  t.assert.strictEqual(http2Server.timeout, 3)
 
   const serverFactory = (handler, _) => {
     const server = http.createServer((req, res) => {
@@ -39,5 +38,5 @@ test('connectionTimeout', t => {
     return server
   }
   const customServer = Fastify({ connectionTimeout: 4, serverFactory }).server
-  t.equal(customServer.timeout, 5)
+  t.assert.strictEqual(customServer.timeout, 5)
 })

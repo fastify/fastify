@@ -74,7 +74,7 @@ test('req.log should be the instance returned by the factory', (t, done) => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.assert.equal(req.log, fastify.log)
+    t.assert.strictEqual(req.log, fastify.log)
     req.log.info('log message')
     reply.send()
   })

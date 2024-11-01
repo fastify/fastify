@@ -28,7 +28,7 @@ test('requestTimeout should return 408', (t, done) => {
 
     socket.on('data', c => (data = Buffer.concat([data, c])))
     socket.on('end', () => {
-      t.assert.equal(
+      t.assert.strictEqual(
         data.toString('utf-8'),
         'HTTP/1.1 408 Request Timeout\r\nContent-Length: 71\r\nContent-Type: application/json\r\n\r\n{"error":"Request Timeout","message":"Client Timeout","statusCode":408}'
       )

@@ -24,7 +24,7 @@ test('Buffer test', async t => {
     })
 
     t.assert.ifError(response.error)
-    t.assert.equal(response.statusCode, 200)
+    t.assert.strictEqual(response.statusCode, 200)
     t.assert.deepEqual(response.payload.toString(), '{"hello":"world"}')
   })
 
@@ -41,7 +41,7 @@ test('Buffer test', async t => {
     })
 
     t.assert.ifError(response.error)
-    t.assert.equal(response.statusCode, 400)
+    t.assert.strictEqual(response.statusCode, 400)
     t.assert.deepEqual(JSON.parse(response.payload.toString()), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_EMPTY_JSON_BODY',

@@ -70,9 +70,9 @@ jobs:
       pull-requests: write
     steps:
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           message: |
             **Node**: 20
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-20 }}

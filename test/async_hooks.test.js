@@ -41,7 +41,7 @@ test('test async hooks', (t, done) => {
       json: true
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
 
       sget({
         method: 'POST',
@@ -52,7 +52,7 @@ test('test async hooks', (t, done) => {
         json: true
       }, (err, response, body) => {
         t.assert.ifError(err)
-        t.assert.equal(response.statusCode, 200)
+        t.assert.strictEqual(response.statusCode, 200)
 
         sget({
           method: 'GET',
@@ -60,9 +60,9 @@ test('test async hooks', (t, done) => {
           json: true
         }, (err, response, body) => {
           t.assert.ifError(err)
-          t.assert.equal(response.statusCode, 200)
+          t.assert.strictEqual(response.statusCode, 200)
           app.close()
-          t.assert.equal(remainingIds.size, 0)
+          t.assert.strictEqual(remainingIds.size, 0)
           done()
         })
       })

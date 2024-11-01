@@ -169,3 +169,65 @@ test('Adding manually HEAD route after GET with the same path throws Fastify dup
     t.equal(error.code, 'FST_ERR_DUPLICATED_ROUTE')
   }
 })
+
+test('Will pass onSend hook to HEAD method if exposeHeadRoutes is true /1', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  await fastify.register((scope, opts, next) => {
+    scope.route({
+      method: 'GET',
+      path: '/route',
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      },
+      onSend: (req, reply, payload, done) => {
+        reply.header('x-content-type', 'application/fastify')
+        done(null, payload)
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  const result = await fastify.inject({
+    url: '/prefix/route',
+    method: 'HEAD'
+  })
+
+  t.equal(result.headers['x-content-type'], 'application/fastify')
+})
+
+test('Will pass onSend hook to HEAD method if exposeHeadRoutes is true /2', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  await fastify.register((scope, opts, next) => {
+    scope.route({
+      method: 'get',
+      path: '/route',
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      },
+      onSend: (req, reply, payload, done) => {
+        reply.header('x-content-type', 'application/fastify')
+        done(null, payload)
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  const result = await fastify.inject({
+    url: '/prefix/route',
+    method: 'HEAD'
+  })
+
+  t.equal(result.headers['x-content-type'], 'application/fastify')
+})

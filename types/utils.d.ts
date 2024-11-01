@@ -2,13 +2,22 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 
+type AutocompletePrimitiveBaseType<T> =
+  T extends string ? string :
+    T extends number ? number :
+      T extends boolean ? boolean :
+        never
+
+export type Autocomplete<T> = T | (AutocompletePrimitiveBaseType<T> & Record<never, never>)
+
 /**
  * Standard HTTP method strings
+ * for internal use
  */
 type _HTTPMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS' |
 'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' | 'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH' | 'REPORT' | 'MKCALENDAR'
 
-export type HTTPMethods = Uppercase<_HTTPMethods> | Lowercase<_HTTPMethods>
+export type HTTPMethods = Autocomplete<_HTTPMethods | Lowercase<_HTTPMethods>>
 
 /**
  * A union type of the Node.js server types from the http, https, and http2 modules.
@@ -56,7 +65,6 @@ type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 type HttpCodes = StringAsNumber<`${CodeClasses}${Digit}${Digit}`>
 type HttpKeys = HttpCodes | `${Digit}xx`
 export type StatusCodeReply = {
-
   [Key in HttpKeys]?: unknown;
 }
 

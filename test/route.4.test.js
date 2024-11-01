@@ -1,21 +1,20 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 
-test('route error handler overrides global custom error handler', t => {
-  t.plan(4)
+test('route error handler overrides global custom error handler', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
   const customGlobalErrorHandler = (error, request, reply) => {
-    t.error(error)
+    t.assert.ifError(error)
     reply.code(429).send({ message: 'Too much coffee' })
   }
 
   const customRouteErrorHandler = (error, request, reply) => {
-    t.equal(error.message, 'Wrong Pot Error')
+    t.assert.strictEqual(error.message, 'Wrong Pot Error')
     reply.code(418).send({
       message: 'Make a brew',
       statusCode: 418,
@@ -34,17 +33,15 @@ test('route error handler overrides global custom error handler', t => {
     errorHandler: customRouteErrorHandler
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     method: 'GET',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 418)
-    t.same(JSON.parse(res.payload), {
-      message: 'Make a brew',
-      statusCode: 418,
-      error: 'Wrong Pot Error'
-    })
+  })
+  t.assert.strictEqual(res.statusCode, 418)
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    message: 'Make a brew',
+    statusCode: 418,
+    error: 'Wrong Pot Error'
   })
 })
 
@@ -61,7 +58,7 @@ test('throws when route with empty url', async t => {
       }
     })
   } catch (err) {
-    t.equal(err.message, 'The path could not be empty')
+    t.assert.strictEqual(err.message, 'The path could not be empty')
   }
 })
 
@@ -75,7 +72,7 @@ test('throws when route with empty url in shorthand declaration', async t => {
       async function handler () { return {} }
     )
   } catch (err) {
-    t.equal(err.message, 'The path could not be empty')
+    t.assert.strictEqual(err.message, 'The path could not be empty')
   }
 })
 
@@ -94,19 +91,19 @@ test('throws when route-level error handler is not a function', t => {
       errorHandler: 'teapot'
     })
   } catch (err) {
-    t.equal(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
+    t.assert.strictEqual(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
 })
 
-test('route child logger factory overrides default child logger factory', t => {
-  t.plan(3)
+test('route child logger factory overrides default child logger factory', async t => {
+  t.plan(2)
 
   const fastify = Fastify()
 
   const customRouteChildLogger = (logger, bindings, opts, req) => {
     const child = logger.child(bindings, opts)
     child.customLog = function (message) {
-      t.equal(message, 'custom')
+      t.assert.strictEqual(message, 'custom')
     }
     return child
   }
@@ -121,11 +118,10 @@ test('route child logger factory overrides default child logger factory', t => {
     childLoggerFactory: customRouteChildLogger
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     method: 'GET',
     url: '/coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
   })
+
+  t.assert.strictEqual(res.statusCode, 200)
 })

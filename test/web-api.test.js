@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../fastify')
 const fs = require('node:fs')
 const { Readable } = require('node:stream')
@@ -24,8 +23,8 @@ test('should response with a ReadableStream', async (t) => {
 
   const expected = await fs.promises.readFile(__filename)
 
-  t.equal(statusCode, 200)
-  t.equal(expected.toString(), body.toString())
+  t.assert.strictEqual(statusCode, 200)
+  t.assert.strictEqual(expected.toString(), body.toString())
 })
 
 test('should response with a Response', async (t) => {
@@ -51,9 +50,9 @@ test('should response with a Response', async (t) => {
 
   const expected = await fs.promises.readFile(__filename)
 
-  t.equal(statusCode, 200)
-  t.equal(expected.toString(), body.toString())
-  t.equal(headers.hello, 'world')
+  t.assert.strictEqual(statusCode, 200)
+  t.assert.strictEqual(expected.toString(), body.toString())
+  t.assert.strictEqual(headers.hello, 'world')
 })
 
 test('should response with a Response 204', async (t) => {
@@ -76,9 +75,9 @@ test('should response with a Response 204', async (t) => {
     body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
-  t.equal(statusCode, 204)
-  t.equal(body, '')
-  t.equal(headers.hello, 'world')
+  t.assert.strictEqual(statusCode, 204)
+  t.assert.strictEqual(body, '')
+  t.assert.strictEqual(headers.hello, 'world')
 })
 
 test('should response with a Response 304', async (t) => {
@@ -101,9 +100,9 @@ test('should response with a Response 304', async (t) => {
     body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
-  t.equal(statusCode, 304)
-  t.equal(body, '')
-  t.equal(headers.hello, 'world')
+  t.assert.strictEqual(statusCode, 304)
+  t.assert.strictEqual(body, '')
+  t.assert.strictEqual(headers.hello, 'world')
 })
 
 test('should response with a Response without body', async (t) => {
@@ -126,9 +125,9 @@ test('should response with a Response without body', async (t) => {
     body
   } = await fastify.inject({ method: 'GET', path: '/' })
 
-  t.equal(statusCode, 200)
-  t.equal(body, '')
-  t.equal(headers.hello, 'world')
+  t.assert.strictEqual(statusCode, 200)
+  t.assert.strictEqual(body, '')
+  t.assert.strictEqual(headers.hello, 'world')
 })
 
 test('able to use in onSend hook - ReadableStream', async (t) => {
@@ -142,7 +141,7 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
   })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    t.equal(Object.prototype.toString.call(payload), '[object ReadableStream]')
+    t.assert.strictEqual(Object.prototype.toString.call(payload), '[object ReadableStream]')
     done(null, new Response(payload, {
       status: 200,
       headers: {
@@ -159,9 +158,9 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
 
   const expected = await fs.promises.readFile(__filename)
 
-  t.equal(statusCode, 200)
-  t.equal(expected.toString(), body.toString())
-  t.equal(headers.hello, 'world')
+  t.assert.strictEqual(statusCode, 200)
+  t.assert.strictEqual(expected.toString(), body.toString())
+  t.assert.strictEqual(headers.hello, 'world')
 })
 
 test('able to use in onSend hook - Response', async (t) => {
@@ -180,7 +179,7 @@ test('able to use in onSend hook - Response', async (t) => {
   })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    t.equal(Object.prototype.toString.call(payload), '[object Response]')
+    t.assert.strictEqual(Object.prototype.toString.call(payload), '[object Response]')
     done(null, new Response(payload.body, {
       status: 200,
       headers: payload.headers
@@ -195,9 +194,9 @@ test('able to use in onSend hook - Response', async (t) => {
 
   const expected = await fs.promises.readFile(__filename)
 
-  t.equal(statusCode, 200)
-  t.equal(expected.toString(), body.toString())
-  t.equal(headers.hello, 'world')
+  t.assert.strictEqual(statusCode, 200)
+  t.assert.strictEqual(expected.toString(), body.toString())
+  t.assert.strictEqual(headers.hello, 'world')
 })
 
 test('Error when Response.bodyUsed', async (t) => {
@@ -216,31 +215,37 @@ test('Error when Response.bodyUsed', async (t) => {
       }
     })
     const file = await response.text()
-    t.equal(expected.toString(), file)
-    t.equal(response.bodyUsed, true)
+    t.assert.strictEqual(expected.toString(), file)
+    t.assert.strictEqual(response.bodyUsed, true)
     return reply.send(response)
   })
 
   const response = await fastify.inject({ method: 'GET', path: '/' })
 
-  t.equal(response.statusCode, 500)
+  t.assert.strictEqual(response.statusCode, 500)
   const body = response.json()
-  t.equal(body.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
+  t.assert.strictEqual(body.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
 })
 
 test('allow to pipe with fetch', async (t) => {
   t.plan(2)
+  const abortController = new AbortController()
+  const { signal } = abortController
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
+  })
 
   fastify.get('/', function (request, reply) {
     return fetch(`${fastify.listeningOrigin}/fetch`, {
-      method: 'GET'
+      method: 'GET',
+      signal
     })
   })
 
-  fastify.get('/fetch', function (request, reply) {
+  fastify.get('/fetch', function async (request, reply) {
     reply.code(200).send({ ok: true })
   })
 
@@ -248,19 +253,25 @@ test('allow to pipe with fetch', async (t) => {
 
   const response = await fastify.inject({ method: 'GET', path: '/' })
 
-  t.equal(response.statusCode, 200)
-  t.same(response.json(), { ok: true })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { ok: true })
 })
 
 test('allow to pipe with undici.fetch', async (t) => {
   t.plan(2)
+  const abortController = new AbortController()
+  const { signal } = abortController
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
+  })
 
   fastify.get('/', function (request, reply) {
     return undiciFetch(`${fastify.listeningOrigin}/fetch`, {
-      method: 'GET'
+      method: 'GET',
+      signal
     })
   })
 
@@ -272,6 +283,6 @@ test('allow to pipe with undici.fetch', async (t) => {
 
   const response = await fastify.inject({ method: 'GET', path: '/' })
 
-  t.equal(response.statusCode, 200)
-  t.same(response.json(), { ok: true })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { ok: true })
 })

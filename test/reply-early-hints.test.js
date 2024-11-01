@@ -7,7 +7,9 @@ const http2 = require('http2')
 
 const testResBody = 'Hello, world!'
 
-test('sends early hints', (t) => {
+test('sends early hints', (t, done) => {
+  t.plan(6)
+
   const fastify = Fastify({
     logger: false
   })
@@ -42,13 +44,16 @@ test('sends early hints', (t) => {
 
       res.on('end', () => {
         t.assert.strictEqual(data, testResBody)
-        fastify.close(t.end)
+        fastify.close()
+        done()
       })
     })
   })
 })
 
-test('sends early hints (http2)', (t) => {
+test('sends early hints (http2)', (t, done) => {
+  t.plan(6)
+
   const fastify = Fastify({
     http2: true,
     logger: false
@@ -86,7 +91,8 @@ test('sends early hints (http2)', (t) => {
     req.on('end', () => {
       t.assert.strictEqual(data, testResBody)
       client.close()
-      fastify.close(t.end)
+      fastify.close()
+      done()
     })
 
     req.end()

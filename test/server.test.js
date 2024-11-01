@@ -150,7 +150,7 @@ test('#5180 - preClose should be called before closing secondary server', async 
     return { hello: 'world' }
   })
 
-  fastify.listen({ port: 0 }, async (err) => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const addresses = fastify.addresses()
     const mainServerAddress = fastify.server.address()
@@ -177,10 +177,10 @@ test('#5180 - preClose should be called before closing secondary server', async 
           t.assert.ok(flag)
         }
       )
-  })
 
-  // Close the server while the slow request is pending
-  setTimeout(fastify.close, 250)
+    // Close the server while the slow request is pending
+    setTimeout(fastify.close, 250)
+  })
 
   // Wait 1000ms to ensure that the test is finished and async operations are
   // completed

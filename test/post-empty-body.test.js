@@ -11,7 +11,7 @@ setGlobalDispatcher(new Agent({
 
 test('post empty body', async t => {
   const fastify = Fastify()
-  t.after(fastify.close(fastify))
+  t.after(fastify.close.bind(fastify))
 
   fastify.post('/bug', async (request, reply) => {})
 

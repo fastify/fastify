@@ -4,7 +4,9 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
-test('use semicolon delimiter default false', t => {
+test('use semicolon delimiter default false', (t, done) => {
+  t.plan(4)
+
   const fastify = Fastify({})
 
   t.after(fastify.close())
@@ -23,11 +25,13 @@ test('use semicolon delimiter default false', t => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), {})
+      done()
     })
   })
 })
 
-test('use semicolon delimiter set to true', t => {
+test('use semicolon delimiter set to true', (t, done) => {
+  t.plan(4)
   const fastify = Fastify({
     useSemicolonDelimiter: true
   })
@@ -49,11 +53,12 @@ test('use semicolon delimiter set to true', t => {
       t.assert.deepStrictEqual(JSON.parse(body), {
         foo: 'bar'
       })
+      done()
     })
   })
 })
 
-test('use semicolon delimiter set to false', t => {
+test('use semicolon delimiter set to false', (t, done) => {
   const fastify = Fastify({
     useSemicolonDelimiter: false
   })
@@ -73,11 +78,12 @@ test('use semicolon delimiter set to false', t => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), {})
+      done()
     })
   })
 })
 
-test('use semicolon delimiter set to false return 404', t => {
+test('use semicolon delimiter set to false return 404', (t, done) => {
   const fastify = Fastify({
     useSemicolonDelimiter: false
   })
@@ -96,6 +102,7 @@ test('use semicolon delimiter set to false return 404', t => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 404)
+      done()
     })
   })
 })

@@ -266,6 +266,13 @@ application, you should __always__ benchmark if performance matters to you.
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
 
+Version 3 of Fastify and lower are EOL and will not receive any security or bug fixes.
+
+Fastify's partner, HeroDevs, provides commercial security fixes for all
+unsupported versions at [https://herodevs.com/support/fastify-nes][hd-link].
+Fastify's supported version matrix is available in the
+[Long Term Support][lts-link] documentation.
+
 ## Contributing
 
 Whether reporting bugs, discussing improvements and new ideas or writing code,
@@ -414,3 +421,6 @@ dependencies:
 - ISC
 - BSD-3-Clause
 - BSD-2-Clause
+
+[hd-link]: https://www.herodevs.com/support/fastify-nes?utm_source=fastify&utm_medium=link&utm_campaign=github_readme
+[lts-link]: https://fastify.dev/docs/latest/Reference/LTS/

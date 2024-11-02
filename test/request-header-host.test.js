@@ -72,9 +72,9 @@ test('Return 200 when Host header is empty', (t, done) => {
   t.after(() => fastify.close())
 
   fastify.get('/', async function (request) {
-    t.assert.equal(request.host, '')
-    t.assert.equal(request.hostname, '')
-    t.assert.equal(request.port, null)
+    t.assert.strictEqual(request.host, '')
+    t.assert.strictEqual(request.hostname, '')
+    t.assert.strictEqual(request.port, null)
     return { ok: true }
   })
   fastify.listen({ port: 0 }, err => {
@@ -104,9 +104,9 @@ test('Return 200 when Host header is empty with trust proxy', (t, done) => {
   t.after(() => fastify.close())
 
   fastify.get('/', async function (request) {
-    t.assert.equal(request.host, '')
-    t.assert.equal(request.hostname, '')
-    t.assert.equal(request.port, null)
+    t.assert.strictEqual(request.host, '')
+    t.assert.strictEqual(request.hostname, '')
+    t.assert.strictEqual(request.port, null)
     return { ok: true }
   })
   fastify.listen({ port: 0 }, err => {
@@ -140,9 +140,9 @@ test('Return 200 when Host header is missing and http.requireHostHeader = false'
   t.after(() => fastify.close())
 
   fastify.get('/', async function (request) {
-    t.assert.equal(request.host, '')
-    t.assert.equal(request.hostname, '')
-    t.assert.equal(request.port, null)
+    t.assert.strictEqual(request.host, '')
+    t.assert.strictEqual(request.hostname, '')
+    t.assert.strictEqual(request.port, null)
     return { ok: true }
   })
   fastify.listen({ port: 0 }, err => {
@@ -175,9 +175,9 @@ test('Return 200 when Host header is missing and http.requireHostHeader = false 
   t.after(() => fastify.close())
 
   fastify.get('/', async function (request) {
-    t.assert.equal(request.host, '')
-    t.assert.equal(request.hostname, '')
-    t.assert.equal(request.port, null)
+    t.assert.strictEqual(request.host, '')
+    t.assert.strictEqual(request.hostname, '')
+    t.assert.strictEqual(request.port, null)
     return { ok: true }
   })
   fastify.listen({ port: 0 }, err => {

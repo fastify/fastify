@@ -85,7 +85,7 @@ test('abort signal', async t => {
   await t.test('listen should not start server', (t, end) => {
     t.plan(2)
     function onClose (instance, done) {
-      t.assert.equal(instance, fastify)
+      t.assert.strictEqual(instance, fastify)
       done()
       end()
     }
@@ -103,7 +103,7 @@ test('abort signal', async t => {
   await t.test('listen should not start server if already aborted', (t, end) => {
     t.plan(2)
     function onClose (instance, done) {
-      t.assert.equal(instance, fastify)
+      t.assert.strictEqual(instance, fastify)
       done()
       end()
     }
@@ -134,21 +134,19 @@ test('abort signal', async t => {
   })
 })
 
-test('#5180 - preClose should be called before closing secondary server', (t, end) => {
+test('#5180 - preClose should be called before closing secondary server', async (t) => {
   t.plan(2)
   const fastify = Fastify({ forceCloseConnections: true })
   let flag = false
   t.after(() => fastify.close())
 
-  fastify.addHook('preClose', async () => {
+  fastify.addHook('preClose', () => {
     flag = true
   })
 
   fastify.get('/', async (req, reply) => {
-    await new Promise((resolve) => {
-      setTimeout(() => resolve(1), 1000)
-    })
-
+    // request will be pending for 1 second to simulate a slow request
+    await new Promise((resolve) => { setTimeout(resolve, 1000) })
     return { hello: 'world' }
   })
 
@@ -177,12 +175,14 @@ test('#5180 - preClose should be called before closing secondary server', (t, en
         () => { t.assert.fail('Request should not succeed') },
         () => {
           t.assert.ok(flag)
-          end()
         }
       )
 
-    setTimeout(() => {
-      fastify.close()
-    }, 250)
+    // Close the server while the slow request is pending
+    setTimeout(fastify.close, 250)
   })
+
+  // Wait 1000ms to ensure that the test is finished and async operations are
+  // completed
+  await new Promise((resolve) => { setTimeout(resolve, 1000) })
 })

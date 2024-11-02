@@ -112,7 +112,7 @@ test('allow unsafe regex allow unsafe', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.deepStrictEqual(JSON.parse(body), {
         foo: '1234'
       })
       done()

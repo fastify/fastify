@@ -25,7 +25,7 @@ test('Buffer test', async t => {
 
     t.assert.ifError(response.error)
     t.assert.strictEqual(response.statusCode, 200)
-    t.assert.deepEqual(response.payload.toString(), '{"hello":"world"}')
+    t.assert.deepStrictEqual(response.payload.toString(), '{"hello":"world"}')
   })
 
   await test('should return 400 if the body is empty', async t => {
@@ -42,7 +42,7 @@ test('Buffer test', async t => {
 
     t.assert.ifError(response.error)
     t.assert.strictEqual(response.statusCode, 400)
-    t.assert.deepEqual(JSON.parse(response.payload.toString()), {
+    t.assert.deepStrictEqual(JSON.parse(response.payload.toString()), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
       message: 'Body cannot be empty when content-type is set to \'application/json\'',

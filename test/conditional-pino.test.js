@@ -21,7 +21,7 @@ test("pino is require'd if logger is passed", t => {
     logger: true
   })
 
-  t.assert.notEqual(require.cache[require.resolve('pino')], undefined)
+  t.assert.notStrictEqual(require.cache[require.resolve('pino')], undefined)
 })
 
 test("pino is require'd if loggerInstance is passed", t => {
@@ -43,5 +43,5 @@ test("pino is require'd if loggerInstance is passed", t => {
     loggerInstance
   })
 
-  t.assert.notEqual(require.cache[require.resolve('pino')], undefined)
+  t.assert.notStrictEqual(require.cache[require.resolve('pino')], undefined)
 })

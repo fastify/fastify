@@ -11,7 +11,12 @@ setGlobalDispatcher(new Agent({
 
 test('post empty body', async t => {
   const fastify = Fastify()
-  t.after(fastify.close.bind(fastify))
+  const abortController = new AbortController()
+  const { signal } = abortController
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
+  })
 
   fastify.post('/bug', async (request, reply) => {})
 
@@ -22,7 +27,8 @@ test('post empty body', async t => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ foo: 'bar' })
+    body: JSON.stringify({ foo: 'bar' }),
+    signal
   })
 
   t.assert.strictEqual(res.statusCode, 200)

@@ -4,12 +4,10 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
-test('use semicolon delimiter default false', (t, done) => {
-  t.plan(4)
-
+test('use semicolon delimiter default false', t => {
   const fastify = Fastify({})
 
-  t.after(fastify.close.bind(fastify))
+  t.after(fastify.close())
 
   fastify.get('/1234;foo=bar', (req, reply) => {
     reply.send(req.query)
@@ -25,18 +23,15 @@ test('use semicolon delimiter default false', (t, done) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), {})
-      done()
     })
   })
 })
 
-test('use semicolon delimiter set to true', (t, done) => {
-  t.plan(4)
-
+test('use semicolon delimiter set to true', t => {
   const fastify = Fastify({
     useSemicolonDelimiter: true
   })
-  t.after(fastify.close.bind(fastify))
+  t.after(fastify.close())
 
   fastify.get('/1234', (req, reply) => {
     reply.send(req.query)
@@ -54,18 +49,15 @@ test('use semicolon delimiter set to true', (t, done) => {
       t.assert.deepStrictEqual(JSON.parse(body), {
         foo: 'bar'
       })
-      done()
     })
   })
 })
 
-test('use semicolon delimiter set to false', (t, done) => {
-  t.plan(4)
-
+test('use semicolon delimiter set to false', t => {
   const fastify = Fastify({
     useSemicolonDelimiter: false
   })
-  t.after(fastify.close.bind(fastify))
+  t.after(fastify.close())
 
   fastify.get('/1234;foo=bar', (req, reply) => {
     reply.send(req.query)
@@ -81,18 +73,15 @@ test('use semicolon delimiter set to false', (t, done) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), {})
-      done()
     })
   })
 })
 
-test('use semicolon delimiter set to false return 404', (t, done) => {
-  t.plan(3)
-
+test('use semicolon delimiter set to false return 404', t => {
   const fastify = Fastify({
     useSemicolonDelimiter: false
   })
-  t.after(fastify.close.bind(fastify))
+  t.after(fastify.close())
 
   fastify.get('/1234', (req, reply) => {
     reply.send(req.query)
@@ -107,7 +96,6 @@ test('use semicolon delimiter set to false return 404', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 404)
-      done()
     })
   })
 })

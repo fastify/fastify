@@ -37,6 +37,6 @@ test('should remove content-type for setErrorHandler', async t => {
   })
 
   const { statusCode, body } = await fastify.inject({ method: 'GET', path: '/' })
-  t.assert.equal(statusCode, 400)
+  t.assert.strictEqual(statusCode, 400)
   t.assert.strictEqual(body, JSON.stringify({ foo: 'bar' }))
 })

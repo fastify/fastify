@@ -59,6 +59,8 @@ test('use semicolon delimiter set to true', (t, done) => {
 })
 
 test('use semicolon delimiter set to false', (t, done) => {
+  t.plan(4)
+
   const fastify = Fastify({
     useSemicolonDelimiter: false
   })
@@ -84,6 +86,8 @@ test('use semicolon delimiter set to false', (t, done) => {
 })
 
 test('use semicolon delimiter set to false return 404', (t, done) => {
+  t.plan(3)
+
   const fastify = Fastify({
     useSemicolonDelimiter: false
   })

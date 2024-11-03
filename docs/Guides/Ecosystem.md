@@ -249,7 +249,7 @@ section.
   plugin to authenticate HTTP requests based on API key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
-- [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin 
+- [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin
   to access Fastify instance, logger, request and reply from Node.js [Async
   Local Storage](https://nodejs.org/api/async_context.html#class-asynclocalstorage).
 - [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
@@ -277,7 +277,7 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
-- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3) 
+- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3)
   Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
@@ -289,7 +289,7 @@ section.
   to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
-- [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
+- [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman)
   Small and efficient cache provider for Node.js with In-memory, File, Redis
    and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
@@ -344,7 +344,7 @@ section.
 - [`fastify-event-bus`](https://github.com/Shiva127/fastify-event-bus) Event bus
   support for Fastify. Built upon [js-event-bus](https://github.com/bcerati/js-event-bus).
 - [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
-  plugin for instantiating and encapsulating the 
+  plugin for instantiating and encapsulating the
   [Evervault](https://evervault.com/) client.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of
   your decorators across all the encapsulated contexts.

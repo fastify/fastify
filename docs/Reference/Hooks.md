@@ -107,7 +107,7 @@ returned stream. This property is used to correctly match the request payload
 with the `Content-Length` header value. Ideally, this property should be updated
 on each received chunk.
 
-**Notice:** The size of the returned stream is checked to not exceed the limit 
+**Notice:** The size of the returned stream is checked to not exceed the limit
 set in [`bodyLimit`](./Server.md#bodylimit) option.
 
 ### preValidation
@@ -256,8 +256,8 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
-**Note:** setting `disableRequestLogging` to `true` will disable any error log 
-inside the `onResponse` hook. In this case use `try - catch` to log errors. 
+**Note:** setting `disableRequestLogging` to `true` will disable any error log
+inside the `onResponse` hook. In this case use `try - catch` to log errors.
 
 ### onTimeout
 
@@ -428,8 +428,8 @@ fastify.addHook('onReady', async function () {
 
 ### onListen
 
-Triggered when the server starts listening for requests. The hooks run one 
-after another. If a hook function causes an error, it is logged and 
+Triggered when the server starts listening for requests. The hooks run one
+after another. If a hook function causes an error, it is logged and
 ignored, allowing the queue of hooks to continue. Hook functions accept one
 argument: a callback, `done`, to be invoked after the hook function is
 complete. Hook functions are invoked with `this` bound to the associated
@@ -451,7 +451,7 @@ fastify.addHook('onListen', async function () {
 })
 ```
 
-> **Note**  
+> **Note**
 > This hook will not run when the server is started using `fastify.inject()` or `fastify.ready()`
 
 ### onClose
@@ -462,7 +462,7 @@ HTTP requests have been completed.
 It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
 to close an open connection to a database.
 
-The hook function takes the Fastify instance as a first argument, 
+The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
 ```js
 // callback style

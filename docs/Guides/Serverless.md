@@ -36,10 +36,10 @@ snippet of code.
 
 To integrate with AWS, you have two choices of library:
 
-- Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) 
+- Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify)
   which only adds API Gateway support but has heavy optimizations for fastify.
-- Using [@h4ad/serverless-adapter](https://github.com/H4ad/serverless-adapter) 
-  which is a little slower as it creates an HTTP request for each AWS event but 
+- Using [@h4ad/serverless-adapter](https://github.com/H4ad/serverless-adapter)
+  which is a little slower as it creates an HTTP request for each AWS event but
   has support for more AWS services such as: AWS SQS, AWS SNS and others.
 
 So you can decide which option is best for you, but you can test both libraries.
@@ -263,7 +263,7 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 
 ## Google Firebase Functions
 
-Follow this guide if you want to use Fastify as the HTTP framework for 
+Follow this guide if you want to use Fastify as the HTTP framework for
 Firebase Functions instead of the vanilla JavaScript router provided with
 `onRequest(async (req, res) => {}`.
 
@@ -280,7 +280,7 @@ const { onRequest } = require("firebase-functions/v2/https")
 ### Creation of Fastify instance
 
 Create the Fastify instance and encapsulate the returned application instance
-in a function which will register routes, await the server's processing of 
+in a function which will register routes, await the server's processing of
 plugins, hooks and other settings. As follows:
 
 ```js

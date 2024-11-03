@@ -223,7 +223,8 @@ function fastify (options) {
         'OPTIONS',
         'PATCH',
         'PUT',
-        'POST'
+        'POST',
+        'SEARCH',
       ])
     },
     [kOptions]: options,

@@ -5,7 +5,7 @@ const joi = require('joi')
 const Fastify = require('..')
 
 test('does not mutate joi schemas', (t, done) => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
   function validatorCompiler ({ schema, method, url, httpPart }) {
@@ -31,7 +31,8 @@ test('does not mutate joi schemas', (t, done) => {
       params: { an_id: joi.number() }
     },
     handler (req, res) {
-      t.assert.deepEqual(req.params, { an_id: 42 })
+      t.assert.strictEqual(Object.keys(req.params).length, 1)
+      t.assert.strictEqual(req.params.an_id, '42')
       res.send({ hello: 'world' })
     }
   })

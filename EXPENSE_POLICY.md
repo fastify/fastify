@@ -98,7 +98,7 @@ To claim a bounty:
 - The expense will be validated by a lead maintainer and then the payment will be
   processed by Open Collective
 
-If the Open Collective budget is insufficient, the expense will be rejected.  
+If the Open Collective budget is insufficient, the expense will be rejected.
 Unclaimed bounties are available for other issues.
 
 [submit]: https://opencollective.com/fastify/expenses/new

@@ -316,7 +316,7 @@ based on a [route config option](../Reference/Routes.md#routes-options):
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (request, key, value) => { request[key] = value })
-  
+
   function handler(request, reply, done) {
     instance.util(request, 'timestamp', new Date())
     done()

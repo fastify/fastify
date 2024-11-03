@@ -178,13 +178,13 @@ When utilizing Fastify's custom error handling through [`setErrorHandler`](./Ser
 you should be aware of how errors are propagated between custom and default
 error handlers.
 
-If a plugin's error handler re-throws an error, and the error is not an 
+If a plugin's error handler re-throws an error, and the error is not an
 instance of [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
 (as seen in the `/bad` route in the following example), it will not propagate
 to the parent context error handler. Instead, it will be caught by the default
 error handler.
 
-To ensure consistent error handling, it is recommended to throw instances of 
+To ensure consistent error handling, it is recommended to throw instances of
 `Error`. For instance, in the following example, replacing `throw 'foo'` with
 `throw new Error('foo')` in the `/bad` route ensures that errors propagate through
 the custom error handling chain as intended. This practice helps avoid potential

@@ -264,7 +264,7 @@ test('should work with undici', async t => {
     'http://localhost:' + fastify.server.address().port, {
       keepAliveTimeout: 10,
       keepAliveMaxTimeout: 10
-    } 
+    }
   )
 
   t.after(() => {
@@ -279,8 +279,8 @@ test('should work with undici', async t => {
 })
 ```
 
-Alternatively, starting with Node.js 18, 
-[`fetch`](https://nodejs.org/docs/latest-v18.x/api/globals.html#fetch) 
+Alternatively, starting with Node.js 18,
+[`fetch`](https://nodejs.org/docs/latest-v18.x/api/globals.html#fetch)
 may be used without requiring any extra dependencies:
 
 **test-listen.js**
@@ -296,7 +296,7 @@ test('should work with fetch', async t => {
   t.after(() => fastify.close())
 
   await fastify.listen()
-  
+
   const response = await fetch(
     'http://localhost:' + fastify.server.address().port
   )
@@ -386,7 +386,7 @@ test("Test the Plugin Route", async t => {
 
     fastify.register(myPlugin)
 
-    // Add an endpoint of your choice 
+    // Add an endpoint of your choice
     fastify.get("/", async (request, reply) => {
         return ({ message: request.helloRequest })
     })
@@ -396,7 +396,7 @@ test("Test the Plugin Route", async t => {
         method: "GET",
         url: "/"
     })
-    
+
   console.log('status code: ', fastifyResponse.statusCode)
   console.log('body: ', fastifyResponse.body)
 })
@@ -440,7 +440,7 @@ test("Test the Plugin Route", async t => {
         method: "GET",
         url: "/"
     })
-    
+
     t.assert.strictEqual(fastifyResponse.statusCode, 200)
     t.assert.deepStrictEqual(JSON.parse(fastifyResponse.body), { message: "Hello World" })
 })
@@ -465,7 +465,7 @@ test("Test the Plugin Route", async t => {
 
     fastify.get("/", async (request, reply) => {
         // Testing the fastify decorators
-        t.assert.ifError(request.helloRequest) 
+        t.assert.ifError(request.helloRequest)
         t.assert.ok(request.helloRequest, "Hello World")
         t.assert.ok(fastify.helloInstance, "Hello Fastify Instance")
         return ({ message: request.helloRequest })

@@ -193,6 +193,8 @@ function invalidSchemaErrorFormatter (err: Error) {
 }
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
+expectType<FastifyInstance>(server.addHttpMethod('SEARCH', { hasBody: true }))
+
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))

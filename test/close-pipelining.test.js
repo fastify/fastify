@@ -29,7 +29,7 @@ test('Should return 503 while closing - pipelining', async t => {
   ])
   const actual = responses.map(r => r.statusCode)
 
-  t.assert.deepEqual(actual, codes)
+  t.assert.deepStrictEqual(actual, codes)
 
   await instance.close()
 })
@@ -60,10 +60,10 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
     instance.request({ path: '/', method: 'GET' })
   ])
 
-  t.assert.equal(responses[0].status, 'fulfilled')
-  t.assert.equal(responses[1].status, 'fulfilled')
-  t.assert.equal(responses[2].status, 'rejected')
-  t.assert.equal(responses[3].status, 'rejected')
+  t.assert.strictEqual(responses[0].status, 'fulfilled')
+  t.assert.strictEqual(responses[1].status, 'fulfilled')
+  t.assert.strictEqual(responses[2].status, 'rejected')
+  t.assert.strictEqual(responses[3].status, 'rejected')
 
   await instance.close()
 })

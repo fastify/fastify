@@ -1,18 +1,17 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 
-test('route child logger factory does not affect other routes', t => {
-  t.plan(6)
+test('route child logger factory does not affect other routes', async t => {
+  t.plan(4)
 
   const fastify = Fastify()
 
   const customRouteChildLogger = (logger, bindings, opts, req) => {
     const child = logger.child(bindings, opts)
     child.customLog = function (message) {
-      t.equal(message, 'custom')
+      t.assert.strictEqual(message, 'custom')
     }
     return child
   }
@@ -31,42 +30,39 @@ test('route child logger factory does not affect other routes', t => {
     method: 'GET',
     path: '/tea',
     handler: (req, res) => {
-      t.notMatch(req.log.customLog instanceof Function)
+      t.assert.ok(req.log.customLog instanceof Function)
       res.send()
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'GET',
     url: '/coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
   })
-  fastify.inject({
+  t.assert.strictEqual(res.statusCode, 200)
+
+  res = await fastify.inject({
     method: 'GET',
     url: '/tea'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.strictEqual(res.statusCode, 200)
 })
-test('route child logger factory overrides global custom error handler', t => {
-  t.plan(6)
+test('route child logger factory overrides global custom error handler', async t => {
+  t.plan(4)
 
   const fastify = Fastify()
 
   const customGlobalChildLogger = (logger, bindings, opts, req) => {
     const child = logger.child(bindings, opts)
     child.globalLog = function (message) {
-      t.equal(message, 'global')
+      t.assert.strictEqual(message, 'global')
     }
     return child
   }
   const customRouteChildLogger = (logger, bindings, opts, req) => {
     const child = logger.child(bindings, opts)
     child.customLog = function (message) {
-      t.equal(message, 'custom')
+      t.assert.strictEqual(message, 'custom')
     }
     return child
   }
@@ -91,24 +87,21 @@ test('route child logger factory overrides global custom error handler', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'GET',
     url: '/coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
   })
-  fastify.inject({
+  t.assert.strictEqual(res.statusCode, 200)
+
+  res = await fastify.inject({
     method: 'GET',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
   })
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('Creates a HEAD route for each GET one (default)', t => {
-  t.plan(8)
+test('Creates a HEAD route for each GET one (default)', async t => {
+  t.plan(6)
 
   const fastify = Fastify()
 
@@ -128,29 +121,25 @@ test('Creates a HEAD route for each GET one (default)', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+  t.assert.strictEqual(res.body, '')
 })
 
-test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t => {
-  t.plan(4)
+test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', async t => {
+  t.plan(2)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
 
@@ -170,25 +159,21 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 404)
   })
+  t.assert.strictEqual(res.statusCode, 404)
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 404)
   })
+  t.assert.strictEqual(res.statusCode, 404)
 })
 
-test('Creates a HEAD route for each GET one', t => {
-  t.plan(8)
+test('Creates a HEAD route for each GET one', async t => {
+  t.plan(6)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
@@ -208,23 +193,19 @@ test('Creates a HEAD route for each GET one', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+  t.assert.strictEqual(res.body, '')
 })

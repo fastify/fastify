@@ -93,16 +93,16 @@ fastify.route(options)
 * `childLoggerFactory(logger, binding, opts, rawReq)`: a custom factory function
   that will be called to produce a child logger instance for every request.
   See [`childLoggerFactory`](./Server.md#childloggerfactory) for more info.
-  Overrides the default logger factory, and anything set by 
+  Overrides the default logger factory, and anything set by
   [`setChildLoggerFactory`](./Server.md#setchildloggerfactory), for requests to
-  the route. To access the default factory, you can access 
+  the route. To access the default factory, you can access
   `instance.childLoggerFactory`. Note that this will point to Fastify's default
   `childLoggerFactory` only if a plugin hasn't overridden it already.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`: 
+* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`:
   function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.
@@ -121,8 +121,8 @@ fastify.route(options)
 * `version`: a [semver](https://semver.org/) compatible string that defined the
   version of the endpoint. [Example](#version-constraints).
 * `constraints`: defines route restrictions based on request properties or
-  values, enabling customized matching using 
-  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes 
+  values, enabling customized matching using
+  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes
   built-in `version` and `host` constraints, with support for custom constraint
   strategies.
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
@@ -796,10 +796,10 @@ const secret = {
 > inside the callback. If the error is not preventable, it is recommended to provide
 > a custom `frameworkErrors` handler to deal with it. Otherwise, you route selection
 > may break or expose sensitive information to attackers.
-> 
+>
 > ```js
 > const Fastify = require('fastify')
-> 
+>
 > const fastify = Fastify({
 >   frameworkErrors: function (err, res, res) {
 >     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {

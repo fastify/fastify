@@ -1,120 +1,123 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
-test('case insensitive', t => {
+test('case insensitive', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.get('/foo', (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/FOO'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(body), {
         hello: 'world'
       })
+      done()
     })
   })
 })
 
-test('case insensitive inject', t => {
+test('case insensitive inject', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.get('/foo', (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     fastify.inject({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/FOO'
     }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(response.payload), {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
         hello: 'world'
       })
+      done()
     })
   })
 })
 
-test('case insensitive (parametric)', t => {
+test('case insensitive (parametric)', (t, done) => {
   t.plan(5)
 
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.get('/foo/:param', (req, reply) => {
-    t.equal(req.params.param, 'bAr')
+    t.assert.strictEqual(req.params.param, 'bAr')
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(body), {
         hello: 'world'
       })
+      done()
     })
   })
 })
 
-test('case insensitive (wildcard)', t => {
+test('case insensitive (wildcard)', (t, done) => {
   t.plan(5)
 
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.get('/foo/*', (req, reply) => {
-    t.equal(req.params['*'], 'bAr/baZ')
+    t.assert.strictEqual(req.params['*'], 'bAr/baZ')
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(body), {
         hello: 'world'
       })
+      done()
     })
   })
 })

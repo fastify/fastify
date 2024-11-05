@@ -122,7 +122,6 @@ test('shorthand - should set get and head route in the same api call', t => {
 
     t.assert.ok(true)
   } catch (e) {
-    console.log(e)
     t.assert.fail()
   }
 })
@@ -147,7 +146,6 @@ test('shorthand - head, querystring schema', t => {
     })
     t.assert.ok(true)
   } catch (e) {
-    console.log(e)
     t.assert.fail()
   }
 })
@@ -160,7 +158,6 @@ test('missing schema - head', t => {
     })
     t.assert.ok(true)
   } catch (e) {
-    console.log(e)
     t.assert.fail()
   }
 })

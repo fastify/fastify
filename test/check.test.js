@@ -72,7 +72,6 @@ const options = {
 }
 
 const handler = (request, reply) => {
-  console.log('in handler')
   if (request.body.id === '400') {
     return reply.status(400).send({
       statusCode: 400,
@@ -125,7 +124,7 @@ test('serialize the response for a Bad Request error, as defined on the schema',
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 400)
-      t.assert.deepEqual(body, {
+      t.assert.deepStrictEqual(body, {
         statusCode: 400,
         error: 'Bad Request',
         message: 'body must be object'

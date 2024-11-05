@@ -25,7 +25,7 @@ test('case insensitive', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.deepStrictEqual(JSON.parse(body), {
         hello: 'world'
       })
       done()
@@ -54,7 +54,7 @@ test('case insensitive inject', (t, done) => {
     }, (err, response) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepEqual(JSON.parse(response.payload), {
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
         hello: 'world'
       })
       done()
@@ -84,7 +84,7 @@ test('case insensitive (parametric)', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.deepStrictEqual(JSON.parse(body), {
         hello: 'world'
       })
       done()
@@ -114,7 +114,7 @@ test('case insensitive (wildcard)', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.deepStrictEqual(JSON.parse(body), {
         hello: 'world'
       })
       done()

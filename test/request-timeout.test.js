@@ -42,12 +42,12 @@ test('requestTimeout should be set', async (t) => {
   t.plan(1)
 
   const initialConfig = Fastify({ requestTimeout: 5000 }).initialConfig
-  t.assert.deepEqual(initialConfig.requestTimeout, 5000)
+  t.assert.strictEqual(initialConfig.requestTimeout, 5000)
 })
 
 test('requestTimeout should 0', async (t) => {
   t.plan(1)
 
   const initialConfig = Fastify().initialConfig
-  t.assert.deepEqual(initialConfig.requestTimeout, 0)
+  t.assert.strictEqual(initialConfig.requestTimeout, 0)
 })

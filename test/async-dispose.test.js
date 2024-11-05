@@ -11,7 +11,7 @@ test('async dispose should close fastify', { skip: !('asyncDispose' in Symbol) }
 
   await fastify.listen({ port: 0 })
 
-  t.assert.equal(fastify.server.listening, true)
+  t.assert.strictEqual(fastify.server.listening, true)
 
   // the same as syntax sugar for
   // await using app = fastify()

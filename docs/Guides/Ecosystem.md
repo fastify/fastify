@@ -176,7 +176,7 @@ section.
   A plugin to easily create git server and make one/many Git repositories available
   for clone/fetch/push through the standard `git` (over http) commands.
 - [`@exortek/fastify-mongo-sanitize`](https://github.com/ExorTek/fastify-mongo-sanitize)
-  A comprehensive Fastify plugin designed to protect against No(n)SQL injection attacks by sanitizing request data.
+  A Fastify plugin that protects against No(n)SQL injection by sanitizing data.
 - [`@exortek/remix-fastify`](https://github.com/ExorTek/remix-fastify)
   Fastify plugin for Remix.
 - [`@fastify-userland/request-id`](https://github.com/fastify-userland/request-id)

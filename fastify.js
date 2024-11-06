@@ -119,13 +119,13 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-
+  const createRequestLogMessage = options.createRequestLogMessage ||
+  function createRequestLogMessage (customMessage) { return customMessage }
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
   }, options.ajv)
   const frameworkErrors = options.frameworkErrors
-
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
     throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
@@ -761,9 +761,12 @@ function fastify (options) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
+      const customMessage = 'incoming request'
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
+        childLogger.info({ req: request }, createRequestLogMessage(customMessage))
       }
+
+      console.log('FST_ERR_BAD_URL(path): ', FST_ERR_BAD_URL(path))
 
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }

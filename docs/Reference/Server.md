@@ -1,3 +1,6 @@
+Server.md
+
+
 <h1 align="center">Fastify</h1>
 
 ## Factory
@@ -24,6 +27,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
+  - [`createRequestLogMessage`](#createRequestLogMessage)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`caseSensitive`](#casesensitive)
@@ -373,6 +377,24 @@ The possible values this property may have are:
 
   const fastify = require('fastify')({logger: customLogger});
   ```
+
+### `createRequestLogMessage`
+<a id="create-request-log-message"></a>
+
++ Default: `false`
+
+When logging is permitted, the user can fully customize their 
+log settings to suit their needs without relying on the default settings.  
+As a result, the user is no longer limited to the default layout.
+Please view the following example:
+
+```js
+  const customMessage = 'incoming request'
+
+  if (disableRequestLogging === false) {
+  childLogger.info({ req: request }, createRequestLogMessage(customMessage))
+  } else { childLogger.info({ req: request }, 'incoming request') }
+```
 
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
@@ -1958,6 +1980,7 @@ The properties that can currently be exposed are:
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)
 - ignoreTrailingSlash
+- createRequestLogMessage
 - disableRequestLogging
 - maxParamLength
 - onProtoPoisoning
@@ -2027,3 +2050,6 @@ fastify.listen({ port: 3000 }, (err) => {
   }
 })
 ```
+
+
+

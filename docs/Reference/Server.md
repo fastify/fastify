@@ -24,6 +24,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
+  - [`loggerInstance`](#loggerInstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`caseSensitive`](#casesensitive)
@@ -329,9 +330,6 @@ The possible values this property may have are:
 + Default: `false`. The logger is disabled. All logging methods will point to a
   null logger [abstract-logging](https://npm.im/abstract-logging) instance.
 
-+ `pinoInstance`: a previously instantiated instance of Pino. The internal
-  logger will point to this instance.
-
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
   This will be passed directly to the Pino constructor. If the following
@@ -351,9 +349,15 @@ The possible values this property may have are:
         ```
       Any user-supplied serializer will override the default serializer of the
       corresponding property.
-+ `loggerInstance`: a custom logger instance. The logger must conform to the
-  Pino interface by having the following methods: `info`, `error`, `debug`,
-  `fatal`, `warn`, `trace`, `child`. For example:
+
+### `loggerInstance`
+<a id="factory-logger-instance"></a>
+
++ Default: `null`
+
+A custom logger instance. The logger must be a Pino instance or conform to the
+Pino interface by having the following methods: `info`, `error`, `debug`,
+`fatal`, `warn`, `trace`, `child`. For example:
   ```js
   const pino = require('pino')();
 

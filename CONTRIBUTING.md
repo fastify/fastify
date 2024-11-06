@@ -104,10 +104,12 @@ the following tasks:
    [team.yml](https://github.com/fastify/website/blob/HEAD/static/data/team.yml)
    file. This list is also sorted alphabetically so make sure to add your name
    in the proper order. Use your GitHub profile icon for the `picture:` field.
-5. The person that does the onboarding must add you to the [npm
+5. Read the [pinned announcements](https://github.com/orgs/fastify/discussions/categories/announcements)
+   to be updated with the organisation’s news.
+7. The person that does the onboarding must add you to the [npm
    org](https://www.npmjs.com/org/fastify), so that you can help maintaining the
    official plugins.
-6. Optionally, the person can be added as an Open Collective member
+8. Optionally, the person can be added as an Open Collective member
    by the lead team.
 
 ### Offboarding Collaborators

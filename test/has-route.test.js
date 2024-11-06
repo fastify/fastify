@@ -9,11 +9,11 @@ describe('hasRoute', async t => {
   test('hasRoute - invalid options', t => {
     t.plan(3)
 
-    t.assert.equal(fastify.hasRoute({ }), false)
+    t.assert.strictEqual(fastify.hasRoute({ }), false)
 
-    t.assert.equal(fastify.hasRoute({ method: 'GET' }), false)
+    t.assert.strictEqual(fastify.hasRoute({ method: 'GET' }), false)
 
-    t.assert.equal(fastify.hasRoute({ constraints: [] }), false)
+    t.assert.strictEqual(fastify.hasRoute({ constraints: [] }), false)
   })
 
   test('hasRoute - primitive method', t => {
@@ -26,12 +26,12 @@ describe('hasRoute', async t => {
       }
     })
 
-    t.assert.equal(fastify.hasRoute({
+    t.assert.strictEqual(fastify.hasRoute({
       method: 'GET',
       url: '/'
     }), true)
 
-    t.assert.equal(fastify.hasRoute({
+    t.assert.strictEqual(fastify.hasRoute({
       method: 'POST',
       url: '/'
     }), false)
@@ -48,13 +48,13 @@ describe('hasRoute', async t => {
       }
     })
 
-    t.assert.equal(fastify.hasRoute({
+    t.assert.strictEqual(fastify.hasRoute({
       method: 'GET',
       url: '/',
       constraints: { version: '1.2.0' }
     }), true)
 
-    t.assert.equal(fastify.hasRoute({
+    t.assert.strictEqual(fastify.hasRoute({
       method: 'GET',
       url: '/',
       constraints: { version: '1.3.0' }
@@ -66,7 +66,7 @@ describe('hasRoute', async t => {
     // parametric with regexp
     fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 
-    t.assert.equal(fastify.hasRoute({
+    t.assert.strictEqual(fastify.hasRoute({
       method: 'GET',
       url: '/example/:file(^\\d+).png'
     }), true)
@@ -82,7 +82,7 @@ describe('hasRoute', async t => {
       }
     })
 
-    t.assert.equal(fastify.hasRoute({
+    t.assert.strictEqual(fastify.hasRoute({
       method: 'get',
       url: '/equal'
     }), true)

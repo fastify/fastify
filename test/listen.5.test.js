@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const net = require('node:net')
 const Fastify = require('../fastify')
 const { once } = require('node:events')
@@ -26,9 +26,9 @@ test('same port conflict and success should not fire callback multiple times - c
     switch (count) {
       case 6: {
         // success in here
-        t.error(err)
+        t.assert.ifError(err)
         fastify.close((err) => {
-          t.error(err)
+          t.assert.ifError(err)
           promise.resolve()
         })
         break
@@ -42,7 +42,7 @@ test('same port conflict and success should not fire callback multiple times - c
       }
       default: {
         // expect error
-        t.equal(err.code, 'EADDRINUSE')
+        t.assert.strictEqual(err.code, 'EADDRINUSE')
         setTimeout(() => {
           fastify.listen(option, callback)
         }, 100)
@@ -65,27 +65,27 @@ test('same port conflict and success should not fire callback multiple times - p
   try {
     await fastify.listen(option)
   } catch (err) {
-    t.equal(err.code, 'EADDRINUSE')
+    t.assert.strictEqual(err.code, 'EADDRINUSE')
   }
   try {
     await fastify.listen(option)
   } catch (err) {
-    t.equal(err.code, 'EADDRINUSE')
+    t.assert.strictEqual(err.code, 'EADDRINUSE')
   }
   try {
     await fastify.listen(option)
   } catch (err) {
-    t.equal(err.code, 'EADDRINUSE')
+    t.assert.strictEqual(err.code, 'EADDRINUSE')
   }
   try {
     await fastify.listen(option)
   } catch (err) {
-    t.equal(err.code, 'EADDRINUSE')
+    t.assert.strictEqual(err.code, 'EADDRINUSE')
   }
   try {
     await fastify.listen(option)
   } catch (err) {
-    t.equal(err.code, 'EADDRINUSE')
+    t.assert.strictEqual(err.code, 'EADDRINUSE')
   }
 
   server.close()

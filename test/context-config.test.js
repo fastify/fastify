@@ -18,7 +18,7 @@ function handler (req, reply) {
 }
 
 test('config', async t => {
-  t.plan(9)
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.get('/get', {
@@ -46,7 +46,6 @@ test('config', async t => {
     url: '/route'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
 
@@ -55,7 +54,6 @@ test('config', async t => {
     url: '/route'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
 
@@ -64,13 +62,12 @@ test('config', async t => {
     url: '/no-config'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
 })
 
 test('config with exposeHeadRoutes', async t => {
-  t.plan(9)
+  t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: true })
 
   fastify.get('/get', {
@@ -98,7 +95,6 @@ test('config with exposeHeadRoutes', async t => {
     url: '/get'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/get', method: 'GET' }, schema.config))
 
@@ -107,7 +103,6 @@ test('config with exposeHeadRoutes', async t => {
     url: '/route'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
 
@@ -116,13 +111,12 @@ test('config with exposeHeadRoutes', async t => {
     url: '/no-config'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
 })
 
 test('config without exposeHeadRoutes', async t => {
-  t.plan(9)
+  t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.get('/get', {
@@ -150,7 +144,6 @@ test('config without exposeHeadRoutes', async t => {
     url: '/get'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/get', method: 'GET' }, schema.config))
 
@@ -158,7 +151,6 @@ test('config without exposeHeadRoutes', async t => {
     method: 'GET',
     url: '/route'
   })
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
 
@@ -167,7 +159,6 @@ test('config without exposeHeadRoutes', async t => {
     url: '/no-config'
   })
 
-  t.assert.ifError(response.error)
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
 })

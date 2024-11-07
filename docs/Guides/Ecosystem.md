@@ -12,8 +12,6 @@ section.
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to the `Accept` header.
-- [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save
-  multiple schemas and decide which one to use to serialize the payload.
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
@@ -43,10 +41,7 @@ section.
   [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to
   Fastify.
 - [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel)
-  Plugin to deal with `diagnostics_channel` on Fastify
-- [`@fastify/early-hints`](https://github.com/fastify/fastify-early-hints) Plugin
-  to add HTTP 103 feature based on [RFC
-  8297](https://datatracker.ietf.org/doc/html/rfc8297).
+  Plugin to deal with `diagnostics_channel` on Fastify.
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check
@@ -124,8 +119,6 @@ section.
   HTTP errors and assertions, but also more request and reply methods.
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for
   Fastify.
-- [`@fastify/soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
-  client plugin for Fastify.
 - [`@fastify/static`](https://github.com/fastify/fastify-static) Plugin for
   serving static files as fast as possible.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
@@ -182,6 +175,10 @@ section.
 - [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
   A plugin to easily create git server and make one/many Git repositories available
   for clone/fetch/push through the standard `git` (over http) commands.
+- [`@exortek/fastify-mongo-sanitize`](https://github.com/ExorTek/fastify-mongo-sanitize)
+  A Fastify plugin that protects against No(n)SQL injection by sanitizing data.
+- [`@exortek/remix-fastify`](https://github.com/ExorTek/remix-fastify)
+  Fastify plugin for Remix.
 - [`@fastify-userland/request-id`](https://github.com/fastify-userland/request-id)
   Fastify Request ID Plugin
 - [`@fastify-userland/typeorm-query-runner`](https://github.com/fastify-userland/typeorm-query-runner)
@@ -256,7 +253,7 @@ section.
   plugin to authenticate HTTP requests based on API key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
-- [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin 
+- [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin
   to access Fastify instance, logger, request and reply from Node.js [Async
   Local Storage](https://nodejs.org/api/async_context.html#class-asynclocalstorage).
 - [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
@@ -284,7 +281,7 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
-- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3) 
+- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3)
   Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
@@ -296,7 +293,7 @@ section.
   to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
-- [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman) 
+- [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman)
   Small and efficient cache provider for Node.js with In-memory, File, Redis
    and MongoDB engines for Fastify
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
@@ -351,7 +348,7 @@ section.
 - [`fastify-event-bus`](https://github.com/Shiva127/fastify-event-bus) Event bus
   support for Fastify. Built upon [js-event-bus](https://github.com/bcerati/js-event-bus).
 - [`fastify-evervault`](https://github.com/Briscoooe/fastify-evervault/) Fastify
-  plugin for instantiating and encapsulating the 
+  plugin for instantiating and encapsulating the
   [Evervault](https://evervault.com/) client.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of
   your decorators across all the encapsulated contexts.

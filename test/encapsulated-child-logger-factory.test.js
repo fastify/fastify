@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 
@@ -12,7 +12,7 @@ test('encapsulates an child logger factory', async t => {
     fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
       const child = logger.child(bindings, opts)
       child.customLog = function (message) {
-        t.equal(message, 'custom')
+        t.assert.strictEqual(message, 'custom')
       }
       return child
     })
@@ -24,7 +24,7 @@ test('encapsulates an child logger factory', async t => {
   fastify.setChildLoggerFactory(function globalFactory (logger, bindings, opts) {
     const child = logger.child(bindings, opts)
     child.globalLog = function (message) {
-      t.equal(message, 'global')
+      t.assert.strictEqual(message, 'global')
     }
     return child
   })
@@ -33,10 +33,10 @@ test('encapsulates an child logger factory', async t => {
   })
 
   const res1 = await fastify.inject('/encapsulated')
-  t.equal(res1.statusCode, 200)
+  t.assert.strictEqual(res1.statusCode, 200)
 
   const res2 = await fastify.inject('/not-encapsulated')
-  t.equal(res2.statusCode, 200)
+  t.assert.strictEqual(res2.statusCode, 200)
 })
 
 test('child logger factory set on root scope when using fastify-plugin', async t => {
@@ -48,7 +48,7 @@ test('child logger factory set on root scope when using fastify-plugin', async t
     fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
       const child = logger.child(bindings, opts)
       child.customLog = function (message) {
-        t.equal(message, 'custom')
+        t.assert.strictEqual(message, 'custom')
       }
       return child
     })
@@ -62,8 +62,8 @@ test('child logger factory set on root scope when using fastify-plugin', async t
   })
 
   const res1 = await fastify.inject('/not-encapsulated-1')
-  t.equal(res1.statusCode, 200)
+  t.assert.strictEqual(res1.statusCode, 200)
 
   const res2 = await fastify.inject('/not-encapsulated-2')
-  t.equal(res2.statusCode, 200)
+  t.assert.strictEqual(res2.statusCode, 200)
 })

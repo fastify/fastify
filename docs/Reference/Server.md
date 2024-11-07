@@ -24,6 +24,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
+  - [`loggerInstance`](#loggerInstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`caseSensitive`](#casesensitive)
@@ -152,7 +153,7 @@ Defines the server keep-alive timeout in milliseconds. See documentation for
 [`server.keepAliveTimeout`
 property](https://nodejs.org/api/http.html#http_server_keepalivetimeout) to
 understand the effect of this option. This option only applies when HTTP/1 is in
-use. 
+use.
 
 When `serverFactory` option is specified this option is ignored.
 
@@ -203,7 +204,7 @@ ignored.
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
 property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_requesttimeout)
-to understand the effect of this option. 
+to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
 It must be set to a non-zero value (e.g. 120 seconds) to protect against potential
@@ -329,9 +330,6 @@ The possible values this property may have are:
 + Default: `false`. The logger is disabled. All logging methods will point to a
   null logger [abstract-logging](https://npm.im/abstract-logging) instance.
 
-+ `pinoInstance`: a previously instantiated instance of Pino. The internal
-  logger will point to this instance.
-
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
   This will be passed directly to the Pino constructor. If the following
@@ -351,9 +349,15 @@ The possible values this property may have are:
         ```
       Any user-supplied serializer will override the default serializer of the
       corresponding property.
-+ `loggerInstance`: a custom logger instance. The logger must conform to the
-  Pino interface by having the following methods: `info`, `error`, `debug`,
-  `fatal`, `warn`, `trace`, `child`. For example:
+
+### `loggerInstance`
+<a id="factory-logger-instance"></a>
+
++ Default: `null`
+
+A custom logger instance. The logger must be a Pino instance or conform to the
+Pino interface by having the following methods: `info`, `error`, `debug`,
+`fatal`, `warn`, `trace`, `child`. For example:
   ```js
   const pino = require('pino')();
 
@@ -387,12 +391,12 @@ attaching custom `onRequest` and `onResponse` hooks.
 
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
-- the error and info logs written by the `defaultErrorHandler` 
+- the error and info logs written by the `defaultErrorHandler`
 on error management
-- the info log written by the `fourOhFour` handler when a 
+- the info log written by the `fourOhFour` handler when a
 non existent route is requested
 
-Other log messages emitted by Fastify will stay enabled, 
+Other log messages emitted by Fastify will stay enabled,
 like deprecation warnings and messages
 emitted when requests are received while the server is closing.
 
@@ -456,7 +460,7 @@ Please note that setting this option to `false` goes against
 
 By setting `caseSensitive` to `false`, all paths will be matched as lowercase,
 but the route parameters or wildcards will maintain their original letter
-casing. 
+casing.
 This option does not affect query strings, please refer to
 [`querystringParser`](#querystringparser) to change their handling.
 
@@ -493,7 +497,7 @@ Setting `requestIdHeader` to `true` will set the `requestIdHeader` to
 Setting `requestIdHeader` to a non-empty string will use
 the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
-Setting `requestIdHeader` to an empty String (`""`) will set the 
+Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
 
 + Default: `false`
@@ -827,7 +831,7 @@ is an instance-wide configuration.
 // @param {object} req The raw Node.js HTTP request, not the `FastifyRequest` object.
 // @this Fastify The root Fastify instance (not an encapsulated instance).
 // @returns {string} The path that the request should be mapped to.
-function rewriteUrl (req) { 
+function rewriteUrl (req) {
   if (req.url === '/hi') {
     this.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
     return '/hello'
@@ -948,7 +952,7 @@ Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
 `callback` parameters extend the [Node.js
 core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
-object. Thus, all core options are available with the following additional 
+object. Thus, all core options are available with the following additional
 Fastify specific options:
 
 ### `listenTextResolver`
@@ -956,13 +960,13 @@ Fastify specific options:
 
 Set an optional resolver for the text to log after server has been successfully
 started.
-It is possible to override the default `Server listening at [address]` log 
+It is possible to override the default `Server listening at [address]` log
 entry using this option.
 
 ```js
-server.listen({ 
-  port: 9080, 
-  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` } 
+server.listen({
+  port: 9080,
+  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` }
 })
 ```
 
@@ -1090,7 +1094,7 @@ Method to add routes to the server, it also has shorthand functions, check
 <a id="hasRoute"></a>
 
 Method to check if a route is already registered to the internal router. It
-expects an object as the payload. `url` and `method` are mandatory fields. It 
+expects an object as the payload. `url` and `method` are mandatory fields. It
 is possible to also specify `constraints`. The method returns `true` if the
 route is registered or `false` if not.
 
@@ -1110,8 +1114,8 @@ if (routeExists === false) {
 <a id="findRoute"></a>
 
 Method to retrieve a route already registered to the internal router. It
-expects an object as the payload. `url` and `method` are mandatory fields. It 
-is possible to also specify `constraints`. 
+expects an object as the payload. `url` and `method` are mandatory fields. It
+is possible to also specify `constraints`.
 The method returns a route object or `null` if the route cannot be found.
 
 ```js
@@ -1351,7 +1355,7 @@ Set the schema error formatter for all routes. See
 Set the schema serializer compiler for all routes. See
 [#schema-serializer](./Validation-and-Serialization.md#schema-serializer).
 
-> **Note** 
+> **Note**
 > [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 #### validatorCompiler
@@ -1559,7 +1563,7 @@ is set. It can be accessed using `fastify.errorHandler` and it logs the error
 with respect to its `statusCode`.
 
 ```js
-var statusCode = error.statusCode
+const statusCode = error.statusCode
 if (statusCode >= 500) {
   log.error(error)
 } else if (statusCode >= 400) {
@@ -1966,7 +1970,7 @@ The properties that can currently be exposed are:
 - requestIdHeader
 - requestIdLogLabel
 - http2SessionTimeout
-- useSemicolonDelimiter 
+- useSemicolonDelimiter
 
 ```js
 const { readFileSync } = require('node:fs')

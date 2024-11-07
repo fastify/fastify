@@ -2,17 +2,17 @@
 
 ## Database
 
-Fastify's ecosystem provides a handful of 
-plugins for connecting to various database engines. 
-This guide covers engines that have Fastify 
+Fastify's ecosystem provides a handful of
+plugins for connecting to various database engines.
+This guide covers engines that have Fastify
 plugins maintained within the Fastify organization.
 
-> If a plugin for your database of choice does not exist 
-> you can still use the database as Fastify is database agnostic. 
-> By following the examples of the database plugins listed in this guide, 
-> a plugin can be written for the missing database engine. 
+> If a plugin for your database of choice does not exist
+> you can still use the database as Fastify is database agnostic.
+> By following the examples of the database plugins listed in this guide,
+> a plugin can be written for the missing database engine.
 
-> If you would like to write your own Fastify plugin 
+> If you would like to write your own Fastify plugin
 > please take a look at the [plugins guide](./Plugins-Guide.md)
 
 ### [MySQL](https://github.com/fastify/fastify-mysql)
@@ -104,8 +104,8 @@ fastify.listen({ port: 3000 }, err => {
 })
 ```
 
-By default `@fastify/redis` doesn't close 
-the client connection when Fastify server shuts down. 
+By default `@fastify/redis` doesn't close
+the client connection when Fastify server shuts down.
 To opt-in to this behavior, register the client like so:
 
 ```javascript
@@ -126,7 +126,7 @@ fastify.register(require('@fastify/mongodb'), {
   // force to close the mongodb connection when app stopped
   // the default value is false
   forceClose: true,
-  
+
   url: 'mongodb://mongo/mydb'
 })
 
@@ -178,8 +178,8 @@ fastify.listen({ port: 3000 }, err => {
 ```
 
 ### Writing plugin for a database library
-We could write a plugin for a database 
-library too (e.g. Knex, Prisma, or TypeORM). 
+We could write a plugin for a database
+library too (e.g. Knex, Prisma, or TypeORM).
 We will use [Knex](https://knexjs.org/) in our example.
 
 ```javascript
@@ -281,7 +281,7 @@ async function migrate() {
   const client = new pg.Client({
     host: 'localhost',
     port: 5432,
-    database: 'example', 
+    database: 'example',
     user: 'example',
     password: 'example',
   });
@@ -313,7 +313,7 @@ async function migrate() {
     console.error(err)
     process.exitCode = 1
   }
-  
+
   await client.end()
 }
 

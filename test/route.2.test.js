@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../fastify')
 
 test('same route definition object on multiple prefixes', async t => {
@@ -17,13 +16,13 @@ test('same route definition object on multiple prefixes', async t => {
 
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
-      t.equal(routeOptions.url, '/v1/simple')
+      t.assert.strictEqual(routeOptions.url, '/v1/simple')
     })
     f.route(routeObject)
   }, { prefix: '/v1' })
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
-      t.equal(routeOptions.url, '/v2/simple')
+      t.assert.strictEqual(routeOptions.url, '/v2/simple')
     })
     f.route(routeObject)
   }, { prefix: '/v2' })
@@ -31,7 +30,7 @@ test('same route definition object on multiple prefixes', async t => {
   await fastify.ready()
 })
 
-test('path can be specified in place of uri', t => {
+test('path can be specified in place of uri', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -49,9 +48,10 @@ test('path can be specified in place of uri', t => {
   }
 
   fastify.inject(reqOpts, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    done()
   })
 })
 
@@ -65,20 +65,20 @@ test('invalid bodyLimit option - route', t => {
       method: 'PUT',
       handler: () => null
     })
-    t.fail('bodyLimit must be an integer')
+    t.assert.fail('bodyLimit must be an integer')
   } catch (err) {
-    t.equal(err.message, "'bodyLimit' option must be an integer > 0. Got 'false'")
+    t.assert.strictEqual(err.message, "'bodyLimit' option must be an integer > 0. Got 'false'")
   }
 
   try {
     fastify.post('/url', { bodyLimit: 10000.1 }, () => null)
-    t.fail('bodyLimit must be an integer')
+    t.assert.fail('bodyLimit must be an integer')
   } catch (err) {
-    t.equal(err.message, "'bodyLimit' option must be an integer > 0. Got '10000.1'")
+    t.assert.strictEqual(err.message, "'bodyLimit' option must be an integer > 0. Got '10000.1'")
   }
 })
 
-test('handler function in options of shorthand route should works correctly', t => {
+test('handler function in options of shorthand route should works correctly', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -92,8 +92,9 @@ test('handler function in options of shorthand route should works correctly', t 
     method: 'GET',
     url: '/foo'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    done()
   })
 })

@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 
 test('diagnostics_channel when present and subscribers', t => {
@@ -11,11 +10,11 @@ test('diagnostics_channel when present and subscribers', t => {
 
   const diagnostics = {
     channel (name) {
-      t.equal(name, 'fastify.initialization')
+      t.assert.strictEqual(name, 'fastify.initialization')
       return {
         hasSubscribers: true,
         publish (event) {
-          t.ok(event.fastify)
+          t.assert.ok(event.fastify)
           fastifyInHook = event.fastify
         }
       }
@@ -26,7 +25,7 @@ test('diagnostics_channel when present and subscribers', t => {
   const fastify = proxyquire('../../fastify', {
     'node:diagnostics_channel': diagnostics
   })()
-  t.equal(fastifyInHook, fastify)
+  t.assert.strictEqual(fastifyInHook, fastify)
 })
 
 test('diagnostics_channel when present and no subscribers', t => {
@@ -34,11 +33,11 @@ test('diagnostics_channel when present and no subscribers', t => {
 
   const diagnostics = {
     channel (name) {
-      t.equal(name, 'fastify.initialization')
+      t.assert.strictEqual(name, 'fastify.initialization')
       return {
         hasSubscribers: false,
         publish () {
-          t.fail('publish should not be called')
+          t.assert.fail('publish should not be called')
         }
       }
     },

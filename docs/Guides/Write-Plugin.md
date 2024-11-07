@@ -60,10 +60,10 @@ A plugin without tests will not be accepted to the ecosystem list. A lack of
 tests does not inspire trust nor guarantee that the code will continue to work
 among different versions of its dependencies.
 
-We do not enforce any testing library. We use [`tap`](https://www.node-tap.org/)
+We do not enforce any testing library. We use [`node:test`](https://nodejs.org/api/test.html)
 since it offers out-of-the-box parallel testing and code coverage, but it is up
 to you to choose your library of preference.
-We highly recommend you read the [Plugin Testing](./Testing.md#plugins) to 
+We highly recommend you read the [Plugin Testing](./Testing.md#plugins) to
 learn about how to test your plugins.
 
 ## Code Linter

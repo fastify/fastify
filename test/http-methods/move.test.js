@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const fastify = require('../../')()
 fastify.addHttpMethod('MOVE')
@@ -19,17 +18,17 @@ test('shorthand - move', t => {
           .send()
       }
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
+test('move test', async t => {
+  await fastify.listen({ port: 0 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+  t.after(() => { fastify.close() })
 
-  test('request - move', t => {
+  await t.test('request - move', (t, done) => {
     t.plan(3)
     sget({
       url: `http://localhost:${fastify.server.address().port}/test.txt`,
@@ -38,9 +37,10 @@ fastify.listen({ port: 0 }, err => {
         Destination: '/test2.txt'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 201)
-      t.equal(response.headers.location, '/test2.txt')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 201)
+      t.assert.strictEqual(response.headers.location, '/test2.txt')
+      done()
     })
   })
 })

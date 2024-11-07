@@ -1,11 +1,10 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const S = require('fluent-json-schema')
 
-test('use fluent-json-schema object', t => {
+test('use fluent-json-schema object', (t, done) => {
   t.plan(15)
   const fastify = Fastify()
 
@@ -32,9 +31,9 @@ test('use fluent-json-schema object', t => {
     query: { surname: 'bar' },
     payload: { name: 'foo' }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'params/id must be >= 42' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'params/id must be >= 42' })
   })
 
   // check header
@@ -45,9 +44,9 @@ test('use fluent-json-schema object', t => {
     query: { surname: 'bar' },
     payload: { name: 'foo' }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'headers/x-custom must match format "email"' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'headers/x-custom must match format "email"' })
   })
 
   // check query
@@ -58,9 +57,9 @@ test('use fluent-json-schema object', t => {
     query: { },
     payload: { name: 'foo' }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'querystring must have required property \'surname\'' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'querystring must have required property \'surname\'' })
   })
 
   // check body
@@ -71,9 +70,9 @@ test('use fluent-json-schema object', t => {
     query: { surname: 'bar' },
     payload: { name: [1, 2, 3] }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'body/name must be string' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'body/name must be string' })
   })
 
   // check response
@@ -84,13 +83,14 @@ test('use fluent-json-schema object', t => {
     query: { surname: 'bar' },
     payload: { name: 'foo' }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(res.json(), { name: 'a', surname: 'b' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { name: 'a', surname: 'b' })
+    done()
   })
 })
 
-test('use complex fluent-json-schema object', t => {
+test('use complex fluent-json-schema object', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -113,10 +113,13 @@ test('use complex fluent-json-schema object', t => {
     .prop('office', S.ref('https://fastify/demo#/definitions/addressSchema')).required()
 
   fastify.post('/the/url', { schema: { body: bodyJsonSchema } }, () => { })
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('use fluent schema and plain JSON schema', t => {
+test('use fluent schema and plain JSON schema', (t, done) => {
   t.plan(1)
 
   const fastify = Fastify()
@@ -154,10 +157,13 @@ test('use fluent schema and plain JSON schema', t => {
     .prop('office', S.ref('https://fastify/demo#/definitions/addressSchema')).required()
 
   fastify.post('/the/url', { schema: { body: bodyJsonSchema } }, () => { })
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Should call valueOf internally', t => {
+test('Should call valueOf internally', (t, done) => {
   t.plan(1)
 
   const fastify = new Fastify()
@@ -208,5 +214,8 @@ test('Should call valueOf internally', t => {
     }
   })
 
-  fastify.ready(t.error)
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })

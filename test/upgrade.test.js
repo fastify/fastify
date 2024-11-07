@@ -8,7 +8,10 @@ const dns = require('node:dns').promises
 
 async function setup () {
   const localAddresses = await dns.lookup('localhost', { all: true })
-  const doesNotSupportIPv6 = localAddresses.length === 1
+  if (localAddresses.length === 1) {
+    test.diagnostic('suite requires both IPv4 and IPv6')
+    return
+  }
 
   test('upgrade to both servers', async t => {
     t.plan(2)

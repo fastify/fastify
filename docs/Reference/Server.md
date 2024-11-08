@@ -24,6 +24,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
+  - [`loggerInstance`](#loggerInstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`caseSensitive`](#casesensitive)
@@ -105,7 +106,7 @@ describes the properties available in that options object.
 
 An object used to configure the server's listening socket. The options
 are the same as the Node.js core [`createServer`
-method](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_http_createserver_options_requestlistener).
+method](https://nodejs.org/docs/latest-v20.x/api/http.html#httpcreateserveroptions-requestlistener).
 
 This option is ignored if options [`http2`](#factory-http2) or
 [`https`](#factory-https) are set.
@@ -116,7 +117,7 @@ This option is ignored if options [`http2`](#factory-http2) or
 + Default: `false`
 
 If `true` Node.js core's
-[HTTP/2](https://nodejs.org/dist/latest-v14.x/docs/api/http2.html) module is
+[HTTP/2](https://nodejs.org/dist/latest-v20.x/docs/api/http2.html) module is
 used for binding the socket.
 
 ### `https`
@@ -126,7 +127,7 @@ used for binding the socket.
 
 An object used to configure the server's listening socket for TLS. The options
 are the same as the Node.js core [`createServer`
-method](https://nodejs.org/dist/latest-v14.x/docs/api/https.html#https_https_createserver_options_requestlistener).
+method](https://nodejs.org/dist/latest-v20.x/docs/api/https.html#https_https_createserver_options_requestlistener).
 When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the [`http2`](#factory-http2) option is set.
@@ -329,9 +330,6 @@ The possible values this property may have are:
 + Default: `false`. The logger is disabled. All logging methods will point to a
   null logger [abstract-logging](https://npm.im/abstract-logging) instance.
 
-+ `pinoInstance`: a previously instantiated instance of Pino. The internal
-  logger will point to this instance.
-
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
   This will be passed directly to the Pino constructor. If the following
@@ -351,9 +349,15 @@ The possible values this property may have are:
         ```
       Any user-supplied serializer will override the default serializer of the
       corresponding property.
-+ `loggerInstance`: a custom logger instance. The logger must conform to the
-  Pino interface by having the following methods: `info`, `error`, `debug`,
-  `fatal`, `warn`, `trace`, `child`. For example:
+
+### `loggerInstance`
+<a id="factory-logger-instance"></a>
+
++ Default: `null`
+
+A custom logger instance. The logger must be a Pino instance or conform to the
+Pino interface by having the following methods: `info`, `error`, `debug`,
+`fatal`, `warn`, `trace`, `child`. For example:
   ```js
   const pino = require('pino')();
 

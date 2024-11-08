@@ -1,7 +1,7 @@
 'use strict'
 
-const { test } = require('tap')
-const fastify = require('../')
+const { test } = require('node:test')
+const Fastify = require('..')
 const { request, setGlobalDispatcher, Agent } = require('undici')
 
 setGlobalDispatcher(new Agent({
@@ -10,22 +10,27 @@ setGlobalDispatcher(new Agent({
 }))
 
 test('post empty body', async t => {
-  const app = fastify()
-  t.teardown(app.close.bind(app))
-
-  app.post('/bug', async (request, reply) => {
+  const fastify = Fastify()
+  const abortController = new AbortController()
+  const { signal } = abortController
+  t.after(() => {
+    fastify.close()
+    abortController.abort()
   })
 
-  await app.listen({ port: 0 })
+  fastify.post('/bug', async (request, reply) => {})
 
-  const res = await request(`http://127.0.0.1:${app.server.address().port}/bug`, {
+  await fastify.listen({ port: 0 })
+
+  const res = await request(`http://127.0.0.1:${fastify.server.address().port}/bug`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ foo: 'bar' })
+    body: JSON.stringify({ foo: 'bar' }),
+    signal
   })
 
-  t.equal(res.statusCode, 200)
-  t.equal(await res.body.text(), '')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(await res.body.text(), '')
 })

@@ -11,9 +11,9 @@
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
-    - [set-cookie](#set-cookie)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
+  - [.writeEarlyHints(hints, callback)](#writeearlyhintshints-callback)
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
@@ -32,8 +32,9 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
-    - [ReadableStream](#send-readablestream)
-    - [Response](#send-response)
+    - [TypedArrays](#typedarrays)
+    - [ReadableStream](#readablestream)
+    - [Response](#response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -87,7 +88,7 @@ since the request was received by Fastify.
   already been called.
 - `.hijack()` - interrupt the normal request lifecycle.
 - `.raw` - The
-  [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse)
+  [`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
@@ -157,7 +158,7 @@ Sets a response header. If the value is omitted or undefined, it is coerced to
 > will result in a 500 `TypeError` response.
 
 For more information, see
-[`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
+[`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_response_setheader_name_value).
 
 - ### set-cookie
   <a id="set-cookie"></a>
@@ -586,7 +587,7 @@ values.
 <a id="raw"></a>
 
 This is the
-[`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse)
+[`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
 from Node core. Whilst you are using the Fastify `Reply` object, the use of
 `Reply.raw` functions is at your own risk as you are skipping all the Fastify
 logic of handling the HTTP response. e.g.:

@@ -4,8 +4,8 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const S = require('fluent-json-schema')
 
-test('use fluent-json-schema object', (t, done) => {
-  t.plan(15)
+test('use fluent-json-schema object', async (t) => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.post('/:id', {
@@ -23,71 +23,59 @@ test('use fluent-json-schema object', (t, done) => {
     }
   })
 
-  // check params
-  fastify.inject({
+  const res1 = await fastify.inject({
     method: 'POST',
     url: '/1',
     headers: { 'x-custom': 'me@me.me' },
     query: { surname: 'bar' },
     payload: { name: 'foo' }
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 400)
-    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'params/id must be >= 42' })
   })
+  t.assert.strictEqual(res1.statusCode, 400)
+  t.assert.deepStrictEqual(res1.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'params/id must be >= 42' })
 
   // check header
-  fastify.inject({
+  const res2 = await fastify.inject({
     method: 'POST',
     url: '/42',
     headers: { 'x-custom': 'invalid' },
     query: { surname: 'bar' },
     payload: { name: 'foo' }
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 400)
-    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'headers/x-custom must match format "email"' })
   })
+  t.assert.strictEqual(res2.statusCode, 400)
+  t.assert.deepStrictEqual(res2.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'headers/x-custom must match format "email"' })
 
   // check query
-  fastify.inject({
+  const res3 = await fastify.inject({
     method: 'POST',
     url: '/42',
     headers: { 'x-custom': 'me@me.me' },
     query: { },
     payload: { name: 'foo' }
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 400)
-    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'querystring must have required property \'surname\'' })
   })
+  t.assert.strictEqual(res3.statusCode, 400)
+  t.assert.deepStrictEqual(res3.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'querystring must have required property \'surname\'' })
 
   // check body
-  fastify.inject({
+  const res4 = await fastify.inject({
     method: 'POST',
     url: '/42',
     headers: { 'x-custom': 'me@me.me' },
     query: { surname: 'bar' },
     payload: { name: [1, 2, 3] }
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 400)
-    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'body/name must be string' })
   })
+  t.assert.strictEqual(res4.statusCode, 400)
+  t.assert.deepStrictEqual(res4.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: 'body/name must be string' })
 
   // check response
-  fastify.inject({
+  const res5 = await fastify.inject({
     method: 'POST',
     url: '/42',
     headers: { 'x-custom': 'me@me.me' },
     query: { surname: 'bar' },
     payload: { name: 'foo' }
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.deepStrictEqual(res.json(), { name: 'a', surname: 'b' })
-    done()
   })
+  t.assert.strictEqual(res5.statusCode, 200)
+  t.assert.deepStrictEqual(res5.json(), { name: 'a', surname: 'b' })
 })
 
 test('use complex fluent-json-schema object', (t, done) => {

@@ -25,6 +25,7 @@ test('Should rewrite url', (t, done) => {
   fastify.listen({ port: 0 }, function (err) {
     t.assert.ifError(err)
 
+    t.after(() => fastify.close())
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
@@ -32,7 +33,6 @@ test('Should rewrite url', (t, done) => {
       t.assert.ifError(err)
       t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
       t.assert.strictEqual(response.statusCode, 200)
-      fastify.close()
       done()
     })
   })
@@ -58,14 +58,13 @@ test('Should not rewrite if the url is the same', (t, done) => {
 
   fastify.listen({ port: 0 }, function (err) {
     t.assert.ifError(err)
-
+    t.after(() => fastify.close())
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 404)
-      fastify.close()
       done()
     })
   })
@@ -91,7 +90,7 @@ test('Should throw an error', (t, done) => {
 
   fastify.listen({ port: 0 }, function (err) {
     t.assert.ifError(err)
-
+    t.after(() => fastify.close())
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
@@ -99,7 +98,6 @@ test('Should throw an error', (t, done) => {
       t.assert.strictEqual(err.code, 'ECONNRESET')
       t.assert.strictEqual(response, undefined)
       t.assert.strictEqual(body, undefined)
-      fastify.close()
       done()
     })
   })
@@ -126,7 +124,7 @@ test('Should rewrite url but keep originalUrl unchanged', (t, done) => {
 
   fastify.listen({ port: 0 }, function (err) {
     t.assert.ifError(err)
-
+    t.after(() => fastify.close())
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
@@ -135,7 +133,6 @@ test('Should rewrite url but keep originalUrl unchanged', (t, done) => {
       const parsedBody = JSON.parse(body)
       t.assert.deepStrictEqual(parsedBody, { hello: 'world', hostname: 'localhost', port: fastify.server.address().port })
       t.assert.strictEqual(response.statusCode, 200)
-      fastify.close()
       done()
     })
   })

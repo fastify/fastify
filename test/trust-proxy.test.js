@@ -5,6 +5,8 @@ const sget = require('simple-get').concat
 const fastify = require('..')
 const helper = require('./helper')
 
+const noop = () => {}
+
 const sgetForwardedRequest = (app, forHeader, path, protoHeader, done) => {
   const headers = {
     'X-Forwarded-For': forHeader,
@@ -17,12 +19,7 @@ const sgetForwardedRequest = (app, forHeader, path, protoHeader, done) => {
     method: 'GET',
     headers,
     url: 'http://localhost:' + app.server.address().port + path
-  }, () => {
-    if (done) {
-      app.close()
-      done()
-    }
-  })
+  }, done || noop)
 }
 
 const testRequestValues = (t, req, options) => {
@@ -72,6 +69,7 @@ test('trust proxy, not add properties to node req', (t, done) => {
   app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.assert.ifError(err)
+    t.after(() => app.close())
     sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
     sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain', undefined, done)
   })
@@ -91,6 +89,7 @@ test('trust proxy chain', (t, done) => {
   app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.assert.ifError(err)
+    t.after(() => app.close())
     sgetForwardedRequest(app, '192.168.1.1, 1.1.1.1', '/trustproxychain', undefined, done)
   })
 })
@@ -108,6 +107,7 @@ test('trust proxy function', (t, done) => {
   app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.assert.ifError(err)
+    t.after(() => app.close())
     sgetForwardedRequest(app, '1.1.1.1', '/trustproxyfunc', undefined, done)
   })
 })
@@ -125,6 +125,7 @@ test('trust proxy number', (t, done) => {
   app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.assert.ifError(err)
+    t.after(() => app.close())
     sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxynumber', undefined, done)
   })
 })
@@ -142,6 +143,7 @@ test('trust proxy IP addresses', (t, done) => {
   app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.assert.ifError(err)
+    t.after(() => app.close())
     sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', '/trustproxyipaddrs', undefined, done)
   })
 })
@@ -163,6 +165,8 @@ test('trust proxy protocol', (t, done) => {
     testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'dolor', host: 'example.com', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
+
+  t.after(() => app.close())
 
   app.listen({ port: 0 }, (err) => {
     app.server.unref()

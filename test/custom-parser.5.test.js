@@ -121,7 +121,6 @@ test('should be able to add a custom content type parser after removeAllContentT
   })
 
   fastify.removeAllContentTypeParsers()
-
   fastify.addContentTypeParser('application/jsoff', function (req, payload, done) {
     t.ok('called')
     jsonParser(payload, function (err, body) {

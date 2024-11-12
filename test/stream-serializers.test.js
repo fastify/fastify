@@ -5,13 +5,13 @@ const Fastify = require('..')
 const Reply = require('../lib/reply')
 
 test('should serialize reply when response stream is ended', (t, done) => {
-  t.plan(3)
+  t.plan(1)
   const stream = require('node:stream')
   const fastify = Fastify({
     logger: {
       serializers: {
         res (reply) {
-          t.assert.ok(reply, Reply)
+          t.type(reply, Reply)
           return reply
         }
       }

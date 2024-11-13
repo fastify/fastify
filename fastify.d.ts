@@ -13,7 +13,7 @@ import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyCont
 import { FastifyContextConfig, FastifyReplyContext, FastifyRequestContext } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, RequestPayload } from './types/hooks'
-import { FastifyDecorators, FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './types/instance'
+import { FastifyDecorators, BaseFastifyInstance, FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './types/instance'
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
@@ -25,7 +25,7 @@ import {
 } from './types/logger'
 import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions, AnyFastifyInstance, UnEncapsulatedPlugin, FastifyDependencies, ApplyDependencies } from './types/register'
-import { FastifyReply } from './types/reply'
+import { BaseFastifyReply, FastifyReply } from './types/reply'
 import { BaseFastifyRequest, FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
@@ -169,9 +169,9 @@ declare namespace fastify {
   export type {
     LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'
     BaseFastifyRequest, FastifyRequest, RequestGenericInterface, // './types/request'
-    FastifyReply, // './types/reply'
+    BaseFastifyReply, FastifyReply, // './types/reply'
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
-    FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
+    FastifyListenOptions, BaseFastifyInstance, FastifyInstance, PrintRoutesOptions, // './types/instance'
     FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
     FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'

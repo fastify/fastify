@@ -418,7 +418,6 @@ server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
 expectError(server.decorate('typedTestProperty', null))
 expectError(server.decorate('typedTestProperty', 'foo'))
-// TODO(mcollina): uncomment after https://github.com/tsdjs/tsd/pull/220 lands.
 expectError(server.decorate('typedTestProperty', {
   getter () {
     return 'foo'

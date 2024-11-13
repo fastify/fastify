@@ -179,23 +179,17 @@ export interface BaseFastifyInstance<
   version: string;
   log: Logger;
   listeningOrigin: string;
-
   addresses(): AddressInfo[]
-
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider, Decorators>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
-
   getSchema(schemaId: string): unknown;
-
   getSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & SafePromiseLike<undefined>;
-
   after(afterListener: (err: Error | null, instance: this) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   close(): Promise<undefined>;
-
   close(closeListener: () => void): undefined;
 
   /** Alias for {@linkcode FastifyInstance.close()} */
@@ -221,31 +215,22 @@ export interface BaseFastifyInstance<
   >;
 
   hasDecorator(decorator: string | symbol): boolean;
-
   hasRequestDecorator(decorator: string | symbol): boolean;
-
   hasReplyDecorator(decorator: string | symbol): boolean;
-
   hasPlugin(name: string): boolean;
 
   addConstraintStrategy(strategy: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>): void;
-
   hasConstraintStrategy(strategyName: string): boolean;
 
   inject(opts: InjectOptions | string, cb: LightMyRequestCallback): void;
-
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
-
   inject(): LightMyRequestChain;
 
   listen(opts: FastifyListenOptions, callback: (err: Error | null, address: string) => void): void;
-
   listen(opts?: FastifyListenOptions): Promise<string>;
-
   listen(callback: (err: Error | null, address: string) => void): void;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators> & SafePromiseLike<undefined>;
-
   ready(readyListener: (err: Error | null) => void | Promise<void>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   register<
@@ -255,7 +240,6 @@ export interface BaseFastifyInstance<
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
   ): ApplyPluginChanges<this, Awaited<Plugin>> & SafePromiseLike<undefined>
-
   register<
     Options extends FastifyPluginOptions,
     Plugin extends FastifyPluginAsync<Options, this>
@@ -263,7 +247,6 @@ export interface BaseFastifyInstance<
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
   ): ApplyPluginChanges<this, Awaited<Plugin>> & SafePromiseLike<undefined>
-
   register<
     Options extends FastifyPluginOptions,
     Instance extends this,

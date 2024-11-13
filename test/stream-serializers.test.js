@@ -5,13 +5,15 @@ const Fastify = require('..')
 const Reply = require('../lib/reply')
 
 test('should serialize reply when response stream is ended', (t, done) => {
-  t.plan(3)
+  t.plan(5)
+
   const stream = require('node:stream')
   const fastify = Fastify({
     logger: {
       serializers: {
         res (reply) {
           t.assert.strictEqual(reply instanceof Reply, true)
+          t.assert.ok('passed')
           return reply
         }
       }

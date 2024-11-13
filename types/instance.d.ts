@@ -235,26 +235,29 @@ export interface BaseFastifyInstance<
 
   register<
     Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginCallback<Options, this>
+    Plugin extends FastifyPluginCallback<Options, this>,
+    TReturn = ApplyPluginChanges<this, Plugin>
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<this, Awaited<Plugin>> & SafePromiseLike<undefined>
+  ): TReturn & SafePromiseLike<TReturn>
   register<
     Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginAsync<Options, this>
+    Plugin extends FastifyPluginAsync<Options, this>,
+    TReturn = ApplyPluginChanges<this, Awaited<Plugin>>
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<this, Awaited<Plugin>> & SafePromiseLike<undefined>
+  ): TReturn & SafePromiseLike<TReturn>
   register<
     Options extends FastifyPluginOptions,
     Instance extends this,
-    Plugin extends Promise<{ default: FastifyPlugin<Options, Instance> }>
+    Plugin extends Promise<{ default: FastifyPlugin<Options, Instance> }>,
+    TReturn = ApplyPluginChanges<Instance, Awaited<Plugin>['default']>
   > (
     plugin: Plugin,
     opts?: FastifyRegisterOptions<Options>
-  ): ApplyPluginChanges<Instance, Awaited<Plugin>['default']> & SafePromiseLike<undefined>
+  ): TReturn & SafePromiseLike<TReturn>
 
   routing(req: RawRequest, res: RawReply): void;
 

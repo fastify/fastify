@@ -1,29 +1,6 @@
-import { expectError, expectType } from 'tsd'
-import fastify, {
-  FastifyInstance,
-  FastifyPlugin,
-  FastifyPluginAsync,
-  FastifyPluginCallback
-} from '../../fastify'
-import { ApplyDependencies, FastifyDependencies, UnEncapsulatedPlugin } from '../../types/register'
-
-export function createPlugin<
-  TPlugin extends FastifyPluginCallback,
-  TDependencies extends FastifyDependencies,
-  TEnhanced extends ApplyDependencies<TPlugin, TDependencies> = ApplyDependencies<TPlugin, TDependencies>
-> (plugin: TEnhanced, options?: { dependencies?: TDependencies }): UnEncapsulatedPlugin<TEnhanced>
-export function createPlugin<
-  TPlugin extends FastifyPluginAsync,
-  TDependencies extends FastifyDependencies,
-  TEnhanced extends ApplyDependencies<TPlugin, TDependencies> = ApplyDependencies<TPlugin, TDependencies>
-> (plugin: TEnhanced, options?: { dependencies?: TDependencies }): UnEncapsulatedPlugin<TEnhanced>
-export function createPlugin<
-  TPlugin extends FastifyPlugin,
-  TDependencies extends FastifyDependencies,
-  TEnhanced extends ApplyDependencies<TPlugin, TDependencies> = ApplyDependencies<TPlugin, TDependencies>
-> (plugin: TEnhanced, options?: { dependencies?: TDependencies }): UnEncapsulatedPlugin<TEnhanced> {
-  return plugin as UnEncapsulatedPlugin<TEnhanced>
-}
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { AnyFastifyInstance, FastifyInstance } from '../../fastify'
+import { createPlugin } from './createPlugin'
 
 const plugin = createPlugin((instance) =>
   instance
@@ -82,11 +59,11 @@ expectType<void>(asyncWithDecorators.testPropAsync)
 expectType<string>(asyncWithDecorators.testValueAsync)
 expectType<number>(asyncWithDecorators.testFnAsync())
 
-const plugin1 = (instance: FastifyInstance) =>
+const plugin1 = (instance: AnyFastifyInstance) =>
   instance
     .decorate('testPropSync2')
 
-const plugin2 = (instance: FastifyInstance) =>
+const plugin2 = (instance: AnyFastifyInstance) =>
   instance
     .decorate('testPropSync3')
 
@@ -119,3 +96,8 @@ expectType<void>(pluginComposition.testPropSync4)
 expectType<void>(pluginComposition.testPropSync5)
 expectError<void>(pluginComposition.testPropSync6)
 expectError<void>(pluginComposition.testPropSync7)
+
+// make sure instance properties are preserved
+const serverWithHttp2 = fastify({ http2: true })
+const expression = serverWithHttp2.register(plugin)
+expectAssignable<typeof serverWithHttp2>(expression)

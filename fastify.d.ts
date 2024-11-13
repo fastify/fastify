@@ -24,7 +24,7 @@ import {
   PinoLoggerOptions
 } from './types/logger'
 import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './types/plugin'
-import { FastifyRegister, FastifyRegisterOptions, RegisterOptions, AnyFastifyInstance, UnEncapsulatedPlugin, FastifyDependencies, ApplyDependencies } from './types/register'
+import { FastifyRegister, FastifyRegisterOptions, RegisterOptions, AnyFastifyInstance, UnEncapsulatedPlugin, FastifyDependencies, ApplyDependencies, ApplyDecorators } from './types/register'
 import { BaseFastifyReply, FastifyReply } from './types/reply'
 import { BaseFastifyRequest, FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
@@ -175,7 +175,7 @@ declare namespace fastify {
     FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
     FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
-    FastifyRegister, FastifyRegisterOptions, RegisterOptions, AnyFastifyInstance, UnEncapsulatedPlugin, FastifyDependencies, ApplyDependencies, // './types/register'
+    FastifyRegister, FastifyRegisterOptions, RegisterOptions, AnyFastifyInstance, UnEncapsulatedPlugin, FastifyDependencies, ApplyDependencies, ApplyDecorators, // './types/register'
     FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, // './types/content-type-parser'
     FastifyError, // '@fastify/error'
     FastifySchema, FastifySchemaCompiler, // './types/schema'

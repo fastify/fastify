@@ -1,6 +1,6 @@
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { AnyFastifyInstance, FastifyInstance } from '../../fastify'
-import { createPlugin } from './createPlugin'
+import { createPlugin } from 'fastify-plugin'
 
 const plugin = createPlugin((instance) =>
   instance

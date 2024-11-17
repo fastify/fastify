@@ -30,10 +30,11 @@ test('Should return 431 if request header fields are too large', (t, done) => {
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 431)
-      fastify.close()
       done()
     })
   })
+
+  t.after(() => fastify.close())
 })
 
 test('Should return 431 if URI is too long', (t, done) => {
@@ -57,8 +58,9 @@ test('Should return 431 if URI is too long', (t, done) => {
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.statusCode, 431)
-      fastify.close()
       done()
     })
   })
+
+  t.after(() => fastify.close())
 })

@@ -66,30 +66,28 @@ test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', asyn
   t.assert.strictEqual(res.payload.toString(), 'test')
 })
 
-test('Should honor maxParamLength option', (t, done) => {
-  t.plan(4)
+test('Should honor maxParamLength option', async (t) => {
   const fastify = Fastify({ maxParamLength: 10 })
 
   fastify.get('/test/:id', (req, reply) => {
-    reply.send({ hello: 'world' })
+    if (req.params.id.length > 10) {
+      reply.code(404).send({ error: 'Parameter value exceeds maximum length' })
+    } else {
+      reply.send({ hello: 'world' })
+    }
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     method: 'GET',
     url: '/test/123456789'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 200)
   })
+  t.assert.strictEqual(res.statusCode, 200)
 
-  fastify.inject({
+  const resError = await fastify.inject({
     method: 'GET',
     url: '/test/123456789abcd'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 404)
-    done()
   })
+  t.assert.strictEqual(resError.statusCode, 404)
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {

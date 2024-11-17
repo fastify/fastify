@@ -28,12 +28,13 @@ test('should serialize reply when response stream is ended', (t, done) => {
     reply.raw.end(Buffer.from('hello\n'))
   })
 
+  t.after(() => fastify.close())
+
   fastify.inject({
     url: '/error',
     method: 'GET'
   }, (err) => {
     t.assert.ifError(err)
-    fastify.close()
     done()
   })
 })

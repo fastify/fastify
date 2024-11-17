@@ -23,19 +23,20 @@ Request is a core Fastify object containing the following fields:
 - `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
-  exists.
+  exists. When you use `requireHostHeader = false` in the server options, it
+  will fallback as empty when the host header is missing.
 - `hostname` - the host of the incoming request without the port
 - `port` - the port that the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
-- `originalUrl` - similar to `url`, this allows you to access the 
-  original `url` in case of internal re-routing 
+- `originalUrl` - similar to `url`, this allows you to access the
+  original `url` in case of internal re-routing
 - `is404` - true if request is being handled by 404 handler, false if it is not
 - `socket` - the underlying connection of the incoming request
 - `context` - Deprecated, use `request.routeOptions.config` instead.
 A Fastify internal object. You should not use
-it directly or modify it. It is useful to access one special key:	
+it directly or modify it. It is useful to access one special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object
   - `bodyLimit` - either server limit or route limit
@@ -43,15 +44,15 @@ it directly or modify it. It is useful to access one special key:
   - `method` - the http method for the route
   - `url` - the path of the URL to match this route
   - `handler` - the handler for this route
-  - `attachValidation` - attach `validationError` to request 
+  - `attachValidation` - attach `validationError` to request
     (if there is a schema defined)
   - `logLevel` - log level defined for this route
   - `schema` - the JSON schemas definition for this route
   - `version` -  a semver compatible string that defines the version of the endpoint
   - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
-  - `prefixTrailingSlash` - string used to determine how to handle passing / 
+  - `prefixTrailingSlash` - string used to determine how to handle passing /
     as a route with a prefix.
-- [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
+- [.getValidationFunction(schema | httpPart)](#getvalidationfunction) -
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.
 - [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema) -
@@ -116,7 +117,7 @@ fastify.post('/:params', options, function (request, reply) {
 ### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>
 
-By calling this function using a provided `schema` or `httpPart`, 
+By calling this function using a provided `schema` or `httpPart`,
 it will return a `validation` function that can be used to
 validate diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
@@ -127,12 +128,12 @@ are assigned to errors
 ```js
 const validate = request
                   .getValidationFunction({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 console.log(validate({ foo: 'bar' })) // true
 console.log(validate.errors) // null
@@ -167,12 +168,12 @@ are assigned to errors
 ```js
 const validate = request
                   .compileValidationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 console.log(validate({ foo: 'bar' })) // true
 console.log(validate.errors) // null
@@ -181,12 +182,12 @@ console.log(validate.errors) // null
 
 const validate = request
                   .compileValidationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   }, 200)
 console.log(validate({ hello: 'world' })) // false
 console.log(validate.errors) // validation errors
@@ -216,7 +217,7 @@ const schema1 = {
 ```
 
 *Not*
-```js 
+```js
 const validate = request.compileValidationSchema(schema1)
 
 // Later on...
@@ -251,25 +252,25 @@ function will be compiled, forwarding the `httpPart` if provided.
 
 ```js
 request
-  .validateInput({ foo: 'bar'}, {  
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+  .validateInput({ foo: 'bar'}, {
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }) // true
 
 // or
 
 request
   .validateInput({ foo: 'bar'}, {
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }, 'body') // true
 
 // or

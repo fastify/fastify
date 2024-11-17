@@ -710,10 +710,10 @@ export interface onRegisterHookHandler<
   Options extends FastifyPluginOptions = FastifyPluginOptions
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-    opts: RegisterOptions & Options,
-    done: HookHandlerDoneFunction
-  ): Promise<unknown> | void; // documentation is missing the `done` method
+    opts: RegisterOptions & Options
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -782,6 +782,7 @@ export interface onCloseHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): void;
@@ -795,6 +796,7 @@ export interface onCloseAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }

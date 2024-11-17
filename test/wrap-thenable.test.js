@@ -1,17 +1,18 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const { kReplyHijacked } = require('../lib/symbols')
 const wrapThenable = require('../lib/wrapThenable')
 const Reply = require('../lib/reply')
 
-test('should resolve immediately when reply[kReplyHijacked] is true', t => {
-  const reply = {}
-  reply[kReplyHijacked] = true
-  const thenable = Promise.resolve()
-  wrapThenable(thenable, reply)
-  t.end()
+test('should resolve immediately when reply[kReplyHijacked] is true', async t => {
+  await new Promise(resolve => {
+    const reply = {}
+    reply[kReplyHijacked] = true
+    const thenable = Promise.resolve()
+    wrapThenable(thenable, reply)
+    resolve()
+  })
 })
 
 test('should reject immediately when reply[kReplyHijacked] is true', t => {
@@ -20,7 +21,7 @@ test('should reject immediately when reply[kReplyHijacked] is true', t => {
   reply[kReplyHijacked] = true
   reply.log = {
     error: ({ err }) => {
-      t.equal(err.message, 'Reply sent already')
+      t.assert.strictEqual(err.message, 'Reply sent already')
     }
   }
 

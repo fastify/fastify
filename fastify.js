@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.0.0-alpha.3'
+const VERSION = '5.1.0'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -42,7 +42,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
+const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/pluginUtils')
 const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
@@ -97,10 +97,11 @@ function defaultBuildPrettyMeta (route) {
  */
 function fastify (options) {
   // Options validations
-  options = options || {}
-
-  if (typeof options !== 'object') {
+  if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
+  } else {
+    // Shallow copy options object to prevent mutations outside of this function
+    options = Object.assign({}, options)
   }
 
   if (options.querystringParser && typeof options.querystringParser !== 'function') {
@@ -134,6 +135,7 @@ function fastify (options) {
   }
 
   // Instance Fastify components
+
   const { logger, hasLogger } = createLogger(options)
 
   // Update the options with the fixed values
@@ -673,7 +675,7 @@ function fastify (options) {
     }
 
     if (name === 'onClose') {
-      this.onClose(fn)
+      this.onClose(fn.bind(this))
     } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
       this[kHooks].add(name, fn)
     } else {
@@ -928,7 +930,7 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
 
 /**
  * These export configurations enable JS and TS developers
- * to consumer fastify in whatever way best suits their needs.
+ * to consume fastify in whatever way best suits their needs.
  * Some examples of supported import syntax includes:
  * - `const fastify = require('fastify')`
  * - `const { fastify } = require('fastify')`

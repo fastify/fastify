@@ -266,6 +266,13 @@ application, you should __always__ benchmark if performance matters to you.
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
 
+Version 3 of Fastify and lower are EOL and will not receive any security or bug fixes.
+
+Fastify's partner, HeroDevs, provides commercial security fixes for all
+unsupported versions at [https://herodevs.com/support/fastify-nes][hd-link].
+Fastify's supported version matrix is available in the
+[Long Term Support][lts-link] documentation.
+
 ## Contributing
 
 Whether reporting bugs, discussing improvements and new ideas or writing code,
@@ -307,8 +314,6 @@ listed in alphabetical order.
   <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
 * [__Carlos Fuentes__](https://github.com/metcoder95),
   <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
-* [__Rafael Gonzaga__](https://github.com/rafaelgss),
-  <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
@@ -348,6 +353,10 @@ listed in alphabetical order.
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
 * [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
   <https://www.npmjs.com/~gurgunday>
+* [__Dan Castillo__](https://github.com/dancastillo),
+  <https://www.npmjs.com/~dancastillo>
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -371,6 +380,8 @@ to join this group by Lead Maintainers.
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 * [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
   <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+* [__Rafael Gonzaga__](https://github.com/rafaelgss),
+  <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 
 ## Hosted by
 
@@ -410,3 +421,6 @@ dependencies:
 - ISC
 - BSD-3-Clause
 - BSD-2-Clause
+
+[hd-link]: https://www.herodevs.com/support/fastify-nes?utm_source=fastify&utm_medium=link&utm_campaign=github_readme
+[lts-link]: https://fastify.dev/docs/latest/Reference/LTS/

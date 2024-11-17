@@ -1,10 +1,10 @@
 'use strict'
 
 const net = require('node:net')
-const { test } = require('tap')
-const Fastify = require('../fastify')
+const { test } = require('node:test')
+const Fastify = require('..')
 
-test('maxRequestsPerSocket', t => {
+test('maxRequestsPerSocket', (t, done) => {
   t.plan(8)
 
   const fastify = Fastify({ maxRequestsPerSocket: 2 })
@@ -12,32 +12,32 @@ test('maxRequestsPerSocket', t => {
     reply.send({ hello: 'world' })
   })
 
-  t.teardown(fastify.close.bind(fastify))
-
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
-        t.match(data.toString(), /Connection:\s*keep-alive/i)
-        t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
-        t.match(data.toString(), /200 OK/i)
+        t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
+        t.assert.match(data.toString(), /200 OK/i)
 
         client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
-          t.match(data.toString(), /Connection:\s*close/i)
-          t.match(data.toString(), /200 OK/i)
+          t.assert.match(data.toString(), /Connection:\s*close/i)
+          t.assert.match(data.toString(), /200 OK/i)
 
           client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           client.once('data', data => {
-            t.match(data.toString(), /Connection:\s*close/i)
-            t.match(data.toString(), /503 Service Unavailable/i)
+            t.assert.match(data.toString(), /Connection:\s*close/i)
+            t.assert.match(data.toString(), /503 Service Unavailable/i)
             client.end()
+            fastify.close()
+            done()
           })
         })
       })
@@ -45,7 +45,7 @@ test('maxRequestsPerSocket', t => {
   })
 })
 
-test('maxRequestsPerSocket zero should behave same as null', t => {
+test('maxRequestsPerSocket zero should behave same as null', (t, done) => {
   t.plan(10)
 
   const fastify = Fastify({ maxRequestsPerSocket: 0 })
@@ -53,34 +53,34 @@ test('maxRequestsPerSocket zero should behave same as null', t => {
     reply.send({ hello: 'world' })
   })
 
-  t.teardown(fastify.close.bind(fastify))
-
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
-        t.match(data.toString(), /Connection:\s*keep-alive/i)
-        t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
-        t.match(data.toString(), /200 OK/i)
+        t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
+        t.assert.match(data.toString(), /200 OK/i)
 
         client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
-          t.match(data.toString(), /Connection:\s*keep-alive/i)
-          t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
-          t.match(data.toString(), /200 OK/i)
+          t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
+          t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
+          t.assert.match(data.toString(), /200 OK/i)
 
           client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           client.once('data', data => {
-            t.match(data.toString(), /Connection:\s*keep-alive/i)
-            t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
-            t.match(data.toString(), /200 OK/i)
+            t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
+            t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
+            t.assert.match(data.toString(), /200 OK/i)
             client.end()
+            fastify.close()
+            done()
           })
         })
       })
@@ -92,22 +92,22 @@ test('maxRequestsPerSocket should be set', async (t) => {
   t.plan(1)
 
   const initialConfig = Fastify({ maxRequestsPerSocket: 5 }).initialConfig
-  t.same(initialConfig.maxRequestsPerSocket, 5)
+  t.assert.deepStrictEqual(initialConfig.maxRequestsPerSocket, 5)
 })
 
 test('maxRequestsPerSocket should 0', async (t) => {
   t.plan(1)
 
   const initialConfig = Fastify().initialConfig
-  t.same(initialConfig.maxRequestsPerSocket, 0)
+  t.assert.deepStrictEqual(initialConfig.maxRequestsPerSocket, 0)
 })
 
 test('requestTimeout passed to server', t => {
   t.plan(2)
 
   const httpServer = Fastify({ maxRequestsPerSocket: 5 }).server
-  t.equal(httpServer.maxRequestsPerSocket, 5)
+  t.assert.strictEqual(httpServer.maxRequestsPerSocket, 5)
 
   const httpsServer = Fastify({ maxRequestsPerSocket: 5, https: true }).server
-  t.equal(httpsServer.maxRequestsPerSocket, 5)
+  t.assert.strictEqual(httpsServer.maxRequestsPerSocket, 5)
 })

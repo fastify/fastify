@@ -1,7 +1,7 @@
-import t from 'tap'
+import { test } from 'node:test'
 import Fastify from '../../fastify.js'
 
-t.test('esm support', async t => {
+test('esm support', async t => {
   const fastify = Fastify()
 
   fastify.register(import('./plugin.mjs'), { foo: 'bar' })
@@ -9,5 +9,5 @@ t.test('esm support', async t => {
 
   await fastify.ready()
 
-  t.equal(fastify.foo, 'bar')
+  t.assert.strictEqual(fastify.foo, 'bar')
 })

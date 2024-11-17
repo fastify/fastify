@@ -48,6 +48,12 @@ A "month" is defined as 30 consecutive days.
 > dependency as `"fastify": "~3.15.x"`. This will leave your application
 > vulnerable, so please use with caution.
 
+### Security Support Beyond LTS
+
+Fastify's partner, HeroDevs, provides commercial security support through the
+OpenJS Ecosystem Sustainability Program for versions of Fastify that are EOL.
+For more information, see their [Never Ending Support][hd-link] service.
+
 ### Schedule
 
 `<a id="lts-schedule"></a>`
@@ -57,7 +63,8 @@ A "month" is defined as 30 consecutive days.
 | 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11    |                |
 | 2.0.0   | 2019-02-25   | 2021-01-31      | 6, 8, 10, 12, 14   |                |
 | 3.0.0   | 2020-07-07   | 2023-06-30      | 10, 12, 14, 16, 18 | v5(18)         |
-| 4.0.0   | 2022-06-08   | TBD             | 14, 16, 18, 20     | v5(18), v5(20) |
+| 4.0.0   | 2022-06-08   | 2025-06-30      | 14, 16, 18, 20, 22 | v5(18), v5(20) |
+| 5.0.0   | 2024-09-17   | TBD             | 20, 22             | v5(20)         |
 
 ### CI tested operating systems
 
@@ -71,12 +78,14 @@ YAML workflow labels below:
 
 | OS      | YAML Workflow Label | Package Manager | Node.js     | Nsolid(Node)  |
 | ------- | ------------------- | --------------- | ----------- | ------------- |
-| Linux   | `ubuntu-latest`   | npm             | 14,16,18,20 | v5(18),v5(20) |
-| Linux   | `ubuntu-latest`   | yarn,pnpm       | 14,16,18,20 | v5(18),v5(20) |
-| Windows | `windows-latest`  | npm             | 14,16,18,20 | v5(18),v5(20) |
-| MacOS   | `macos-latest`    | npm             | 14,16,18,20 | v5(18),v5(20) |
+| Linux   | `ubuntu-latest`     | npm             | 20          | v5(20)        |
+| Linux   | `ubuntu-latest`     | yarn,pnpm       | 20          | v5(20)        |
+| Windows | `windows-latest`    | npm             | 20          | v5(20)        |
+| MacOS   | `macos-latest`      | npm             | 20          | v5(20)        |
 
 Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines`
 flag.
 
 [semver]: https://semver.org/
+
+[hd-link]: https://www.herodevs.com/support/fastify-nes?utm_source=fastify&utm_medium=link&utm_campaign=eol_support_fastify

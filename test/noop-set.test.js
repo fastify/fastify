@@ -1,19 +1,19 @@
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const noopSet = require('../lib/noop-set')
 
-tap.test('does a lot of nothing', async t => {
+test('does a lot of nothing', async t => {
   const aSet = noopSet()
-  t.type(aSet, 'object')
+  t.assert.ok(aSet, 'object')
 
   const item = {}
   aSet.add(item)
   aSet.add({ another: 'item' })
   aSet.delete(item)
-  t.equal(aSet.has(item), true)
+  t.assert.strictEqual(aSet.has(item), true)
 
   for (const i of aSet) {
-    t.fail('should not have any items', i)
+    t.assert.fail('should not have any items: ' + i)
   }
 })

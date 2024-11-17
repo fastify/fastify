@@ -6,6 +6,34 @@ Before migrating to v4, please ensure that you have fixed all deprecation
 warnings from v3. All v3 deprecations have been removed and they will no longer
 work after upgrading.
 
+## Codemods
+### Fastify v4 Codemods
+
+To help with the upgrade, we’ve worked with the team at
+[Codemod](https://github.com/codemod-com/codemod) to
+publish codemods that will automatically update your code to many of
+the new APIs and patterns in Fastify v4.
+
+Run the following
+[migration recipe](https://go.codemod.com/fastify-4-migration-recipe) to
+automatically update your code to Fastify v4:
+
+```
+npx codemod@latest fastify/4/migration-recipe
+```
+
+This will run the following codemods:
+
+- [`fastify/4/remove-app-use`](https://go.codemod.com/fastify-4-remove-app-use)
+- [`fastify/4/reply-raw-access`](https://go.codemod.com/fastify-4-reply-raw-access)
+- [`fastify/4/wrap-routes-plugin`](https://go.codemod.com/fastify-4-wrap-routes-plugin)
+- [`fastify/4/await-register-calls`](https://go.codemod.com/fastify-4-await-register-calls)
+
+Each of these codemods automates the changes listed in the v4 migration guide.
+For a complete list of available Fastify codemods and further details,
+see [Codemod Registry](https://go.codemod.com/fastify).
+
+
 ## Breaking Changes
 
 ### Error handling composition ([#3261](https://github.com/fastify/fastify/pull/3261))
@@ -24,14 +52,14 @@ fastify.register(async fastify => {
     console.log(err.message) // 'kaboom'
     throw new Error('caught')
   })
-  
+
   fastify.get('/encapsulated', async () => {
     throw new Error('kaboom')
   })
 })
 
 fastify.setErrorHandler(async err => {
-  console.log(err.message) // 'caught' 
+  console.log(err.message) // 'caught'
   throw new Error('wrapped')
 })
 
@@ -39,10 +67,10 @@ const res = await fastify.inject('/encapsulated')
 console.log(res.json().message) // 'wrapped'
 ```
 
->The root error handler is Fastify’s generic error handler. 
->This error handler will use the headers and status code in the Error object, 
+>The root error handler is Fastify’s generic error handler.
+>This error handler will use the headers and status code in the Error object,
 >if they exist. **The headers and status code will not be automatically set if
->a custom error handler is provided**. 
+>a custom error handler is provided**.
 
 ### Removed `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
 
@@ -55,10 +83,22 @@ If you need to use middleware, use
 continue to be maintained.
 However, it is strongly recommended that you migrate to Fastify's [hooks](../Reference/Hooks.md).
 
+> **Note**: Codemod remove `app.use()` with:
+>
+> ```bash
+> npx codemod@latest fastify/4/remove-app-use
+> ```
+
 ### `reply.res` moved to `reply.raw`
 
 If you previously used the `reply.res` attribute to access the underlying Request
 object you will now need to use `reply.raw`.
+
+> **Note**: Codemod `reply.res` to `reply.raw` with:
+>
+> ```bash
+> npx codemod@latest fastify/4/reply-raw-access
+> ```
 
 ### Need to `return reply` to signal a "fork" of the promise chain
 
@@ -105,6 +145,11 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
+> **Note**: Codemod synchronous route definitions with:
+>
+> ```bash
+> npx codemod@latest fastify/4/wrap-routes-plugin
+> ```
 
 * use `await register(...)`
 
@@ -129,6 +174,13 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
+
+> **Note**: Codemod 'await register(...)' with:
+>
+> ```bash
+> npx codemod@latest fastify/4/await-register-calls
+> ```
+
 
 ### Optional URL parameters
 
@@ -190,7 +242,7 @@ As such, schemas like below will need to be changed from:
   properties: {
     api_key: { type: 'string' },
     image: { type: ['object', 'array'] }
-  } 
+  }
 }
 ```
 

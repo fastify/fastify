@@ -542,6 +542,8 @@ middlewares into Fastify plugins
   OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-override`](https://github.com/matthyk/fastify-override)
   Fastify plugin to override decorators, plugins and hooks for testing purposes
+- [`fastify-passkit-webservice`](https://github.com/alexandercerutti/fastify-passkit-webservice)
+  A set of Fastify plugins to integrate Apple Wallet Web Service specification
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker

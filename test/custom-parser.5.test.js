@@ -26,10 +26,11 @@ test('cannot remove content type parsers after binding', (t, done) => {
 
   const fastify = Fastify()
 
+  t.after(() => fastify.close())
+
   fastify.listen({ port: 0 }, function (err) {
     t.assert.ifError(err)
     t.assert.throws(() => fastify.removeContentTypeParser('application/json'))
-    fastify.close()
     done()
   })
 })

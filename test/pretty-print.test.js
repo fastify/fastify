@@ -242,7 +242,6 @@ test('pretty print - nested plugins', (t, done) => {
   fastify.ready(() => {
     const tree = fastify.printPlugins()
     t.assert.strictEqual(typeof tree, 'string')
-    console.log(tree)
     t.assert.match(tree, /foo/)
     t.assert.match(tree, /bar/)
     t.assert.match(tree, /baz/)

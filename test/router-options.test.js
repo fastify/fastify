@@ -70,11 +70,7 @@ test('Should honor maxParamLength option', async (t) => {
   const fastify = Fastify({ maxParamLength: 10 })
 
   fastify.get('/test/:id', (req, reply) => {
-    if (req.params.id.length > 10) {
-      reply.code(404).send({ error: 'Parameter value exceeds maximum length' })
-    } else {
-      reply.send({ hello: 'world' })
-    }
+    reply.send({ hello: 'world' })
   })
 
   const res = await fastify.inject({

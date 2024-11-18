@@ -141,7 +141,7 @@ test('should be able to add a custom content type parser after removeAllContentT
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       fastify.close()
       done()
     })

@@ -147,7 +147,7 @@ test('Should honor frameworkErrors option - FST_ERR_BAD_URL', (t, done) => {
       if (err instanceof FST_ERR_BAD_URL) {
         t.assert.ok(true)
       } else {
-        t.fail()
+        t.assert.fail()
       }
       res.send(`${err.message} - ${err.code}`)
     }
@@ -231,10 +231,10 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
       stream: logStream,
       serializers: {
         req () {
-          t.fail('should not be called')
+          t.assert.fail('should not be called')
         },
         res () {
-          t.fail('should not be called')
+          t.assert.fail('should not be called')
         }
       }
     }
@@ -245,7 +245,7 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
   })
 
   logStream.on('data', (json) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   fastify.inject(
@@ -284,7 +284,7 @@ test('Should honor frameworkErrors option - FST_ERR_ASYNC_CONSTRAINT', (t, done)
       if (err instanceof FST_ERR_ASYNC_CONSTRAINT) {
         t.assert.ok(true)
       } else {
-        t.fail()
+        t.assert.fail()
       }
       res.send(`${err.message} - ${err.code}`)
     },
@@ -411,10 +411,10 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
       stream: logStream,
       serializers: {
         req () {
-          t.fail('should not be called')
+          t.assert.fail('should not be called')
         },
         res () {
-          t.fail('should not be called')
+          t.assert.fail('should not be called')
         }
       }
     }
@@ -430,7 +430,7 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
   })
 
   logStream.on('data', (json) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   fastify.inject(

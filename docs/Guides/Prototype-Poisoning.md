@@ -8,7 +8,7 @@
 <a id="pp"></a>
 
 Based on the article by Eran Hammer,the issue is created by a web security bug.
-It is also a perfect illustration of the efforts required to maintain 
+It is also a perfect illustration of the efforts required to maintain
 open-source software and the limitations of existing communication channels.
 
 But first, if we use a JavaScript framework to process incoming JSON data, take
@@ -16,7 +16,7 @@ a moment to read up on [Prototype Poisoning](https://medium.com/intrinsic/javasc
 in general, and the specific
 [technical details](https://github.com/hapijs/hapi/issues/3916) of this issue.
 This could be a critical issue so, we might need to verify your own code first.
-It focuses on specific framework however, any solution that uses `JSON.parse()` 
+It focuses on specific framework however, any solution that uses `JSON.parse()`
 to process external data is potentially at risk.
 
 ### BOOM
@@ -42,7 +42,7 @@ defect a validation library can have.
 
 To understand this, we need to understand how JavaScript works a bit.
 Every object in JavaScript can have a prototype. It is a set of methods and
-properties it "inherits" from another object. I have put inherits in quotes 
+properties it "inherits" from another object. I have put inherits in quotes
 because JavaScript isn't really an object-oriented language. It is a prototype-
 based object-oriented language.
 

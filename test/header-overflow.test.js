@@ -1,13 +1,12 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 
 const maxHeaderSize = 1024
 
-test('Should return 431 if request header fields are too large', t => {
+test('Should return 431 if request header fields are too large', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify({ http: { maxHeaderSize } })
@@ -20,7 +19,7 @@ test('Should return 431 if request header fields are too large', t => {
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'GET',
@@ -29,15 +28,16 @@ test('Should return 431 if request header fields are too large', t => {
         'Large-Header': 'a'.repeat(maxHeaderSize)
       }
     }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 431)
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 431)
+      done()
     })
   })
 
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 })
 
-test('Should return 431 if URI is too long', t => {
+test('Should return 431 if URI is too long', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify({ http: { maxHeaderSize } })
@@ -50,16 +50,17 @@ test('Should return 431 if URI is too long', t => {
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + `/${'a'.repeat(maxHeaderSize)}`
     }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 431)
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 431)
+      done()
     })
   })
 
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 })

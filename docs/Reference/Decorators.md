@@ -59,7 +59,7 @@ close as possible to the value intended to be set dynamically in the future.
 Initialize a decorator as a `''` if the intended value is a string, and as
 `null` if it will be an object or a function.
 
-Remember this example works only with value types as reference types will 
+Remember this example works only with value types as reference types will
 thrown and error during the fastify startup. See [decorateRequest](#decorate-request).
 
 See [JavaScript engine fundamentals: Shapes and Inline
@@ -109,7 +109,7 @@ fastify.decorate('db', new DbConnection())
 fastify.get('/', async function (request, reply) {
   // using return
   return { hello: await this.db.query('world') }
-  
+
   // or
   // using reply.send()
   reply.send({ hello: await this.db.query('world') })

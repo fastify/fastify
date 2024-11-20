@@ -182,7 +182,7 @@ route-level `request` object.
    admin"}`
 
 🎉 Good work, now you can define interfaces for each route and have strictly
-typed request and reply instances. Other parts of the Fastify type system rely 
+typed request and reply instances. Other parts of the Fastify type system rely
 on generic properties. Make sure to reference the detailed type system
 documentation below to learn more about what is available.
 
@@ -877,7 +877,7 @@ a more detailed http server walkthrough.
    import path from 'path'
    import fastify from 'fastify'
    ```
-2. Perform the following steps before setting up a Fastify HTTPS server 
+2. Perform the following steps before setting up a Fastify HTTPS server
 to create the `key.pem` and `cert.pem` files:
 ```sh
 openssl genrsa -out key.pem

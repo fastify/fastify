@@ -159,7 +159,7 @@ the following:
 +++ b/index.ts
 @@ -11,7 +11,8 @@ import {
  import { FromSchema, FromSchemaDefaultOptions, FromSchemaOptions, JSONSchema } from 'json-schema-to-ts'
- 
+
  export interface JsonSchemaToTsProvider<
    Options extends FromSchemaOptions = FromSchemaDefaultOptions
  > extends FastifyTypeProvider {
@@ -298,7 +298,7 @@ use the `constraints` option instead.
 We have a more strict requirement for custom `HEAD` route when
 `exposeHeadRoutes: true`.
 
-When you provides a custom `HEAD` route, you must either explicitly 
+When you provides a custom `HEAD` route, you must either explicitly
 set `exposeHeadRoutes` to `false`
 
 ```js
@@ -403,7 +403,7 @@ and requires the route definition to be passed as it is defined in the route.
 fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 
 console.log(fastify.hasRoute({
-  method: 'GET', 
+  method: 'GET',
   url: '/example/12345.png'
 )); // true
 ```
@@ -414,7 +414,7 @@ console.log(fastify.hasRoute({
 fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 
 console.log(fastify.hasRoute({
-  method: 'GET', 
+  method: 'GET',
   url: '/example/:file(^\\d+).png'
 )); // true
 ```
@@ -480,7 +480,7 @@ or as a getter
 ```js
 // v5
 fastify.decorateRequest('myObject', {
-  getter () { 
+  getter () {
     return { hello: 'world' }
   }
 });

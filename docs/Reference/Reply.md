@@ -11,15 +11,14 @@
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
-    - [set-cookie](#set-cookie)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
+  - [.writeEarlyHints(hints, callback)](#writeearlyhintshints-callback)
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
   - [.redirect(dest, [code ,])](#redirectdest--code)
   - [.callNotFound()](#callnotfound)
-  - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
   - [.getSerializationFunction(schema | httpStatus, [contentType])](#getserializationfunctionschema--httpstatus)
   - [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschemaschema-httpstatus)
@@ -33,8 +32,9 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
-    - [ReadableStream](#send-readablestream)
-    - [Response](#send-response)
+    - [TypedArrays](#typedarrays)
+    - [ReadableStream](#readablestream)
+    - [Response](#response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -72,14 +72,14 @@ since the request was received by Fastify.
   serialized payload.
 - `.getSerializationFunction(schema | httpStatus, [contentType])` - Returns the serialization
   function for the specified schema or http status, if any of either are set.
-- `.compileSerializationSchema(schema, [httpStatus], [contentType])` - Compiles 
-  the specified schema and returns a serialization function using the default 
-  (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded 
+- `.compileSerializationSchema(schema, [httpStatus], [contentType])` - Compiles
+  the specified schema and returns a serialization function using the default
+  (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded
   to the `SerializerCompiler` if provided, default to `undefined`.
-- `.serializeInput(data, schema, [,httpStatus], [contentType])` - Serializes 
+- `.serializeInput(data, schema, [,httpStatus], [contentType])` - Serializes
   the specified data using the specified schema and returns the serialized payload.
-  If the optional `httpStatus`, and `contentType` are provided, the function 
-  will use the serializer function given for that specific content type and 
+  If the optional `httpStatus`, and `contentType` are provided, the function
+  will use the serializer function given for that specific content type and
   HTTP Status Code. Default to `undefined`.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a
@@ -88,7 +88,7 @@ since the request was received by Fastify.
   already been called.
 - `.hijack()` - interrupt the normal request lifecycle.
 - `.raw` - The
-  [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse)
+  [`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
@@ -113,9 +113,6 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 Invokes the custom response time getter to calculate the amount of time passed
 since the request was received by Fastify.
-
-Note that unless this function is called in the [`onResponse`
-hook](./Hooks.md#onresponse) it will always return `0`.
 
 ```js
 const milliseconds = reply.elapsedTime
@@ -161,7 +158,7 @@ Sets a response header. If the value is omitted or undefined, it is coerced to
 > will result in a 500 `TypeError` response.
 
 For more information, see
-[`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
+[`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_response_setheader_name_value).
 
 - ### set-cookie
   <a id="set-cookie"></a>
@@ -247,7 +244,7 @@ The hints parameter is an object containing the early hint key-value pairs.
 Example:
 
 ```js
-reply.writeEarlyHints({ 
+reply.writeEarlyHints({
   Link: '</styles.css>; rel=preload; as=style'
 });
 ```
@@ -370,8 +367,8 @@ If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>
 
-By calling this function using a provided `schema` or `httpStatus`, 
-and the optional `contentType`, it will return a `serialzation` function 
+By calling this function using a provided `schema` or `httpStatus`,
+and the optional `contentType`, it will return a `serialzation` function
 that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
@@ -381,12 +378,12 @@ the serialization functions compiled by using `compileSerializationSchema`.
 ```js
 const serialize = reply
                   .getSerializationFunction({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
@@ -415,8 +412,8 @@ The function returned (a.k.a. _serialization function_) returned is compiled
 by using the provided `SerializerCompiler`. Also this is cached by using
 a `WeakMap` for reducing compilation calls.
 
-The optional parameters `httpStatus` and `contentType`, if provided, 
-are forwarded directly to the `SerializerCompiler`, so it can be used 
+The optional parameters `httpStatus` and `contentType`, if provided,
+are forwarded directly to the `SerializerCompiler`, so it can be used
 to compile the serialization function if a custom `SerializerCompiler` is used.
 
 This heavily depends of the `schema#responses` attached to the route, or
@@ -425,12 +422,12 @@ the serialization functions compiled by using `compileSerializationSchema`.
 ```js
 const serialize = reply
                   .compileSerializationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
@@ -438,12 +435,12 @@ serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
 const serialize = reply
                   .compileSerializationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   }, 200)
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
@@ -489,7 +486,7 @@ const schema1 = {
 ```
 
 *Not*
-```js 
+```js
 const serialize = reply.compileSerializationSchema(schema1)
 
 // Later on...
@@ -523,25 +520,25 @@ function will be compiled, forwarding the `httpStatus` and `contentType` if prov
 
 ```js
 reply
-  .serializeInput({ foo: 'bar'}, {  
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+  .serializeInput({ foo: 'bar'}, {
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }) // '{"foo":"bar"}'
 
 // or
 
 reply
   .serializeInput({ foo: 'bar'}, {
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }, 200) // '{"foo":"bar"}'
 
 // or
@@ -590,7 +587,7 @@ values.
 <a id="raw"></a>
 
 This is the
-[`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse)
+[`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
 from Node core. Whilst you are using the Fastify `Reply` object, the use of
 `Reply.raw` functions is at your own risk as you are skipping all the Fastify
 logic of handling the HTTP response. e.g.:
@@ -716,7 +713,7 @@ fastify.get('/streams', async function (request, reply) {
 If you are sending a buffer and you have not set a `'Content-Type'` header,
 *send* will set it to `'application/octet-stream'`.
 
-As noted above, Buffers are considered to be pre-serialized, so they will be 
+As noted above, Buffers are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
 
 ```js
@@ -747,7 +744,7 @@ fastify.get('/streams', async function (request, reply) {
 `send` manages TypedArray like a Buffer, and sets the `'Content-Type'`
 header to `'application/octet-stream'` if not already set.
 
-As noted above, TypedArray/Buffers are considered to be pre-serialized, so they 
+As noted above, TypedArray/Buffers are considered to be pre-serialized, so they
 will be sent unmodified without response validation.
 
 ```js
@@ -763,7 +760,7 @@ fastify.get('/streams', function (request, reply) {
 <a id="send-readablestream"></a>
 
 `ReadableStream` will be treated as a node stream mentioned above,
-the content is considered to be pre-serialized, so they will be 
+the content is considered to be pre-serialized, so they will be
 sent unmodified without response validation.
 
 ```js
@@ -782,7 +779,7 @@ fastify.get('/streams', function (request, reply) {
 
 `Response` allows to manage the reply payload, status code and
 headers in one place. The payload provided inside `Response` is
-considered to be pre-serialized, so they will be sent unmodified 
+considered to be pre-serialized, so they will be sent unmodified
 without response validation.
 
 Please be aware when using `Response`, the status code and headers
@@ -880,7 +877,7 @@ API:
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
   request.log.warn(error)
-  var statusCode = error.statusCode >= 400 ? error.statusCode : 500
+  const statusCode = error.statusCode >= 400 ? error.statusCode : 500
   reply
     .code(statusCode)
     .type('text/plain')

@@ -1,8 +1,7 @@
 'use strict'
 
 const stream = require('node:stream')
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 
 test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
@@ -31,11 +30,11 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
 
   await fastify.ready()
 
-  t.ok(true)
+  t.assert.ok(true)
 })
 
-test('Will not create a HEAD route that is not GET', t => {
-  t.plan(11)
+test('Will not create a HEAD route that is not GET', async t => {
+  t.plan(8)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
@@ -63,38 +62,35 @@ test('Will not create a HEAD route that is not GET', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.body, '')
   })
 
-  fastify.inject({
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.body, '')
+
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/some-light'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], undefined)
-    t.equal(res.headers['content-length'], '0')
-    t.equal(res.body, '')
   })
 
-  fastify.inject({
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], undefined)
+  t.assert.strictEqual(res.headers['content-length'], '0')
+  t.assert.strictEqual(res.body, '')
+
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/something'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 404)
   })
+
+  t.assert.strictEqual(res.statusCode, 404)
 })
 
-test('HEAD route should handle properly each response type', t => {
-  t.plan(25)
+test('HEAD route should handle properly each response type', async t => {
+  t.plan(20)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
   const resString = 'Found me!'
@@ -143,64 +139,54 @@ test('HEAD route should handle properly each response type', t => {
     }
   })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'HEAD',
     url: '/json'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.equal(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
-    t.same(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
+  t.assert.deepStrictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/string'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.equal(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+  t.assert.strictEqual(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
+  t.assert.strictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/buffer'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/buffer-with-content-type'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'image/jpeg')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'image/jpeg')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'HEAD',
     url: '/stream'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], undefined)
-    t.equal(res.headers['content-length'], undefined)
-    t.equal(res.body, '')
   })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], undefined)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+  t.assert.strictEqual(res.body, '')
 })
 
-test('HEAD route should respect custom onSend handlers', t => {
-  t.plan(6)
+test('HEAD route should respect custom onSend handlers', async t => {
+  t.plan(5)
 
   let counter = 0
   const resBuffer = Buffer.from('I am a coffee!')
@@ -219,21 +205,20 @@ test('HEAD route should respect custom onSend handlers', t => {
     onSend: [customOnSend, customOnSend]
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     method: 'HEAD',
     url: '/more-coffee'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.body, '')
-    t.equal(counter, 2)
   })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(counter, 2)
 })
 
-test('route onSend can be function or array of functions', t => {
-  t.plan(12)
+test('route onSend can be function or array of functions', async t => {
+  t.plan(10)
   const counters = { single: 0, multiple: 0 }
 
   const resBuffer = Buffer.from('I am a coffee!')
@@ -261,23 +246,19 @@ test('route onSend can be function or array of functions', t => {
     onSend: [customOnSend, customOnSend]
   })
 
-  fastify.inject({ method: 'HEAD', url: '/coffee' }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.body, '')
-    t.equal(counters.single, 1)
-  })
+  let res = await fastify.inject({ method: 'HEAD', url: '/coffee' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(counters.single, 1)
 
-  fastify.inject({ method: 'HEAD', url: '/more-coffee' }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
-    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.equal(res.body, '')
-    t.equal(counters.multiple, 2)
-  })
+  res = await fastify.inject({ method: 'HEAD', url: '/more-coffee' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  t.assert.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(counters.multiple, 2)
 })
 
 test('no warning for exposeHeadRoute', async t => {
@@ -293,7 +274,7 @@ test('no warning for exposeHeadRoute', async t => {
   })
 
   const listener = (w) => {
-    t.fail('no warning')
+    t.assert.fail('no warning')
   }
 
   process.on('warning', listener)

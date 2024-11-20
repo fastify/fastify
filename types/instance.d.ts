@@ -549,6 +549,13 @@ export interface FastifyInstance<
    */
   removeAllContentTypeParsers: removeAllContentTypeParsers
   /**
+   * Add a non-standard HTTP method
+   *
+   * Methods defined by default include `GET`, `HEAD`, `TRACE`, `DELETE`,
+   * `OPTIONS`, `PATCH`, `PUT` and `POST`
+   */
+  addHttpMethod(method: string, methodOptions?: { hasBody: boolean }): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  /**
    * Fastify default JSON parser
    */
   getDefaultJsonParser: getDefaultJsonParser;

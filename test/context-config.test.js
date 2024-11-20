@@ -1,7 +1,7 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
+
 const { kRouteContext } = require('../lib/symbols')
 const Fastify = require('..')
 
@@ -17,8 +17,8 @@ function handler (req, reply) {
   reply.send(reply[kRouteContext].config)
 }
 
-test('config', t => {
-  t.plan(9)
+test('config', async t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.get('/get', {
@@ -41,36 +41,33 @@ test('config', t => {
     handler
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/get'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
-  })
-
-  fastify.inject({
+  let response = await fastify.inject({
     method: 'GET',
     url: '/route'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
   })
 
-  fastify.inject({
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+
+  response = await fastify.inject({
+    method: 'GET',
+    url: '/route'
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+
+  response = await fastify.inject({
     method: 'GET',
     url: '/no-config'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
   })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
 })
 
-test('config with exposeHeadRoutes', t => {
-  t.plan(9)
+test('config with exposeHeadRoutes', async t => {
+  t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: true })
 
   fastify.get('/get', {
@@ -93,36 +90,33 @@ test('config with exposeHeadRoutes', t => {
     handler
   })
 
-  fastify.inject({
+  let response = await fastify.inject({
     method: 'GET',
     url: '/get'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
   })
 
-  fastify.inject({
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+
+  response = await fastify.inject({
     method: 'GET',
     url: '/route'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
   })
 
-  fastify.inject({
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+
+  response = await fastify.inject({
     method: 'GET',
     url: '/no-config'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
   })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
 })
 
-test('config without exposeHeadRoutes', t => {
-  t.plan(9)
+test('config without exposeHeadRoutes', async t => {
+  t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.get('/get', {
@@ -145,30 +139,26 @@ test('config without exposeHeadRoutes', t => {
     handler
   })
 
-  fastify.inject({
+  let response = await fastify.inject({
     method: 'GET',
     url: '/get'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
   })
 
-  fastify.inject({
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+
+  response = await fastify.inject({
     method: 'GET',
     url: '/route'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
   })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), Object.assign({ url: '/route', method: 'GET' }, schema.config))
 
-  fastify.inject({
+  response = await fastify.inject({
     method: 'GET',
     url: '/no-config'
-  }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
   })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
 })

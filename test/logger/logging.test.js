@@ -281,7 +281,7 @@ t.test('logging', (t) => {
     const loggerInstance = pino(stream)
 
     const fastify = Fastify({
-      disableRequestLogging: (context, request) => {
+      disableRequestLogging: (request) => {
         return request.url !== '/not-logged'
       },
       loggerInstance,

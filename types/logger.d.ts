@@ -78,6 +78,13 @@ export interface FastifyLoggerOptions<
   file?: string;
   genReqId?: (req: RawRequest) => string;
   stream?: FastifyLoggerStreamDestination;
+  customAttributeKeys?: CustomAttributeKeys;
+}
+
+export interface CustomAttributeKeys {
+  req?: string;
+  res?: string;
+  err?: string;
 }
 
 export interface FastifyChildLoggerFactory<

@@ -14,7 +14,7 @@ test('sync route', async t => {
 
 test('sync route return null', async t => {
   const app = Fastify()
-  t.after(() => app.close.bind(app))
+  t.after(() => app.close())
   app.get('/', () => null)
   const res = await app.inject('/')
   t.assert.strictEqual(res.statusCode, 200)
@@ -23,7 +23,7 @@ test('sync route return null', async t => {
 
 test('sync route, error', async t => {
   const app = Fastify()
-  t.after(() => app.close.bind(app))
+  t.after(() => app.close())
   app.get('/', () => {
     throw new Error('kaboom')
   })

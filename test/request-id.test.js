@@ -53,6 +53,8 @@ test('The request id header key can be customized', (t, done) => {
     reply.send({ id: req.id })
   })
 
+  t.after(() => fastify.close())
+
   fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
 
@@ -65,7 +67,6 @@ test('The request id header key can be customized', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(body.toString(), `{"id":"${REQUEST_ID}"}`)
-      fastify.close()
       done()
     })
   })
@@ -84,6 +85,8 @@ test('The request id header key can be customized', (t, done) => {
     reply.send({ id: req.id })
   })
 
+  t.after(() => fastify.close())
+
   fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
 
@@ -96,7 +99,6 @@ test('The request id header key can be customized', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(body.toString(), `{"id":"${REQUEST_ID}"}`)
-      fastify.close()
       done()
     })
   })

@@ -71,9 +71,9 @@ test('should trigger the onSend hook', async (t) => {
     url: '/'
   })
 
-  t.assert.equal(response.statusCode, 200)
-  t.assert.equal(response.headers['content-type'], 'application/javascript')
-  t.assert.equal(response.payload, fs.readFileSync(__filename, 'utf8'))
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.headers['content-type'], 'application/javascript')
+  t.assert.strictEqual(response.payload, fs.readFileSync(__filename, 'utf8'))
   t.after(() => fastify.close())
 })
 
@@ -104,8 +104,8 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 500)
-      t.after(() => fastify.close())
       done()
     })
   })
+  t.after(() => fastify.close())
 })

@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const os = require('node:os')
 
@@ -13,7 +12,7 @@ const {
 
 test('root fastify instance is an object', t => {
   t.plan(1)
-  t.type(Fastify(), 'object')
+  t.assert.strictEqual(typeof Fastify(), 'object')
 })
 
 test('fastify instance should contains ajv options', t => {
@@ -25,7 +24,7 @@ test('fastify instance should contains ajv options', t => {
       }
     }
   })
-  t.same(fastify[kOptions].ajv, {
+  t.assert.deepStrictEqual(fastify[kOptions].ajv, {
     customOptions: {
       nullable: false
     },
@@ -43,7 +42,7 @@ test('fastify instance should contains ajv options.plugins nested arrays', t => 
       plugins: [[]]
     }
   })
-  t.same(fastify[kOptions].ajv, {
+  t.assert.deepStrictEqual(fastify[kOptions].ajv, {
     customOptions: {
       nullable: false
     },
@@ -53,7 +52,7 @@ test('fastify instance should contains ajv options.plugins nested arrays', t => 
 
 test('fastify instance get invalid ajv options', t => {
   t.plan(1)
-  t.throws(() => Fastify({
+  t.assert.throws(() => Fastify({
     ajv: {
       customOptions: 8
     }
@@ -62,7 +61,7 @@ test('fastify instance get invalid ajv options', t => {
 
 test('fastify instance get invalid ajv options.plugins', t => {
   t.plan(1)
-  t.throws(() => Fastify({
+  t.assert.throws(() => Fastify({
     ajv: {
       customOptions: {},
       plugins: 8
@@ -73,9 +72,9 @@ test('fastify instance get invalid ajv options.plugins', t => {
 test('fastify instance should contain default errorHandler', t => {
   t.plan(3)
   const fastify = Fastify()
-  t.ok(fastify[kErrorHandler].func instanceof Function)
-  t.same(fastify.errorHandler, fastify[kErrorHandler].func)
-  t.same(Object.getOwnPropertyDescriptor(fastify, 'errorHandler').set, undefined)
+  t.assert.ok(fastify[kErrorHandler].func instanceof Function)
+  t.assert.deepStrictEqual(fastify.errorHandler, fastify[kErrorHandler].func)
+  t.assert.deepStrictEqual(Object.getOwnPropertyDescriptor(fastify, 'errorHandler').set, undefined)
 })
 
 test('errorHandler in plugin should be separate from the external one', async t => {
@@ -89,24 +88,24 @@ test('errorHandler in plugin should be separate from the external one', async t 
 
     instance.setErrorHandler(inPluginErrHandler)
 
-    t.notSame(instance.errorHandler, fastify.errorHandler)
-    t.equal(instance.errorHandler.name, 'bound inPluginErrHandler')
+    t.assert.notDeepStrictEqual(instance.errorHandler, fastify.errorHandler)
+    t.assert.strictEqual(instance.errorHandler.name, 'bound inPluginErrHandler')
 
     done()
   })
 
   await fastify.ready()
 
-  t.ok(fastify[kErrorHandler].func instanceof Function)
-  t.same(fastify.errorHandler, fastify[kErrorHandler].func)
+  t.assert.ok(fastify[kErrorHandler].func instanceof Function)
+  t.assert.deepStrictEqual(fastify.errorHandler, fastify[kErrorHandler].func)
 })
 
 test('fastify instance should contain default childLoggerFactory', t => {
   t.plan(3)
   const fastify = Fastify()
-  t.ok(fastify[kChildLoggerFactory] instanceof Function)
-  t.same(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
-  t.same(Object.getOwnPropertyDescriptor(fastify, 'childLoggerFactory').set, undefined)
+  t.assert.ok(fastify[kChildLoggerFactory] instanceof Function)
+  t.assert.deepStrictEqual(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
+  t.assert.deepStrictEqual(Object.getOwnPropertyDescriptor(fastify, 'childLoggerFactory').set, undefined)
 })
 
 test('childLoggerFactory in plugin should be separate from the external one', async t => {
@@ -120,16 +119,16 @@ test('childLoggerFactory in plugin should be separate from the external one', as
 
     instance.setChildLoggerFactory(inPluginLoggerFactory)
 
-    t.notSame(instance.childLoggerFactory, fastify.childLoggerFactory)
-    t.equal(instance.childLoggerFactory.name, 'inPluginLoggerFactory')
+    t.assert.notDeepStrictEqual(instance.childLoggerFactory, fastify.childLoggerFactory)
+    t.assert.strictEqual(instance.childLoggerFactory.name, 'inPluginLoggerFactory')
 
     done()
   })
 
   await fastify.ready()
 
-  t.ok(fastify[kChildLoggerFactory] instanceof Function)
-  t.same(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
+  t.assert.ok(fastify[kChildLoggerFactory] instanceof Function)
+  t.assert.deepStrictEqual(fastify.childLoggerFactory, fastify[kChildLoggerFactory])
 })
 
 test('ready should resolve in order when called multiply times (promises only)', async (t) => {
@@ -142,7 +141,7 @@ test('ready should resolve in order when called multiply times (promises only)',
 
   await Promise.all(promises)
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('ready should reject in order when called multiply times (promises only)', async (t) => {
@@ -159,7 +158,7 @@ test('ready should reject in order when called multiply times (promises only)', 
 
   await Promise.all(promises)
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('ready should reject in order when called multiply times (callbacks only)', async (t) => {
@@ -174,10 +173,10 @@ test('ready should reject in order when called multiply times (callbacks only)',
   expectedOrder.map((id) => app.ready(() => result.push(id)))
 
   await app.ready().catch(err => {
-    t.equal(err.message, 'test')
+    t.assert.strictEqual(err.message, 'test')
   })
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('ready should resolve in order when called multiply times (callbacks only)', async (t) => {
@@ -189,7 +188,7 @@ test('ready should resolve in order when called multiply times (callbacks only)'
 
   await app.ready()
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('ready should resolve in order when called multiply times (mixed)', async (t) => {
@@ -207,7 +206,7 @@ test('ready should resolve in order when called multiply times (mixed)', async (
 
   await app.ready()
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('ready should reject in order when called multiply times (mixed)', async (t) => {
@@ -228,10 +227,10 @@ test('ready should reject in order when called multiply times (mixed)', async (t
   }
 
   await app.ready().catch(err => {
-    t.equal(err.message, 'test')
+    t.assert.strictEqual(err.message, 'test')
   })
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('ready should resolve in order when called multiply times (mixed)', async (t) => {
@@ -249,7 +248,7 @@ test('ready should resolve in order when called multiply times (mixed)', async (
 
   await app.ready()
 
-  t.strictSame(result, expectedOrder, 'Should resolve in order')
+  t.assert.deepStrictEqual(result, expectedOrder, 'Should resolve in order')
 })
 
 test('fastify instance should contains listeningOrigin property (with port and host)', async t => {
@@ -258,7 +257,7 @@ test('fastify instance should contains listeningOrigin property (with port and h
   const host = '127.0.0.1'
   const fastify = Fastify()
   await fastify.listen({ port, host })
-  t.same(fastify.listeningOrigin, `http://${host}:${port}`)
+  t.assert.deepStrictEqual(fastify.listeningOrigin, `http://${host}:${port}`)
   await fastify.close()
 })
 
@@ -268,7 +267,7 @@ test('fastify instance should contains listeningOrigin property (with port and h
   const host = '127.0.0.1'
   const fastify = Fastify({ https: {} })
   await fastify.listen({ port, host })
-  t.same(fastify.listeningOrigin, `https://${host}:${port}`)
+  t.assert.deepStrictEqual(fastify.listeningOrigin, `https://${host}:${port}`)
   await fastify.close()
 })
 
@@ -276,7 +275,7 @@ test('fastify instance should contains listeningOrigin property (unix socket)', 
   const fastify = Fastify()
   const path = `fastify.${Date.now()}.sock`
   await fastify.listen({ path })
-  t.same(fastify.listeningOrigin, path)
+  t.assert.deepStrictEqual(fastify.listeningOrigin, path)
   await fastify.close()
 })
 
@@ -286,6 +285,6 @@ test('fastify instance should contains listeningOrigin property (IPv6)', async t
   const host = '::1'
   const fastify = Fastify()
   await fastify.listen({ port, host })
-  t.same(fastify.listeningOrigin, `http://[::1]:${port}`)
+  t.assert.deepStrictEqual(fastify.listeningOrigin, `http://[::1]:${port}`)
   await fastify.close()
 })

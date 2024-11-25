@@ -204,15 +204,16 @@ on serializers for more information.
 *Any logger other than Pino will ignore this option.*
 
 You can also supply your own logger instance. Instead of passing configuration
-options, pass the instance. The logger you supply must conform to the Pino
-interface; that is, it must have the following methods: `info`, `error`,
-`debug`, `fatal`, `warn`, `trace`, `silent`, `child` and a string property `level`.
+options, pass the instance as `loggerInstance`. The logger you supply must
+conform to the Pino interface; that is, it must have the following methods:
+`info`, `error`, `debug`, `fatal`, `warn`, `trace`, `silent`, `child` and a
+string property `level`.
 
 Example:
 
 ```js
 const log = require('pino')({ level: 'info' })
-const fastify = require('fastify')({ logger: log })
+const fastify = require('fastify')({ loggerInstance: log })
 
 log.info('does not have request information')
 

@@ -302,7 +302,7 @@ test('FST_ERR_HOOK_TIMEOUT', t => {
   const error = new errors.FST_ERR_HOOK_TIMEOUT()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_HOOK_TIMEOUT')
-  t.assert.strictEqual(error.message, "A callback for '%s' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+  t.assert.strictEqual(error.message, "A callback for '%s' hook%s timed out. You may have forgotten to call 'done' function or to resolve a Promise")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

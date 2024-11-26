@@ -242,7 +242,7 @@ test('add', async t => {
         done()
       })
     } catch (err) {
-      t.assert.deepStrictEqual(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+      t.assert.strictEqual(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
     }
   })
 
@@ -257,7 +257,7 @@ test('add', async t => {
         done()
       })
     } catch (err) {
-      t.assert.deepStrictEqual(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+      t.assert.strictEqual(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
     }
   })
 })
@@ -368,7 +368,7 @@ test('remove', async t => {
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
     t.assert.ok(!contentTypeParser.remove('image/png'))
-    t.assert.deepStrictEqual(contentTypeParser.customParsers.size, 2)
+    t.assert.strictEqual(contentTypeParser.customParsers.size, 2)
   })
 })
 
@@ -384,10 +384,10 @@ test('remove all should remove all existing parsers and reset cache', t => {
   contentTypeParser.getParser('application/xml') // fill cache with one entry
   contentTypeParser.removeAll()
 
-  t.assert.deepStrictEqual(contentTypeParser.cache.size, 0)
-  t.assert.deepStrictEqual(contentTypeParser.parserList.length, 0)
-  t.assert.deepStrictEqual(contentTypeParser.parserRegExpList.length, 0)
-  t.assert.deepStrictEqual(Object.keys(contentTypeParser.customParsers).length, 0)
+  t.assert.strictEqual(contentTypeParser.cache.size, 0)
+  t.assert.strictEqual(contentTypeParser.parserList.length, 0)
+  t.assert.strictEqual(contentTypeParser.parserRegExpList.length, 0)
+  t.assert.strictEqual(Object.keys(contentTypeParser.customParsers).length, 0)
 })
 
 test('Safeguard against malicious content-type / 1', async t => {
@@ -410,7 +410,7 @@ test('Safeguard against malicious content-type / 1', async t => {
       body: ''
     })
 
-    t.assert.deepStrictEqual(response.statusCode, 415)
+    t.assert.strictEqual(response.statusCode, 415)
   }
 })
 
@@ -432,7 +432,7 @@ test('Safeguard against malicious content-type / 2', async t => {
     body: ''
   })
 
-  t.assert.deepStrictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('Safeguard against malicious content-type / 3', async t => {
@@ -453,7 +453,7 @@ test('Safeguard against malicious content-type / 3', async t => {
     body: ''
   })
 
-  t.assert.deepStrictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('Safeguard against content-type spoofing - string', async t => {
@@ -598,7 +598,7 @@ test('content-type fail when parameters not match - string 1', async t => {
     body: ''
   })
 
-  t.assert.deepStrictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('content-type fail when parameters not match - string 2', async t => {
@@ -624,7 +624,7 @@ test('content-type fail when parameters not match - string 2', async t => {
     body: ''
   })
 
-  t.assert.deepStrictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('content-type fail when parameters not match - regexp', async t => {
@@ -650,7 +650,7 @@ test('content-type fail when parameters not match - regexp', async t => {
     body: ''
   })
 
-  t.assert.deepStrictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 // Refs: https://github.com/fastify/fastify/issues/4495
@@ -678,9 +678,9 @@ test('content-type regexp list should be cloned when plugin override', async t =
       payload: 'jpeg',
       headers: { 'content-type': 'image/jpeg' }
     })
-    t.assert.deepStrictEqual(statusCode, 200)
-    t.assert.deepStrictEqual(headers['content-type'], 'image/jpeg')
-    t.assert.deepStrictEqual(payload, 'jpeg')
+    t.assert.strictEqual(statusCode, 200)
+    t.assert.strictEqual(headers['content-type'], 'image/jpeg')
+    t.assert.strictEqual(payload, 'jpeg')
   }
 
   {
@@ -690,9 +690,9 @@ test('content-type regexp list should be cloned when plugin override', async t =
       payload: 'png',
       headers: { 'content-type': 'image/png' }
     })
-    t.assert.deepStrictEqual(statusCode, 200)
-    t.assert.deepStrictEqual(headers['content-type'], 'image/png')
-    t.assert.deepStrictEqual(payload, 'png')
+    t.assert.strictEqual(statusCode, 200)
+    t.assert.strictEqual(headers['content-type'], 'image/png')
+    t.assert.strictEqual(payload, 'png')
   }
 })
 

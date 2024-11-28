@@ -4,29 +4,30 @@ const { test } = require('node:test')
 const Fastify = require('..')
 
 test('sync route', async t => {
-  const app = Fastify()
-  app.get('/', () => 'hello world')
-  const res = await app.inject('/')
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.get('/', () => 'hello world')
+  const res = await fastify.inject('/')
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.body, 'hello world')
-  app.close()
+  fastify.close()
 })
 
 test('sync route return null', async t => {
-  const app = Fastify()
-  app.get('/', () => null)
-  const res = await app.inject('/')
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.get('/', () => null)
+  const res = await fastify.inject('/')
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.body, 'null')
-  app.close()
 })
 
 test('sync route, error', async t => {
-  const app = Fastify()
-  app.get('/', () => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.get('/', () => {
     throw new Error('kaboom')
   })
-  const res = await app.inject('/')
+  const res = await fastify.inject('/')
   t.assert.strictEqual(res.statusCode, 500)
-  app.close()
 })

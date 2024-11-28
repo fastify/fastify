@@ -10,7 +10,6 @@ test('sync route', async t => {
   const res = await fastify.inject('/')
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.body, 'hello world')
-  fastify.close()
 })
 
 test('sync route return null', async t => {

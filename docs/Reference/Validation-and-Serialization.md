@@ -49,16 +49,16 @@ The shared schemas can be reused through the JSON Schema
 [**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8)
 keyword. Here is an overview of _how_ references work:
 
-+ `myField: { $ref: '#foo'}` will search for field with `$id: '#foo'` inside the
++ `myField: { $ref: '#foo' }` will search for field with `$id: '#foo'` inside the
   current schema
-+ `myField: { $ref: '#/definitions/foo'}` will search for field
++ `myField: { $ref: '#/definitions/foo' }` will search for field
   `definitions.foo` inside the current schema
-+ `myField: { $ref: 'http://url.com/sh.json#'}` will search for a shared schema
++ `myField: { $ref: 'http://url.com/sh.json#' }` will search for a shared schema
   added with `$id: 'http://url.com/sh.json'`
-+ `myField: { $ref: 'http://url.com/sh.json#/definitions/foo'}` will search for
++ `myField: { $ref: 'http://url.com/sh.json#/definitions/foo' }` will search for
   a shared schema added with `$id: 'http://url.com/sh.json'` and will use the
   field `definitions.foo`
-+ `myField: { $ref: 'http://url.com/sh.json#foo'}` will search for a shared
++ `myField: { $ref: 'http://url.com/sh.json#foo' }` will search for a shared
   schema added with `$id: 'http://url.com/sh.json'` and it will look inside of
   it for object with `$id: '#foo'`
 

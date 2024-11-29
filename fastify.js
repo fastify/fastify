@@ -765,8 +765,6 @@ function fastify (options) {
         childLogger.info({ req: request }, createRequestLogMessage(customMessage))
       }
 
-      console.log('FST_ERR_BAD_URL(path): ', FST_ERR_BAD_URL(path))
-
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
     const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`

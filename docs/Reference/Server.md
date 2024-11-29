@@ -1,6 +1,3 @@
-Server.md
-
-
 <h1 align="center">Fastify</h1>
 
 ## Factory
@@ -2050,6 +2047,3 @@ fastify.listen({ port: 3000 }, (err) => {
   }
 })
 ```
-
-
-

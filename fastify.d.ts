@@ -120,7 +120,7 @@ declare namespace fastify {
     requestIdLogLabel?: string;
     useSemicolonDelimiter?: boolean,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
-    createRequestLogMessage?: (req: FastifyRequest) => string,
+    createRequestLogMessage?: (req: string) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: unknown },
     constraints?: {

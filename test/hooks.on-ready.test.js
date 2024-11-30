@@ -322,14 +322,14 @@ t.test('onReady does not call done', t => {
   t.plan(6)
   const fastify = Fastify({ pluginTimeout: 500 })
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function someHookName (done) {
     t.pass('called in root')
     // done() // don't call done to test timeout
   })
 
   fastify.ready(err => {
     t.ok(err)
-    t.equal(err.message, "A callback for 'onReady' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.message, 'A callback for \'onReady\' hook "someHookName" timed out. You may have forgotten to call \'done\' function or to resolve a Promise')
     t.equal(err.code, 'FST_ERR_HOOK_TIMEOUT')
     t.ok(err.cause)
     t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')

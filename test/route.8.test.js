@@ -75,6 +75,7 @@ test('route with non-english characters', (t, done) => {
 
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'GET',
@@ -83,7 +84,6 @@ test('route with non-english characters', (t, done) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.strictEqual(body.toString(), 'here /föö')
-      fastify.close()
       done()
     })
   })

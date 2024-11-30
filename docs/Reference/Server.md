@@ -378,12 +378,14 @@ The possible values this property may have are:
 ### `createRequestLogMessage`
 <a id="create-request-log-message"></a>
 
-+ Default: `false`
++ Default: `true`
 
-When logging is permitted, the user can fully customize their 
-log settings to suit their needs without relying on the default settings.  
-As a result, the user is no longer limited to the default layout.
-Please view the following example:
+When logging is permitted through the `disableRequestLogging` parameter, users can 
+implement the `createRequestLogMessage` function to customize their log management 
+system.  As a result, this setting allows users to produce a customizablelog message 
+catered to their needs without needing to use the default layout.  
+
+Example:
 
 ```js
   const customMessage = 'incoming request'

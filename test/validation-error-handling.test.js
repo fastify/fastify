@@ -54,10 +54,10 @@ test('should fail immediately with invalid payload', async (t) => {
   })
 
   t.assert.deepStrictEqual(response.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: "body must have required property 'name'"
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: "body must have required property 'name'"
   })
   t.assert.strictEqual(response.statusCode, 400)
 })
@@ -92,7 +92,7 @@ test('should be able to use setErrorHandler specify custom validation error', as
     message: 'validation failed'
   })
   t.assert.strictEqual(response.statusCode, 422)
-  })
+})
 
 test('validation error has 400 statusCode set', async (t) => {
   t.plan(2)
@@ -106,7 +106,7 @@ test('validation error has 400 statusCode set', async (t) => {
     }
 
     reply.code(errorResponse.statusCode).send(errorResponse)
-})
+  })
 
   fastify.post('/', { schema }, echoBody)
 
@@ -648,7 +648,6 @@ test('prefer route based error formatter over global one', async (t) => {
   })
   t.assert.strictEqual(response1.statusCode, 400)
 
-
   const response2 = await fastify.inject({
     method: 'POST',
     payload: {
@@ -752,7 +751,7 @@ test('plugin override', async (t) => {
     }
   }, echoBody)
 
-  const response1 =  await fastify.inject({
+  const response1 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'

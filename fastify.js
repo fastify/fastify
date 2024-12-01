@@ -119,8 +119,8 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const createRequestLogMessage = options.createRequestLogMessage ||
-  function createRequestLogMessage (customMessage) { return customMessage }
+  const createRequestLogMessage = options.createRequestLogMessage
+
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
@@ -760,9 +760,12 @@ function fastify (options) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      const customMessage = 'incoming request'
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, createRequestLogMessage(customMessage))
+        if (typeof createRequestLogMessage === 'function') {
+          childLogger.info({ req: request }, createRequestLogMessage(req, 'customMessage'))
+        } else {
+          childLogger.info({ req: request }, 'incoming request')
+        }
       }
 
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)

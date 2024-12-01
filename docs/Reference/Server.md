@@ -380,19 +380,21 @@ The possible values this property may have are:
 
 + Default: `true`
 
-When logging is permitted through the `disableRequestLogging` parameter, users can 
+When logging is enabled via `disableRequestLogging` parameter, users can 
 implement the `createRequestLogMessage` function to customize their log management 
-system.  As a result, this setting allows users to produce a customizablelog message 
-catered to their needs without needing to use the default layout.  
+system.  As a result, this setting allows users to produce a customizable log message 
+catered to their projects' needs, circumventing the default format. 
 
 Example:
 
 ```js
-  const customMessage = 'incoming request'
-
   if (disableRequestLogging === false) {
-  childLogger.info({ req: request }, createRequestLogMessage(customMessage))
-  } else { childLogger.info({ req: request }, 'incoming request') }
+        if (typeof createRequestLogMessage === 'function') {
+          childLogger.info({ req: request }, createRequestLogMessage(req, 'customMessage'))
+        } else {
+          childLogger.info({ req: request }, 'incoming request')
+        }
+      }
 ```
 
 ### `disableRequestLogging`

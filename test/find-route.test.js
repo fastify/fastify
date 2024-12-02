@@ -47,7 +47,7 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
     url: '/artists/:artistId'
   })
 
-  t.assert.deepStrictEqual(route.params.artistId, ':artistId')
+  t.assert.strictEqual(route.params.artistId, ':artistId')
 })
 
 test('findRoute should return null when when url is not passed', t => {

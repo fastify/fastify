@@ -100,7 +100,7 @@ test('findRoute should return the route when found', t => {
     method: 'GET',
     url: '/artists/:artistId'
   })
-  t.assert.deepStrictEqual(route.params.artistId, ':artistId')
+  t.assert.strictEqual(route.params.artistId, ':artistId')
 })
 
 test('findRoute should work correctly when used within plugins', (t, done) => {

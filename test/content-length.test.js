@@ -32,7 +32,7 @@ test('default 413 with bodyLimit option', async (t) => {
   })
 })
 
-test('default 400 with wrong content-length', async(t) => {
+test('default 400 with wrong content-length', async (t) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -133,7 +133,6 @@ test('custom 400 with wrong content-length', async (t) => {
     message: 'Request body size did not match Content-Length',
     statusCode: 400
   })
-  
 })
 
 test('#2214 - wrong content-length', (t) => {

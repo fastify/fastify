@@ -135,7 +135,7 @@ test('custom 400 with wrong content-length', async (t) => {
   })
 })
 
-test('#2214 - wrong content-length', (t) => {
+test('#2214 - wrong content-length', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', async () => {
@@ -146,16 +146,14 @@ test('#2214 - wrong content-length', (t) => {
     throw error
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'GET',
     path: '/'
   })
-    .then(responseponse => {
-      t.assert.strictEqual(responseponse.headers['content-length'], '' + responseponse.rawPayload.length)
-    })
+  t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
 })
 
-test('#2543 - wrong content-length with errorHandler', (t) => {
+test('#2543 - wrong content-length with errorHandler', async (t) => {
   const fastify = Fastify()
 
   fastify.setErrorHandler((_error, _request, reply) => {
@@ -170,13 +168,11 @@ test('#2543 - wrong content-length with errorHandler', (t) => {
     throw error
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'GET',
     path: '/'
   })
-    .then(response => {
-      t.assert.strictEqual(response.statusCode, 500)
-      t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
-      t.assert.deepStrictEqual(JSON.parse(response.payload), { message: 'longer than 2 bytes' })
-    })
+  t.assert.strictEqual(response.statusCode, 500)
+  t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
+  t.assert.deepStrictEqual(JSON.parse(response.payload), { message: 'longer than 2 bytes' })
 })

@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('..')
 
 test('default 413 with bodyLimit option', async (t) => {
-  t.plan(4)
+  t.plan(3)
 
   const fastify = Fastify({
     bodyLimit: 10
@@ -21,7 +21,6 @@ test('default 413 with bodyLimit option', async (t) => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   })
-  t.assert.ifError(response.err)
   t.assert.strictEqual(response.statusCode, 413)
   t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
   t.assert.deepStrictEqual(JSON.parse(response.payload), {
@@ -33,7 +32,7 @@ test('default 413 with bodyLimit option', async (t) => {
 })
 
 test('default 400 with wrong content-length', async (t) => {
-  t.plan(4)
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -51,7 +50,6 @@ test('default 400 with wrong content-length', async (t) => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   })
-  t.assert.ifError(response.err)
   t.assert.strictEqual(response.statusCode, 400)
   t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
   t.assert.deepStrictEqual(JSON.parse(response.payload), {
@@ -63,7 +61,7 @@ test('default 400 with wrong content-length', async (t) => {
 })
 
 test('custom 413 with bodyLimit option', async (t) => {
-  t.plan(4)
+  t.plan(3)
 
   const fastify = Fastify({
     bodyLimit: 10
@@ -87,7 +85,6 @@ test('custom 413 with bodyLimit option', async (t) => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   })
-  t.assert.ifError(response.err)
   t.assert.strictEqual(response.statusCode, 413)
   t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
   t.assert.deepStrictEqual(JSON.parse(response.payload), {
@@ -99,7 +96,7 @@ test('custom 413 with bodyLimit option', async (t) => {
 })
 
 test('custom 400 with wrong content-length', async (t) => {
-  t.plan(4)
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -124,7 +121,6 @@ test('custom 400 with wrong content-length', async (t) => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   })
-  t.assert.ifError(response.err)
   t.assert.strictEqual(response.statusCode, 400)
   t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
   t.assert.deepStrictEqual(JSON.parse(response.payload), {

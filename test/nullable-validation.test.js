@@ -11,7 +11,7 @@ test('nullable string', (t, done) => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.assert.deepStrictEqual(req.body.hello, null)
+      t.assert.strictEqual(req.body.hello, null)
       reply.code(200).send(req.body)
     },
     schema: {

@@ -9,16 +9,18 @@ setGlobalDispatcher(new Agent({
   keepAliveMaxTimeout: 10
 }))
 
-test('post empty body', async t => {
-  const fastify = Fastify()
-  let abortController = new AbortController()
+test('post empty body', { timeout: 3_000 }, async t => {
+  const fastify = Fastify({ forceCloseConnections: true })
+  const abortController = new AbortController()
   const { signal } = abortController
   t.after(() => {
     fastify.close()
-    abortController?.abort()
+    abortController.abort()
   })
 
-  fastify.post('/bug', async (request, reply) => {})
+  fastify.post('/bug', async () => {
+    // This function must be async and return nothing
+  })
 
   await fastify.listen({ port: 0 })
 
@@ -30,7 +32,6 @@ test('post empty body', async t => {
     body: JSON.stringify({ foo: 'bar' }),
     signal
   })
-  abortController = null
 
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(await res.body.text(), '')

@@ -212,7 +212,7 @@ test('onRequest hook should support encapsulation / 1', t => {
   })
 })
 
-test('onRequest hook should support encapsulation / 2', (t, done) => {
+test('onRequest hook should support encapsulation / 2', (t) => {
   t.plan(3)
   const fastify = Fastify()
   let pluginInstance
@@ -229,7 +229,6 @@ test('onRequest hook should support encapsulation / 2', (t, done) => {
     t.error(err)
     t.equal(fastify[symbols.kHooks].onRequest.length, 1)
     t.equal(pluginInstance[symbols.kHooks].onRequest.length, 2)
-    done()
   })
 })
 

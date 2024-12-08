@@ -7,7 +7,7 @@ const helper = require('./helper')
 
 const noop = () => {}
 
-const sgetForwardedRequest = (app, forHeader, path, protoHeader, done) => {
+const sgetForwardedRequest = (app, forHeader, path, protoHeader, testCaseDone) => {
   const headers = {
     'X-Forwarded-For': forHeader,
     'X-Forwarded-Host': 'example.com'
@@ -19,7 +19,7 @@ const sgetForwardedRequest = (app, forHeader, path, protoHeader, done) => {
     method: 'GET',
     headers,
     url: 'http://localhost:' + app.server.address().port + path
-  }, done || noop)
+  }, testCaseDone || noop)
 }
 
 const testRequestValues = (t, req, options) => {
@@ -56,6 +56,8 @@ test('trust proxy, not add properties to node req', (t, done) => {
   const app = fastify({
     trustProxy: true
   })
+  t.after(() => app.close())
+
   app.get('/trustproxy', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1', host: 'example.com', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
@@ -69,9 +71,16 @@ test('trust proxy, not add properties to node req', (t, done) => {
   app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.assert.ifError(err)
-    t.after(() => app.close())
-    sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
-    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain', undefined, done)
+
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxy', undefined, completed)
+    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain', undefined, completed)
+
+    let pending = 2
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
   })
 })
 

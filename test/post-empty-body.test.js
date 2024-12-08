@@ -24,7 +24,7 @@ test('post empty body', { timeout: 3_000 }, async t => {
 
   await fastify.listen({ port: 0 })
 
-  const res = await request(`http://127.0.0.1:${fastify.server.address().port}/bug`, {
+  const res = await request(`http://localhost:${fastify.server.address().port}/bug`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

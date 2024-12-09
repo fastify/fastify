@@ -1,7 +1,6 @@
 'use strict'
 
 const { test, after } = require('node:test')
-const assert = require('node:assert/strict')
 const Fastify = require('..')
 
 test('default 413 with bodyLimit option', async (t) => {
@@ -23,9 +22,9 @@ test('default 413 with bodyLimit option', async (t) => {
     }
   })
 
-  assert.strictEqual(res.statusCode, 413)
-  assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-  assert.deepStrictEqual(JSON.parse(res.payload), {
+  t.assert.strictEqual(res.statusCode, 413)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
     error: 'Payload Too Large',
     code: 'FST_ERR_CTP_BODY_TOO_LARGE',
     message: 'Request body is too large',
@@ -53,9 +52,9 @@ test('default 400 with wrong content-length', async (t) => {
     }
   })
 
-  assert.strictEqual(res.statusCode, 400)
-  assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-  assert.deepStrictEqual(JSON.parse(res.payload), {
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
     error: 'Bad Request',
     code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
     message: 'Request body size did not match Content-Length',
@@ -89,9 +88,9 @@ test('custom 413 with bodyLimit option', async (t) => {
     }
   })
 
-  assert.strictEqual(res.statusCode, 413)
-  assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-  assert.deepStrictEqual(JSON.parse(res.payload), {
+  t.assert.strictEqual(res.statusCode, 413)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
     error: 'Payload Too Large',
     code: 'FST_ERR_CTP_BODY_TOO_LARGE',
     message: 'Request body is too large',
@@ -125,9 +124,9 @@ test('custom 400 with wrong content-length', async (t) => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   })
-  assert.strictEqual(res.statusCode, 400)
-  assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-  assert.deepStrictEqual(JSON.parse(res.payload), {
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
     error: 'Bad Request',
     code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
     message: 'Request body size did not match Content-Length',
@@ -152,7 +151,7 @@ test('#2214 - wrong content-length', async (t) => {
     method: 'GET',
     path: '/'
   })
-  assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
+  t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
 })
 
 test('#2543 - wrong content-length with errorHandler', async (t) => {
@@ -177,7 +176,7 @@ test('#2543 - wrong content-length with errorHandler', async (t) => {
     path: '/'
   })
 
-  assert.strictEqual(res.statusCode, 500)
-  assert.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
-  assert.deepStrictEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
+  t.assert.deepStrictEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
 })

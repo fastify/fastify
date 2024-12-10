@@ -49,6 +49,7 @@ the organization efforts for each Fastify's version.
 **v1.x**|[branch 1.x](https://github.com/fastify/fastify/tree/1.x)|
 **v2.x**|[branch 2.x](https://github.com/fastify/fastify/tree/2.x)|
 **v3.x**|[branch 3.x](https://github.com/fastify/fastify/tree/3.x)|
+**v4.x**|[branch 4.x](https://github.com/fastify/fastify/tree/4.x)|
 
 ## Releases
 

@@ -1,10 +1,10 @@
-<h1 align="center">Fastify</h1>
+<h1 align="center">abduebar/fostify</h1>
 
 ## Core Documents
 <a id="reference-core-docs"></a>
 
 For the full table of contents (TOC), see [below](#reference-toc). The following
-list is a subset of the full TOC that detail core Fastify APIs and concepts in
+list is a subset of the full TOC that detail core abdujebar pro APIs and concepts in
 order of most likely importance to the reader:
 
 + [Server](./Server.md): Documents the core Fastify API. Includes documentation
@@ -18,7 +18,7 @@ order of most likely importance to the reader:
 + [Reply](./Reply.md): Details Fastify's response object available to each
   request handler.
 + [Validation and Serialization](./Validation-and-Serialization.md): Details
-  Fastify's support for validating incoming data and how Fastify serializes data
+abdujebar/fostify support for validating incoming data and how Fastify serializes data
   for responses.
 + [Plugins](./Plugins.md): Explains Fastify's plugin architecture and API.
 + [Encapsulation](./Encapsulation.md): Explains a core concept upon which all

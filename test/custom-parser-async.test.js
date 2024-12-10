@@ -1,14 +1,12 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 
 process.removeAllListeners('warning')
 
-test('contentTypeParser should add a custom async parser', t => {
-  t.plan(3)
+test('contentTypeParser should add a custom async parser', async (t) => {
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -24,43 +22,41 @@ test('contentTypeParser should add a custom async parser', t => {
     return res
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  await fastify.listen({ port: 0 })
 
-    t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
-    t.test('in POST', t => {
-      t.plan(3)
+  await t.test('in POST', async (t) => {
+    const { response, body } = await new Promise((resolve, reject) => sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      }
+    }, (err, response, body) => {
+      if (err) return reject(err)
+      resolve({ response, body })
+    }))
 
-      sget({
-        method: 'POST',
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/jsoff'
-        }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      })
-    })
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+  })
 
-    t.test('in OPTIONS', t => {
-      t.plan(3)
+  await t.test('in OPTIONS', async (t) => {
+    const { response, body } = await new Promise((resolve, reject) => sget({
+      method: 'OPTIONS',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      }
+    }, (err, response, body) => {
+      if (err)reject(err)
+      resolve({ response, body })
+    }))
 
-      sget({
-        method: 'OPTIONS',
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/jsoff'
-        }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      })
-    })
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
   })
 })

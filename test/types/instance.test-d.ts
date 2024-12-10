@@ -521,6 +521,36 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
 
+interface FastifyDecorators {
+  log(message: string): void;
+}
+
+interface RequestDecorators {
+  getUser(): { id: string; name: string };
+}
+
+interface ReplyDecorators {
+  sendFile(filename: string, rootPath?: string): FastifyReply;
+}
+const REPLY_DECORATOR_NAMES = ['sendFile']
+const REQUEST_DECORATOR_NAMES = ['getUser']
+const FASTIFY_DECORATOR_NAMES = ['log']
+
+const fastifyDecorators = server.getFastifyDecorators<FastifyDecorators>(FASTIFY_DECORATOR_NAMES)
+expectType<FastifyDecorators>(fastifyDecorators)
+const fastifyDecoratorsDefault = server.getFastifyDecorators(FASTIFY_DECORATOR_NAMES)
+expectType<Record<string, any>>(fastifyDecoratorsDefault)
+
+const requestDecorators = server.getRequestDecorators<RequestDecorators>(REQUEST_DECORATOR_NAMES)
+expectType<RequestDecorators>(requestDecorators)
+const requestDecoratorsDefault = server.getRequestDecorators(REQUEST_DECORATOR_NAMES)
+expectType<Record<string, any>>(requestDecoratorsDefault)
+
+const replyDecorators = server.getReplyDecorators<ReplyDecorators>(REPLY_DECORATOR_NAMES)
+expectType<ReplyDecorators>(replyDecorators)
+const replyDecoratorsDefault = server.getReplyDecorators(REPLY_DECORATOR_NAMES)
+expectType<Record<string, any>>(replyDecoratorsDefault)
+
 const versionConstraintStrategy = {
   name: 'version',
   storage: () => ({

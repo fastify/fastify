@@ -22,7 +22,12 @@ test('post empty body', async t => {
 
   await fastify.listen({ port: 0 })
 
-  const res = await request(`http://127.0.0.1:${fastify.server.address().port}/bug`, {
+  const addyInfo = fastify.server.address()
+  const address = addyInfo.address.startsWith(':')
+    ? `[${addyInfo.address}]`
+    : addyInfo.address
+  const port = addyInfo.port
+  const res = await request(`http://${address}:${port}/bug`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

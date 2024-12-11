@@ -152,9 +152,15 @@ test('hooks', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -164,7 +170,7 @@ test('hooks', t => {
 
     sget({
       method: 'HEAD',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -172,7 +178,7 @@ test('hooks', t => {
 
     sget({
       method: 'DELETE',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -336,9 +342,15 @@ test('preHandler hook should support encapsulation / 5', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -348,7 +360,7 @@ test('preHandler hook should support encapsulation / 5', t => {
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
+      url: `http://${address}:${port}/second`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -953,9 +965,15 @@ test('onResponse hook should support encapsulation / 3', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -965,7 +983,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
+      url: `http://${address}:${port}/second`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1030,9 +1048,15 @@ test('onSend hook should support encapsulation / 2', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1042,7 +1066,7 @@ test('onSend hook should support encapsulation / 2', t => {
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
+      url: `http://${address}:${port}/second`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1325,9 +1349,15 @@ test('onSend hook throws', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -1336,21 +1366,21 @@ test('onSend hook throws', t => {
     })
     sget({
       method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
     })
     sget({
       method: 'DELETE',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
     })
     sget({
       method: 'PUT',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: `http://${address}:${port}`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -2463,9 +2493,15 @@ test('preValidation hook should support encapsulation / 3', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2475,7 +2511,7 @@ test('preValidation hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
+      url: `http://${address}:${port}/second`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2610,9 +2646,15 @@ test('preParsing hook should run before parsing and be able to modify the payloa
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
+      url: `http://${address}:${port}/first`,
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2654,8 +2696,15 @@ test('preParsing hooks should run in the order in which they are defined', t => 
     t.teardown(() => { fastify.close() })
 
     sget({
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
+    sget({
       method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
+      url: `http://${address}:${port}/first`,
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2703,9 +2752,15 @@ test('preParsing hooks should support encapsulation', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
+      url: `http://${address}:${port}/first`,
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2717,7 +2772,7 @@ test('preParsing hooks should support encapsulation', t => {
 
     sget({
       method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second',
+      url: `http://${address}:${port}/second`,
       body: { hello: 'world' },
       json: true
     }, (err, response, body) => {
@@ -2824,9 +2879,15 @@ test('preParsing hook should support encapsulation / 3', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2836,7 +2897,7 @@ test('preParsing hook should support encapsulation / 3', t => {
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
+      url: `http://${address}:${port}/second`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2886,9 +2947,15 @@ test('preSerialization hook should run before serialization and be able to modif
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -2937,9 +3004,15 @@ test('preSerialization hook should be able to throw errors which are validated a
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -2971,9 +3044,15 @@ test('preSerialization hook which returned error should still run onError hooks'
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 500)
@@ -3005,9 +3084,15 @@ test('preSerialization hooks should run in the order in which they are defined',
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -3049,9 +3134,15 @@ test('preSerialization hooks should support encapsulation', t => {
     t.error(err)
     t.teardown(() => { fastify.close() })
 
+    const addyInfo = fastify.server.address()
+    const address = addyInfo.address.startsWith(':')
+      ? `[${addyInfo.address}]`
+      : addyInfo.address
+    const port = addyInfo.port
+
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
+      url: `http://${address}:${port}/first`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
@@ -3061,7 +3152,7 @@ test('preSerialization hooks should support encapsulation', t => {
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
+      url: `http://${address}:${port}/second`
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

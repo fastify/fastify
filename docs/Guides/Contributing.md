@@ -166,7 +166,7 @@ baseline settings that should be set before VSCode is ready.
 Press `cmd+shift+p` to bring up the VSCode command input prompt. Type `open
 settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
 options will appear in the dropdown: Workspace, Default,
-and User settings. We recommend selecting Default. This will open a document
+and User settings. Choose Workspace or User (Default is not editable by default). This will open a document
 that is the settings for the editor. Paste the following JSON into this
 document, overwriting any text already present, and save it:
 
@@ -175,7 +175,7 @@ document, overwriting any text already present, and save it:
     "[javascript]": {
         "editor.defaultFormatter": "dbaeumer.vscode-eslint",
         "editor.codeActionsOnSave": {
-            "source.fixAll": true
+            "source.fixAll": "explicit"
         }
     },
 

@@ -14,13 +14,12 @@ us.
 ## Table Of Contents
 <a id="contributing-toc"></a>
 
-- [Table Of Contents](#table-of-contents)
-- [Types Of Contributions We're Looking
-  For](#types-of-contributions-were-looking-for)
-- [Ground Rules & Expectations](#ground-rules--expectations)
-- [How To Contribute](#how-to-contribute)
-- [Setting Up Your Environment](#setting-up-your-environment)
-  - [Using Visual Studio Code](#using-visual-studio-code)
+- [Contributing To Fastify](#contributing-to-fastify)
+  - [Table Of Contents](#table-of-contents)
+  - [Types Of Contributions We're Looking For](#types-of-contributions-were-looking-for)
+  - [Ground Rules \& Expectations](#ground-rules--expectations)
+  - [How To Contribute](#how-to-contribute)
+  - [Setting Up Your Environment](#setting-up-your-environment)
 
 ## Types Of Contributions We're Looking For
 <a id="contribution-types"></a>
@@ -80,114 +79,6 @@ https://github.com/github/opensource.guide/blob/2868efbf0c14aec821909c19e210c360
 Please adhere to the project's code and documentation style. Some popular tools
 that automatically "correct" code and documentation do not follow a style that
 conforms to the styles this project uses. Notably, this project uses
-[StandardJS](https://standardjs.com) for code formatting.
+[Neostandard](https://github.com/neostandard/neostandard) for code formatting.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/fastify/fastify)
-
-### Using Visual Studio Code
-<a id="contributing-vscode"></a>
-
-What follows is how to use [Visual Studio Code (VSCode)
-portable](https://code.visualstudio.com/docs/editor/portable) to create a
-Fastify specific environment. This guide is written as if you are setting up the
-environment on macOS, but the principles are the same across all platforms. See
-the previously linked VSCode portable guide for help with other platforms.
-
-First, [download VSCode](https://code.visualstudio.com/download) and unpackage
-it to `/Applications/VSCodeFastify/`. Upon doing so, the following should output
-"found" when run in a terminal:
-
-```sh
-[ -d /Applications/VSCodeFastify/Visual\ Studio\ Code.app ] && echo "found"
-```
-
-As mentioned in the VSCode portable guide, we need to unsandbox the application
-for the portable mode to work correctly. So issue the following in a terminal:
-
-```sh
-xattr -dr com.apple.quarantine /Applications/VSCodeFastify/Visual\ Studio\ Code.app
-```
-
-Next, create the required data directories for VSCode:
-
-```sh
-mkdir -p /Applications/VSCodeFastify/code-portable-data/{user-data,extensions}
-```
-
-Before continuing, we need to add the `code` command to your terminal's `PATH`.
-To do so, we will [manually add VSCode to the
-`PATH`](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).
-As outlined in that document, the instructions vary depending on your default
-shell, so you should follow the instructions in that guide as relates to your
-preferred shell. However, we will tweak them slightly by defining an alias
-instead of a direct reference to the `code` tool. This is so we do not conflict
-with any other installation of VSCode you may have, and to keep this guide
-specific to Fastify. So, ultimately, we want the following:
-
-```sh
-alias code-fastify="/Applications/VSCodeFastify/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
-```
-
-The result should be that `code-fastify --version` results in something like:
-
-```sh
-❯ code-fastify --version
-1.50.0
-93c2f0fbf16c5a4b10e4d5f89737d9c2c25488a3
-x64
-```
-
-Now that VSCode is installed, and we can work with it via the command line, we
-need to install an extension that will aid in keeping any JavaScript you write
-for the project formatted according to the project's style:
-
-```sh
-code-fastify --install-extension dbaeumer.vscode-eslint
-```
-
-Upon successful execution of the previous command, the following command should
-result in "found" being output:
-
-```sh
-[ -d /Applications/VSCodeFastify/code-portable-data/extensions/dbaeumer.vscode-eslint-* ] && echo "found"
-```
-
-Now, from within the directory of your local clone of the Fastify project, we
-can open VSCode:
-
-```sh
-code-fastify .
-```
-
-A new VSCode window should open and you should see the Fastify project files in
-the left sidebar. But wait! We are not quite done yet. There are a few more
-baseline settings that should be set before VSCode is ready.
-
-Press `cmd+shift+p` to bring up the VSCode command input prompt. Type `open
-settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
-options will appear in the dropdown: Workspace, Default,
-and User settings. Choose Workspace or User (Default is not editable by default). This will open a document
-that is the settings for the editor. Paste the following JSON into this
-document, overwriting any text already present, and save it:
-
-```json
-{
-    "[javascript]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit"
-        }
-    },
-
-    "workbench.colorCustomizations": {
-        "statusBar.background": "#178bb9"
-    }
-}
-```
-
-Finally, from the menu bar, select "Terminal > New Terminal" to open a new terminal
-in the editor. Run `npm i` to install the Fastify dependencies.
-
-At this point, you are all setup with a custom VSCode instance that can be used
-to work on Fastify contributions. As you edit and save JavaScript files, the
-editor will autocorrect any style issues.

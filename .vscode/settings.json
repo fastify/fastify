@@ -1,0 +1,12 @@
+{
+  "[javascript]": {
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+      "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit"
+      }
+  },
+
+  "workbench.colorCustomizations": {
+      "statusBar.background": "#178bb9"
+  }
+}

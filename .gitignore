@@ -142,7 +142,7 @@ pnpm-lock.yaml
 yarn.lock
 
 # editor files
-.vscode
+# .vscode
 .idea
 
 # tap files

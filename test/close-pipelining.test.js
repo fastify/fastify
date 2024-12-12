@@ -9,7 +9,6 @@ test('Should return 503 while closing - pipelining', async t => {
     return503OnClosing: true,
     forceCloseConnections: false
   })
-  t.teardown(() => fastify.close())
 
   fastify.get('/', async (req, reply) => {
     fastify.close()
@@ -29,8 +28,9 @@ test('Should return 503 while closing - pipelining', async t => {
     instance.request({ path: '/', method: 'GET' })
   ])
   const actual = responses.map(r => r.statusCode)
-
   t.assert.deepStrictEqual(actual, codes)
+
+  await instance.close()
 })
 
 test('Should close the socket abruptly - pipelining - return503OnClosing: false', async t => {

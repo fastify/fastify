@@ -279,13 +279,13 @@ test('within an instance', async t => {
     done()
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   await t.test('custom serializer should be used', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/custom-serializer'
+      url: address + '/custom-serializer'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/plain')
@@ -298,7 +298,7 @@ test('within an instance', async t => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
@@ -312,7 +312,7 @@ test('within an instance', async t => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/auto-status-code'
+      url: address + '/auto-status-code'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
@@ -325,7 +325,7 @@ test('within an instance', async t => {
     t.plan(3)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/auto-type'
+      url: address + '/auto-type'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/plain')
@@ -337,7 +337,7 @@ test('within an instance', async t => {
   await t.test('redirect to `/` - 1', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect', function (response) {
+    http.get(address + '/redirect', function (response) {
       t.assert.strictEqual(response.statusCode, 302)
       done()
     })
@@ -346,7 +346,7 @@ test('within an instance', async t => {
   await t.test('redirect to `/` - 2', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code', function (response) {
+    http.get(address + '/redirect-code', function (response) {
       t.assert.strictEqual(response.statusCode, 301)
       done()
     })
@@ -356,7 +356,7 @@ test('within an instance', async t => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect'
+      url: address + '/redirect'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
@@ -370,7 +370,7 @@ test('within an instance', async t => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-code'
+      url: address + '/redirect-code'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
@@ -382,7 +382,7 @@ test('within an instance', async t => {
 
   await t.test('redirect to `/` - 5', (t, done) => {
     t.plan(3)
-    const url = 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-onsend'
+    const url = address + '/redirect-onsend'
     http.get(url, (response) => {
       t.assert.strictEqual(response.headers['x-onsend'], 'yes')
       t.assert.strictEqual(response.headers['content-length'], '0')
@@ -395,7 +395,7 @@ test('within an instance', async t => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call'
+      url: address + '/redirect-code-before-call'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
@@ -409,7 +409,7 @@ test('within an instance', async t => {
     t.plan(4)
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call-overwrite'
+      url: address + '/redirect-code-before-call-overwrite'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
@@ -422,7 +422,7 @@ test('within an instance', async t => {
   await t.test('redirect to `/` - 8', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call', function (response) {
+    http.get(address + '/redirect-code-before-call', function (response) {
       t.assert.strictEqual(response.statusCode, 307)
       done()
     })
@@ -431,7 +431,7 @@ test('within an instance', async t => {
   await t.test('redirect to `/` - 9', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
+    http.get(address + '/redirect-code-before-call-overwrite', function (response) {
       t.assert.strictEqual(response.statusCode, 302)
       done()
     })
@@ -440,7 +440,7 @@ test('within an instance', async t => {
   await t.test('redirect with async function to `/` - 10', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-async', function (response) {
+    http.get(address + '/redirect-async', function (response) {
       t.assert.strictEqual(response.statusCode, 302)
       done()
     })
@@ -456,13 +456,13 @@ test('buffer without content type should send a application/octet-stream and raw
     reply.send(Buffer.alloc(1024))
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'application/octet-stream')
@@ -555,13 +555,13 @@ test('buffer with content type should not send application/octet-stream', (t, do
     reply.send(Buffer.alloc(1024))
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/plain')
@@ -584,12 +584,12 @@ test('stream with content type should not send application/octet-stream', (t, do
     reply.header('Content-Type', 'text/plain').send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/plain')
@@ -611,12 +611,12 @@ test('stream without content type should not send application/octet-stream', (t,
     reply.send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], undefined)
@@ -647,12 +647,12 @@ test('stream using reply.raw.writeHead should return customize headers', (t, don
     reply.send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers.location, '/')
@@ -672,13 +672,13 @@ test('plain string without content type should send a text/plain', (t, done) => 
     reply.send('hello world!')
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
@@ -697,13 +697,13 @@ test('plain string with content type should be sent unmodified', (t, done) => {
     reply.type('text/css').send('hello world!')
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/css')
@@ -725,13 +725,13 @@ test('plain string with content type and custom serializer should be serialized'
       .send('hello world!')
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'text/css')
@@ -750,13 +750,13 @@ test('plain string with content type application/json should NOT be serialized a
     reply.type('application/json').send('{"key": "hello world!"}')
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
@@ -806,13 +806,13 @@ test('plain string with custom json content type should NOT be serialized as jso
     })
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   await Promise.all(Object.keys(customSamples).map(path => {
     return new Promise((resolve, reject) => {
       sget({
         method: 'GET',
-        url: 'http://127.0.0.1:' + fastify.server.address().port + '/' + path
+        url: address + '/' + path
       }, (err, response, body) => {
         if (err) {
           reject(err)
@@ -834,13 +834,13 @@ test('non-string with content type application/json SHOULD be serialized as json
     reply.type('application/json').send({ key: 'hello world!' })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
@@ -859,13 +859,13 @@ test('non-string with custom json\'s content-type SHOULD be serialized as json',
     reply.type('application/json; version=2; ').send({ key: 'hello world!' })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], 'application/json; version=2; charset=utf-8')
@@ -910,13 +910,13 @@ test('non-string with custom json content type SHOULD be serialized as json', as
     })
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   await Promise.all(Object.keys(customSamples).map(path => {
     return new Promise((resolve, reject) => {
       sget({
         method: 'GET',
-        url: 'http://127.0.0.1:' + fastify.server.address().port + '/' + path
+        url: address + '/' + path
       }, (err, response, body) => {
         if (err) {
           reject(err)
@@ -977,13 +977,13 @@ test('undefined payload should be sent as-is', (t, done) => {
     reply.code(204).send()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: `http://127.0.0.1:${fastify.server.address().port}`
+      url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.headers['content-type'], undefined)
@@ -1024,12 +1024,12 @@ test('for HEAD method, no body should be sent but content-length should be', asy
     reply.code(200).send(null)
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   const promise1 = new Promise((resolve, reject) => {
     sget({
       method: 'HEAD',
-      url: `http://127.0.0.1:${fastify.server.address().port}`
+      url: address
     }, (err, response, body) => {
       if (err) {
         reject(err)
@@ -1044,7 +1044,7 @@ test('for HEAD method, no body should be sent but content-length should be', asy
   const promise2 = new Promise((resolve, reject) => {
     sget({
       method: 'HEAD',
-      url: `http://127.0.0.1:${fastify.server.address().port}/with/null`
+      url: `${address}/with/null`
     }, (err, response, body) => {
       if (err) {
         reject(err)
@@ -1081,12 +1081,12 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', async t => 
     done()
   }, { prefix: '/prefixed' })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   const promise1 = new Promise((resolve, reject) => {
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/not-found'
+      url: address + '/not-found'
     }, (err, response, body) => {
       if (err) {
         reject(err)
@@ -1105,7 +1105,7 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', async t => 
   const promise2 = new Promise((resolve, reject) => {
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/prefixed/not-found'
+      url: address + '/prefixed/not-found'
     }, (err, response, body) => {
       if (err) {
         reject(err)
@@ -1136,13 +1136,13 @@ test('reply can set multiple instances of same header', (t, done) => {
       .send({})
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.ok(response.headers['set-cookie'])
@@ -1164,12 +1164,12 @@ test('reply.hasHeader returns correct values', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, () => {
       done()
     })
@@ -1198,12 +1198,12 @@ test('reply.getHeader returns correct values', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, () => {
       done()
     })
@@ -1271,12 +1271,12 @@ test('reply.removeHeader can remove the value', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, () => {
       done()
     })
@@ -1298,12 +1298,12 @@ test('reply.header can reset the value', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, () => {
       done()
     })
@@ -1327,12 +1327,12 @@ test('reply.hasHeader computes raw and fastify headers', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, () => {
       done()
     })
@@ -1499,12 +1499,12 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', asy
       .send({})
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   await new Promise((resolve, reject) => {
     sget({
       method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
+      url: address + '/headers'
     }, (err, response, body) => {
       if (err) {
         reject(err)
@@ -1937,10 +1937,10 @@ test('redirect to an invalid URL should not crash the server', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
   {
-    const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=1`)
+    const { response, body } = await doGet(`${address}/redirect?useCase=1`)
     t.assert.strictEqual(response.statusCode, 500)
     t.assert.deepStrictEqual(JSON.parse(body), {
       statusCode: 500,
@@ -1950,13 +1950,13 @@ test('redirect to an invalid URL should not crash the server', async t => {
     })
   }
   {
-    const { response } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=2`)
+    const { response } = await doGet(`${address}/redirect?useCase=2`)
     t.assert.strictEqual(response.statusCode, 302)
     t.assert.strictEqual(response.headers.location, '/?key=a%E2%80%99b')
   }
 
   {
-    const { response } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=3`)
+    const { response } = await doGet(`${address}/redirect?useCase=3`)
     t.assert.strictEqual(response.statusCode, 302)
     t.assert.strictEqual(response.headers.location, '/?key=ab')
   }
@@ -1983,9 +1983,9 @@ test('invalid response headers should not crash the server', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
-  const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
+  const { response, body } = await doGet(`${address}/bad-headers`)
   t.assert.strictEqual(response.statusCode, 500)
   t.assert.deepStrictEqual(JSON.parse(body), {
     statusCode: 500,
@@ -2012,9 +2012,9 @@ test('invalid response headers when sending back an error', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
-  const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
+  const { response, body } = await doGet(`${address}/bad-headers`)
   t.assert.strictEqual(response.statusCode, 500)
   t.assert.deepStrictEqual(JSON.parse(body), {
     statusCode: 500,
@@ -2046,9 +2046,9 @@ test('invalid response headers and custom error handler', async t => {
     reply.status(500).send({ ops: true })
   })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
-  const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
+  const { response, body } = await doGet(`${address}/bad-headers`)
   t.assert.strictEqual(response.statusCode, 500)
   t.assert.deepStrictEqual(JSON.parse(body), {
     statusCode: 500,

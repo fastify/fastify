@@ -18,16 +18,11 @@ test('post empty body', async t => {
     abortController.abort()
   })
 
-  fastify.post('/bug', async (request, reply) => {})
+  fastify.post('/bug', async (request, reply) => { })
 
-  await fastify.listen({ port: 0 })
+  const address = await fastify.listen({ port: 0 })
 
-  const addyInfo = fastify.server.address()
-  const address = addyInfo.address.startsWith(':')
-    ? `[${addyInfo.address}]`
-    : addyInfo.address
-  const port = addyInfo.port
-  const res = await request(`http://${address}:${port}/bug`, {
+  const res = await request(`${address}/bug`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

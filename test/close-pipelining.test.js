@@ -28,7 +28,6 @@ test('Should return 503 while closing - pipelining', async t => {
     instance.request({ path: '/', method: 'GET' })
   ])
   const actual = responses.map(r => r.statusCode)
-
   t.assert.deepStrictEqual(actual, codes)
 
   await instance.close()

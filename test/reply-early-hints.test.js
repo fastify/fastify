@@ -2,8 +2,8 @@
 
 const Fastify = require('..')
 const { test } = require('node:test')
-const http = require('http')
-const http2 = require('http2')
+const http = require('node:http')
+const http2 = require('node:http2')
 
 const testResBody = 'Hello, world!'
 

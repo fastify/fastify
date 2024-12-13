@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { Readable } = require('stream')
+const { Readable } = require('node:stream')
 const Fastify = require('..')
 
 test('code should handle null/undefined/float', (t, done) => {

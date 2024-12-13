@@ -1,6 +1,6 @@
 'use strict'
 
-const os = require('os')
+const os = require('node:os')
 const forge = require('node-forge')
 
 // from self-cert module

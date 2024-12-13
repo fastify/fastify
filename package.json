@@ -167,7 +167,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^4.5.1",
+    "fastify-plugin": "^5.0.0",
     "fluent-json-schema": "^5.0.0",
     "h2url": "^0.2.0",
     "http-errors": "^2.0.0",

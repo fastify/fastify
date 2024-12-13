@@ -8,7 +8,7 @@ import fastify, {
   SafePromiseLike
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders } from 'node:http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
 

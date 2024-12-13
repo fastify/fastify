@@ -1,5 +1,5 @@
 import { FastifyError } from '@fastify/error'
-import * as http from 'http'
+import * as http from 'node:http'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
 import { RequestPayload } from '../../types/hooks'

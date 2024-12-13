@@ -23,10 +23,13 @@ Request is a core Fastify object containing the following fields:
 - `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
-  exists. When you use `requireHostHeader = false` in the server options, it
-  will fallback as empty when the host header is missing.
-- `hostname` - the host of the incoming request without the port
-- `port` - the port that the server is listening on
+  exists. The host header may return empty string when using
+  `requireHostHeader = false`, not suppied when connected with `HTTP/1.0` or
+  using schema validation that remove the extra headers.
+- `hostname` - the host of the `host` property, it may refers the incoming
+  request hostname
+- `port` - the port of the `host` property, it may refers the port thats
+  the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
@@ -84,6 +87,9 @@ request's headers with the `request.raw.headers` property.
 
 > Note: For performance reason on `not found` route, you may see that we will
 add an extra property `Symbol('fastify.RequestAcceptVersion')` on the headers.
+
+> Note: When using schema, it may mutate the `request.headers` and
+`request.raw.headers` object. So, you may found the headers becomes empty.
 
 ```js
 fastify.post('/:params', options, function (request, reply) {

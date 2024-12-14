@@ -106,13 +106,8 @@ generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
 
 To install Fastify in an existing project as a dependency:
 
-Install with npm:
 ```sh
 npm i fastify
-```
-Install with yarn:
-```sh
-yarn add fastify
 ```
 
 ### Example

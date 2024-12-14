@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: 22.11
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true
@@ -23,18 +23,6 @@ jobs:
       - name: Install
         run: |
           npm install --ignore-scripts
-
-      # We do not check coverage requirements here because the goal is to
-      # generate a report to upload as an artifact.
-      - name: Generate coverage report
-        run: |
-          npm run coverage:ci
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ success() }}
-        with:
-          name: coverage-report-win
-          path: ./.tap/report/
 
       # Here, we verify the coverage thresholds so that this workflow can pass
       # or fail and stop further workflows if this one fails.

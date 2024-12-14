@@ -292,14 +292,17 @@ listed in alphabetical order.
 ### Fastify Core team
 * [__Aras Abbasi__](https://github.com/uzlopak),
   <https://www.npmjs.com/~uzlopak>
-* [__Carlos Fuentes__](https://github.com/metcoder95),
-  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
-* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
-  <https://www.npmjs.com/~gurgunday>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
-* [__James Sumners__](https://github.com/jsumners),
-  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+* [__Matteo Collina__](https://github.com/mcollina),
+  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
+* [__Tomas Della Vedova__](https://github.com/delvedor),
+  <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
+* [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),
@@ -308,35 +311,32 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
-* [__Matteo Collina__](https://github.com/mcollina),
-  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
-* [__Tomas Della Vedova__](https://github.com/delvedor),
-  <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
-* [__Vincent Le Goff__](https://github.com/zekth)
+* [__James Sumners__](https://github.com/jsumners),
+  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ### Fastify Plugins team
-* [__Carlos Fuentes__](https://github.com/metcoder95),
-  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
-* [__Dan Castillo__](https://github.com/dancastillo),
-  <https://www.npmjs.com/~dancastillo>
-* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
-* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
-  <https://www.npmjs.com/~gurgunday>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
-* [__Jean Michelet__](https://github.com/jean-michelet),
-  <https://www.npmjs.com/~jean-michelet>
-* [__Maksim Sinik__](https://github.com/fox1t),
-  <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
-* [__Manuel Spigolon__](https://github.com/eomm),
-  <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
-* [__Matteo Collina__](https://github.com/mcollina),
-  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Simone Busoli__](https://github.com/simoneb),
   <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
+* [__Matteo Collina__](https://github.com/mcollina),
+  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Dan Castillo__](https://github.com/dancastillo),
+  <https://www.npmjs.com/~dancastillo>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Carlos Fuentes__](https://github.com/metcoder95),
+  <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Vincent Le Goff__](https://github.com/zekth)
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
+* [__Manuel Spigolon__](https://github.com/eomm),
+  <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+* [__Maksim Sinik__](https://github.com/fox1t),
+  <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
+* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 
 ### Emeritus Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited

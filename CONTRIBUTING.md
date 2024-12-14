@@ -97,8 +97,8 @@ the following tasks:
    [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) that adds
    your name, username, and email to the team you have chosen in the
    [README.md](./README.md) and [package.json](./package.json) *(if you are part
-   of the core team)* files. The members lists are sorted alphabetically by last name;
-   make sure to add your name in the proper order.
+   of the core team)* files. The members lists are sorted alphabetically by last
+   name; make sure to add your name in the proper order.
 4. Open a pull request to
    [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) adding
    yourself to the

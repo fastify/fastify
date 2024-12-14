@@ -1,6 +1,6 @@
-import * as http from 'http'
-import * as http2 from 'http2'
-import * as https from 'https'
+import * as http from 'node:http'
+import * as http2 from 'node:http2'
+import * as https from 'node:https'
 
 type AutocompletePrimitiveBaseType<T> =
   T extends string ? string :

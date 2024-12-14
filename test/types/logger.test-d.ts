@@ -7,8 +7,8 @@ import fastify, {
   FastifyReply,
   FastifyBaseLogger
 } from '../../fastify'
-import { Server, IncomingMessage, ServerResponse } from 'http'
-import * as fs from 'fs'
+import { Server, IncomingMessage, ServerResponse } from 'node:http'
+import * as fs from 'node:fs'
 import P from 'pino'
 import { ResSerializerReply } from '../../types/logger'
 

@@ -1,8 +1,8 @@
 import { ErrorObject as AjvErrorObject } from 'ajv'
-import * as http from 'http'
-import * as http2 from 'http2'
-import * as https from 'https'
-import { Socket } from 'net'
+import * as http from 'node:http'
+import * as http2 from 'node:http2'
+import * as https from 'node:https'
+import { Socket } from 'node:net'
 import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   ConnectionError,

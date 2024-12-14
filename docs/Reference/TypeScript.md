@@ -873,8 +873,8 @@ a more detailed http server walkthrough.
 
 1. Create the following imports from `@types/node` and `fastify`
    ```typescript
-   import fs from 'fs'
-   import path from 'path'
+   import fs from 'node:fs'
+   import path from 'node:path'
    import fastify from 'fastify'
    ```
 2. Perform the following steps before setting up a Fastify HTTPS server
@@ -935,7 +935,7 @@ specified at server instantiation, the custom type becomes available on all
 further instances of the custom type.
 ```typescript
 import fastify from 'fastify'
-import http from 'http'
+import http from 'node:http'
 
 interface customRequest extends http.IncomingMessage {
   mySpecialProp: string
@@ -1123,8 +1123,8 @@ returns `http.IncomingMessage`, otherwise, it returns
 `http2.Http2ServerRequest`.
 
 ```typescript
-import http from 'http'
-import http2 from 'http2'
+import http from 'node:http'
+import http2 from 'node:http2'
 import { RawRequestDefaultExpression } from 'fastify'
 
 RawRequestDefaultExpression<http.Server> // -> http.IncomingMessage
@@ -1183,8 +1183,8 @@ returns `http.ServerResponse`, otherwise, it returns
 `http2.Http2ServerResponse`.
 
 ```typescript
-import http from 'http'
-import http2 from 'http2'
+import http from 'node:http'
+import http2 from 'node:http2'
 import { RawReplyDefaultExpression } from 'fastify'
 
 RawReplyDefaultExpression<http.Server> // -> http.ServerResponse

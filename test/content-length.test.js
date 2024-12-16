@@ -3,9 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('default 413 with bodyLimit option', async (t) => {
-  t.plan(3)
-
+test('default 413 with bodyLimit option', async t => {
   const fastify = Fastify({
     bodyLimit: 10
   })
@@ -14,55 +12,60 @@ test('default 413 with bodyLimit option', async (t) => {
     reply.send({ hello: 'world' })
   })
 
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
-  })
-  t.assert.strictEqual(response.statusCode, 413)
-  t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-  t.assert.deepStrictEqual(JSON.parse(response.payload), {
-    error: 'Payload Too Large',
-    code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-    message: 'Request body is too large',
-    statusCode: 413
-  })
+  try {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
+    })
+
+    t.assert.strictEqual(res.statusCode, 413)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+      error: 'Payload Too Large',
+      code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+      message: 'Request body is too large',
+      statusCode: 413
+    })
+  } catch (err) {
+    t.assert.ifError(err)
+  }
 })
 
-test('default 400 with wrong content-length', async (t) => {
-  t.plan(3)
-
+test('default 400 with wrong content-length', async t => {
   const fastify = Fastify()
 
   fastify.post('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'content-length': 20
-    },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
-  })
-  t.assert.strictEqual(response.statusCode, 400)
-  t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-  t.assert.deepStrictEqual(JSON.parse(response.payload), {
-    error: 'Bad Request',
-    code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
-    message: 'Request body size did not match Content-Length',
-    statusCode: 400
-  })
+  try {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: {
+        'content-length': 20
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
+      message: 'Request body size did not match Content-Length',
+      statusCode: 400
+    })
+  } catch (err) {
+    t.assert.ifError(err)
+  }
 })
 
-test('custom 413 with bodyLimit option', async (t) => {
-  t.plan(3)
-
+test('custom 413 with bodyLimit option', async t => {
   const fastify = Fastify({
     bodyLimit: 10
   })
@@ -78,26 +81,28 @@ test('custom 413 with bodyLimit option', async (t) => {
       .send(err)
   })
 
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
-  })
-  t.assert.strictEqual(response.statusCode, 413)
-  t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-  t.assert.deepStrictEqual(JSON.parse(response.payload), {
-    error: 'Payload Too Large',
-    code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-    message: 'Request body is too large',
-    statusCode: 413
-  })
+  try {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 413)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+      error: 'Payload Too Large',
+      code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+      message: 'Request body is too large',
+      statusCode: 413
+    })
+  } catch (err) {
+    t.assert.ifError(err)
+  }
 })
 
-test('custom 400 with wrong content-length', async (t) => {
-  t.plan(3)
-
+test('custom 400 with wrong content-length', async t => {
   const fastify = Fastify()
 
   fastify.post('/', function (req, reply) {
@@ -111,27 +116,31 @@ test('custom 400 with wrong content-length', async (t) => {
       .send(err)
   })
 
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'content-length': 20
-    },
-    body: {
-      text: '12345678901234567890123456789012345678901234567890'
-    }
-  })
-  t.assert.strictEqual(response.statusCode, 400)
-  t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-  t.assert.deepStrictEqual(JSON.parse(response.payload), {
-    error: 'Bad Request',
-    code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
-    message: 'Request body size did not match Content-Length',
-    statusCode: 400
-  })
+  try {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: {
+        'content-length': 20
+      },
+      body: {
+        text: '12345678901234567890123456789012345678901234567890'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
+      message: 'Request body size did not match Content-Length',
+      statusCode: 400
+    })
+  } catch (err) {
+    t.assert.ifError(err)
+  }
 })
 
-test('#2214 - wrong content-length', async (t) => {
+test('#2214 - wrong content-length', async t => {
   const fastify = Fastify()
 
   fastify.get('/', async () => {
@@ -142,14 +151,18 @@ test('#2214 - wrong content-length', async (t) => {
     throw error
   })
 
-  const response = await fastify.inject({
-    method: 'GET',
-    path: '/'
+  await new Promise((resolve, reject) => {
+    fastify.inject({
+      method: 'GET',
+      path: '/'
+    }).then((response) => {
+      t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
+      resolve()
+    }).catch((err) => reject(err))
   })
-  t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
 })
 
-test('#2543 - wrong content-length with errorHandler', async (t) => {
+test('#2543 - wrong content-length with errorHandler', async t => {
   const fastify = Fastify()
 
   fastify.setErrorHandler((_error, _request, reply) => {
@@ -164,11 +177,15 @@ test('#2543 - wrong content-length with errorHandler', async (t) => {
     throw error
   })
 
-  const response = await fastify.inject({
-    method: 'GET',
-    path: '/'
+  await new Promise((resolve, reject) => {
+    fastify.inject({
+      method: 'GET',
+      path: '/'
+    }).then((res) => {
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
+      resolve()
+    }).catch((err) => reject(err))
   })
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
-  t.assert.deepStrictEqual(JSON.parse(response.payload), { message: 'longer than 2 bytes' })
 })

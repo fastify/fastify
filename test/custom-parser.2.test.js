@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const sget = require('simple-get').concat
-const Fastify = require('../fastify')
+const Fastify = require('..')
 const { getServerUrl } = require('./helper')
 
 process.removeAllListeners('warning')

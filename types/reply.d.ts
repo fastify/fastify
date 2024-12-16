@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer'
+import { Buffer } from 'node:buffer'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest, RequestRouteOptions } from './request'

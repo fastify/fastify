@@ -11,7 +11,7 @@
  */
 
 import fastify, { FastifyInstance, RouteShorthandOptions } from '../fastify'
-import { Server, IncomingMessage, ServerResponse } from 'http'
+import { Server, IncomingMessage, ServerResponse } from 'node:http'
 
 // Create an http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.

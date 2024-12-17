@@ -3,6 +3,7 @@
 const stream = require('node:stream')
 const os = require('node:os')
 const fs = require('node:fs')
+const path = require('node:path')
 
 const t = require('tap')
 const split = require('split2')
@@ -21,7 +22,7 @@ t.test('logger instantiation', (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(11)
+  t.plan(12)
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
   })
@@ -321,6 +322,57 @@ t.test('logger instantiation', (t) => {
       t.match(line, lines.shift())
       if (lines.length === 0) break
     }
+  })
+
+  t.test('should log custom attribute keys', async (t) => {
+    t.plan(5)
+    const logFilePath = path.join(__dirname, 'logs.txt')
+
+    const fastify = Fastify({
+      logger: {
+        level: 'info',
+        file: logFilePath,
+        customAttributeKeys: {
+          req: 'customReq',
+          res: 'customRes',
+          err: 'customErr',
+        },
+      },
+    })
+
+    t.teardown(fastify.close.bind(fastify))
+    t.teardown(() => {
+      if (fs.existsSync(logFilePath)) {
+        fs.unlinkSync(logFilePath)
+      }
+    })
+
+    fastify.get('/test', (req, reply) => {
+      req.log.info('Logging with custom keys')
+      reply.send(new Error('kaboom'))
+    })
+
+    await fastify.ready()
+    await fastify.listen({ port: 0, host: localhost })
+    await request(`http://${localhostForURL}:` + fastify.server.address().port + '/test')
+
+    // Flush the logger to ensure logs are written
+    await new Promise((resolve) => {
+      const loggerStream = fastify.log[streamSym]
+      if (loggerStream && typeof loggerStream.flush === 'function') {
+        loggerStream.flush(resolve)
+      } else {
+        resolve()
+      }
+    })
+
+    t.ok(fs.existsSync(logFilePath), 'Log file should exist')
+
+    const logFileContent = fs.readFileSync(logFilePath, 'utf8')
+    t.ok(logFileContent.includes('Logging with custom keys'), 'Log file should contain the log message')
+    t.ok(logFileContent.includes('"customReq"'), 'Log file should contain customReq attribute')
+    t.ok(logFileContent.includes('"customRes"'), 'Log file should contain customRes attribute')
+    t.ok(logFileContent.includes('"customErr"'), 'Log file should contain customRes attribute')
   })
 
   t.test('should throw in case the external logger provided does not have a child method', async (t) => {

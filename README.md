@@ -334,9 +334,9 @@ listed in alphabetical order.
   <https://www.npmjs.com/~jean-michelet>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
+* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
-* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 
 ### Emeritus Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -360,14 +360,14 @@ active contributors group.
   <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
+* [__Trivikram Kamat__](https://github.com/trivikr),
+  <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
 * [__Ayoub El Khattabi__](https://github.com/AyoubElk),
   <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Cemre Mengu__](https://github.com/cemremengu),
   <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Salman Mitha__](https://github.com/salmanm),
   <https://www.npmjs.com/~salmanm>
-* [__Trivikram Kamat__](https://github.com/trivikr),
-  <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
 * [__Nathan Woltman__](https://github.com/nwoltman),
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 

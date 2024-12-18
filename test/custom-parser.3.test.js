@@ -38,7 +38,7 @@ test('should be able to use default parser for extra content type', (t, done) =>
   })
 })
 
-test('contentTypeParser should add a custom parser with RegExp value', (t) => {
+test('contentTypeParser should add a custom parser with RegExp value', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -56,10 +56,10 @@ test('contentTypeParser should add a custom parser with RegExp value', (t) => {
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, async err => {
     t.assert.ifError(err)
 
-    t.test('in POST', (t) => {
+    await t.test('in POST', (t) => {
       t.plan(3)
       t.after(() => fastify.close())
 
@@ -77,7 +77,7 @@ test('contentTypeParser should add a custom parser with RegExp value', (t) => {
       })
     })
 
-    t.test('in OPTIONS', (t) => {
+    await t.test('in OPTIONS', (t) => {
       t.plan(3)
       t.after(() => fastify.close())
 

@@ -1,5 +1,6 @@
 'use strict'
 
+const { ifError } = require('node:assert')
 const t = require('node:test')
 const test = t.test
 const sget = require('simple-get').concat
@@ -160,7 +161,7 @@ test('body - delete', t => {
 })
 
 fastify.listen({ port: 0 }, err => {
-  t.assert.error(err)
+  ifError(err)
   t.after(() => { fastify.close() })
 
   test('shorthand - request delete', (t, done) => {

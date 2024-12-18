@@ -59,7 +59,7 @@ test('contentTypeParser should add a custom parser with RegExp value', async (t)
   fastify.listen({ port: 0 }, async err => {
     t.assert.ifError(err)
 
-    await t.test('in POST', (t) => {
+    await t.test('in POST', (t, done) => {
       t.plan(3)
       t.after(() => fastify.close())
 
@@ -74,10 +74,11 @@ test('contentTypeParser should add a custom parser with RegExp value', async (t)
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        done()
       })
     })
 
-    await t.test('in OPTIONS', (t) => {
+    await t.test('in OPTIONS', (t, done) => {
       t.plan(3)
       t.after(() => fastify.close())
 
@@ -92,6 +93,7 @@ test('contentTypeParser should add a custom parser with RegExp value', async (t)
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        done()
       })
     })
   })

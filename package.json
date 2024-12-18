@@ -131,6 +131,11 @@
     {
       "name": "Aras Abbasi",
       "email": "aras.abbasi@gmail.com"
+    },
+    {
+      "name": "Frazer Smith",
+      "email": "frazer.dev@icloud.com",
+      "url": "https://github.com/fdawgs"
     }
   ],
   "license": "MIT",

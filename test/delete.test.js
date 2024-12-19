@@ -171,9 +171,9 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
-      t.assert.equal(response.headers['content-length'], '' + body.length)
-      t.assert.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
       done()
     })
   })
@@ -185,9 +185,9 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
-      t.assert.equal(response.headers['content-length'], '' + body.length)
-      t.assert.deepEqual(JSON.parse(body), { foo: 'world', test: 123 })
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { foo: 'world', test: 123 })
       done()
     })
   })
@@ -199,8 +199,8 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 400)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(body), {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'params/test must be integer',
@@ -220,9 +220,9 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
-      t.assert.equal(response.headers['content-length'], '' + body.length)
-      t.assert.equal(JSON.parse(body)['x-test'], 1)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.strictEqual(JSON.parse(body)['x-test'], 1)
       done()
     })
   })
@@ -237,8 +237,8 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 400)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(body), {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'headers/x-test must be number',
@@ -255,9 +255,9 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
-      t.assert.equal(response.headers['content-length'], '' + body.length)
-      t.assert.deepEqual(JSON.parse(body), { hello: 123 })
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 123 })
       done()
     })
   })
@@ -269,8 +269,8 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 400)
-      t.assert.deepEqual(JSON.parse(body), {
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(body), {
         error: 'Bad Request',
         code: 'FST_ERR_VALIDATION',
         message: 'querystring/hello must be integer',
@@ -287,9 +287,9 @@ fastify.listen({ port: 0 }, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
-      t.assert.equal(response.headers['content-length'], '' + body.length)
-      t.assert.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
       done()
     })
   })
@@ -305,8 +305,8 @@ fastify.listen({ port: 0 }, err => {
       json: true
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.equal(response.statusCode, 200)
-      t.assert.deepEqual(body, { hello: 'world' })
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(body, { hello: 'world' })
       done()
     })
   })
@@ -316,7 +316,7 @@ test('shorthand - delete with application/json Content-Type header and null body
   t.plan(4)
   const fastify = require('..')()
   fastify.delete('/', {}, (req, reply) => {
-    t.assert.equal(req.body, null)
+    t.assert.strictEqual(req.body, null)
     reply.send(req.body)
   })
   fastify.inject({
@@ -326,8 +326,8 @@ test('shorthand - delete with application/json Content-Type header and null body
     body: 'null'
   }, (err, response) => {
     t.assert.ifError(err)
-    t.assert.equal(response.statusCode, 200)
-    t.assert.equal(response.payload.toString(), 'null')
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.payload.toString(), 'null')
     done()
   })
 })
@@ -338,7 +338,7 @@ test('shorthand - delete with application/json Content-Type header and without b
   t.plan(4)
   const fastify = require('..')()
   fastify.delete('/', {}, (req, reply) => {
-    t.assert.equal(req.body, undefined)
+    t.assert.strictEqual(req.body, undefined)
     reply.send(req.body)
   })
   fastify.inject({
@@ -348,7 +348,7 @@ test('shorthand - delete with application/json Content-Type header and without b
     body: null
   }, (err, response) => {
     t.assert.ifError(err)
-    t.assert.equal(response.statusCode, 200)
-    t.assert.equal(response.payload.toString(), '')
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.payload.toString(), '')
   })
 })

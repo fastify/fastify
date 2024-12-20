@@ -47,7 +47,6 @@ test('should respond with a stream (error)', (t, done) => {
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 500)
-      fastify.close()
       done()
     })
   })
@@ -107,5 +106,4 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
       done()
     })
   })
-  t.after(() => fastify.close())
 })

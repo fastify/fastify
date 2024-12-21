@@ -10,22 +10,22 @@
     "benchmark": "concurrently -k -s first \"node ./examples/benchmark/simple.js\" \"autocannon -c 100 -d 30 -p 10 localhost:3000/\"",
     "benchmark:parser": "concurrently -k -s first \"node ./examples/benchmark/parser.js\" \"autocannon -c 100 -d 30 -p 10 -i ./examples/benchmark/body.json -H \"content-type:application/jsoff\" -m POST localhost:3000/\"",
     "build:validation": "node build/build-error-serializer.js && node build/build-validation.js",
-    "coverage": "c8 --reporter html borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --lines 100 ",
-    "coverage:ci-check-coverage": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --lines 100",
+    "coverage": "c8 --reporter html borp --reporter=@jsumners/line-reporter --coverage --check-coverage --lines 100 ",
+    "coverage:ci-check-coverage": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage --lines 100",
     "lint": "npm run lint:eslint",
     "lint:fix": "eslint --fix",
     "lint:markdown": "markdownlint-cli2",
     "lint:eslint": "eslint",
-    "prepublishOnly": "cross-env PREPUBLISH=true borp --reporter=./test/test-reporter.mjs && npm run test:validator:integrity",
+    "prepublishOnly": "cross-env PREPUBLISH=true borp --reporter=@jsumners/line-reporter && npm run test:validator:integrity",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run unit && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts --target es2022 --moduleResolution node16 --module node16 --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
-    "unit": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage",
-    "unit:report": "c8 --reporter html borp --reporter=./test/test-reporter.mjs",
-    "citgm": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --concurrency=1"
+    "unit": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage",
+    "unit:report": "c8 --reporter html borp --reporter=@jsumners/line-reporter",
+    "citgm": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage --concurrency=1"
   },
   "repository": {
     "type": "git",
@@ -131,6 +131,11 @@
     {
       "name": "Aras Abbasi",
       "email": "aras.abbasi@gmail.com"
+    },
+    {
+      "name": "Frazer Smith",
+      "email": "frazer.dev@icloud.com",
+      "url": "https://github.com/fdawgs"
     }
   ],
   "license": "MIT",
@@ -150,6 +155,7 @@
   ],
   "devDependencies": {
     "@fastify/pre-commit": "^2.1.0",
+    "@jsumners/line-reporter": "^1.0.1",
     "@sinclair/typebox": "^0.33.4",
     "@sinonjs/fake-timers": "^11.2.2",
     "@stylistic/eslint-plugin": "^2.1.0",

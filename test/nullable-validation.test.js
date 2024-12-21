@@ -47,7 +47,7 @@ test('nullable string', (t, done) => {
     }
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(res.json().hello, null)
+    t.assert.strictEqual(res.json().hello, null)
     done()
   })
 })

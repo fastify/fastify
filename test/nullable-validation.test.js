@@ -43,11 +43,11 @@ test('nullable string', (t, done) => {
     method: 'POST',
     url: '/',
     body: {
-      hello: undefined
+      hello: null
     }
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.strictEqual(res.payload.hello, undefined)
+    t.assert.deepStrictEqual(res.json().hello, null)
     done()
   })
 })

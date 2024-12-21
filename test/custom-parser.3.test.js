@@ -203,6 +203,14 @@ test('catch all content type parser should not interfere with content type parse
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
 
+    let pending = 3
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
+
     sget({
       method: 'POST',
       url: getServerUrl(fastify),
@@ -214,6 +222,7 @@ test('catch all content type parser should not interfere with content type parse
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(body.toString(), JSON.stringify({ myKey: 'myValue' }))
+      completed()
     })
 
     sget({
@@ -227,6 +236,7 @@ test('catch all content type parser should not interfere with content type parse
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(body.toString(), 'body')
+      completed()
     })
 
     sget({
@@ -240,7 +250,7 @@ test('catch all content type parser should not interfere with content type parse
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(body.toString(), 'my texthtml')
-      done()
+      completed()
     })
   })
 })

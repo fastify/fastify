@@ -284,6 +284,8 @@ listed in alphabetical order.
   <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__KaKa Ng__](https://github.com/climba03003),
+  <https://www.npmjs.com/~climba03003>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners),
@@ -305,6 +307,8 @@ listed in alphabetical order.
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__KaKa Ng__](https://github.com/climba03003),
+  <https://www.npmjs.com/~climba03003>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),
   <https://twitter.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
 * [__Maksim Sinik__](https://github.com/fox1t),
@@ -332,6 +336,8 @@ listed in alphabetical order.
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Jean Michelet__](https://github.com/jean-michelet),
   <https://www.npmjs.com/~jean-michelet>
+* [__KaKa Ng__](https://github.com/climba03003),
+  <https://www.npmjs.com/~climba03003>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>

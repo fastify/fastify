@@ -74,6 +74,9 @@ const a = fastifyPlugin<{
 });
 
 const b = fastifyPlugin<{ decorators: { fastify: { other: string } }, dependencies: [typeof a] }>((fastify) => {
+    fastify.other;
+    
+    // From it's deps
     fastify.someProperty;
     
     fastify.get("/", (req, res) => {
@@ -96,4 +99,8 @@ app.route({
     handler: (req, res) => {
         res.sendFile("./somefilepath") // <- Now the type works
     }
+})
+
+app.get("/", (_, res) => {
+    res.sendFile("hello"); // Type still works
 })

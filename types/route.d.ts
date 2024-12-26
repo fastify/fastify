@@ -94,8 +94,8 @@ export type RouteHandlerMethod<
   Decorators extends FastifyDecorators = object
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>,
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>, Decorators['request']>,
-  reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>, Decorators['reply']>
+  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>> & Decorators['request'],
+  reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>> & Decorators['reply']
 // This return type used to be a generic type argument. Due to TypeScript's inference of return types, this rendered returns unchecked.
 ) => ResolveFastifyReplyReturnType<TypeProvider, SchemaCompiler, RouteGeneric>
 

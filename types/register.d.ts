@@ -26,13 +26,13 @@ export interface FastifyRegister<
   <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, Logger extends FastifyBaseLogger = FastifyBaseLogger, Decorators extends FastifyDecorators = object>(
     plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators>,
     opts?: FastifyRegisterOptions<Options>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & PromiseLike<undefined>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & Decorators['fastify'] & D['fastify'] & PromiseLike<undefined>;
   <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, Logger extends FastifyBaseLogger = FastifyBaseLogger, Decorators extends FastifyDecorators = object>(
     plugin: FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators>,
     opts?: FastifyRegisterOptions<Options>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & PromiseLike<undefined>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & Decorators['fastify'] & D['fastify'] & PromiseLike<undefined>;
   <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, Logger extends FastifyBaseLogger = FastifyBaseLogger, Decorators extends FastifyDecorators = object>(
     plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators> | FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators> | Promise<{ default: FastifyPluginCallback<Options, Server, TypeProvider, Logger, Decorators> }> | Promise<{ default: FastifyPluginAsync<Options, Server, TypeProvider, Logger, Decorators> }>,
     opts?: FastifyRegisterOptions<Options>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & PromiseLike<undefined>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators & D> & Decorators['fastify'] & D['fastify'] & PromiseLike<undefined>;
 }

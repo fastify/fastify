@@ -37,7 +37,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
  */
-export type FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   SchemaCompiler extends FastifySchema = FastifySchema,
@@ -45,8 +45,7 @@ export type FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGen
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
-  Decorator extends object | undefined = object
-> = {
+> {
   id: string;
   params: RequestType['params']; // deferred inference
   raw: RawRequest;
@@ -88,4 +87,4 @@ export type FastifyRequest<RouteGeneric extends RouteGenericInterface = RouteGen
   // Prefer `socket` over deprecated `connection` property in node 13.0.0 or higher
   // @deprecated
   readonly connection: RawRequest['socket'];
-} & Decorator;
+}

@@ -28,7 +28,7 @@ export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends Rep
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
  */
-export type FastifyReply<
+export interface FastifyReply<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -37,8 +37,7 @@ export type FastifyReply<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>,
-  Decorator extends object | undefined = object
-> = {
+> {
   raw: RawReply;
   context: FastifyContext<ContextConfig>;
   log: FastifyBaseLogger;
@@ -80,4 +79,4 @@ export type FastifyReply<
   ) => FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   hasTrailer(key: string): boolean;
   removeTrailer(key: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-} & Decorator;
+}

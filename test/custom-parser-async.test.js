@@ -1,13 +1,12 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 
 process.removeAllListeners('warning')
 
-test('contentTypeParser should add a custom async parser', t => {
+test('contentTypeParser should add a custom async parser', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -24,12 +23,11 @@ test('contentTypeParser should add a custom async parser', t => {
     return res
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  fastify.listen({ port: 0 }, async (err) => {
+    t.assert.ifError(err)
 
-    t.teardown(() => fastify.close())
-
-    t.test('in POST', t => {
+    t.after(() => fastify.close())
+    await t.test('in POST', (t, done) => {
       t.plan(3)
 
       sget({
@@ -40,13 +38,14 @@ test('contentTypeParser should add a custom async parser', t => {
           'Content-Type': 'application/jsoff'
         }
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        done()
       })
     })
 
-    t.test('in OPTIONS', t => {
+    await t.test('in OPTIONS', (t, done) => {
       t.plan(3)
 
       sget({
@@ -57,10 +56,13 @@ test('contentTypeParser should add a custom async parser', t => {
           'Content-Type': 'application/jsoff'
         }
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        done()
       })
     })
+
+    done()
   })
 })

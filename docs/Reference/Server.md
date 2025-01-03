@@ -1548,6 +1548,9 @@ set it to 500 before calling the error handler.
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
+- stream errors thrown during pipe-ing process into the response socket as the
+  headers/response was already sent to the client. Use custom in-stream data
+  to signal such errors to client.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
@@ -1572,6 +1575,35 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+
+Custom error handler has to account for stream replies.
+
+If `Content-Type` is different between endpoint and error handler
+For example, endpoint returns `application/text` stream and error handler
+responds with `application/json` JSON data. In this case `Content-Type` has
+to be explicitly defined in both endpoint and error handler. Otherwise, the
+error handler would fail serialization with `500` status code as it would not
+apply JSON serialization logic.
+Another option would be to always respond with serialized data in error handler,
+by manually calling serialization method (e.g. `JSON.stringify`).
+
+```js
+fastify.setErrorHandler((err, req, reply) => {
+  reply
+    .code(400)
+    .type('application/json')
+    .send({ error: err.message })
+})
+```
+
+```js
+fastify.setErrorHandler((err, req, reply) => {
+  reply
+    .code(400)
+    .send(JSON.stringify({ error: err.message }))
+})
+```
+
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>
 

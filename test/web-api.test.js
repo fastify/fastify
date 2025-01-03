@@ -227,6 +227,50 @@ test('Error when Response.bodyUsed', async (t) => {
   t.assert.strictEqual(body.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
 })
 
+test('Error when Response.body.locked', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async function (request, reply) {
+    const stream = Readable.toWeb(fs.createReadStream(__filename))
+    const response = new Response(stream, {
+      status: 200,
+      headers: {
+        hello: 'world'
+      }
+    })
+    stream.getReader()
+    t.assert.strictEqual(stream.locked, true)
+    return reply.send(response)
+  })
+
+  const response = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.assert.strictEqual(response.statusCode, 500)
+  const body = response.json()
+  t.assert.strictEqual(body.code, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
+})
+
+test('Error when ReadableStream.locked', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async function (request, reply) {
+    const stream = Readable.toWeb(fs.createReadStream(__filename))
+    stream.getReader()
+    t.assert.strictEqual(stream.locked, true)
+    return reply.send(stream)
+  })
+
+  const response = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.assert.strictEqual(response.statusCode, 500)
+  const body = response.json()
+  t.assert.strictEqual(body.code, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
+})
+
 test('allow to pipe with fetch', async (t) => {
   t.plan(2)
   const abortController = new AbortController()

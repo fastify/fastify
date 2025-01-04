@@ -161,7 +161,7 @@ This function will compile a validation schema and
 return a function that can be used to validate data.
 The function returned (a.k.a. _validation function_) is compiled
 by using the provided [`SchemaController#ValidationCompiler`](./Server.md#schema-controller).
-A `WeakMap` is used to cached this, reducing compilation calls.
+A `WeakMap` is used to cache this, reducing compilation calls.
 
 The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation

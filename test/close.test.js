@@ -18,7 +18,6 @@ test('close callback', (t, testDone) => {
     t.assert.strictEqual(fastify, this)
     t.assert.strictEqual(fastify, instance)
     done()
-    testDone()
   }
 
   fastify.listen({ port: 0 }, err => {
@@ -27,6 +26,7 @@ test('close callback', (t, testDone) => {
     fastify.close((err) => {
       t.assert.ifError(err)
       t.assert.ok('close callback')
+      testDone()
     })
   })
 })
@@ -174,9 +174,8 @@ test('Should return error while closing (promise) - injection', (t, done) => {
       }).catch(err => {
         t.assert.ok(err)
         t.assert.strictEqual(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+        done()
       })
-
-      done()
     }, 100)
   })
 })

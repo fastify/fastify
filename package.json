@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.1.0",
+  "version": "5.2.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -10,23 +10,22 @@
     "benchmark": "concurrently -k -s first \"node ./examples/benchmark/simple.js\" \"autocannon -c 100 -d 30 -p 10 localhost:3000/\"",
     "benchmark:parser": "concurrently -k -s first \"node ./examples/benchmark/parser.js\" \"autocannon -c 100 -d 30 -p 10 -i ./examples/benchmark/body.json -H \"content-type:application/jsoff\" -m POST localhost:3000/\"",
     "build:validation": "node build/build-error-serializer.js && node build/build-validation.js",
-    "coverage": "c8 --reporter html borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --lines 100 ",
-    "coverage:ci": "c8 --reporter lcov --reporter html borp --reporter=./test/test-reporter.mjs",
-    "coverage:ci-check-coverage": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --lines 100",
+    "coverage": "c8 --reporter html borp --reporter=@jsumners/line-reporter --coverage --check-coverage --lines 100 ",
+    "coverage:ci-check-coverage": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage --lines 100",
     "lint": "npm run lint:eslint",
     "lint:fix": "eslint --fix",
     "lint:markdown": "markdownlint-cli2",
     "lint:eslint": "eslint",
-    "prepublishOnly": "cross-env PREPUBLISH=true borp --reporter=./test/test-reporter.mjs && npm run test:validator:integrity",
+    "prepublishOnly": "cross-env PREPUBLISH=true borp --reporter=@jsumners/line-reporter && npm run test:validator:integrity",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run unit && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts --target es2022 --moduleResolution node16 --module node16 --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
-    "unit": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage",
-    "unit:report": "c8 --reporter html borp --reporter=./test/test-reporter.mjs",
-    "citgm": "borp --reporter=./test/test-reporter.mjs --coverage --check-coverage --concurrency=1"
+    "unit": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage",
+    "unit:report": "c8 --reporter html borp --reporter=@jsumners/line-reporter",
+    "citgm": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage --concurrency=1"
   },
   "repository": {
     "type": "git",
@@ -132,6 +131,16 @@
     {
       "name": "Aras Abbasi",
       "email": "aras.abbasi@gmail.com"
+    },
+    {
+      "name": "Frazer Smith",
+      "email": "frazer.dev@icloud.com",
+      "url": "https://github.com/fdawgs"
+    },
+    {
+      "name": "KaKa Ng",
+      "email": "kaka@kakang.dev",
+      "url": "https://github.com/climba03003"
     }
   ],
   "license": "MIT",
@@ -151,6 +160,7 @@
   ],
   "devDependencies": {
     "@fastify/pre-commit": "^2.1.0",
+    "@jsumners/line-reporter": "^1.0.1",
     "@sinclair/typebox": "^0.33.4",
     "@sinonjs/fake-timers": "^11.2.2",
     "@stylistic/eslint-plugin": "^2.1.0",
@@ -168,7 +178,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^9.0.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^4.5.1",
+    "fastify-plugin": "^5.0.0",
     "fluent-json-schema": "^5.0.0",
     "h2url": "^0.2.0",
     "http-errors": "^2.0.0",
@@ -192,6 +202,7 @@
     "@fastify/ajv-compiler": "^4.0.0",
     "@fastify/error": "^4.0.0",
     "@fastify/fast-json-stringify-compiler": "^5.0.0",
+    "@fastify/proxy-addr": "^5.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^9.0.0",
     "fast-json-stringify": "^6.0.0",
@@ -199,9 +210,8 @@
     "light-my-request": "^6.0.0",
     "pino": "^9.0.0",
     "process-warning": "^4.0.0",
-    "proxy-addr": "^2.0.7",
     "rfdc": "^1.3.1",
-    "secure-json-parse": "^2.7.0",
+    "secure-json-parse": "^3.0.1",
     "semver": "^7.6.0",
     "toad-cache": "^3.7.0"
   },

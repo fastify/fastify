@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
 const fastifyPlugin = require('fastify-plugin')
 
@@ -15,7 +15,7 @@ test('findRoute should return null when route cannot be found due to a different
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.equal(fastify.findRoute({
+  t.assert.strictEqual(fastify.findRoute({
     method: 'POST',
     url: '/artists/:artistId'
   }), null)
@@ -46,7 +46,8 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
     method: 'GET',
     url: '/artists/:artistId'
   })
-  t.same(route.params, { artistId: ':artistId' })
+
+  t.assert.strictEqual(route.params.artistId, ':artistId')
 })
 
 test('findRoute should return null when when url is not passed', t => {
@@ -60,7 +61,7 @@ test('findRoute should return null when when url is not passed', t => {
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.equal(fastify.findRoute({
+  t.assert.strictEqual(fastify.findRoute({
     method: 'POST'
   }), null)
 })
@@ -76,7 +77,7 @@ test('findRoute should return null when route cannot be found due to a different
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.equal(fastify.findRoute({
+  t.assert.strictEqual(fastify.findRoute({
     method: 'GET',
     url: '/books/:bookId'
   }), null)
@@ -99,11 +100,10 @@ test('findRoute should return the route when found', t => {
     method: 'GET',
     url: '/artists/:artistId'
   })
-
-  t.same(route.params, { artistId: ':artistId' })
+  t.assert.strictEqual(route.params.artistId, ':artistId')
 })
 
-test('findRoute should work correctly when used within plugins', t => {
+test('findRoute should work correctly when used within plugins', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const handler = (req, reply) => reply.send(typeof req.params.artistId)
@@ -128,7 +128,8 @@ test('findRoute should work correctly when used within plugins', t => {
   fastify.register(fastifyPlugin(validateRoutePlugin))
 
   fastify.ready(() => {
-    t.equal(fastify.validateRoutes.validateParams(), true)
+    t.assert.strictEqual(fastify.validateRoutes.validateParams(), true)
+    done()
   })
 })
 
@@ -147,5 +148,5 @@ test('findRoute should not expose store', t => {
     method: 'GET',
     url: '/artists/:artistId'
   })
-  t.equal(route.store, undefined)
+  t.assert.strictEqual(route.store, undefined)
 })

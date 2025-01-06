@@ -9,7 +9,7 @@
 
 <div align="center">
 
-[![CI](https://github.com/fastify/fastify/actions/workflows/ci.yml/badge.svg)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
+[![CI](https://github.com/fastify/fastify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
 [![Package Manager
 CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web
@@ -29,7 +29,7 @@ downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.np
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/fastify/blob/main/SECURITY.md)
 [![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=blue)](https://gitpod.io/#https://github.com/fastify/fastify)
-![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)
+[![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)](https://github.com/sponsors/fastify#sponsors)
 
 </div>
 
@@ -106,13 +106,8 @@ generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
 
 To install Fastify in an existing project as a dependency:
 
-Install with npm:
 ```sh
 npm i fastify
-```
-Install with yarn:
-```sh
-yarn add fastify
 ```
 
 ### Example
@@ -289,34 +284,31 @@ listed in alphabetical order.
   <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__KaKa Ng__](https://github.com/climba03003),
+  <https://www.npmjs.com/~climba03003>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners),
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ### Fastify Core team
-* [__Tommaso Allevi__](https://github.com/allevo),
-  <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
+* [__Aras Abbasi__](https://github.com/uzlopak),
+  <https://www.npmjs.com/~uzlopak>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
-* [__David Mark Clements__](https://github.com/davidmarkclements),
-  <https://twitter.com/davidmarkclem>,
-  <https://www.npmjs.com/~davidmarkclements>
 * [__Matteo Collina__](https://github.com/mcollina),
   <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
-* [__Dustin Deus__](https://github.com/StarpTech),
-  <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>
-* [__Ayoub El Khattabi__](https://github.com/AyoubElk),
-  <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
-* [__Denis Fäcke__](https://github.com/SerayaEryn),
-  <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
 * [__Carlos Fuentes__](https://github.com/metcoder95),
   <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__KaKa Ng__](https://github.com/climba03003),
+  <https://www.npmjs.com/~climba03003>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),
   <https://twitter.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
 * [__Maksim Sinik__](https://github.com/fox1t),
@@ -325,63 +317,65 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners),
   <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
-* [__Aras Abbasi__](https://github.com/uzlopak),
-  <https://www.npmjs.com/~uzlopak>
-* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
-  <https://www.npmjs.com/~gurgunday>
 
 ### Fastify Plugins team
-* [__Matteo Collina__](https://github.com/mcollina),
-  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
+* [__Simone Busoli__](https://github.com/simoneb),
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
+* [__Dan Castillo__](https://github.com/dancastillo),
+  <https://www.npmjs.com/~dancastillo>
+* [__Matteo Collina__](https://github.com/mcollina),
+  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
+  <https://www.npmjs.com/~gurgunday>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
   <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
-* [__Ayoub El Khattabi__](https://github.com/AyoubElk),
-  <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Carlos Fuentes__](https://github.com/metcoder95),
   <https://twitter.com/metcoder95>, <https://www.npmjs.com/~metcoder95>
 * [__Vincent Le Goff__](https://github.com/zekth)
-* [__Salman Mitha__](https://github.com/salmanm),
-  <https://www.npmjs.com/~salmanm>
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
+* [__KaKa Ng__](https://github.com/climba03003),
+  <https://www.npmjs.com/~climba03003>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
-* [__Simone Busoli__](https://github.com/simoneb),
-  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>
-* [__Gürgün Dayıoğlu__](https://github.com/gurgunday),
-  <https://www.npmjs.com/~gurgunday>
-* [__Dan Castillo__](https://github.com/dancastillo),
-  <https://www.npmjs.com/~dancastillo>
-* [__Jean Michelet__](https://github.com/jean-michelet),
-  <https://www.npmjs.com/~jean-michelet>
 
-### Great Contributors
+### Emeritus Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
-to join this group by Lead Maintainers.
+to join this group by Lead Maintainers when they decide to step down from the
+active contributors group.
 
-* [__dalisoft__](https://github.com/dalisoft), <https://twitter.com/dalisoft>,
-  <https://www.npmjs.com/~dalisoft>
-* [__Luciano Mammino__](https://github.com/lmammino),
-  <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
-* [__Evan Shortiss__](https://github.com/evanshortiss),
-  <https://twitter.com/evanshortiss>, <https://www.npmjs.com/~evanshortiss>
-
-**Past Collaborators**
-* [__Çağatay Çalı__](https://github.com/cagataycali),
-  <https://twitter.com/cagataycali>, <https://www.npmjs.com/~cagataycali>
-* [__Trivikram Kamat__](https://github.com/trivikr),
-  <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
-* [__Cemre Mengu__](https://github.com/cemremengu),
-  <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
-* [__Nathan Woltman__](https://github.com/nwoltman),
-  <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+* [__Tommaso Allevi__](https://github.com/allevo),
+  <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
 * [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
   <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+* [__Çağatay Çalı__](https://github.com/cagataycali),
+  <https://twitter.com/cagataycali>, <https://www.npmjs.com/~cagataycali>
+* [__David Mark Clements__](https://github.com/davidmarkclements),
+  <https://twitter.com/davidmarkclem>,
+  <https://www.npmjs.com/~davidmarkclements>
+* [__dalisoft__](https://github.com/dalisoft), <https://twitter.com/dalisoft>,
+  <https://www.npmjs.com/~dalisoft>
+* [__Dustin Deus__](https://github.com/StarpTech),
+  <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>
+* [__Denis Fäcke__](https://github.com/SerayaEryn),
+  <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
+* [__Trivikram Kamat__](https://github.com/trivikr),
+  <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
+* [__Ayoub El Khattabi__](https://github.com/AyoubElk),
+  <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
+* [__Cemre Mengu__](https://github.com/cemremengu),
+  <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
+* [__Salman Mitha__](https://github.com/salmanm),
+  <https://www.npmjs.com/~salmanm>
+* [__Nathan Woltman__](https://github.com/nwoltman),
+  <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 
 ## Hosted by
 

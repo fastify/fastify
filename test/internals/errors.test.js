@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 84
+const expectedErrors = 85
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -185,6 +185,16 @@ test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_EMPTY_JSON_BODY')
   t.assert.strictEqual(error.message, "Body cannot be empty when content-type is set to 'application/json'")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_CTP_INVALID_JSON_BODY', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTP_INVALID_JSON_BODY()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_JSON_BODY')
+  t.assert.strictEqual(error.message, "Body is not valid JSON but content-type is set to 'application/json'")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
 })

@@ -1,15 +1,15 @@
 'use strict'
 
-const { test } = require('node:test')
+const { describe, test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 
-test('route-shorthand', async (t) => {
+describe('route-shorthand', () => {
   const methodsReader = new Fastify()
   const supportedMethods = methodsReader.supportedMethods
 
   for (const method of supportedMethods) {
-    await t.test(`route-shorthand - ${method.toLowerCase()}`, async (t) => {
+    test(`route-shorthand - ${method.toLowerCase()}`, async (t) => {
       t.plan(2)
       const fastify = new Fastify()
       fastify[method.toLowerCase()]('/', (req, reply) => {
@@ -35,7 +35,7 @@ test('route-shorthand', async (t) => {
     })
   }
 
-  await t.test('route-shorthand - all', async (t) => {
+  test('route-shorthand - all', async (t) => {
     t.plan(2 * supportedMethods.length)
     const fastify = new Fastify()
     let currentMethod = ''

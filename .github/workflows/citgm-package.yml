@@ -1,0 +1,94 @@
+name: CITGM Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to test'
+        required: true
+        type: string
+      node-version:
+        description: 'Node version to test'
+        required: true
+        type: string
+        default: '20'
+      os:
+        description: 'Operating System'
+        required: false
+        type: choice
+        default: 'ubuntu-latest'
+        options:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+          - 'macos-latest'
+  workflow_call:
+    inputs:
+      package:
+        description: 'Package to test'
+        required: true
+        type: string
+      node-version:
+        description: 'Node version to test'
+        required: true
+        type: string
+        default: '20'
+      os:
+        description: 'Operating System'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+jobs:
+  core-plugins:
+    name: CITGM
+    runs-on: ${{inputs.os}}
+    permissions:
+      contents: read
+    steps:
+        - name: Check out Fastify
+          uses: actions/checkout@v4
+          with:
+            persist-credentials: false
+
+        - name: Use Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ inputs.node-version }}
+            cache: 'npm'
+            cache-dependency-path: package.json
+            check-latest: true
+
+        - name: Install Dependencies for Fastify
+          run: |
+            npm install --ignore-scripts
+        - name: Npm Link Fastify
+          run: |
+            npm link
+        - name: Determine repository URL of ${{inputs.package}}
+          uses: actions/github-script@v7
+          id: repository-url
+          with:
+            result-encoding: string
+            script: |
+              const response = await fetch('https://registry.npmjs.org/${{inputs.package}}')
+              const data = await response.json()
+              const repositoryUrl = data.repository.url
+              const result = repositoryUrl.match( /.*\/([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+)\.git/)[1]
+              return result
+        - name: Check out ${{inputs.package}}
+          uses: actions/checkout@v4
+          with:
+            repository: ${{ steps.repository-url.outputs.result }}
+            path: package
+            persist-credentials: false
+        - name: Install Dependencies for ${{inputs.package}}
+          working-directory: package
+          run: |
+            npm install
+        - name: Sym Link Fastify
+          working-directory: package
+          run: |
+            npm link fastify
+        - name: Run Tests of ${{inputs.package}}
+          working-directory: package
+          run: |
+            npm test

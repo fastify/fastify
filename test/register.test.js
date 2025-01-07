@@ -1,7 +1,5 @@
 'use strict'
 
-/* eslint no-prototype-builtins: 0 */
-
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
@@ -14,7 +12,7 @@ test('register', t => {
 
   fastify.register(function (instance, opts, done) {
     t.not(instance, fastify)
-    t.ok(fastify.isPrototypeOf(instance))
+    t.ok(Object.prototype.isPrototypeOf.call(fastify, instance))
 
     t.equal(typeof opts, 'object')
     t.equal(typeof done, 'function')
@@ -27,7 +25,7 @@ test('register', t => {
 
   fastify.register(function (instance, opts, done) {
     t.not(instance, fastify)
-    t.ok(fastify.isPrototypeOf(instance))
+    t.ok(Object.prototype.isPrototypeOf.call(fastify, instance))
 
     t.equal(typeof opts, 'object')
     t.equal(typeof done, 'function')
@@ -105,20 +103,20 @@ test('awaitable register and after', async t => {
   let second = false
   let third = false
 
-  await fastify.register(async (instance, opts, done) => {
+  await fastify.register(async (instance, opts) => {
     first = true
   })
 
   t.equal(first, true)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     second = true
   })
 
   await fastify.after()
   t.equal(second, true)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     third = true
   })
 
@@ -145,7 +143,7 @@ test('awaitable register error handling', async t => {
 
   await t.rejects(fastify.after(), e)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     t.fail('should not be executed')
   })
 
@@ -167,7 +165,7 @@ test('awaitable after error handling', async t => {
 
   await t.rejects(fastify.after(), e)
 
-  fastify.register(async (instance, opts, done) => {
+  fastify.register(async (instance, opts) => {
     t.fail('should not be executed')
   })
 

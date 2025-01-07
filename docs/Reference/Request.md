@@ -20,46 +20,41 @@ Request is a core Fastify object containing the following fields:
 - `ips` - an array of the IP addresses, ordered from closest to furthest, in the
   `X-Forwarded-For` header of the incoming request (only when the
   [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled)
-- `hostname` - the host of the incoming request (derived from `X-Forwarded-Host`
+- `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
-  exists.
+  exists. The host header may return an empty string if `requireHostHeader`
+  is false, not provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - the hostname derived from the `host` property of
+  the incoming request
+- `port` - the port from the `host` property, which may refer to
+  the port the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
-- `originalUrl` - similar to `url`, this allows you to access the 
-  original `url` in case of internal re-routing 
-- `routerMethod` - Deprecated, use `request.routeOptions.method` instead. The
-  method defined for the router that is handling the request
-- `routerPath` - Deprecated, use `request.routeOptions.url` instead. The
-  path pattern defined for the router that is handling the request
+- `originalUrl` - similar to `url`, this allows you to access the
+  original `url` in case of internal re-routing
 - `is404` - true if request is being handled by 404 handler, false if it is not
-- `connection` - Deprecated, use `socket` instead. The underlying connection of
-  the incoming request.
 - `socket` - the underlying connection of the incoming request
-- `context` - A Fastify internal object. You should not use it directly or
-  modify it. It is useful to access one special key:	
+- `context` - Deprecated, use `request.routeOptions.config` instead.
+A Fastify internal object. You should not use
+it directly or modify it. It is useful to access one special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
-- `routeSchema` - Deprecated, use `request.routeOptions.schema` instead. The
-  scheme definition set for the router that is handling the request
-- `routeConfig` - Deprecated, use `request.routeOptions.config` instead. The
-  route [`config`](./Routes.md#routes-config) 
-  object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object
   - `bodyLimit` - either server limit or route limit
   - `config` - the [`config`](./Routes.md#routes-config) object for this route
   - `method` - the http method for the route
   - `url` - the path of the URL to match this route
   - `handler` - the handler for this route
-  - `attachValidation` - attach `validationError` to request 
+  - `attachValidation` - attach `validationError` to request
     (if there is a schema defined)
   - `logLevel` - log level defined for this route
   - `schema` - the JSON schemas definition for this route
   - `version` -  a semver compatible string that defines the version of the endpoint
   - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
-  - `prefixTrailingSlash` - string used to determine how to handle passing / 
+  - `prefixTrailingSlash` - string used to determine how to handle passing /
     as a route with a prefix.
-- [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
+- [.getValidationFunction(schema | httpPart)](#getvalidationfunction) -
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.
 - [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema) -
@@ -92,6 +87,9 @@ request's headers with the `request.raw.headers` property.
 > Note: For performance reason on `not found` route, you may see that we will
 add an extra property `Symbol('fastify.RequestAcceptVersion')` on the headers.
 
+> Note: Using schema validation may mutate the `request.headers` and
+`request.raw.headers` objects, causing the headers to become empty.
+
 ```js
 fastify.post('/:params', options, function (request, reply) {
   console.log(request.body)
@@ -103,10 +101,12 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.id)
   console.log(request.ip)
   console.log(request.ips)
+  console.log(request.host)
   console.log(request.hostname)
+  console.log(request.port)
   console.log(request.protocol)
   console.log(request.url)
-  console.log(request.routerMethod)
+  console.log(request.routeOptions.method)
   console.log(request.routeOptions.bodyLimit)
   console.log(request.routeOptions.method)
   console.log(request.routeOptions.url)
@@ -115,14 +115,14 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.routeOptions.version)
   console.log(request.routeOptions.exposeHeadRoute)
   console.log(request.routeOptions.prefixTrailingSlash)
-  console.log(request.routerPath.logLevel)
+  console.log(request.routeOptions.logLevel)
   request.log.info('some info')
 })
 ```
 ### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>
 
-By calling this function using a provided `schema` or `httpPart`, 
+By calling this function using a provided `schema` or `httpPart`,
 it will return a `validation` function that can be used to
 validate diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
@@ -133,12 +133,12 @@ are assigned to errors
 ```js
 const validate = request
                   .getValidationFunction({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 console.log(validate({ foo: 'bar' })) // true
 console.log(validate.errors) // null
@@ -160,7 +160,7 @@ for more information on how to compile validation function.
 This function will compile a validation schema and
 return a function that can be used to validate data.
 The function returned (a.k.a. _validation function_) is compiled
-by using the provided [`SchemaControler#ValidationCompiler`](./Server.md#schema-controller).
+by using the provided [`SchemaController#ValidationCompiler`](./Server.md#schema-controller).
 A `WeakMap` is used to cached this, reducing compilation calls.
 
 The optional parameter `httpPart`, if provided, is forwarded directly
@@ -173,12 +173,12 @@ are assigned to errors
 ```js
 const validate = request
                   .compileValidationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 console.log(validate({ foo: 'bar' })) // true
 console.log(validate.errors) // null
@@ -187,12 +187,12 @@ console.log(validate.errors) // null
 
 const validate = request
                   .compileValidationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   }, 200)
 console.log(validate({ hello: 'world' })) // false
 console.log(validate.errors) // validation errors
@@ -222,7 +222,7 @@ const schema1 = {
 ```
 
 *Not*
-```js 
+```js
 const validate = request.compileValidationSchema(schema1)
 
 // Later on...
@@ -257,25 +257,25 @@ function will be compiled, forwarding the `httpPart` if provided.
 
 ```js
 request
-  .validateInput({ foo: 'bar'}, {  
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+  .validateInput({ foo: 'bar'}, {
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }) // true
 
 // or
 
 request
   .validateInput({ foo: 'bar'}, {
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }, 'body') // true
 
 // or

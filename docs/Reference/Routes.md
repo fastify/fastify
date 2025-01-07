@@ -32,9 +32,9 @@ fastify.route(options)
 ### Routes options
 <a id="options"></a>
 
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
-  `'POST'`, `'PUT'`, `'OPTIONS'`, `'SEARCH'`, `'TRACE'`, `'PROPFIND'`,
-  `'PROPPATCH'`, `'MKCOL'`, `'COPY'`, `'MOVE'`, `'LOCK'`  and `'UNLOCK'`.
+* `method`: currently it supports `GET`, `HEAD`, `TRACE`, `DELETE`,
+  `OPTIONS`, `PATCH`, `PUT` and `POST`. To accept more methods,
+  the [`addHttpMethod`](./Server.md#addHttpMethod) must be used.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They
@@ -42,7 +42,7 @@ fastify.route(options)
   [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, PATCH,
-    TRACE, or SEARCH method.
+    TRACE, SEARCH, PROPFIND, PROPPATCH or LOCK method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -93,16 +93,16 @@ fastify.route(options)
 * `childLoggerFactory(logger, binding, opts, rawReq)`: a custom factory function
   that will be called to produce a child logger instance for every request.
   See [`childLoggerFactory`](./Server.md#childloggerfactory) for more info.
-  Overrides the default logger factory, and anything set by 
+  Overrides the default logger factory, and anything set by
   [`setChildLoggerFactory`](./Server.md#setchildloggerfactory), for requests to
-  the route. To access the default factory, you can access 
+  the route. To access the default factory, you can access
   `instance.childLoggerFactory`. Note that this will point to Fastify's default
   `childLoggerFactory` only if a plugin hasn't overridden it already.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`: 
+* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`:
   function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.
@@ -121,8 +121,8 @@ fastify.route(options)
 * `version`: a [semver](https://semver.org/) compatible string that defined the
   version of the endpoint. [Example](#version-constraints).
 * `constraints`: defines route restrictions based on request properties or
-  values, enabling customized matching using 
-  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes 
+  values, enabling customized matching using
+  [find-my-way](https://github.com/delvedor/find-my-way) constraints. Includes
   built-in `version` and `host` constraints, with support for custom constraint
   strategies.
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
@@ -151,8 +151,11 @@ fastify.route({
   url: '/',
   schema: {
     querystring: {
-      name: { type: 'string' },
-      excitement: { type: 'integer' }
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        excitement: { type: 'integer' }
+      }
     },
     response: {
       200: {
@@ -331,8 +334,8 @@ fastify.post('/name::verb') // will be interpreted as /name:verb
 Are you an `async/await` user? We have you covered!
 ```js
 fastify.get('/', options, async function (request, reply) {
-  var data = await getData()
-  var processed = await processData(data)
+  const data = await getData()
+  const processed = await processData(data)
   return processed
 })
 ```
@@ -346,8 +349,8 @@ handler or you will introduce a race condition in certain situations.
 
 ```js
 fastify.get('/', options, async function (request, reply) {
-  var data = await getData()
-  var processed = await processData(data)
+  const data = await getData()
+  const processed = await processData(data)
   return reply.send(processed)
 })
 ```
@@ -467,14 +470,14 @@ const route = {
     schema: {},
 }
 
-fastify.register(function(app, _, done) {
+fastify.register(function (app, _, done) {
   app.get('/users', () => {})
   app.route(route)
 
   done()
 }, { prefix: '/v1' }) // global route prefix
 
-await fastify.listen({ port: 0 })
+await fastify.listen({ port: 3000 })
 ```
 
 ### Route Prefixing and fastify-plugin
@@ -577,7 +580,7 @@ const fastify = Fastify({
           method: req.method,
           url: req.url,
           headers: req.headers,
-          hostname: req.hostname,
+          host: req.host,
           remoteAddress: req.ip,
           remotePort: req.socket.remotePort
         }
@@ -614,7 +617,7 @@ retrieve it in the handler.
 const fastify = require('fastify')()
 
 function handler (req, reply) {
-  reply.send(reply.context.config.output)
+  reply.send(reply.routeOptions.config.output)
 }
 
 fastify.get('/en', { config: { output: 'hello world!' } }, handler)
@@ -715,9 +718,9 @@ arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.io' },
+  constraints: { host: 'auth.fastify.dev' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.io')
+    reply.send('hello world from auth.fastify.dev')
   }
 })
 
@@ -735,10 +738,10 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'auth.fastify.io'
+    'Host': 'auth.fastify.dev'
   }
 }, (err, res) => {
-  // => 'hello world from auth.fastify.io'
+  // => 'hello world from auth.fastify.dev'
 })
 ```
 
@@ -749,7 +752,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.io
+  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }
@@ -793,13 +796,13 @@ const secret = {
 > inside the callback. If the error is not preventable, it is recommended to provide
 > a custom `frameworkErrors` handler to deal with it. Otherwise, you route selection
 > may break or expose sensitive information to attackers.
-> 
+>
 > ```js
 > const Fastify = require('fastify')
-> 
+>
 > const fastify = Fastify({
->   frameworkErrors: function(err, res, res) {
->     if(err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
+>   frameworkErrors: function (err, res, res) {
+>     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")
 >     } else {
@@ -808,25 +811,3 @@ const secret = {
 >   }
 > })
 > ```
-
-
-### ⚠  HTTP version check
-
-Fastify will check the HTTP version of every request, based on configuration
-options ([http2](./Server.md#http2), [https](./Server.md#https), and
-[serverFactory](./Server.md#serverfactory)), to determine if it matches one or
-all of the > following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a
-different HTTP version in the request it will return a `505 HTTP Version Not
-Supported` error.
-
-|                          | 2.0 | 1.1 | 1.0 | skip |
-|:------------------------:|:---:|:---:|:---:|:----:|
-| http2                    | ✓   |     |     |      |
-| http2 + https            | ✓   |     |     |      |
-| http2 + https.allowHTTP1 | ✓   | ✓   | ✓   |      |
-| https                    |     | ✓   | ✓   |      |
-| http                     |     | ✓   | ✓   |      |
-| serverFactory            |     |     |     | ✓    |
-
- Note: The internal HTTP version check will be removed in the future when Node
- implements [this feature](https://github.com/nodejs/node/issues/43115).

@@ -34,7 +34,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v3
+            uses: actions/dependency-review-action@v4
 
   check-licenses:
     name: Check licenses
@@ -47,11 +47,12 @@ jobs:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -72,11 +73,12 @@ jobs:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -87,19 +89,21 @@ jobs:
           npm run lint
 
   coverage-nix:
-    needs: lint
+    needs:
+      - lint
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
 
   coverage-win:
-    needs: lint
+    needs:
+      - lint
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml
 
   test-unit:
-    needs: 
+    needs:
       - lint
       - coverage-nix
       - coverage-win
@@ -109,12 +113,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 18, 20]
+        node-version: [20, 22.11]
         os: [macos-latest, ubuntu-latest, windows-latest]
-        exclude:
-          # excludes node 14 on Windows
-          - os: windows-latest
-            node-version: 14
 
     steps:
       - uses: actions/checkout@v4
@@ -122,11 +122,12 @@ jobs:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -137,7 +138,7 @@ jobs:
           npm run unit
 
   test-typescript:
-    needs: 
+    needs:
       - lint
       - coverage-nix
       - coverage-win
@@ -150,11 +151,12 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
 
       - name: Install
         run: |
@@ -178,11 +180,12 @@ jobs:
         with:
           persist-credentials: false
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
           cache-dependency-path: package.json
+          check-latest: true
       - name: install fastify
         run: |
           npm install --ignore-scripts
@@ -203,7 +206,7 @@ jobs:
     if: >
         github.event_name == 'pull_request' &&
         github.event.pull_request.user.login == 'dependabot[bot]'
-    needs: 
+    needs:
       - test-typescript
       - test-unit
       - package

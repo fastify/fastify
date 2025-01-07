@@ -1,11 +1,11 @@
 import { FastifyError } from '@fastify/error'
-import { RouteGenericInterface } from './route'
-import { FastifyRequest } from './request'
-import { FastifyReply } from './reply'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
-import { FastifySchema } from './schema'
 import { FastifyInstance } from './instance'
+import { FastifyReply } from './reply'
+import { FastifyRequest } from './request'
+import { RouteGenericInterface } from './route'
+import { FastifySchema } from './schema'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
 import pino from 'pino'
 
@@ -42,8 +42,8 @@ export type PinoLoggerOptions = pino.LoggerOptions
  */
 export type ResSerializerReply<
   RawServer extends RawServerBase,
-  RawReply extends FastifyReply<RawServer>
-> = Partial<RawReply> & Pick<RawReply, 'statusCode'>;
+  RawReply extends FastifyReply<RouteGenericInterface, RawServer>
+> = Partial<RawReply> & Pick<RawReply, 'statusCode'>
 
 /**
  * Fastify Custom Logger options.
@@ -51,14 +51,14 @@ export type ResSerializerReply<
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProvider> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
-  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>,
+  RawReply extends FastifyReply<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>
 > {
   serializers?: {
     req?: (req: RawRequest) => {
       method?: string;
       url?: string;
       version?: string;
-      hostname?: string;
+      host?: string;
       remoteAddress?: string;
       remotePort?: number;
       [key: string]: unknown;

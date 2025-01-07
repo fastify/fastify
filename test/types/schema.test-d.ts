@@ -1,8 +1,8 @@
-import { expectAssignable } from 'tsd'
-import fastify, { FastifyInstance, FastifySchema } from '../../fastify'
-import Ajv from 'ajv'
 import { StandaloneValidator } from '@fastify/ajv-compiler'
 import { StandaloneSerializer } from '@fastify/fast-json-stringify-compiler'
+import Ajv from 'ajv'
+import { expectAssignable } from 'tsd'
+import fastify, { FastifyInstance, FastifySchema } from '../../fastify'
 
 const server = fastify()
 
@@ -15,6 +15,25 @@ expectAssignable<FastifyInstance>(server.get(
       params: { type: 'null' },
       headers: { type: 'null' },
       response: { type: 'null' }
+    }
+  },
+  () => { }
+))
+
+expectAssignable<FastifyInstance>(server.post(
+  '/multiple-content-schema',
+  {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: { type: 'object' }
+          },
+          'text/plain': {
+            schema: { type: 'string' }
+          }
+        }
+      }
     }
   },
   () => { }
@@ -70,8 +89,7 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
     storeFunction (routeOpts, schemaValidationCode) { }
   })
 
-  const app = fastify({
-    jsonShorthand: false,
+  fastify({
     schemaController: {
       compilersFactory: {
         buildValidator: factory
@@ -86,8 +104,7 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
     storeFunction (routeOpts, schemaValidationCode) { }
   })
 
-  const app = fastify({
-    jsonShorthand: false,
+  fastify({
     schemaController: {
       compilersFactory: {
         buildSerializer: factory

@@ -1,4 +1,4 @@
-import { expectAssignable, expectDeprecated, expectError, expectNotDeprecated, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
   FastifyBodyParser,
@@ -12,9 +12,8 @@ import fastify, {
 import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
-import { DefaultRoute } from '../../types/route'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
-import { AddressInfo } from 'net'
+import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 const server = fastify()
@@ -51,6 +50,18 @@ expectAssignable<FastifyInstance>(
   })
 )
 
+expectAssignable<FastifyInstance>(
+  server.setGenReqId(function (req) {
+    expectType<RawRequestDefaultExpression>(req)
+    return 'foo'
+  })
+)
+
+function fastifySetGenReqId (req: RawRequestDefaultExpression) {
+  return 'foo'
+}
+server.setGenReqId(fastifySetGenReqId)
+
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 
@@ -78,12 +89,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
@@ -182,47 +193,7 @@ function invalidSchemaErrorFormatter (err: Error) {
 }
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
-// test listen method callback
-expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen(3000, (err, address) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectType<Error | null>(err)
-}))
-
-// test listen method callback types
-expectAssignable<void>(server.listen('3000', (err, address) => {
-  expectAssignable<Error|null>(err)
-  expectAssignable<string>(address)
-}))
-
-// test listen method promise
-expectAssignable<PromiseLike<string>>(server.listen(3000))
-expectAssignable<PromiseLike<string>>(server.listen('3000'))
-expectAssignable<PromiseLike<string>>(server.listen(3000, '', 0))
-expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
-expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
-expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
-
-// Test variadic listen signatures Typescript deprecation
-expectDeprecated(server.listen(3000))
-expectDeprecated(server.listen('3000'))
-expectDeprecated(server.listen(3000, '', 0))
-expectDeprecated(server.listen('3000', '', 0))
-expectDeprecated(server.listen(3000, ''))
-expectDeprecated(server.listen('3000', ''))
+expectType<FastifyInstance>(server.addHttpMethod('SEARCH', { hasBody: true }))
 
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
@@ -241,7 +212,7 @@ expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
-// test listen opts objects Typescript deprectation exclusion
+// test listen opts objects Typescript deprecation exclusion
 expectNotDeprecated(server.listen())
 expectNotDeprecated(server.listen({ port: 3000 }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
@@ -256,6 +227,24 @@ expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, 
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
+// test after method
+expectAssignable<FastifyInstance>(server.after())
+expectAssignable<FastifyInstance>(server.after((err) => {
+  expectType<Error | null>(err)
+}))
+
+// test ready method
+expectAssignable<FastifyInstance>(server.ready())
+expectAssignable<FastifyInstance>(server.ready((err) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<FastifyInstance>(server.ready(async (err) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<Parameters<typeof server.ready>[0]>(async (err) => {
+  expectType<Error | null>(err)
+})
+
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
@@ -263,7 +252,7 @@ expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: s
   errorHandler: (error, request, reply) => {
     expectAssignable<FastifyError>(error)
     expectAssignable<FastifyRequest>(request)
-    expectAssignable<{ contextKey: string }>(request.routeConfig)
+    expectAssignable<{ contextKey: string }>(request.routeOptions.config)
     expectAssignable<FastifyReply>(reply)
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }
@@ -318,7 +307,8 @@ type InitialConfig = Readonly<{
   pluginTimeout?: number,
   requestIdHeader?: string | false,
   requestIdLogLabel?: string,
-  http2SessionTimeout?: number
+  http2SessionTimeout?: number,
+  useSemicolonDelimiter?: boolean
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)
@@ -428,7 +418,7 @@ server.decorate('typedTestProperty', {
 })
 server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
-server.decorate('typedTestProperty', null)
+expectError(server.decorate('typedTestProperty', null))
 expectError(server.decorate('typedTestProperty', 'foo'))
 expectError(server.decorate('typedTestProperty', {
   getter () {
@@ -468,7 +458,7 @@ server.decorateRequest('typedTestRequestProperty', {
 })
 server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
-server.decorateRequest('typedTestRequestProperty', null)
+expectError(server.decorateRequest('typedTestRequestProperty', null))
 expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
 expectError(server.decorateRequest('typedTestRequestProperty', {
   getter () {
@@ -508,7 +498,7 @@ server.decorateReply('typedTestReplyProperty', {
 })
 server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
-server.decorateReply('typedTestReplyProperty', null)
+expectError(server.decorateReply('typedTestReplyProperty', null))
 expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
 expectError(server.decorateReply('typedTestReplyProperty', {
   getter () {
@@ -544,10 +534,6 @@ const versionConstraintStrategy = {
 }
 expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
 expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))
-
-expectType<boolean>(server.hasPlugin(''))
-
-expectAssignable<DefaultRoute<RawRequestDefaultExpression, RawReplyDefaultExpression>>(server.getDefaultRoute())
 
 expectType<FastifySchemaCompiler<any> | undefined>(server.validatorCompiler)
 expectType<FastifySerializerCompiler<any> | undefined>(server.serializerCompiler)

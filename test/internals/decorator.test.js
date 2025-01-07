@@ -1,9 +1,6 @@
 'use strict'
 
-/* eslint no-prototype-builtins: 0 */
-
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const decorator = require('../../lib/decorate')
 const {
   kState
@@ -24,7 +21,7 @@ test('decorate should add the given method to its instance', t => {
 
   const server = build()
   server.add('test', () => {})
-  t.ok(server.test)
+  t.assert.ok(server.test)
 })
 
 test('decorate is chainable', t => {
@@ -46,15 +43,15 @@ test('decorate is chainable', t => {
     .add('test2', () => {})
     .add('test3', () => {})
 
-  t.ok(server.test1)
-  t.ok(server.test2)
-  t.ok(server.test3)
+  t.assert.ok(server.test1)
+  t.assert.ok(server.test2)
+  t.assert.ok(server.test3)
 })
 
 test('checkExistence should check if a property is part of the given instance', t => {
   t.plan(1)
   const instance = { test: () => {} }
-  t.ok(decorator.exist(instance, 'test'))
+  t.assert.ok(decorator.exist(instance, 'test'))
 })
 
 test('checkExistence should find the instance if not given', t => {
@@ -73,7 +70,7 @@ test('checkExistence should find the instance if not given', t => {
 
   const server = build()
   server.add('test', () => {})
-  t.ok(server.check('test'))
+  t.assert.ok(server.check('test'))
 })
 
 test('checkExistence should check the prototype as well', t => {
@@ -82,7 +79,7 @@ test('checkExistence should check the prototype as well', t => {
   Instance.prototype.test = () => {}
 
   const instance = new Instance()
-  t.ok(decorator.exist(instance, 'test'))
+  t.assert.ok(decorator.exist(instance, 'test'))
 })
 
 test('checkDependencies should throw if a dependency is not present', t => {
@@ -90,10 +87,10 @@ test('checkDependencies should throw if a dependency is not present', t => {
   const instance = {}
   try {
     decorator.dependencies(instance, 'foo', ['test'])
-    t.fail()
+    t.assert.fail()
   } catch (e) {
-    t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.equal(e.message, 'The decorator is missing dependency \'test\'.')
+    t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.assert.strictEqual(e.message, 'The decorator is missing dependency \'test\'.')
   }
 })
 
@@ -114,10 +111,10 @@ test('decorate should internally call checkDependencies', t => {
 
   try {
     server.add('method', () => {}, ['test'])
-    t.fail()
+    t.assert.fail()
   } catch (e) {
-    t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.equal(e.message, 'The decorator is missing dependency \'test\'.')
+    t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.assert.strictEqual(e.message, 'The decorator is missing dependency \'test\'.')
   }
 })
 
@@ -134,14 +131,14 @@ test('decorate should recognize getter/setter objects', t => {
   decorator.add.call(one, 'foo', {
     getter: () => this._a,
     setter: (val) => {
-      t.pass()
+      t.assert.ok(true)
       this._a = val
     }
   })
-  t.equal(Object.prototype.hasOwnProperty.call(one, 'foo'), true)
-  t.equal(one.foo, undefined)
+  t.assert.strictEqual(Object.hasOwn(one, 'foo'), true)
+  t.assert.strictEqual(one.foo, undefined)
   one.foo = 'a'
-  t.equal(one.foo, 'a')
+  t.assert.strictEqual(one.foo, 'a')
 
   // getter only
   const two = {
@@ -154,6 +151,6 @@ test('decorate should recognize getter/setter objects', t => {
   decorator.add.call(two, 'foo', {
     getter: () => 'a getter'
   })
-  t.equal(Object.prototype.hasOwnProperty.call(two, 'foo'), true)
-  t.equal(two.foo, 'a getter')
+  t.assert.strictEqual(Object.hasOwn(two, 'foo'), true)
+  t.assert.strictEqual(two.foo, 'a getter')
 })

@@ -3,11 +3,15 @@
 .gitignore
 .github
 .nyc_output
+.DS_Store
 coverage/
 tools/
+.tap/
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
+EXPENSE_POLICY.md
 .clinic
+.gitpod.yml
 
 # test certification
 test/https/fastify.cert

@@ -3,14 +3,13 @@
 const { test, before } = require('tap')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
-const dns = require('node:dns').promises
 const split = require('split2')
+const helper = require('./helper')
+const { kState } = require('../lib/symbols')
 
 let localhost
-
 before(async function () {
-  const lookup = await dns.lookup('localhost')
-  localhost = lookup.address
+  [localhost] = await helper.getLoopbackHost()
 })
 
 test('onListen should not be processed when .ready() is called', t => {
@@ -273,8 +272,8 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
   })
 })
 
-test('localhost onListen encapsulation should be called in order', t => {
-  t.plan(6)
+test('localhost onListen encapsulation should be called in order', async t => {
+  t.plan(8)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
@@ -286,20 +285,75 @@ test('localhost onListen encapsulation should be called in order', t => {
     done()
   })
 
-  fastify.register(async (childOne, o) => {
+  await fastify.register(async (childOne, o) => {
     childOne.addHook('onListen', function (done) {
       t.equal(++order, 2, 'called in childOne')
       t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
     })
-    childOne.register(async (childTwo, o) => {
+
+    await childOne.register(async (childTwo, o) => {
       childTwo.addHook('onListen', async function () {
         t.equal(++order, 3, 'called in childTwo')
         t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
       })
     })
+
+    await childOne.register(async (childTwoPeer, o) => {
+      childTwoPeer.addHook('onListen', async function () {
+        t.equal(++order, 4, 'called second in childTwo')
+        t.equal(this.pluginName, childTwoPeer.pluginName, 'the this binding is the right instance')
+      })
+    })
   })
-  fastify.listen({
+  await fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})
+
+test('localhost onListen encapsulation with only nested hook', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(async (child) => {
+    await child.register(async (child2) => {
+      child2.addHook('onListen', function (done) {
+        t.pass()
+        done()
+      })
+    })
+  })
+
+  await fastify.listen({
+    host: 'localhost',
+    port: 0
+  })
+})
+
+test('localhost onListen peer encapsulations with only nested hooks', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+
+  await fastify.register(async (child) => {
+    await child.register(async (child2) => {
+      child2.addHook('onListen', function (done) {
+        t.pass()
+        done()
+      })
+    })
+
+    await child.register(async (child2) => {
+      child2.addHook('onListen', function (done) {
+        t.pass()
+        done()
+      })
+    })
+  })
+
+  await fastify.listen({
     host: 'localhost',
     port: 0
   })
@@ -1055,36 +1109,35 @@ test('async onListen does not need to be awaited', t => {
 
 test('onListen hooks do not block /1', t => {
   t.plan(2)
+
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', function (done) {
-    setTimeout(done, 500)
+    t.equal(fastify[kState].listening, true)
+    done()
   })
 
-  const startDate = new Date()
   fastify.listen({
     host: 'localhost',
     port: 0
   }, err => {
     t.error(err)
-    t.ok(new Date() - startDate < 50)
   })
 })
 
 test('onListen hooks do not block /2', async t => {
   t.plan(1)
+
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   fastify.addHook('onListen', async function () {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    t.equal(fastify[kState].listening, true)
   })
 
-  const startDate = new Date()
   await fastify.listen({
     host: 'localhost',
     port: 0
   })
-  t.ok(new Date() - startDate < 50)
 })

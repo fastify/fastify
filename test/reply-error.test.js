@@ -603,7 +603,6 @@ test('error handler is triggered when a string is thrown from sync handler', t =
   const payload = 'error'
 
   fastify.get('/', function (req, reply) {
-    // eslint-disable-next-line no-throw-literal
     throw throwable
   })
 
@@ -666,7 +665,6 @@ test('should trigger error handlers if a sync route throws any non-error object'
   const payload = 'error'
 
   fastify.get('/', function async (req, reply) {
-    // eslint-disable-next-line no-throw-literal
     throw throwable
   })
 

@@ -1,14 +1,11 @@
 'use strict'
 
-/* eslint no-prototype-builtins: 0 */
-
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const symbols = require('../lib/symbols.js')
-const proxyquire = require('proxyquire')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -642,7 +639,7 @@ test('should register empty values', t => {
 
   fastify.register((instance, opts, done) => {
     instance.decorate('test', null)
-    t.ok(Object.prototype.hasOwnProperty.call(instance, 'test'))
+    t.ok(Object.hasOwn(instance, 'test'))
     done()
   })
 
@@ -789,45 +786,44 @@ test('decorate* should throw if called after ready', async t => {
   await fastify.close()
 })
 
-test('decorate* should emit warning if an array is passed', t => {
+test('decorate* should emit error if an array is passed', t => {
   t.plan(2)
-  function onWarning (code, name) {
-    t.equal(name, 'test_array')
-    t.equal(code, 'FSTDEP006')
-  }
-  const warning = {
-    emit: onWarning
-  }
 
-  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
-  fastify.decorateRequest('test_array', [])
+  const fastify = Fastify()
+  try {
+    fastify.decorateRequest('test_array', [])
+    t.fail('should not decorate')
+  } catch (err) {
+    t.same(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.same(err.message, "The decorator 'test_array' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+  }
+})
+
+test('server.decorate should not emit error if reference type is passed', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.decorate('test_array', [])
+  fastify.decorate('test_object', {})
+  await fastify.ready()
+  t.pass('Done')
 })
 
 test('decorate* should emit warning if object type is passed', t => {
   t.plan(2)
-  function onWarning (code, name) {
-    t.equal(name, 'test_object')
-    t.equal(code, 'FSTDEP006')
-  }
-  const warning = {
-    emit: onWarning
-  }
 
-  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
-  fastify.decorateRequest('test_object', { foo: 'bar' })
+  const fastify = Fastify()
+  try {
+    fastify.decorateRequest('test_object', { foo: 'bar' })
+    t.fail('should not decorate')
+  } catch (err) {
+    t.same(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.same(err.message, "The decorator 'test_object' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+  }
 })
 
 test('decorate* should not emit warning if object with getter/setter is passed', t => {
-  function onWarning (warning) {
-    t.fail('Should not call a warn')
-  }
-  const warning = {
-    emit: onWarning
-  }
-  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+  const fastify = Fastify()
 
   fastify.decorateRequest('test_getter_setter', {
     setter (val) {
@@ -840,16 +836,74 @@ test('decorate* should not emit warning if object with getter/setter is passed',
   t.end('Done')
 })
 
-test('decorate* should not emit warning if string,bool,numbers are passed', t => {
-  function onWarning (warning) {
-    t.fail('Should not call a warn')
-  }
-  const warning = {
-    emit: onWarning
-  }
+test('decorateRequest with getter/setter can handle encapsulation', async t => {
+  t.plan(24)
 
-  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
-  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+  const fastify = Fastify({ logger: true })
+
+  fastify.decorateRequest('test_getter_setter_holder')
+  fastify.decorateRequest('test_getter_setter', {
+    getter () {
+      this.test_getter_setter_holder ??= {}
+      return this.test_getter_setter_holder
+    }
+  })
+
+  fastify.get('/', async function (req, reply) {
+    t.same(req.test_getter_setter, {}, 'a getter')
+    req.test_getter_setter.a = req.id
+    t.same(req.test_getter_setter, { a: req.id })
+  })
+
+  fastify.addHook('onResponse', async function hook (req, reply) {
+    t.same(req.test_getter_setter, { a: req.id })
+  })
+
+  await Promise.all([
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200))
+  ])
+})
+
+test('decorateRequest with getter/setter can handle encapsulation with arrays', async t => {
+  t.plan(24)
+
+  const fastify = Fastify({ logger: true })
+
+  fastify.decorateRequest('array_holder')
+  fastify.decorateRequest('my_array', {
+    getter () {
+      this.array_holder ??= []
+      return this.array_holder
+    }
+  })
+
+  fastify.get('/', async function (req, reply) {
+    t.same(req.my_array, [])
+    req.my_array.push(req.id)
+    t.same(req.my_array, [req.id])
+  })
+
+  fastify.addHook('onResponse', async function hook (req, reply) {
+    t.same(req.my_array, [req.id])
+  })
+
+  await Promise.all([
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.same(res.statusCode, 200))
+  ])
+})
+
+test('decorate* should not emit error if string,bool,numbers are passed', t => {
+  const fastify = Fastify()
 
   fastify.decorateRequest('test_str', 'foo')
   fastify.decorateRequest('test_bool', true)

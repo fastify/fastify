@@ -1,8 +1,6 @@
-import pino from 'pino'
-import { expectAssignable, expectType } from 'tsd'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
-  FastifyContext,
   FastifyContextConfig,
   FastifyLogFn,
   FastifySchema,
@@ -13,7 +11,8 @@ import fastify, {
   RequestBodyDefault,
   RequestGenericInterface,
   RouteHandler,
-  RouteHandlerMethod
+  RouteHandlerMethod,
+  SafePromiseLike
 } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -55,7 +54,7 @@ type CustomRequest = FastifyRequest<{
 }>
 
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
-type ExpectedGetValidationFunction = (input: {[key: string]: unknown}) => boolean
+type ExpectedGetValidationFunction = (input: { [key: string]: unknown }) => boolean
 
 interface CustomLoggerInterface extends FastifyLoggerInstance {
   foo: FastifyLogFn; // custom severity logger method
@@ -65,23 +64,20 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.url)
   expectType<string>(request.originalUrl)
   expectType<string>(request.method)
-  expectType<string>(request.routerPath)
-  expectType<string>(request.routerMethod)
   expectType<Readonly<RequestRouteOptions>>(request.routeOptions)
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
+  expectType<string>(request.host)
+  expectType<number>(request.port)
   expectType<string>(request.ip)
   expectType<string[] | undefined>(request.ips)
   expectType<RawRequestDefaultExpression>(request.raw)
   expectType<RequestBodyDefault>(request.body)
   expectType<RequestParamsDefault>(request.params)
-  expectType<FastifyContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeConfig)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.routeOptions.config)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
-  expectType<FastifySchema>(request.routeSchema)
-  expectType<FastifySchema>(request.routeOptions.schema)
+  expectType<FastifySchema | undefined>(request.routeOptions.schema)
+  expectType<RouteHandlerMethod>(request.routeOptions.handler)
+  expectType<string | undefined>(request.routeOptions.url)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}
@@ -93,9 +89,9 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
   expectType<FastifyInstance>(request.server)
   expectAssignable<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction>(request.getValidationFunction)
-  expectAssignable<(schema: {[key: string]: unknown}) => ExpectedGetValidationFunction>(request.getValidationFunction)
-  expectAssignable<(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
-  expectAssignable<(input: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
+  expectAssignable<(schema: { [key: string]: unknown }) => ExpectedGetValidationFunction>(request.getValidationFunction)
+  expectAssignable<(input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
+  expectAssignable<(input: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
 }
 
 const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, CustomLoggerInterface> = function (request, _reply) {
@@ -112,8 +108,7 @@ const postHandler: Handler = function (request) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
-  expectType<FastifyContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<FastifyContextConfig & FastifyRouteConfig>(request.routeOptions.config)
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
@@ -121,7 +116,7 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystring>(request.query)
-  if (typeof request.body === 'undefined') {
+  if (request.body === undefined) {
     expectType<undefined>(request.body)
   } else {
     expectType<string>(request.body.content)
@@ -130,8 +125,7 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
-  expectType<FastifyContext<ContextConfigDefault>>(request.context)
-  expectType<FastifyContext<ContextConfigDefault>['config']>(request.context.config)
+  expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(request.routeOptions.config)
 }
 
 const server = fastify()
@@ -149,13 +143,21 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
-  child: () => customLogger as pino.Logger<never>
+  child: () => customLogger
 }
 
-const serverWithCustomLogger = fastify({ logger: customLogger })
-expectType<
+const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
+expectError<
+FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
+& Promise<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
+>(serverWithCustomLogger)
+expectAssignable<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
+>(serverWithCustomLogger)
+expectType<
+FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
+& SafePromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
 >(serverWithCustomLogger)
 
 serverWithCustomLogger.get('/get', getHandlerWithCustomLogger)

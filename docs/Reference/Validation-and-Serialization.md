@@ -49,16 +49,16 @@ The shared schemas can be reused through the JSON Schema
 [**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8)
 keyword. Here is an overview of _how_ references work:
 
-+ `myField: { $ref: '#foo'}` will search for field with `$id: '#foo'` inside the
++ `myField: { $ref: '#foo' }` will search for field with `$id: '#foo'` inside the
   current schema
-+ `myField: { $ref: '#/definitions/foo'}` will search for field
++ `myField: { $ref: '#/definitions/foo' }` will search for field
   `definitions.foo` inside the current schema
-+ `myField: { $ref: 'http://url.com/sh.json#'}` will search for a shared schema
++ `myField: { $ref: 'http://url.com/sh.json#' }` will search for a shared schema
   added with `$id: 'http://url.com/sh.json'`
-+ `myField: { $ref: 'http://url.com/sh.json#/definitions/foo'}` will search for
++ `myField: { $ref: 'http://url.com/sh.json#/definitions/foo' }` will search for
   a shared schema added with `$id: 'http://url.com/sh.json'` and will use the
   field `definitions.foo`
-+ `myField: { $ref: 'http://url.com/sh.json#foo'}` will search for a shared
++ `myField: { $ref: 'http://url.com/sh.json#foo' }` will search for a shared
   schema added with `$id: 'http://url.com/sh.json'` and it will look inside of
   it for object with `$id: '#foo'`
 
@@ -233,6 +233,28 @@ const schema = {
 }
 
 fastify.post('/the/url', { schema }, handler)
+```
+
+For `body` schema, it is further possible to differentiate the schema per content
+type by nesting the schemas inside `content` property. The schema validation
+will be applied based on the `Content-Type` header in the request.
+
+```js
+fastify.post('/the/url', {
+  schema: {
+    body: {
+      content: {
+        'application/json': {
+          schema: { type: 'object' }
+        },
+        'text/plain': {
+          schema: { type: 'string' }
+        }
+        // Other content types will not be validated
+      }
+    }
+  }
+}, handler)
 ```
 
 *Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) the values
@@ -435,7 +457,7 @@ validator you are using._
 <a id="using-other-validation-libraries"></a>
 
 The `setValidatorCompiler` function makes it easy to substitute `ajv` with
-almost any Javascript validation library ([joi](https://github.com/hapijs/joi/),
+almost any JavaScript validation library ([joi](https://github.com/hapijs/joi/),
 [yup](https://github.com/jquense/yup/), ...) or a custom one:
 
 ```js
@@ -618,37 +640,47 @@ You can even have a specific response schema for different content types.
 For example:
 ```js
 const schema = {
-      response: {
-        200: {
-          description: 'Response schema that support different content types'
-          content: {
-            'application/json': {
-              schema: {
-                name: { type: 'string' },
-                image: { type: 'string' },
-                address: { type: 'string' }
-              }
-            },
-            'application/vnd.v1+json': {
-              schema: {
-                type: 'array',
-                items: { $ref: 'test' }
-              }
-            }
+  response: {
+    200: {
+      description: 'Response schema that support different content types'
+      content: {
+        'application/json': {
+          schema: {
+            name: { type: 'string' },
+            image: { type: 'string' },
+            address: { type: 'string' }
           }
         },
-        '3xx': {
-          content: {
-            'application/vnd.v2+json': {
-              schema: {
-                fullName: { type: 'string' },
-                phone: { type: 'string' }
-              }
-            }
+        'application/vnd.v1+json': {
+          schema: {
+            type: 'array',
+            items: { $ref: 'test' }
+          }
+        }
+      }
+    },
+    '3xx': {
+      content: {
+        'application/vnd.v2+json': {
+          schema: {
+            fullName: { type: 'string' },
+            phone: { type: 'string' }
+          }
+        }
+      }
+    },
+    default: {
+      content: {
+        // */* is match-all content-type
+        '*/*': {
+          schema: {
+            desc: { type: 'string' }
           }
         }
       }
     }
+  }
+}
 
 fastify.post('/url', { schema }, handler)
 ```
@@ -673,8 +705,11 @@ fastify.get('/user', {
   schema: {
     response: {
       '2xx': {
-        id: { type: 'number' },
-        name: { type: 'string' }
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          name: { type: 'string' }
+        }
       }
     }
   }

@@ -19,10 +19,10 @@ jobs:
       # See: https://github.com/lycheeverse/lychee-action/issues/17
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@ec3ed119d4f44ad2673a7232460dc7dff59d2421
+        uses: lycheeverse/lychee-action@f81112d0d2814ded911bd23e3beaa9dda9093915
         with:
           fail: true
-          # As external links behaviour is not predictable, we check only internal links
+          # As external links behavior is not predictable, we check only internal links
           # to ensure consistency.
           # See: https://github.com/lycheeverse/lychee-action/issues/17#issuecomment-1162586751
           args: --offline --verbose --no-progress './**/*.md'

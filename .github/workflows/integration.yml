@@ -20,33 +20,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
-    
+
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [20, 22]
         os: [ubuntu-latest]
         pnpm-version: [8]
-        # pnpm@8 does not support Node.js 14 so include it separately
-        include:
-          - node-version: 14
-            os: ubuntu-latest
-            pnpm-version: 7
 
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      
+
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          check-latest: true
 
       - name: Install Pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: ${{ matrix.pnpm-version }}
-      
+
       - name: Install Production
         run: |
           pnpm install --prod

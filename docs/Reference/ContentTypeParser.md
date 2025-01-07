@@ -4,6 +4,8 @@
 Natively, Fastify only supports `'application/json'` and `'text/plain'` content
 types. If the content type is not one of these, an
 `FST_ERR_CTP_INVALID_MEDIA_TYPE` error will be thrown.
+Other common content types are supported through the use of
+[plugins](https://fastify.dev/ecosystem/).
 
 The default charset is `utf-8`. If you need to support different content types,
 you can use the `addContentTypeParser` API. *The default JSON and/or plain text
@@ -27,6 +29,13 @@ is given in the content-type header. If it is not given, the
 [catch-all](#catch-all) parser is not executed as with `POST`, `PUT` and
 `PATCH`, but the payload is simply not parsed.
 
+> ## ⚠  Security Notice
+> When using with RegExp to detect `Content-Type`, you should beware of
+> how to properly detect the `Content-Type`. For example, if you need
+> `application/*`, you should use `/^application\/([\w-]+);?/` to match the
+> [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
+> only.
+
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {
@@ -44,13 +53,13 @@ fastify.addContentTypeParser(['text/xml', 'application/xml'], function (request,
 
 // Async is also supported in Node versions >= 8.0.0
 fastify.addContentTypeParser('application/jsoff', async function (request, payload) {
-  var res = await jsoffParserAsync(payload)
+  const res = await jsoffParserAsync(payload)
 
   return res
 })
 
 // Handle all content types that matches RegExp
-fastify.addContentTypeParser(/^image\/.*/, function (request, payload, done) {
+fastify.addContentTypeParser(/^image\/([\w-]+);?/, function (request, payload, done) {
   imageParser(payload, function (err, body) {
     done(err, body)
   })
@@ -76,6 +85,28 @@ fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => 
 // `application/vnd.custom+xml` content type parser
 fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
+```
+
+### Using addContentTypeParser with fastify.register
+When using `addContentTypeParser` in combination with `fastify.register`,
+`await` should not be used when registering routes. Using `await` causes
+the route registration to be asynchronous and can lead to routes being registered
+before the addContentTypeParser has been set.
+
+#### Correct Usage
+```js
+const fastify = require('fastify')();
+
+
+fastify.register((fastify, opts) => {
+  fastify.addContentTypeParser('application/json', function (request, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.get('/hello', async (req, res) => {});
+});
 ```
 
 Besides the `addContentTypeParser` API there are further APIs that can be used.
@@ -150,7 +181,7 @@ limit is exceeded the custom parser will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
-    var json = JSON.parse(body)
+    const json = JSON.parse(body)
     done(null, json)
   } catch (err) {
     err.statusCode = 400
@@ -175,7 +206,7 @@ There are some cases where you need to catch all requests regardless of their
 content type. With Fastify, you can just use the `'*'` content type.
 ```js
 fastify.addContentTypeParser('*', function (request, payload, done) {
-  var data = ''
+  let data = ''
   payload.on('data', chunk => { data += chunk })
   payload.on('end', () => {
     done(null, data)
@@ -235,7 +266,7 @@ only on those that don't have a specific one, you should call the
 fastify.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('*', function (request, payload, done) {
-  var data = ''
+  const data = ''
   payload.on('data', chunk => { data += chunk })
   payload.on('end', () => {
     done(null, data)

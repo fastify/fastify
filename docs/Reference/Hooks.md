@@ -107,7 +107,7 @@ returned stream. This property is used to correctly match the request payload
 with the `Content-Length` header value. Ideally, this property should be updated
 on each received chunk.
 
-**Notice:** The size of the returned stream is checked to not exceed the limit 
+**Notice:** The size of the returned stream is checked to not exceed the limit
 set in [`bodyLimit`](./Server.md#bodylimit) option.
 
 ### preValidation
@@ -130,6 +130,10 @@ fastify.addHook('preValidation', async (request, reply) => {
 ```
 
 ### preHandler
+
+The `preHandler` hook allows you to specify a function that is executed before
+a routes's handler.
+
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {
   // some code
@@ -185,9 +189,11 @@ specific header in case of error.
 It is not intended for changing the error, and calling `reply.send` will throw
 an exception.
 
-This hook will be executed only after the `customErrorHandler` has been
-executed, and only if the `customErrorHandler` sends an error back to the user
-*(Note that the default `customErrorHandler` always sends the error back to the
+This hook will be executed only after
+the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler)
+has been executed, and only if the custom error handler sends an error back to the
+user
+*(Note that the default error handler always sends the error back to the
 user)*.
 
 **Notice:** unlike the other hooks, passing an error to the `done` function is not
@@ -228,7 +234,7 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > `null`.
 
 Note: If you change the payload, you may only change it to a `string`, a
-`Buffer`, a `stream`, or `null`.
+`Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
 ### onResponse
@@ -250,8 +256,8 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
-**Note:** setting `disableRequestLogging` to `true` will disable any error log 
-inside the `onResponse` hook. In this case use `try - catch` to log errors. 
+**Note:** setting `disableRequestLogging` to `true` will disable any error log
+inside the `onResponse` hook. In this case use `try - catch` to log errors.
 
 ### onTimeout
 
@@ -346,9 +352,11 @@ fastify.addHook('onRequest', (request, reply, done) => {
 
 // Works with async functions too
 fastify.addHook('preHandler', async (request, reply) => {
-  await something()
-  reply.send({ hello: 'world' })
+  setTimeout(() => {
+    reply.send({ hello: 'from prehandler' })
+  })
   return reply // mandatory, so the request is not executed further
+// Commenting the line above will allow the hooks to continue and fail with FST_ERR_REP_ALREADY_SENT
 })
 ```
 
@@ -420,8 +428,8 @@ fastify.addHook('onReady', async function () {
 
 ### onListen
 
-Triggered when the server starts listening for requests. The hooks run one 
-after another. If a hook function causes an error, it is logged and 
+Triggered when the server starts listening for requests. The hooks run one
+after another. If a hook function causes an error, it is logged and
 ignored, allowing the queue of hooks to continue. Hook functions accept one
 argument: a callback, `done`, to be invoked after the hook function is
 complete. Hook functions are invoked with `this` bound to the associated
@@ -443,7 +451,7 @@ fastify.addHook('onListen', async function () {
 })
 ```
 
-> **Note**  
+> **Note**
 > This hook will not run when the server is started using `fastify.inject()` or `fastify.ready()`
 
 ### onClose
@@ -454,7 +462,7 @@ HTTP requests have been completed.
 It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
 to close an open connection to a database.
 
-The hook function takes the Fastify instance as a first argument, 
+The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
 ```js
 // callback style
@@ -820,19 +828,11 @@ consider creating a custom [Plugin](./Plugins.md) instead.
 
 ## Diagnostics Channel Hooks
 
-> **Note:** The `diagnostics_channel` is currently experimental on Node.js, so
-> its API is subject to change even in semver-patch releases of Node.js. For
-> versions of Node.js supported by Fastify where `diagnostics_channel` is
-> unavailable, the hook will use the
-> [polyfill](https://www.npmjs.com/package/diagnostics_channel) if it is
-> available. Otherwise, this feature will not be present.
-
-Currently, one
-[`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
-event, `'fastify.initialization'`, happens at initialization time. The Fastify
-instance is passed into the hook as a property of the object passed in. At this
-point, the instance can be interacted with to add hooks, plugins, routes, or any
-other sort of modification.
+One [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html)
+publish event, `'fastify.initialization'`, happens at initialization time. The
+Fastify instance is passed into the hook as a property of the object passed in.
+At this point, the instance can be interacted with to add hooks, plugins,
+routes, or any other sort of modification.
 
 For example, a tracing package might do something like the following (which is,
 of course, a simplification). This would be in a file loaded in the
@@ -847,7 +847,7 @@ const spans = new WeakMap()
 
 channel.subscribe(function ({ fastify }) {
   fastify.addHook('onRequest', (request, reply, done) => {
-    const span = tracer.startSpan('fastify.request')
+    const span = tracer.startSpan('fastify.request.handler')
     spans.set(request, span)
     done()
   })
@@ -857,5 +857,43 @@ channel.subscribe(function ({ fastify }) {
     span.finish()
     done()
   })
+})
+```
+
+> **Note:** The TracingChannel class API is currently experimental and may undergo
+> breaking changes even in semver-patch releases of Node.js.
+
+Five other events are published on a per-request basis following the
+[Tracing Channel](https://nodejs.org/api/diagnostics_channel.html#class-tracingchannel)
+nomenclature. The list of the channel names and the event they receive is:
+
+- `tracing:fastify.request.handler:start`: Always fires
+  - `{ request: Request, reply: Reply, route: { url, method } }`
+- `tracing:fastify.request.handler:end`: Always fires
+  - `{ request: Request, reply: Reply, route: { url, method }, async: Bool }`
+- `tracing:fastify.request.handler:asyncStart`: Fires for promise/async handlers
+  - `{ request: Request, reply: Reply, route: { url, method } }`
+- `tracing:fastify.request.handler:asyncEnd`: Fires for promise/async handlers
+  - `{ request: Request, reply: Reply, route: { url, method } }`
+- `tracing:fastify.request.handler:error`: Fires when an error occurs
+  - `{ request: Request, reply: Reply, route: { url, method }, error: Error }`
+
+The object instance remains the same for all events associated with a given
+request. All payloads include a `request` and `reply` property which are an
+instance of Fastify's `Request` and `Reply` instances. They also include a
+`route` property which is an object with the matched `url` pattern (e.g.
+`/collection/:id`) and the `method` HTTP method (e.g. `GET`). The `:start` and
+`:end` events always fire for requests. If a request handler is an `async`
+function or one that returns a `Promise` then the `:asyncStart` and `:asyncEnd`
+events also fire. Finally, the `:error` event contains an `error` property
+associated with the request's failure.
+
+These events can be received like so:
+
+```js
+const dc = require('node:diagnostics_channel')
+const channel = dc.channel('tracing:fastify.request.handler:start')
+channel.subscribe((msg) => {
+  console.log(msg.request, msg.reply)
 })
 ```

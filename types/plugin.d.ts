@@ -15,7 +15,7 @@ export type FastifyPluginCallback<
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  Decorators extends FastifyDecorators = object,
+  Decorators extends FastifyDecorators = object
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators> & Decorators['fastify'],
   opts: Options,
@@ -36,10 +36,11 @@ export type FastifyPluginAsync<
 > = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider, Decorators> & Decorators['fastify'],
   opts: Options
-) => Promise<void>;
+) => Promise<void>
 
 /**
  * Generic plugin type.
- * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. See FastifyRegister.
+ * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. Use `FastifyPluginCallback` or `FastifyPluginAsync` instead. To activate
+ * plugins use `FastifyRegister`. https://fastify.dev/docs/latest/Reference/TypeScript/#register
  */
 export type FastifyPlugin<Options extends FastifyPluginOptions = Record<never, never>> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>

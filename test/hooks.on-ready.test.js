@@ -35,6 +35,22 @@ t.test('onReady should be called in order', t => {
   fastify.ready(err => t.error(err))
 })
 
+t.test('onReady should be called once', async (t) => {
+  const app = Fastify()
+  let counter = 0
+
+  app.addHook('onReady', async function () {
+    counter++
+  })
+
+  const promises = [1, 2, 3, 4, 5].map((id) => app.ready().then(() => id))
+
+  const result = await Promise.race(promises)
+
+  t.strictSame(result, 1, 'Should resolve in order')
+  t.equal(counter, 1, 'Should call onReady only once')
+})
+
 t.test('async onReady should be called in order', async t => {
   t.plan(7)
   const fastify = Fastify()
@@ -279,7 +295,7 @@ t.test('onReady cannot add lifecycle hooks', t => {
       t.ok(error)
       t.equal(error.message, 'Root plugin has already booted')
       // TODO: look where the error pops up
-      t.equal(error.code, 'AVV_ERR_PLUGIN_NOT_VALID')
+      t.equal(error.code, 'AVV_ERR_ROOT_PLG_BOOTED')
       done(error)
     }
   })
@@ -306,14 +322,14 @@ t.test('onReady does not call done', t => {
   t.plan(6)
   const fastify = Fastify({ pluginTimeout: 500 })
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function someHookName (done) {
     t.pass('called in root')
     // done() // don't call done to test timeout
   })
 
   fastify.ready(err => {
     t.ok(err)
-    t.equal(err.message, "A callback for 'onReady' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.message, 'A callback for \'onReady\' hook "someHookName" timed out. You may have forgotten to call \'done\' function or to resolve a Promise')
     t.equal(err.code, 'FST_ERR_HOOK_TIMEOUT')
     t.ok(err.cause)
     t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')

@@ -1,14 +1,14 @@
 'use strict'
 
 const { test, skip } = require('tap')
-const { lookup } = require('node:dns').promises
 const Fastify = require('..')
 const { connect } = require('node:net')
 const { once } = require('node:events')
+const dns = require('node:dns').promises
 
 async function setup () {
-  const results = await lookup('localhost', { all: true })
-  if (results.length === 1) {
+  const localAddresses = await dns.lookup('localhost', { all: true })
+  if (localAddresses.length === 1) {
     skip('requires both IPv4 and IPv6')
     return
   }

@@ -703,8 +703,8 @@ test('Custom schema object should not trigger FST_ERR_SCH_DUPLICATE', async t =>
   t.pass('fastify is ready')
 })
 
-test('The default schema compilers should not be called when overwritte by the user', async t => {
-  const Fastify = t.mock('../', {
+test('The default schema compilers should not be called when overwritten by the user', async t => {
+  const Fastify = t.mockRequire('../', {
     '@fastify/ajv-compiler': () => {
       t.fail('The default validator compiler should not be called')
     },

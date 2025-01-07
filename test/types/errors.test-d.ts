@@ -1,6 +1,6 @@
+import { FastifyErrorConstructor } from '@fastify/error'
 import { expectAssignable } from 'tsd'
 import { errorCodes } from '../../fastify'
-import { FastifyErrorConstructor } from '@fastify/error'
 
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_VALIDATION)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_NOT_FOUND)
@@ -10,7 +10,6 @@ expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_SCHEMA_CONTROLLER_B
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR)
-expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_VERSION_CONSTRAINT_NOT_STR)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_VALIDATION)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_CTP_ALREADY_PRESENT)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_CTP_INVALID_TYPE)
@@ -59,8 +58,6 @@ expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_FORCE_CLOSE_CONNECT
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_DUPLICATED_ROUTE)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_BAD_URL)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_ASYNC_CONSTRAINT)
-expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_DEFAULT_ROUTE_INVALID_TYPE)
-expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_INVALID_URL)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_ROUTE_OPTIONS_NOT_OBJ)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_ROUTE_DUPLICATED_HANDLER)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_ROUTE_HANDLER_NOT_FN)

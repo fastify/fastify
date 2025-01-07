@@ -10,8 +10,8 @@
  * node examples/typescript-server.js
  */
 
-import fastify, { FastifyInstance, RouteShorthandOptions } from '../fastify';
-import { Server, IncomingMessage, ServerResponse } from 'http';
+import fastify, { FastifyInstance, RouteShorthandOptions } from '../fastify'
+import { Server, IncomingMessage, ServerResponse } from 'node:http'
 
 // Create an http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.
@@ -20,7 +20,7 @@ const server: FastifyInstance<
   Server,
   IncomingMessage,
   ServerResponse
-> = fastify({ logger: true });
+> = fastify({ logger: true })
 
 // Define interfaces for our request. We can create these automatically
 // off our JSON Schema files (See TypeScript.md) but for the purpose of this
@@ -53,7 +53,7 @@ const opts: RouteShorthandOptions = {
       }
     }
   }
-};
+}
 
 // Add our route handler with correct types
 server.post<{
@@ -62,18 +62,18 @@ server.post<{
   Headers: PingHeaders;
   Body: PingBody;
 }>('/ping/:bar', opts, (request, reply) => {
-  console.log(request.query); // this is of type `PingQuerystring`
-  console.log(request.params); // this is of type `PingParams`
-  console.log(request.headers); // this is of type `PingHeaders`
-  console.log(request.body); // this is of type `PingBody`
-  reply.code(200).send({ pong: 'it worked!' });
-});
+  console.log(request.query) // this is of type `PingQuerystring`
+  console.log(request.params) // this is of type `PingParams`
+  console.log(request.headers) // this is of type `PingHeaders`
+  console.log(request.body) // this is of type `PingBody`
+  reply.code(200).send({ pong: 'it worked!' })
+})
 
 // Start your server
 server.listen({ port: 8080 }, (err, address) => {
   if (err) {
-    console.error(err);
-    process.exit(1);
+    console.error(err)
+    process.exit(1)
   }
-   console.log(`server listening on ${address}`)
-});
+  console.log(`server listening on ${address}`)
+})

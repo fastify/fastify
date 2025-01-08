@@ -132,7 +132,7 @@ on Fastify to find out how to integrate.
 
 ## Genezio
 
-[Genezio](https://genezio.com/) is a platform designed to simplify the deployment of Fastify applications to the cloud. It eliminates the complexity of managing infrastructure and modifying your code for cloud compatibility. Genezio provides two main deployment methods:
+[Genezio](https://genezio.com/) is a platform designed to simplify the deployment of serverless applications to the cloud. It eliminates the complexity of managing infrastructure and modifying your code for cloud compatibility. Genezio provides two main deployment methods:
 
 - [Deploy from a GitHub repository](#deploy-from-a-github-repository)
 - [Deploy Using the CLI](#deploy-using-the-cli)

@@ -5,7 +5,9 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 83 errors', t => {
+const expectedErrors = 84
+
+test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +16,11 @@ test('should expose 83 errors', t => {
       counter++
     }
   }
-  t.assert.strictEqual(counter, 83)
+  t.assert.strictEqual(counter, expectedErrors)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -373,6 +375,16 @@ test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
   t.assert.strictEqual(error.message, 'Response.body is already consumed.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_REP_READABLE_STREAM_LOCKED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_REP_READABLE_STREAM_LOCKED()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
+  t.assert.strictEqual(error.message, 'ReadableStream was locked. You should call releaseLock() method on reader before sending.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
@@ -868,7 +880,7 @@ test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
 })
 
 test('Ensure that all errors are in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -880,7 +892,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g
@@ -893,7 +905,7 @@ test('Ensure that non-existing errors are not in Errors.md TOC', t => {
 })
 
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -905,7 +917,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g

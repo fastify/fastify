@@ -23,13 +23,12 @@ Request is a core Fastify object containing the following fields:
 - `host` - the host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
   enabled). For HTTP/2 compatibility it returns `:authority` if no host header
-  exists. The host header may return empty string when using
-  `requireHostHeader = false`, not suppied when connected with `HTTP/1.0` or
-  using schema validation that remove the extra headers.
-- `hostname` - the host of the `host` property, it may refers the incoming
-  request hostname
-- `port` - the port of the `host` property, it may refers the port thats
-  the server is listening on
+  exists. The host header may return an empty string if `requireHostHeader`
+  is false, not provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - the hostname derived from the `host` property of
+  the incoming request
+- `port` - the port from the `host` property, which may refer to
+  the port the server is listening on
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
@@ -88,8 +87,8 @@ request's headers with the `request.raw.headers` property.
 > Note: For performance reason on `not found` route, you may see that we will
 add an extra property `Symbol('fastify.RequestAcceptVersion')` on the headers.
 
-> Note: When using schema, it may mutate the `request.headers` and
-`request.raw.headers` object. So, you may found the headers becomes empty.
+> Note: Using schema validation may mutate the `request.headers` and
+`request.raw.headers` objects, causing the headers to become empty.
 
 ```js
 fastify.post('/:params', options, function (request, reply) {
@@ -162,7 +161,7 @@ This function will compile a validation schema and
 return a function that can be used to validate data.
 The function returned (a.k.a. _validation function_) is compiled
 by using the provided [`SchemaController#ValidationCompiler`](./Server.md#schema-controller).
-A `WeakMap` is used to cached this, reducing compilation calls.
+A `WeakMap` is used to cache this, reducing compilation calls.
 
 The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation

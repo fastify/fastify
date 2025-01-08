@@ -1,19 +1,19 @@
 'use strict'
 
-const { test } = require('node:test')
+const { describe, test } = require('node:test')
 const Fastify = require('..')
 const { connect } = require('node:net')
 const { once } = require('node:events')
 const dns = require('node:dns').promises
 
-test('upgrade to both servers', async t => {
+describe('upgrade to both servers', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
   if (localAddresses.length === 1) {
     t.skip('requires both IPv4 and IPv6')
     return
   }
 
-  await t.test('upgrade IPv4 and IPv6', async t => {
+  await test('upgrade IPv4 and IPv6', async t => {
     t.plan(2)
 
     const fastify = Fastify()

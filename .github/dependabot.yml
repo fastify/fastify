@@ -29,9 +29,6 @@ updates:
         dependency-type: "production"
         update-types:
         - "major"
-      # Development dependencies
-      dev-dependencies:
-        dependency-type: "development"
     ignore:
         - dependency-name: tap
           update-types: ["version-update:semver-major"]

@@ -29,6 +29,23 @@ updates:
         dependency-type: "production"
         update-types:
         - "major"
+      # ESLint related dependencies
+      dev-dependencies-eslint:
+        patterns:
+          - "eslint"
+          - "neostandard"
+          - "@stylistic/*"
+      # TypeScript related dependencies
+      dev-dependencies-typescript:
+        patterns:
+          - "@types/*"
+          - "tsd"
+          - "typescript"
+      # Ajv related dependencies
+      dev-dependencies-ajv:
+        patterns:
+          - "ajv"
+          - "ajv-*"
     ignore:
         - dependency-name: tap
           update-types: ["version-update:semver-major"]

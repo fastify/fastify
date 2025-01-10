@@ -528,7 +528,7 @@ fastify.register(function (instance, opts, done) {
 
 In Fastify v4, `req.hostname` would include both the hostname and the
 server’s port, so locally it might have the value `localhost:1234`.
-With v5, we are aligned to the Node.js URL object and include `host`, `hostname`,
+With v5, we aligned to the Node.js URL object and now include `host`, `hostname`,
 and `port` properties. `req.host` has the same value as `req.hostname` did in v4,
 while `req.hostname` includes the hostname _without_ a port if a port is present,
 and `req.port` contains just the port number.

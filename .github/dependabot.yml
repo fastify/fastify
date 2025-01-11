@@ -15,7 +15,7 @@ updates:
       # Prefix all commit messages with "chore: "
       prefix: "chore"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 10
     groups:
       # Production dependencies without breaking changes

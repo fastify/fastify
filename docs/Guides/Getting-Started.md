@@ -106,7 +106,7 @@ of your code.
 Fastify offers an easy platform that helps to solve all of the problems outlined
 above, and more!
 
-> ## Note
+> **Note**
 > The above examples, and subsequent examples in this document, default to
 > listening *only* on the localhost `127.0.0.1` interface. To listen on all
 > available IPv4 interfaces the example should be modified to listen on

@@ -19,7 +19,7 @@ This table of contents is in alphabetical order.
   practical guide on detecting if and when a client aborts a request.
 + [Ecosystem](./Ecosystem.md): Lists all core plugins and many known community
   plugins.
-+ [Fluent Schema](./Fluent-Schema.md): Shows how writing JSON Schema can be
++ [Fluent Schema](./Fluent-Schema.md): Shows how JSON Schema can be
   written with a fluent API and used in Fastify.
 + [Getting Started](./Getting-Started.md): Introduction tutorial for Fastify.
   This is where beginners should start.

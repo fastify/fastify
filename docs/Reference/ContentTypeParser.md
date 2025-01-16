@@ -65,9 +65,9 @@ fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefa
 
 Fastify first tries to match a content-type parser with a `string` value before
 trying to find a matching `RegExp`. For overlapping content types, it starts
-with the last one configured and ends with the first (last in, first out). To specify a general content
-type more precisely, first specify the general type, then the specific one, as
-shown below.
+with the last one configured and ends with the first (last in, first out).
+To specify a general content type more precisely, first specify the general
+type, then the specific one, as shown below.
 
 ```js
 // Here only the second content type parser is called because its value also matches the first one
@@ -137,9 +137,10 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 
 #### removeAllContentTypeParsers
 The `removeAllContentTypeParsers` API removes all existing content type parsers
-eliminating the need to specify each one individually. This API supports encapsulation
-and is useful for registering a [catch-all content type parser](#catch-all) that
-should be executed for every content type, ignoring built-in parsers.
+eliminating the need to specify each one individually. This API supports
+encapsulation and is useful for registering a
+[catch-all content type parser](#catch-all) that should be executed for every
+content type, ignoring built-in parsers.
 
 ```js
 fastify.removeAllContentTypeParsers()

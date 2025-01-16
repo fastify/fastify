@@ -362,7 +362,8 @@ Sets the content type for the response. This is a shortcut for
 reply.type('text/html')
 ```
 If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
-`utf-8` will be used as the charset by default.
+`utf-8` will be used as the charset by default. For other content types, the
+charset must be set explicitly.
 
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>

@@ -199,8 +199,7 @@ fastify.addContentTypeParser('*', function (request, payload, done) {
 All requests without a corresponding content type parser will be handled by
 this function.
 
-This is also useful for piping the request stream. You can define a content
-parser like:
+This is also useful for piping the request stream. Define a content parser like:
 
 ```js
 fastify.addContentTypeParser('*', function (request, payload, done) {
@@ -208,7 +207,7 @@ fastify.addContentTypeParser('*', function (request, payload, done) {
 })
 ```
 
-And then access the core HTTP request directly for piping it where you want:
+And then access the core HTTP request directly for piping:
 
 ```js
 app.post('/hello', (request, reply) => {

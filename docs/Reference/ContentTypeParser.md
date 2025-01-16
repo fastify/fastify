@@ -65,7 +65,7 @@ fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefa
 
 Fastify first tries to match a content-type parser with a `string` value before
 trying to find a matching `RegExp`. For overlapping content types, it starts
-with the last one passed and ends with the first. To specify a general content
+with the last one configured and ends with the first (last in, first out). To specify a general content
 type more precisely, first specify the general type, then the specific one, as
 shown below.
 

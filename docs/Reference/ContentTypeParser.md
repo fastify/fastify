@@ -137,7 +137,7 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 
 #### removeAllContentTypeParsers
 The `removeAllContentTypeParsers` API removes all existing content type parsers
-eliminating the need to specify each one individually. This API support encapsulation
+eliminating the need to specify each one individually. This API supports encapsulation
 and is useful for registering a [catch-all content type parser](#catch-all) that
 should be executed for every content type, ignoring built-in parsers.
 

@@ -1576,7 +1576,7 @@ if (statusCode >= 500) {
 }
 ```
 
-Custom error handler has to account for stream replies.
+### Custom error handler has to account for stream replies.
 
 If `Content-Type` is different between endpoint and error handler
 For example, endpoint returns `application/text` stream and error handler

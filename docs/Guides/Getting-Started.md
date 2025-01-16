@@ -559,8 +559,9 @@ Read the [testing](./Testing.md) documentation to learn more!
 ### Run your server from CLI
 <a id="cli"></a>
 
-Fastify also has CLI integration thanks to
-[fastify-cli](https://github.com/fastify/fastify-cli).
+Fastify also has CLI integration via
+[fastify-cli](https://github.com/fastify/fastify-cli),
+a separate tool for scaffolding and managing Fastify projects.
 
 First, install `fastify-cli`:
 

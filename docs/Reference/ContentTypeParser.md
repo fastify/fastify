@@ -151,7 +151,7 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 })
 ```
 
-**Notice**: The old syntaxes `function(req, done)` and `async function(req)` are
+**Notice**: `function(req, done)` and `async function(req)` are
 still supported but deprecated.
 
 #### Body Parser

@@ -6,7 +6,7 @@ recommend using [JSON Schema](https://json-schema.org/) to validate your routes
 and serialize your outputs. Internally, Fastify compiles the schema into a
 highly performant function.
 
-Validation will only be attempted if the content type is `application-json`, as
+Validation will only be attempted if the content type is `application/json`, as
 described in the documentation for the [content type
 parser](./ContentTypeParser.md).
 

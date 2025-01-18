@@ -35,10 +35,10 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 
 <br />
 
-An efficient server implies a lower cost of the infrastructure, a better
-responsiveness under load and happy users. How can you efficiently handle the
+An efficient server implies a lower cost of the infrastructure, better
+responsiveness under load, and happy users. How can you efficiently handle the
 resources of your server, knowing that you are serving the highest number of
-requests as possible, without sacrificing security validations and handy
+requests possible, without sacrificing security validations and handy
 development?
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best
@@ -46,7 +46,7 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-The `main` branch refers to the Fastify `v5` release, which is not released/LTS yet.
+The `main` branch refers to the Fastify `v5` release.
 Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v4`.
 
 ### Table of Contents
@@ -138,7 +138,7 @@ fastify.listen({ port: 3000 }, (err, address) => {
 })
 ```
 
-with async-await:
+With async-await:
 
 ```js
 // ESM
@@ -171,7 +171,7 @@ href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 > (`127.0.0.1` or `::1`, depending on the operating system configuration). If
 > you are running Fastify in a container (Docker,
 > [GCP](https://cloud.google.com/), etc.), you may need to bind to `0.0.0.0`. Be
-> careful when deciding to listen on all interfaces; it comes with inherent
+> careful when listening on all interfaces; it comes with inherent
 > [security
 > risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 > See [the documentation](./docs/Reference/Server.md#listen) for more
@@ -182,16 +182,16 @@ href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
   frameworks in town, depending on the code complexity we can serve up to 76+
   thousand requests per second.
-- **Extensible:** Fastify is fully extensible via its hooks, plugins and
+- **Extensible:** Fastify is fully extensible via its hooks, plugins, and
   decorators.
-- **Schema based:** even if it is not mandatory we recommend to use [JSON
+- **Schema-based:** even if it is not mandatory we recommend using [JSON
   Schema](https://json-schema.org/) to validate your routes and serialize your
-  outputs, internally Fastify compiles the schema in a highly performant
+  outputs. Internally Fastify compiles the schema in a highly performant
   function.
 - **Logging:** logs are extremely important but are costly; we chose the best
   logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
 - **Developer friendly:** the framework is built to be very expressive and help
-  the developer in their daily use, without sacrificing performance and
+  developers in their daily use without sacrificing performance and
   security.
 
 ### Benchmarks
@@ -211,10 +211,10 @@ second average
 | -                  |                            |              |               |
 | `http.Server`      | 16.14.2	                  | &#10007;     | 74,513        |
 
-Benchmarks taken using https://github.com/fastify/benchmarks. This is a
-synthetic, "hello world" benchmark that aims to evaluate the framework overhead.
+These benchmarks taken using https://github.com/fastify/benchmarks. This is a
+synthetic "hello world" benchmark that aims to evaluate the framework overhead.
 The overhead that each framework has on your application depends on your
-application, you should __always__ benchmark if performance matters to you.
+application. You should __always__ benchmark if performance matters to you.
 
 ## Documentation
 * [__`Getting Started`__](./docs/Guides/Getting-Started.md)
@@ -244,13 +244,11 @@ application, you should __always__ benchmark if performance matters to you.
 * [__`Serverless`__](./docs/Guides/Serverless.md)
 * [__`Recommendations`__](./docs/Guides/Recommendations.md)
 
-中文文档[地址](https://github.com/fastify/docs-chinese/blob/HEAD/README.md)
-
 ## Ecosystem
 
 - [Core](./docs/Guides/Ecosystem.md#core) - Core plugins maintained by the
   _Fastify_ [team](#team).
-- [Community](./docs/Guides/Ecosystem.md#community) - Community supported
+- [Community](./docs/Guides/Ecosystem.md#community) - Community-supported
   plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad
   set of real working examples.
@@ -270,7 +268,7 @@ Fastify's supported version matrix is available in the
 
 ## Contributing
 
-Whether reporting bugs, discussing improvements and new ideas or writing code,
+Whether reporting bugs, discussing improvements and new ideas, or writing code,
 we welcome contributions from anyone and everyone. Please read the [CONTRIBUTING](./CONTRIBUTING.md)
 guidelines before submitting pull requests.
 
@@ -345,9 +343,9 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 
 ### Emeritus Contributors
-Great contributors on a specific area in the Fastify ecosystem will be invited
+Great contributors to a specific area of the Fastify ecosystem will be invited
 to join this group by Lead Maintainers when they decide to step down from the
-active contributors group.
+active contributor's group.
 
 * [__Tommaso Allevi__](https://github.com/allevo),
   <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
@@ -383,7 +381,7 @@ active contributors group.
 src="https://github.com/openjs-foundation/artwork/blob/main/openjs_foundation/openjs_foundation-logo-horizontal-color.png?raw=true"
 width="250px;"/>](https://openjsf.org/projects)
 
-We are a [At-Large
+We are an [At-Large
 Project](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#at-large-projects)
 in the [OpenJS Foundation](https://openjsf.org/).
 
@@ -393,7 +391,7 @@ Support this project by becoming a [SPONSOR](./SPONSORS.md)!
 Fastify has an [Open Collective](https://opencollective.com/fastify)
 page where we accept and manage financial contributions.
 
-## Acknowledgements
+## Acknowledgments
 
 This project is kindly sponsored by:
 - [NearForm](https://nearform.com)
@@ -402,8 +400,8 @@ This project is kindly sponsored by:
 Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
 
-This list includes all companies that support one or more of the team members
-in the maintenance of this project.
+This list includes all companies that support one or more team members
+in maintaining this project.
 
 ## License
 

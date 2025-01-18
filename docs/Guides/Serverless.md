@@ -280,8 +280,8 @@ const { onRequest } = require("firebase-functions/v2/https")
 ### Creation of Fastify instance
 
 Create the Fastify instance and encapsulate the returned application instance
-in a function which will register routes, await the server's processing of
-plugins, hooks and other settings. As follows:
+in a function that will register routes, await the server's processing of
+plugins, hooks, and other settings. As follows:
 
 ```js
 const fastify = require("fastify")({
@@ -299,7 +299,7 @@ const fastifyApp = async (request, reply) => {
 
 Firebase Function's HTTP layer already parses the request
 and makes a JSON payload available. It also provides access
-to the raw body, unparsed, which is useful in order to calculate
+to the raw body, unparsed, which is useful for calculating
 request signatures to validate HTTP webhooks.
 
 Add as follows to the `registerRoutes()` function:
@@ -384,7 +384,7 @@ familiar with gcloud or just follow their
 
 ### Adjust Fastify server
 
-In order for Fastify to properly listen for requests within the container, be
+For Fastify to properly listen for requests within the container, be
 sure to set the correct port and address:
 
 ```js

@@ -21,19 +21,19 @@ test('can be created - mkcol', t => {
   }
 })
 
-test('mkcol test', async t => {
+test('mkcol test - request', async t => {
   await fastify.listen({ port: 0 })
   t.after(() => { fastify.close() })
 
-  await t.test('request - mkcol', (t, done) => {
-    t.plan(2)
+  t.plan(2)
+  await new Promise((resolve, reject) => {
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/`,
       method: 'MKCOL'
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 201)
-      done()
+      resolve()
     })
   })
 })

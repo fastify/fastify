@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const sget = require('simple-get').concat
 const http = require('node:http')
 const NotFound = require('http-errors').NotFound
@@ -219,9 +219,9 @@ test('reply.serialize should serialize payload with Fastify instance', (t, done)
   })
 })
 
-test('within an instance', async t => {
+describe('within an instance', async () => {
   const fastify = Fastify()
-  t.after(() => fastify.close())
+  after(() => fastify.close())
 
   fastify.get('/', function (req, reply) {
     reply.code(200)
@@ -281,7 +281,7 @@ test('within an instance', async t => {
 
   await fastify.listen({ port: 0 })
 
-  await t.test('custom serializer should be used', (t, done) => {
+  test('custom serializer should be used', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -294,7 +294,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('status code and content-type should be correct', (t, done) => {
+  test('status code and content-type should be correct', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -308,7 +308,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('auto status code should be 200', (t, done) => {
+  test('auto status code should be 200', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -321,7 +321,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('auto type should be text/plain', (t, done) => {
+  test('auto type should be text/plain', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -334,7 +334,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 1', (t, done) => {
+  test('redirect to `/` - 1', (t, done) => {
     t.plan(1)
 
     http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect', function (response) {
@@ -343,7 +343,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 2', (t, done) => {
+  test('redirect to `/` - 2', (t, done) => {
     t.plan(1)
 
     http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code', function (response) {
@@ -352,7 +352,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 3', (t, done) => {
+  test('redirect to `/` - 3', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -366,7 +366,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 4', (t, done) => {
+  test('redirect to `/` - 4', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -380,7 +380,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 5', (t, done) => {
+  test('redirect to `/` - 5', (t, done) => {
     t.plan(3)
     const url = 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-onsend'
     http.get(url, (response) => {
@@ -391,7 +391,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 6', (t, done) => {
+  test('redirect to `/` - 6', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -405,7 +405,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 7', (t, done) => {
+  test('redirect to `/` - 7', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -419,7 +419,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 8', (t, done) => {
+  test('redirect to `/` - 8', (t, done) => {
     t.plan(1)
 
     http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call', function (response) {
@@ -428,7 +428,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 9', (t, done) => {
+  test('redirect to `/` - 9', (t, done) => {
     t.plan(1)
 
     http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
@@ -437,7 +437,7 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect with async function to `/` - 10', (t, done) => {
+  test('redirect with async function to `/` - 10', (t, done) => {
     t.plan(1)
 
     http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-async', function (response) {
@@ -1829,12 +1829,10 @@ test('reply should not call the custom serializer for errors and not found', asy
   }
 })
 
-test('reply.then', async t => {
-  t.plan(4)
-
+describe('reply.then', async t => {
   function request () { }
 
-  await t.test('without an error', (t, done) => {
+  test('without an error', (t, done) => {
     t.plan(1)
 
     const response = new Writable()
@@ -1848,7 +1846,7 @@ test('reply.then', async t => {
     response.destroy()
   })
 
-  await t.test('with an error', (t, done) => {
+  test('with an error', (t, done) => {
     t.plan(1)
 
     const response = new Writable()
@@ -1865,7 +1863,7 @@ test('reply.then', async t => {
     response.destroy(_err)
   })
 
-  await t.test('with error but without reject callback', t => {
+  test('with error but without reject callback', t => {
     t.plan(1)
 
     const response = new Writable()
@@ -1881,7 +1879,7 @@ test('reply.then', async t => {
     response.destroy(_err)
   })
 
-  await t.test('with error, without reject callback, with logger', (t, done) => {
+  test('with error, without reject callback, with logger', (t, done) => {
     t.plan(1)
 
     const response = new Writable()

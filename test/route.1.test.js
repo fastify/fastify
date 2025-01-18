@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { describe, test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const {
@@ -9,10 +9,8 @@ const {
 } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
-test('route', async t => {
-  t.plan(10)
-
-  await t.test('route - get', (t, done) => {
+describe('route 1 test', async t => {
+  test('route - get', (t, done) => {
     t.plan(4)
 
     const fastify = Fastify()
@@ -53,7 +51,7 @@ test('route', async t => {
     })
   })
 
-  await t.test('missing schema - route', (t, done) => {
+  test('missing schema - route', (t, done) => {
     t.plan(4)
 
     const fastify = Fastify()
@@ -82,14 +80,14 @@ test('route', async t => {
     })
   })
 
-  await t.test('invalid handler attribute - route', t => {
+  test('invalid handler attribute - route', t => {
     t.plan(1)
 
     const fastify = Fastify()
     t.assert.throws(() => fastify.get('/', { handler: 'not a function' }, () => { }))
   })
 
-  await t.test('Add Multiple methods per route all uppercase', (t, done) => {
+  test('Add Multiple methods per route all uppercase', (t, done) => {
     t.plan(7)
 
     const fastify = Fastify()
@@ -126,7 +124,7 @@ test('route', async t => {
     })
   })
 
-  await t.test('Add Multiple methods per route all lowercase', (t, done) => {
+  test('Add Multiple methods per route all lowercase', (t, done) => {
     t.plan(7)
 
     const fastify = Fastify()
@@ -163,7 +161,7 @@ test('route', async t => {
     })
   })
 
-  await t.test('Add Multiple methods per route mixed uppercase and lowercase', (t, done) => {
+  test('Add Multiple methods per route mixed uppercase and lowercase', (t, done) => {
     t.plan(7)
 
     const fastify = Fastify()
@@ -200,7 +198,7 @@ test('route', async t => {
     })
   })
 
-  t.test('Add invalid Multiple methods per route', t => {
+  test('Add invalid Multiple methods per route', t => {
     t.plan(1)
 
     const fastify = Fastify()
@@ -214,7 +212,7 @@ test('route', async t => {
       }), new FST_ERR_ROUTE_METHOD_INVALID())
   })
 
-  await t.test('Add method', t => {
+  test('Add method', t => {
     t.plan(1)
 
     const fastify = Fastify()
@@ -228,7 +226,7 @@ test('route', async t => {
       }), new FST_ERR_ROUTE_METHOD_INVALID())
   })
 
-  await t.test('Add additional multiple methods to existing route', (t, done) => {
+  test('Add additional multiple methods to existing route', (t, done) => {
     t.plan(7)
 
     const fastify = Fastify()
@@ -269,7 +267,7 @@ test('route', async t => {
     })
   })
 
-  await t.test('cannot add another route after binding', (t, done) => {
+  test('cannot add another route after binding', (t, done) => {
     t.plan(1)
 
     const fastify = Fastify()

@@ -1,9 +1,9 @@
 'use strict'
 
-const { test } = require('node:test')
+const { describe, test } = require('node:test')
 const Fastify = require('..')
 
-test('Buffer test', async t => {
+describe('Buffer test', () => {
   const fastify = Fastify()
   fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, fastify.getDefaultJsonParser('error', 'ignore'))
 
@@ -11,7 +11,7 @@ test('Buffer test', async t => {
     return request.body
   })
 
-  await test('should return 200 if the body is not empty', async t => {
+  test('should return 200 if the body is not empty', async t => {
     t.plan(3)
 
     const response = await fastify.inject({
@@ -28,7 +28,7 @@ test('Buffer test', async t => {
     t.assert.deepStrictEqual(response.payload.toString(), '{"hello":"world"}')
   })
 
-  await test('should return 400 if the body is empty', async t => {
+  test('should return 400 if the body is empty', async t => {
     t.plan(3)
 
     const response = await fastify.inject({

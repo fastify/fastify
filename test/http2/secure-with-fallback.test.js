@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const Fastify = require('../..')
 const h2url = require('h2url')
 const sget = require('simple-get').concat
@@ -9,23 +9,15 @@ const msg = { hello: 'world' }
 const { buildCertificate } = require('../build-certificate')
 test.before(buildCertificate)
 
-test('secure with fallback', async (t) => {
-  t.plan(6)
-
-  let fastify
-  try {
-    fastify = Fastify({
-      http2: true,
-      https: {
-        allowHTTP1: true,
-        key: global.context.key,
-        cert: global.context.cert
-      }
-    })
-    t.assert.ok(true, 'Key/cert successfully loaded')
-  } catch (e) {
-    t.assert.fail('Key/cert loading failed')
-  }
+describe('secure with fallback', async () => {
+  const fastify = Fastify({
+    http2: true,
+    https: {
+      allowHTTP1: true,
+      key: global.context.key,
+      cert: global.context.cert
+    }
+  })
 
   fastify.get('/', function (req, reply) {
     reply.code(200).send(msg)
@@ -39,11 +31,11 @@ test('secure with fallback', async (t) => {
     throw new Error('kaboom')
   })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('https get error', async (t) => {
+  test('https get error', async (t) => {
     t.plan(1)
 
     const url = `https://localhost:${fastify.server.address().port}/error`
@@ -52,7 +44,7 @@ test('secure with fallback', async (t) => {
     t.assert.strictEqual(res.headers[':status'], 500)
   })
 
-  await t.test('https post', async (t) => {
+  test('https post', async (t) => {
     t.plan(2)
 
     const url = `https://localhost:${fastify.server.address().port}`
@@ -69,7 +61,7 @@ test('secure with fallback', async (t) => {
     t.assert.deepStrictEqual(JSON.parse(res.body), { hello: 'http2' })
   })
 
-  await t.test('https get request', async (t) => {
+  test('https get request', async (t) => {
     t.plan(3)
 
     const url = `https://localhost:${fastify.server.address().port}`
@@ -80,7 +72,7 @@ test('secure with fallback', async (t) => {
     t.assert.deepStrictEqual(JSON.parse(res.body), msg)
   })
 
-  await t.test('http1 get request', (t, done) => {
+  test('http1 get request', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -95,7 +87,7 @@ test('secure with fallback', async (t) => {
     })
   })
 
-  await t.test('http1 get error', (t, done) => {
+  test('http1 get error', (t, done) => {
     t.plan(2)
     sget({
       method: 'GET',

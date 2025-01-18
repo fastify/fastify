@@ -17,18 +17,16 @@ test('http2 unknown http method', async t => {
   t.after(() => { fastify.close() })
   await fastify.listen({ port: 0 })
 
-  await t.test('http UNKNOWN_METHOD request', async (t) => {
-    t.plan(2)
+  t.plan(2)
 
-    const url = `http://localhost:${fastify.server.address().port}`
-    const res = await h2url.concat({ url, method: 'UNKNOWN_METHOD' })
+  const url = `http://localhost:${fastify.server.address().port}`
+  const res = await h2url.concat({ url, method: 'UNKNOWN_METHOD' })
 
-    t.assert.strictEqual(res.headers[':status'], 404)
-    t.assert.deepStrictEqual(JSON.parse(res.body), {
-      statusCode: 404,
-      code: 'FST_ERR_NOT_FOUND',
-      error: 'Not Found',
-      message: 'Not Found'
-    })
+  t.assert.strictEqual(res.headers[':status'], 404)
+  t.assert.deepStrictEqual(JSON.parse(res.body), {
+    statusCode: 404,
+    code: 'FST_ERR_NOT_FOUND',
+    error: 'Not Found',
+    message: 'Not Found'
   })
 })

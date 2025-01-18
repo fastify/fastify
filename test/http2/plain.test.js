@@ -1,20 +1,14 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
-test('http2 plain test', async t => {
-  let fastify
-  try {
-    fastify = Fastify({
-      http2: true
-    })
-    t.assert.ok(true, 'http2 successfully loaded')
-  } catch (e) {
-    t.assert.fail('http2 loading failed')
-  }
+describe('http2 plain test', async t => {
+  const fastify = Fastify({
+    http2: true
+  })
 
   fastify.get('/', function (req, reply) {
     reply.code(200).send(msg)
@@ -28,11 +22,11 @@ test('http2 plain test', async t => {
     reply.code(200).send({ hostname: req.hostname, port: req.port })
   })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('http get request', async (t) => {
+  test('http get request', async (t) => {
     t.plan(3)
 
     const url = `http://localhost:${fastify.server.address().port}`
@@ -44,7 +38,7 @@ test('http2 plain test', async t => {
     t.assert.deepStrictEqual(JSON.parse(res.body), msg)
   })
 
-  await t.test('http host', async (t) => {
+  test('http host', async (t) => {
     t.plan(1)
 
     const host = `localhost:${fastify.server.address().port}`
@@ -54,7 +48,7 @@ test('http2 plain test', async t => {
 
     t.assert.strictEqual(res.body, host)
   })
-  await t.test('http hostname and port', async (t) => {
+  test('http hostname and port', async (t) => {
     t.plan(2)
 
     const host = `localhost:${fastify.server.address().port}`

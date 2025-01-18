@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { describe, test } = require('node:test')
 const { kReplyCacheSerializeFns, kRouteContext } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
@@ -62,10 +62,8 @@ function getResponseSchema () {
   }
 }
 
-test('Reply#compileSerializationSchema', async t => {
-  t.plan(4)
-
-  await t.test('Should return a serialization function', async t => {
+describe('Reply#compileSerializationSchema', () => {
+  test('Should return a serialization function', async t => {
     const fastify = Fastify()
 
     t.plan(4)
@@ -92,7 +90,7 @@ test('Reply#compileSerializationSchema', async t => {
     })
   })
 
-  await t.test('Should reuse the serialize fn across multiple invocations - Route without schema',
+  test('Should reuse the serialize fn across multiple invocations - Route without schema',
     async t => {
       const fastify = Fastify()
       let serialize = null
@@ -137,7 +135,7 @@ test('Reply#compileSerializationSchema', async t => {
     }
   )
 
-  await t.test('Should use the custom serializer compiler for the route',
+  test('Should use the custom serializer compiler for the route',
     async t => {
       const fastify = Fastify()
       let called = 0
@@ -202,7 +200,7 @@ test('Reply#compileSerializationSchema', async t => {
     }
   )
 
-  await t.test('Should build a WeakMap for cache when called', async t => {
+  test('Should build a WeakMap for cache when called', async t => {
     const fastify = Fastify()
 
     t.plan(4)
@@ -225,10 +223,8 @@ test('Reply#compileSerializationSchema', async t => {
   })
 })
 
-test('Reply#getSerializationFunction', async t => {
-  t.plan(3)
-
-  await t.test('Should retrieve the serialization function from the Schema definition',
+describe('Reply#getSerializationFunction', () => {
+  test('Should retrieve the serialization function from the Schema definition',
     async t => {
       const fastify = Fastify()
       const okInput201 = {
@@ -341,7 +337,7 @@ test('Reply#getSerializationFunction', async t => {
     }
   )
 
-  await t.test('Should retrieve the serialization function from the cached one',
+  test('Should retrieve the serialization function from the cached one',
     async t => {
       const fastify = Fastify()
 
@@ -410,7 +406,7 @@ test('Reply#getSerializationFunction', async t => {
     }
   )
 
-  await t.test('Should not instantiate a WeakMap if it is not needed', async t => {
+  test('Should not instantiate a WeakMap if it is not needed', async t => {
     const fastify = Fastify()
 
     t.plan(4)
@@ -431,10 +427,8 @@ test('Reply#getSerializationFunction', async t => {
   })
 })
 
-test('Reply#serializeInput', async t => {
-  t.plan(6)
-
-  await t.test(
+describe('Reply#serializeInput', () => {
+  test(
     'Should throw if missed serialization function from HTTP status',
     async t => {
       const fastify = Fastify()
@@ -460,7 +454,7 @@ test('Reply#serializeInput', async t => {
     }
   )
 
-  await t.test(
+  test(
     'Should throw if missed serialization function from HTTP status with specific content type',
     async t => {
       const fastify = Fastify()
@@ -504,7 +498,7 @@ test('Reply#serializeInput', async t => {
     }
   )
 
-  await t.test('Should use a serializer fn from HTTP status', async t => {
+  test('Should use a serializer fn from HTTP status', async t => {
     const fastify = Fastify()
     const okInput201 = {
       status: 'ok',
@@ -594,7 +588,7 @@ test('Reply#serializeInput', async t => {
     })
   })
 
-  await t.test(
+  test(
     'Should compile a serializer out of a schema if serializer fn missed',
     async t => {
       let compilerCalled = 0
@@ -642,7 +636,7 @@ test('Reply#serializeInput', async t => {
     }
   )
 
-  await t.test('Should use a cached serializer fn', async t => {
+  test('Should use a cached serializer fn', async t => {
     let compilerCalled = 0
     let serializerCalled = 0
     let cached
@@ -692,7 +686,7 @@ test('Reply#serializeInput', async t => {
     t.assert.strictEqual(serializerCalled, 3)
   })
 
-  await t.test('Should instantiate a WeakMap after first call', async t => {
+  test('Should instantiate a WeakMap after first call', async t => {
     const fastify = Fastify()
 
     t.plan(3)

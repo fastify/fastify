@@ -3,7 +3,8 @@
 const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 const zlib = require('node:zlib')
-const { test } = require('node:test')
+const { describe, test } = require('node:test')
+const { strictEqual, fail } = require('node:assert')
 
 test('bodyLimit', (t, done) => {
   t.plan(5)
@@ -46,9 +47,7 @@ test('bodyLimit', (t, done) => {
   })
 })
 
-test('bodyLimit is applied to decoded content', async (t) => {
-  t.plan(6)
-
+describe('bodyLimit is applied to decoded content', async (t) => {
   const body = { x: 'x'.repeat(30000) }
   const json = JSON.stringify(body)
   const encoded = zlib.gzipSync(json)
@@ -56,7 +55,7 @@ test('bodyLimit is applied to decoded content', async (t) => {
   const fastify = Fastify()
 
   fastify.addHook('preParsing', async (req, reply, payload) => {
-    t.assert.strictEqual(req.headers['content-length'], `${encoded.length}`)
+    strictEqual(req.headers['content-length'], `${encoded.length}`)
     const unzip = zlib.createGunzip()
     Object.defineProperty(unzip, 'receivedEncodedLength', {
       get () {
@@ -70,23 +69,23 @@ test('bodyLimit is applied to decoded content', async (t) => {
   fastify.post('/body-limit-40k', {
     bodyLimit: 40000,
     onError: async (req, res, err) => {
-      t.fail('should not be called')
+      fail('should not be called')
     }
-  }, (request, reply) => {
+  }, async (request, reply) => {
     reply.send({ x: request.body.x })
   })
 
   fastify.post('/body-limit-20k', {
     bodyLimit: 20000,
     onError: async (req, res, err) => {
-      t.assert.strictEqual(err.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
-      t.assert.strictEqual(err.statusCode, 413)
+      strictEqual(err.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
+      strictEqual(err.statusCode, 413)
     }
-  }, (request, reply) => {
+  }, async (request, reply) => {
     reply.send({ x: 'handler should not be called' })
   })
 
-  await t.test('bodyLimit 40k', async (t) => {
+  test('bodyLimit 40k', async (t) => {
     const result = await fastify.inject({
       method: 'POST',
       url: '/body-limit-40k',
@@ -100,7 +99,7 @@ test('bodyLimit is applied to decoded content', async (t) => {
     t.assert.deepStrictEqual(result.json(), body)
   })
 
-  await t.test('bodyLimit 20k', async (t) => {
+  test('bodyLimit 20k', async (t) => {
     const result = await fastify.inject({
       method: 'POST',
       url: '/body-limit-20k',

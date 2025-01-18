@@ -21,12 +21,12 @@ test('can be created - unlock', t => {
   }
 })
 
-test('unlock test', async t => {
+test('unlock request test', async t => {
   await fastify.listen({ port: 0 })
 
   t.after(() => { fastify.close() })
-  await t.test('request - unlock', (t, done) => {
-    t.plan(2)
+  t.plan(2)
+  await new Promise((resolve, reject) => {
     sget({
       url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
       method: 'UNLOCK',
@@ -36,7 +36,7 @@ test('unlock test', async t => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 204)
-      done()
+      resolve()
     })
   })
 })

@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
@@ -8,20 +8,18 @@ const split = require('split2')
 const Fastify = require('..')
 const { getServerUrl } = require('./helper')
 
-test('default 404', async t => {
-  t.plan(4)
-
+describe('default 404', async t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('unsupported method', (t, done) => {
+  test('unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PUT',
@@ -37,7 +35,7 @@ test('default 404', async t => {
   })
 
   // Return 404 instead of 405 see https://github.com/fastify/fastify/pull/862 for discussion
-  await t.test('framework-unsupported method', (t, done) => {
+  test('framework-unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PROPFIND',
@@ -52,7 +50,7 @@ test('default 404', async t => {
     })
   })
 
-  await t.test('unsupported route', (t, done) => {
+  test('unsupported route', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -67,7 +65,7 @@ test('default 404', async t => {
     })
   })
 
-  await t.test('using post method and multipart/formdata', async t => {
+  test('using post method and multipart/formdata', async t => {
     t.plan(3)
     const form = new FormData()
     form.set('test-field', 'just some field')
@@ -82,9 +80,7 @@ test('default 404', async t => {
   })
 })
 
-test('customized 404', async t => {
-  t.plan(5)
-
+describe('customized 404', async t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
@@ -105,11 +101,11 @@ test('customized 404', async t => {
     reply.code(404).send('this was not found')
   })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('unsupported method', (t, done) => {
+  test('unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PUT',
@@ -124,7 +120,7 @@ test('customized 404', async t => {
     })
   })
 
-  await t.test('framework-unsupported method', (t, done) => {
+  test('framework-unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PROPFIND',
@@ -139,7 +135,7 @@ test('customized 404', async t => {
     })
   })
 
-  await t.test('unsupported route', (t, done) => {
+  test('unsupported route', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -152,7 +148,7 @@ test('customized 404', async t => {
     })
   })
 
-  await t.test('with error object', (t, done) => {
+  test('with error object', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -169,7 +165,7 @@ test('customized 404', async t => {
     })
   })
 
-  await t.test('error object with headers property', (t, done) => {
+  test('error object with headers property', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -188,20 +184,18 @@ test('customized 404', async t => {
   })
 })
 
-test('custom header in notFound handler', async t => {
-  t.plan(1)
-
+describe('custom header in notFound handler', async t => {
   const fastify = Fastify()
 
   fastify.setNotFoundHandler(function (req, reply) {
     reply.code(404).header('x-foo', 'bar').send('this was not found')
   })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('not found with custom header', (t, done) => {
+  test('not found with custom header', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -216,10 +210,8 @@ test('custom header in notFound handler', async t => {
   })
 })
 
-test('setting a custom 404 handler multiple times is an error', async t => {
-  t.plan(5)
-
-  await t.test('at the root level', t => {
+describe('setting a custom 404 handler multiple times is an error', () => {
+  test('at the root level', t => {
     t.plan(2)
 
     const fastify = Fastify()
@@ -235,7 +227,7 @@ test('setting a custom 404 handler multiple times is an error', async t => {
     }
   })
 
-  await t.test('at the plugin level', (t, done) => {
+  test('at the plugin level', (t, done) => {
     t.plan(3)
 
     const fastify = Fastify()
@@ -261,7 +253,7 @@ test('setting a custom 404 handler multiple times is an error', async t => {
     })
   })
 
-  await t.test('at multiple levels', (t, done) => {
+  test('at multiple levels', (t, done) => {
     t.plan(3)
 
     const fastify = Fastify()
@@ -286,7 +278,7 @@ test('setting a custom 404 handler multiple times is an error', async t => {
     })
   })
 
-  await t.test('at multiple levels / 2', (t, done) => {
+  test('at multiple levels / 2', (t, done) => {
     t.plan(3)
 
     const fastify = Fastify()
@@ -317,7 +309,7 @@ test('setting a custom 404 handler multiple times is an error', async t => {
     })
   })
 
-  await t.test('in separate plugins at the same level', (t, done) => {
+  test('in separate plugins at the same level', (t, done) => {
     t.plan(3)
 
     const fastify = Fastify()
@@ -352,9 +344,7 @@ test('setting a custom 404 handler multiple times is an error', async t => {
   })
 })
 
-test('encapsulated 404', async t => {
-  t.plan(12)
-
+describe('encapsulated 404', async () => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
@@ -386,11 +376,11 @@ test('encapsulated 404', async t => {
     done()
   }, { prefix: '/test3/' })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('root unsupported method', (t, done) => {
+  test('root unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PUT',
@@ -405,7 +395,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('root framework-unsupported method', (t, done) => {
+  test('root framework-unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PROPFIND',
@@ -420,7 +410,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('root unsupported route', (t, done) => {
+  test('root unsupported route', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -433,7 +423,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('unsupported method', (t, done) => {
+  test('unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PUT',
@@ -448,7 +438,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('framework-unsupported method', (t, done) => {
+  test('framework-unsupported method', (t, done) => {
     t.plan(3)
     sget({
       method: 'PROPFIND',
@@ -463,7 +453,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('unsupported route', (t, done) => {
+  test('unsupported route', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -476,7 +466,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('unsupported method 2', (t, done) => {
+  test('unsupported method 2', (t, done) => {
     t.plan(3)
     sget({
       method: 'PUT',
@@ -491,7 +481,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('framework-unsupported method 2', (t, done) => {
+  test('framework-unsupported method 2', (t, done) => {
     t.plan(3)
     sget({
       method: 'PROPFIND',
@@ -506,7 +496,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('unsupported route 2', (t, done) => {
+  test('unsupported route 2', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -519,7 +509,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('unsupported method 3', (t, done) => {
+  test('unsupported method 3', (t, done) => {
     t.plan(3)
     sget({
       method: 'PUT',
@@ -534,7 +524,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('framework-unsupported method 3', (t, done) => {
+  test('framework-unsupported method 3', (t, done) => {
     t.plan(3)
     sget({
       method: 'PROPFIND',
@@ -549,7 +539,7 @@ test('encapsulated 404', async t => {
     })
   })
 
-  await t.test('unsupported route 3', (t, done) => {
+  test('unsupported route 3', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',
@@ -1035,9 +1025,7 @@ test('setNotFoundHandler should not suppress duplicated routes checking', t => {
   }
 })
 
-test('log debug for 404', async t => {
-  t.plan(1)
-
+describe('log debug for 404', async t => {
   const Writable = require('node:stream').Writable
 
   const logStream = new Writable()
@@ -1058,9 +1046,9 @@ test('log debug for 404', async t => {
     reply.send({ hello: 'world' })
   })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
-  await t.test('log debug', (t, done) => {
+  test('log debug', (t, done) => {
     t.plan(7)
     fastify.inject({
       method: 'GET',
@@ -1324,10 +1312,8 @@ test('onSend hooks run when an encapsulated route invokes the notFound handler',
 })
 
 // https://github.com/fastify/fastify/issues/713
-test('preHandler option for setNotFoundHandler', async t => {
-  t.plan(10)
-
-  await t.test('preHandler option', (t, done) => {
+describe('preHandler option for setNotFoundHandler', () => {
+  test('preHandler option', (t, done) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1353,7 +1339,7 @@ test('preHandler option for setNotFoundHandler', async t => {
   })
 
   // https://github.com/fastify/fastify/issues/2229
-  await t.test('preHandler hook in setNotFoundHandler should be called when callNotFound', { timeout: 40000 }, (t, done) => {
+  test('preHandler hook in setNotFoundHandler should be called when callNotFound', { timeout: 40000 }, (t, done) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -1382,7 +1368,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     })
   })
 
-  await t.test('preHandler hook in setNotFoundHandler should accept an array of functions and be called when callNotFound', (t, done) => {
+  test('preHandler hook in setNotFoundHandler should accept an array of functions and be called when callNotFound', (t, done) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1417,7 +1403,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     })
   })
 
-  await t.test('preHandler option should be called after preHandler hook', (t, done) => {
+  test('preHandler option should be called after preHandler hook', (t, done) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1447,7 +1433,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     })
   })
 
-  await t.test('preHandler option should be unique per prefix', async t => {
+  test('preHandler option should be unique per prefix', async t => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1491,7 +1477,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     }
   })
 
-  await t.test('preHandler option should handle errors', (t, done) => {
+  test('preHandler option should handle errors', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -1520,7 +1506,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     })
   })
 
-  await t.test('preHandler option should handle errors with custom status code', (t, done) => {
+  test('preHandler option should handle errors with custom status code', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -1550,7 +1536,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     })
   })
 
-  await t.test('preHandler option could accept an array of functions', (t, done) => {
+  test('preHandler option could accept an array of functions', (t, done) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1581,7 +1567,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     })
   })
 
-  await t.test('preHandler option does not interfere with preHandler', async t => {
+  test('preHandler option does not interfere with preHandler', async t => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1630,7 +1616,7 @@ test('preHandler option for setNotFoundHandler', async t => {
     }
   })
 
-  await t.test('preHandler option should keep the context', (t, done) => {
+  test('preHandler option should keep the context', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -1850,8 +1836,8 @@ test('Should fail to invoke callNotFound inside a 404 handler', (t, done) => {
   })
 })
 
-test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
-  await t.test('Dynamic route', (t, done) => {
+describe('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', () => {
+  test('Dynamic route', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('/hello/:id', () => t.assert.fail('we should not be here'))
@@ -1871,7 +1857,7 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
     })
   })
 
-  await t.test('Wildcard', (t, done) => {
+  test('Wildcard', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('*', () => t.assert.fail('we should not be here'))
@@ -1891,7 +1877,7 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
     })
   })
 
-  await t.test('No route registered', (t, done) => {
+  test('No route registered', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
     fastify.inject({
@@ -1909,7 +1895,7 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
     })
   })
 
-  await t.test('Only / is registered', (t, done) => {
+  test('Only / is registered', (t, done) => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('/', () => t.assert.fail('we should not be here'))
@@ -1928,7 +1914,7 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
     })
   })
 
-  await t.test('customized 404', (t, done) => {
+  test('customized 404', (t, done) => {
     t.plan(3)
     const fastify = Fastify({ logger: true })
     fastify.setNotFoundHandler(function (req, reply) {
@@ -1946,13 +1932,13 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
   })
 })
 
-test('setNotFoundHandler should be chaining fastify instance', async t => {
-  await t.test('Register route after setNotFoundHandler', async t => {
+describe('setNotFoundHandler should be chaining fastify instance', () => {
+  test('Register route after setNotFoundHandler', async t => {
     t.plan(4)
     const fastify = Fastify()
-    fastify.setNotFoundHandler(function (_req, reply) {
+    fastify.setNotFoundHandler(async function (_req, reply) {
       reply.code(404).send('this was not found')
-    }).get('/valid-route', function (_req, reply) {
+    }).get('/valid-route', async function (_req, reply) {
       reply.send('valid route')
     })
 
@@ -1977,8 +1963,8 @@ test('setNotFoundHandler should be chaining fastify instance', async t => {
   })
 })
 
-test('Send 404 when frameworkError calls reply.callNotFound', async t => {
-  await t.test('Dynamic route', (t, done) => {
+describe('Send 404 when frameworkError calls reply.callNotFound', () => {
+  test('Dynamic route', (t, done) => {
     t.plan(4)
     const fastify = Fastify({
       frameworkErrors: (error, req, reply) => {

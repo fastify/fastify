@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const jsonParser = require('fast-json-body')
@@ -38,9 +38,9 @@ test('should be able to use default parser for extra content type', (t, done) =>
   })
 })
 
-test('contentTypeParser should add a custom parser with RegExp value', async (t) => {
+describe('contentTypeParser should add a custom parser with RegExp value', async (t) => {
   const fastify = Fastify()
-  t.after(() => fastify.close())
+  after(() => fastify.close())
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -56,45 +56,42 @@ test('contentTypeParser should add a custom parser with RegExp value', async (t)
     })
   })
 
-  fastify.listen({ port: 0 }, async err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
+  await fastify.ready()
 
-    await t.test('in POST', (t, done) => {
-      t.plan(3)
-      t.after(() => fastify.close())
+  test('in POST', (t, done) => {
+    t.plan(3)
 
-      sget({
-        method: 'POST',
-        url: getServerUrl(fastify),
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/vnd.test+json'
-        }
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
-        done()
-      })
+    sget({
+      method: 'POST',
+      url: getServerUrl(fastify),
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/vnd.test+json'
+      }
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      done()
     })
+  })
 
-    await t.test('in OPTIONS', (t, done) => {
-      t.plan(3)
-      t.after(() => fastify.close())
+  test('in OPTIONS', (t, done) => {
+    t.plan(3)
 
-      sget({
-        method: 'OPTIONS',
-        url: getServerUrl(fastify),
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'weird/content-type+json'
-        }
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
-        done()
-      })
+    sget({
+      method: 'OPTIONS',
+      url: getServerUrl(fastify),
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'weird/content-type+json'
+      }
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      done()
     })
   })
 })

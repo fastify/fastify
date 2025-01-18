@@ -1,27 +1,19 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('../..')
 
 const { buildCertificate } = require('../build-certificate')
 test.before(buildCertificate)
 
-test('https', async (t) => {
-  t.plan(3)
-
-  let fastify
-  try {
-    fastify = Fastify({
-      https: {
-        key: global.context.key,
-        cert: global.context.cert
-      }
-    })
-    t.assert.ok('Key/cert successfully loaded')
-  } catch (e) {
-    t.assert.fail('Key/cert loading failed')
-  }
+describe('https', async (t) => {
+  const fastify = Fastify({
+    https: {
+      key: global.context.key,
+      cert: global.context.cert
+    }
+  })
 
   fastify.get('/', function (req, reply) {
     reply.code(200).send({ hello: 'world' })
@@ -33,9 +25,9 @@ test('https', async (t) => {
 
   await fastify.listen({ port: 0 })
 
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
-  await t.test('https get request', (t, done) => {
+  test('https get request', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -50,7 +42,7 @@ test('https', async (t) => {
     })
   })
 
-  await t.test('https get request without trust proxy - protocol', (t, done) => {
+  test('https get request without trust proxy - protocol', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -75,30 +67,23 @@ test('https', async (t) => {
   })
 })
 
-test('https - headers', async (t) => {
-  t.plan(3)
-  let fastify
-  try {
-    fastify = Fastify({
-      https: {
-        key: global.context.key,
-        cert: global.context.cert
-      }
-    })
-    t.assert.ok('Key/cert successfully loaded')
-  } catch (e) {
-    t.assert.fail('Key/cert loading failed')
-  }
+describe('https - headers', async (t) => {
+  const fastify = Fastify({
+    https: {
+      key: global.context.key,
+      cert: global.context.cert
+    }
+  })
 
   fastify.get('/', function (req, reply) {
     reply.code(200).send({ hello: 'world', hostname: req.hostname, port: req.port })
   })
 
-  t.after(async () => { await fastify.close() })
+  after(async () => { await fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('https get request', (t, done) => {
+  test('https get request', (t, done) => {
     t.plan(4)
     sget({
       method: 'GET',
@@ -113,7 +98,8 @@ test('https - headers', async (t) => {
       done()
     })
   })
-  await t.test('https get request - test port fall back', (t, done) => {
+
+  test('https get request - test port fall back', (t, done) => {
     t.plan(3)
     sget({
       method: 'GET',

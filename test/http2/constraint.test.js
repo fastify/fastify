@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('node:test')
+const { after, describe, test } = require('node:test')
 const Fastify = require('../..')
 const h2url = require('h2url')
 
@@ -10,22 +10,14 @@ const beta = { res: 'beta' }
 const { buildCertificate } = require('../build-certificate')
 test.before(buildCertificate)
 
-test('A route supports host constraints under http2 protocol and secure connection', async (t) => {
-  t.plan(5)
-
-  let fastify
-  try {
-    fastify = Fastify({
-      http2: true,
-      https: {
-        key: global.context.key,
-        cert: global.context.cert
-      }
-    })
-    t.assert.ok(true, 'Key/cert successfully loaded')
-  } catch (e) {
-    t.assert.fail('Key/cert loading failed')
-  }
+describe('A route supports host constraints under http2 protocol and secure connection', async (t) => {
+  const fastify = Fastify({
+    http2: true,
+    https: {
+      key: global.context.key,
+      cert: global.context.cert
+    }
+  })
 
   const constrain = 'fastify.dev'
 
@@ -52,11 +44,11 @@ test('A route supports host constraints under http2 protocol and secure connecti
       reply.code(200).send({ ...beta, hostname: req.hostname })
     }
   })
-  t.after(() => { fastify.close() })
+  after(() => { fastify.close() })
 
   await fastify.listen({ port: 0 })
 
-  await t.test('https get request - no constrain', async (t) => {
+  test('https get request - no constrain', async (t) => {
     t.plan(3)
 
     const url = `https://localhost:${fastify.server.address().port}`
@@ -67,7 +59,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
     t.assert.deepStrictEqual(JSON.parse(res.body), alpha)
   })
 
-  await t.test('https get request - constrain', async (t) => {
+  test('https get request - constrain', async (t) => {
     t.plan(3)
 
     const url = `https://localhost:${fastify.server.address().port}/beta`
@@ -83,7 +75,7 @@ test('A route supports host constraints under http2 protocol and secure connecti
     t.assert.deepStrictEqual(JSON.parse(res.body), beta)
   })
 
-  await t.test('https get request - constrain - not found', async (t) => {
+  test('https get request - constrain - not found', async (t) => {
     t.plan(1)
 
     const url = `https://localhost:${fastify.server.address().port}/beta`
@@ -93,7 +85,8 @@ test('A route supports host constraints under http2 protocol and secure connecti
 
     t.assert.strictEqual(res.headers[':status'], 404)
   })
-  await t.test('https get request - constrain - verify hostname and port from request', async (t) => {
+
+  test('https get request - constrain - verify hostname and port from request', async (t) => {
     t.plan(1)
 
     const url = `https://localhost:${fastify.server.address().port}/hostname_port`

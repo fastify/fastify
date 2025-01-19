@@ -63,6 +63,7 @@ test('Should allow defining the bodyLimit per parser', (t, done) => {
 
 test('route bodyLimit should take precedence over a custom parser bodyLimit', (t, done) => {
   t.plan(3)
+
   const fastify = Fastify()
   t.after(() => fastify.close())
 

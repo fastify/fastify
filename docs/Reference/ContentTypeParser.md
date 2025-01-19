@@ -82,7 +82,7 @@ fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done)
 
 ### Using addContentTypeParser with fastify.register
 When using `addContentTypeParser` with `fastify.register`, avoid `await`
-when registering routes. Using `await` makes route registration asynchronous, 
+when registering routes. Using `await` makes route registration asynchronous,
 potentially registering routes before `addContentTypeParser` is set.
 
 #### Correct Usage

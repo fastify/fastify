@@ -25,7 +25,7 @@ in this document:
    and verified against alternative runtimes that are compatible with Node.js.
    The maintenance teams of these alternative runtimes are responsible for ensuring
    and guaranteeing these tests work properly.
-      1. [N|Solid](https://docs.nodesource.com/nsolid), maintained by NodeSource,
+      1. [N|Solid](https://docs.nodesource.com/docs/product_suite), maintained by NodeSource,
       commits to testing and verifying each Fastify major release against the N|Solid
       LTS versions that are current at the time of the Fastify release.
       NodeSource guarantees that Fastify will be compatible and function correctly

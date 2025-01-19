@@ -195,9 +195,6 @@ module.exports = function (fastify, opts, done) {
   done()
 }
 ```
-Sometimes, it is necessary to know when the server is about to close, for example,
-to close a database connection. Use the [`'onClose'`](./Hooks.md#on-close) hook
-for this purpose.
 
 Remember, `register` always creates a new Fastify scope. If this is not needed,
 read the following section.

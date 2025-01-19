@@ -25,13 +25,11 @@ in this document:
    and verified against alternative runtimes that are compatible with Node.js.
    The maintenance teams of these alternative runtimes are responsible for ensuring
    and guaranteeing these tests work properly.
-      1. [N|Solid](https://docs.nodesource.com/docs/product_suite), maintained by NodeSource,
-      commits to testing and verifying each Fastify major release against the N|Solid
-      LTS versions that are current at the time of the Fastify release.
-      NodeSource guarantees that Fastify will be compatible and function correctly
-      with N|Solid, aligning with the support and compatibility scope of the N|Solid
-      LTS versions available at the time of the Fastify release.
-      This ensures users of N|Solid can confidently use Fastify.
+   1. [N|Solid](https://docs.nodesource.com/docs/product_suite) tests and
+      verifies each Fastify major release against current N|Solid LTS versions.
+      NodeSource ensures Fastify compatibility with N|Solid, aligning with the
+      support scope of N|Solid LTS versions at the time of the Fastify release.
+      This guarantees N|Solid users can confidently use Fastify.
 
 A "month" is defined as 30 consecutive days.
 
@@ -40,13 +38,10 @@ A "month" is defined as 30 consecutive days.
 > As a consequence of providing long-term support for major releases, there are
 > occasions where we need to release breaking changes as a _minor_ version
 > release. Such changes will _always_ be noted in the [release
-> notes](https://github.com/fastify/fastify/releases).
 >
 > To avoid automatically receiving breaking security updates it is possible to
 > use the tilde (`~`) range qualifier. For example, to get patches for the 3.15
 > release, and avoid automatically updating to the 3.16 release, specify the
-> dependency as `"fastify": "~3.15.x"`. This will leave your application
-> vulnerable, so please use with caution.
 
 ### Security Support Beyond LTS
 

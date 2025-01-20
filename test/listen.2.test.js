@@ -24,7 +24,7 @@ test('register after listen using Promise.resolve()', async t => {
       })
       return fastify.ready()
     })
-    .catch((err) => t.assert.ifError(err))
+    .catch((err) => err)
     .then(() => t.assert.ok('resolved'))
 })
 

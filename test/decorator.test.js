@@ -64,8 +64,8 @@ test('decorate should throw if a declared dependency is not present', (t, done) 
       instance.decorate('test', () => {}, ['dependency'])
       t.assert.fail()
     } catch (e) {
-      t.assert.deepStrictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-      t.assert.deepStrictEqual(e.message, 'The decorator is missing dependency \'dependency\'.')
+      t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+      t.assert.strictEqual(e.message, 'The decorator is missing dependency \'dependency\'.')
     }
     done()
   })
@@ -85,8 +85,8 @@ test('decorate should throw if declared dependency is not array', (t, done) => {
       instance.decorate('test', () => {}, {})
       t.assert.fail()
     } catch (e) {
-      t.assert.deepStrictEqual(e.code, 'FST_ERR_DEC_DEPENDENCY_INVALID_TYPE')
-      t.assert.deepStrictEqual(e.message, 'The dependencies of decorator \'test\' must be of type Array.')
+      t.assert.strictEqual(e.code, 'FST_ERR_DEC_DEPENDENCY_INVALID_TYPE')
+      t.assert.strictEqual(e.message, 'The dependencies of decorator \'test\' must be of type Array.')
     }
     done()
   })
@@ -840,22 +840,22 @@ test('decorate* should throw if called after ready', async t => {
     fastify.decorate('test', true)
     t.assert.fail('should not decorate')
   } catch (err) {
-    t.assert.deepStrictEqual(err.code, 'FST_ERR_DEC_AFTER_START')
-    t.assert.deepStrictEqual(err.message, "The decorator 'test' has been added after start!")
+    t.assert.strictEqual(err.code, 'FST_ERR_DEC_AFTER_START')
+    t.assert.strictEqual(err.message, "The decorator 'test' has been added after start!")
   }
   try {
     fastify.decorateRequest('test', true)
     t.assert.fail('should not decorate')
   } catch (e) {
-    t.assert.deepStrictEqual(e.code, 'FST_ERR_DEC_AFTER_START')
-    t.assert.deepStrictEqual(e.message, "The decorator 'test' has been added after start!")
+    t.assert.strictEqual(e.code, 'FST_ERR_DEC_AFTER_START')
+    t.assert.strictEqual(e.message, "The decorator 'test' has been added after start!")
   }
   try {
     fastify.decorateReply('test', true)
     t.assert.fail('should not decorate')
   } catch (e) {
-    t.assert.deepStrictEqual(e.code, 'FST_ERR_DEC_AFTER_START')
-    t.assert.deepStrictEqual(e.message, "The decorator 'test' has been added after start!")
+    t.assert.strictEqual(e.code, 'FST_ERR_DEC_AFTER_START')
+    t.assert.strictEqual(e.message, "The decorator 'test' has been added after start!")
   }
   await fastify.close()
 })
@@ -868,8 +868,8 @@ test('decorate* should emit error if an array is passed', t => {
     fastify.decorateRequest('test_array', [])
     t.assert.fail('should not decorate')
   } catch (err) {
-    t.assert.deepStrictEqual(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
-    t.assert.deepStrictEqual(err.message, "The decorator 'test_array' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+    t.assert.strictEqual(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.assert.strictEqual(err.message, "The decorator 'test_array' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
   }
 })
 
@@ -891,8 +891,8 @@ test('decorate* should emit warning if object type is passed', t => {
     fastify.decorateRequest('test_object', { foo: 'bar' })
     t.assert.fail('should not decorate')
   } catch (err) {
-    t.assert.deepStrictEqual(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
-    t.assert.deepStrictEqual(err.message, "The decorator 'test_object' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+    t.assert.strictEqual(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.assert.strictEqual(err.message, "The decorator 'test_object' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
   }
 })
 
@@ -934,12 +934,12 @@ test('decorateRequest with getter/setter can handle encapsulation', async t => {
   })
 
   await Promise.all([
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200))
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200))
   ])
 })
 
@@ -967,12 +967,12 @@ test('decorateRequest with getter/setter can handle encapsulation with arrays', 
   })
 
   await Promise.all([
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.assert.deepStrictEqual(res.statusCode, 200))
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200))
   ])
 })
 

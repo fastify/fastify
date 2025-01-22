@@ -70,8 +70,8 @@ it directly or modify it. It is useful to access one special key:
 
 ### Headers
 
-The `request.headers` is a getter that returns an Object with the headers of the
-incoming request. You can set custom headers like this:
+The `request.headers` is a getter that returns an object with the headers of the
+incoming request. Set custom headers as follows:
 
 ```js
 request.headers = {
@@ -80,14 +80,14 @@ request.headers = {
 }
 ```
 
-This operation will add to the request headers the new values that can be read
-calling `request.headers.bar`. Moreover, you can still access the standard
-request's headers with the `request.raw.headers` property.
+This operation adds new values to the request headers, accessible via
+`request.headers.bar`. Standard request headers remain accessible via
+`request.raw.headers`.
 
-> Note: For performance reason on `not found` route, you may see that we will
-add an extra property `Symbol('fastify.RequestAcceptVersion')` on the headers.
+For performance reasons, `Symbol('fastify.RequestAcceptVersion')` may be added
+to headers on `not found` routes.
 
-> Note: Using schema validation may mutate the `request.headers` and
+> Note: Schema validation may mutate the `request.headers` and
 `request.raw.headers` objects, causing the headers to become empty.
 
 ```js
@@ -122,13 +122,12 @@ fastify.post('/:params', options, function (request, reply) {
 ### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>
 
-By calling this function using a provided `schema` or `httpPart`,
-it will return a `validation` function that can be used to
-validate diverse inputs. It returns `undefined` if no
-serialization function was found using either of the provided inputs.
+By calling this function with a provided `schema` or `httpPart`, it returns a
+`validation` function to validate diverse inputs. It returns `undefined` if no
+serialization function is found using the provided inputs.
 
-This function has property errors. Errors encountered during the last validation
-are assigned to errors
+This function has an `errors` property. Errors encountered during the last
+validation are assigned to `errors`.
 
 ```js
 const validate = request
@@ -151,24 +150,23 @@ console.log(validate({ foo: 0.5 })) // false
 console.log(validate.errors) // validation errors
 ```
 
-See [.compileValidationSchema(schema, [httpStatus])](#compilevalidationschema)
-for more information on how to compile validation function.
+See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)
+for more information on compiling validation schemas.
 
 ### .compileValidationSchema(schema, [httpPart])
 <a id="compilevalidationschema"></a>
 
-This function will compile a validation schema and
-return a function that can be used to validate data.
-The function returned (a.k.a. _validation function_) is compiled
-by using the provided [`SchemaController#ValidationCompiler`](./Server.md#schema-controller).
-A `WeakMap` is used to cache this, reducing compilation calls.
+This function compiles a validation schema and returns a function to validate data.
+The returned function (a.k.a. _validation function_) is compiled using the provided
+[`SchemaController#ValidationCompiler`](./Server.md#schema-controller). A `WeakMap`
+is used to cache this, reducing compilation calls.
 
-The optional parameter `httpPart`, if provided, is forwarded directly
-the `ValidationCompiler`, so it can be used to compile the validation
-function if a custom `ValidationCompiler` is provided for the route.
+The optional parameter `httpPart`, if provided, is forwarded to the
+`ValidationCompiler`, allowing it to compile the validation function if a custom
+`ValidationCompiler` is provided for the route.
 
-This function has property errors. Errors encountered during the last validation
-are assigned to errors
+This function has an `errors` property. Errors encountered during the last
+validation are assigned to `errors`.
 
 ```js
 const validate = request
@@ -198,16 +196,13 @@ console.log(validate({ hello: 'world' })) // false
 console.log(validate.errors) // validation errors
 ```
 
-Note that you should be careful when using this function, as it will cache
-the compiled validation functions based on the schema provided. If the
-schemas provided are mutated or changed, the validation functions will not
-detect that the schema has been altered and for instance it will reuse the
-previously compiled validation function, as the cache is based on
-the reference of the schema (Object) previously provided.
+Be careful when using this function, as it caches compiled validation functions
+based on the provided schema. If schemas are mutated or changed, the validation
+functions will not detect the alterations and will reuse the previously compiled
+validation function, as the cache is based on the schema's reference.
 
-If there is a need to change the properties of a schema, always opt to create
-a totally new schema (object), otherwise the implementation will not benefit from
-the cache mechanism.
+If schema properties need to be changed, create a new schema object to benefit
+from the cache mechanism.
 
 Using the following schema as an example:
 ```js
@@ -248,12 +243,11 @@ console.log(newValidate === validate) // false
 ### .validateInput(data, [schema | httpStatus], [httpStatus])
 <a id="validate"></a>
 
-This function will validate the input based on the provided schema,
-or HTTP part passed. If both are provided, the `httpPart` parameter
-will take precedence.
+This function validates the input based on the provided schema or HTTP part. If
+both are provided, the `httpPart` parameter takes precedence.
 
-If there is not a validation function for a given `schema`, a new validation
-function will be compiled, forwarding the `httpPart` if provided.
+If no validation function exists for a given `schema`, a new validation function
+will be compiled, forwarding the `httpPart` if provided.
 
 ```js
 request
@@ -285,4 +279,4 @@ request
 ```
 
 See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)
-for more information on how to compile validation schemas.
+for more information on compiling validation schemas.

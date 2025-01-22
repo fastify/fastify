@@ -2,7 +2,7 @@
 
 ## Logging
 
-### Enable logging
+### Enable Logging
 Logging is disabled by default. Enable it by passing `{ logger: true }` or
 `{ logger: { level: 'info' } }` when creating a Fastify instance. Note that if
 the logger is disabled, it cannot be enabled at runtime.
@@ -13,6 +13,7 @@ As Fastify is focused on performance, it uses
 [pino](https://github.com/pinojs/pino) as its logger, with the default log
 level set to `'info'` when enabled.
 
+#### Basic logging setup
 Enabling the production JSON logger:
 
 ```js
@@ -21,6 +22,7 @@ const fastify = require('fastify')({
 })
 ```
 
+#### Environment-Specific Configuration
 Enabling the logger with appropriate configuration for local development,
 production, and test environments requires more configuration:
 
@@ -61,6 +63,7 @@ instance:
 fastify.log.info('Something important happened!');
 ```
 
+#### Passing Logger Options
 To pass options to the logger, provide them to Fastify. See the
 [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#options)
 for available options. To specify a file destination, use:
@@ -94,14 +97,17 @@ const fastify = require('fastify')({
 })
 ```
 
-<a id="logging-request-id"></a>
+### Advanced Logger Configuration
 
+<a id="logging-request-id"></a>
+#### Request ID Tracking
 By default, Fastify adds an ID to every request for easier tracking. If the
 `requestIdHeader` option is set and the corresponding header is present, its
 value is used; otherwise, a new incremental ID is generated. See Fastify Factory
 [`requestIdHeader`](./Server.md#factory-request-id-header) and Fastify Factory
 [`genReqId`](./Server.md#genreqid) for customization options.
 
+#### Serializers
 The default logger uses standard serializers for objects with `req`, `res`, and
 `err` properties. The `req` object is the Fastify [`Request`](./Request.md)
 object, and the `res` object is the Fastify [`Reply`](./Reply.md) object. This
@@ -167,7 +173,7 @@ const fastify = require('fastify')({
       res (reply) {
         // The default
         return {
-          statusCode: reply.statusCode
+          statusCode: reply.statusCode,
           headers: typeof reply.getHeaders === 'function'
             ? reply.getHeaders()
             : {}
@@ -200,6 +206,7 @@ information.
 
 *Any logger other than Pino will ignore this option.*
 
+### Using Custom Loggers
 A custom logger instance can be supplied by passing it as `loggerInstance`. The
 logger must conform to the Pino interface, with methods: `info`, `error`,
 `debug`, `fatal`, `warn`, `trace`, `silent`, `child`, and a string property
@@ -222,7 +229,7 @@ fastify.get('/', function (request, reply) {
 *The logger instance for the current request is available in every part of the
 [lifecycle](./Lifecycle.md).*
 
-## Log Redaction
+### Log Redaction
 
 [Pino](https://getpino.io) supports low-overhead log redaction for obscuring
 values of specific properties in recorded logs. For example, log all HTTP

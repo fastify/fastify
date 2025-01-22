@@ -4,69 +4,64 @@
 The first parameter of the handler function is `Request`.
 
 Request is a core Fastify object containing the following fields:
-- `query` - the parsed querystring, its format is specified by
-  [`querystringParser`](./Server.md#querystringparser)
-- `body` - the request payload, see [Content-Type
-  Parser](./ContentTypeParser.md) for details on what request payloads Fastify
-  natively parses and how to support other content types
-- `params` - the params matching the URL
-- [`headers`](#headers) - the headers getter and setter
-- `raw` - the incoming HTTP request from Node core
-- `server` - The Fastify server instance, scoped to the current [encapsulation
-  context](./Encapsulation.md)
-- `id` - the request ID
-- `log` - the logger instance of the incoming request
-- `ip` - the IP address of the incoming request
-- `ips` - an array of the IP addresses, ordered from closest to furthest, in the
+- `query` - The parsed querystring, its format is specified by
+  [`querystringParser`](./Server.md#querystringparser).
+- `body` - The request payload, see [Content-Type Parser](./ContentTypeParser.md)
+  for details on what request payloads Fastify natively parses and how to support
+  other content types.
+- `params` - The params matching the URL.
+- [`headers`](#headers) - The headers getter and setter.
+- `raw` - The incoming HTTP request from Node core.
+- `server` - The Fastify server instance, scoped to the current
+  [encapsulation context](./Encapsulation.md).
+- `id` - The request ID.
+- `log` - The logger instance of the incoming request.
+- `ip` - The IP address of the incoming request.
+- `ips` - An array of the IP addresses, ordered from closest to furthest, in the
   `X-Forwarded-For` header of the incoming request (only when the
-  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled)
-- `host` - the host of the incoming request (derived from `X-Forwarded-Host`
+  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled).
+- `host` - The host of the incoming request (derived from `X-Forwarded-Host`
   header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
-  enabled). For HTTP/2 compatibility it returns `:authority` if no host header
-  exists. The host header may return an empty string if `requireHostHeader`
-  is false, not provided with HTTP/1.0, or removed by schema validation.
-- `hostname` - the hostname derived from the `host` property of
-  the incoming request
-- `port` - the port from the `host` property, which may refer to
-  the port the server is listening on
-- `protocol` - the protocol of the incoming request (`https` or `http`)
-- `method` - the method of the incoming request
-- `url` - the URL of the incoming request
-- `originalUrl` - similar to `url`, this allows you to access the
-  original `url` in case of internal re-routing
-- `is404` - true if request is being handled by 404 handler, false if it is not
-- `socket` - the underlying connection of the incoming request
-- `context` - Deprecated, use `request.routeOptions.config` instead.
-A Fastify internal object. You should not use
-it directly or modify it. It is useful to access one special key:
+  enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
+  exists. The host header may return an empty string if `requireHostHeader` is
+  `false`, not provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - The hostname derived from the `host` property of the incoming request.
+- `port` - The port from the `host` property, which may refer to the port the
+  server is listening on.
+- `protocol` - The protocol of the incoming request (`https` or `http`).
+- `method` - The method of the incoming request.
+- `url` - The URL of the incoming request.
+- `originalUrl` - Similar to `url`, allows access to the original `url` in
+  case of internal re-routing.
+- `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
+- `socket` - The underlying connection of the incoming request.
+- `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
+  internal object. Do not use or modify it directly. It is useful to access one
+  special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
-- `routeOptions` - The route [`option`](./Routes.md#routes-options) object
-  - `bodyLimit` - either server limit or route limit
-  - `config` - the [`config`](./Routes.md#routes-config) object for this route
-  - `method` - the http method for the route
-  - `url` - the path of the URL to match this route
-  - `handler` - the handler for this route
-  - `attachValidation` - attach `validationError` to request
-    (if there is a schema defined)
-  - `logLevel` - log level defined for this route
-  - `schema` - the JSON schemas definition for this route
-  - `version` -  a semver compatible string that defines the version of the endpoint
-  - `exposeHeadRoute` - creates a sibling HEAD route for any GET routes
-  - `prefixTrailingSlash` - string used to determine how to handle passing /
+- `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
+  - `bodyLimit` - Either server limit or route limit.
+  - `config` - The [`config`](./Routes.md#routes-config) object for this route.
+  - `method` - The HTTP method for the route.
+  - `url` - The path of the URL to match this route.
+  - `handler` - The handler for this route.
+  - `attachValidation` - Attach `validationError` to request (if there is a schema defined).
+  - `logLevel` - Log level defined for this route.
+  - `schema` - The JSON schemas definition for this route.
+  - `version` - A semver compatible string that defines the version of the endpoint.
+  - `exposeHeadRoute` - Creates a sibling HEAD route for any GET routes.
+  - `prefixTrailingSlash` - String used to determine how to handle passing `/`
     as a route with a prefix.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) -
-  Returns a validation function for the specified schema or http part,
-  if any of either are set or cached.
+  Returns a validation function for the specified schema or HTTP part, if set or cached.
 - [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema) -
-  Compiles the specified schema and returns a validation function
-  using the default (or customized) `ValidationCompiler`.
-  The optional `httpPart` is forwarded to the `ValidationCompiler`
-  if provided, defaults to `null`.
+  Compiles the specified schema and returns a validation function using the
+  default (or customized) `ValidationCompiler`. The optional `httpPart` is
+  forwarded to the `ValidationCompiler` if provided, defaults to `null`.
 - [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
-  Validates the specified input by using the specified
-  schema and returns the serialized payload. If the optional
-  `httpPart` is provided, the function will use the serializer
-  function given for that HTTP Status Code. Defaults to `null`.
+  Validates the input using the specified schema and returns the serialized payload.
+  If `httpPart` is provided, the function uses the serializer for that HTTP Status Code.
+  Defaults to `null`.
 
 ### Headers
 

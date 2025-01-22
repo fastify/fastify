@@ -45,7 +45,8 @@ Request is a core Fastify object containing the following fields:
   - `method` - The HTTP method for the route.
   - `url` - The path of the URL to match this route.
   - `handler` - The handler for this route.
-  - `attachValidation` - Attach `validationError` to request (if there is a schema defined).
+  - `attachValidation` - Attach `validationError` to request (if there is
+    a schema defined).
   - `logLevel` - Log level defined for this route.
   - `schema` - The JSON schemas definition for this route.
   - `version` - A semver compatible string that defines the version of the endpoint.
@@ -53,15 +54,16 @@ Request is a core Fastify object containing the following fields:
   - `prefixTrailingSlash` - String used to determine how to handle passing `/`
     as a route with a prefix.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) -
-  Returns a validation function for the specified schema or HTTP part, if set or cached.
+  Returns a validation function for the specified schema or HTTP part, if
+  set or cached.
 - [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema) -
   Compiles the specified schema and returns a validation function using the
   default (or customized) `ValidationCompiler`. The optional `httpPart` is
   forwarded to the `ValidationCompiler` if provided, defaults to `null`.
 - [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
-  Validates the input using the specified schema and returns the serialized payload.
-  If `httpPart` is provided, the function uses the serializer for that HTTP Status Code.
-  Defaults to `null`.
+  Validates the input using the specified schema and returns the serialized
+  payload. If `httpPart` is provided, the function uses the serializer for
+  that HTTP Status Code. Defaults to `null`.
 
 ### Headers
 

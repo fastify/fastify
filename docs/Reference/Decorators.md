@@ -12,10 +12,11 @@ the Fastify instance booting before the decoration completes. To register an
 asynchronous decoration, use the `register` API with `fastify-plugin`. See the
 [Plugins](./Plugins.md) documentation for more details.
 
-Decorating core objects with this API allows the JavaScript engine to optimize
-handling of server, request, and reply objects. This is done by defining the
-shape of these objects before they are instantiated. The following example is
-not recommended as it changes the shape of objects during their lifecycle:
+Decorating core objects with this API allows the underlying JavaScript engine to
+optimize the handling of server, request, and reply objects. This is
+accomplished by defining the shape of all such object instances before they are
+instantiated and used. As an example, the following is not recommended because
+it will change the shape of objects during their lifecycle:
 
 ```js
 // Bad example! Continue reading.

@@ -2,18 +2,16 @@
 
 ## Type Providers
 
-Type Providers are a TypeScript only feature that enables Fastify to statically
-infer type information directly from inline JSON Schema. They are an alternative
-to specifying generic arguments on routes; and can greatly reduce the need to
-keep associated types for each schema defined in your project.
+Type Providers are a TypeScript feature that enables Fastify to infer type
+information from inline JSON Schema. They are an alternative to specifying
+generic arguments on routes and can reduce the need to keep associated types for
+each schema in a project.
 
 ### Providers
 
-Type Providers are offered as additional packages you will need to install into
-your project. Each provider uses a different inference library under the hood;
-allowing you to select the library most appropriate for your needs. Official Type
-Provider packages follow a `@fastify/type-provider-{provider-name}` naming
-convention, and there are several community ones available as well.
+Official Type Provider packages follow the
+`@fastify/type-provider-{provider-name}` naming convention.
+Several community providers are also available.
 
 The following inference packages are supported:
 
@@ -30,7 +28,7 @@ See also the Type Provider wrapper packages for each of the packages respectivel
 
 ### Json Schema to Ts
 
-The following sets up a `json-schema-to-ts` Type Provider
+The following sets up a `json-schema-to-ts` Type Provider:
 
 ```bash
 $ npm i @fastify/type-provider-json-schema-to-ts
@@ -62,7 +60,7 @@ server.get('/route', {
 
 ### TypeBox
 
-The following sets up a TypeBox Type Provider
+The following sets up a TypeBox Type Provider:
 
 ```bash
 $ npm i @fastify/type-provider-typebox
@@ -89,14 +87,14 @@ server.get('/route', {
 })
 ```
 
-See also the [TypeBox
-documentation](https://github.com/sinclairzx81/typebox#validation) on how to set
-up AJV to work with TypeBox.
+See the [TypeBox
+documentation](https://github.com/sinclairzx81/typebox#validation)
+for setting up AJV to work with TypeBox.
 
 ### Zod
 
 See [official documentation](https://github.com/turkerdev/fastify-type-provider-zod)
-for Zod type provider instructions.
+for Zod Type Provider instructions.
 
 
 ### Scoped Type-Provider
@@ -154,9 +152,9 @@ fastify.register(pluginWithJsonSchema)
 fastify.register(pluginWithTypebox)
 ```
 
-It's also important to mention that since the types don't propagate globally,
-_currently_ it is not possible to avoid multiple registrations on routes when
-dealing with several scopes, see below:
+It is important to note that since the types do not propagate globally, it is
+currently not possible to avoid multiple registrations on routes when dealing
+with several scopes, as shown below:
 
 ```ts
 import Fastify from 'fastify'
@@ -178,7 +176,7 @@ function plugin1(fastify: FastifyInstance, _opts, done): void {
       })
     }
   }, (req) => {
-    // it doesn't work! in a new scope needs to call `withTypeProvider` again
+    // In a new scope, call `withTypeProvider` again to ensure it works
     const { x, y, z } = req.body
   });
   done()
@@ -205,8 +203,8 @@ function plugin2(fastify: FastifyInstance, _opts, done): void {
 
 ### Type Definition of FastifyInstance + TypeProvider
 
-When working with modules one has to make use of `FastifyInstance` with Type
-Provider generics. See the example below:
+When working with modules, use `FastifyInstance` with Type Provider generics.
+See the example below:
 
 ```ts
 // index.ts

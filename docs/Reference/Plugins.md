@@ -183,7 +183,7 @@ module.exports = function (fastify, opts, done) {
   done()
 }
 ```
-You can also use `register` inside another `register`:
+`register` can also be used inside another `register`:
 ```js
 module.exports = function (fastify, opts, done) {
   fastify.decorate('utility', function () {})

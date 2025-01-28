@@ -242,7 +242,7 @@ module.exports = fp(myPlugin)
 ```
 
 The hook solution is more flexible and allows for more complex initialization
-because you can add more logic to the `onRequest` hook.
+because more logic can be added to the `onRequest` hook.
 
 Another approach is to use the getter/setter pattern, but it requires 2 decorators:
 

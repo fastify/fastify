@@ -549,6 +549,10 @@ export interface FastifyInstance<
    */
   removeAllContentTypeParsers: removeAllContentTypeParsers
   /**
+   * Returns an array of strings containing the list of supported HTTP methods
+   */
+  supportedMethods: string[]
+  /**
    * Add a non-standard HTTP method
    *
    * Methods defined by default include `GET`, `HEAD`, `TRACE`, `DELETE`,

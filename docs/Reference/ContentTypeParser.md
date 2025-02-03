@@ -23,7 +23,7 @@ Note that for `GET` and `HEAD` requests, the payload is never parsed. For
 [catch-all](#catch-all) parser is not executed, and the payload is simply not
 parsed.
 
-> ## ⚠ Security Notice
+> ⚠ Warning:
 > When using regular expressions to detect `Content-Type`, it is important to
 > ensure proper detection. For example, to match `application/*`, use
 > `/^application\/([\w-]+);?/` to match the
@@ -152,8 +152,8 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 })
 ```
 
-**Notice**: `function(req, done)` and `async function(req)` are
-still supported but deprecated.
+> 🛈 Note: `function(req, done)` and `async function(req)` are
+> still supported but deprecated.
 
 #### Body Parser
 The request body can be parsed in two ways. First, add a custom content type

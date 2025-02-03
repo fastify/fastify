@@ -11,7 +11,7 @@ All examples use the
 [JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
 specification.
 
-> ## ⚠  Security Notice
+> ⚠ Warning:
 > Treat schema definitions as application code. Validation and serialization
 > features use `new Function()`, which is unsafe with user-provided schemas. See
 > [Ajv](https://npm.im/ajv) and
@@ -432,9 +432,9 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-_**Note:** When using a custom validator instance, add schemas to the validator
-instead of Fastify. Fastify's `addSchema` method will not recognize the custom
-validator._
+> 🛈 Note: When using a custom validator instance, add schemas to the validator
+> instead of Fastify. Fastify's `addSchema` method will not recognize the custom
+> validator.
 
 ##### Using other validation libraries
 <a id="using-other-validation-libraries"></a>
@@ -793,7 +793,7 @@ const fastify = Fastify({
   ajv: {
     customOptions: {
       jsonPointers: true,
-      // Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
+      // ⚠ Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
       allErrors: true
     },
     plugins: [

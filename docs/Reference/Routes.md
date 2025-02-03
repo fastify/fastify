@@ -376,12 +376,12 @@ fastify.get('/', options, async function (request, reply) {
 })
 ```
 
-**Warning:**
-* When using both `return value` and `reply.send(value)`, the first one takes
-  precedence, the second is discarded, and a *warn* log is emitted.
-* Calling `reply.send()` outside of the promise is possible but requires special
-  attention. See [promise-resolution](#promise-resolution).
-* `undefined` cannot be returned. See [promise-resolution](#promise-resolution).
+> ⚠ Warning:
+> * When using both `return value` and `reply.send(value)`, the first one takes
+>   precedence, the second is discarded, and a *warn* log is emitted.
+> * Calling `reply.send()` outside of the promise is possible but requires special
+>   attention. See [promise-resolution](#promise-resolution).
+> * `undefined` cannot be returned. See [promise-resolution](#promise-resolution).
 
 ### Promise resolution
 <a id="promise-resolution"></a>
@@ -659,7 +659,7 @@ fastify.inject({
 })
 ```
 
-> ## ⚠  Security Notice
+> ⚠ Warning:
 > Set a
 > [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary)
 > header in responses with the value used for versioning
@@ -771,7 +771,7 @@ const secret = {
 }
 ```
 
-> ## ⚠  Security Notice
+> ⚠ Warning:
 > When using asynchronous constraints, avoid returning errors inside the
 > callback. If errors are unavoidable, provide a custom `frameworkErrors`
 > handler to manage them. Otherwise, route selection may break or expose

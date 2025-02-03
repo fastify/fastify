@@ -987,4 +987,4 @@ const refToSharedSchemaDefinitions = {
 - [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)
 - [Ajv custom errors](https://github.com/epoberezkin/ajv-errors)
 - Custom error handling with core methods with error file dumping
-  [example](https://github.com/fastify/example/tree/master/validation-messages)
+  [example](https://github.com/fastify/example/tree/main/validation-messages)

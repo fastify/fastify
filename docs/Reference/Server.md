@@ -166,7 +166,7 @@ When set to `true`, upon [`close`](#close) the server will iterate the current
 persistent connections and [destroy their
 sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
 
-> **Warning**
+> ⚠ Warning:
 > Connections are not inspected to determine if requests have
 > been completed.
 
@@ -193,7 +193,7 @@ to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
 
-> **Note**
+> 🛈 Note:
 >  At the time of writing, only node >= v16.10.0 supports this option.
 
 ### `requestTimeout`
@@ -211,7 +211,7 @@ It must be set to a non-zero value (e.g. 120 seconds) to protect against potenti
 Denial-of-Service attacks in case the server is deployed without a reverse proxy
 in front.
 
-> **Note**
+> 🛈 Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
 
 ### `ignoreTrailingSlash`
@@ -529,7 +529,7 @@ Especially in distributed systems, you may want to override the default ID
 generation behavior as shown below. For generating `UUID`s you may want to check
 out [hyperid](https://github.com/mcollina/hyperid).
 
-> **Note**
+> 🛈 Note:
 > `genReqId` will be not called if the header set in
 > <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
 > 'request-id').
@@ -581,7 +581,7 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
-> **Note**
+> 🛈 Note:
 > If a request contains multiple `x-forwarded-host` or `x-forwarded-proto`
 > headers, it is only the last one that is used to derive `request.hostname`
 > and `request.protocol`.
@@ -735,7 +735,7 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-> **Note**
+> 🛈 Note:
 > Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
 
 ```js
@@ -788,7 +788,7 @@ function defaultClientErrorHandler (err, socket) {
 }
 ```
 
-> **Note**
+> 🛈 Note:
 > `clientErrorHandler` operates with raw sockets. The handler is expected to
 > return a properly formed HTTP response that includes a status line, HTTP headers
 > and a message body. Before attempting to write the socket, the handler should
@@ -877,7 +877,7 @@ fastify.get('/dev', async (request, reply) => {
 [server](https://nodejs.org/api/http.html#http_class_http_server) object as
 returned by the [**`Fastify factory function`**](#factory).
 
-> **Warning**
+> ⚠ Warning:
 > If utilized improperly, certain Fastify features could be disrupted.
 > It is recommended to only use it for attaching listeners.
 
@@ -1219,7 +1219,7 @@ different ways to define a name (in order).
 Newlines are replaced by ` -- `. This will help to identify the root cause when
 you deal with many plugins.
 
-> **Warning**
+> ⚠ Warning:
 > If you have to deal with nested plugins, the name differs with the usage of
 > the [fastify-plugin](https://github.com/fastify/fastify-plugin) because
 > no new scope is created and therefore we have no place to attach contextual
@@ -1355,7 +1355,7 @@ Set the schema error formatter for all routes. See
 Set the schema serializer compiler for all routes. See
 [#schema-serializer](./Validation-and-Serialization.md#schema-serializer).
 
-> **Note**
+> 🛈 Note:
 > [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 #### validatorCompiler
@@ -1488,7 +1488,7 @@ lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
 You can also register [`preValidation`](./Hooks.md#route-hooks) and
 [`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
 
-> **Note**
+> 🛈 Note:
 > The `preValidation` hook registered using this method will run for a
 > route that Fastify does not recognize and **not** when a route handler manually
 > calls [`reply.callNotFound`](./Reply.md#call-not-found). In which case, only
@@ -1524,7 +1524,7 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
-> **Note**
+> 🛈 Note:
 > Some config properties from the request object will be
 > undefined inside the custom not found handler. E.g.:
 > `request.routerPath`, `routerMethod` and `context.config`.

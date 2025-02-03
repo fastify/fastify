@@ -157,11 +157,11 @@ const fastify = require('fastify')({
 });
 ```
 
-**Note**: In some cases, the [`Reply`](./Reply.md) object passed to the `res`
-serializer cannot be fully constructed. When writing a custom `res` serializer,
-check for the existence of any properties on `reply` aside from `statusCode`,
-which is always present. For example, verify the existence of `getHeaders`
-before calling it:
+> 🛈 Note: In some cases, the [`Reply`](./Reply.md) object passed to the `res`
+> serializer cannot be fully constructed. When writing a custom `res`
+> serializer, check for the existence of any properties on `reply` aside from
+> `statusCode`, which is always present. For example, verify the existence of
+> `getHeaders` before calling it:
 
 ```js
 const fastify = require('fastify')({
@@ -184,7 +184,7 @@ const fastify = require('fastify')({
 });
 ```
 
-**Note**: The body cannot be serialized inside a `req` method because the
+> 🛈 Note: The body cannot be serialized inside a `req` method because the
 request is serialized when the child logger is created. At that time, the body
 is not yet parsed.
 
@@ -199,10 +199,10 @@ app.addHook('preHandler', function (req, reply, done) {
 })
 ```
 
-**Note**: Ensure serializers never throw errors, as this can cause the Node
-process to exit. See the
-[Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers) for more
-information.
+> 🛈 Note: Ensure serializers never throw errors, as this can cause the Node
+> process to exit. See the
+> [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers) for more
+> information.
 
 *Any logger other than Pino will ignore this option.*
 

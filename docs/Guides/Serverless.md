@@ -25,6 +25,7 @@ snippet of code.
 ### Contents
 
 - [AWS](#aws)
+- [Genezio](#genezio)
 - [Google Cloud Functions](#google-cloud-functions)
 - [Google Firebase Functions](#google-firebase-functions)
 - [Google Cloud Run](#google-cloud-run)
@@ -128,6 +129,57 @@ found
 If you need to integrate with more AWS services, take a look at
 [@h4ad/serverless-adapter](https://viniciusl.com.br/serverless-adapter/docs/main/frameworks/fastify)
 on Fastify to find out how to integrate.
+
+## Genezio
+
+[Genezio](https://genezio.com/) is a platform designed to simplify the deployment of serverless applications to the cloud. It eliminates the complexity of managing infrastructure and modifying your code for cloud compatibility. Genezio provides two main deployment methods:
+
+- [Deploy from a GitHub repository](#deploy-from-a-github-repository)
+- [Deploy Using the CLI](#deploy-using-the-cli)
+
+[![Genezio Deploy](https://raw.githubusercontent.com/Genez-io/graphics/main/svg/deploy-button.svg)](https://app.genez.io/start/deploy?repository=https://github.com/Genez-io/fastify-getting-started&utm_source=github&utm_medium=referral&utm_campaign=github-fastify&utm_term=deploy-project&utm_content=button-head)
+
+### Deploy from a GitHub repository
+
+Deploy directly from your GitHub repository with 0 configuration needed:
+
+1. Navigate to the [Genezio Deployment Page](https://app.genez.io/auth/login?redirect=import).
+2. Authenticate with your GitHub account.
+3. Select the repository you wish to deploy.
+
+Genezio will handle the configuration and deployment for you. 
+
+
+### Deploy using the CLI
+
+The Genezio CLI allows you to deploy applications directly from your local environment.
+
+**Step 1**: Install the Genezio CLI:
+
+```bash
+npm install -g genezio
+```
+
+**Step 2**: Run the analyze command to generate a configuration file:
+
+```bash
+genezio analyze
+```
+
+This will create a `genezio.yaml` configuration file in your project.
+
+**Step 3**: Deploy your application to production:
+
+```bash
+genezio deploy
+```
+
+This will deploy your Fastify application to Genezio's serverless infrastructure.
+
+### References
+
+- [Fastify on Genezio](https://app.genez.io/start/deploy?repository=https://github.com/Genez-io/fastify-getting-started&utm_source=github&utm_medium=referral&utm_campaign=github-fastify&utm_term=deploy-project&utm_content=button-head)
+- [Genezio Documentation](https://genezio.com/docs/frameworks/fastify/)
 
 ## Google Cloud Functions
 

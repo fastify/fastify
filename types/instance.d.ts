@@ -605,7 +605,7 @@ export interface FastifyInstance<
 }
 
 type GetSixthGenericOfFasityInstance<Instance> = Instance extends FastifyInstance<any, any, any, any, any, infer U> ? U : never
-type GetFirstParameter<T> = T extends (...args: infer P) => any ? P[0] : void
-type GetFastifyDecorators<Plugins extends (FastifyPluginCallback<any, any, any, any, any> | FastifyPluginAsync<any, any, any, any, any>)[]> = GetSixthGenericOfFasityInstance<GetFirstParameter<Plugins[number]>>
+type GetFirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never
+type GetFastifyDecoratorsFromPlugins<Plugins extends (FastifyPluginCallback<any, any, any, any, any> | FastifyPluginAsync<any, any, any, any, any>)[]> = GetSixthGenericOfFasityInstance<GetFirstParameter<Plugins[number]>>
 
-export type FastifyInstanceWithPlugins<Options extends { plugins: (FastifyPluginCallback<any, any, any, any, any> | FastifyPluginAsync<any, any, any, any, any>)[] }> = FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, FastifyBaseLogger, FastifyTypeProviderDefault, GetFastifyDecorators<Options['plugins']>> & GetFastifyDecorators<Options['plugins']>['fastify']
+export type FastifyInstanceWithPlugins<Options extends { plugins: (FastifyPluginCallback<any, any, any, any, any> | FastifyPluginAsync<any, any, any, any, any>)[] }> = FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, FastifyBaseLogger, FastifyTypeProviderDefault, GetFastifyDecoratorsFromPlugins<Options['plugins']>> & GetFastifyDecoratorsFromPlugins<Options['plugins']>['fastify']

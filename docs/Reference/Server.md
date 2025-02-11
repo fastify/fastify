@@ -1548,8 +1548,9 @@ set it to 500 before calling the error handler.
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
-- Stream errors thrown during piping into the response socket, as headers/response 
-  were already sent to the client. Use custom in-stream data to signal such errors.
+- Stream errors thrown during piping into the response socket, as
+  headers/response were already sent to the client. 
+  Use custom in-stream data to signal such errors.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {

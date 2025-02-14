@@ -46,7 +46,7 @@ const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/pluginUtils')
 const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
-const { buildRouting, validateBodyLimitOption } = require('./lib/route')
+const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
@@ -159,21 +159,20 @@ function fastify (options) {
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
+  options.routerOptions = buildRouterOptions(options, {
+    defaultRoute,
+    onBadUrl,
+    ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
+    ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
+    maxParamLength: defaultInitOptions.maxParamLength,
+    allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
+    buildPrettyMeta: defaultBuildPrettyMeta,
+    useSemilcolonDelimiter: defaultInitOptions.useSemicolonDelimiter
+  })
+
   // Default router
   const router = buildRouting({
-    config: {
-      defaultRoute,
-      onBadUrl,
-      constraints: options.constraints,
-      ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
-      ignoreDuplicateSlashes: options.ignoreDuplicateSlashes || defaultInitOptions.ignoreDuplicateSlashes,
-      maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive,
-      allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
-      buildPrettyMeta: defaultBuildPrettyMeta,
-      querystringParser: options.querystringParser,
-      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
-    }
+    config: options.routerOptions
   })
 
   // 404 router, used for handling encapsulated 404 handlers

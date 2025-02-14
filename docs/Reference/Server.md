@@ -765,10 +765,10 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 ### `buildPrettyMeta`
 <a id="build-pretty-meta"></a>
 
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
-`buildPrettyMeta` where you can assign a `buildPrettyMeta` function to sanitize a 
-route's store object to use with the `prettyPrint` functions. This function should 
-accept a single object and return an object.
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which
+supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta` 
+function to sanitize a route's store object to use with the `prettyPrint` 
+functions. This function should accept a single object and return an object.
 
 ```js
 fastify.get('/user/:username', (request, reply) => {

@@ -8,15 +8,7 @@
     - [FSTWRN001](#FSTWRN001)
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
-    - [FSTDEP020](#FSTDEP020)
-    - [FSTDEP021](#FSTDEP021)
     - [FSTDEP022](#FSTDEP022)
-    - [FSTDEP023](#FSTDEP023)
-    - [FSTDEP024](#FSTDEP024)
-    - [FSTDEP025](#FSTDEP025)
-    - [FSTDEP026](#FSTDEP026)
-    - [FSTDEP027](#FSTDEP027)
-
 
 ## Warnings
 
@@ -63,11 +55,4 @@ Deprecation codes are supported by the Node.js CLI options:
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
-| <a id="FSTDEP020">FSTDEP020</a> | You are trying to access the deprecated `options.ignoreTrailingSlash` property. | Use `options.routerOptions.ignoreTrailingSlash`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP021">FSTDEP021</a> | You are trying to access the deprecated `options.ignoreDuplicateSlashes` property. | Use `options.routerOptions.ignoreDuplicateSlashes`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated `options.maxParamLength` property. | Use `options.routerOptions.maxParamLength`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP023">FSTDEP023</a> | You are trying to access the deprecated `options.caseSensitive` property. | Use `options.routerOptions.caseSensitive`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP024">FSTDEP024</a> | You are trying to access the deprecated `options.allowUnsafeRegex` property. | Use `options.routerOptions.allowUnsafeRegex`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP025">FSTDEP025</a> | You are trying to access the deprecated `options.querystringParser` property. | Use `options.routerOptions.querystringParser`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP026">FSTDEP026</a> | You are trying to access the deprecated `options.useSemicolonDelimiter` property. | Use `options.routerOptions.useSemicolonDelimiter`. | [#](https://github.com/fastify/fastify/pull/)
-| <a id="FSTDEP027">FSTDEP027</a> | You are trying to access the deprecated `options.constraints` property. | Use `options.routerOptions.constraints`. | [#](https://github.com/fastify/fastify/pull/)
+| <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated router options on top option properties. | Use `options.routerOptions`. | [#](https://github.com/fastify/fastify/pull/)

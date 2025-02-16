@@ -1,8 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Long Term Support
-
-`<a id="lts"></a>`
+<a id="lts"></a>
 
 Fastify's Long Term Support (LTS) is provided according to the schedule laid out
 in this document:
@@ -50,8 +49,7 @@ OpenJS Ecosystem Sustainability Program for versions of Fastify that are EOL.
 For more information, see their [Never Ending Support][hd-link] service.
 
 ### Schedule
-
-`<a id="lts-schedule"></a>`
+<a id="lts-schedule"></a>
 
 | Version | Release Date | End Of LTS Date | Node.js            | Nsolid(Node)   |
 | :------ | :----------- | :-------------- | :----------------- | :------------- |
@@ -62,8 +60,7 @@ For more information, see their [Never Ending Support][hd-link] service.
 | 5.0.0   | 2024-09-17   | TBD             | 20, 22             | v5(20)         |
 
 ### CI tested operating systems
-
-`<a id="supported-os"></a>`
+<a id="supported-os"></a>
 
 Fastify uses GitHub Actions for CI testing, please refer to [GitHub&#39;s
 documentation regarding workflow

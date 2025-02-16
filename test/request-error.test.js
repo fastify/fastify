@@ -2,12 +2,11 @@
 
 const { connect } = require('node:net')
 const sget = require('simple-get').concat
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const { kRequest } = require('../lib/symbols.js')
 
-test('default 400 on request error', t => {
+test('default 400 on request error', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -26,25 +25,26 @@ test('default 400 on request error', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
+    done()
   })
 })
 
-test('default 400 on request error with custom error handler', t => {
+test('default 400 on request error with custom error handler', (t, done) => {
   t.plan(6)
 
   const fastify = Fastify()
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.type(request, 'object')
-    t.type(request, fastify[kRequest].parent)
+    t.assert.strictEqual(typeof request, 'object')
+    t.assert.strictEqual(request instanceof fastify[kRequest].parent, true)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -65,18 +65,19 @@ test('default 400 on request error with custom error handler', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
+    done()
   })
 })
 
-test('default clientError handler ignores ECONNRESET', t => {
+test('default clientError handler ignores ECONNRESET', (t, done) => {
   t.plan(3)
 
   let logs = ''
@@ -107,8 +108,8 @@ test('default clientError handler ignores ECONNRESET', t => {
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     const client = connect(fastify.server.address().port)
 
@@ -117,8 +118,9 @@ test('default clientError handler ignores ECONNRESET', t => {
     })
 
     client.on('end', () => {
-      t.match(response, /^HTTP\/1.1 200 OK/)
-      t.notMatch(logs, /ECONNRESET/)
+      t.assert.match(response, /^HTTP\/1.1 200 OK/)
+      t.assert.notEqual(logs, /ECONNRESET/)
+      done()
     })
 
     client.resume()
@@ -138,15 +140,15 @@ test('default clientError handler ignores sockets in destroyed state', t => {
   })
   fastify.server.on('clientError', () => {
     // this handler is called after default handler, so we can make sure end was not called
-    t.pass()
+    t.assert.ok('end should not be called')
   })
   fastify.server.emit('clientError', new Error(), {
     destroyed: true,
     end () {
-      t.fail('end should not be called')
+      t.assert.fail('end should not be called')
     },
     destroy () {
-      t.fail('destroy should not be called')
+      t.assert.fail('destroy should not be called')
     }
   })
 })
@@ -164,13 +166,13 @@ test('default clientError handler destroys sockets in writable state', t => {
     writable: true,
     encrypted: true,
     end () {
-      t.fail('end should not be called')
+      t.assert.fail('end should not be called')
     },
     destroy () {
-      t.pass('destroy should be called')
+      t.assert.ok('destroy should be called')
     },
     write (response) {
-      t.match(response, /^HTTP\/1.1 400 Bad Request/)
+      t.assert.match(response, /^HTTP\/1.1 400 Bad Request/)
     }
   })
 })
@@ -187,24 +189,24 @@ test('default clientError handler destroys http sockets in non-writable state', 
     destroyed: false,
     writable: false,
     end () {
-      t.fail('end should not be called')
+      t.assert.fail('end should not be called')
     },
     destroy () {
-      t.pass('destroy should be called')
+      t.assert.ok('destroy should be called')
     },
     write (response) {
-      t.fail('write should not be called')
+      t.assert.fail('write should not be called')
     }
   })
 })
 
-test('error handler binding', t => {
+test('error handler binding', (t, done) => {
   t.plan(5)
 
   const fastify = Fastify()
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.equal(this, fastify)
+    t.assert.strictEqual(this, fastify)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -225,30 +227,31 @@ test('error handler binding', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
+    done()
   })
 })
 
-test('encapsulated error handler binding', t => {
+test('encapsulated error handler binding', (t, done) => {
   t.plan(7)
 
   const fastify = Fastify()
 
   fastify.register(function (app, opts, done) {
     app.decorate('hello', 'world')
-    t.equal(app.hello, 'world')
+    t.assert.strictEqual(app.hello, 'world')
     app.post('/', function (req, reply) {
       reply.send({ hello: 'world' })
     })
     app.setErrorHandler(function (err, request, reply) {
-      t.equal(this.hello, 'world')
+      t.assert.strictEqual(this.hello, 'world')
       reply
         .code(err.statusCode)
         .type('application/json; charset=utf-8')
@@ -267,19 +270,20 @@ test('encapsulated error handler binding', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.json(), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(res.json(), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
-    t.equal(fastify.hello, undefined)
+    t.assert.strictEqual(fastify.hello, undefined)
+    done()
   })
 })
 
-test('default clientError replies with bad request on reused keep-alive connection', t => {
+test('default clientError replies with bad request on reused keep-alive connection', (t, done) => {
   t.plan(2)
 
   let response = ''
@@ -294,7 +298,7 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.server.unref()
 
     const client = connect(fastify.server.address().port)
@@ -304,7 +308,8 @@ test('default clientError replies with bad request on reused keep-alive connecti
     })
 
     client.on('end', () => {
-      t.match(response, /^HTTP\/1.1 200 OK.*HTTP\/1.1 400 Bad Request/s)
+      t.assert.match(response, /^HTTP\/1.1 200 OK.*HTTP\/1.1 400 Bad Request/s)
+      done()
     })
 
     client.resume()
@@ -318,21 +323,21 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 })
 
-test('request.routeOptions should be immutable', t => {
+test('request.routeOptions should be immutable', (t, done) => {
   t.plan(14)
   const fastify = Fastify()
   const handler = function (req, res) {
-    t.equal('POST', req.routeOptions.method)
-    t.equal('/', req.routeOptions.url)
-    t.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
-    t.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
+    t.assert.strictEqual('POST', req.routeOptions.method)
+    t.assert.strictEqual('/', req.routeOptions.url)
+    t.assert.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
+    t.assert.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
+    t.assert.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
 
     for (const key of Object.keys(req.routeOptions)) {
       if (typeof req.routeOptions[key] === 'object' && req.routeOptions[key] !== null) {
@@ -347,8 +352,8 @@ test('request.routeOptions should be immutable', t => {
     handler
   })
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'POST',
@@ -357,17 +362,18 @@ test('request.routeOptions should be immutable', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
 
-test('request.routeOptions.method is an uppercase string /1', t => {
+test('request.routeOptions.method is an uppercase string /1', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const handler = function (req, res) {
-    t.equal('POST', req.routeOptions.method)
+    t.assert.strictEqual('POST', req.routeOptions.method)
     res.send({})
   }
 
@@ -376,8 +382,8 @@ test('request.routeOptions.method is an uppercase string /1', t => {
     handler
   })
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'POST',
@@ -386,17 +392,18 @@ test('request.routeOptions.method is an uppercase string /1', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
 
-test('request.routeOptions.method is an uppercase string /2', t => {
+test('request.routeOptions.method is an uppercase string /2', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const handler = function (req, res) {
-    t.equal('POST', req.routeOptions.method)
+    t.assert.strictEqual('POST', req.routeOptions.method)
     res.send({})
   }
 
@@ -407,8 +414,8 @@ test('request.routeOptions.method is an uppercase string /2', t => {
     handler
   })
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'POST',
@@ -417,17 +424,18 @@ test('request.routeOptions.method is an uppercase string /2', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
 
-test('request.routeOptions.method is an uppercase string /3', t => {
+test('request.routeOptions.method is an uppercase string /3', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const handler = function (req, res) {
-    t.equal('POST', req.routeOptions.method)
+    t.assert.strictEqual('POST', req.routeOptions.method)
     res.send({})
   }
 
@@ -438,8 +446,8 @@ test('request.routeOptions.method is an uppercase string /3', t => {
     handler
   })
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'POST',
@@ -448,17 +456,18 @@ test('request.routeOptions.method is an uppercase string /3', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
 
-test('request.routeOptions.method is an array with uppercase string', t => {
+test('request.routeOptions.method is an array with uppercase string', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const handler = function (req, res) {
-    t.strictSame(['POST'], req.routeOptions.method)
+    t.assert.deepStrictEqual(['POST'], req.routeOptions.method)
     res.send({})
   }
 
@@ -469,8 +478,8 @@ test('request.routeOptions.method is an array with uppercase string', t => {
     handler
   })
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'POST',
@@ -479,13 +488,14 @@ test('request.routeOptions.method is an array with uppercase string', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
 
-test('test request.routeOptions.version', t => {
+test('test request.routeOptions.version', (t, done) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -494,7 +504,7 @@ test('test request.routeOptions.version', t => {
     url: '/version',
     constraints: { version: '1.2.0' },
     handler: function (request, reply) {
-      t.equal('1.2.0', request.routeOptions.version)
+      t.assert.strictEqual('1.2.0', request.routeOptions.version)
       reply.send({})
     }
   })
@@ -503,13 +513,21 @@ test('test request.routeOptions.version', t => {
     method: 'POST',
     url: '/version-undefined',
     handler: function (request, reply) {
-      t.equal(undefined, request.routeOptions.version)
+      t.assert.strictEqual(undefined, request.routeOptions.version)
       reply.send({})
     }
   })
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'POST',
@@ -518,8 +536,9 @@ test('test request.routeOptions.version', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      completed()
     })
 
     sget({
@@ -529,8 +548,9 @@ test('test request.routeOptions.version', t => {
       body: [],
       json: true
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      completed()
     })
   })
 })

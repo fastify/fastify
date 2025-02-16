@@ -1,14 +1,13 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 const fs = require('node:fs')
 const Readable = require('node:stream').Readable
 const sget = require('simple-get').concat
 const Fastify = require('..')
 
-test('should destroy stream when response is ended', t => {
+test('should destroy stream when response is ended', (t, done) => {
   t.plan(4)
   const stream = require('node:stream')
   const fastify = Fastify()
@@ -17,7 +16,7 @@ test('should destroy stream when response is ended', t => {
     const reallyLongStream = new stream.Readable({
       read: function () { },
       destroy: function (err, callback) {
-        t.ok('called')
+        t.assert.ok('called')
         callback(err)
       }
     })
@@ -26,23 +25,25 @@ test('should destroy stream when response is ended', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
   })
 })
 
-test('should mark reply as sent before pumping the payload stream into response for async route handler', t => {
+test('should mark reply as sent before pumping the payload stream into response for async route handler', (t, done) => {
   t.plan(3)
+  t.after(() => fastify.close())
 
   const handleRequest = proxyquire('../lib/handleRequest', {
     './wrapThenable': (thenable, reply) => {
       thenable.then(function (payload) {
-        t.equal(reply.sent, true)
+        t.assert.strictEqual(reply.sent, true)
       })
     }
   })
@@ -66,20 +67,20 @@ test('should mark reply as sent before pumping the payload stream into response 
     url: '/',
     method: 'GET'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
-    fastify.close()
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+    done()
   })
 })
 
-test('reply.send handles aborted requests', t => {
+test('reply.send handles aborted requests', (t, done) => {
   t.plan(2)
 
   const spyLogger = {
     level: 'error',
     fatal: () => { },
     error: () => {
-      t.fail('should not log an error')
+      t.assert.fail('should not log an error')
     },
     warn: () => { },
     info: () => { },
@@ -103,31 +104,31 @@ test('reply.send handles aborted requests', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     const port = fastify.server.address().port
     const http = require('node:http')
     const req = http.get(`http://localhost:${port}`)
       .on('error', (err) => {
-        t.equal(err.code, 'ECONNRESET')
-        fastify.close()
+        t.assert.strictEqual(err.code, 'ECONNRESET')
+        done()
       })
 
     setTimeout(() => {
-      req.abort()
+      req.destroy()
     }, 1)
   })
 })
 
-test('request terminated should not crash fastify', t => {
+test('request terminated should not crash fastify', (t, done) => {
   t.plan(10)
 
   const spyLogger = {
     level: 'error',
     fatal: () => { },
     error: () => {
-      t.fail('should not log an error')
+      t.assert.fail('should not log an error')
     },
     warn: () => { },
     info: () => { },
@@ -156,18 +157,18 @@ test('request terminated should not crash fastify', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     const port = fastify.server.address().port
     const http = require('node:http')
     const req = http.get(`http://localhost:${port}`, function (res) {
       const { statusCode, headers } = res
-      t.equal(statusCode, 200)
-      t.equal(headers['content-type'], 'text/html; charset=utf-8')
-      t.equal(headers['transfer-encoding'], 'chunked')
+      t.assert.strictEqual(statusCode, 200)
+      t.assert.strictEqual(headers['content-type'], 'text/html; charset=utf-8')
+      t.assert.strictEqual(headers['transfer-encoding'], 'chunked')
       res.on('data', function (chunk) {
-        t.equal(chunk.toString(), '<h1>HTML</h1>')
+        t.assert.strictEqual(chunk.toString(), '<h1>HTML</h1>')
       })
 
       setTimeout(() => {
@@ -176,16 +177,17 @@ test('request terminated should not crash fastify', t => {
         // the server is not crash, we can connect it
         http.get(`http://localhost:${port}`, function (res) {
           const { statusCode, headers } = res
-          t.equal(statusCode, 200)
-          t.equal(headers['content-type'], 'text/html; charset=utf-8')
-          t.equal(headers['transfer-encoding'], 'chunked')
+          t.assert.strictEqual(statusCode, 200)
+          t.assert.strictEqual(headers['content-type'], 'text/html; charset=utf-8')
+          t.assert.strictEqual(headers['transfer-encoding'], 'chunked')
           let payload = ''
           res.on('data', function (chunk) {
             payload += chunk.toString()
           })
           res.on('end', function () {
-            t.equal(payload, '<h1>HTML</h1><h1>should display on second stream</h1>')
-            t.pass('should end properly')
+            t.assert.strictEqual(payload, '<h1>HTML</h1><h1>should display on second stream</h1>')
+            t.assert.ok('should end properly')
+            done()
           })
         })
       }, 1)

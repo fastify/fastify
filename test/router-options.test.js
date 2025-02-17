@@ -730,7 +730,7 @@ test('Should honor routerOptions.buildPrettyMeta', async (t) => {
   t.assert.strictEqual(result, expected)
 })
 
-test('Should honor routerOptions.ignoreTrailingSlash and routerOptions.ignoreDuplicateSlashes over top level options', { only: true }, async t => {
+test('Should honor routerOptions.ignoreTrailingSlash and routerOptions.ignoreDuplicateSlashes over top level options', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false,

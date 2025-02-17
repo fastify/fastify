@@ -128,6 +128,9 @@ above, and more!
 >
 > When deploying to a Docker (or another type of) container using `0.0.0.0` or
 > `::` would be the easiest method for exposing the application.
+>
+> Note that when using `0.0.0.0`, the address provided in the callback argument
+> above will be the first address the wildcard refers to.
 
 ### Your first plugin
 <a id="first-plugin"></a>

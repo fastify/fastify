@@ -167,7 +167,7 @@ function fastify (options) {
     maxParamLength: defaultInitOptions.maxParamLength,
     allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
     buildPrettyMeta: defaultBuildPrettyMeta,
-    useSemilcolonDelimiter: defaultInitOptions.useSemicolonDelimiter
+    useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
   })
 
   // Default router

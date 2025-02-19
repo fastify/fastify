@@ -973,7 +973,8 @@ server.listen({
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
 desired, then specifying `0.0.0.0` for the address will listen on all IPv4
-addresses. The following table details the possible values for `host` when
+addresses. The address argument provided above will then return the first such
+IPv4 address. The following table details the possible values for `host` when
 targeting `localhost`, and what the result of those values for `host` will be.
 
  Host          | IPv4 | IPv6

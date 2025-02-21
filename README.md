@@ -165,6 +165,7 @@ fastify.listen({ port: 3000 }, (err, address) => {
 
 Do you want to know more? Head to the <a
 href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
+If you learn best by reading code, explore the official [demo](https://github.com/fastify/demo).
 
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default

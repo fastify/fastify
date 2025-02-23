@@ -599,8 +599,9 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is a more performant fork of Node.js's core
-`querystring` module called [`fast-query-string`](https://github.com/anonrig/fast-querystring).
+The default query string parser that Fastify uses is a more performant fork 
+of Node.js's core `querystring` module called 
+[`fast-query-string`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
 [`qs`](https://www.npmjs.com/package/qs).

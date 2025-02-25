@@ -472,7 +472,7 @@ or turn it into a function
 
 ```js
 // v5
-fastify.decorateRequest('myObject', () => { hello: 'world' });
+fastify.decorateRequest('myObject', () => ({ hello: 'world' }));
 ```
 
 or as a getter
@@ -720,4 +720,3 @@ contributing to those that are capable of accepting sponsorships.
 | voxpelli | [❤️ sponsor](https://github.com/sponsors/voxpelli) | fastify |
 | weixinwu |  | fastify-cli |
 | zetaraku |  | fastify-cli |
-

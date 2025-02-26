@@ -620,7 +620,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('node:querystring')
+const querystring = require('fast-querystring')
 const fastify = require('fastify')({
   querystringParser: str => querystring.parse(str.toLowerCase())
 })

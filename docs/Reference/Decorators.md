@@ -187,9 +187,9 @@ incoming request in the [`'onRequest'` hook](./Hooks.md#onrequest).
 const fp = require('fastify-plugin')
 
 async function myPlugin (app) {
-  app.decorateRequest('foo')
+  app.decorateReply('foo')
   app.addHook('onRequest', async (req, reply) => {
-    req.foo = { bar: 42 }
+    reply.foo = { bar: 42 }
   })
 }
 

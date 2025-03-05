@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('Fastify should throw on wrong options', async (t) => {
+test('Fastify should throw on wrong options', (t) => {
   t.plan(2)
   try {
     Fastify('lol')
@@ -14,7 +14,7 @@ test('Fastify should throw on wrong options', async (t) => {
   }
 })
 
-test('Fastify should throw on multiple assignment to the same route', async (t) => {
+test('Fastify should throw on multiple assignment to the same route', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -89,7 +89,7 @@ test('Should throw on unsupported method', async (t) => {
   }
 })
 
-test('Should throw on missing handler', async (t) => {
+test('Should throw on missing handler', (t) => {
   t.plan(1)
   const fastify = Fastify()
   try {

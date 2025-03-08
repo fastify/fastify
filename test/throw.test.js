@@ -29,7 +29,7 @@ test('Fastify should throw on multiple assignment to the same route', (t) => {
 })
 
 test('Fastify should throw for an invalid schema, printing the error route - headers', async (t) => {
-  t.plan(2)
+  t.plan(1)
 
   const badSchema = {
     type: 'object',
@@ -39,19 +39,18 @@ test('Fastify should throw for an invalid schema, printing the error route - hea
       }
     }
   }
-
   const fastify = Fastify()
   fastify.get('/', { schema: { headers: badSchema } }, () => {})
   fastify.get('/not-loaded', { schema: { headers: badSchema } }, () => {})
 
-  await fastify.ready().catch(err => {
-    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.assert.match(err.message, /Failed building the validation schema for GET: \//)
+  await t.assert.rejects(fastify.ready(), {
+    code: 'FST_ERR_SCH_VALIDATION_BUILD',
+    message: /Failed building the validation schema for GET: \//
   })
 })
 
 test('Fastify should throw for an invalid schema, printing the error route - body', async (t) => {
-  t.plan(2)
+  t.plan(1)
   const badSchema = {
     type: 'object',
     properties: {
@@ -67,9 +66,9 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
     done()
   }, { prefix: 'hello' })
 
-  await fastify.ready().catch(err => {
-    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.assert.match(err.message, /Failed building the validation schema for POST: \/hello\/form/)
+  await t.assert.rejects(fastify.ready(), {
+    code: 'FST_ERR_SCH_VALIDATION_BUILD',
+    message: /Failed building the validation schema for POST: \/hello\/form/
   })
 })
 

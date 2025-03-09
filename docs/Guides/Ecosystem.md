@@ -218,7 +218,7 @@ section.
   A custom compact pino-base prettifier
 - [`@pybot/fastify-autoload`](https://github.com/kunal097/fastify-autoload)
   Plugin to generate routes automatically with valid json content
-- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/packages/fastify-api-reference)
+- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify

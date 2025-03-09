@@ -4,6 +4,7 @@ const { test } = require('node:test')
 const net = require('node:net')
 const Fastify = require('../fastify')
 const { once } = require('node:events')
+const { FSTWRN003 } = require('../lib/warnings.js')
 
 function createDeferredPromise () {
   const promise = {}
@@ -96,4 +97,26 @@ test('same port conflict and success should not fire callback multiple times - p
   // which means there is no problem on the callback
   await fastify.listen()
   await fastify.close()
+})
+
+test('should emit a warning when using async callback', (t, done) => {
+  t.plan(2)
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.assert.strictEqual(warning.name, 'FastifyWarning')
+    t.assert.strictEqual(warning.code, FSTWRN003.code)
+  }
+
+  const fastify = Fastify()
+
+  t.after(async () => {
+    await fastify.close()
+    process.removeListener('warning', onWarning)
+    FSTWRN003.emitted = false
+  })
+
+  fastify.listen({ port: 0 }, async function doNotUseAsyncCallback () {
+    done()
+  })
 })

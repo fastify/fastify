@@ -15,7 +15,7 @@ updates:
       # Prefix all commit messages with "chore: "
       prefix: "chore"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 10
     groups:
       # Production dependencies without breaking changes
@@ -29,9 +29,23 @@ updates:
         dependency-type: "production"
         update-types:
         - "major"
-      # Development dependencies
-      dev-dependencies:
-        dependency-type: "development"
+      # ESLint related dependencies
+      dev-dependencies-eslint:
+        patterns:
+          - "eslint"
+          - "neostandard"
+          - "@stylistic/*"
+      # TypeScript related dependencies
+      dev-dependencies-typescript:
+        patterns:
+          - "@types/*"
+          - "tsd"
+          - "typescript"
+      # Ajv related dependencies
+      dev-dependencies-ajv:
+        patterns:
+          - "ajv"
+          - "ajv-*"
     ignore:
         - dependency-name: tap
           update-types: ["version-update:semver-major"]

@@ -632,7 +632,7 @@ newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
 out
-[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/master/index.d.ts).
+[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any
 TypeScript project!
@@ -659,23 +659,6 @@ However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.
-- In case you've the `@typescript-eslint/no-floating-promises` enabled,
-please double-check that your ESLint configuration includes a `allowForKnownSafePromises`
-property as described on the [`typescript-eslint no-floating-promises allowForKnownSafePromises
-documentation`](https://typescript-eslint.io/rules/no-floating-promises/#allowforknownsafepromises):
-```
-{
-  "rules": {
-    "@typescript-eslint/no-floating-promises": ["error", {
-      "allowForKnownSafePromises": [
-        { "from": "package", "name": "FastifyInstance", "package": "fastify" },
-        { "from": "package", "name": "FastifyReply", "package": "fastify" },
-        { "from": "package", "name": "SafePromiseLike", "package": "fastify" },
-      ]
-    }]
-  }
-}
-```
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
@@ -873,8 +856,8 @@ a more detailed http server walkthrough.
 
 1. Create the following imports from `@types/node` and `fastify`
    ```typescript
-   import fs from 'fs'
-   import path from 'path'
+   import fs from 'node:fs'
+   import path from 'node:path'
    import fastify from 'fastify'
    ```
 2. Perform the following steps before setting up a Fastify HTTPS server
@@ -935,7 +918,7 @@ specified at server instantiation, the custom type becomes available on all
 further instances of the custom type.
 ```typescript
 import fastify from 'fastify'
-import http from 'http'
+import http from 'node:http'
 
 interface customRequest extends http.IncomingMessage {
   mySpecialProp: string
@@ -1123,8 +1106,8 @@ returns `http.IncomingMessage`, otherwise, it returns
 `http2.Http2ServerRequest`.
 
 ```typescript
-import http from 'http'
-import http2 from 'http2'
+import http from 'node:http'
+import http2 from 'node:http2'
 import { RawRequestDefaultExpression } from 'fastify'
 
 RawRequestDefaultExpression<http.Server> // -> http.IncomingMessage
@@ -1183,8 +1166,8 @@ returns `http.ServerResponse`, otherwise, it returns
 `http2.Http2ServerResponse`.
 
 ```typescript
-import http from 'http'
-import http2 from 'http2'
+import http from 'node:http'
+import http2 from 'node:http2'
 import { RawReplyDefaultExpression } from 'fastify'
 
 RawReplyDefaultExpression<http.Server> // -> http.ServerResponse

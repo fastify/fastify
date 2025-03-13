@@ -83,7 +83,7 @@ Result:
 
 Make sure you avoid copying other people's work. Keep it as original as
 possible. You can learn from what they have done and reference where it is from
-if you used a particular quote from their work.
+if you use a particular quote from their work.
 
 
 ## Word Choice
@@ -217,7 +217,7 @@ Styles](https://medium.com/better-programming/string-case-styles-camel-pascal-sn
 
 ### Hyperlinks
 
-Hyperlinks should have a clear title of what it references. Here is how your
+Hyperlinks should have a clear title of what they reference. Here is how your
 hyperlink should look:
 
 ```MD

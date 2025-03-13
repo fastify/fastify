@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance, FastifyPluginOptions, SafePromiseLike } from '../../fastify'
-import * as http from 'http'
-import * as https from 'https'
+import * as http from 'node:http'
+import * as https from 'node:https'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyPluginCallback, FastifyPluginAsync } from '../../types/plugin'
 import { FastifyError } from '@fastify/error'

@@ -13,7 +13,7 @@ import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
-import { AddressInfo } from 'net'
+import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 const server = fastify()
@@ -36,6 +36,7 @@ expectType<unknown>(server.getSchema('SchemaId'))
 expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())
 expectType<string>(server.listeningOrigin)
+expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {

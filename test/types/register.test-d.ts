@@ -1,6 +1,6 @@
 import { expectAssignable, expectError, expectType } from 'tsd'
-import { IncomingMessage, Server, ServerResponse } from 'http'
-import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
+import { IncomingMessage, Server, ServerResponse } from 'node:http'
+import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'node:http2'
 import fastify, { FastifyInstance, FastifyError, FastifyLoggerInstance, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions, RawServerDefault } from '../../fastify'
 
 const testPluginCallback: FastifyPluginCallback = function (instance, opts, done) { }

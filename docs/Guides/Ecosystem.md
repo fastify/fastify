@@ -86,6 +86,8 @@ section.
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Formats
   Fastify's logs into a nice one-line message.
+- [`@fastify/otel`](https://github.com/fastify/otel) OpenTelemetry
+  instrumentation library.
 - [`@fastify/passport`](https://github.com/fastify/fastify-passport) Use Passport
   strategies to authenticate requests and protect route.
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
@@ -198,6 +200,8 @@ section.
   to go!
   A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
+- [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
+  A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
@@ -214,13 +218,13 @@ section.
   A custom compact pino-base prettifier
 - [`@pybot/fastify-autoload`](https://github.com/kunal097/fastify-autoload)
   Plugin to generate routes automatically with valid json content
-- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/packages/fastify-api-reference)
+- [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
-- [`apitally`](https://github.com/apitally/nodejs-client) Fastify plugin to
-  integrate with [Apitally](https://apitally.io), a simple API monitoring &
-  API key management solution.
+- [`apitally`](https://github.com/apitally/apitally-js) Fastify plugin to
+  integrate with [Apitally](https://apitally.io/fastify), an API analytics,
+  logging and monitoring tool.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
 - [`aws-xray-sdk-fastify`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify)

@@ -1,7 +1,7 @@
 import { RawServerBase, RawServerDefault, RawReplyDefaultExpression, RawRequestDefaultExpression } from './utils'
-import * as http from 'http'
-import * as https from 'https'
-import * as http2 from 'http2'
+import * as http from 'node:http'
+import * as https from 'node:https'
+import * as http2 from 'node:http2'
 
 export type FastifyServerFactoryHandler<
   RawServer extends RawServerBase = RawServerDefault,

@@ -1,38 +1,32 @@
 <h1 align="center">Fastify</h1>
 
 ## `Content-Type` Parser
-Natively, Fastify only supports `'application/json'` and `'text/plain'` content
-types. If the content type is not one of these, an
-`FST_ERR_CTP_INVALID_MEDIA_TYPE` error will be thrown.
-Other common content types are supported through the use of
-[plugins](https://fastify.dev/ecosystem/).
+Fastify natively supports `'application/json'` and `'text/plain'` content types
+with a default charset of `utf-8`. These default parsers can be changed or
+removed.
 
-The default charset is `utf-8`. If you need to support different content types,
-you can use the `addContentTypeParser` API. *The default JSON and/or plain text
-parser can be changed or removed.*
+Unsupported content types will throw an `FST_ERR_CTP_INVALID_MEDIA_TYPE` error.
 
-*Note: If you decide to specify your own content type with the `Content-Type`
-header, UTF-8 will not be the default. Be sure to include UTF-8 like this
-`text/html; charset=utf-8`.*
+To support other content types, use the `addContentTypeParser` API or an
+existing [plugin](https://fastify.dev/ecosystem/).
 
-As with the other APIs, `addContentTypeParser` is encapsulated in the scope in
-which it is declared. This means that if you declare it in the root scope it
-will be available everywhere, while if you declare it inside a plugin it will be
-available only in that scope and its children.
+As with other APIs, `addContentTypeParser` is encapsulated in the scope in which
+it is declared. If declared in the root scope, it is available everywhere; if
+declared in a plugin, it is available only in that scope and its children.
 
 Fastify automatically adds the parsed request payload to the [Fastify
-request](./Request.md) object which you can access with `request.body`.
+request](./Request.md) object, accessible via `request.body`.
 
-Note that for `GET` and `HEAD` requests the payload is never parsed. For
-`OPTIONS` and `DELETE` requests the payload is only parsed if the content type
-is given in the content-type header. If it is not given, the
-[catch-all](#catch-all) parser is not executed as with `POST`, `PUT` and
-`PATCH`, but the payload is simply not parsed.
+Note that for `GET` and `HEAD` requests, the payload is never parsed. For
+`OPTIONS` and `DELETE` requests, the payload is parsed only if a valid
+`content-type` header is provided. Unlike `POST`, `PUT`, and `PATCH`, the
+[catch-all](#catch-all) parser is not executed, and the payload is simply not
+parsed.
 
-> ## ⚠  Security Notice
-> When using with RegExp to detect `Content-Type`, you should beware of
-> how to properly detect the `Content-Type`. For example, if you need
-> `application/*`, you should use `/^application\/([\w-]+);?/` to match the
+> ⚠ Warning:
+> When using regular expressions to detect `Content-Type`, it is important to
+> ensure proper detection. For example, to match `application/*`, use
+> `/^application\/([\w-]+);?/` to match the
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > only.
 
@@ -70,11 +64,10 @@ fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefa
 ```
 
 Fastify first tries to match a content-type parser with a `string` value before
-trying to find a matching `RegExp`. If you provide overlapping content types,
-Fastify tries to find a matching content type by starting with the last one
-passed and ending with the first one. So if you want to specify a general
-content type more precisely, first specify the general content type and then the
-more specific one, like in the example below.
+trying to find a matching `RegExp`. For overlapping content types, it starts
+with the last one configured and ends with the first (last in, first out).
+To specify a general content type more precisely, first specify the general
+type, then the specific one, as shown below.
 
 ```js
 // Here only the second content type parser is called because its value also matches the first one
@@ -88,10 +81,9 @@ fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done)
 ```
 
 ### Using addContentTypeParser with fastify.register
-When using `addContentTypeParser` in combination with `fastify.register`,
-`await` should not be used when registering routes. Using `await` causes
-the route registration to be asynchronous and can lead to routes being registered
-before the addContentTypeParser has been set.
+When using `addContentTypeParser` with `fastify.register`, avoid `await`
+when registering routes. Using `await` makes route registration asynchronous,
+potentially registering routes before `addContentTypeParser` is set.
 
 #### Correct Usage
 ```js
@@ -109,14 +101,13 @@ fastify.register((fastify, opts) => {
 });
 ```
 
-Besides the `addContentTypeParser` API there are further APIs that can be used.
-These are `hasContentTypeParser`, `removeContentTypeParser` and
-`removeAllContentTypeParsers`.
+In addition to `addContentTypeParser`, the `hasContentTypeParser`,
+`removeContentTypeParser`, and `removeAllContentTypeParsers` APIs are available.
 
 #### hasContentTypeParser
 
-You can use the `hasContentTypeParser` API to find if a specific content type
-parser already exists.
+Use the `hasContentTypeParser` API to check if a specific content type parser
+exists.
 
 ```js
 if (!fastify.hasContentTypeParser('application/jsoff')){
@@ -130,8 +121,8 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
 
 #### removeContentTypeParser
 
-With `removeContentTypeParser` a single or an array of content types can be
-removed. The method supports `string` and `RegExp` content types.
+`removeContentTypeParser` can remove a single content type or an array of
+content types, supporting both `string` and `RegExp`.
 
 ```js
 fastify.addContentTypeParser('text/xml', function (request, payload, done) {
@@ -145,16 +136,11 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 ```
 
 #### removeAllContentTypeParsers
-
-In the example from just above, it is noticeable that we need to specify each
-content type that we want to remove. To solve this problem Fastify provides the
-`removeAllContentTypeParsers` API. This can be used to remove all currently
-existing content type parsers. In the example below we achieve the same as in
-the example above except that we do not need to specify each content type to
-delete. Just like `removeContentTypeParser`, this API supports encapsulation.
-The API is especially useful if you want to register a [catch-all content type
-parser](#catch-all) that should be executed for every content type and the
-built-in parsers should be ignored as well.
+The `removeAllContentTypeParsers` API removes all existing content type parsers
+eliminating the need to specify each one individually. This API supports
+encapsulation and is useful for registering a
+[catch-all content type parser](#catch-all) that should be executed for every
+content type, ignoring built-in parsers.
 
 ```js
 fastify.removeAllContentTypeParsers()
@@ -166,18 +152,16 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 })
 ```
 
-**Notice**: The old syntaxes `function(req, done)` and `async function(req)` for
-the parser are still supported but they are deprecated.
+> 🛈 Note: `function(req, done)` and `async function(req)` are
+> still supported but deprecated.
 
 #### Body Parser
-You can parse the body of a request in two ways. The first one is shown above:
-you add a custom content type parser and handle the request stream. In the
-second one, you should pass a `parseAs` option to the `addContentTypeParser`
-API, where you declare how you want to get the body. It could be of type
-`'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will
-internally handle the stream and perform some checks, such as the [maximum
-size](./Server.md#factory-body-limit) of the body and the content length. If the
-limit is exceeded the custom parser will not be invoked.
+The request body can be parsed in two ways. First, add a custom content type
+parser and handle the request stream. Or second, use the `parseAs` option in the
+`addContentTypeParser` API, specifying `'string'` or `'buffer'`. Fastify will
+handle the stream, check the [maximum size](./Server.md#factory-body-limit) of
+the body, and the content length. If the limit is exceeded, the custom parser
+will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
@@ -195,15 +179,14 @@ See
 for an example.
 
 ##### Custom Parser Options
-+ `parseAs` (string): Either `'string'` or `'buffer'` to designate how the
-  incoming data should be collected. Default: `'buffer'`.
++ `parseAs` (string): `'string'` or `'buffer'` to designate how the incoming
+  data should be collected. Default: `'buffer'`.
 + `bodyLimit` (number): The maximum payload size, in bytes, that the custom
   parser will accept. Defaults to the global body limit passed to the [`Fastify
   factory function`](./Server.md#bodylimit).
 
 #### Catch-All
-There are some cases where you need to catch all requests regardless of their
-content type. With Fastify, you can just use the `'*'` content type.
+To catch all requests regardless of content type, use the `'*'` content type:
 ```js
 fastify.addContentTypeParser('*', function (request, payload, done) {
   let data = ''
@@ -213,12 +196,10 @@ fastify.addContentTypeParser('*', function (request, payload, done) {
   })
 })
 ```
+All requests without a corresponding content type parser will be handled by
+this function.
 
-Using this, all requests that do not have a corresponding content type parser
-will be handled by the specified function.
-
-This is also useful for piping the request stream. You can define a content
-parser like:
+This is also useful for piping the request stream. Define a content parser like:
 
 ```js
 fastify.addContentTypeParser('*', function (request, payload, done) {
@@ -226,7 +207,7 @@ fastify.addContentTypeParser('*', function (request, payload, done) {
 })
 ```
 
-and then access the core HTTP request directly for piping it where you want:
+And then access the core HTTP request directly for piping:
 
 ```js
 app.post('/hello', (request, reply) => {
@@ -254,12 +235,11 @@ fastify.route({
 })
  ```
 
-For piping file uploads you may want to check out [this
-plugin](https://github.com/fastify/fastify-multipart).
+For piping file uploads, check out
+[`@fastify/multipart`](https://github.com/fastify/fastify-multipart).
 
-If you want the content type parser to be executed on all content types and not
-only on those that don't have a specific one, you should call the
-`removeAllContentTypeParsers` method first.
+To execute the content type parser on all content types, call
+`removeAllContentTypeParsers` first.
 
 ```js
 // Without this call, the request body with the content type application/json would be processed by the built-in JSON parser

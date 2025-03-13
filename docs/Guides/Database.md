@@ -245,7 +245,7 @@ for Postgres, MySQL, SQL Server and SQLite. For MongoDB migrations, please check
 #### [Postgrator](https://www.npmjs.com/package/postgrator)
 
 Postgrator is Node.js SQL migration tool that uses a directory of SQL scripts to
-alter the database schema. Each file in a migrations folder need to follow the
+alter the database schema. Each file in a migrations folder needs to follow the
 pattern: ` [version].[action].[optional-description].sql`.
 
 **version:** must be an incrementing number (e.g. `001` or a timestamp).

@@ -1,6 +1,6 @@
 'use strict'
 
-const { test, before } = require('tap')
+const { test, before } = require('node:test')
 const Fastify = require('..')
 const helper = require('./helper')
 
@@ -13,69 +13,70 @@ before(async function () {
 
 test('listen works without arguments', async t => {
   const doNotWarn = () => {
-    t.fail('should not be deprecated')
+    t.assert.fail('should not be deprecated')
   }
   process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(() => {
+  t.after(() => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
   await fastify.listen()
   const address = fastify.server.address()
-  t.equal(address.address, localhost)
-  t.ok(address.port > 0)
+  t.assert.strictEqual(address.address, localhost)
+  t.assert.ok(address.port > 0)
 })
 
 test('Async/await listen with arguments', async t => {
   const doNotWarn = () => {
-    t.fail('should not be deprecated')
+    t.assert.fail('should not be deprecated')
   }
   process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(() => {
+  t.after(() => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
   const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
   const address = fastify.server.address()
-  t.equal(addr, `http://127.0.0.1:${address.port}`)
-  t.same(address, {
+  t.assert.strictEqual(addr, `http://127.0.0.1:${address.port}`)
+  t.assert.deepEqual(address, {
     address: '0.0.0.0',
     family: 'IPv4',
     port: address.port
   })
 })
 
-test('listen accepts a callback', t => {
+test('listen accepts a callback', (t, done) => {
   t.plan(2)
   const doNotWarn = () => {
-    t.fail('should not be deprecated')
+    t.assert.fail('should not be deprecated')
   }
   process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(() => {
+  t.after(() => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
   fastify.listen({ port: 0 }, (err) => {
-    t.equal(fastify.server.address().address, localhost)
-    t.error(err)
+    t.assert.ifError(err)
+    t.assert.strictEqual(fastify.server.address().address, localhost)
+    done()
   })
 })
 
-test('listen accepts options and a callback', t => {
+test('listen accepts options and a callback', (t, done) => {
   t.plan(1)
   const doNotWarn = () => {
-    t.fail('should not be deprecated')
+    t.assert.fail('should not be deprecated')
   }
   process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(() => {
+  t.after(() => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
@@ -88,40 +89,42 @@ test('listen accepts options and a callback', t => {
     writableAll: false,
     ipv6Only: false
   }, (err) => {
-    t.error(err)
+    t.assert.ifError(err)
+    done()
   })
 })
 
-test('listen after Promise.resolve()', t => {
+test('listen after Promise.resolve()', (t, done) => {
   t.plan(2)
-  const f = Fastify()
-  t.teardown(f.close.bind(f))
+  const fastify = Fastify()
+  t.after(() => fastify.close())
   Promise.resolve()
     .then(() => {
-      f.listen({ port: 0 }, (err, address) => {
-        f.server.unref()
-        t.equal(address, `http://${localhostForURL}:${f.server.address().port}`)
-        t.error(err)
+      fastify.listen({ port: 0 }, (err, address) => {
+        fastify.server.unref()
+        t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
+        t.assert.ifError(err)
+        done()
       })
     })
 })
 
 test('listen works with undefined host', async t => {
   const doNotWarn = () => {
-    t.fail('should not be deprecated')
+    t.assert.fail('should not be deprecated')
   }
   process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
-  t.teardown(() => {
+  t.after(() => fastify.close())
+  t.after(() => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
   await fastify.listen({ host: undefined, port: 0 })
   const address = fastify.server.address()
-  t.equal(address.address, localhost)
-  t.ok(address.port > 0)
+  t.assert.strictEqual(address.address, localhost)
+  t.assert.ok(address.port > 0)
 })
 
 test('listen works with null host', async t => {
@@ -131,13 +134,13 @@ test('listen works with null host', async t => {
   process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
-  t.teardown(() => {
+  t.after(() => fastify.close())
+  t.after(() => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
   await fastify.listen({ host: null, port: 0 })
   const address = fastify.server.address()
-  t.equal(address.address, localhost)
-  t.ok(address.port > 0)
+  t.assert.strictEqual(address.address, localhost)
+  t.assert.ok(address.port > 0)
 })

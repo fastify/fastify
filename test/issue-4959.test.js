@@ -5,7 +5,11 @@ const http = require('node:http')
 const Fastify = require('../fastify')
 
 function runBadClientCall (reqOptions, payload) {
-  const { promise, resolve, reject } = Promise.withResolvers()
+  let innerResolve, innerReject
+  const promise = new Promise((resolve, reject) => {
+    innerResolve = resolve
+    innerReject = reject
+  })
 
   const postData = JSON.stringify(payload)
 
@@ -16,14 +20,14 @@ function runBadClientCall (reqOptions, payload) {
       'Content-Length': Buffer.byteLength(postData),
     }
   }, (res) => {
-    reject(new Error('Request should have failed'))
+    innerReject(new Error('Request should have failed'))
   })
 
   // Kill the socket immediately (before sending data)
   req.on('socket', (socket) => {
     setTimeout(() => { socket.destroy() }, 5)
   })
-  req.on('error', resolve)
+  req.on('error', innerResolve)
   req.write(postData)
   req.end()
 

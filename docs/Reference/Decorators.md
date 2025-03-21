@@ -366,10 +366,10 @@ Will define the `foo` property on the Fastify instance:
 console.log(fastify.foo) // 'a getter'
 ```
 
-
 ### `getDecorator<T>` API
 
-Fastify’s `getDecorator` API retrieves an existing decorator from the Fastify instance, `Request`, or `Reply`. 
+Fastify’s `getDecorator` API retrieves an existing decorator 
+from the Fastify instance, `Request`, or `Reply`. 
 If the decorator isn’t defined, an `FST_ERR_DEC_UNDECLARED` error is thrown.
 
 Usage:
@@ -380,11 +380,15 @@ request.getDecorator('someDecorator')
 reply.getDecorator('someDecorator')
 ```
 
-This API provides an alternative way to manage dependencies in Fastify applications. It is particularly useful for performing **early plugin dependency validation** and can also serve as an alternative to **TypeScript module augmentation**.
+This API provides an alternative way to manage dependencies
+in Fastify applications. It is particularly useful for performing 
+**early plugin dependency validation** and can also serve as an alternative 
+to **TypeScript module augmentation**.
 
 #### Early Dependency Validation
 
-When building plugins, `getDecorator` is helpful for ensuring that required dependencies are available at registration time:
+When building plugins, `getDecorator` is helpful for ensuring that required 
+dependencies are available at registration time:
 
 ```js
 fastify.register(async function (fastify) {
@@ -402,15 +406,9 @@ fastify.register(async function (fastify) {
 In Fastify, decorators are usually typed using [module augmentation](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation):
 
 ```ts
-interface ISession {
-  user: string
-}
-
-type SendSuccessFn = (data: any) => void
-
 declare module 'fastify' {
   interface FastifyInstance {
-    usersRepository: UsersRepository
+    usersRepository: IUsersRepository
   }
   interface FastifyRequest {
     session: ISession
@@ -421,7 +419,9 @@ declare module 'fastify' {
 }
 ```
 
-**Drawback**: This approach modifies the Fastify instance globally, which can lead to conflicts or inconsistent behavior when running multiple servers or relying on plugin encapsulation.
+**Drawback**: This approach modifies the Fastify instance globally, which can 
+lead to conflicts or inconsistent behavior when running multiple servers or 
+relying on plugin encapsulation.
 
 Using `getDecorator<T>` as an alternative:
 
@@ -455,4 +455,5 @@ serverTwo.register(async function (fastify) {
 })
 ```
 
-This keeps types scoped to where they are used, preventing unintended type exposure between isolated parts of your application.
+This keeps types scoped to where they are used, preventing unintended 
+type exposure between isolated parts of your application.

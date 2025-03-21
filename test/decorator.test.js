@@ -1266,15 +1266,27 @@ test('getDecorator should return the decorator', t => {
   const fastify = Fastify()
 
   fastify.decorate('a', 'from_instance')
-  fastify.decorateRequest('b', 'from_request')
   fastify.decorateReply('c', 'from_reply')
+
+  fastify.decorateRequest('holder', null)
+  fastify.decorateRequest('b', {
+    getter () {
+      this.holder ??= {}
+      return this.holder
+    }
+  })
+
+  fastify.addHook('onRequest', async (req) => {
+    const b = req.getDecorator('b')
+    b.x = 'from_request'
+  })
 
   fastify.register((child) => {
     child.decorate('a', 'from_child_instance')
 
     t.equal(child.getDecorator('a'), 'from_child_instance')
     child.get('/child', async (req, res) => {
-      t.equal(req.getDecorator('b'), 'from_request')
+      t.equal(req.getDecorator('b').x, 'from_request')
       t.equal(res.getDecorator('c'), 'from_reply')
 
       res.send()
@@ -1283,7 +1295,7 @@ test('getDecorator should return the decorator', t => {
 
   t.equal(fastify.getDecorator('a'), 'from_instance')
   fastify.get('/', async (req, res) => {
-    t.equal(req.getDecorator('b'), 'from_request')
+    t.equal(req.getDecorator('b').x, 'from_request')
     t.equal(res.getDecorator('c'), 'from_reply')
 
     res.send()
@@ -1386,39 +1398,6 @@ test('getDecorator should only return existing decorator', t => {
     t.error(err)
 
     assertsThrowOnUndeclaredDecorator(fastify, 'instance')
-    fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
-    })
-  })
-})
-
-test('getDecorator should leverage caching for request and reply', t => {
-  t.plan(7)
-  const fastify = Fastify()
-
-  fastify.decorateRequest('a', 'from_request')
-  fastify.decorateReply('b', 'from_reply')
-
-  fastify.get('/', async (req, res) => {
-    t.equal(req[symbols.kDecoratorsAccessedCache], undefined)
-    t.equal(res[symbols.kDecoratorsAccessedCache], undefined)
-
-    req.getDecorator('a')
-    res.getDecorator('b')
-
-    t.strictSame(req[symbols.kDecoratorsAccessedCache], { a: 'from_request' })
-    t.strictSame(res[symbols.kDecoratorsAccessedCache], { b: 'from_reply' })
-
-    // Accessing decorator again leverage caching and allow to reach full coverage
-    req.getDecorator('a')
-    res.getDecorator('b')
-
-    res.send()
-  })
-
-  fastify.ready((err) => {
-    t.error(err)
     fastify.inject({ url: '/' }, (err, res) => {
       t.error(err)
       t.pass()

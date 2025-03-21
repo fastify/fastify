@@ -65,8 +65,87 @@ test('Custom querystring parser should be called also if there is nothing to par
   t.assert.strictEqual(injectResponse.statusCode, 200)
 })
 
+// test('Custom querystring parser', t => {
+//   t.plan(9)
+//
+//   const fastify = Fastify({
+//     querystringParser: function (str) {
+//       t.equal(str, 'foo=bar&baz=faz')
+//       return querystring.parse(str)
+//     }
+//   })
+//
+//   fastify.get('/', (req, reply) => {
+//     t.same(req.query, {
+//       foo: 'bar',
+//       baz: 'faz'
+//     })
+//     reply.send({ hello: 'world' })
+//   })
+//
+//   fastify.listen({ port: 0 }, (err, address) => {
+//     t.error(err)
+//     t.teardown(() => fastify.close())
+//
+//     sget({
+//       method: 'GET',
+//       url: `${address}?foo=bar&baz=faz`
+//     }, (err, response, body) => {
+//       t.error(err)
+//       t.equal(response.statusCode, 200)
+//     })
+//
+//     fastify.inject({
+//       method: 'GET',
+//       url: `${address}?foo=bar&baz=faz`
+//     }, (err, response, body) => {
+//       t.error(err)
+//       t.equal(response.statusCode, 200)
+//     })
+//   })
+// })
+
+// test('Custom querystring parser should be called also if there is nothing to parse', t => {
+//   t.plan(9)
+//
+//   const fastify = Fastify({
+//     querystringParser: function (str) {
+//       t.equal(str, '')
+//       return querystring.parse(str)
+//     }
+//   })
+//
+//   fastify.get('/', (req, reply) => {
+//     t.same(req.query, {})
+//     reply.send({ hello: 'world' })
+//   })
+//
+//   fastify.listen({ port: 0 }, (err, address) => {
+//     t.error(err)
+//     t.teardown(() => fastify.close())
+//
+//     sget({
+//       method: 'GET',
+//       url: address
+//     }, (err, response, body) => {
+//       t.error(err)
+//       t.equal(response.statusCode, 200)
+//     })
+//
+//     fastify.inject({
+//       method: 'GET',
+//       url: address
+//     }, (err, response, body) => {
+//       t.error(err)
+//       t.equal(response.statusCode, 200)
+//     })
+//   })
+// })
+
 test('Querystring without value', async t => {
   t.plan(7)
+
+  console.log('hello')
 
   const fastify = Fastify({
     querystringParser: function (str) {
@@ -104,6 +183,24 @@ test('Custom querystring parser should be a function', t => {
     t.assert.fail('Should throw')
   } catch (err) {
     t.assert.strictEqual(
+      err.message,
+      "querystringParser option should be a function, instead got 'number'"
+    )
+  }
+})
+
+test('Custom querystring parser should be a function', t => {
+  t.plan(1)
+
+  try {
+    Fastify({
+      routerOptions: {
+        querystringParser: 10
+      }
+    })
+    t.fail('Should throw')
+  } catch (err) {
+    t.equal(
       err.message,
       "querystringParser option should be a function, instead got 'number'"
     )

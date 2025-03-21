@@ -340,6 +340,7 @@ test('The not found handler should not erase the Accept-Version header', (t, don
       t.assert.deepStrictEqual(typeof key, 'string')
     }
 
+    console.log('jdkakfjajd')
     reply.code(404).send('not found handler')
   })
 

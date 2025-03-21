@@ -17,7 +17,6 @@ describes the properties available in that options object.
   - [`forceCloseConnections`](#forcecloseconnections)
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
-  - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
   - [`bodyLimit`](#bodylimit)
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
@@ -45,6 +44,7 @@ describes the properties available in that options object.
     - [`caseSensitive`](#casesensitive)
     - [`constraints`](#constraints)
     - [`defaultRoute`](#defaultroute)
+    - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
     - [`ignoreTrailingSlash`](#ignoretrailingslash)
     - [`maxParamLength`](#maxparamlength)
     - [`onBadUrl`](#onbadurl)
@@ -218,34 +218,6 @@ in front.
 
 > ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
-
-### `ignoreDuplicateSlashes`
-<a id="factory-ignore-duplicate-slashes"></a>
-
-+ Default: `false`
-
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. You can use `ignoreDuplicateSlashes` option to remove duplicate slashes
-from the path. It removes duplicate slashes in the route path and the request
-URL. This option applies to *all* route registrations for the resulting server
-instance.
-
-When `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set
-to `true` Fastify will remove duplicate slashes, and then trailing slashes,
-meaning `//a//b//c//` will be converted to `/a/b/c`.
-
-```js
-const fastify = require('fastify')({
-  routerOptions: {
-    ignoreDuplicateSlashes: true
-  }
-})
-
-// registers "/foo/bar/"
-fastify.get('///foo//bar//', function (req, reply) {
-  reply.send('foo')
-})
-```
 
 ### `bodyLimit`
 <a id="factory-body-limit"></a>
@@ -741,10 +713,10 @@ function rewriteUrl (req) {
 ## RouterOptions
 <a id="routeroptions"></a>
 
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) for its
-HTTP router. With routerOptions you can pass 
-[find-my-way options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
-to customize your HTTP router within Fastify.
+Fastify uses [`find-my-way`](https://github.com/delvedor/find-my-way) for its
+HTTP router. The `routerOptions` parameter allows passing 
+[`find-my-way` options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
+to customize the HTTP router within Fastify.
 
 ### `allowUnsafeRegex`
 <a id="allow-unsafe-regex"></a>
@@ -862,6 +834,34 @@ const fastify = require('fastify')({
 })
 ```
 
+### `ignoreDuplicateSlashes`
+<a id="factory-ignore-duplicate-slashes"></a>
+
++ Default: `false`
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
+routing. You can use `ignoreDuplicateSlashes` option to remove duplicate slashes
+from the path. It removes duplicate slashes in the route path and the request
+URL. This option applies to *all* route registrations for the resulting server
+instance.
+
+When `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set
+to `true` Fastify will remove duplicate slashes, and then trailing slashes,
+meaning `//a//b//c//` will be converted to `/a/b/c`.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    ignoreDuplicateSlashes: true
+  }
+})
+
+// registers "/foo/bar/"
+fastify.get('///foo//bar//', function (req, reply) {
+  reply.send('foo')
+})
+```
+
 ### `ignoreTrailingSlash`
 <a id="ignore-slash"></a>
 
@@ -926,7 +926,7 @@ const fastify = require('fastify')({
 ```
 
 ### `querystringParser`
-<a id="querystring-parser"></a>
+<a id="querystringparser"></a>
 
 The default query string parser that Fastify uses is the Node.js's core
 `querystring` module.
@@ -2122,6 +2122,7 @@ The properties that can currently be exposed are:
   - caseSensitive
   - constraints
   - defaultRoute
+  - ignoreDuplicateSlashes
   - ignoreTrailingSlash
   - maxParamLength
   - onBadUrl

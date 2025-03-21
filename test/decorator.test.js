@@ -925,9 +925,9 @@ test('Request/reply decorators should be able to access the server instance', as
   server.decorateRequest('assert', rootAssert)
   server.decorateReply('assert', rootAssert)
 
-  server.get('/root-assert', async (req, rep) => {
+  server.get('/root-assert', async (req, res) => {
     req.assert()
-    rep.assert()
+    res.assert()
     return 'done'
   })
 
@@ -936,9 +936,9 @@ test('Request/reply decorators should be able to access the server instance', as
     instance.decorateReply('assert', nestedAssert)
     instance.decorate('foo', 'bar')
 
-    instance.get('/nested-assert', async (req, rep) => {
+    instance.get('/nested-assert', async (req, res) => {
       req.assert()
-      rep.assert()
+      res.assert()
       return 'done'
     })
   })
@@ -1259,4 +1259,169 @@ test('chain of decorators on Reply', async (t) => {
     const response = await fastify.inject('/plugin2/plugin3/bar')
     t.equal(response.body, 'tata')
   }
+})
+
+test('getDecorator should return the decorator', t => {
+  t.plan(11)
+  const fastify = Fastify()
+
+  fastify.decorate('a', 'from_instance')
+  fastify.decorateRequest('b', 'from_request')
+  fastify.decorateReply('c', 'from_reply')
+
+  fastify.register((child) => {
+    child.decorate('a', 'from_child_instance')
+
+    t.equal(child.getDecorator('a'), 'from_child_instance')
+    child.get('/child', async (req, res) => {
+      t.equal(req.getDecorator('b'), 'from_request')
+      t.equal(res.getDecorator('c'), 'from_reply')
+
+      res.send()
+    })
+  })
+
+  t.equal(fastify.getDecorator('a'), 'from_instance')
+  fastify.get('/', async (req, res) => {
+    t.equal(req.getDecorator('b'), 'from_request')
+    t.equal(res.getDecorator('c'), 'from_reply')
+
+    res.send()
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+    fastify.inject({ url: '/' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+
+    fastify.inject({ url: '/child' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+  })
+})
+
+test('getDecorator should return function decorators with expected binded context', t => {
+  t.plan(12)
+  const fastify = Fastify()
+
+  fastify.decorate('a', function () {
+    return this
+  })
+  fastify.decorateRequest('b', function () {
+    return this
+  })
+  fastify.decorateReply('c', function () {
+    return this
+  })
+
+  fastify.register((child) => {
+    child.decorate('a', function () {
+      return this
+    })
+
+    t.same(child.getDecorator('a')(), child)
+    child.get('/child', async (req, res) => {
+      t.same(req.getDecorator('b')(), req)
+      t.same(res.getDecorator('c')(), res)
+
+      res.send()
+    })
+  })
+
+  t.same(fastify.getDecorator('a')(), fastify)
+  fastify.get('/', async (req, res) => {
+    t.same(req.getDecorator('b')(), req)
+    t.same(res.getDecorator('c')(), res)
+
+    res.send()
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+    fastify.inject({ url: '/' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+
+    fastify.inject({ url: '/child' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+
+    t.pass()
+  })
+})
+
+test('getDecorator should only return existing decorator', t => {
+  t.plan(9)
+
+  function assertsThrowOnUndeclaredDecorator (notDecorated, instanceType) {
+    try {
+      notDecorated.getDecorator('foo')
+      t.fail()
+    } catch (e) {
+      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.same(e.message, `No decorator 'foo' has been declared on ${instanceType}.`)
+    }
+  }
+
+  const fastify = Fastify()
+  fastify.register(child => {
+    child.decorate('foo', true)
+    child.decorateRequest('foo', true)
+    child.decorateReply('foo', true)
+  })
+
+  fastify.get('/', async (req, res) => {
+    assertsThrowOnUndeclaredDecorator(req, 'request')
+    assertsThrowOnUndeclaredDecorator(res, 'reply')
+
+    return { hello: 'world' }
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+
+    assertsThrowOnUndeclaredDecorator(fastify, 'instance')
+    fastify.inject({ url: '/' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+  })
+})
+
+test('getDecorator should leverage caching for request and reply', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('a', 'from_request')
+  fastify.decorateReply('b', 'from_reply')
+
+  fastify.get('/', async (req, res) => {
+    t.equal(req[symbols.kDecoratorsAccessedCache], undefined)
+    t.equal(res[symbols.kDecoratorsAccessedCache], undefined)
+
+    req.getDecorator('a')
+    res.getDecorator('b')
+
+    t.strictSame(req[symbols.kDecoratorsAccessedCache], { a: 'from_request' })
+    t.strictSame(res[symbols.kDecoratorsAccessedCache], { b: 'from_reply' })
+
+    // Accessing decorator again leverage caching and allow to reach full coverage
+    req.getDecorator('a')
+    res.getDecorator('b')
+
+    res.send()
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+    fastify.inject({ url: '/' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+  })
 })

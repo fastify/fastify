@@ -343,13 +343,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
-<<<<<<< HEAD
     getDecorator: decorator.getInstanceDecorator,
-=======
-    getFastifyDecorators: decorator.getFastifyDecorators,
-    getRequestDecorators: decorator.getRequestDecorators,
-    getReplyDecorators: decorator.getReplyDecorators,
->>>>>>> 82634be1 (refactor: separate the apis)
     addHttpMethod,
     // fake http injection
     inject,

@@ -31,7 +31,7 @@ const {
   kErrorHandler,
   kKeepAliveConnections,
   kChildLoggerFactory,
-  kGenReqId,
+  kGenReqId
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')

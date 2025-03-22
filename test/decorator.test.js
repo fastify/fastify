@@ -1262,43 +1262,33 @@ test('chain of decorators on Reply', async (t) => {
 })
 
 test('getDecorator should return the decorator', t => {
-  t.plan(11)
+  t.plan(12)
   const fastify = Fastify()
 
-  fastify.decorate('a', 'from_instance')
-  fastify.decorateReply('c', 'from_reply')
+  fastify.decorate('root', 'from_root')
+  fastify.decorateRequest('root', 'from_root_request')
+  fastify.decorateReply('root', 'from_root_reply')
 
-  fastify.decorateRequest('holder', null)
-  fastify.decorateRequest('b', {
-    getter () {
-      this.holder ??= {}
-      return this.holder
-    }
-  })
+  t.equal(fastify.getDecorator('root'), 'from_root')
+  fastify.get('/', async (req, res) => {
+    t.equal(req.getDecorator('root'), 'from_root_request')
+    t.equal(res.getDecorator('root'), 'from_root_reply')
 
-  fastify.addHook('onRequest', async (req) => {
-    const b = req.getDecorator('b')
-    b.x = 'from_request'
+    res.send()
   })
 
   fastify.register((child) => {
-    child.decorate('a', 'from_child_instance')
+    child.decorate('child', 'from_child')
 
-    t.equal(child.getDecorator('a'), 'from_child_instance')
+    t.equal(child.getDecorator('child'), 'from_child')
+    t.equal(child.getDecorator('root'), 'from_root')
+
     child.get('/child', async (req, res) => {
-      t.equal(req.getDecorator('b').x, 'from_request')
-      t.equal(res.getDecorator('c'), 'from_reply')
+      t.equal(req.getDecorator('root'), 'from_root_request')
+      t.equal(res.getDecorator('root'), 'from_root_reply')
 
       res.send()
     })
-  })
-
-  t.equal(fastify.getDecorator('a'), 'from_instance')
-  fastify.get('/', async (req, res) => {
-    t.equal(req.getDecorator('b').x, 'from_request')
-    t.equal(res.getDecorator('c'), 'from_reply')
-
-    res.send()
   })
 
   fastify.ready((err) => {
@@ -1367,7 +1357,7 @@ test('getDecorator should return function decorators with expected binded contex
   })
 })
 
-test('getDecorator should only return existing decorator', t => {
+test('getDecorator should only return decorators existing in the scope', t => {
   t.plan(9)
 
   function assertsThrowOnUndeclaredDecorator (notDecorated, instanceType) {

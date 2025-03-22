@@ -19,7 +19,7 @@ function runBadClientCall (reqOptions, payload) {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(postData),
     }
-  }, (res) => {
+  }, () => {
     innerReject(new Error('Request should have failed'))
   })
 
@@ -35,7 +35,7 @@ function runBadClientCall (reqOptions, payload) {
 }
 
 test('should handle a soket error', async (t) => {
-  t.plan(2)
+  t.plan(4)
   const fastify = Fastify()
 
   function shouldNotHappen () {
@@ -58,6 +58,7 @@ test('should handle a soket error', async (t) => {
       return
     }
 
+    t.assert.ok('onSend hook called')
     request.onSendCalled = true
 
     // Introduce a delay
@@ -71,12 +72,13 @@ test('should handle a soket error', async (t) => {
     return reply.send({ hello: 'world' })
   })
 
-  await fastify.listen({ port: 3000 })
+  await fastify.listen({ port: 0 })
 
-  await runBadClientCall({
+  const err = await runBadClientCall({
     hostname: 'localhost',
-    port: 3000,
+    port: fastify.server.address().port,
     path: '/',
     method: 'PUT',
   }, { test: 'me' })
+  t.assert.equal(err.code, 'ECONNRESET')
 })

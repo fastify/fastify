@@ -365,3 +365,144 @@ Will define the `foo` property on the Fastify instance:
 ```js
 console.log(fastify.foo) // 'a getter'
 ```
+
+### `getDecorator<T>` API
+
+Fastify's `getDecorator<T>` API retrieves an existing decorator from the
+Fastify instance, `Request`, or `Reply`. If the decorator is not defined, an
+`FST_ERR_DEC_UNDECLARED` error is thrown.
+
+#### Use cases
+
+**Early Plugin Dependency Validation**
+
+`getDecorator<T>` on Fastify instance verifies that required decorators are
+available at registration time. For example:
+
+```js
+fastify.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator('usersRepository')
+
+  fastify.get('/users', async function (request, reply) {
+    // We are sure `usersRepository` exists at runtime
+    return usersRepository.findAll()
+  })
+})
+```
+
+**Handling Missing Decorators**
+
+Directly accessing a decorator may lead to unexpected behavior if it is not declared:
+
+```ts
+const user = request.user;
+if (user && user.isAdmin) {
+  // Execute admin tasks.
+}
+```
+
+If `request.user` doesn't exist, then `user` will be set to `undefined`. 
+This makes it unclear whether the user is unauthenticated or the decorator is missing.
+
+Using `getDecorator` enforces runtime safety:
+
+```ts
+// If the decorator is missing, an explicit `FST_ERR_DEC_UNDECLARED` 
+// error is thrown immediately.
+const user = request.getDecorator<User>('user');
+if (user && user.isAdmin) {
+  // Execute admin tasks.
+}
+```
+
+**Alternative to Module Augmentation**
+
+Decorators are typically typed via module augmentation:
+
+```ts
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersRepository: IUsersRepository
+  }
+  interface FastifyRequest {
+    session: ISession
+  }
+  interface FastifyReply {
+    sendSuccess: SendSuccessFn
+  }
+}
+```
+
+This approach modifies the Fastify instance globally, which may lead to
+conflicts and inconsistent behavior in multi-server setups or with plugin
+encapsulation.
+
+Using `getDecorator<T>` allows to limit types scope:
+
+```ts
+serverOne.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<PostgreUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateRequest('session', null)
+  fastify.addHook('onRequest', async (req, reply) => {
+    // Yes, the request object has a setDecorator method. 
+    // More information will be provided soon.
+    req.setDecorator('session', { user: 'Jean' })
+  })
+
+  fastify.get('/me', (request, reply) => {
+    const session = request.getDecorator<ISession>('session')
+    reply.send(session)
+  })
+})
+
+serverTwo.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<SqlLiteUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateReply('sendSuccess', function (data) {
+    this.send({ success: true })
+  })
+
+  fastify.get('/success', async (request, reply) => {
+    const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+    sendSuccess()
+  })
+})
+```
+
+### `Request.setDecorator<T>` Method
+
+This method provides an elegant way to update a `Request` decorator's value 
+with type safety.
+
+A `Request` decorator is typically set as follows:
+
+```ts
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  req.user = 'Bob Dylan'
+})
+```
+
+If the `FastifyRequest` interface lacks the decorator, type assertions are
+required:
+
+```ts
+fastify.addHook('preHandler', async (req, reply) => {
+  (req as typeof req & { user: string }).user = 'Bob Dylan'
+})
+```
+
+The `setDecorator<T>` method simplifies the process and throws an 
+`FST_ERR_DEC_UNDECLARED` error if thedecorator was not previously 
+declared:
+
+```ts
+fastify.addHook('preHandler', async (req, reply) => {
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
+```

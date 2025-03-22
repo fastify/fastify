@@ -45,6 +45,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectAssignable<((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)>(reply.serializeInput)
   expectAssignable<((input: { [key: string]: unknown }, httpStatus: string) => unknown)>(reply.serializeInput)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(reply.routeOptions.config)
+  expectType<string>(reply.getDecorator<string>('foo'))
 }
 
 interface ReplyPayload {

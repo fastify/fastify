@@ -77,4 +77,5 @@ export interface FastifyReply<
   ) => FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   hasTrailer(key: string): boolean;
   removeTrailer(key: string): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
+  getDecorator<T>(name: string | symbol): T;
 }

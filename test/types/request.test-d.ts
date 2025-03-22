@@ -92,6 +92,10 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectAssignable<(schema: { [key: string]: unknown }) => ExpectedGetValidationFunction>(request.getValidationFunction)
   expectAssignable<(input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
   expectAssignable<(input: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
+  expectType<string>(request.getDecorator<string>('foo'))
+  expectType<void>(request.setDecorator('foo', 'hello'))
+  expectType<void>(request.setDecorator<string>('foo', 'hello'))
+  expectError(request.setDecorator<string>('foo', true))
 }
 
 const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, CustomLoggerInterface> = function (request, _reply) {

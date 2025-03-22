@@ -1394,3 +1394,39 @@ test('getDecorator should only return decorators existing in the scope', t => {
     })
   })
 })
+
+test('Request.setDecorator should update an existing decorator', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('session', null)
+  fastify.decorateRequest('utility', null)
+  fastify.addHook('onRequest', async (req, reply) => {
+    req.setDecorator('session', { user: 'Jean' })
+    req.setDecorator('utility', function () {
+      return this
+    })
+    try {
+      req.setDecorator('foo', { user: 'Jean' })
+      t.fail()
+    } catch (e) {
+      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.same(e.message, "No decorator 'foo' has been declared on request.")
+    }
+  })
+
+  fastify.get('/', async (req, res) => {
+    t.strictSame(req.getDecorator('session'), { user: 'Jean' })
+    t.same(req.getDecorator('utility')(), req)
+
+    res.send()
+  })
+
+  fastify.ready((err) => {
+    t.error(err)
+    fastify.inject({ url: '/' }, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+  })
+})

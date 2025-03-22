@@ -476,8 +476,8 @@ serverTwo.register(async function (fastify) {
 
 ### `Request.setDecorator<T>` Method
 
-This method provides an elegant way to update a `Request` decorator's value with type
-safety.
+This method provides an elegant way to update a `Request` decorator's value 
+with type safety.
 
 A `Request` decorator is typically set as follows:
 
@@ -497,8 +497,9 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-The `setDecorator<T>` method simplifies the process and throws an `FST_ERR_DEC_UNDECLARED` error if the
-decorator was not previously declared:
+The `setDecorator<T>` method simplifies the process and throws an 
+`FST_ERR_DEC_UNDECLARED` error if thedecorator was not previously 
+declared:
 
 ```ts
 fastify.addHook('preHandler', async (req, reply) => {

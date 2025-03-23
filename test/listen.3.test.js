@@ -47,36 +47,36 @@ test('listen without callback with (address)', async t => {
   t.plan(1)
   const fastify = Fastify()
   t.after(() => fastify.close())
-  await fastify.listen({ port: 0 })
-    .then(address => {
-      t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
-    })
+  const address = await fastify.listen({ port: 0 })
+  t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
 })
 
-test('double listen without callback rejects', async t => {
+test('double listen without callback rejects', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   t.after(() => fastify.close())
-  await fastify.listen({ port: 0 })
+  fastify.listen({ port: 0 })
     .then(() => {
       fastify.listen({ port: 0 })
         .catch(err => {
           t.assert.ok(err)
+          done()
         })
     })
     .catch(err => t.assert.ifError(err))
 })
 
-test('double listen without callback with (address)', async t => {
+test('double listen without callback with (address)', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
-  await fastify.listen({ port: 0 })
+  fastify.listen({ port: 0 })
     .then(address => {
       t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
       fastify.listen({ port: 0 })
         .catch(err => {
           t.assert.ok(err)
+          done()
         })
     })
     .catch(err => t.assert.ifError(err))

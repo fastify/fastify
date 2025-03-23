@@ -6,6 +6,7 @@ const dnsCb = require('node:dns')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const helper = require('./helper')
+const { waitForCb } = require('./toolkit')
 
 let localhostForURL
 
@@ -84,9 +85,7 @@ test('listen logs the port as info', async t => {
   }
 
   await fastify.listen({ port: 0 })
-    .then(() => {
-      t.assert.ok(/http:\/\//.test(msgs[0]))
-    })
+  t.assert.ok(/http:\/\//.test(msgs[0]))
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
@@ -124,10 +123,10 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
       t.assert.ifError(err)
       t.after(() => app.close())
 
+      const { stepIn, patience } = waitForCb({ steps: lookups.length })
+
       // Loop over each lookup and perform the assertions
       if (lookups.length > 0) {
-        let completedRequests = 0
-
         for (const lookup of lookups) {
           sget({
             method: 'GET',
@@ -136,15 +135,12 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
             t.assert.ifError(err)
             t.assert.strictEqual(response.statusCode, 200)
             t.assert.deepStrictEqual(body.toString(), 'hello localhost')
-            // Increase completed requests counter
-            completedRequests++
-
-            // When all requests have been completed, call done
-            if (completedRequests === lookups.length) {
-              done()
-            }
+            // Call stepIn to report that a request has been completed
+            stepIn()
           })
         }
+        // When all requests have been completed, call done
+        patience.then(() => done())
       }
     })
   })

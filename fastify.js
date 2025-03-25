@@ -110,14 +110,11 @@ function fastify (options) {
   if (
     (options.querystringParser && typeof options.querystringParser !== 'function') ||
     (
-      options.routerOptions &&
-      options.routerOptions.querystringParser &&
+      options.routerOptions?.querystringParser &&
       typeof options.routerOptions.querystringParser !== 'function'
     )
   ) {
-    throw new FST_ERR_QSP_NOT_FN(
-      options.querystringParser ? typeof options.querystringParser : typeof options.routerOptions.querystringParser
-    )
+    throw new FST_ERR_QSP_NOT_FN(typeof (options.querystringParser ?? options.routerOptions.querystringParser))
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {

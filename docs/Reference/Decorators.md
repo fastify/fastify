@@ -377,7 +377,9 @@ Fastify instance, `Request`, or `Reply`. If the decorator is not defined, an
 **Early Plugin Dependency Validation**
 
 `getDecorator<T>` on Fastify instance verifies that required decorators are
-available at registration time. For example:
+available at registration time. 
+
+For example:
 
 ```js
 fastify.register(async function (fastify) {
@@ -409,7 +411,7 @@ Using `getDecorator` enforces runtime safety:
 ```ts
 // If the decorator is missing, an explicit `FST_ERR_DEC_UNDECLARED` 
 // error is thrown immediately.
-const user = request.getDecorator<User>('user');
+const user = request.getDecorator('user');
 if (user && user.isAdmin) {
   // Execute admin tasks.
 }
@@ -464,22 +466,61 @@ serverTwo.register(async function (fastify) {
   )
 
   fastify.decorateReply('sendSuccess', function (data) {
-    this.send({ success: true })
+    return this.send({ success: true })
   })
 
   fastify.get('/success', async (request, reply) => {
     const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
-    sendSuccess()
+    await sendSuccess()
   })
+})
+```
+
+#### Bound functions inference
+
+To save time, it's common to infer function types instead of 
+writing them manually:
+
+```ts
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+export type SendSuccess = typeof sendSuccess
+```
+
+However, `getDecorator` returns functions with the `this` 
+context already **bound**, meaning the `this` parameter disappears 
+from the function signature.
+
+To correctly type it, you should use `OmitThisParameter` utility:
+
+```ts
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+type BoundSendSuccess = OmitThisParameter<typeof sendSuccess>
+
+fastify.decorateReply('sendSuccess', sendSuccess)
+fastify.get('/success', async (request, reply) => {
+  const sendSuccess = reply.getDecorator<BoundSendSuccess>('sendSuccess')
+  await sendSuccess()
 })
 ```
 
 ### `Request.setDecorator<T>` Method
 
-This method provides an elegant way to update a `Request` decorator's value 
-with type safety.
+The `setDecorator<T>` method provides a safe and convenient way to 
+update the value of a `Request` decorator.  
+If the decorator does not exist, a `FST_ERR_DEC_UNDECLARED` error 
+is thrown.
 
-A `Request` decorator is typically set as follows:
+#### Use Cases
+
+**Runtime Safety**
+
+A typical way to set a `Request` decorator looks like this:
 
 ```ts
 fastify.decorateRequest('user', '')
@@ -488,8 +529,26 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-If the `FastifyRequest` interface lacks the decorator, type assertions are
-required:
+However, there is no guarantee that the decorator actually exists 
+unless you manually check beforehand.  
+Additionally, typos are common, e.g. `account`, `acount`, or `accout`.
+
+By using `setDecorator`, you are always sure that the decorator exists:
+
+```ts
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  // Throws FST_ERR_DEC_UNDECLARED if the decorator does not exist
+  req.setDecorator('user-with-typo', 'Bob Dylan')
+})
+```
+
+---
+
+**Type Safety**
+
+If the `FastifyRequest` interface does not declare the decorator, you 
+would typically need to use type assertions:
 
 ```ts
 fastify.addHook('preHandler', async (req, reply) => {
@@ -497,9 +556,8 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-The `setDecorator<T>` method simplifies the process and throws an 
-`FST_ERR_DEC_UNDECLARED` error if thedecorator was not previously 
-declared:
+The `setDecorator<T>` method eliminates the need for explicit type 
+assertions while allowing type safety:
 
 ```ts
 fastify.addHook('preHandler', async (req, reply) => {

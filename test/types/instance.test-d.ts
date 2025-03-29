@@ -522,6 +522,9 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
 
+const foo = server.getDecorator<string>('foo')
+expectType<string>(foo)
+
 const versionConstraintStrategy = {
   name: 'version',
   storage: () => ({

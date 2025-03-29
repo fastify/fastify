@@ -36,6 +36,7 @@
     - [FST_ERR_DEC_MISSING_DEPENDENCY](#fst_err_dec_missing_dependency)
     - [FST_ERR_DEC_AFTER_START](#fst_err_dec_after_start)
     - [FST_ERR_DEC_REFERENCE_TYPE](#fst_err_dec_reference_type)
+    - [FST_ERR_DEC_UNDECLARED](#fst_err_dec_undeclared)
     - [FST_ERR_HOOK_INVALID_TYPE](#fst_err_hook_invalid_type)
     - [FST_ERR_HOOK_INVALID_HANDLER](#fst_err_hook_invalid_handler)
     - [FST_ERR_HOOK_INVALID_ASYNC_HANDLER](#fst_err_hook_invalid_async_handler)
@@ -306,6 +307,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_dec_missing_dependency">FST_ERR_DEC_MISSING_DEPENDENCY</a> | The decorator cannot be registered due to a missing dependency. | Register the missing dependency. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_after_start">FST_ERR_DEC_AFTER_START</a> | The decorator cannot be added after start. | Add the decorator before starting the server. | [#2128](https://github.com/fastify/fastify/pull/2128) |
 | <a id="fst_err_dec_reference_type">FST_ERR_DEC_REFERENCE_TYPE</a> | The decorator cannot be a reference type. | Define the decorator with a getter/setter interface or an empty decorator with a hook. | [#5462](https://github.com/fastify/fastify/pull/5462) |
+| <a id="fst_err_dec_undeclared">FST_ERR_DEC_UNDECLARED</a> | An attempt was made to access a decorator that has not been declared. | Declare the decorator before using it. | [#](https://github.com/fastify/fastify/pull/)
 | <a id="fst_err_hook_invalid_type">FST_ERR_HOOK_INVALID_TYPE</a> | The hook name must be a string. | Use a string for the hook name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_handler">FST_ERR_HOOK_INVALID_HANDLER</a> | The hook callback must be a function. | Use a function for the hook callback. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_async_handler">FST_ERR_HOOK_INVALID_ASYNC_HANDLER</a> | Async function has too many arguments. Async hooks should not use the `done` argument. | Remove the `done` argument from the async hook. | [#4367](https://github.com/fastify/fastify/pull/4367) |

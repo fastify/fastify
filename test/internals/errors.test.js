@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 84
+const expectedErrors = 85
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -21,6 +21,7 @@ test(`should expose ${expectedErrors} errors`, t => {
 
 test('ensure name and codes of Errors are identical', t => {
   t.plan(expectedErrors)
+
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -245,6 +246,16 @@ test('FST_ERR_DEC_REFERENCE_TYPE', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_DEC_REFERENCE_TYPE')
   t.assert.strictEqual(error.message, "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_DEC_UNDECLARED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_UNDECLARED('myDecorator', 'request')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_UNDECLARED')
+  t.assert.strictEqual(error.message, "No decorator 'myDecorator' has been declared on request.")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
@@ -881,6 +892,7 @@ test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
 
 test('Ensure that all errors are in Errors.md TOC', t => {
   t.plan(expectedErrors)
+
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -918,6 +930,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
   t.plan(expectedErrors)
+
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g

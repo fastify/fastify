@@ -7,7 +7,8 @@ const os = require('node:os')
 const {
   kOptions,
   kErrorHandler,
-  kChildLoggerFactory
+  kChildLoggerFactory,
+  kState
 } = require('../lib/symbols')
 
 test('root fastify instance is an object', t => {
@@ -287,4 +288,11 @@ test('fastify instance should contains listeningOrigin property (IPv6)', async t
   await fastify.listen({ port, host })
   t.assert.deepStrictEqual(fastify.listeningOrigin, `http://[::1]:${port}`)
   await fastify.close()
+})
+
+test('fastify instance should ensure ready promise cleanup on ready', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  await fastify.ready()
+  t.assert.strictEqual(fastify[kState].readyPromise, null)
 })

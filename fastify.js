@@ -640,7 +640,7 @@ function fastify (options) {
       resolveReady(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true
-      fastify[kState].promise = null
+      fastify[kState].readyPromise = null
     }
   }
 

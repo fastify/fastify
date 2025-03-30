@@ -1,11 +1,12 @@
 'use strict'
 
-const { test, before } = require('tap')
+const { test, before } = require('node:test')
 const dns = require('node:dns').promises
 const dnsCb = require('node:dns')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const helper = require('./helper')
+const { waitForCb } = require('./toolkit')
 
 let localhostForURL
 
@@ -22,64 +23,69 @@ before(async function () {
   [, localhostForURL] = await helper.getLoopbackHost()
 })
 
-test('listen twice on the same port without callback rejects', t => {
+test('listen twice on the same port without callback rejects', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.listen({ port: 0 })
     .then(() => {
-      const s2 = Fastify()
-      t.teardown(s2.close.bind(s2))
-      s2.listen({ port: fastify.server.address().port })
+      const server2 = Fastify()
+      t.after(() => server2.close())
+      server2.listen({ port: fastify.server.address().port })
         .catch(err => {
-          t.ok(err)
+          t.assert.ok(err)
+          done()
         })
     })
-    .catch(err => t.error(err))
+    .catch(err => {
+      t.assert.ifError(err)
+    })
 })
 
-test('listen twice on the same port without callback rejects with (address)', t => {
+test('listen twice on the same port without callback rejects with (address)', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
   fastify.listen({ port: 0 })
     .then(address => {
-      const s2 = Fastify()
-      t.teardown(s2.close.bind(s2))
-      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
-      s2.listen({ port: fastify.server.address().port })
+      const server2 = Fastify()
+      t.after(() => server2.close())
+      t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
+
+      server2.listen({ port: fastify.server.address().port })
         .catch(err => {
-          t.ok(err)
+          t.assert.ok(err)
+          done()
         })
     })
-    .catch(err => t.error(err))
+    .catch(err => {
+      t.assert.ifError(err)
+    })
 })
 
 test('listen on invalid port without callback rejects', t => {
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
   return fastify.listen({ port: -1 })
     .catch(err => {
-      t.ok(err)
+      t.assert.ok(err)
       return true
     })
 })
 
-test('listen logs the port as info', t => {
+test('listen logs the port as info', async t => {
   t.plan(1)
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   const msgs = []
   fastify.log.info = function (msg) {
     msgs.push(msg)
   }
 
-  fastify.listen({ port: 0 })
-    .then(() => {
-      t.ok(/http:\/\//.test(msgs[0]))
-    })
+  await fastify.listen({ port: 0 })
+  t.assert.ok(/http:\/\//.test(msgs[0]))
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
@@ -88,7 +94,7 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
 
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
-  t.teardown(app.close.bind(app))
+  t.after(() => app.close())
   await app.listen({ port: 0, host: 'localhost' })
 
   for (const lookup of localAddresses) {
@@ -98,34 +104,43 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
         url: getUrl(app, lookup)
       }, (err, response, body) => {
         if (err) { return reject(err) }
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), 'hello localhost')
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body.toString(), 'hello localhost')
         resolve()
       })
     })
   }
 })
 
-test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present) - callback interface', t => {
+test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present) - callback interface', (t, done) => {
   dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
     t.plan(2 + (3 * lookups.length))
-    t.error(err)
+    t.assert.ifError(err)
 
     const app = Fastify()
     app.get('/', async () => 'hello localhost')
     app.listen({ port: 0, host: 'localhost' }, (err) => {
-      t.error(err)
-      t.teardown(app.close.bind(app))
+      t.assert.ifError(err)
+      t.after(() => app.close())
 
-      for (const lookup of lookups) {
-        sget({
-          method: 'GET',
-          url: getUrl(app, lookup)
-        }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
-          t.same(body.toString(), 'hello localhost')
-        })
+      const { stepIn, patience } = waitForCb({ steps: lookups.length })
+
+      // Loop over each lookup and perform the assertions
+      if (lookups.length > 0) {
+        for (const lookup of lookups) {
+          sget({
+            method: 'GET',
+            url: getUrl(app, lookup)
+          }, (err, response, body) => {
+            t.assert.ifError(err)
+            t.assert.strictEqual(response.statusCode, 200)
+            t.assert.deepStrictEqual(body.toString(), 'hello localhost')
+            // Call stepIn to report that a request has been completed
+            stepIn()
+          })
+        }
+        // When all requests have been completed, call done
+        patience.then(() => done())
       }
     })
   })
@@ -137,11 +152,12 @@ test('addresses getter', async t => {
   t.plan(4)
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
+  t.after(() => app.close())
 
-  t.same(app.addresses(), [], 'before ready')
+  t.assert.deepStrictEqual(app.addresses(), [], 'before ready')
   await app.ready()
 
-  t.same(app.addresses(), [], 'after ready')
+  t.assert.deepStrictEqual(app.addresses(), [], 'after ready')
   await app.listen({ port: 0, host: 'localhost' })
 
   // fix citgm
@@ -157,8 +173,8 @@ test('addresses getter', async t => {
     family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
   })).sort()
 
-  t.same(appAddresses, localAddresses, 'after listen')
+  t.assert.deepStrictEqual(appAddresses, localAddresses, 'after listen')
 
   await app.close()
-  t.same(app.addresses(), [], 'after close')
+  t.assert.deepStrictEqual(app.addresses(), [], 'after close')
 })

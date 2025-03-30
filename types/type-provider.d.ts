@@ -1,6 +1,6 @@
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
-import { RecordKeysToLowercase } from './utils'
+import { HttpKeys, RecordKeysToLowercase } from './utils'
 
 // -----------------------------------------------------------------------------------------------
 // TypeProvider
@@ -80,6 +80,11 @@ export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, Sc
 // FastifyReplyReturnType
 // -----------------------------------------------------------------------------------------------
 
+// Resolves the Reply return type by taking a union of response status codes in the generic argument
+type ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric extends RouteGenericInterface> = RouteGeneric extends { Reply: infer Return }
+  ? keyof Return extends HttpKeys ? Return[keyof Return] | Return : Return
+  : unknown
+
 // The target reply return type. This type is inferenced on fastify 'routes' via generic argument assignment
 export type ResolveFastifyReplyReturnType<
   TypeProvider extends FastifyTypeProvider,
@@ -89,8 +94,12 @@ export type ResolveFastifyReplyReturnType<
 TypeProvider,
 SchemaCompiler,
 RouteGeneric
-> extends infer Return ?
-    (Return | void | Promise<Return | void>)
+> extends infer ReplyType
+  ? RouteGeneric['Reply'] extends ReplyType
+    ? ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric> extends infer Return
+      ? Return | void | Promise<Return | void>
+      : unknown
+    : ReplyType | void | Promise<ReplyType | void>
 // review: support both async and sync return types
 // (Promise<Return> | Return | Promise<void> | void)
   : unknown

@@ -61,7 +61,7 @@ test('Should support Webpack and faux modules', t => {
   t.plan(2)
 
   const internals = proxyquire('../../lib/contentTypeParser', {
-    'tiny-lru': { default: () => { } }
+    'toad-cache': { default: () => { } }
   })[kTestInternals]
 
   const body = Buffer.from('你好 世界')

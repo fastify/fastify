@@ -14,30 +14,27 @@
 
 ### Warnings In Fastify
 
-Fastify utilizes Node.js's [warning event](https://nodejs.org/api/process.html#event-warning)
-API to notify users of deprecated features and known coding mistakes. Fastify's
-warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes on warning
-code. When encountering such a warning, it is highly recommended that the
-cause of the warning be determined through use of the
-[`--trace-warnings`](https://nodejs.org/api/cli.html#--trace-warnings) and
-[`--trace-deprecation`](https://nodejs.org/api/cli.html#--trace-deprecation)
-flags. These will produce stack traces pointing out where the issue occurs
-in the application's code. Issues opened about warnings without including
-this information may be closed due to lack of information.
+Fastify uses Node.js's [warning event](https://nodejs.org/api/process.html#event-warning)
+API to notify users of deprecated features and coding mistakes. Fastify's
+warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes. When
+encountering such a warning, it is highly recommended to determine the cause
+using the [`--trace-warnings`](https://nodejs.org/api/cli.html#--trace-warnings)
+and [`--trace-deprecation`](https://nodejs.org/api/cli.html#--trace-deprecation)
+flags. These produce stack traces pointing to where the issue occurs in the
+application's code. Issues opened about warnings without this information will
+be closed due to lack of details.
 
-In addition to tracing, warnings can also be disabled. It is not recommended to
-disable warnings as a matter of course, but if necessary, they can be disabled
-by using any of the following methods:
+Warnings can also be disabled, though it is not recommended. If necessary, use
+one of the following methods:
 
-- setting the `NODE_NO_WARNINGS` environment variable to `1`
-- passing the `--no-warnings` flag to the node process
-- setting 'no-warnings' in the `NODE_OPTIONS` environment variable
+- Set the `NODE_NO_WARNINGS` environment variable to `1`
+- Pass the `--no-warnings` flag to the node process
+- Set `no-warnings` in the `NODE_OPTIONS` environment variable
 
-For more information on how to disable warnings, see [node's documentation](https://nodejs.org/api/cli.html).
+For more information on disabling warnings, see [Node's documentation](https://nodejs.org/api/cli.html).
 
-However, disabling warnings is not recommended as it may cause
-potential problems when upgrading Fastify versions.
-Only experienced users should consider disabling warnings.
+Disabling warnings may cause issues when upgrading Fastify versions. Only
+experienced users should consider disabling warnings.
 
 ### Fastify Warning Codes
 
@@ -49,7 +46,7 @@ Only experienced users should consider disabling warnings.
 
 ### Fastify Deprecation Codes
 
-Deprecation codes are further supported by the Node.js CLI options:
+Deprecation codes are supported by the Node.js CLI options:
 
 - [--no-deprecation](https://nodejs.org/api/cli.html#--no-deprecation)
 - [--throw-deprecation](https://nodejs.org/api/cli.html#--throw-deprecation)

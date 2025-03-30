@@ -1,8 +1,8 @@
 import { FastifyError } from '@fastify/error'
 import { ConstraintStrategy, FindResult, HTTPVersion } from 'find-my-way'
-import * as http from 'http'
+import * as http from 'node:http'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
-import { AddressInfo } from 'net'
+import { AddressInfo } from 'node:net'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
@@ -151,6 +151,8 @@ export interface FastifyInstance<
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+
+  getDecorator<T>(name: string | symbol): T;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
@@ -548,6 +550,10 @@ export interface FastifyInstance<
    * Remove all content type parsers, including the default ones
    */
   removeAllContentTypeParsers: removeAllContentTypeParsers
+  /**
+   * Returns an array of strings containing the list of supported HTTP methods
+   */
+  supportedMethods: string[]
   /**
    * Add a non-standard HTTP method
    *

@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer'
+import { Buffer } from 'node:buffer'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRequest, RequestRouteOptions } from './request'
@@ -77,4 +77,5 @@ export interface FastifyReply<
   ) => FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   hasTrailer(key: string): boolean;
   removeTrailer(key: string): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
+  getDecorator<T>(name: string | symbol): T;
 }

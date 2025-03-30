@@ -2,9 +2,8 @@
 
 ## Routes
 
-The route methods will configure the endpoints of your application. You have two
-ways to declare a route with Fastify: the shorthand method and the full
-declaration.
+The route methods configure the endpoints of the application. Routes can be
+declared using the shorthand method or the full declaration.
 
 - [Full declaration](#full-declaration)
 - [Routes options](#routes-options)
@@ -138,11 +137,11 @@ fastify.route(options)
 
 * `reply` is defined in [Reply](./Reply.md).
 
-**Notice:** The documentation of `onRequest`, `preParsing`, `preValidation`,
-`preHandler`, `preSerialization`, `onSend`, and `onResponse` are described in
-more detail in [Hooks](./Hooks.md). Additionally, to send a response before the
-request is handled by the `handler` please refer to [Respond to a request from a
-hook](./Hooks.md#respond-to-a-request-from-a-hook).
+> 🛈 Note: The documentation for `onRequest`, `preParsing`, `preValidation`,
+> `preHandler`, `preSerialization`, `onSend`, and `onResponse` is detailed in
+> [Hooks](./Hooks.md). To send a response before the request is handled by the
+> `handler`, see [Respond to a request from
+> a hook](./Hooks.md#respond-to-a-request-from-a-hook).
 
 Example:
 ```js
@@ -234,17 +233,17 @@ const opts = {
 fastify.get('/', opts)
 ```
 
-> Note: if the handler is specified in both the `options` and as the third
-> parameter to the shortcut method then throws a duplicate `handler` error.
+> 🛈 Note: Specifying the handler in both `options` and as the third parameter to
+> the shortcut method throws a duplicate `handler` error.
 
 ### Url building
 <a id="url-building"></a>
 
 Fastify supports both static and dynamic URLs.
 
-To register a **parametric** path, use the *colon* before the parameter name.
-For **wildcard**, use the *star*. *Remember that static routes are always
-checked before parametric and wildcard.*
+To register a **parametric** path, use a *colon* before the parameter name. For
+**wildcard**, use a *star*. Static routes are always checked before parametric
+and wildcard routes.
 
 ```js
 // parametric
@@ -266,9 +265,8 @@ fastify.get('/example/:userId/:secretToken', function (request, reply) {
 fastify.get('/example/*', function (request, reply) {})
 ```
 
-Regular expression routes are supported as well, but be aware that you have to
-escape slashes. Take note that RegExp is also very expensive in terms of
-performance!
+Regular expression routes are supported, but slashes must be escaped.
+Take note that RegExp is also very expensive in terms of performance!
 ```js
 // parametric with regexp
 fastify.get('/example/:file(^\\d+).png', function (request, reply) {
@@ -306,24 +304,24 @@ fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, r
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
 
-The last parameter can be made optional if you add a question mark ("?") to the
-end of the parameters name.
+The last parameter can be made optional by adding a question mark ("?") to the
+end of the parameter name.
 ```js
 fastify.get('/example/posts/:id?', function (request, reply) {
   const { id } = request.params;
   // your code here
 })
 ```
-In this case you can request `/example/posts` as well as `/example/posts/1`.
-The optional param will be undefined if not specified.
+In this case, `/example/posts` and `/example/posts/1` are both valid. The
+optional param will be `undefined` if not specified.
 
-Having a route with multiple parameters may negatively affect performance, so
-prefer a single parameter approach whenever possible, especially on routes that
-are on the hot path of your application. If you are interested in how we handle
-the routing, check out [find-my-way](https://github.com/delvedor/find-my-way).
+Having a route with multiple parameters may negatively affect performance.
+Prefer a single parameter approach, especially on routes that are on the hot
+path of your application. For more details, see
+[find-my-way](https://github.com/delvedor/find-my-way).
 
-If you want a path containing a colon without declaring a parameter, use a
-double colon. For example:
+To include a colon in a path without declaring a parameter, use a double colon.
+For example:
 ```js
 fastify.post('/name::verb') // will be interpreted as /name:verb
 ```
@@ -340,12 +338,12 @@ fastify.get('/', options, async function (request, reply) {
 })
 ```
 
-As you can see, we are not calling `reply.send` to send back the data to the
-user. You just need to return the body and you are done!
+As shown, `reply.send` is not called to send data back to the user. Simply
+return the body and you are done!
 
-If you need it you can also send back the data to the user with `reply.send`. In
-this case do not forget to `return reply` or `await reply` in your `async`
-handler or you will introduce a race condition in certain situations.
+If needed, you can also send data back with `reply.send`. In this case, do not
+forget to `return reply` or `await reply` in your `async` handler to avoid race
+conditions.
 
 ```js
 fastify.get('/', options, async function (request, reply) {
@@ -378,48 +376,42 @@ fastify.get('/', options, async function (request, reply) {
 })
 ```
 
-**Warning:**
-* When using both `return value` and `reply.send(value)` at the same time, the
-  first one that happens takes precedence, the second value will be discarded,
-  and a *warn* log will also be emitted because you tried to send a response
-  twice.
-* Calling `reply.send()` outside of the promise is possible but requires special
-  attention. For more details read [promise-resolution](#promise-resolution).
-* You cannot return `undefined`. For more details read
-  [promise-resolution](#promise-resolution).
+> ⚠ Warning:
+> * When using both `return value` and `reply.send(value)`, the first one takes
+>   precedence, the second is discarded, and a *warn* log is emitted.
+> * Calling `reply.send()` outside of the promise is possible but requires special
+>   attention. See [promise-resolution](#promise-resolution).
+> * `undefined` cannot be returned. See [promise-resolution](#promise-resolution).
 
 ### Promise resolution
 <a id="promise-resolution"></a>
 
-If your handler is an `async` function or returns a promise, you should be aware
-of the special behavior that is necessary to support the callback and promise
-control-flow. When the handler's promise is resolved, the reply will be
-automatically sent with its value unless you explicitly await or return `reply`
-in your handler.
+If the handler is an `async` function or returns a promise, be aware of the
+special behavior to support callback and promise control-flow. When the
+handler's promise resolves, the reply is automatically sent with its value
+unless you explicitly await or return `reply` in the handler.
 
-1. If you want to use `async/await` or promises but respond with a value with
-   `reply.send`:
+1. If using `async/await` or promises but responding with `reply.send`:
     - **Do** `return reply` / `await reply`.
     - **Do not** forget to call `reply.send`.
-2. If you want to use `async/await` or promises:
+2. If using `async/await` or promises:
     - **Do not** use `reply.send`.
-    - **Do** return the value that you want to send.
+    - **Do** return the value to send.
 
-In this way, we can support both `callback-style` and `async-await`, with the
-minimum trade-off. Despite so much freedom we highly recommend going with only
-one style because error handling should be handled in a consistent way within
-your application.
+This approach supports both `callback-style` and `async-await` with minimal
+trade-off. However, it is recommended to use only one style for consistent
+error handling within your application.
 
-**Notice**: Every async function returns a promise by itself.
+> 🛈 Note: Every async function returns a promise by itself.
 
 ### Route Prefixing
 <a id="route-prefixing"></a>
 
-Sometimes you need to maintain two or more different versions of the same API; a
-classic approach is to prefix all the routes with the API version number,
-`/v1/user` for example. Fastify offers you a fast and smart way to create
-different versions of the same API without changing all the route names by hand,
-*route prefixing*. Let's see how it works:
+Sometimes maintaining multiple versions of the same API is necessary. A common
+approach is to prefix routes with the API version number, e.g., `/v1/user`.
+Fastify offers a fast and smart way to create different versions of the same API
+without changing all the route names by hand, called *route prefixing*. Here is
+how it works:
 
 ```js
 // server.js
@@ -446,19 +438,18 @@ module.exports = function (fastify, opts, done) {
   done()
 }
 ```
-Fastify will not complain because you are using the same name for two different
-routes, because at compilation time it will handle the prefix automatically
-*(this also means that the performance will not be affected at all!)*.
+Fastify will not complain about using the same name for two different routes
+because it handles the prefix automatically at compilation time. This ensures
+performance is not affected.
 
-Now your clients will have access to the following routes:
+Now clients will have access to the following routes:
 - `/v1/user`
 - `/v2/user`
 
-You can do this as many times as you want, it also works for nested `register`,
-and route parameters are supported as well.
+This can be done multiple times and works for nested `register`. Route
+parameters are also supported.
 
-In case you want to use prefix for all of your routes, you can put them inside a
-plugin:
+To use a prefix for all routes, place them inside a plugin:
 
 ```js
 const fastify = require('fastify')()
@@ -483,10 +474,8 @@ await fastify.listen({ port: 3000 })
 ### Route Prefixing and fastify-plugin
 <a id="fastify-plugin"></a>
 
-Be aware that if you use
-[`fastify-plugin`](https://github.com/fastify/fastify-plugin) for wrapping your
-routes, this option will not work. You can still make it work by wrapping a
-plugin in a plugin, e. g.:
+If using [`fastify-plugin`](https://github.com/fastify/fastify-plugin) to wrap
+routes, this option will not work. To make it work, wrap a plugin in a plugin:
 ```js
 const fp = require('fastify-plugin')
 const routes = require('./lib/routes')
@@ -502,27 +491,23 @@ module.exports = fp(async function (app, opts) {
 
 #### Handling of / route inside prefixed plugins
 
-The `/` route has different behavior depending on if the prefix ends with `/` or
-not. As an example, if we consider a prefix `/something/`, adding a `/` route
-will only match `/something/`. If we consider a prefix `/something`, adding a
-`/` route will match both `/something` and `/something/`.
+The `/` route behaves differently based on whether the prefix ends with `/`.
+For example, with a prefix `/something/`, adding a `/` route matches only
+`/something/`. With a prefix `/something`, adding a `/` route matches both
+`/something` and `/something/`.
 
 See the `prefixTrailingSlash` route option above to change this behavior.
 
 ### Custom Log Level
 <a id="custom-log-level"></a>
 
-You might need different log levels in your routes; Fastify achieves this in a
-very straightforward way.
+Different log levels can be set for routes in Fastify by passing the `logLevel`
+option to the plugin or route with the desired
+[value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string).
 
-You just need to pass the option `logLevel` to the plugin option or the route
-option with the
-[value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string)
-that you need.
-
-Be aware that if you set the `logLevel` at plugin level, also the
+Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and
-[`setErrorHandler`](./Server.md#seterrorhandler) will be affected.
+[`setErrorHandler`](./Server.md#seterrorhandler).
 
 ```js
 // server.js
@@ -534,22 +519,21 @@ fastify.register(require('./routes/events'), { logLevel: 'debug' })
 fastify.listen({ port: 3000 })
 ```
 
-Or you can directly pass it to a route:
+Or pass it directly to a route:
 ```js
 fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
   reply.send({ hello: 'world' })
 })
 ```
-*Remember that the custom log level is applied only to the routes, and not to
-the global Fastify Logger, accessible with `fastify.log`*
+*Remember that the custom log level applies only to routes, not to the global
+Fastify Logger, accessible with `fastify.log`.*
 
 ### Custom Log Serializer
 <a id="custom-log-serializer"></a>
 
-In some contexts, you may need to log a large object but it could be a waste of
-resources for some routes. In this case, you can define custom
+In some contexts, logging a large object may waste resources. Define custom
 [`serializers`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
-and attach them in the right context!
+and attach them in the appropriate context.
 
 ```js
 const fastify = require('fastify')({ logger: true })
@@ -568,7 +552,7 @@ fastify.register(require('./routes/events'), {
 fastify.listen({ port: 3000 })
 ```
 
-You can inherit serializers by context:
+Serializers can be inherited by context:
 
 ```js
 const fastify = Fastify({
@@ -629,23 +613,22 @@ fastify.listen({ port: 3000 })
 ### Constraints
 <a id="constraints"></a>
 
-Fastify supports constraining routes to match only certain requests based on
-some property of the request, like the `Host` header, or any other value via
+Fastify supports constraining routes to match certain requests based on
+properties like the `Host` header or any other value via
 [`find-my-way`](https://github.com/delvedor/find-my-way) constraints.
 Constraints are specified in the `constraints` property of the route options.
-Fastify has two built-in constraints ready for use: the `version` constraint and
-the `host` constraint, and you can add your own custom constraint strategies to
-inspect other parts of a request to decide if a route should be executed for a
-request.
+Fastify has two built-in constraints: `version` and `host`. Custom constraint
+strategies can be added to inspect other parts of a request to decide if a route
+should be executed.
 
 #### Version Constraints
 
 You can provide a `version` key in the `constraints` option to a route.
-Versioned routes allow you to declare multiple handlers for the same HTTP route
-path, which will then be matched according to each request's `Accept-Version`
-header. The `Accept-Version` header value should follow the
-[semver](https://semver.org/) specification, and routes should be declared with
-exact semver versions for matching.
+Versioned routes allows multiple handlers to be declared for the same HTTP
+route path, matched according to the request's `Accept-Version` header.
+The `Accept-Version` header value should follow the
+[semver](https://semver.org/) specification, and routes should be declared
+with exact semver versions for matching.
 
 Fastify will require a request `Accept-Version` header to be set if the route
 has a version set, and will prefer a versioned route to a non-versioned route
@@ -676,20 +659,20 @@ fastify.inject({
 })
 ```
 
-> ## ⚠  Security Notice
-> Remember to set a
+> ⚠ Warning:
+> Set a
 > [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary)
-> header in your responses with the value you are using for defining the
-> versioning (e.g.: `'Accept-Version'`), to prevent cache poisoning attacks. You
-> can also configure this as part of your Proxy/CDN.
+> header in responses with the value used for versioning
+> (e.g., `'Accept-Version'`) to prevent cache poisoning attacks.
+> This can also be configured in a Proxy/CDN.
 >
 > ```js
 > const append = require('vary').append
 > fastify.addHook('onSend', (req, reply, payload, done) => {
->   if (req.headers['accept-version']) { // or the custom header you are using
+>   if (req.headers['accept-version']) { // or the custom header being used
 >     let value = reply.getHeader('Vary') || ''
 >     const header = Array.isArray(value) ? value.join(', ') : String(value)
->     if ((value = append(header, 'Accept-Version'))) { // or the custom header you are using
+>     if ((value = append(header, 'Accept-Version'))) { // or the custom header being used
 >       reply.header('Vary', value)
 >     }
 >   }
@@ -697,22 +680,20 @@ fastify.inject({
 > })
 > ```
 
-If you declare multiple versions with the same major or minor, Fastify will
+If multiple versions with the same major or minor are declared, Fastify will
 always choose the highest compatible with the `Accept-Version` header value.
 
-If the request will not have the `Accept-Version` header, a 404 error will be
-returned.
+If the request lacks an `Accept-Version` header, a 404 error will be returned.
 
-It is possible to define a custom version matching logic. This can be done
-through the [`constraints`](./Server.md#constraints) configuration when creating
-a Fastify server instance.
+Custom version matching logic can be defined through the
+[`constraints`](./Server.md#constraints) configuration when creating a Fastify
+server instance.
 
 #### Host Constraints
 
-You can provide a `host` key in the `constraints` route option for to limit that
-route to only be matched for certain values of the request `Host` header. `host`
-constraint values can be specified as strings for exact matches or RegExps for
-arbitrary host matching.
+Provide a `host` key in the `constraints` route option to limit the route to
+certain values of the request `Host` header. `host` constraint values can be
+specified as strings for exact matches or RegExps for arbitrary host matching.
 
 ```js
 fastify.route({
@@ -761,10 +742,9 @@ fastify.route({
 
 #### Asynchronous Custom Constraints
 
-Custom constraints can be provided and the `constraint` criteria can be
-fetched from another source such as `database`. The use of asynchronous
-custom constraints should be a last resort as it impacts router
-performance.
+Custom constraints can be provided, and the `constraint` criteria can be
+fetched from another source such as a database. Use asynchronous custom
+constraints as a last resort, as they impact router performance.
 
 ```js
 function databaseOperation(field, done) {
@@ -791,11 +771,11 @@ const secret = {
 }
 ```
 
-> ## ⚠  Security Notice
-> When using with asynchronous constraint. It is highly recommend never return error
-> inside the callback. If the error is not preventable, it is recommended to provide
-> a custom `frameworkErrors` handler to deal with it. Otherwise, you route selection
-> may break or expose sensitive information to attackers.
+> ⚠ Warning:
+> When using asynchronous constraints, avoid returning errors inside the
+> callback. If errors are unavoidable, provide a custom `frameworkErrors`
+> handler to manage them. Otherwise, route selection may break or expose
+> sensitive information.
 >
 > ```js
 > const Fastify = require('fastify')

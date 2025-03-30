@@ -3,7 +3,6 @@ name: Lint Ecosystem Order
 on:
   pull_request:
     branches:
-      - master
       - main
     paths:
       - "**/Ecosystem.md"

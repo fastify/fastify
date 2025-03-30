@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.1.0'
+const VERSION = '5.2.2'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -343,6 +343,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
+    getDecorator: decorator.getInstanceDecorator,
     addHttpMethod,
     // fake http injection
     inject,
@@ -639,7 +640,7 @@ function fastify (options) {
       resolveReady(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true
-      fastify[kState].promise = null
+      fastify[kState].readyPromise = null
     }
   }
 

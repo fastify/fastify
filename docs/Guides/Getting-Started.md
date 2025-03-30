@@ -106,7 +106,7 @@ of your code.
 Fastify offers an easy platform that helps to solve all of the problems outlined
 above, and more!
 
-> ## Note
+> **Note**
 > The above examples, and subsequent examples in this document, default to
 > listening *only* on the localhost `127.0.0.1` interface. To listen on all
 > available IPv4 interfaces the example should be modified to listen on
@@ -128,6 +128,9 @@ above, and more!
 >
 > When deploying to a Docker (or another type of) container using `0.0.0.0` or
 > `::` would be the easiest method for exposing the application.
+>
+> Note that when using `0.0.0.0`, the address provided in the callback argument
+> above will be the first address the wildcard refers to.
 
 ### Your first plugin
 <a id="first-plugin"></a>
@@ -417,7 +420,7 @@ In this way, you will always have access to all of the properties declared in
 the current scope.
 
 As discussed previously, Fastify offers a solid encapsulation model, to help you
-build your application as single and independent services. If you want to
+build your application as independent services. If you want to
 register a plugin only for a subset of routes, you just have to replicate the
 above structure.
 ```
@@ -552,15 +555,16 @@ an amazing [ecosystem](./Ecosystem.md)!
 <a id="test-server"></a>
 
 Fastify does not offer a testing framework, but we do recommend a way to write
-your tests that use the features and architecture of Fastify.
+your tests that uses the features and architecture of Fastify.
 
 Read the [testing](./Testing.md) documentation to learn more!
 
 ### Run your server from CLI
 <a id="cli"></a>
 
-Fastify also has CLI integration thanks to
-[fastify-cli](https://github.com/fastify/fastify-cli).
+Fastify also has CLI integration via
+[fastify-cli](https://github.com/fastify/fastify-cli),
+a separate tool for scaffolding and managing Fastify projects.
 
 First, install `fastify-cli`:
 

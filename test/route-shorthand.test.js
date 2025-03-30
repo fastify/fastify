@@ -1,62 +1,66 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { describe, test } = require('node:test')
 const sget = require('simple-get').concat
-const Fastify = require('../fastify')
+const Fastify = require('..')
 
-test('route-shorthand', t => {
+describe('route-shorthand', () => {
   const methodsReader = new Fastify()
   const supportedMethods = methodsReader.supportedMethods
 
-  t.plan(supportedMethods.length + 1)
-  const test = t.test
-
   for (const method of supportedMethods) {
-    test(`route-shorthand - ${method.toLowerCase()}`, t => {
-      t.plan(3)
+    test(`route-shorthand - ${method.toLowerCase()}`, async (t) => {
+      t.plan(2)
       const fastify = new Fastify()
-      fastify[method.toLowerCase()]('/', function (req, reply) {
-        t.equal(req.method, method)
+      fastify[method.toLowerCase()]('/', (req, reply) => {
+        t.assert.strictEqual(req.method, method)
         reply.send()
       })
-      fastify.listen({ port: 0 }, function (err) {
-        if (err) t.error(err)
-        t.teardown(() => { fastify.close() })
+      await fastify.listen({ port: 0 })
+      t.after(() => fastify.close())
+
+      await new Promise((resolve, reject) => {
         sget({
           method,
-          url: 'http://localhost:' + fastify.server.address().port
+          url: `http://localhost:${fastify.server.address().port}`
         }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
+          if (err) {
+            t.assert.ifError(err)
+            return reject(err)
+          }
+          t.assert.strictEqual(response.statusCode, 200)
+          resolve()
         })
       })
     })
   }
 
-  test('route-shorthand - all', t => {
-    t.plan(3 * supportedMethods.length)
+  test('route-shorthand - all', async (t) => {
+    t.plan(2 * supportedMethods.length)
     const fastify = new Fastify()
     let currentMethod = ''
     fastify.all('/', function (req, reply) {
-      t.equal(req.method, currentMethod)
+      t.assert.strictEqual(req.method, currentMethod)
       reply.send()
     })
-    fastify.listen({ port: 0 }, async function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      for (const method of supportedMethods) {
-        currentMethod = method
-        await new Promise(resolve => sget({
+    await fastify.listen({ port: 0 })
+    t.after(() => fastify.close())
+
+    for (const method of supportedMethods) {
+      currentMethod = method
+      await new Promise((resolve, reject) => {
+        sget({
           method,
-          url: 'http://localhost:' + fastify.server.address().port
+          url: `http://localhost:${fastify.server.address().port}`
         }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
+          if (err) {
+            t.assert.ifError(err)
+            return reject(err)
+          }
+          t.assert.strictEqual(response.statusCode, 200)
           resolve()
         })
-        )
-      }
-    })
+      })
+    }
   })
 })

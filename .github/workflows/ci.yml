@@ -4,7 +4,6 @@ on:
   push:
     branches:
      - main
-     - master
      - next
      - 'v*'
     paths-ignore:

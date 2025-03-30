@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const keys = require('../lib/symbols')
 const { FST_ERR_CTP_ALREADY_PRESENT, FST_ERR_CTP_INVALID_TYPE, FST_ERR_CTP_INVALID_MEDIA_TYPE } = require('../lib/errors')
@@ -10,21 +9,22 @@ const first = function (req, payload, done) {}
 const second = function (req, payload, done) {}
 const third = function (req, payload, done) {}
 
-test('hasContentTypeParser', t => {
-  test('should know about internal parsers', t => {
+test('hasContentTypeParser', async t => {
+  await t.test('should know about internal parsers', (t, done) => {
     t.plan(5)
 
     const fastify = Fastify()
     fastify.ready(err => {
-      t.error(err)
-      t.ok(fastify.hasContentTypeParser('application/json'))
-      t.ok(fastify.hasContentTypeParser('text/plain'))
-      t.ok(fastify.hasContentTypeParser('  text/plain  '))
-      t.notOk(fastify.hasContentTypeParser('application/jsoff'))
+      t.assert.ifError(err)
+      t.assert.ok(fastify.hasContentTypeParser('application/json'))
+      t.assert.ok(fastify.hasContentTypeParser('text/plain'))
+      t.assert.ok(fastify.hasContentTypeParser('  text/plain  '))
+      t.assert.ok(!fastify.hasContentTypeParser('application/jsoff'))
+      done()
     })
   })
 
-  test('should only work with string and RegExp', t => {
+  await t.test('should only work with string and RegExp', t => {
     t.plan(8)
 
     const fastify = Fastify()
@@ -32,21 +32,22 @@ test('hasContentTypeParser', t => {
     fastify.addContentTypeParser(/^application\/.+\+xml/, first)
     fastify.addContentTypeParser('image/gif', first)
 
-    t.ok(fastify.hasContentTypeParser('application/json'))
-    t.ok(fastify.hasContentTypeParser(/^image\/.*/))
-    t.ok(fastify.hasContentTypeParser(/^application\/.+\+xml/))
-    t.ok(fastify.hasContentTypeParser('image/gif'))
-    t.notOk(fastify.hasContentTypeParser(/^image\/.+\+xml/))
-    t.notOk(fastify.hasContentTypeParser('image/png'))
-    t.notOk(fastify.hasContentTypeParser('*'))
-    t.throws(() => fastify.hasContentTypeParser(123), FST_ERR_CTP_INVALID_TYPE)
+    t.assert.ok(fastify.hasContentTypeParser('application/json'))
+    t.assert.ok(fastify.hasContentTypeParser(/^image\/.*/))
+    t.assert.ok(fastify.hasContentTypeParser(/^application\/.+\+xml/))
+    t.assert.ok(fastify.hasContentTypeParser('image/gif'))
+    t.assert.ok(!fastify.hasContentTypeParser(/^image\/.+\+xml/))
+    t.assert.ok(!fastify.hasContentTypeParser('image/png'))
+    t.assert.ok(!fastify.hasContentTypeParser('*'))
+    t.assert.throws(
+      () => fastify.hasContentTypeParser(123),
+      FST_ERR_CTP_INVALID_TYPE
+    )
   })
-
-  t.end()
 })
 
-test('getParser', t => {
-  test('should return matching parser', t => {
+test('getParser', async t => {
+  await t.test('should return matching parser', t => {
     t.plan(6)
 
     const fastify = Fastify()
@@ -55,62 +56,62 @@ test('getParser', t => {
     fastify.addContentTypeParser(/^application\/.+\+xml/, second)
     fastify.addContentTypeParser('text/html', third)
 
-    t.equal(fastify[keys.kContentTypeParser].getParser('application/t+xml').fn, second)
-    t.equal(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html; charset=utf-8').fn, third)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ; charset=utf-8').fn, third)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/htmlINVALID')?.fn, undefined)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('application/t+xml').fn, second)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html; charset=utf-8').fn, third)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ; charset=utf-8').fn, third)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/htmlINVALID')?.fn, undefined)
   })
 
-  test('should return matching parser with caching /1', t => {
+  await t.test('should return matching parser with caching /1', t => {
     t.plan(6)
 
     const fastify = Fastify()
 
     fastify.addContentTypeParser('text/html', first)
 
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 0)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
   })
 
-  test('should return matching parser with caching /2', t => {
+  await t.test('should return matching parser with caching /2', t => {
     t.plan(8)
 
     const fastify = Fastify()
 
     fastify.addContentTypeParser('text/html', first)
 
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 0)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/HTML').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.equal(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
-    t.equal(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/HTML').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('TEXT/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
   })
 
-  test('should return matching parser with caching /3', t => {
+  await t.test('should return matching parser with caching /3', t => {
     t.plan(6)
 
     const fastify = Fastify()
 
     fastify.addContentTypeParser(/^text\/html(;\s*charset=[^;]+)?$/, first)
 
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
   })
 
-  test('should prefer content type parser with string value', t => {
+  await t.test('should prefer content type parser with string value', t => {
     t.plan(2)
 
     const fastify = Fastify()
@@ -118,11 +119,11 @@ test('getParser', t => {
     fastify.addContentTypeParser(/^image\/.*/, first)
     fastify.addContentTypeParser('image/gif', second)
 
-    t.equal(fastify[keys.kContentTypeParser].getParser('image/gif').fn, second)
-    t.equal(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('image/gif').fn, second)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
   })
 
-  test('should return parser that catches all if no other is set', t => {
+  await t.test('should return parser that catches all if no other is set', t => {
     t.plan(3)
 
     const fastify = Fastify()
@@ -130,12 +131,12 @@ test('getParser', t => {
     fastify.addContentTypeParser('*', first)
     fastify.addContentTypeParser(/^text\/.*/, second)
 
-    t.equal(fastify[keys.kContentTypeParser].getParser('image/gif').fn, first)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, second)
-    t.equal(fastify[keys.kContentTypeParser].getParser('text').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('image/gif').fn, first)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, second)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text').fn, first)
   })
 
-  test('should return undefined if no matching parser exist', t => {
+  await t.test('should return undefined if no matching parser exist', t => {
     t.plan(2)
 
     const fastify = Fastify()
@@ -143,15 +144,13 @@ test('getParser', t => {
     fastify.addContentTypeParser(/^weirdType\/.+/, first)
     fastify.addContentTypeParser('application/javascript', first)
 
-    t.notOk(fastify[keys.kContentTypeParser].getParser('application/xml'))
-    t.notOk(fastify[keys.kContentTypeParser].getParser('weirdType/'))
+    t.assert.ok(!fastify[keys.kContentTypeParser].getParser('application/xml'))
+    t.assert.ok(!fastify[keys.kContentTypeParser].getParser('weirdType/'))
   })
-
-  t.end()
 })
 
-test('existingParser', t => {
-  test('returns always false for "*"', t => {
+test('existingParser', async t => {
+  await t.test('returns always false for "*"', t => {
     t.plan(2)
 
     const fastify = Fastify()
@@ -160,14 +159,14 @@ test('existingParser', t => {
     fastify.addContentTypeParser(/^application\/.+\+xml/, first)
     fastify.addContentTypeParser('text/html', first)
 
-    t.notOk(fastify[keys.kContentTypeParser].existingParser('*'))
+    t.assert.ok(!fastify[keys.kContentTypeParser].existingParser('*'))
 
     fastify.addContentTypeParser('*', first)
 
-    t.notOk(fastify[keys.kContentTypeParser].existingParser('*'))
+    t.assert.ok(!fastify[keys.kContentTypeParser].existingParser('*'))
   })
 
-  test('let you override the default parser once', t => {
+  await t.test('let you override the default parser once', t => {
     t.plan(2)
 
     const fastify = Fastify()
@@ -175,15 +174,13 @@ test('existingParser', t => {
     fastify.addContentTypeParser('application/json', first)
     fastify.addContentTypeParser('text/plain', first)
 
-    t.throws(
+    t.assert.throws(
       () => fastify.addContentTypeParser('application/json', first),
-      FST_ERR_CTP_ALREADY_PRESENT,
-      "Content type parser 'application/json' already present"
+      FST_ERR_CTP_ALREADY_PRESENT
     )
-    t.throws(
+    t.assert.throws(
       () => fastify.addContentTypeParser('text/plain', first),
-      FST_ERR_CTP_ALREADY_PRESENT,
-      "Content type parser 'text/plain' already present"
+      FST_ERR_CTP_ALREADY_PRESENT
     )
   })
 
@@ -194,49 +191,47 @@ test('existingParser', t => {
   fastify.addContentTypeParser(/^application\/.+\+xml/, first)
   fastify.addContentTypeParser('text/html', first)
 
-  t.ok(contentTypeParser.existingParser(/^image\/.*/))
-  t.ok(contentTypeParser.existingParser('text/html'))
-  t.ok(contentTypeParser.existingParser(/^application\/.+\+xml/))
-  t.notOk(contentTypeParser.existingParser('application/json'))
-  t.notOk(contentTypeParser.existingParser('text/plain'))
-  t.notOk(contentTypeParser.existingParser('image/png'))
-  t.notOk(contentTypeParser.existingParser(/^application\/.+\+json/))
-
-  t.end()
+  t.assert.ok(contentTypeParser.existingParser(/^image\/.*/))
+  t.assert.ok(contentTypeParser.existingParser('text/html'))
+  t.assert.ok(contentTypeParser.existingParser(/^application\/.+\+xml/))
+  t.assert.ok(!contentTypeParser.existingParser('application/json'))
+  t.assert.ok(!contentTypeParser.existingParser('text/plain'))
+  t.assert.ok(!contentTypeParser.existingParser('image/png'))
+  t.assert.ok(!contentTypeParser.existingParser(/^application\/.+\+json/))
 })
 
-test('add', t => {
-  test('should only accept string and RegExp', t => {
+test('add', async t => {
+  await t.test('should only accept string and RegExp', t => {
     t.plan(4)
 
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    t.error(contentTypeParser.add('test', {}, first))
-    t.error(contentTypeParser.add(/test/, {}, first))
-    t.throws(
+    t.assert.ifError(contentTypeParser.add('test', {}, first))
+    t.assert.ifError(contentTypeParser.add(/test/, {}, first))
+    t.assert.throws(
       () => contentTypeParser.add({}, {}, first),
       FST_ERR_CTP_INVALID_TYPE,
       'The content type should be a string or a RegExp'
     )
-    t.throws(
+    t.assert.throws(
       () => contentTypeParser.add(1, {}, first),
       FST_ERR_CTP_INVALID_TYPE,
       'The content type should be a string or a RegExp'
     )
   })
 
-  test('should set "*" as parser that catches all', t => {
+  await t.test('should set "*" as parser that catches all', t => {
     t.plan(1)
 
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
     contentTypeParser.add('*', {}, first)
-    t.equal(contentTypeParser.customParsers.get('').fn, first)
+    t.assert.strictEqual(contentTypeParser.customParsers.get('').fn, first)
   })
 
-  test('should lowercase contentTypeParser name', async t => {
+  await t.test('should lowercase contentTypeParser name', async t => {
     t.plan(1)
     const fastify = Fastify()
     fastify.addContentTypeParser('text/html', function (req, done) {
@@ -247,11 +242,11 @@ test('add', t => {
         done()
       })
     } catch (err) {
-      t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+      t.assert.strictEqual(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
     }
   })
 
-  test('should trim contentTypeParser name', async t => {
+  await t.test('should trim contentTypeParser name', async t => {
     t.plan(1)
     const fastify = Fastify()
     fastify.addContentTypeParser('text/html', function (req, done) {
@@ -262,14 +257,12 @@ test('add', t => {
         done()
       })
     } catch (err) {
-      t.same(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
+      t.assert.strictEqual(err.message, FST_ERR_CTP_ALREADY_PRESENT('text/html').message)
     }
   })
-
-  t.end()
 })
 
-test('non-Error thrown from content parser is properly handled', t => {
+test('non-Error thrown from content parser is properly handled', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -285,7 +278,7 @@ test('non-Error thrown from content parser is properly handled', t => {
   })
 
   fastify.setErrorHandler((err, req, res) => {
-    t.equal(err, throwable)
+    t.assert.strictEqual(err, throwable)
 
     res.send(payload)
   })
@@ -296,12 +289,13 @@ test('non-Error thrown from content parser is properly handled', t => {
     headers: { 'Content-Type': 'text/test' },
     body: 'some text'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, payload)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, payload)
+    done()
   })
 })
 
-test('Error thrown 415 from content type is null and make post request to server', t => {
+test('Error thrown 415 from content type is null and make post request to server', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -315,28 +309,29 @@ test('Error thrown 415 from content type is null and make post request to server
     url: '/',
     body: 'some text'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 415)
-    t.equal(JSON.parse(res.body).message, errMsg)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 415)
+    t.assert.strictEqual(JSON.parse(res.body).message, errMsg)
+    done()
   })
 })
 
-test('remove', t => {
-  test('should remove default parser', t => {
+test('remove', async t => {
+  await t.test('should remove default parser', t => {
     t.plan(6)
 
     const fastify = Fastify()
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    t.ok(contentTypeParser.remove('application/json'))
-    t.notOk(contentTypeParser.customParsers['application/json'])
-    t.notOk(contentTypeParser.parserList.find(parser => parser === 'application/json'))
-    t.ok(contentTypeParser.remove('  text/plain  '))
-    t.notOk(contentTypeParser.customParsers['text/plain'])
-    t.notOk(contentTypeParser.parserList.find(parser => parser === 'text/plain'))
+    t.assert.ok(contentTypeParser.remove('application/json'))
+    t.assert.ok(!contentTypeParser.customParsers['application/json'])
+    t.assert.ok(!contentTypeParser.parserList.find(parser => parser === 'application/json'))
+    t.assert.ok(contentTypeParser.remove('  text/plain  '))
+    t.assert.ok(!contentTypeParser.customParsers['text/plain'])
+    t.assert.ok(!contentTypeParser.parserList.find(parser => parser === 'text/plain'))
   })
 
-  test('should remove RegExp parser', t => {
+  await t.test('should remove RegExp parser', t => {
     t.plan(3)
 
     const fastify = Fastify()
@@ -344,39 +339,37 @@ test('remove', t => {
 
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    t.ok(contentTypeParser.remove(/^text\/*/))
-    t.notOk(contentTypeParser.customParsers[/^text\/*/])
-    t.notOk(contentTypeParser.parserRegExpList.find(parser => parser.toString() === /^text\/*/.toString()))
+    t.assert.ok(contentTypeParser.remove(/^text\/*/))
+    t.assert.ok(!contentTypeParser.customParsers[/^text\/*/])
+    t.assert.ok(!contentTypeParser.parserRegExpList.find(parser => parser.toString() === /^text\/*/.toString()))
   })
 
-  test('should throw an error if content type is neither string nor RegExp', t => {
+  await t.test('should throw an error if content type is neither string nor RegExp', t => {
     t.plan(1)
 
     const fastify = Fastify()
 
-    t.throws(() => fastify[keys.kContentTypeParser].remove(12), FST_ERR_CTP_INVALID_TYPE)
+    t.assert.throws(() => fastify[keys.kContentTypeParser].remove(12), FST_ERR_CTP_INVALID_TYPE)
   })
 
-  test('should return false if content type does not exist', t => {
+  await t.test('should return false if content type does not exist', t => {
     t.plan(1)
 
     const fastify = Fastify()
 
-    t.notOk(fastify[keys.kContentTypeParser].remove('image/png'))
+    t.assert.ok(!fastify[keys.kContentTypeParser].remove('image/png'))
   })
 
-  test('should not remove any content type parser if content type does not exist', t => {
+  await t.test('should not remove any content type parser if content type does not exist', t => {
     t.plan(2)
 
     const fastify = Fastify()
 
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
-    t.notOk(contentTypeParser.remove('image/png'))
-    t.same(contentTypeParser.customParsers.size, 2)
+    t.assert.ok(!contentTypeParser.remove('image/png'))
+    t.assert.strictEqual(contentTypeParser.customParsers.size, 2)
   })
-
-  t.end()
 })
 
 test('remove all should remove all existing parsers and reset cache', t => {
@@ -391,10 +384,10 @@ test('remove all should remove all existing parsers and reset cache', t => {
   contentTypeParser.getParser('application/xml') // fill cache with one entry
   contentTypeParser.removeAll()
 
-  t.same(contentTypeParser.cache.size, 0)
-  t.same(contentTypeParser.parserList.length, 0)
-  t.same(contentTypeParser.parserRegExpList.length, 0)
-  t.same(Object.keys(contentTypeParser.customParsers).length, 0)
+  t.assert.strictEqual(contentTypeParser.cache.size, 0)
+  t.assert.strictEqual(contentTypeParser.parserList.length, 0)
+  t.assert.strictEqual(contentTypeParser.parserRegExpList.length, 0)
+  t.assert.strictEqual(Object.keys(contentTypeParser.customParsers).length, 0)
 })
 
 test('Safeguard against malicious content-type / 1', async t => {
@@ -417,7 +410,7 @@ test('Safeguard against malicious content-type / 1', async t => {
       body: ''
     })
 
-    t.same(response.statusCode, 415)
+    t.assert.strictEqual(response.statusCode, 415)
   }
 })
 
@@ -439,7 +432,7 @@ test('Safeguard against malicious content-type / 2', async t => {
     body: ''
   })
 
-  t.same(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('Safeguard against malicious content-type / 3', async t => {
@@ -460,7 +453,7 @@ test('Safeguard against malicious content-type / 3', async t => {
     body: ''
   })
 
-  t.same(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('Safeguard against content-type spoofing - string', async t => {
@@ -469,11 +462,11 @@ test('Safeguard against content-type spoofing - string', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('text/plain', function (request, body, done) {
-    t.pass('should be called')
+    t.assert.ok('should be called')
     done(null, body)
   })
   fastify.addContentTypeParser('application/json', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.assert.fail('shouldn\'t be called')
     done(null, body)
   })
 
@@ -491,24 +484,42 @@ test('Safeguard against content-type spoofing - string', async t => {
   })
 })
 
-test('Warning against improper content-type - regexp', t => {
-  t.plan(2)
+test('Warning against improper content-type - regexp', async t => {
+  await t.test('improper regex - text plain', (t, done) => {
+    t.plan(2)
+    const fastify = Fastify()
 
-  const fastify = Fastify()
+    process.on('warning', onWarning)
+    function onWarning (warning) {
+      t.assert.strictEqual(warning.name, 'FastifySecurity')
+      t.assert.strictEqual(warning.code, 'FSTSEC001')
+      done()
+    }
+    t.after(() => process.removeListener('warning', onWarning))
 
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifySecurity')
-    t.equal(warning.code, 'FSTSEC001')
-  }
-  t.teardown(() => process.removeListener('warning', onWarning))
-
-  fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
-    done(null, body)
+    fastify.removeAllContentTypeParsers()
+    fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
+      done(null, body)
+    })
   })
-  fastify.addContentTypeParser(/application\/json/, function (request, body, done) {
-    done(null, body)
+
+  await t.test('improper regex - application json', (t, done) => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    process.on('warning', onWarning)
+    function onWarning (warning) {
+      t.assert.strictEqual(warning.name, 'FastifySecurity')
+      t.assert.strictEqual(warning.code, 'FSTSEC001')
+      done()
+    }
+    t.after(() => process.removeListener('warning', onWarning))
+
+    fastify.removeAllContentTypeParsers()
+
+    fastify.addContentTypeParser(/application\/json/, function (request, body, done) {
+      done(null, body)
+    })
   })
 })
 
@@ -518,11 +529,11 @@ test('content-type match parameters - string 1', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('text/plain; charset=utf8', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.assert.fail('shouldn\'t be called')
     done(null, body)
   })
   fastify.addContentTypeParser('application/json; charset=utf8', function (request, body, done) {
-    t.pass('should be called')
+    t.assert.ok('should be called')
     done(null, body)
   })
 
@@ -546,7 +557,7 @@ test('content-type match parameters - regexp', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser(/application\/json; charset=utf8/, function (request, body, done) {
-    t.pass('should be called')
+    t.assert.ok('should be called')
     done(null, body)
   })
 
@@ -570,7 +581,7 @@ test('content-type fail when parameters not match - string 1', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.assert.fail('shouldn\'t be called')
     done(null, body)
   })
 
@@ -587,7 +598,7 @@ test('content-type fail when parameters not match - string 1', async t => {
     body: ''
   })
 
-  t.same(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('content-type fail when parameters not match - string 2', async t => {
@@ -596,7 +607,7 @@ test('content-type fail when parameters not match - string 2', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.assert.fail('shouldn\'t be called')
     done(null, body)
   })
 
@@ -613,7 +624,7 @@ test('content-type fail when parameters not match - string 2', async t => {
     body: ''
   })
 
-  t.same(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 test('content-type fail when parameters not match - regexp', async t => {
@@ -622,7 +633,7 @@ test('content-type fail when parameters not match - regexp', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser(/application\/json; charset=utf8; foo=bar/, function (request, body, done) {
-    t.fail('shouldn\'t be called')
+    t.assert.fail('shouldn\'t be called')
     done(null, body)
   })
 
@@ -639,7 +650,7 @@ test('content-type fail when parameters not match - regexp', async t => {
     body: ''
   })
 
-  t.same(response.statusCode, 415)
+  t.assert.strictEqual(response.statusCode, 415)
 })
 
 // Refs: https://github.com/fastify/fastify/issues/4495
@@ -667,9 +678,9 @@ test('content-type regexp list should be cloned when plugin override', async t =
       payload: 'jpeg',
       headers: { 'content-type': 'image/jpeg' }
     })
-    t.same(statusCode, 200)
-    t.same(headers['content-type'], 'image/jpeg')
-    t.same(payload, 'jpeg')
+    t.assert.strictEqual(statusCode, 200)
+    t.assert.strictEqual(headers['content-type'], 'image/jpeg')
+    t.assert.strictEqual(payload, 'jpeg')
   }
 
   {
@@ -679,9 +690,9 @@ test('content-type regexp list should be cloned when plugin override', async t =
       payload: 'png',
       headers: { 'content-type': 'image/png' }
     })
-    t.same(statusCode, 200)
-    t.same(headers['content-type'], 'image/png')
-    t.same(payload, 'png')
+    t.assert.strictEqual(statusCode, 200)
+    t.assert.strictEqual(headers['content-type'], 'image/png')
+    t.assert.strictEqual(payload, 'png')
   }
 })
 
@@ -691,7 +702,7 @@ test('edge case content-type - ;', async t => {
   const fastify = Fastify()
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser(';', function (request, body, done) {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
     done(null, body)
   })
 
@@ -717,5 +728,5 @@ test('edge case content-type - ;', async t => {
     body: ''
   })
 
-  t.pass('end')
+  t.assert.ok('end')
 })

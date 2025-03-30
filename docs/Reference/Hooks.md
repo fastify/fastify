@@ -34,9 +34,9 @@ are Request/Reply hooks and application hooks:
 - [Using Hooks to Inject Custom Properties](#using-hooks-to-inject-custom-properties)
 - [Diagnostics Channel Hooks](#diagnostics-channel-hooks)
 
-**Notice:** the `done` callback is not available when using `async`/`await` or
-returning a `Promise`. If you do invoke a `done` callback in this situation
-unexpected behavior may occur, e.g. duplicate invocation of handlers.
+> 🛈 Note: The `done` callback is not available when using `async`/`await` or
+> returning a `Promise`. If you do invoke a `done` callback in this situation
+> unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
 ## Request/Reply Hooks
 
@@ -68,9 +68,9 @@ fastify.addHook('onRequest', async (request, reply) => {
 })
 ```
 
-**Notice:** in the [onRequest](#onrequest) hook, `request.body` will always be
-`undefined`, because the body parsing happens before the
-[preValidation](#prevalidation) hook.
+> 🛈 Note: In the [onRequest](#onrequest) hook, `request.body` will always be
+> `undefined`, because the body parsing happens before the
+> [preValidation](#prevalidation) hook.
 
 ### preParsing
 
@@ -98,17 +98,17 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 })
 ```
 
-**Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be
-`undefined`, because the body parsing happens before the
-[preValidation](#prevalidation) hook.
+> 🛈 Note: In the [preParsing](#preparsing) hook, `request.body` will always be
+> `undefined`, because the body parsing happens before the
+> [preValidation](#prevalidation) hook.
 
-**Notice:** you should also add a `receivedEncodedLength` property to the
-returned stream. This property is used to correctly match the request payload
-with the `Content-Length` header value. Ideally, this property should be updated
-on each received chunk.
+> 🛈 Note: You should also add a `receivedEncodedLength` property to the
+> returned stream. This property is used to correctly match the request payload
+> with the `Content-Length` header value. Ideally, this property should be updated
+> on each received chunk.
 
-**Notice:** The size of the returned stream is checked to not exceed the limit
-set in [`bodyLimit`](./Server.md#bodylimit) option.
+> 🛈 Note: The size of the returned stream is checked to not exceed the limit
+> set in [`bodyLimit`](./Server.md#bodylimit) option.
 
 ### preValidation
 
@@ -166,8 +166,8 @@ fastify.addHook('preSerialization', async (request, reply, payload) => {
 })
 ```
 
-Note: the hook is NOT called if the payload is a `string`, a `Buffer`, a
-`stream`, or `null`.
+> 🛈 Note: The hook is NOT called if the payload is a `string`, a `Buffer`, a
+> `stream`, or `null`.
 
 ### onError
 ```js
@@ -196,8 +196,8 @@ user
 *(Note that the default error handler always sends the error back to the
 user)*.
 
-**Notice:** unlike the other hooks, passing an error to the `done` function is not
-supported.
+> 🛈 Note: Unlike the other hooks, passing an error to the `done` function is not
+> supported.
 
 ### onSend
 If you are using the `onSend` hook, you can change the payload. For example:
@@ -233,8 +233,8 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > to `0`, whereas the `Content-Length` header will not be set if the payload is
 > `null`.
 
-Note: If you change the payload, you may only change it to a `string`, a
-`Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
+> 🛈 Note: If you change the payload, you may only change it to a `string`, a
+> `Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
 ### onResponse
@@ -256,8 +256,8 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
-**Note:** setting `disableRequestLogging` to `true` will disable any error log
-inside the `onResponse` hook. In this case use `try - catch` to log errors.
+> 🛈 Note: Setting `disableRequestLogging` to `true` will disable any error log
+> inside the `onResponse` hook. In this case use `try - catch` to log errors.
 
 ### onTimeout
 
@@ -298,7 +298,8 @@ The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been processed. Therefore, you will not be able to send
 data to the client.
 
-**Notice:** client abort detection is not completely reliable. See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)
+> 🛈 Note: Client abort detection is not completely reliable.
+> See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)
 
 ### Manage Errors from a hook
 If you get an error during the execution of your hook, just pass it to `done()`
@@ -451,8 +452,8 @@ fastify.addHook('onListen', async function () {
 })
 ```
 
-> **Note**
-> This hook will not run when the server is started using `fastify.inject()` or `fastify.ready()`
+> 🛈 Note: This hook will not run when the server is started using
+> fastify.inject()` or `fastify.ready()`.
 
 ### onClose
 <a id="on-close"></a>
@@ -575,8 +576,8 @@ This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context, thus
 this hook is encapsulated.
 
-**Note:** This hook will not be called if a plugin is wrapped inside
-[`fastify-plugin`](https://github.com/fastify/fastify-plugin).
+> 🛈 Note: This hook will not be called if a plugin is wrapped inside
+> [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
 
@@ -773,7 +774,7 @@ fastify.route({
 })
 ```
 
-**Note**: both options also accept an array of functions.
+> 🛈 Note: Both options also accept an array of functions.
 
 ## Using Hooks to Inject Custom Properties
 <a id="using-hooks-to-inject-custom-properties"></a>
@@ -860,7 +861,7 @@ channel.subscribe(function ({ fastify }) {
 })
 ```
 
-> **Note:** The TracingChannel class API is currently experimental and may undergo
+> 🛈 Note: The TracingChannel class API is currently experimental and may undergo
 > breaking changes even in semver-patch releases of Node.js.
 
 Five other events are published on a per-request basis following the

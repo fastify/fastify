@@ -25,11 +25,11 @@ snippet of code.
 ### Contents
 
 - [AWS](#aws)
+- [Genezio](#genezio)
 - [Google Cloud Functions](#google-cloud-functions)
 - [Google Firebase Functions](#google-firebase-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
-- [Platformatic Cloud](#platformatic-cloud)
 - [Vercel](#vercel)
 
 ## AWS
@@ -128,6 +128,14 @@ found
 If you need to integrate with more AWS services, take a look at
 [@h4ad/serverless-adapter](https://viniciusl.com.br/serverless-adapter/docs/main/frameworks/fastify)
 on Fastify to find out how to integrate.
+
+## Genezio
+
+[Genezio](https://genezio.com/) is a platform designed to simplify the deployment
+of serverless applications to the cloud.
+
+[Genezio has a dedicated guide for deploying a Fastify application.](https://genezio.com/docs/frameworks/fastify/)
+
 
 ## Google Cloud Functions
 
@@ -280,8 +288,8 @@ const { onRequest } = require("firebase-functions/v2/https")
 ### Creation of Fastify instance
 
 Create the Fastify instance and encapsulate the returned application instance
-in a function which will register routes, await the server's processing of
-plugins, hooks and other settings. As follows:
+in a function that will register routes, await the server's processing of
+plugins, hooks, and other settings. As follows:
 
 ```js
 const fastify = require("fastify")({
@@ -299,7 +307,7 @@ const fastifyApp = async (request, reply) => {
 
 Firebase Function's HTTP layer already parses the request
 and makes a JSON payload available. It also provides access
-to the raw body, unparsed, which is useful in order to calculate
+to the raw body, unparsed, which is useful for calculating
 request signatures to validate HTTP webhooks.
 
 Add as follows to the `registerRoutes()` function:
@@ -384,7 +392,7 @@ familiar with gcloud or just follow their
 
 ### Adjust Fastify server
 
-In order for Fastify to properly listen for requests within the container, be
+For Fastify to properly listen for requests within the container, be
 sure to set the correct port and address:
 
 ```js
@@ -562,49 +570,7 @@ Add this command to your `package.json` *scripts*
 }
 ```
 
-Then it should work fine
-
-## Platformatic Cloud
-
-[Platformatic](https://platformatic.dev) provides zero-configuration deployment
-for Node.js applications.
-To use it now, you should wrap your existing Fastify application inside a
-[Platformatic Service](https://oss.platformatic.dev/docs/reference/service/introduction),
-by running the following:
-
-
-```bash
-npm create platformatic@latest -- service
-```
-
-The wizard would ask you to fill in a few answers:
-
-```
-? Where would you like to create your project? .
-? Do you want to run npm install? yes
-? Do you want to use TypeScript? no
-? What port do you want to use? 3042
-[13:04:14] INFO: Configuration file platformatic.service.json successfully created.
-[13:04:14] INFO: Environment file .env successfully created.
-[13:04:14] INFO: Plugins folder "plugins" successfully created.
-[13:04:14] INFO: Routes folder "routes" successfully created.
-? Do you want to create the github action to deploy this application to Platformatic Cloud dynamic workspace? no
-? Do you want to create the github action to deploy this application to Platformatic Cloud static workspace? no
-```
-
-Then, head to [Platformatic Cloud](https://platformatic.cloud) and sign in
-with your GitHub account.
-Create your first application and a static workspace: be careful to download the
-API key as an env file, e.g. `yourworkspace.txt`.
-
-Then, you can easily deploy your application with the following command:
-
-```bash
-platformatic deploy --keys `yourworkspace.txt`
-```
-
-Check out the [Full Guide](https://blog.platformatic.dev/how-to-migrate-a-fastify-app-to-platformatic-service)
-on how to wrap Fastify application in Platformatic.
+Then it should work fine.
 
 ## Vercel
 

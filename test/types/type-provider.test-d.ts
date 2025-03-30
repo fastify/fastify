@@ -8,7 +8,7 @@ import fastify, {
   SafePromiseLike
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders } from 'node:http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
 
@@ -1004,6 +1004,46 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: 
       } as const
     }
   },
+  async (_, res) => {
+    return true
+  }
+))
+
+// -------------------------------------------------------------------
+// RouteGeneric Reply Type Return (Different Status Codes)
+// -------------------------------------------------------------------
+
+expectAssignable(server.get<{
+  Reply: {
+    200: string | { msg: string }
+    400: number
+    '5xx': { error: string }
+  }
+}>(
+  '/',
+  async (_, res) => {
+    const option = 1 as 1 | 2 | 3 | 4
+    switch (option) {
+      case 1: return 'hello'
+      case 2: return { msg: 'hello' }
+      case 3: return 400
+      case 4: return { error: 'error' }
+    }
+  }
+))
+
+// -------------------------------------------------------------------
+// RouteGeneric Reply Type Return: Non Assignable (Different Status Codes)
+// -------------------------------------------------------------------
+
+expectError(server.get<{
+  Reply: {
+    200: string | { msg: string }
+    400: number
+    '5xx': { error: string }
+  }
+}>(
+  '/',
   async (_, res) => {
     return true
   }

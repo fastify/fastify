@@ -323,7 +323,7 @@ test("serializer read validator's schemas", t => {
   fastify.get('/', {
     schema: {
       response: {
-        '2xx': ajvInstance.getSchema('http://example.com/schemas/ref').schema
+        '2xx': { $ref: 'http://example.com/schemas/ref' }
       }
     },
     handler (req, res) { res.send({ hello: 'world', evict: 'this' }) }
@@ -365,9 +365,9 @@ test('setSchemaController in a plugin', t => {
   fastify.register(schemaPlugin)
   fastify.get('/', {
     schema: {
-      query: ajvInstance.getSchema('urn:schema:ref').schema,
+      query: { $ref: 'urn:schema:ref' },
       response: {
-        '2xx': ajvInstance.getSchema('urn:schema:ref').schema
+        '2xx': { $ref: 'urn:schema:ref' }
       }
     },
     handler (req, res) {
@@ -535,9 +535,9 @@ test('setSchemaController in a plugin with head routes', t => {
   fastify.register(schemaPlugin)
   fastify.get('/', {
     schema: {
-      query: ajvInstance.getSchema('urn:schema:ref').schema,
+      query: { $ref: 'urn:schema:ref' },
       response: {
-        '2xx': ajvInstance.getSchema('urn:schema:ref').schema
+        '2xx': { $ref: 'urn:schema:ref' }
       }
     },
     handler (req, res) {
@@ -615,9 +615,9 @@ test('multiple refs with the same ids', t => {
 
   fastify.head('/', {
     schema: {
-      query: refSchema,
+      query: { $ref: 'urn:schema:ref' },
       response: {
-        '2xx': refSchema
+        '2xx': { $ref: 'urn:schema:ref' }
       }
     },
     handler (req, res) {
@@ -627,9 +627,9 @@ test('multiple refs with the same ids', t => {
 
   fastify.get('/', {
     schema: {
-      query: refSchema,
+      query: { $ref: 'urn:schema:ref' },
       response: {
-        '2xx': refSchema
+        '2xx': { $ref: 'urn:schema:ref' }
       }
     },
     handler (req, res) {

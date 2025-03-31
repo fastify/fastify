@@ -3,6 +3,9 @@ name: Code Coverage (*nix)
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   check-coverage:
     runs-on: ubuntu-latest

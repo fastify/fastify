@@ -4,6 +4,9 @@ on:
   pull_request_target:
     types: [labeled]
 
+permissions:
+  contents: read
+
 jobs:
   benchmark:
     if: ${{ github.event.label.name == 'benchmark' }}

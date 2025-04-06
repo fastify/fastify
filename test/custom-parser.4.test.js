@@ -5,6 +5,7 @@ const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
 const { getServerUrl } = require('./helper')
+const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
@@ -32,6 +33,7 @@ test('should prefer string content types over RegExp ones', (t, testDone) => {
 
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
+    const completion = waitForCb({ steps: 2 })
 
     sget({
       method: 'POST',
@@ -44,6 +46,7 @@ test('should prefer string content types over RegExp ones', (t, testDone) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.equal(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
+      completion.stepIn()
     })
 
     sget({
@@ -57,8 +60,10 @@ test('should prefer string content types over RegExp ones', (t, testDone) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.equal(body.toString(), 'javascript')
-      testDone()
+      completion.stepIn()
     })
+
+    completion.patience.then(testDone)
   })
 })
 
@@ -90,6 +95,8 @@ test('removeContentTypeParser should support arrays of content types to remove',
 
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
+    const completion = waitForCb({ steps: 3 })
+
     sget({
       method: 'POST',
       url: getServerUrl(fastify),
@@ -101,6 +108,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.equal(body.toString(), 'xml')
+      completion.stepIn()
     })
 
     sget({
@@ -113,6 +121,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 415)
+      completion.stepIn()
     })
 
     sget({
@@ -125,8 +134,9 @@ test('removeContentTypeParser should support arrays of content types to remove',
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 415)
-      testDone()
+      completion.stepIn()
     })
+    completion.patience.then(testDone)
   })
 })
 
@@ -159,6 +169,7 @@ test('removeContentTypeParser should support encapsulation', (t, done) => {
 
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
+    const completion = waitForCb({ steps: 2 })
 
     sget({
       method: 'POST',
@@ -170,6 +181,7 @@ test('removeContentTypeParser should support encapsulation', (t, done) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 415)
+      completion.stepIn()
     })
 
     sget({
@@ -183,8 +195,9 @@ test('removeContentTypeParser should support encapsulation', (t, done) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.equal(body.toString(), 'xml')
-      done()
+      completion.stepIn()
     })
+    completion.patience.then(done)
   })
 })
 
@@ -210,6 +223,7 @@ test('removeAllContentTypeParsers should support encapsulation', (t, testDone) =
 
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
+    const completion = waitForCb({ steps: 2 })
 
     sget({
       method: 'POST',
@@ -221,6 +235,7 @@ test('removeAllContentTypeParsers should support encapsulation', (t, testDone) =
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 415)
+      completion.stepIn()
     })
 
     sget({
@@ -234,7 +249,8 @@ test('removeAllContentTypeParsers should support encapsulation', (t, testDone) =
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.equal(JSON.parse(body.toString()).test, 1)
-      testDone()
+      completion.stepIn()
     })
+    completion.patience.then(testDone)
   })
 })

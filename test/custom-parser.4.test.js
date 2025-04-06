@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
@@ -9,11 +8,10 @@ const { getServerUrl } = require('./helper')
 
 process.removeAllListeners('warning')
 
-test('should prefer string content types over RegExp ones', t => {
+test('should prefer string content types over RegExp ones', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
-
+  t.after(() => { fastify.close() })
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
   })
@@ -33,7 +31,7 @@ test('should prefer string content types over RegExp ones', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -43,9 +41,9 @@ test('should prefer string content types over RegExp ones', t => {
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.equal(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
     })
 
     sget({
@@ -56,18 +54,19 @@ test('should prefer string content types over RegExp ones', t => {
         'Content-Type': 'application/javascript'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'javascript')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.equal(body.toString(), 'javascript')
+      testDone()
     })
   })
 })
 
-test('removeContentTypeParser should support arrays of content types to remove', t => {
+test('removeContentTypeParser should support arrays of content types to remove', (t, testDone) => {
   t.plan(8)
 
   const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.addContentTypeParser('application/xml', function (req, payload, done) {
     payload.on('data', () => {})
@@ -90,8 +89,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-
+    t.assert.ifError(err)
     sget({
       method: 'POST',
       url: getServerUrl(fastify),
@@ -100,9 +98,9 @@ test('removeContentTypeParser should support arrays of content types to remove',
         'Content-Type': 'application/xml'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'xml')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.equal(body.toString(), 'xml')
     })
 
     sget({
@@ -113,8 +111,8 @@ test('removeContentTypeParser should support arrays of content types to remove',
         'Content-Type': 'image/png'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 415)
     })
 
     sget({
@@ -125,16 +123,18 @@ test('removeContentTypeParser should support arrays of content types to remove',
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 415)
+      testDone()
     })
   })
 })
 
-test('removeContentTypeParser should support encapsulation', t => {
+test('removeContentTypeParser should support encapsulation', (t, done) => {
   t.plan(6)
 
   const fastify = Fastify()
+  t.after(() => fastify.close())
 
   fastify.addContentTypeParser('application/xml', function (req, payload, done) {
     payload.on('data', () => {})
@@ -158,7 +158,7 @@ test('removeContentTypeParser should support encapsulation', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -168,8 +168,8 @@ test('removeContentTypeParser should support encapsulation', t => {
         'Content-Type': 'application/xml'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 415)
     })
 
     sget({
@@ -180,18 +180,19 @@ test('removeContentTypeParser should support encapsulation', t => {
         'Content-Type': 'application/xml'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'xml')
-      fastify.close()
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.equal(body.toString(), 'xml')
+      done()
     })
   })
 })
 
-test('removeAllContentTypeParsers should support encapsulation', t => {
+test('removeAllContentTypeParsers should support encapsulation', (t, testDone) => {
   t.plan(6)
 
   const fastify = Fastify()
+  t.after(() => fastify.close())
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -208,7 +209,7 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -218,8 +219,8 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 415)
     })
 
     sget({
@@ -230,10 +231,10 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body.toString()).test, 1)
-      fastify.close()
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.equal(JSON.parse(body.toString()).test, 1)
+      testDone()
     })
   })
 })

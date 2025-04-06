@@ -6,14 +6,11 @@ const { connect } = require('node:net')
 const { once } = require('node:events')
 const dns = require('node:dns').promises
 
-describe('upgrade to both servers', async t => {
+describe('upgrade to both servers', async () => {
   const localAddresses = await dns.lookup('localhost', { all: true })
-  if (localAddresses.length === 1) {
-    t.skip('requires both IPv4 and IPv6')
-    return
-  }
+  const skip = localAddresses.length === 1 && 'requires both IPv4 and IPv6'
 
-  await test('upgrade IPv4 and IPv6', async t => {
+  await test('upgrade IPv4 and IPv6', { skip }, async t => {
     t.plan(2)
 
     const fastify = Fastify()

@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  issues: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: lock
@@ -15,6 +14,9 @@ concurrency:
 jobs:
   action:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - uses: jsumners/lock-threads@b27edac0ac998d42b2815e122b6c24b32b568321
         with:

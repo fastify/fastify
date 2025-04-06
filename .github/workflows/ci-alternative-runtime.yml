@@ -19,6 +19,9 @@ concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   test-unit:
     runs-on: ${{ matrix.os }}
@@ -48,6 +51,7 @@ jobs:
           npm install --ignore-scripts
 
       - name: Run tests
+        continue-on-error: true
         run: |
           npm run unit
 

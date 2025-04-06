@@ -37,6 +37,10 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
+
+permissions:
+  contents: read
+
 jobs:
   core-plugins:
     name: CITGM

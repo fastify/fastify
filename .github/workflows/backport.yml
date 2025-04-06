@@ -6,12 +6,14 @@ on:
       - labeled
 
 permissions:
-  pull-requests: write
-  contents: write
+  contents: read
 
 jobs:
   backport:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: >
       github.event.pull_request.merged
       && (

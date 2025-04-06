@@ -11,6 +11,8 @@ permissions:
 jobs:
   pnpm:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     strategy:
       matrix:
@@ -45,6 +47,8 @@ jobs:
 
   yarn:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     strategy:
       matrix:

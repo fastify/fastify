@@ -3,9 +3,14 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
 
+permissions:
+  contents: read
+
 jobs:
   pull-request-title-check:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
     - uses: fastify/action-pr-title@v0
       with:

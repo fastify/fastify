@@ -140,7 +140,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
   })
 })
 
-test('removeContentTypeParser should support encapsulation', (t, done) => {
+test('removeContentTypeParser should support encapsulation', (t, testDone) => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -197,7 +197,7 @@ test('removeContentTypeParser should support encapsulation', (t, done) => {
       t.assert.equal(body.toString(), 'xml')
       completion.stepIn()
     })
-    completion.patience.then(done)
+    completion.patience.then(testDone)
   })
 })
 

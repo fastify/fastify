@@ -14,6 +14,9 @@ on:
       - 'docs/**'
       - '*.md'
 
+permissions:
+  contents: read
+
 jobs:
   install-production:
     runs-on: ${{ matrix.os }}

@@ -215,6 +215,11 @@
     "semver": "^7.6.0",
     "toad-cache": "^3.7.0"
   },
+  "overrides": {
+    "tsd": {
+      "@tsd/typescript": "~5.8.2"
+    }
+  },
   "tsd": {
     "directory": "test/types"
   }

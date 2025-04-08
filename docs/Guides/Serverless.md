@@ -1,20 +1,20 @@
 <h1 align="center">Serverless</h1>
 
 Run serverless applications and REST APIs using your existing Fastify
-application. By default, Fastify will not work on your serverless platform of
-choice, you will need to make some small changes to fix this. This document
-contains a small guide for the most popular serverless providers and how to use
+application. You may need to make code changes to work on your
+serverless platform of choice. This document contains a small guide 
+for the most popular serverless providers and how to use
 Fastify with them.
 
 #### Should you use Fastify in a serverless platform?
 
-That is up to you! Keep in mind that functions as a service should always use
+That is up to you! Keep in mind, functions as a service should always use
 small and focused functions, but you can also run an entire web application with
 them. It is important to remember that the bigger the application the slower the
 initial boot will be. The best way to run Fastify applications in serverless
-environments is to use platforms like Google Cloud Run, AWS Fargate, and Azure
-Container Instances, where the server can handle multiple requests at the same
-time and make full use of Fastify's features.
+environments is to use platforms like Google Cloud Run, AWS Fargate, Azure
+Container Instances, and Vercel where the server can handle multiple requests 
+at the same time and make full use of Fastify's features.
 
 One of the best features of using Fastify in serverless applications is the ease
 of development. In your local environment, you will always run the Fastify
@@ -574,54 +574,14 @@ Then it should work fine.
 
 ## Vercel
 
-[Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
-applications. To use it now, it is as simple as configuring your `vercel.json`
-file like the following:
+[Vercel](https://vercel.com) fully supports deploying Fastify applications. Additionally, 
+with Vercel's [Fluid compute](https://vercel.com/docs/functions/fluid-compute), you can 
+combine server-like concurrency with the autoscaling properties of traditional serverless functions.
 
-```json
-{
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/api/serverless.js"
-        }
-    ]
-}
-```
+### Example
 
-Then, write `api/serverless.js` like so:
+- [Fastify Node.js template on Vercel](https://vercel.com/templates/other/fastify-serverless-function)
 
-```js
-"use strict";
+### Considerations
 
-// Read the .env file.
-import * as dotenv from "dotenv";
-dotenv.config();
-
-// Require the framework
-import Fastify from "fastify";
-
-// Instantiate Fastify with some config
-const app = Fastify({
-  logger: true,
-});
-
-// Register your application as a normal plugin.
-app.register(import("../src/app.js"));
-
-export default async (req, res) => {
-    await app.ready();
-    app.server.emit('request', req, res);
-}
-```
-
-In `src/app.js` define the plugin.
-```js
-async function routes (fastify, options) {
-  fastify.get('/', async (request, reply) => {
-    return { hello: 'world' }
-  })
-}
-
-export default routes;
-```
+- [Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently requires an explicit opt-in. [Learn more](https://vercel.com/docs/functions/fluid-compute#how-to-enable-fluid-compute).

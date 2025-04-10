@@ -3,6 +3,9 @@
 const { test, before } = require('node:test')
 const Fastify = require('..')
 const helper = require('./helper')
+const { networkInterfaces } = require('node:os')
+
+const hasIPv6 = Object.values(networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
 
 let localhostForURL
 
@@ -59,7 +62,7 @@ test('double listen errors callback with (err, address)', (t, done) => {
   })
 })
 
-test('nonlocalhost double listen errors callback with (err, address)', (t, done) => {
+test('nonlocalhost double listen errors callback with (err, address)', { skip: !hasIPv6 }, (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   t.after(() => fastify.close())

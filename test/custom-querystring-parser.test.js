@@ -86,6 +86,8 @@ test('Custom querystring parser should be called also if there is nothing to par
 test('Querystring without value', t => {
   t.plan(9)
 
+  console.log('hello')
+
   const fastify = Fastify({
     querystringParser: function (str) {
       t.equal(str, 'foo')
@@ -126,6 +128,24 @@ test('Custom querystring parser should be a function', t => {
   try {
     Fastify({
       querystringParser: 10
+    })
+    t.fail('Should throw')
+  } catch (err) {
+    t.equal(
+      err.message,
+      "querystringParser option should be a function, instead got 'number'"
+    )
+  }
+})
+
+test('Custom querystring parser should be a function', t => {
+  t.plan(1)
+
+  try {
+    Fastify({
+      routerOptions: {
+        querystringParser: 10
+      }
     })
     t.fail('Should throw')
   } catch (err) {

@@ -11,7 +11,7 @@ const {
   kState
 } = require('../lib/symbols')
 
-const hasIPv6 = Object.values(os.networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
+const isIPv6Missing = !Object.values(os.networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
 
 test('root fastify instance is an object', t => {
   t.plan(1)
@@ -282,7 +282,7 @@ test('fastify instance should contains listeningOrigin property (unix socket)', 
   await fastify.close()
 })
 
-test('fastify instance should contains listeningOrigin property (IPv6)', { skip: !hasIPv6 }, async t => {
+test('fastify instance should contains listeningOrigin property (IPv6)', { skip: isIPv6Missing }, async t => {
   t.plan(1)
   const port = 3000
   const host = '::1'

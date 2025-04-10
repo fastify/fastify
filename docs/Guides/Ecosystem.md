@@ -460,6 +460,8 @@ middlewares into Fastify plugins
   Lightweight cache plugin
 - [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes)
   A simple plugin for Fastify to list all available routes.
+- [`fastify-lm`](https://github.com/galiprandi/fastify-lm#readme)
+  Use OpenAI, Claude, Google, Deepseek, and others LMs with one Fastify plugin.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
 - [`fastify-log-controller`](https://github.com/Eomm/fastify-log-controller/)

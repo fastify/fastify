@@ -6,6 +6,9 @@ const fp = require('fastify-plugin')
 const split = require('split2')
 const helper = require('./helper')
 const { kState } = require('../lib/symbols')
+const { networkInterfaces } = require('node:os')
+
+const isIPv6Missing = !Object.values(networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
 
 let localhost
 before(async function () {
@@ -405,7 +408,7 @@ test('localhost onListen encapsulation should be called in order and should log 
   })
 })
 
-test('non-localhost onListen should be called in order', t => {
+test('non-localhost onListen should be called in order', { skip: isIPv6Missing }, t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -428,7 +431,7 @@ test('non-localhost onListen should be called in order', t => {
   })
 })
 
-test('non-localhost async onListen should be called in order', async t => {
+test('non-localhost async onListen should be called in order', { skip: isIPv6Missing }, async t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -448,7 +451,7 @@ test('non-localhost async onListen should be called in order', async t => {
   })
 })
 
-test('non-localhost sync onListen should log errors as warnings and continue', t => {
+test('non-localhost sync onListen should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
   t.plan(4)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -488,7 +491,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', t
   })
 })
 
-test('non-localhost async onListen should log errors as warnings and continue', async t => {
+test('non-localhost async onListen should log errors as warnings and continue', { skip: isIPv6Missing }, async t => {
   t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -529,7 +532,7 @@ test('non-localhost async onListen should log errors as warnings and continue', 
   })
 })
 
-test('non-localhost Register onListen hook after a plugin inside a plugin', t => {
+test('non-localhost Register onListen hook after a plugin inside a plugin', { skip: isIPv6Missing }, t => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -562,7 +565,7 @@ test('non-localhost Register onListen hook after a plugin inside a plugin', t =>
   })
 })
 
-test('non-localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', t => {
+test('non-localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
   t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -608,7 +611,7 @@ test('non-localhost Register onListen hook after a plugin inside a plugin should
   })
 })
 
-test('non-localhost onListen encapsulation should be called in order', t => {
+test('non-localhost onListen encapsulation should be called in order', { skip: isIPv6Missing }, t => {
   t.plan(6)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -640,7 +643,7 @@ test('non-localhost onListen encapsulation should be called in order', t => {
   })
 })
 
-test('non-localhost onListen encapsulation should be called in order and should log errors as warnings and continue', t => {
+test('non-localhost onListen encapsulation should be called in order and should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
   t.plan(7)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -874,7 +877,7 @@ test('onListen localhost with callback encapsulation should be called in order',
   })
 })
 
-test('onListen non-localhost should work in order with callback in sync', t => {
+test('onListen non-localhost should work in order with callback in sync', { skip: isIPv6Missing }, t => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -896,7 +899,7 @@ test('onListen non-localhost should work in order with callback in sync', t => {
   })
 })
 
-test('onListen non-localhost should work in order with callback in async', t => {
+test('onListen non-localhost should work in order with callback in async', { skip: isIPv6Missing }, t => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -916,7 +919,7 @@ test('onListen non-localhost should work in order with callback in async', t => 
   })
 })
 
-test('onListen non-localhost sync with callback should log errors as warnings and continue', t => {
+test('onListen non-localhost sync with callback should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
   t.plan(8)
 
   const stream = split(JSON.parse)
@@ -960,7 +963,7 @@ test('onListen non-localhost sync with callback should log errors as warnings an
   })
 })
 
-test('onListen non-localhost async with callback should log errors as warnings and continue', t => {
+test('onListen non-localhost async with callback should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
   t.plan(8)
 
   const stream = split(JSON.parse)
@@ -1002,7 +1005,7 @@ test('onListen non-localhost async with callback should log errors as warnings a
   })
 })
 
-test('Register onListen hook non-localhost with callback after a plugin inside a plugin', t => {
+test('Register onListen hook non-localhost with callback after a plugin inside a plugin', { skip: isIPv6Missing }, t => {
   t.plan(5)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -1035,7 +1038,7 @@ test('Register onListen hook non-localhost with callback after a plugin inside a
   })
 })
 
-test('onListen non-localhost with callback encapsulation should be called in order', t => {
+test('onListen non-localhost with callback encapsulation should be called in order', { skip: isIPv6Missing }, t => {
   t.plan(8)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))

@@ -172,7 +172,7 @@ t.test('response serialization', { timeout: 60000 }, async (t) => {
 
     {
       const response = await fastify.inject({ method: 'GET', url: '/500' })
-      t.assert.deepStrictEqual(response.statusCode, 500)
+      t.assert.deepEqual(response.statusCode, 500)
     }
 
     for await (const [line] of on(stream, 'data')) {

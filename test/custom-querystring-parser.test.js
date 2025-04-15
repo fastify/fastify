@@ -145,7 +145,7 @@ test('Custom querystring parser should be a function', t => {
     Fastify({
       querystringParser: 10
     })
-    t.fail('Should throw')
+    t.assert.fail('Should throw')
   } catch (err) {
     t.assert.deepEqual(
       err.message,

@@ -4,7 +4,7 @@ const stream = require('node:stream')
 const os = require('node:os')
 const fs = require('node:fs')
 
-const t = require('tap')
+const t = require('node:test')
 const split = require('split2')
 
 const { streamSym } = require('pino/lib/symbols')
@@ -14,10 +14,9 @@ const helper = require('../helper')
 const { FST_ERR_LOG_INVALID_LOGGER } = require('../../lib/errors')
 const { once, on } = stream
 const { createTempFile, request } = require('./logger-test-utils')
+const { partialDeepStrictEqual } = require('../toolkit')
 
-t.test('logger instantiation', (t) => {
-  t.setTimeout(60000)
-
+t.test('logger instantiation', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
@@ -26,7 +25,7 @@ t.test('logger instantiation', (t) => {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
   })
 
-  t.test('can use external logger instance', async (t) => {
+  await t.test('can use external logger instance', async (t) => {
     const lines = [/^Server listening at /, /^incoming request$/, /^log success$/, /^request completed$/]
     t.plan(lines.length + 1)
 
@@ -35,10 +34,10 @@ t.test('logger instantiation', (t) => {
     const loggerInstance = require('pino')(stream)
 
     const fastify = Fastify({ loggerInstance })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/foo', function (req, reply) {
-      t.ok(req.log)
+      t.assert.ok(req.log)
       req.log.info('log success')
       reply.send({ hello: 'world' })
     })
@@ -49,30 +48,30 @@ t.test('logger instantiation', (t) => {
 
     for await (const [line] of on(stream, 'data')) {
       const regex = lines.shift()
-      t.ok(regex.test(line.msg), '"' + line.msg + '" does not match "' + regex + '"')
+      t.assert.ok(regex.test(line.msg), '"' + line.msg + '" does not match "' + regex + '"')
       if (lines.length === 0) break
     }
   })
 
-  t.test('should create a default logger if provided one is invalid', (t) => {
+  await t.test('should create a default logger if provided one is invalid', (t) => {
     t.plan(8)
 
     const logger = new Date()
 
     const fastify = Fastify({ logger })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
-    t.equal(typeof fastify.log, 'object')
-    t.equal(typeof fastify.log.fatal, 'function')
-    t.equal(typeof fastify.log.error, 'function')
-    t.equal(typeof fastify.log.warn, 'function')
-    t.equal(typeof fastify.log.info, 'function')
-    t.equal(typeof fastify.log.debug, 'function')
-    t.equal(typeof fastify.log.trace, 'function')
-    t.equal(typeof fastify.log.child, 'function')
+    t.assert.deepEqual(typeof fastify.log, 'object')
+    t.assert.deepEqual(typeof fastify.log.fatal, 'function')
+    t.assert.deepEqual(typeof fastify.log.error, 'function')
+    t.assert.deepEqual(typeof fastify.log.warn, 'function')
+    t.assert.deepEqual(typeof fastify.log.info, 'function')
+    t.assert.deepEqual(typeof fastify.log.debug, 'function')
+    t.assert.deepEqual(typeof fastify.log.trace, 'function')
+    t.assert.deepEqual(typeof fastify.log.child, 'function')
   })
 
-  t.test('expose the logger', async (t) => {
+  await t.test('expose the logger', async (t) => {
     t.plan(2)
     const stream = split(JSON.parse)
     const fastify = Fastify({
@@ -81,15 +80,15 @@ t.test('logger instantiation', (t) => {
         level: 'info'
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     await fastify.ready()
 
-    t.ok(fastify.log)
-    t.same(typeof fastify.log, 'object')
+    t.assert.ok(fastify.log)
+    t.assert.deepEqual(typeof fastify.log, 'object')
   })
 
-  t.test('Wrap IPv6 address in listening log message', async (t) => {
+  await t.test('Wrap IPv6 address in listening log message', async (t) => {
     t.plan(1)
 
     const interfaces = os.networkInterfaces()
@@ -111,19 +110,19 @@ t.test('logger instantiation', (t) => {
           level: 'info'
         }
       })
-      t.teardown(fastify.close.bind(fastify))
+      t.after(() => fastify.close())
 
       await fastify.ready()
       await fastify.listen({ port: 0, host: ipv6 })
 
       {
         const [line] = await once(stream, 'data')
-        t.same(line.msg, `Server listening at http://[${ipv6}]:${fastify.server.address().port}`)
+        t.assert.deepEqual(line.msg, `Server listening at http://[${ipv6}]:${fastify.server.address().port}`)
       }
     }
   })
 
-  t.test('Do not wrap IPv4 address', async (t) => {
+  await t.test('Do not wrap IPv4 address', async (t) => {
     t.plan(1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
@@ -132,24 +131,18 @@ t.test('logger instantiation', (t) => {
         level: 'info'
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     await fastify.ready()
     await fastify.listen({ port: 0, host: '127.0.0.1' })
 
     {
       const [line] = await once(stream, 'data')
-      t.same(line.msg, `Server listening at http://127.0.0.1:${fastify.server.address().port}`)
+      t.assert.deepEqual(line.msg, `Server listening at http://127.0.0.1:${fastify.server.address().port}`)
     }
   })
 
-  t.test('file option', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { reqId: /req-/, req: { method: 'GET', url: '/' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
-    ]
-
+  await t.test('file option', async (t) => {
     const { file, cleanup } = createTempFile(t)
     // 0600 permissions (read/write for owner only)
     if (process.env.CITGM) { fs.writeFileSync(file, '', { mode: 0o600 }) }
@@ -158,7 +151,7 @@ t.test('logger instantiation', (t) => {
       logger: { file }
     })
 
-    t.teardown(async () => {
+    t.after(async () => {
       await helper.sleep(250)
       // may fail on win
       try {
@@ -174,15 +167,20 @@ t.test('logger instantiation', (t) => {
         console.warn(err)
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/', function (req, reply) {
-      t.ok(req.log)
+      t.assert.ok(req.log)
       reply.send({ hello: 'world' })
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { req: { method: 'GET', url: '/' }, msg: 'incoming request' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
+    ]
     await request(`http://${localhostForURL}:` + fastify.server.address().port)
 
     await helper.sleep(250)
@@ -195,26 +193,26 @@ t.test('logger instantiation', (t) => {
     for (let line of log) {
       line = JSON.parse(line)
       if (id === undefined && line.reqId) id = line.reqId
-      if (id !== undefined && line.reqId) t.equal(line.reqId, id)
-      t.match(line, lines.shift())
+      if (id !== undefined && line.reqId) t.assert.deepEqual(line.reqId, id)
+      t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
     }
   })
 
-  t.test('should be able to use a custom logger', (t) => {
+  await t.test('should be able to use a custom logger', (t) => {
     t.plan(7)
 
     const loggerInstance = {
-      fatal: (msg) => { t.equal(msg, 'fatal') },
-      error: (msg) => { t.equal(msg, 'error') },
-      warn: (msg) => { t.equal(msg, 'warn') },
-      info: (msg) => { t.equal(msg, 'info') },
-      debug: (msg) => { t.equal(msg, 'debug') },
-      trace: (msg) => { t.equal(msg, 'trace') },
+      fatal: (msg) => { t.assert.deepEqual(msg, 'fatal') },
+      error: (msg) => { t.assert.deepEqual(msg, 'error') },
+      warn: (msg) => { t.assert.deepEqual(msg, 'warn') },
+      info: (msg) => { t.assert.deepEqual(msg, 'info') },
+      debug: (msg) => { t.assert.deepEqual(msg, 'debug') },
+      trace: (msg) => { t.assert.deepEqual(msg, 'trace') },
       child: () => loggerInstance
     }
 
     const fastify = Fastify({ loggerInstance })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.log.fatal('fatal')
     fastify.log.error('error')
@@ -223,17 +221,17 @@ t.test('logger instantiation', (t) => {
     fastify.log.debug('debug')
     fastify.log.trace('trace')
     const child = fastify.log.child()
-    t.equal(child, loggerInstance)
+    t.assert.deepEqual(child, loggerInstance)
   })
 
-  t.test('should throw in case a partially matching logger is provided', async (t) => {
+  await t.test('should throw in case a partially matching logger is provided', async (t) => {
     t.plan(1)
 
     try {
       const fastify = Fastify({ logger: console })
       await fastify.ready()
     } catch (err) {
-      t.equal(
+      t.assert.deepEqual(
         err instanceof FST_ERR_LOG_INVALID_LOGGER,
         true,
         "Invalid logger object provided. The logger instance should have these functions(s): 'fatal,child'."
@@ -241,7 +239,7 @@ t.test('logger instantiation', (t) => {
     }
   })
 
-  t.test('can use external logger instance with custom serializer', async (t) => {
+  await t.test('can use external logger instance with custom serializer', async (t) => {
     const lines = [['level', 30], ['req', { url: '/foo' }], ['level', 30], ['res', { statusCode: 200 }]]
     t.plan(lines.length + 1)
 
@@ -260,10 +258,10 @@ t.test('logger instantiation', (t) => {
     const fastify = Fastify({
       loggerInstance
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/foo', function (req, reply) {
-      t.ok(req.log)
+      t.assert.ok(req.log)
       req.log.info('log success')
       reply.send({ hello: 'world' })
     })
@@ -277,20 +275,12 @@ t.test('logger instantiation', (t) => {
       const check = lines.shift()
       const key = check[0]
       const value = check[1]
-      t.same(line[key], value)
+      t.assert.deepEqual(line[key], value)
       if (lines.length === 0) break
     }
   })
 
-  t.test('The logger should accept custom serializer', async (t) => {
-    const lines = [
-      { msg: /^Server listening at / },
-      { req: { url: '/custom' }, msg: 'incoming request' },
-      { res: { statusCode: 500 }, msg: 'kaboom' },
-      { res: { statusCode: 500 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 1)
-
+  await t.test('The logger should accept custom serializer', async (t) => {
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -305,25 +295,32 @@ t.test('logger instantiation', (t) => {
         }
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/custom', function (req, reply) {
-      t.ok(req.log)
+      t.assert.ok(req.log)
       reply.send(new Error('kaboom'))
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { req: { url: '/custom' }, msg: 'incoming request' },
+      { res: { statusCode: 500 }, msg: 'kaboom' },
+      { res: { statusCode: 500 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 1)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/custom')
 
     for await (const [line] of on(stream, 'data')) {
-      t.match(line, lines.shift())
+      t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
   })
 
-  t.test('should throw in case the external logger provided does not have a child method', async (t) => {
+  await t.test('should throw in case the external logger provided does not have a child method', async (t) => {
     t.plan(1)
     const loggerInstance = {
       info: console.info,
@@ -338,7 +335,7 @@ t.test('logger instantiation', (t) => {
       const fastify = Fastify({ logger: loggerInstance })
       await fastify.ready()
     } catch (err) {
-      t.equal(
+      t.assert.deepEqual(
         err instanceof FST_ERR_LOG_INVALID_LOGGER,
         true,
         "Invalid logger object provided. The logger instance should have these functions(s): 'child'."

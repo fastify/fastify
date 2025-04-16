@@ -516,7 +516,7 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       Fastify({ loggerInstance: { level: 'log' } })
     } catch (err) {
       t.assert.ok(err)
-      t.assert.deepEqual(err.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
+      t.assert.strictEqual(err.code, 'FST_ERR_LOG_INVALID_LOGGER_INSTANCE')
     }
   })
 

@@ -16,7 +16,7 @@ test('contentTypeParser method should exist', t => {
   t.assert.ok(fastify.addContentTypeParser)
 })
 
-test('contentTypeParser should add a custom parser', (t, testDone) => {
+test('contentTypeParser should add a custom parser', (t, mainTestDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -78,7 +78,7 @@ test('contentTypeParser should add a custom parser', (t, testDone) => {
         completion.stepIn()
       })
     })
-    completion.patience.then(testDone)
+    completion.patience.then(mainTestDone)
   })
 })
 

@@ -578,10 +578,5 @@ Then it should work fine.
 with Vercel's [Fluid compute](https://vercel.com/docs/functions/fluid-compute), you can 
 combine server-like concurrency with the autoscaling properties of traditional serverless functions.
 
-### Example
-
-- [Fastify Node.js template on Vercel](https://vercel.com/templates/other/fastify-serverless-function)
-
-### Considerations
-
-- [Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently requires an explicit opt-in. [Learn more](https://vercel.com/docs/functions/fluid-compute#how-to-enable-fluid-compute).
+Get started with the [Fastify Node.js template on Vercel](https://vercel.com/templates/other/fastify-serverless-function).
+[Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently requires an explicit opt-in. [Learn more](https://vercel.com/docs/functions/fluid-compute#how-to-enable-fluid-compute).

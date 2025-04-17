@@ -30,8 +30,8 @@ test('Destroying streams prematurely should call abort method', (t, testDone) =>
   // Test that "premature close" errors are logged with level warn
   logStream.on('data', line => {
     if (line.res) {
-      t.assert.deepEqual(line.msg, 'stream closed prematurely')
-      t.assert.deepEqual(line.level, 30)
+      t.assert.strictEqual(line.msg, 'stream closed prematurely')
+      t.assert.strictEqual(line.level, 30)
       testDone()
     }
   })
@@ -61,7 +61,7 @@ test('Destroying streams prematurely should call abort method', (t, testDone) =>
     const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       response.on('readable', function () {
         response.destroy()
       })
@@ -114,7 +114,7 @@ test('Destroying streams prematurely, log is disabled', (t, testDone) => {
     const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       response.on('readable', function () {
         response.destroy()
       })
@@ -143,8 +143,8 @@ test('should respond with a stream1', (t, testDone) => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.headers['content-type'], 'application/json')
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-type'], 'application/json')
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(JSON.parse(body), [{ hello: 'world' }, { a: 42 }])
       testDone()
     })
@@ -178,8 +178,8 @@ test('return a 404 if the stream emits a 404 error', (t, testDone) => {
 
     sget(`http://localhost:${port}`, function (err, response) {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepEqual(response.statusCode, 404)
+      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.assert.strictEqual(response.statusCode, 404)
       testDone()
     })
   })

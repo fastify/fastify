@@ -39,11 +39,11 @@ t.test('logging', { timeout: 60000 }, async (t) => {
 
     {
       const response = await fastify.inject({ method: 'GET', url: '/not-found' })
-      t.assert.deepEqual(response.statusCode, 404)
+      t.assert.strictEqual(response.statusCode, 404)
     }
 
     for await (const [line] of on(stream, 'data')) {
-      t.assert.deepEqual(line.msg, lines.shift())
+      t.assert.strictEqual(line.msg, lines.shift())
       if (lines.length === 0) break
     }
   })
@@ -245,7 +245,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     t.assert.ok(partialDeepStrictEqual(body, { hello: 'world' }))
 
     for await (const [line] of on(stream, 'data')) {
-      t.assert.deepEqual(line.msg, lines.shift())
+      t.assert.strictEqual(line.msg, lines.shift())
       if (lines.length === 0) break
     }
   })
@@ -265,7 +265,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     await fastify.inject({ method: 'GET', url: '/500' })
 
     // no more readable data
-    t.assert.deepEqual(stream.readableLength, 0)
+    t.assert.strictEqual(stream.readableLength, 0)
   })
 
   await t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {
@@ -279,7 +279,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     await fastify.inject({ method: 'GET', url: '/%c0' })
 
     // no more readable data
-    t.assert.deepEqual(stream.readableLength, 0)
+    t.assert.strictEqual(stream.readableLength, 0)
   })
 
   await t.test('defaults to info level', async (t) => {
@@ -311,7 +311,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
       // we skip the non-request log
       if (typeof line.reqId !== 'string') continue
       if (id === undefined && line.reqId) id = line.reqId
-      if (id !== undefined && line.reqId) t.assert.deepEqual(line.reqId, id)
+      if (id !== undefined && line.reqId) t.assert.strictEqual(line.reqId, id)
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
@@ -346,7 +346,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     let id
     for await (const [line] of on(stream, 'data')) {
       if (id === undefined && line.reqId) id = line.reqId
-      if (id !== undefined && line.reqId) t.assert.deepEqual(line.reqId, id)
+      if (id !== undefined && line.reqId) t.assert.strictEqual(line.reqId, id)
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
@@ -382,7 +382,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     let id
     for await (const [line] of on(stream, 'data')) {
       if (id === undefined && line.reqId) id = line.reqId
-      if (id !== undefined && line.reqId) t.assert.deepEqual(line.reqId, id)
+      if (id !== undefined && line.reqId) t.assert.strictEqual(line.reqId, id)
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
@@ -418,6 +418,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     }
 
     // no more readable data
-    t.assert.deepEqual(stream.readableLength, 0)
+    t.assert.strictEqual(stream.readableLength, 0)
   })
 })

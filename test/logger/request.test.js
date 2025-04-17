@@ -39,11 +39,11 @@ t.test('request', { timeout: 60000 }, async (t) => {
 
     const response = await fastify.inject({ method: 'GET', url: '/', headers: { 'my-custom-request-id': REQUEST_ID } })
     const body = await response.json()
-    t.assert.deepEqual(body.id, REQUEST_ID)
+    t.assert.strictEqual(body.id, REQUEST_ID)
 
     for await (const [line] of on(stream, 'data')) {
-      t.assert.deepEqual(line.reqId, REQUEST_ID)
-      t.assert.deepEqual(line.msg, lines.shift(), 'message is set')
+      t.assert.strictEqual(line.reqId, REQUEST_ID)
+      t.assert.strictEqual(line.msg, lines.shift(), 'message is set')
       if (lines.length === 0) break
     }
   })
@@ -61,17 +61,17 @@ t.test('request', { timeout: 60000 }, async (t) => {
     t.after(() => fastify.close())
 
     fastify.get('/', (req, reply) => {
-      t.assert.deepEqual(req.id, 'req-1')
+      t.assert.strictEqual(req.id, 'req-1')
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
     const response = await fastify.inject({ method: 'GET', url: '/', headers: { 'request-id': REQUEST_ID } })
     const body = await response.json()
-    t.assert.deepEqual(body.id, 'req-1')
+    t.assert.strictEqual(body.id, 'req-1')
 
     for await (const [line] of on(stream, 'data')) {
-      t.assert.deepEqual(line.reqId, 'req-1')
-      t.assert.deepEqual(line.msg, lines.shift(), 'message is set')
+      t.assert.strictEqual(line.reqId, 'req-1')
+      t.assert.strictEqual(line.msg, lines.shift(), 'message is set')
       if (lines.length === 0) break
     }
   })
@@ -99,13 +99,13 @@ t.test('request', { timeout: 60000 }, async (t) => {
     t.after(() => fastify.close())
 
     fastify.get('/one', (req, reply) => {
-      t.assert.deepEqual(req.id, REQUEST_ID)
+      t.assert.strictEqual(req.id, REQUEST_ID)
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
 
     fastify.get('/two', (req, reply) => {
-      t.assert.deepEqual(req.id, 'foo')
+      t.assert.strictEqual(req.id, 'foo')
       req.log.info('some log message 2')
       reply.send({ id: req.id })
     })
@@ -113,13 +113,13 @@ t.test('request', { timeout: 60000 }, async (t) => {
     {
       const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
       const body = await response.json()
-      t.assert.deepEqual(body.id, REQUEST_ID)
+      t.assert.strictEqual(body.id, REQUEST_ID)
     }
 
     {
       const response = await fastify.inject({ method: 'GET', url: '/two' })
       const body = await response.json()
-      t.assert.deepEqual(body.id, 'foo')
+      t.assert.strictEqual(body.id, 'foo')
     }
 
     for await (const [line] of on(stream, 'data')) {
@@ -151,13 +151,13 @@ t.test('request', { timeout: 60000 }, async (t) => {
     t.after(() => fastify.close())
 
     fastify.get('/one', (req, reply) => {
-      t.assert.deepEqual(req.id, 'foo')
+      t.assert.strictEqual(req.id, 'foo')
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
 
     fastify.get('/two', (req, reply) => {
-      t.assert.deepEqual(req.id, 'foo')
+      t.assert.strictEqual(req.id, 'foo')
       req.log.info('some log message 2')
       reply.send({ id: req.id })
     })
@@ -165,13 +165,13 @@ t.test('request', { timeout: 60000 }, async (t) => {
     {
       const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'request-id': REQUEST_ID } })
       const body = await response.json()
-      t.assert.deepEqual(body.id, 'foo')
+      t.assert.strictEqual(body.id, 'foo')
     }
 
     {
       const response = await fastify.inject({ method: 'GET', url: '/two' })
       const body = await response.json()
-      t.assert.deepEqual(body.id, 'foo')
+      t.assert.strictEqual(body.id, 'foo')
     }
 
     for await (const [line] of on(stream, 'data')) {
@@ -198,7 +198,7 @@ t.test('request', { timeout: 60000 }, async (t) => {
     t.after(() => fastify.close())
 
     fastify.get('/one', (req, reply) => {
-      t.assert.deepEqual(req.id, REQUEST_ID)
+      t.assert.strictEqual(req.id, REQUEST_ID)
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
@@ -206,7 +206,7 @@ t.test('request', { timeout: 60000 }, async (t) => {
     {
       const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
       const body = await response.json()
-      t.assert.deepEqual(body.id, REQUEST_ID)
+      t.assert.strictEqual(body.id, REQUEST_ID)
     }
 
     for await (const [line] of on(stream, 'data')) {
@@ -262,7 +262,7 @@ t.test('request', { timeout: 60000 }, async (t) => {
         authorization: 'Bearer abcde'
       }
     }, function (response, body) {
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       t.assert.deepStrictEqual(body, JSON.stringify({ hello: 'world' }))
     })
 

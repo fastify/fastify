@@ -53,8 +53,8 @@ test('contentTypeParser should add a custom parser', (t, testDone) => {
         }
       }, (err, response, body) => {
         t.assert.ifError(err)
-        t.assert.deepEqual(response.statusCode, 200)
-        t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
         testDone()
         completion.stepIn()
       })
@@ -72,8 +72,8 @@ test('contentTypeParser should add a custom parser', (t, testDone) => {
         }
       }, (err, response, body) => {
         t.assert.ifError(err)
-        t.assert.deepEqual(response.statusCode, 200)
-        t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
         testDone()
         completion.stepIn()
       })
@@ -118,8 +118,8 @@ test('contentTypeParser should handle multiple custom parsers', (t, testDone) =>
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       completion.stepIn()
     })
 
@@ -132,8 +132,8 @@ test('contentTypeParser should handle multiple custom parsers', (t, testDone) =>
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       completion.stepIn()
     })
     completion.patience.then(testDone)
@@ -175,8 +175,8 @@ test('contentTypeParser should handle an array of custom contentTypes', (t, test
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       completion.stepIn()
     })
 
@@ -189,8 +189,8 @@ test('contentTypeParser should handle an array of custom contentTypes', (t, test
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       completion.stepIn()
     })
     completion.patience.then(testDone)
@@ -221,7 +221,7 @@ test('contentTypeParser should handle errors', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 500)
+      t.assert.strictEqual(response.statusCode, 500)
       fastify.close()
       testDone()
     })
@@ -284,8 +284,8 @@ test('contentTypeParser should support encapsulation, second try', (t, testDone)
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       fastify.close()
       testDone()
     })
@@ -318,7 +318,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 415)
+      t.assert.strictEqual(response.statusCode, 415)
       fastify.close()
       testDone()
     })
@@ -333,8 +333,8 @@ test('the content type should be a string or RegExp', t => {
     fastify.addContentTypeParser(null, () => {})
     t.assert.fail()
   } catch (err) {
-    t.assert.deepEqual(err.code, 'FST_ERR_CTP_INVALID_TYPE')
-    t.assert.deepEqual(err.message, 'The content type should be a string or a RegExp')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_INVALID_TYPE')
+    t.assert.strictEqual(err.message, 'The content type should be a string or a RegExp')
   }
 })
 
@@ -346,8 +346,8 @@ test('the content type cannot be an empty string', t => {
     fastify.addContentTypeParser('', () => {})
     t.assert.fail()
   } catch (err) {
-    t.assert.deepEqual(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
-    t.assert.deepEqual(err.message, 'The content type cannot be an empty string')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
+    t.assert.strictEqual(err.message, 'The content type cannot be an empty string')
   }
 })
 
@@ -359,8 +359,8 @@ test('the content type handler should be a function', t => {
     fastify.addContentTypeParser('aaa', null)
     t.assert.fail()
   } catch (err) {
-    t.assert.deepEqual(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
-    t.assert.deepEqual(err.message, 'The content type handler should be a function')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
+    t.assert.strictEqual(err.message, 'The content type handler should be a function')
   }
 })
 
@@ -392,8 +392,8 @@ test('catch all content type parser', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), 'hello')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello')
 
       sget({
         method: 'POST',
@@ -404,8 +404,8 @@ test('catch all content type parser', (t, testDone) => {
         }
       }, (err, response, body) => {
         t.assert.ifError(err)
-        t.assert.deepEqual(response.statusCode, 200)
-        t.assert.deepEqual(body.toString(), 'hello')
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello')
         fastify.close()
         testDone()
       })
@@ -447,8 +447,8 @@ test('catch all content type parser should not interfere with other conte type p
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
 
       sget({
         method: 'POST',
@@ -459,8 +459,8 @@ test('catch all content type parser should not interfere with other conte type p
         }
       }, (err, response, body) => {
         t.assert.ifError(err)
-        t.assert.deepEqual(response.statusCode, 200)
-        t.assert.deepEqual(body.toString(), 'hello')
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello')
         fastify.close()
         testDone()
       })
@@ -500,8 +500,8 @@ test('\'*\' catch undefined Content-Type requests', (t, testDone) => {
       body: fileStream
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body + '', fs.readFileSync(__filename).toString())
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body + '', fs.readFileSync(__filename).toString())
       testDone()
     })
   })
@@ -558,8 +558,8 @@ test('Can override the default json parser', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '{"hello":"world"}')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
       testDone()
     })
@@ -593,8 +593,8 @@ test('Can override the default plain text parser', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), 'hello world')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
       testDone()
     })
@@ -632,8 +632,8 @@ test('Can override the default json parser in a plugin', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '{"hello":"world"}')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
       testDone()
     })
@@ -658,8 +658,8 @@ test('Can\'t override the json parser multiple times', t => {
       })
     })
   } catch (err) {
-    t.assert.deepEqual(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.assert.deepEqual(err.message, 'Content type parser \'application/json\' already present.')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
+    t.assert.strictEqual(err.message, 'Content type parser \'application/json\' already present.')
   }
 })
 
@@ -681,8 +681,8 @@ test('Can\'t override the plain text parser multiple times', t => {
       })
     })
   } catch (err) {
-    t.assert.deepEqual(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.assert.deepEqual(err.message, 'Content type parser \'text/plain\' already present.')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
+    t.assert.strictEqual(err.message, 'Content type parser \'text/plain\' already present.')
   }
 })
 
@@ -718,8 +718,8 @@ test('Should get the body as string', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '{"hello":"world"}')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
       testDone()
     })
@@ -746,8 +746,8 @@ test('Should return defined body with no custom parser defined and content type 
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), 'hello world')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
       testDone()
     })
@@ -773,8 +773,8 @@ test('Should have typeof body object with no custom parser defined, no body defi
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(typeof body, 'object')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(typeof body, 'object')
       fastify.close()
       testDone()
     })

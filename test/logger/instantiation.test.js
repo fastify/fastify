@@ -61,14 +61,14 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     const fastify = Fastify({ logger })
     t.after(() => fastify.close())
 
-    t.assert.deepEqual(typeof fastify.log, 'object')
-    t.assert.deepEqual(typeof fastify.log.fatal, 'function')
-    t.assert.deepEqual(typeof fastify.log.error, 'function')
-    t.assert.deepEqual(typeof fastify.log.warn, 'function')
-    t.assert.deepEqual(typeof fastify.log.info, 'function')
-    t.assert.deepEqual(typeof fastify.log.debug, 'function')
-    t.assert.deepEqual(typeof fastify.log.trace, 'function')
-    t.assert.deepEqual(typeof fastify.log.child, 'function')
+    t.assert.strictEqual(typeof fastify.log, 'object')
+    t.assert.strictEqual(typeof fastify.log.fatal, 'function')
+    t.assert.strictEqual(typeof fastify.log.error, 'function')
+    t.assert.strictEqual(typeof fastify.log.warn, 'function')
+    t.assert.strictEqual(typeof fastify.log.info, 'function')
+    t.assert.strictEqual(typeof fastify.log.debug, 'function')
+    t.assert.strictEqual(typeof fastify.log.trace, 'function')
+    t.assert.strictEqual(typeof fastify.log.child, 'function')
   })
 
   await t.test('expose the logger', async (t) => {
@@ -85,7 +85,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     await fastify.ready()
 
     t.assert.ok(fastify.log)
-    t.assert.deepEqual(typeof fastify.log, 'object')
+    t.assert.strictEqual(typeof fastify.log, 'object')
   })
 
   await t.test('Wrap IPv6 address in listening log message', async (t) => {
@@ -117,7 +117,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
 
       {
         const [line] = await once(stream, 'data')
-        t.assert.deepEqual(line.msg, `Server listening at http://[${ipv6}]:${fastify.server.address().port}`)
+        t.assert.strictEqual(line.msg, `Server listening at http://[${ipv6}]:${fastify.server.address().port}`)
       }
     }
   })
@@ -138,7 +138,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
 
     {
       const [line] = await once(stream, 'data')
-      t.assert.deepEqual(line.msg, `Server listening at http://127.0.0.1:${fastify.server.address().port}`)
+      t.assert.strictEqual(line.msg, `Server listening at http://127.0.0.1:${fastify.server.address().port}`)
     }
   })
 
@@ -193,7 +193,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     for (let line of log) {
       line = JSON.parse(line)
       if (id === undefined && line.reqId) id = line.reqId
-      if (id !== undefined && line.reqId) t.assert.deepEqual(line.reqId, id)
+      if (id !== undefined && line.reqId) t.assert.strictEqual(line.reqId, id)
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
     }
   })
@@ -202,12 +202,12 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     t.plan(7)
 
     const loggerInstance = {
-      fatal: (msg) => { t.assert.deepEqual(msg, 'fatal') },
-      error: (msg) => { t.assert.deepEqual(msg, 'error') },
-      warn: (msg) => { t.assert.deepEqual(msg, 'warn') },
-      info: (msg) => { t.assert.deepEqual(msg, 'info') },
-      debug: (msg) => { t.assert.deepEqual(msg, 'debug') },
-      trace: (msg) => { t.assert.deepEqual(msg, 'trace') },
+      fatal: (msg) => { t.assert.strictEqual(msg, 'fatal') },
+      error: (msg) => { t.assert.strictEqual(msg, 'error') },
+      warn: (msg) => { t.assert.strictEqual(msg, 'warn') },
+      info: (msg) => { t.assert.strictEqual(msg, 'info') },
+      debug: (msg) => { t.assert.strictEqual(msg, 'debug') },
+      trace: (msg) => { t.assert.strictEqual(msg, 'trace') },
       child: () => loggerInstance
     }
 
@@ -221,7 +221,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     fastify.log.debug('debug')
     fastify.log.trace('trace')
     const child = fastify.log.child()
-    t.assert.deepEqual(child, loggerInstance)
+    t.assert.strictEqual(child, loggerInstance)
   })
 
   await t.test('should throw in case a partially matching logger is provided', async (t) => {
@@ -231,7 +231,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
       const fastify = Fastify({ logger: console })
       await fastify.ready()
     } catch (err) {
-      t.assert.deepEqual(
+      t.assert.strictEqual(
         err instanceof FST_ERR_LOG_INVALID_LOGGER,
         true,
         "Invalid logger object provided. The logger instance should have these functions(s): 'fatal,child'."
@@ -275,7 +275,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
       const check = lines.shift()
       const key = check[0]
       const value = check[1]
-      t.assert.deepEqual(line[key], value)
+      t.assert.deepStrictEqual(line[key], value)
       if (lines.length === 0) break
     }
   })
@@ -335,7 +335,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
       const fastify = Fastify({ logger: loggerInstance })
       await fastify.ready()
     } catch (err) {
-      t.assert.deepEqual(
+      t.assert.strictEqual(
         err instanceof FST_ERR_LOG_INVALID_LOGGER,
         true,
         "Invalid logger object provided. The logger instance should have these functions(s): 'child'."

@@ -11,7 +11,7 @@ test('Custom querystring parser', t => {
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.assert.deepEqual(str, 'foo=bar&baz=faz')
+      t.assert.strictEqual(str, 'foo=bar&baz=faz')
       return querystring.parse(str)
     }
   })
@@ -35,7 +35,7 @@ test('Custom querystring parser', t => {
       url: `${address}?foo=bar&baz=faz`
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       completion.stepIn()
     })
 
@@ -44,7 +44,7 @@ test('Custom querystring parser', t => {
       url: `${address}?foo=bar&baz=faz`
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       completion.stepIn()
     })
   })
@@ -57,7 +57,7 @@ test('Custom querystring parser should be called also if there is nothing to par
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.assert.deepEqual(str, '')
+      t.assert.strictEqual(str, '')
       return querystring.parse(str)
     }
   })
@@ -78,7 +78,7 @@ test('Custom querystring parser should be called also if there is nothing to par
       url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       completion.stepIn()
     })
 
@@ -87,7 +87,7 @@ test('Custom querystring parser should be called also if there is nothing to par
       url: address
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       completion.stepIn()
     })
   })
@@ -100,7 +100,7 @@ test('Querystring without value', t => {
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.assert.deepEqual(str, 'foo')
+      t.assert.strictEqual(str, 'foo')
       return querystring.parse(str)
     }
   })
@@ -121,7 +121,7 @@ test('Querystring without value', t => {
       url: `${address}?foo`
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       completion.stepIn()
     })
 
@@ -130,7 +130,7 @@ test('Querystring without value', t => {
       url: `${address}?foo`
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
       completion.stepIn()
     })
   })
@@ -147,7 +147,7 @@ test('Custom querystring parser should be a function', t => {
     })
     t.assert.fail('Should throw')
   } catch (err) {
-    t.assert.deepEqual(
+    t.assert.strictEqual(
       err.message,
       "querystringParser option should be a function, instead got 'number'"
     )

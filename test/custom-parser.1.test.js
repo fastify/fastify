@@ -29,8 +29,8 @@ test('Should have typeof body object with no custom parser defined, null body an
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(typeof body, 'object')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(typeof body, 'object')
       fastify.close()
       testDone()
     })
@@ -57,8 +57,8 @@ test('Should have typeof body object with no custom parser defined, undefined bo
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(typeof body, 'object')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(typeof body, 'object')
       fastify.close()
       testDone()
     })
@@ -97,8 +97,8 @@ test('Should get the body as string /1', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), 'hello world')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
       testDone()
     })
@@ -137,8 +137,8 @@ test('Should get the body as string /2', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), 'hello world')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
       testDone()
     })
@@ -177,8 +177,8 @@ test('Should get the body as buffer', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '{"hello":"world"}')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
       testDone()
     })
@@ -217,8 +217,8 @@ test('Should get the body as buffer', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), 'hello world')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
       testDone()
     })
@@ -230,7 +230,7 @@ test('Should parse empty bodies as a string', (t) => {
   const fastify = Fastify()
 
   fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
-    t.assert.deepEqual(body, '')
+    t.assert.strictEqual(body, '')
     done(null, body)
   })
 
@@ -257,8 +257,8 @@ test('Should parse empty bodies as a string', (t) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '')
       completion.stepIn()
     })
 
@@ -272,8 +272,8 @@ test('Should parse empty bodies as a string', (t) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '')
       completion.stepIn()
     })
   })
@@ -291,7 +291,7 @@ test('Should parse empty bodies as a buffer', (t, testDone) => {
 
   fastify.addContentTypeParser('text/plain', { parseAs: 'buffer' }, function (req, body, done) {
     t.assert.ok(body instanceof Buffer)
-    t.assert.deepEqual(body.length, 0)
+    t.assert.strictEqual(body.length, 0)
     done(null, body)
   })
 
@@ -307,8 +307,8 @@ test('Should parse empty bodies as a buffer', (t, testDone) => {
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.length, 0)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.length, 0)
       fastify.close()
       testDone()
     })
@@ -342,8 +342,8 @@ test('The charset should not interfere with the content type handling', (t, test
       }
     }, (err, response, body) => {
       t.assert.ifError(err)
-      t.assert.deepEqual(response.statusCode, 200)
-      t.assert.deepEqual(body.toString(), '{"hello":"world"}')
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
       testDone()
     })

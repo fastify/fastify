@@ -19,7 +19,7 @@ t.test('request', { timeout: 60000 }, async (t) => {
     [localhost] = await helper.getLoopbackHost()
   })
 
-  await await t.test('The request id header key can be customized', async (t) => {
+  await t.test('The request id header key can be customized', async (t) => {
     const lines = ['incoming request', 'some log message', 'request completed']
     t.plan(lines.length * 2 + 2)
     const REQUEST_ID = '42'
@@ -32,7 +32,7 @@ t.test('request', { timeout: 60000 }, async (t) => {
     t.after(() => fastify.close())
 
     fastify.get('/', (req, reply) => {
-      t.assert.deepEqual(req.id, REQUEST_ID)
+      t.assert.strictEqual(req.id, REQUEST_ID)
       req.log.info('some log message')
       reply.send({ id: req.id })
     })

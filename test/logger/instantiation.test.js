@@ -88,37 +88,33 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     t.assert.strictEqual(typeof fastify.log, 'object')
   })
 
-  await t.test('Wrap IPv6 address in listening log message', async (t) => {
+  const interfaces = os.networkInterfaces()
+  const ipv6 = Object.keys(interfaces)
+    .filter(name => name.substr(0, 2) === 'lo')
+    .map(name => interfaces[name])
+    .reduce((list, set) => list.concat(set), [])
+    .filter(info => info.family === 'IPv6')
+    .map(info => info.address)
+    .shift()
+
+  await t.test('Wrap IPv6 address in listening log message', { skip: !ipv6 }, async (t) => {
     t.plan(1)
 
-    const interfaces = os.networkInterfaces()
-    const ipv6 = Object.keys(interfaces)
-      .filter(name => name.substr(0, 2) === 'lo')
-      .map(name => interfaces[name])
-      .reduce((list, set) => list.concat(set), [])
-      .filter(info => info.family === 'IPv6')
-      .map(info => info.address)
-      .shift()
-
-    if (ipv6 === undefined) {
-      t.pass('No IPv6 loopback interface')
-    } else {
-      const stream = split(JSON.parse)
-      const fastify = Fastify({
-        logger: {
-          stream,
-          level: 'info'
-        }
-      })
-      t.after(() => fastify.close())
-
-      await fastify.ready()
-      await fastify.listen({ port: 0, host: ipv6 })
-
-      {
-        const [line] = await once(stream, 'data')
-        t.assert.strictEqual(line.msg, `Server listening at http://[${ipv6}]:${fastify.server.address().port}`)
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream,
+        level: 'info'
       }
+    })
+    t.after(() => fastify.close())
+
+    await fastify.ready()
+    await fastify.listen({ port: 0, host: ipv6 })
+
+    {
+      const [line] = await once(stream, 'data')
+      t.assert.strictEqual(line.msg, `Server listening at http://[${ipv6}]:${fastify.server.address().port}`)
     }
   })
 

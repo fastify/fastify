@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
+const { request } = require('undici')
 
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
@@ -1342,7 +1343,7 @@ test('Schema validation when no content type is provided', async t => {
 })
 
 test('Schema validation will not be bypass by different content type', async t => {
-  t.plan(8)
+  t.plan(10)
 
   const fastify = Fastify()
 
@@ -1365,58 +1366,73 @@ test('Schema validation will not be bypass by different content type', async t =
     }
   }, async () => 'ok')
 
-  await fastify.ready()
+  await fastify.listen({ port: 0 })
+  t.teardown(() => fastify.close())
+  const address = fastify.listeningOrigin
 
-  const correct1 = await fastify.inject({
+  const correct1 = await request(address, {
     method: 'POST',
     url: '/',
     headers: {
       'content-type': 'application/json'
     },
-    body: { foo: 'string' }
+    body: JSON.stringify({ foo: 'string' })
   })
   t.equal(correct1.statusCode, 200)
+  await correct1.body.dump()
 
-  const correct2 = await fastify.inject({
+  const correct2 = await request(address, {
     method: 'POST',
     url: '/',
     headers: {
       'content-type': 'application/json; charset=utf-8'
     },
-    body: { foo: 'string' }
+    body: JSON.stringify({ foo: 'string' })
   })
   t.equal(correct2.statusCode, 200)
+  await correct2.body.dump()
 
-  const invalid1 = await fastify.inject({
+  const invalid1 = await request(address, {
     method: 'POST',
     url: '/',
     headers: {
       'content-type': 'application/json ;'
     },
-    body: { invalid: 'string' }
+    body: JSON.stringify({ invalid: 'string' })
   })
   t.equal(invalid1.statusCode, 400)
-  t.equal(invalid1.json().code, 'FST_ERR_VALIDATION')
+  t.equal((await invalid1.body.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid2 = await fastify.inject({
+  const invalid2 = await request(address, {
     method: 'POST',
     url: '/',
     headers: {
       'content-type': 'ApPlIcAtIoN/JsOn;'
     },
-    body: { invalid: 'string' }
+    body: JSON.stringify({ invalid: 'string' })
   })
   t.equal(invalid2.statusCode, 400)
-  t.equal(invalid2.json().code, 'FST_ERR_VALIDATION')
+  t.equal((await invalid2.body.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid3 = await fastify.inject({
+  const invalid3 = await request(address, {
     method: 'POST',
     url: '/',
     headers: {
       'content-type': 'ApPlIcAtIoN/JsOn ;'
     },
-    body: { invalid: 'string' }
+    body: JSON.stringify({ invalid: 'string' })
   })
   t.equal(invalid3.statusCode, 400)
-  t.equal(invalid3.json().code, 'FST_ERR_VALIDATION')
+  t.equal((await invalid3.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid4 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn foo;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid4.statusCode, 400)
+  t.equal((await invalid4.body.json()).code, 'FST_ERR_VALIDATION')
 })

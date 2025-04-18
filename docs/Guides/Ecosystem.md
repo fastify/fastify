@@ -202,6 +202,8 @@ section.
   on Fastify
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
+- [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
+  A plugin to integrate [Papr](https://github.com/plexinc/papr), the MongoDB ORM for TypeScript & MongoDB, with Fastify.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)

@@ -1380,8 +1380,8 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: { invalid: 'string' }
   })
-  t.equal(invalid1.statusCode, 400)
-  t.equal(invalid1.json().code, 'FST_ERR_VALIDATION')
+  t.equal(invalid1.statusCode, 415)
+  t.equal(invalid1.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 
   const invalid2 = await fastify.inject({
     method: 'POST',
@@ -1391,8 +1391,8 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: { invalid: 'string' }
   })
-  t.equal(invalid2.statusCode, 400)
-  t.equal(invalid2.json().code, 'FST_ERR_VALIDATION')
+  t.equal(invalid2.statusCode, 415)
+  t.equal(invalid2.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 
   const invalid3 = await fastify.inject({
     method: 'POST',
@@ -1402,6 +1402,6 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: { invalid: 'string' }
   })
-  t.equal(invalid3.statusCode, 400)
-  t.equal(invalid3.json().code, 'FST_ERR_VALIDATION')
+  t.equal(invalid3.statusCode, 415)
+  t.equal(invalid3.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })

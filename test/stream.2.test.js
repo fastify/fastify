@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 const fs = require('node:fs')
 const resolve = require('node:path').resolve
@@ -9,7 +8,7 @@ const zlib = require('node:zlib')
 const pipeline = require('node:stream').pipeline
 const Fastify = require('..')
 
-test('onSend hook stream', t => {
+test('onSend hook stream', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -24,7 +23,7 @@ test('onSend hook stream', t => {
     pipeline(
       fs.createReadStream(resolve(__filename), 'utf8'),
       gzStream,
-      t.error
+      (err) => t.assert.ifError(err)
     )
     done(null, gzStream)
   })
@@ -33,16 +32,17 @@ test('onSend hook stream', t => {
     url: '/',
     method: 'GET'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['content-encoding'], 'gzip')
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.headers['content-encoding'], 'gzip')
     const file = fs.readFileSync(resolve(__filename), 'utf8')
     const payload = zlib.gunzipSync(res.rawPayload)
-    t.equal(payload.toString('utf-8'), file)
+    t.assert.strictEqual(payload.toString('utf-8'), file)
     fastify.close()
+    testDone()
   })
 })
 
-test('onSend hook stream should work even if payload is not a proper stream', t => {
+test('onSend hook stream should work even if payload is not a proper stream', (t, testDone) => {
   t.plan(1)
 
   const reply = proxyquire('../lib/reply', {
@@ -59,8 +59,9 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
     fatal: () => { },
     error: () => { },
     warn: (message) => {
-      t.equal(message, 'stream payload does not end properly')
+      t.assert.strictEqual(message, 'stream payload does not end properly')
       fastify.close()
+      testDone()
     },
     info: () => { },
     debug: () => { },
@@ -83,7 +84,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
   })
 })
 
-test('onSend hook stream should work on payload with "close" ending function', t => {
+test('onSend hook stream should work on payload with "close" ending function', (t, testDone) => {
   t.plan(1)
 
   const reply = proxyquire('../lib/reply', {
@@ -106,7 +107,8 @@ test('onSend hook stream should work on payload with "close" ending function', t
       pipe: () => { },
       close: (cb) => {
         cb()
-        t.pass()
+        t.assert.ok('close callback called')
+        testDone()
       }
     }
     done(null, fakeStream)

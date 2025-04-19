@@ -7,14 +7,17 @@ const resolve = require('node:path').resolve
 const zlib = require('node:zlib')
 const pipeline = require('node:stream').pipeline
 const Fastify = require('..')
+const { waitForCb } = require('./toolkit')
 
-test('onSend hook stream', (t, testDone) => {
+test('onSend hook stream', t => {
   t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
+
+  const { stepIn, patience } = waitForCb({ steps: 2 })
 
   fastify.addHook('onSend', (req, reply, payload, done) => {
     const gzStream = zlib.createGzip()
@@ -23,7 +26,10 @@ test('onSend hook stream', (t, testDone) => {
     pipeline(
       fs.createReadStream(resolve(__filename), 'utf8'),
       gzStream,
-      (err) => t.assert.ifError(err)
+      (err) => {
+        t.assert.ifError(err)
+        stepIn()
+      }
     )
     done(null, gzStream)
   })
@@ -38,8 +44,10 @@ test('onSend hook stream', (t, testDone) => {
     const payload = zlib.gunzipSync(res.rawPayload)
     t.assert.strictEqual(payload.toString('utf-8'), file)
     fastify.close()
-    testDone()
+    stepIn()
   })
+
+  return patience
 })
 
 test('onSend hook stream should work even if payload is not a proper stream', (t, testDone) => {

@@ -13,7 +13,7 @@ import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyCont
 import { FastifyContextConfig, FastifyReplyContext, FastifyRequestContext } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, RequestPayload } from './types/hooks'
-import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './types/instance'
+import { FastifyInstance, FastifyInstanceWithPlugins, FastifyListenOptions, PrintRoutesOptions, FastifyDecorators } from './types/instance'
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
@@ -171,7 +171,7 @@ declare namespace fastify {
     FastifyRequest, RequestGenericInterface, // './types/request'
     FastifyReply, // './types/reply'
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
-    FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
+    FastifyListenOptions, FastifyInstance, FastifyInstanceWithPlugins, PrintRoutesOptions, FastifyDecorators, // './types/instance'
     FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
     FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'

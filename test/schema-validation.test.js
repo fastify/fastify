@@ -1343,8 +1343,6 @@ test('Schema validation when no content type is provided', async t => {
 })
 
 test('Schema validation will not be bypass by different content type', async t => {
-  t.plan(10)
-
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -1435,4 +1433,48 @@ test('Schema validation will not be bypass by different content type', async t =
   })
   t.equal(invalid4.statusCode, 400)
   t.equal((await invalid4.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid5 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn \tfoo;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid5.statusCode, 400)
+  t.equal((await invalid5.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid6 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn\t foo;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid6.statusCode, 415)
+  t.equal((await invalid6.body.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+
+  const invalid7 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn \t'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid7.statusCode, 400)
+  t.equal((await invalid7.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid8 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn\t'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid8.statusCode, 400)
+  t.equal((await invalid8.body.json()).code, 'FST_ERR_VALIDATION')
 })

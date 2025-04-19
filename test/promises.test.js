@@ -81,7 +81,7 @@ test('shorthand - sget return promise es6 get', async (t) => {
         url: 'http://localhost:' + fastify.server.address().port + '/return',
       },
       (err, response, body) => {
-        if (err) reject(err)
+        if (err) return reject(err)
         resolve({ response, body })
       }
     )

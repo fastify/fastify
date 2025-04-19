@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
+const { request } = require('undici')
 
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
@@ -1299,4 +1300,139 @@ test('Custom validator builder override by custom validator compiler in child in
     url: '/two/43'
   })
   t.equal(two.statusCode, 200)
+})
+
+test('Schema validation when no content type is provided', async t => {
+  // this case should not be happened in normal use-case,
+  // it is added for the completeness of code branch
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                foo: { type: 'string' }
+              },
+              required: ['foo'],
+              additionalProperties: false
+            }
+          }
+        }
+      }
+    },
+    preValidation: async (request) => {
+      request.headers['content-type'] = undefined
+    }
+  }, async () => 'ok')
+
+  await fastify.ready()
+
+  const invalid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: { invalid: 'string' }
+  })
+  t.equal(invalid.statusCode, 200)
+})
+
+test('Schema validation will not be bypass by different content type', async t => {
+  t.plan(10)
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                foo: { type: 'string' }
+              },
+              required: ['foo'],
+              additionalProperties: false
+            }
+          }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await fastify.listen({ port: 0 })
+  t.teardown(() => fastify.close())
+  const address = fastify.listeningOrigin
+
+  const correct1 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({ foo: 'string' })
+  })
+  t.equal(correct1.statusCode, 200)
+  await correct1.body.dump()
+
+  const correct2 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify({ foo: 'string' })
+  })
+  t.equal(correct2.statusCode, 200)
+  await correct2.body.dump()
+
+  const invalid1 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json ;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid1.statusCode, 400)
+  t.equal((await invalid1.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid2 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid2.statusCode, 400)
+  t.equal((await invalid2.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid3 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn ;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid3.statusCode, 400)
+  t.equal((await invalid3.body.json()).code, 'FST_ERR_VALIDATION')
+
+  const invalid4 = await request(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn foo;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.equal(invalid4.statusCode, 400)
+  t.equal((await invalid4.body.json()).code, 'FST_ERR_VALIDATION')
 })

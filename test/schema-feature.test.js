@@ -7,6 +7,7 @@ const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
 const { FSTWRN001 } = require('../lib/warnings')
+const { waitForCb } = require('./toolkit')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
@@ -20,7 +21,7 @@ const echoBody = (req, reply) => { reply.send(req.body) }
 })
 
 ;['setValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
-  test(`cannot call ${f} after binding`, t => {
+  test(`cannot call ${f} after binding`, (t, testDone) => {
     t.plan(2)
     const fastify = Fastify()
     t.after(() => fastify.close())
@@ -31,6 +32,7 @@ const echoBody = (req, reply) => { reply.send(req.body) }
         t.assert.fail()
       } catch (e) {
         t.assert.ok(true)
+        testDone()
       }
     })
   })
@@ -58,7 +60,7 @@ test('The schemas should be accessible via getSchemas', t => {
   t.assert.deepStrictEqual(fastify.getSchemas(), schemas)
 })
 
-test('The schema should be accessible by id via getSchema', t => {
+test('The schema should be accessible by id via getSchema', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -79,30 +81,39 @@ test('The schema should be accessible by id via getSchema', t => {
     done()
   })
 
-  fastify.ready(err => t.assert.ifError(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
 })
 
-test('Get validatorCompiler after setValidatorCompiler', t => {
+test('Get validatorCompiler after setValidatorCompiler', (t, testDone) => {
   t.plan(2)
   const myCompiler = () => { }
   const fastify = Fastify()
   fastify.setValidatorCompiler(myCompiler)
   const sc = fastify.validatorCompiler
   t.assert.ok(Object.is(myCompiler, sc))
-  fastify.ready(err => t.assert.ifError(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
 })
 
-test('Get serializerCompiler after setSerializerCompiler', t => {
+test('Get serializerCompiler after setSerializerCompiler', (t, testDone) => {
   t.plan(2)
   const myCompiler = () => { }
   const fastify = Fastify()
   fastify.setSerializerCompiler(myCompiler)
   const sc = fastify.serializerCompiler
   t.assert.ok(Object.is(myCompiler, sc))
-  fastify.ready(err => t.assert.ifError(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
 })
 
-test('Get compilers is empty when settle on routes', t => {
+test('Get compilers is empty when settle on routes', (t, testDone) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -133,6 +144,7 @@ test('Get compilers is empty when settle on routes', t => {
     t.assert.ifError(err)
     t.assert.strictEqual(fastify.validatorCompiler, undefined)
     t.assert.strictEqual(fastify.serializerCompiler, undefined)
+    testDone()
   })
 })
 
@@ -160,7 +172,7 @@ test('Cannot add multiple times the same id', t => {
   }
 })
 
-test('Cannot add schema for query and querystring', t => {
+test('Cannot add schema for query and querystring', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -185,10 +197,11 @@ test('Cannot add schema for query and querystring', t => {
   fastify.ready(err => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_DUPLICATE')
     t.assert.strictEqual(err.message, 'Schema with \'querystring\' already present!')
+    testDone()
   })
 })
 
-test('Should throw of the schema does not exists in input', t => {
+test('Should throw of the schema does not exists in input', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -207,10 +220,11 @@ test('Should throw of the schema does not exists in input', t => {
   fastify.ready(err => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
     t.assert.strictEqual(err.message, "Failed building the validation schema for GET: /:id, due to error can't resolve reference #notExist from id #")
+    testDone()
   })
 })
 
-test('Should throw if schema is missing for content type', t => {
+test('Should throw if schema is missing for content type', (t, testDone) => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -228,10 +242,11 @@ test('Should throw if schema is missing for content type', t => {
   fastify.ready(err => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCHEMA')
     t.assert.strictEqual(err.message, "Schema is missing for the content type 'application/json'")
+    testDone()
   })
 })
 
-test('Should throw of the schema does not exists in output', t => {
+test('Should throw of the schema does not exists in output', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -251,11 +266,12 @@ test('Should throw of the schema does not exists in output', t => {
 
   fastify.ready(err => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot find reference.*/) // error from fast-json-stringify
+    t.assert.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot find reference.*/) // error from fast-json-stringify
+    testDone()
   })
 })
 
-test('Should not change the input schemas', t => {
+test('Should not change the input schemas', (t, testDone) => {
   t.plan(4)
 
   const theSchema = {
@@ -298,10 +314,11 @@ test('Should not change the input schemas', t => {
     t.assert.deepStrictEqual(res.json(), { name: 'Foo' })
     t.assert.ok(theSchema.$id, 'the $id is not removed')
     t.assert.deepStrictEqual(fastify.getSchema('helloSchema'), theSchema)
+    testDone()
   })
 })
 
-test('Should emit warning if the schema headers is undefined', t => {
+test('Should emit warning if the schema headers is undefined', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -329,10 +346,11 @@ test('Should emit warning if the schema headers is undefined', t => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    testDone()
   })
 })
 
-test('Should emit warning if the schema body is undefined', t => {
+test('Should emit warning if the schema body is undefined', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -360,10 +378,11 @@ test('Should emit warning if the schema body is undefined', t => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    testDone()
   })
 })
 
-test('Should emit warning if the schema query is undefined', t => {
+test('Should emit warning if the schema query is undefined', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -391,10 +410,11 @@ test('Should emit warning if the schema query is undefined', t => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    testDone()
   })
 })
 
-test('Should emit warning if the schema params is undefined', t => {
+test('Should emit warning if the schema params is undefined', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -422,10 +442,11 @@ test('Should emit warning if the schema params is undefined', t => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    testDone()
   })
 })
 
-test('Should emit a warning for every route with undefined schema', t => {
+test('Should emit a warning for every route with undefined schema', (t, testDone) => {
   t.plan(16)
   const fastify = Fastify()
 
@@ -475,10 +496,11 @@ test('Should emit a warning for every route with undefined schema', t => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    testDone()
   })
 })
 
-test('First level $ref', t => {
+test('First level $ref', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -508,6 +530,7 @@ test('First level $ref', t => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(res.json(), { id: 246 })
+    testDone()
   })
 })
 
@@ -528,26 +551,26 @@ test('Customize validator compiler in instance and route', t => {
       case 'params':
         t.assert.ok('params evaluated')
         return params => {
-          t.assert.deepStrictEqual(params, { id: 1234 })
+          t.assert.strictEqual(params.id, '1234')
           return true
         }
       case 'querystring':
         t.assert.ok('querystring evaluated')
         return query => {
-          t.assert.deepStrictEqual(query, { lang: 'en' })
+          t.assert.strictEqual(query.lang, 'en')
           return true
         }
       case 'headers':
         t.assert.ok('headers evaluated')
         return headers => {
-          t.match(headers, { x: 'hello' })
+          t.assert.strictEqual(headers.x, 'hello')
           return true
         }
       case '2xx':
-        t.fail('the validator doesn\'t process the response')
+        t.assert.fail('the validator doesn\'t process the response')
         break
       default:
-        t.fail(`unknown httpPart ${httpPart}`)
+        t.assert.fail(`unknown httpPart ${httpPart}`)
     }
   })
 
@@ -626,6 +649,8 @@ test('Customize validator compiler in instance and route', t => {
     }
   })
 
+  const { stepIn, patience } = waitForCb({ steps: 2 })
+
   fastify.inject({
     url: '/1234',
     method: 'POST',
@@ -636,6 +661,7 @@ test('Customize validator compiler in instance and route', t => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 200)
     t.assert.deepStrictEqual(res.json(), { foo: ['bar', 'BAR'] })
+    stepIn()
   })
 
   fastify.inject({
@@ -647,10 +673,13 @@ test('Customize validator compiler in instance and route', t => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 200) // the validation is always true
     t.assert.deepStrictEqual(res.json(), {})
+    stepIn()
   })
+
+  return patience
 })
 
-test('Use the same schema across multiple routes', t => {
+test('Use the same schema across multiple routes', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -704,10 +733,11 @@ test('Use the same schema across multiple routes', t => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.payload, 'number')
+    testDone()
   })
 })
 
-test('Encapsulation should intervene', t => {
+test('Encapsulation should intervene', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -740,10 +770,11 @@ test('Encapsulation should intervene', t => {
   fastify.ready(err => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
     t.assert.strictEqual(err.message, "Failed building the validation schema for GET: /:id, due to error can't resolve reference encapsulation#/properties/id from id #")
+    testDone()
   })
 })
 
-test('Encapsulation isolation', t => {
+test('Encapsulation isolation', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -757,7 +788,10 @@ test('Encapsulation isolation', t => {
     done()
   })
 
-  fastify.ready(err => t.assert.ifError(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
 })
 
 test('Add schema after register', (t, testDone) => {
@@ -1822,7 +1856,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     method: 'GET',
     url: '/',
     query: {
-      msg: 'string'
+      msg: ['string']
     }
   })
   const json = res.json()
@@ -2147,7 +2181,7 @@ test('setSchemaController: custom validator instance should not mutate headers s
     compilersFactory: {
       buildValidator: function () {
         return ({ schema, method, url, httpPart }) => {
-          t.type(schema, Headers)
+          t.assert.ok(schema instanceof Headers)
           return () => {}
         }
       }

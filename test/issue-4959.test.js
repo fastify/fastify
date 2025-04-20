@@ -17,7 +17,7 @@ function runBadClientCall (reqOptions, payload) {
     ...reqOptions,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(postData),
+      'Content-Length': Buffer.byteLength(postData)
     }
   }, () => {
     innerReject(new Error('Request should have failed'))
@@ -78,7 +78,7 @@ test('should handle a soket error', async (t) => {
     hostname: 'localhost',
     port: fastify.server.address().port,
     path: '/',
-    method: 'PUT',
+    method: 'PUT'
   }, { test: 'me' })
   t.assert.equal(err.code, 'ECONNRESET')
 })

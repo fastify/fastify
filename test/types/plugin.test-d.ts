@@ -12,7 +12,7 @@ interface TestOptions extends FastifyPluginOptions {
 }
 const testOptions: TestOptions = {
   option1: 'a',
-  option2: false,
+  option2: false
 }
 const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) {
   expectType<TestOptions>(opts)

@@ -1,8 +1,6 @@
 'use strict'
 
 const stream = require('node:stream')
-
-// const t = require('tap')
 const { test } = require('node:test')
 const split = require('split2')
 const pino = require('pino')
@@ -13,15 +11,14 @@ const { on } = stream
 const TEST_PARAMS = { timeout: 60000 }
 
 test('response serialization', TEST_PARAMS, async (t) => {
-  // t.plan(4)
-
+  t.plan(4)
   await t.test('Should use serializers from plugin and route', async (t) => {
     const lines = [
       { msg: 'incoming request' },
       { test: 'XHello', test2: 'ZHello' },
       { msg: 'request completed' }
     ]
-    // t.plan(lines.length + 1)
+    t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
 
@@ -56,11 +53,9 @@ test('response serialization', TEST_PARAMS, async (t) => {
     }
 
     for await (const [line] of on(stream, 'data')) {
-      const [key, value] = Object.entries(lines.shift())[0]
-      t.assert.strictEqual(line[key], value)
+      t.assert.partialDeepStrictEqual(line, lines.shift())
       if (lines.length === 0) break
     }
-    t.assert.ok(true)
   })
 
   await t.test('Should use serializers from instance fastify and route', async (t) => {
@@ -103,8 +98,7 @@ test('response serialization', TEST_PARAMS, async (t) => {
     }
 
     for await (const [line] of on(stream, 'data')) {
-      const [key, value] = Object.entries(lines.shift())[0]
-      t.assert.strictEqual(line[key], value)
+      t.assert.partialDeepStrictEqual(line, lines.shift())
       if (lines.length === 0) break
     }
   })
@@ -152,38 +146,37 @@ test('response serialization', TEST_PARAMS, async (t) => {
     }
 
     for await (const [line] of on(stream, 'data')) {
-      const [key, value] = Object.entries(lines.shift())[0]
-      t.assert.strictEqual(line[key], value)
+      t.assert.partialDeepStrictEqual(line, lines.shift())
       if (lines.length === 0) break
     }
   })
 
-  // await t.test('should serialize request and response', async (t) => {
-  //   const lines = [
-  //     { req: { method: 'GET', url: '/500' }, msg: 'incoming request' },
-  //     { req: { method: 'GET', url: '/500' }, msg: '500 error' },
-  //     { msg: 'request completed' }
-  //   ]
-  //   t.plan(lines.length + 1)
+  await t.test('should serialize request and response', async (t) => {
+    const lines = [
+      { req: { method: 'GET', url: '/500' }, msg: 'incoming request' },
+      { req: { method: 'GET', url: '/500' }, msg: '500 error' },
+      { msg: 'request completed' }
+    ]
+    t.plan(lines.length + 1)
 
-  //   const stream = split(JSON.parse)
-  //   const fastify = Fastify({ logger: { level: 'info', stream } })
-  //   t.after(fastify.close.bind(fastify))
+    const stream = split(JSON.parse)
+    const fastify = Fastify({ logger: { level: 'info', stream } })
+    t.after(() => fastify.close())
 
-  //   fastify.get('/500', (req, reply) => {
-  //     reply.code(500).send(Error('500 error'))
-  //   })
+    fastify.get('/500', (req, reply) => {
+      reply.code(500).send(Error('500 error'))
+    })
 
-  //   await fastify.ready()
+    await fastify.ready()
 
-  //   {
-  //     const response = await fastify.inject({ method: 'GET', url: '/500' })
-  //     t.assert.equal(response.statusCode, 500)
-  //   }
+    {
+      const response = await fastify.inject({ method: 'GET', url: '/500' })
+      t.assert.strictEqual(response.statusCode, 500)
+    }
 
-  //   for await (const [line] of on(stream, 'data')) {
-  //     t.assert.match(line, lines.shift())
-  //     if (lines.length === 0) break
-  //   }
-  // })
+    for await (const [line] of on(stream, 'data')) {
+      t.assert.partialDeepStrictEqual(line, lines.shift())
+      if (lines.length === 0) break
+    }
+  })
 })

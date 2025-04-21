@@ -32,8 +32,8 @@ test('should wait for the ready event', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), payload)
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -53,8 +53,8 @@ test('inject get request', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), payload)
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -74,8 +74,8 @@ test('inject get request - code check', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), payload)
-    t.assert.equal(res.statusCode, 201)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 201)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -93,9 +93,9 @@ test('inject get request - headers check', (t, done) => {
     url: '/'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.equal('', res.payload)
-    t.assert.equal(res.headers['content-type'], 'text/plain')
-    t.assert.equal(res.headers['content-length'], '0')
+    t.assert.strictEqual('', res.payload)
+    t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+    t.assert.strictEqual(res.headers['content-length'], '0')
     done()
   })
 })
@@ -114,8 +114,8 @@ test('inject get request - querystring', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -134,8 +134,8 @@ test('inject get request - params', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -154,8 +154,8 @@ test('inject get request - wildcard', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), { '*': 'wildcard' })
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '16')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '16')
     done()
   })
 })
@@ -174,9 +174,9 @@ test('inject get request - headers', (t, done) => {
     headers: { hello: 'world' }
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.equal(JSON.parse(res.payload).hello, 'world')
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '69')
+    t.assert.strictEqual(JSON.parse(res.payload).hello, 'world')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '69')
     done()
   })
 })
@@ -197,8 +197,8 @@ test('inject post request', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(JSON.parse(res.payload), payload)
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -219,8 +219,8 @@ test('inject post request - send stream', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(res.payload, '{"hello":"world"}')
-    t.assert.equal(res.statusCode, 200)
-    t.assert.equal(res.headers['content-length'], '17')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['content-length'], '17')
     done()
   })
 })
@@ -239,7 +239,7 @@ test('inject get request - reply stream', (t, done) => {
   }, (err, res) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(res.payload, '{"hello":"world"}')
-    t.assert.equal(res.statusCode, 200)
+    t.assert.strictEqual(res.statusCode, 200)
     done()
   })
 })
@@ -259,7 +259,7 @@ test('inject promisify - waiting for ready event', (t, done) => {
   }
   fastify.inject(injectParams)
     .then(res => {
-      t.assert.equal(res.statusCode, 200)
+      t.assert.strictEqual(res.statusCode, 200)
     })
     .catch(() => t.assert.fail('should not fail test inject promisify - waiting for ready event'))
     .then(done)
@@ -283,7 +283,7 @@ test('inject promisify - after the ready event', (t, done) => {
     }
     fastify.inject(injectParams)
       .then(res => {
-        t.assert.equal(res.statusCode, 200)
+        t.assert.strictEqual(res.statusCode, 200)
       })
       .catch(() => t.assert.fail('should not fail test inject promisify - after the ready event'))
       .then(done)
@@ -311,7 +311,7 @@ test('inject promisify - when the server is up', (t, done) => {
       }
       fastify.inject(injectParams)
         .then(res => {
-          t.assert.equal(res.statusCode, 200)
+          t.assert.strictEqual(res.statusCode, 200)
         })
         .catch(() => t.assert.fail('should not fail test inject promisify - when the server is up'))
         .then(done)
@@ -333,7 +333,7 @@ test('should reject in error case', (t, done) => {
     url: '/'
   })
     .catch(e => {
-      t.assert.equal(e, error)
+      t.assert.strictEqual(e, error)
     })
     .then(done)
 })
@@ -364,8 +364,8 @@ test('inject a multipart request using form-body', (t, done) => {
     payload: form
   })
     .then(response => {
-      t.assert.equal(response.statusCode, 200)
-      t.assert.ok(/Content-Disposition: form-data; name="my_field"/.test(response.payload))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.match(response.payload, /Content-Disposition: form-data; name="my_field"/)
     })
     .then(done)
 })
@@ -403,7 +403,7 @@ test('should error the promise if ready errors', (t, done) => {
     t.assert.fail('this should not be called')
   }).catch(err => {
     t.assert.ok(err)
-    t.assert.equal(err.message, 'kaboom')
+    t.assert.strictEqual(err.message, 'kaboom')
   }).then(done)
 })
 
@@ -421,7 +421,7 @@ test('should throw error if callback specified and if ready errors', (t, done) =
     url: '/'
   }, err => {
     t.assert.ok(err)
-    t.assert.equal(err, error)
+    t.assert.strictEqual(err, error)
     done()
   })
 })
@@ -438,8 +438,8 @@ test('should support builder-style injection with ready app', async (t) => {
   await fastify.ready()
   const res = await fastify.inject().get('/').end()
   t.assert.deepStrictEqual(JSON.parse(res.payload), payload)
-  t.assert.equal(res.statusCode, 200)
-  t.assert.equal(res.headers['content-length'], '17')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-length'], '17')
 })
 
 test('should support builder-style injection with non-ready app', async (t) => {
@@ -453,8 +453,8 @@ test('should support builder-style injection with non-ready app', async (t) => {
 
   const res = await fastify.inject().get('/').end()
   t.assert.deepStrictEqual(JSON.parse(res.payload), payload)
-  t.assert.equal(res.statusCode, 200)
-  t.assert.equal(res.headers['content-length'], '17')
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-length'], '17')
 })
 
 test('should handle errors in builder-style injection correctly', async (t) => {
@@ -468,7 +468,7 @@ test('should handle errors in builder-style injection correctly', async (t) => {
     await fastify.inject().get('/')
   } catch (err) {
     t.assert.ok(err)
-    t.assert.equal(err.message, 'Kaboom')
+    t.assert.strictEqual(err.message, 'Kaboom')
   }
 })
 
@@ -495,7 +495,7 @@ test('Should not throw on access to routeConfig frameworkErrors handler - FST_ER
     },
     (err, res) => {
       t.assert.ifError(err)
-      t.assert.equal(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.assert.strictEqual(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
       done()
     }
   )

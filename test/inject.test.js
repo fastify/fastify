@@ -1,8 +1,6 @@
 'use strict'
 
-// const t = require('tap')
-// const test = t.test
-const { test } = require("node:test")
+const { test } = require('node:test')
 const Stream = require('node:stream')
 const util = require('node:util')
 const Fastify = require('..')
@@ -15,7 +13,7 @@ test('inject should exist', t => {
   t.assert.equal(typeof fastify.inject, 'function')
 })
 
-test('should wait for the ready event', (t,done) => {
+test('should wait for the ready event', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -40,7 +38,7 @@ test('should wait for the ready event', (t,done) => {
   })
 })
 
-test('inject get request', (t,done) => {
+test('inject get request', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -61,7 +59,7 @@ test('inject get request', (t,done) => {
   })
 })
 
-test('inject get request - code check', (t,done) => {
+test('inject get request - code check', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -82,7 +80,7 @@ test('inject get request - code check', (t,done) => {
   })
 })
 
-test('inject get request - headers check', (t,done) => {
+test('inject get request - headers check', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -102,27 +100,27 @@ test('inject get request - headers check', (t,done) => {
   })
 })
 
-test('inject get request - querystring', (t,done) => {
+test('inject get request - querystring', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
     reply.send(req.query)
   })
-  
+
   fastify.inject({
     method: 'GET',
     url: '/?hello=world'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(JSON.parse(res.payload),{ hello: 'world' })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
     t.assert.equal(res.statusCode, 200)
     t.assert.equal(res.headers['content-length'], '17')
     done()
   })
 })
 
-test('inject get request - params', (t,done) => {
+test('inject get request - params', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -142,7 +140,7 @@ test('inject get request - params', (t,done) => {
   })
 })
 
-test('inject get request - wildcard', (t,done) => {
+test('inject get request - wildcard', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -162,7 +160,7 @@ test('inject get request - wildcard', (t,done) => {
   })
 })
 
-test('inject get request - headers', (t,done) => {
+test('inject get request - headers', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -183,7 +181,7 @@ test('inject get request - headers', (t,done) => {
   })
 })
 
-test('inject post request', (t,done) => {
+test('inject post request', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -205,7 +203,7 @@ test('inject post request', (t,done) => {
   })
 })
 
-test('inject post request - send stream', (t,done) => {
+test('inject post request - send stream', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -227,7 +225,7 @@ test('inject post request - send stream', (t,done) => {
   })
 })
 
-test('inject get request - reply stream', (t,done)=> {
+test('inject get request - reply stream', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -246,7 +244,7 @@ test('inject get request - reply stream', (t,done)=> {
   })
 })
 
-test('inject promisify - waiting for ready event', (t,done) => {
+test('inject promisify - waiting for ready event', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -263,11 +261,11 @@ test('inject promisify - waiting for ready event', (t,done) => {
     .then(res => {
       t.assert.equal(res.statusCode, 200)
     })
-    .catch(() => t.assert.fail("should not fail test inject promisify - waiting for ready event"))
+    .catch(() => t.assert.fail('should not fail test inject promisify - waiting for ready event'))
     .then(done)
 })
 
-test('inject promisify - after the ready event', (t,done)=> {
+test('inject promisify - after the ready event', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -287,12 +285,12 @@ test('inject promisify - after the ready event', (t,done)=> {
       .then(res => {
         t.assert.equal(res.statusCode, 200)
       })
-      .catch(() => t.assert.fail("should not fail test inject promisify - after the ready event"))
+      .catch(() => t.assert.fail('should not fail test inject promisify - after the ready event'))
       .then(done)
   })
 })
 
-test('inject promisify - when the server is up', (t,done) => {
+test('inject promisify - when the server is up', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -315,13 +313,13 @@ test('inject promisify - when the server is up', (t,done) => {
         .then(res => {
           t.assert.equal(res.statusCode, 200)
         })
-        .catch(() => t.assert.fail("should not fail test inject promisify - when the server is up"))
+        .catch(() => t.assert.fail('should not fail test inject promisify - when the server is up'))
         .then(done)
     }, 10)
   })
 })
 
-test('should reject in error case', (t,done) => {
+test('should reject in error case', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -340,7 +338,7 @@ test('should reject in error case', (t,done) => {
     .then(done)
 })
 
-test('inject a multipart request using form-body', (t,done) => {
+test('inject a multipart request using form-body', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -388,7 +386,7 @@ function getStream () {
   return new Read()
 }
 
-test('should error the promise if ready errors', (t,done) => {
+test('should error the promise if ready errors', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -406,11 +404,10 @@ test('should error the promise if ready errors', (t,done) => {
   }).catch(err => {
     t.assert.ok(err)
     t.assert.equal(err.message, 'kaboom')
-  })
-  .then(done)
+  }).then(done)
 })
 
-test('should throw error if callback specified and if ready errors', (t,done) => {
+test('should throw error if callback specified and if ready errors', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
   const error = new Error('kaboom')
@@ -475,7 +472,7 @@ test('should handle errors in builder-style injection correctly', async (t) => {
   }
 })
 
-test('Should not throw on access to routeConfig frameworkErrors handler - FST_ERR_BAD_URL', (t,done) => {
+test('Should not throw on access to routeConfig frameworkErrors handler - FST_ERR_BAD_URL', (t, done) => {
   t.plan(5)
 
   const fastify = Fastify({

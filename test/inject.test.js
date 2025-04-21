@@ -10,7 +10,7 @@ test('inject should exist', t => {
   t.plan(2)
   const fastify = Fastify()
   t.assert.ok(fastify.inject)
-  t.assert.equal(typeof fastify.inject, 'function')
+  t.assert.strictEqual(typeof fastify.inject, 'function')
 })
 
 test('should wait for the ready event', (t, done) => {

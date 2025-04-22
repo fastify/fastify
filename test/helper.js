@@ -346,6 +346,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
 
       t.plan(12)
 
+      const { stepIn, patience } = waitForCb({ steps: 5 })
+
       fastify.inject({
         method: `${upMethod}`,
         url: '/',
@@ -376,6 +378,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
+        stepIn()
       })
 
       fastify.inject({
@@ -393,6 +396,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
+        stepIn()
       })
 
       sget({
@@ -410,6 +414,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
+        stepIn()
       })
 
       fastify.inject({
@@ -427,6 +432,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
+        stepIn()
       })
 
       sget({
@@ -444,7 +450,10 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
+        stepIn()
       })
+
+      return patience
     })
   })
 }

@@ -4,6 +4,7 @@ const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const Joi = require('joi')
 const yup = require('yup')
+const assert = require('node:assert')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -127,14 +128,14 @@ module.exports.payloadMethod = function (method, t) {
 
         done()
       })
-      t.assert.ok()
+      t.assert.ok(true)
     } catch (e) {
       t.assert.fail()
     }
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+    assert.ifError(err)
 
     t.after(() => { fastify.close() })
 
@@ -236,7 +237,7 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body, { hello: 42 })
+        t.assert.deepStrictEqual(body, { hello: '42' })
         testDone()
       })
     })
@@ -275,7 +276,7 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body, { hello: 42 })
+        t.assert.deepStrictEqual(body, { hello: '42' })
         testDone()
       })
     })
@@ -292,9 +293,9 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 400)
-        t.match(body, {
+        t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
-          message: /body hello must be a `string` type, but the final value was: `44`./,
+          message: 'body hello must be a `string` type, but the final value was: `44`.',
           statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })
@@ -307,7 +308,7 @@ module.exports.payloadMethod = function (method, t) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/plugin',
-        body: { },
+        body: {},
         json: true
       }, (err, response, body) => {
         t.assert.ifError(err)
@@ -315,7 +316,7 @@ module.exports.payloadMethod = function (method, t) {
         t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
           message: 'From custom schema compiler!',
-          statusCode: '400',
+          statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })
         testDone()
@@ -327,7 +328,7 @@ module.exports.payloadMethod = function (method, t) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
-        body: { },
+        body: {},
         json: true
       }, (err, response, body) => {
         t.assert.ifError(err)
@@ -335,7 +336,7 @@ module.exports.payloadMethod = function (method, t) {
         t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
           message: 'Always fail!',
-          statusCode: '400',
+          statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })
         testDone()

@@ -5,6 +5,8 @@ const dns = require('node:dns').promises
 const stream = require('node:stream')
 const { promisify } = require('node:util')
 const symbols = require('../lib/symbols')
+const { waitForCb } = require('./toolkit')
+const assert = require('node:assert')
 
 module.exports.sleep = promisify(setTimeout)
 
@@ -19,8 +21,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
 
   if (isSetErrorHandler) {
     fastify.setErrorHandler(function (err, request, reply) {
-      t.assert.strictEqual(typeof request, fastify[symbols.kRequest].parent)
-      t.assert.strictEqual(typeof request, 'object')
+      assert.ok(request instanceof fastify[symbols.kRequest].parent)
+      assert.strictEqual(typeof request, 'object')
       reply
         .code(err.statusCode)
         .type('application/json; charset=utf-8')
@@ -52,7 +54,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       fastify[loMethod]('/', schema, function (req, reply) {
         reply.code(200).send(req.body)
       })
-      t.assert.ok()
+      t.assert.ok(true)
     } catch (e) {
       t.assert.fail()
     }
@@ -64,7 +66,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       fastify[loMethod]('/missing', function (req, reply) {
         reply.code(200).send(req.body)
       })
-      t.assert.ok()
+      t.assert.ok(true)
     } catch (e) {
       t.assert.fail()
     }
@@ -77,7 +79,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         req.body.hello = req.body.hello + req.query.foo
         reply.code(200).send(req.body)
       })
-      t.assert.ok()
+      t.assert.ok(true)
     } catch (e) {
       t.assert.fail()
     }
@@ -89,7 +91,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       fastify[loMethod]('/with-limit', { bodyLimit: 1 }, function (req, reply) {
         reply.send(req.body)
       })
-      t.assert.ok()
+      t.assert.ok(true)
     } catch (e) {
       t.assert.fail()
     }
@@ -191,6 +193,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     test(`${upMethod} with no body - correctly replies`, t => {
       t.plan(6)
 
+      const { stepIn, patience } = waitForCb({ steps: 2 })
+
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/missing',
@@ -199,6 +203,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.strictEqual(body.toString(), '')
+        stepIn()
       })
 
       // Must use inject to make a request without a Content-Length header
@@ -209,10 +214,13 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.assert.ifError(err)
         t.assert.strictEqual(res.statusCode, 200)
         t.assert.strictEqual(res.payload.toString(), '')
+        stepIn()
       })
+
+      return patience
     })
 
-    test(`${upMethod} returns 415 - incorrect media type if body is not json`, t => {
+    test(`${upMethod} returns 415 - incorrect media type if body is not json`, (t, testDone) => {
       t.plan(2)
       sget({
         method: upMethod,
@@ -222,11 +230,12 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 415)
+        testDone()
       })
     })
 
     if (loMethod === 'options') {
-      test('OPTIONS returns 415 - should return 415 if Content-Type is not json or plain text', t => {
+      test('OPTIONS returns 415 - should return 415 if Content-Type is not json or plain text', (t, testDone) => {
         t.plan(2)
         sget({
           method: upMethod,
@@ -238,12 +247,15 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }, (err, response, body) => {
           t.assert.ifError(err)
           t.assert.strictEqual(response.statusCode, 415)
+          testDone()
         })
       })
     }
 
     test(`${upMethod} returns 400 - Bad Request`, t => {
       t.plan(4)
+
+      const { stepIn, patience } = waitForCb({ steps: 2 })
 
       sget({
         method: upMethod,
@@ -255,6 +267,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 400)
+        stepIn()
       })
 
       sget({
@@ -267,11 +280,17 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 400)
+        stepIn()
       })
+
+      return patience
     })
 
     test(`${upMethod} returns 413 - Payload Too Large`, t => {
-      t.plan(upMethod === 'OPTIONS' ? 4 : 6)
+      const isOptions = upMethod === 'OPTIONS'
+      t.plan(isOptions ? 4 : 6)
+
+      const { stepIn, patience } = waitForCb({ steps: isOptions ? 2 : 3 })
 
       sget({
         method: upMethod,
@@ -283,10 +302,11 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 413)
+        stepIn()
       })
 
       // Node errors for OPTIONS requests with a stream body and no Content-Length header
-      if (upMethod !== 'OPTIONS') {
+      if (!isOptions) {
         let chunk = Buffer.alloc(1024 * 1024 + 1, 0)
         const largeStream = new stream.Readable({
           read () {
@@ -302,6 +322,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }, (err, response, body) => {
           t.assert.ifError(err)
           t.assert.strictEqual(response.statusCode, 413)
+          stepIn()
         })
       }
 
@@ -314,7 +335,10 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 413)
+        stepIn()
       })
+
+      return patience
     })
 
     test(`${upMethod} should fail with empty body and application/json content-type`, t => {

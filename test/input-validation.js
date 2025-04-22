@@ -127,28 +127,27 @@ module.exports.payloadMethod = function (method, t) {
 
         done()
       })
-      t.pass()
+      t.assert.ok()
     } catch (e) {
-      t.fail()
+      t.assert.fail()
     }
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    if (err) {
-      t.error(err)
-    }
+    t.assert.ifError(err)
 
-    t.teardown(() => { fastify.close() })
+    t.after(() => { fastify.close() })
 
-    test(`${upMethod} - correctly replies`, t => {
+    test(`${upMethod} - correctly replies`, (t, testDone) => {
       if (upMethod === 'HEAD') {
         t.plan(2)
         sget({
           method: upMethod,
           url: 'http://localhost:' + fastify.server.address().port
         }, (err, response) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
+          t.assert.ifError(err)
+          t.assert.strictEqual(response.statusCode, 200)
+          testDone()
         })
       } else {
         t.plan(3)
@@ -160,14 +159,15 @@ module.exports.payloadMethod = function (method, t) {
           },
           json: true
         }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
-          t.same(body, { hello: 42 })
+          t.assert.ifError(err)
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(body, { hello: 42 })
+          testDone()
         })
       }
     })
 
-    test(`${upMethod} - 400 on bad parameters`, t => {
+    test(`${upMethod} - 400 on bad parameters`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -177,18 +177,19 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
           message: 'body/hello must be integer',
           statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation coerce`, t => {
+    test(`${upMethod} - input-validation coerce`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -198,13 +199,14 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body, { hello: 42 })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation custom schema compiler`, t => {
+    test(`${upMethod} - input-validation custom schema compiler`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -215,13 +217,14 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body, { hello: 42 })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation joi schema compiler ok`, t => {
+    test(`${upMethod} - input-validation joi schema compiler ok`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -231,13 +234,14 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body, { hello: 42 })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation joi schema compiler ko`, t => {
+    test(`${upMethod} - input-validation joi schema compiler ko`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -247,18 +251,19 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
           message: '"hello" must be a string',
           statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation yup schema compiler ok`, t => {
+    test(`${upMethod} - input-validation yup schema compiler ok`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -268,13 +273,14 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(body, { hello: 42 })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation yup schema compiler ko`, t => {
+    test(`${upMethod} - input-validation yup schema compiler ko`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -284,18 +290,19 @@ module.exports.payloadMethod = function (method, t) {
         },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 400)
         t.match(body, {
           error: 'Bad Request',
           message: /body hello must be a `string` type, but the final value was: `44`./,
           statusCode: 400,
           code: 'FST_ERR_VALIDATION'
         })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, t => {
+    test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -303,18 +310,19 @@ module.exports.payloadMethod = function (method, t) {
         body: { },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
           message: 'From custom schema compiler!',
           statusCode: '400',
           code: 'FST_ERR_VALIDATION'
         })
+        testDone()
       })
     })
 
-    test(`${upMethod} - input-validation custom schema compiler encapsulated`, t => {
+    test(`${upMethod} - input-validation custom schema compiler encapsulated`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -322,14 +330,15 @@ module.exports.payloadMethod = function (method, t) {
         body: { },
         json: true
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(body, {
           error: 'Bad Request',
           message: 'Always fail!',
           statusCode: '400',
           code: 'FST_ERR_VALIDATION'
         })
+        testDone()
       })
     })
   })

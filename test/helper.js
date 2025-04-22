@@ -101,7 +101,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       return
     }
 
-    t.teardown(() => { fastify.close() })
+    t.after(() => { fastify.close() })
 
     test(`${upMethod} - correctly replies`, (t, testDone) => {
       t.plan(3)
@@ -120,7 +120,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       })
     })
 
-    test(`${upMethod} - correctly replies with very large body`, t => {
+    test(`${upMethod} - correctly replies with very large body`, (t, testDone) => {
       t.plan(3)
 
       const largeString = 'world'.repeat(13200)
@@ -133,10 +133,11 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.deepStrictEqual(body, { hello: largeString })
+        testDone()
       })
     })
 
-    test(`${upMethod} - correctly replies if the content type has the charset`, t => {
+    test(`${upMethod} - correctly replies if the content type has the charset`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -149,10 +150,11 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        testDone()
       })
     })
 
-    test(`${upMethod} without schema - correctly replies`, t => {
+    test(`${upMethod} without schema - correctly replies`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -165,10 +167,11 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.deepStrictEqual(body, { hello: 'world' })
+        testDone()
       })
     })
 
-    test(`${upMethod} with body and querystring - correctly replies`, t => {
+    test(`${upMethod} with body and querystring - correctly replies`, (t, testDone) => {
       t.plan(3)
       sget({
         method: upMethod,
@@ -181,6 +184,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
         t.assert.deepStrictEqual(body, { hello: 'worldhello' })
+        testDone()
       })
     })
 
@@ -314,7 +318,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     })
 
     test(`${upMethod} should fail with empty body and application/json content-type`, t => {
-      if (upMethod === 'OPTIONS') return t.end()
+      if (upMethod === 'OPTIONS') return
 
       t.plan(12)
 

@@ -200,6 +200,9 @@ section.
   to go!
   A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
+- [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
+  A plugin to integrate [Papr](https://github.com/plexinc/papr), 
+  the MongoDB ORM for TypeScript & MongoDB, with Fastify.
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)

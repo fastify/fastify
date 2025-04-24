@@ -13,7 +13,7 @@ test('use semicolon delimiter default false', (t, done) => {
     reply.send(req.query)
   })
 
-  fastify.listen({ port: 0, }, err => {
+  fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
     sget({
       method: 'GET',

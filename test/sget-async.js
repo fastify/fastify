@@ -4,9 +4,9 @@ const sget = require('simple-get').concat
 
 async function sgetAsync (options) {
   return await new Promise((resolve, reject) => {
-    sget(options, (err, response, data) => {
+    sget(options, (err, response, body) => {
       if (err) return reject(err)
-      resolve({ response, body: data.toString() })
+      resolve({ response, body })
     })
   })
 }

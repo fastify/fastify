@@ -24,14 +24,17 @@ test('plugin metadata - ignore prefix', (t, testDone) => {
   plugin[Symbol.for('skip-override')] = true
   fastify.register(plugin, { prefix: 'foo' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, function (err, res) {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, 'hello')
-    testDone()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    function (err, res) {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.payload, 'hello')
+      testDone()
+    }
+  )
 
   function plugin (instance, opts, done) {
     instance.get('/', function (request, reply) {
@@ -41,7 +44,7 @@ test('plugin metadata - ignore prefix', (t, testDone) => {
   }
 })
 
-test('plugin metadata - naming plugins', async t => {
+test('plugin metadata - naming plugins', async (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -64,11 +67,13 @@ test('fastify.register with fastify-plugin should not encapsulate his code', (t,
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
-    instance.register(fp((i, o, n) => {
-      i.decorate('test', () => {})
-      t.assert.ok(i.test)
-      n()
-    }))
+    instance.register(
+      fp((i, o, n) => {
+        i.decorate('test', () => {})
+        t.assert.ok(i.test)
+        n()
+      })
+    )
 
     t.assert.ok(!instance.test)
 
@@ -89,20 +94,25 @@ test('fastify.register with fastify-plugin should not encapsulate his code', (t,
     t.assert.ok(!fastify.test)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      testDone()
+    t.after(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+        testDone()
+      }
+    )
   })
 })
 
@@ -111,45 +121,66 @@ test('fastify.register with fastify-plugin should provide access to external fas
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
-    instance.register(fp((i, o, n) => {
-      i.decorate('global', () => {})
-      t.assert.ok(i.global)
-      n()
-    }))
+    instance.register(
+      fp((i, o, n) => {
+        i.decorate('global', () => {})
+        t.assert.ok(i.global)
+        n()
+      })
+    )
 
-    instance.register((i, o, n) => n(), p => {
-      t.assert.ok(!(p === instance || p === fastify))
-      t.assert.ok(Object.prototype.isPrototypeOf.call(instance, p))
-      t.assert.ok(Object.prototype.isPrototypeOf.call(fastify, p))
-      t.assert.ok(p.global)
-    })
+    instance.register(
+      (i, o, n) => n(),
+      (p) => {
+        t.assert.ok(!(p === instance || p === fastify))
+        t.assert.ok(Object.prototype.isPrototypeOf.call(instance, p))
+        t.assert.ok(Object.prototype.isPrototypeOf.call(fastify, p))
+        t.assert.ok(p.global)
+      }
+    )
 
     instance.register((i, o, n) => {
       i.decorate('local', () => {})
       n()
     })
 
-    instance.register((i, o, n) => n(), p => t.assert.ok(!p.local))
+    instance.register(
+      (i, o, n) => n(),
+      (p) => t.assert.ok(!p.local)
+    )
 
-    instance.register((i, o, n) => {
-      t.assert.ok(i.local)
-      n()
-    }, p => p.decorate('local', () => {}))
+    instance.register(
+      (i, o, n) => {
+        t.assert.ok(i.local)
+        n()
+      },
+      (p) => p.decorate('local', () => {})
+    )
 
-    instance.register((i, o, n) => n(), p => t.assert.ok(!p.local))
+    instance.register(
+      (i, o, n) => n(),
+      (p) => t.assert.ok(!p.local)
+    )
 
-    instance.register(fp((i, o, n) => {
-      t.assert.ok(i.global_2)
-      n()
-    }), p => p.decorate('global_2', () => 'hello'))
+    instance.register(
+      fp((i, o, n) => {
+        t.assert.ok(i.global_2)
+        n()
+      }),
+      (p) => p.decorate('global_2', () => 'hello')
+    )
 
-    instance.register((i, o, n) => {
-      i.decorate('global_2', () => 'world')
-      n()
-    }, p => p.get('/', (req, reply) => {
-      t.assert.ok(p.global_2)
-      reply.send({ hello: p.global_2() })
-    }))
+    instance.register(
+      (i, o, n) => {
+        i.decorate('global_2', () => 'world')
+        n()
+      },
+      (p) =>
+        p.get('/', (req, reply) => {
+          t.assert.ok(p.global_2)
+          reply.send({ hello: p.global_2() })
+        })
+    )
 
     t.assert.ok(!instance.global)
     t.assert.ok(!instance.global_2)
@@ -169,24 +200,29 @@ test('fastify.register with fastify-plugin should provide access to external fas
     t.assert.ok(!fastify.global)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      testDone()
+    t.after(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+        testDone()
+      }
+    )
   })
 })
 
-test('fastify.register with fastify-plugin registers fastify level plugins', t => {
+test('fastify.register with fastify-plugin registers fastify level plugins', (t) => {
   t.plan(15)
   const fastify = Fastify()
 
@@ -227,31 +263,39 @@ test('fastify.register with fastify-plugin registers fastify level plugins', t =
 
   const { stepIn, patience } = waitForCb({ steps: 2 })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { test: 'first' })
-      stepIn()
+    t.after(() => {
+      fastify.close()
     })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/test2'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { test2: 'second' })
-      stepIn()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        t.assert.deepStrictEqual(JSON.parse(body), { test: 'first' })
+        stepIn()
+      }
+    )
+
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/test2'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        t.assert.deepStrictEqual(JSON.parse(body), { test2: 'second' })
+        stepIn()
+      }
+    )
   })
 
   return patience

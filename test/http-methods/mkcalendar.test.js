@@ -77,7 +77,7 @@ test('can be created - mkcalendar', (t) => {
   }
 })
 
-test('mkcalendar test', async t => {
+test('mkcalendar test', async (t) => {
   await fastify.listen({ port: 0 })
   t.after(() => {
     fastify.close()

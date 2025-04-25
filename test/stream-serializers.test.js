@@ -22,7 +22,7 @@ test('should serialize reply when response stream is ended', (t, done) => {
 
   fastify.get('/error', function (req, reply) {
     const reallyLongStream = new stream.Readable({
-      read: () => { }
+      read: () => {}
     })
     reply.code(200).send(reallyLongStream)
     reply.raw.end(Buffer.from('hello\n'))
@@ -30,11 +30,14 @@ test('should serialize reply when response stream is ended', (t, done) => {
 
   t.after(() => fastify.close())
 
-  fastify.inject({
-    url: '/error',
-    method: 'GET'
-  }, (err) => {
-    t.assert.ifError(err)
-    done()
-  })
+  fastify.inject(
+    {
+      url: '/error',
+      method: 'GET'
+    },
+    (err) => {
+      t.assert.ifError(err)
+      done()
+    }
+  )
 })

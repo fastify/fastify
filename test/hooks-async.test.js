@@ -10,7 +10,7 @@ const { sleep } = require('./helper')
 
 process.removeAllListeners('warning')
 
-test('async hooks', t => {
+test('async hooks', (t) => {
   t.plan(21)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -56,39 +56,50 @@ test('async hooks', t => {
     reply.code(200).send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
-    t.teardown(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+    t.teardown(() => {
+      fastify.close()
     })
 
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
 
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-    })
+    sget(
+      {
+        method: 'HEAD',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 500)
+      }
+    )
+
+    sget(
+      {
+        method: 'DELETE',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 500)
+      }
+    )
   })
 })
 
-test('modify payload', t => {
+test('modify payload', (t) => {
   t.plan(10)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -116,18 +127,21 @@ test('modify payload', t => {
     reply.send(payload)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, anotherPayload)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-length'], '18')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.payload, anotherPayload)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['content-length'], '18')
+    }
+  )
 })
 
-test('onRequest hooks should be able to block a request', t => {
+test('onRequest hooks should be able to block a request', (t) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -155,17 +169,20 @@ test('onRequest hooks should be able to block a request', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'hello')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.equal(res.payload, 'hello')
+    }
+  )
 })
 
-test('preParsing hooks should be able to modify the payload', t => {
+test('preParsing hooks should be able to modify the payload', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -183,18 +200,21 @@ test('preParsing hooks should be able to modify the payload', t => {
     reply.send(request.body)
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'another world' })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.same(JSON.parse(res.payload), { hello: 'another world' })
+    }
+  )
 })
 
-test('preParsing hooks should be able to supply statusCode', t => {
+test('preParsing hooks should be able to supply statusCode', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -218,22 +238,25 @@ test('preParsing hooks should be able to supply statusCode', t => {
     t.fail('should not be called')
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 408)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 408,
-      error: 'Request Timeout',
-      message: 'kaboom'
-    })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 408)
+      t.same(JSON.parse(res.payload), {
+        statusCode: 408,
+        error: 'Request Timeout',
+        message: 'kaboom'
+      })
+    }
+  )
 })
 
-test('preParsing hooks should ignore statusCode 200 in stream error', t => {
+test('preParsing hooks should ignore statusCode 200 in stream error', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -257,22 +280,25 @@ test('preParsing hooks should ignore statusCode 200 in stream error', t => {
     t.fail('should not be called')
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'kaboom'
-    })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.same(JSON.parse(res.payload), {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'kaboom'
+      })
+    }
+  )
 })
 
-test('preParsing hooks should ignore non-number statusCode in stream error', t => {
+test('preParsing hooks should ignore non-number statusCode in stream error', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -296,22 +322,25 @@ test('preParsing hooks should ignore non-number statusCode in stream error', t =
     t.fail('should not be called')
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'kaboom'
-    })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.same(JSON.parse(res.payload), {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'kaboom'
+      })
+    }
+  )
 })
 
-test('preParsing hooks should default to statusCode 400 if stream error', t => {
+test('preParsing hooks should default to statusCode 400 if stream error', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -333,22 +362,25 @@ test('preParsing hooks should default to statusCode 400 if stream error', t => {
     t.fail('should not be called')
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'kaboom'
-    })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.same(JSON.parse(res.payload), {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'kaboom'
+      })
+    }
+  )
 })
 
-test('preParsing hooks should handle errors', t => {
+test('preParsing hooks should handle errors', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -362,18 +394,25 @@ test('preParsing hooks should handle errors', t => {
     reply.send(request.body)
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 501)
-    t.same(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
-  })
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 501)
+      t.same(JSON.parse(res.payload), {
+        error: 'Not Implemented',
+        message: 'kaboom',
+        statusCode: 501
+      })
+    }
+  )
 })
 
-test('preHandler hooks should be able to block a request', t => {
+test('preHandler hooks should be able to block a request', (t) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -397,17 +436,20 @@ test('preHandler hooks should be able to block a request', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'hello')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.equal(res.payload, 'hello')
+    }
+  )
 })
 
-test('preValidation hooks should be able to block a request', t => {
+test('preValidation hooks should be able to block a request', (t) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -431,17 +473,20 @@ test('preValidation hooks should be able to block a request', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'hello')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.equal(res.payload, 'hello')
+    }
+  )
 })
 
-test('preValidation hooks should be able to change request body before validation', t => {
+test('preValidation hooks should be able to change request body before validation', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -474,20 +519,23 @@ test('preValidation hooks should be able to change request body before validatio
     }
   )
 
-  fastify.inject({
-    url: '/',
-    method: 'POST',
-    payload: {
-      message: Buffer.from(JSON.stringify({ foo: 'example', bar: 1 })).toString('base64')
+  fastify.inject(
+    {
+      url: '/',
+      method: 'POST',
+      payload: {
+        message: Buffer.from(JSON.stringify({ foo: 'example', bar: 1 })).toString('base64')
+      }
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.equal(res.payload, 'hello')
     }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'hello')
-  })
+  )
 })
 
-test('preSerialization hooks should be able to modify the payload', t => {
+test('preSerialization hooks should be able to modify the payload', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -499,17 +547,20 @@ test('preSerialization hooks should be able to modify the payload', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'another world' })
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.same(JSON.parse(res.payload), { hello: 'another world' })
+    }
+  )
 })
 
-test('preSerialization hooks should handle errors', t => {
+test('preSerialization hooks should handle errors', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -521,17 +572,24 @@ test('preSerialization hooks should handle errors', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.same(JSON.parse(res.payload), { error: 'Internal Server Error', message: 'kaboom', statusCode: 500 })
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.same(JSON.parse(res.payload), {
+        error: 'Internal Server Error',
+        message: 'kaboom',
+        statusCode: 500
+      })
+    }
+  )
 })
 
-test('preValidation hooks should handle throwing null', t => {
+test('preValidation hooks should handle throwing null', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -545,24 +603,29 @@ test('preValidation hooks should handle throwing null', t => {
     throw null
   })
 
-  fastify.get('/', function (request, reply) { t.fail('the handler must not be called') })
-
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.same(res.json(), {
-      error: 'Internal Server Error',
-      code: 'FST_ERR_SEND_UNDEFINED_ERR',
-      message: 'Undefined error has occurred',
-      statusCode: 500
-    })
+  fastify.get('/', function (request, reply) {
+    t.fail('the handler must not be called')
   })
+
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.same(res.json(), {
+        error: 'Internal Server Error',
+        code: 'FST_ERR_SEND_UNDEFINED_ERR',
+        message: 'Undefined error has occurred',
+        statusCode: 500
+      })
+    }
+  )
 })
 
-test('preValidation hooks should handle throwing a string', t => {
+test('preValidation hooks should handle throwing a string', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -571,19 +634,24 @@ test('preValidation hooks should handle throwing a string', t => {
     throw 'this is an error'
   })
 
-  fastify.get('/', function (request, reply) { t.fail('the handler must not be called') })
-
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 500)
-    t.equal(res.payload, 'this is an error')
+  fastify.get('/', function (request, reply) {
+    t.fail('the handler must not be called')
   })
+
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 500)
+      t.equal(res.payload, 'this is an error')
+    }
+  )
 })
 
-test('onRequest hooks should be able to block a request (last hook)', t => {
+test('onRequest hooks should be able to block a request (last hook)', (t) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -607,17 +675,20 @@ test('onRequest hooks should be able to block a request (last hook)', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'hello')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.equal(res.payload, 'hello')
+    }
+  )
 })
 
-test('preHandler hooks should be able to block a request (last hook)', t => {
+test('preHandler hooks should be able to block a request (last hook)', (t) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -637,17 +708,20 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'hello')
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.equal(res.payload, 'hello')
+    }
+  )
 })
 
-test('onRequest respond with a stream', t => {
+test('onRequest respond with a stream', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -682,16 +756,19 @@ test('onRequest respond with a stream', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })
 
-test('preHandler respond with a stream', t => {
+test('preHandler respond with a stream', (t) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -728,17 +805,20 @@ test('preHandler respond with a stream', t => {
     t.fail('we should not be here')
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })
 
-test('Should log a warning if is an async function with `done`', t => {
-  t.test('2 arguments', t => {
+test('Should log a warning if is an async function with `done`', (t) => {
+  t.test('2 arguments', (t) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -746,11 +826,11 @@ test('Should log a warning if is an async function with `done`', t => {
       fastify.addHook('onRequestAbort', async (req, done) => {})
     } catch (e) {
       t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
     }
   })
 
-  t.test('3 arguments', t => {
+  t.test('3 arguments', (t) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -758,11 +838,11 @@ test('Should log a warning if is an async function with `done`', t => {
       fastify.addHook('onRequest', async (req, reply, done) => {})
     } catch (e) {
       t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
     }
   })
 
-  t.test('4 arguments', t => {
+  t.test('4 arguments', (t) => {
     t.plan(6)
     const fastify = Fastify()
 
@@ -770,26 +850,26 @@ test('Should log a warning if is an async function with `done`', t => {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {
       t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
     }
     try {
       fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
     } catch (e) {
       t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
     }
     try {
       fastify.addHook('onError', async (req, reply, payload, done) => {})
     } catch (e) {
       t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
     }
   })
 
   t.end()
 })
 
-test('early termination, onRequest async', async t => {
+test('early termination, onRequest async', async (t) => {
   t.plan(2)
 
   const app = Fastify()
@@ -808,7 +888,7 @@ test('early termination, onRequest async', async t => {
   t.equal(res.body.toString(), 'hello world')
 })
 
-test('The this should be the same of the encapsulation level', async t => {
+test('The this should be the same of the encapsulation level', async (t) => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', async function (req, reply) {
@@ -833,8 +913,8 @@ test('The this should be the same of the encapsulation level', async t => {
   await fastify.inject({ method: 'GET', path: '/nested' })
 })
 
-test('preSerializationEnd should handle errors if the serialize method throws', t => {
-  t.test('works with sync preSerialization', t => {
+test('preSerializationEnd should handle errors if the serialize method throws', (t) => {
+  t.test('works with sync preSerialization', (t) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -843,20 +923,29 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
     })
 
     fastify.post('/', {
-      handler (req, reply) { reply.send({ notOk: true }) },
-      schema: { response: { 200: { required: ['ok'], properties: { ok: { type: 'boolean' } } } } }
+      handler (req, reply) {
+        reply.send({ notOk: true })
+      },
+      schema: {
+        response: {
+          200: { required: ['ok'], properties: { ok: { type: 'boolean' } } }
+        }
+      }
     })
 
-    fastify.inject({
-      method: 'POST',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.not(res.statusCode, 200)
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/'
+      },
+      (err, res) => {
+        t.error(err)
+        t.not(res.statusCode, 200)
+      }
+    )
   })
 
-  t.test('works with async preSerialization', t => {
+  t.test('works with async preSerialization', (t) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -865,23 +954,32 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
     })
 
     fastify.post('/', {
-      handler (req, reply) { reply.send({ notOk: true }) },
-      schema: { response: { 200: { required: ['ok'], properties: { ok: { type: 'boolean' } } } } }
+      handler (req, reply) {
+        reply.send({ notOk: true })
+      },
+      schema: {
+        response: {
+          200: { required: ['ok'], properties: { ok: { type: 'boolean' } } }
+        }
+      }
     })
 
-    fastify.inject({
-      method: 'POST',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.not(res.statusCode, 200)
-    })
+    fastify.inject(
+      {
+        method: 'POST',
+        url: '/'
+      },
+      (err, res) => {
+        t.error(err)
+        t.not(res.statusCode, 200)
+      }
+    )
   })
 
   t.end()
 })
 
-t.test('nested hooks to do not crash on 404', t => {
+t.test('nested hooks to do not crash on 404', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -889,21 +987,24 @@ t.test('nested hooks to do not crash on 404', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.register(async function (fastify) {
-    fastify.get('/something', (req, reply) => {
-      reply.callNotFound()
-    })
+  fastify.register(
+    async function (fastify) {
+      fastify.get('/something', (req, reply) => {
+        reply.callNotFound()
+      })
 
-    fastify.setNotFoundHandler(async (request, reply) => {
-      reply.statusCode = 404
-      return { status: 'nested-not-found' }
-    })
+      fastify.setNotFoundHandler(async (request, reply) => {
+        reply.statusCode = 404
+        return { status: 'nested-not-found' }
+      })
 
-    fastify.setErrorHandler(async (error, request, reply) => {
-      reply.statusCode = 500
-      return { status: 'nested-error', error }
-    })
-  }, { prefix: '/nested' })
+      fastify.setErrorHandler(async (error, request, reply) => {
+        reply.statusCode = 500
+        return { status: 'nested-error', error }
+      })
+    },
+    { prefix: '/nested' }
+  )
 
   fastify.setNotFoundHandler(async (request, reply) => {
     reply.statusCode = 404
@@ -915,16 +1016,19 @@ t.test('nested hooks to do not crash on 404', t => {
     return { status: 'error', error }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/nested/something'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/nested/something'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 404)
+    }
+  )
 })
 
-test('Register an hook (preHandler) as route option should fail if mixing async and callback style', t => {
+test('Register an hook (preHandler) as route option should fail if mixing async and callback style', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -945,11 +1049,11 @@ test('Register an hook (preHandler) as route option should fail if mixing async 
     t.fail('preHandler mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })
 
-test('Register an hook (onSend) as route option should fail if mixing async and callback style', t => {
+test('Register an hook (onSend) as route option should fail if mixing async and callback style', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -970,11 +1074,11 @@ test('Register an hook (onSend) as route option should fail if mixing async and 
     t.fail('onSend mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })
 
-test('Register an hook (preSerialization) as route option should fail if mixing async and callback style', t => {
+test('Register an hook (preSerialization) as route option should fail if mixing async and callback style', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -995,11 +1099,11 @@ test('Register an hook (preSerialization) as route option should fail if mixing 
     t.fail('preSerialization mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })
 
-test('Register an hook (onError) as route option should fail if mixing async and callback style', t => {
+test('Register an hook (onError) as route option should fail if mixing async and callback style', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -1020,11 +1124,11 @@ test('Register an hook (onError) as route option should fail if mixing async and
     t.fail('onError mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })
 
-test('Register an hook (preParsing) as route option should fail if mixing async and callback style', t => {
+test('Register an hook (preParsing) as route option should fail if mixing async and callback style', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -1045,11 +1149,11 @@ test('Register an hook (preParsing) as route option should fail if mixing async 
     t.fail('preParsing mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })
 
-test('Register an hook (onRequestAbort) as route option should fail if mixing async and callback style', t => {
+test('Register an hook (onRequestAbort) as route option should fail if mixing async and callback style', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -1070,6 +1174,6 @@ test('Register an hook (onRequestAbort) as route option should fail if mixing as
     t.fail('onRequestAbort mixing async and callback style')
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.equal(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.equal(e.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })

@@ -39,13 +39,15 @@ test('skip automatic reply.send() with reply.hijack and a body', (t) => {
     return Promise.resolve('this will be skipped')
   })
 
-  return app.inject({
-    method: 'GET',
-    url: '/'
-  }).then((res) => {
-    t.equal(res.statusCode, 200)
-    t.equal(res.body, 'hello world')
-  })
+  return app
+    .inject({
+      method: 'GET',
+      url: '/'
+    })
+    .then((res) => {
+      t.equal(res.statusCode, 200)
+      t.equal(res.body, 'hello world')
+    })
 })
 
 test('skip automatic reply.send() with reply.hijack and no body', (t) => {
@@ -68,13 +70,15 @@ test('skip automatic reply.send() with reply.hijack and no body', (t) => {
     return Promise.resolve()
   })
 
-  return app.inject({
-    method: 'GET',
-    url: '/'
-  }).then((res) => {
-    t.equal(res.statusCode, 200)
-    t.equal(res.body, 'hello world')
-  })
+  return app
+    .inject({
+      method: 'GET',
+      url: '/'
+    })
+    .then((res) => {
+      t.equal(res.statusCode, 200)
+      t.equal(res.body, 'hello world')
+    })
 })
 
 test('skip automatic reply.send() with reply.hijack and an error', (t) => {
@@ -102,14 +106,16 @@ test('skip automatic reply.send() with reply.hijack and an error', (t) => {
     return Promise.reject(new Error('kaboom'))
   })
 
-  return app.inject({
-    method: 'GET',
-    url: '/'
-  }).then((res) => {
-    t.equal(errorSeen, true)
-    t.equal(res.statusCode, 200)
-    t.equal(res.body, 'hello world')
-  })
+  return app
+    .inject({
+      method: 'GET',
+      url: '/'
+    })
+    .then((res) => {
+      t.equal(errorSeen, true)
+      t.equal(res.statusCode, 200)
+      t.equal(res.body, 'hello world')
+    })
 })
 
 function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
@@ -117,11 +123,11 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
   const previousHooks = lifecycleHooks.slice(0, idx)
   const nextHooks = lifecycleHooks.slice(idx + 1)
 
-  test(`Hijacking inside ${hookOrHandler} skips all the following hooks and handler execution`, t => {
+  test(`Hijacking inside ${hookOrHandler} skips all the following hooks and handler execution`, (t) => {
     t.plan(4)
     const test = t.test
 
-    test('Sending a response using reply.raw => onResponse hook is called', t => {
+    test('Sending a response using reply.raw => onResponse hook is called', (t) => {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
@@ -134,7 +140,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         t.not(line.level, 50) // there are no errors
       })
 
-      previousHooks.forEach(h => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
+      previousHooks.forEach((h) => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
 
       if (hookOrHandler === 'handler') {
         app.get('/', (req, reply) => {
@@ -149,7 +155,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         app.get('/', (req, reply) => t.fail('Handler should not be called'))
       }
 
-      nextHooks.forEach(h => {
+      nextHooks.forEach((h) => {
         if (h === 'onResponse') {
           app.addHook(h, async (req, reply) => t.pass(`${h} should be called`))
         } else {
@@ -157,16 +163,18 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         }
       })
 
-      return app.inject({
-        method: 'GET',
-        url: '/'
-      }).then((res) => {
-        t.equal(res.statusCode, 200)
-        t.equal(res.body, `hello from ${hookOrHandler}`)
-      })
+      return app
+        .inject({
+          method: 'GET',
+          url: '/'
+        })
+        .then((res) => {
+          t.equal(res.statusCode, 200)
+          t.equal(res.body, `hello from ${hookOrHandler}`)
+        })
     })
 
-    test('Sending a response using req.socket => onResponse not called', t => {
+    test('Sending a response using req.socket => onResponse not called', (t) => {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
@@ -180,7 +188,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         t.not(line.level, 50) // there are no errors
       })
 
-      previousHooks.forEach(h => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
+      previousHooks.forEach((h) => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
 
       if (hookOrHandler === 'handler') {
         app.get('/', (req, reply) => {
@@ -199,16 +207,16 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         app.get('/', (req, reply) => t.fail('Handler should not be called'))
       }
 
-      nextHooks.forEach(h => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
+      nextHooks.forEach((h) => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
 
-      app.listen({ port: 0 }, err => {
+      app.listen({ port: 0 }, (err) => {
         t.error(err)
-        const client = net.createConnection({ port: (app.server.address()).port }, () => {
+        const client = net.createConnection({ port: app.server.address().port }, () => {
           client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           let chunks = ''
           client.setEncoding('utf8')
-          client.on('data', data => {
+          client.on('data', (data) => {
             chunks += data
           })
 
@@ -220,7 +228,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       })
     })
 
-    test('Throwing an error does not trigger any hooks', t => {
+    test('Throwing an error does not trigger any hooks', (t) => {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
@@ -242,7 +250,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         }
       })
 
-      previousHooks.forEach(h => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
+      previousHooks.forEach((h) => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
 
       if (hookOrHandler === 'handler') {
         app.get('/', (req, reply) => {
@@ -257,7 +265,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         app.get('/', (req, reply) => t.fail('Handler should not be called'))
       }
 
-      nextHooks.forEach(h => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
+      nextHooks.forEach((h) => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
 
       return Promise.race([
         app.inject({ method: 'GET', url: '/' }),
@@ -270,7 +278,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       })
     })
 
-    test('Calling reply.send() after hijacking logs a warning', t => {
+    test('Calling reply.send() after hijacking logs a warning', (t) => {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
@@ -287,7 +295,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         }
       })
 
-      previousHooks.forEach(h => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
+      previousHooks.forEach((h) => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
 
       if (hookOrHandler === 'handler') {
         app.get('/', (req, reply) => {
@@ -302,7 +310,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         app.get('/', (req, reply) => t.fail('Handler should not be called'))
       }
 
-      nextHooks.forEach(h => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
+      nextHooks.forEach((h) => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
 
       return Promise.race([
         app.inject({ method: 'GET', url: '/' }),

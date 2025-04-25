@@ -5,15 +5,18 @@ const FJS = require('fast-json-stringify')
 const path = require('node:path')
 const fs = require('node:fs')
 
-const code = FJS({
-  type: 'object',
-  properties: {
-    statusCode: { type: 'number' },
-    code: { type: 'string' },
-    error: { type: 'string' },
-    message: { type: 'string' }
-  }
-}, { mode: 'standalone' })
+const code = FJS(
+  {
+    type: 'object',
+    properties: {
+      statusCode: { type: 'number' },
+      code: { type: 'string' },
+      error: { type: 'string' },
+      message: { type: 'string' }
+    }
+  },
+  { mode: 'standalone' }
+)
 
 const file = path.join(__dirname, '..', 'lib', 'error-serializer.js')
 

@@ -36,42 +36,51 @@ test('Async Local Storage test', (t, done) => {
   app.listen({ port: 0 }, function (err, address) {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + app.server.address().port,
-      body: {
-        hello: 'world'
-      },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(body, { id: 0 })
-
-      sget({
+    sget(
+      {
         method: 'POST',
         url: 'http://localhost:' + app.server.address().port,
         body: {
           hello: 'world'
         },
         json: true
-      }, (err, response, body) => {
+      },
+      (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body, { id: 1 })
+        t.assert.deepStrictEqual(body, { id: 0 })
 
-        sget({
-          method: 'GET',
-          url: 'http://localhost:' + app.server.address().port,
-          json: true
-        }, (err, response, body) => {
-          t.assert.ifError(err)
-          t.assert.strictEqual(response.statusCode, 200)
-          t.assert.deepStrictEqual(body, { id: 2 })
-          app.close()
-          done()
-        })
-      })
-    })
+        sget(
+          {
+            method: 'POST',
+            url: 'http://localhost:' + app.server.address().port,
+            body: {
+              hello: 'world'
+            },
+            json: true
+          },
+          (err, response, body) => {
+            t.assert.ifError(err)
+            t.assert.strictEqual(response.statusCode, 200)
+            t.assert.deepStrictEqual(body, { id: 1 })
+
+            sget(
+              {
+                method: 'GET',
+                url: 'http://localhost:' + app.server.address().port,
+                json: true
+              },
+              (err, response, body) => {
+                t.assert.ifError(err)
+                t.assert.strictEqual(response.statusCode, 200)
+                t.assert.deepStrictEqual(body, { id: 2 })
+                app.close()
+                done()
+              }
+            )
+          }
+        )
+      }
+    )
   })
 })

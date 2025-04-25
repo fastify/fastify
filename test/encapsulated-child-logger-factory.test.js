@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 
-test('encapsulates an child logger factory', async t => {
+test('encapsulates an child logger factory', async (t) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -39,23 +39,25 @@ test('encapsulates an child logger factory', async t => {
   t.assert.strictEqual(res2.statusCode, 200)
 })
 
-test('child logger factory set on root scope when using fastify-plugin', async t => {
+test('child logger factory set on root scope when using fastify-plugin', async (t) => {
   t.plan(4)
 
   const fastify = Fastify()
-  fastify.register(fp(async function (fastify) {
-    // Using fastify-plugin, the factory should be set on the root scope
-    fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
-      const child = logger.child(bindings, opts)
-      child.customLog = function (message) {
-        t.assert.strictEqual(message, 'custom')
-      }
-      return child
+  fastify.register(
+    fp(async function (fastify) {
+      // Using fastify-plugin, the factory should be set on the root scope
+      fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
+        const child = logger.child(bindings, opts)
+        child.customLog = function (message) {
+          t.assert.strictEqual(message, 'custom')
+        }
+        return child
+      })
+      fastify.get('/not-encapsulated-1', async (req) => {
+        req.log.customLog('custom')
+      })
     })
-    fastify.get('/not-encapsulated-1', async (req) => {
-      req.log.customLog('custom')
-    })
-  }))
+  )
 
   fastify.get('/not-encapsulated-2', async (req) => {
     req.log.customLog('custom')

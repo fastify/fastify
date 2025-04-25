@@ -3,12 +3,9 @@
 const split = require('split2')
 const { test } = require('node:test')
 const Fastify = require('../')
-const {
-  FST_ERR_BAD_URL,
-  FST_ERR_ASYNC_CONSTRAINT
-} = require('../lib/errors')
+const { FST_ERR_BAD_URL, FST_ERR_ASYNC_CONSTRAINT } = require('../lib/errors')
 
-test('Should honor ignoreTrailingSlash option', async t => {
+test('Should honor ignoreTrailingSlash option', async (t) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true
@@ -27,7 +24,7 @@ test('Should honor ignoreTrailingSlash option', async t => {
   t.assert.strictEqual(res.payload.toString(), 'test')
 })
 
-test('Should honor ignoreDuplicateSlashes option', async t => {
+test('Should honor ignoreDuplicateSlashes option', async (t) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreDuplicateSlashes: true
@@ -46,7 +43,7 @@ test('Should honor ignoreDuplicateSlashes option', async t => {
   t.assert.strictEqual(res.payload.toString(), 'test')
 })
 
-test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', async t => {
+test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', async (t) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -98,27 +95,34 @@ test('Should expose router options via getters on request and reply', (t, done) 
     }
   }
 
-  fastify.get('/test/:id', {
-    schema: expectedSchema
-  }, (req, reply) => {
-    t.assert.strictEqual(reply.routeOptions.config.url, '/test/:id')
-    t.assert.strictEqual(reply.routeOptions.config.method, 'GET')
-    t.assert.deepStrictEqual(req.routeOptions.schema, expectedSchema)
-    t.assert.strictEqual(typeof req.routeOptions.handler, 'function')
-    t.assert.strictEqual(req.routeOptions.config.url, '/test/:id')
-    t.assert.strictEqual(req.routeOptions.config.method, 'GET')
-    t.assert.strictEqual(req.is404, false)
-    reply.send({ hello: 'world' })
-  })
+  fastify.get(
+    '/test/:id',
+    {
+      schema: expectedSchema
+    },
+    (req, reply) => {
+      t.assert.strictEqual(reply.routeOptions.config.url, '/test/:id')
+      t.assert.strictEqual(reply.routeOptions.config.method, 'GET')
+      t.assert.deepStrictEqual(req.routeOptions.schema, expectedSchema)
+      t.assert.strictEqual(typeof req.routeOptions.handler, 'function')
+      t.assert.strictEqual(req.routeOptions.config.url, '/test/:id')
+      t.assert.strictEqual(req.routeOptions.config.method, 'GET')
+      t.assert.strictEqual(req.is404, false)
+      reply.send({ hello: 'world' })
+    }
+  )
 
-  fastify.inject({
-    method: 'GET',
-    url: '/test/123456789'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 200)
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123456789'
+    },
+    (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 200)
+      done()
+    }
+  )
 })
 
 test('Should set is404 flag for unmatched paths', (t, done) => {
@@ -130,14 +134,17 @@ test('Should set is404 flag for unmatched paths', (t, done) => {
     reply.code(404).send({ error: 'Not Found', message: 'Four oh for', statusCode: 404 })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/nonexist/123456789'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 404)
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/nonexist/123456789'
+    },
+    (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 404)
+      done()
+    }
+  )
 })
 
 test('Should honor frameworkErrors option - FST_ERR_BAD_URL', (t, done) => {
@@ -154,7 +161,7 @@ test('Should honor frameworkErrors option - FST_ERR_BAD_URL', (t, done) => {
   })
 
   fastify.get('/test/:id', (req, res) => {
-    res.send('{ hello: \'world\' }')
+    res.send("{ hello: 'world' }")
   })
 
   fastify.inject(
@@ -164,7 +171,7 @@ test('Should honor frameworkErrors option - FST_ERR_BAD_URL', (t, done) => {
     },
     (err, res) => {
       t.assert.ifError(err)
-      t.assert.strictEqual(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.assert.strictEqual(res.body, "'/test/%world' is not a valid url component - FST_ERR_BAD_URL")
       done()
     }
   )
@@ -195,7 +202,7 @@ test('Should supply Fastify request to the logger in frameworkErrors wrapper - F
   })
 
   fastify.get('/test/:id', (req, res) => {
-    res.send('{ hello: \'world\' }')
+    res.send("{ hello: 'world' }")
   })
 
   logStream.on('data', (json) => {
@@ -211,7 +218,7 @@ test('Should supply Fastify request to the logger in frameworkErrors wrapper - F
     },
     (err, res) => {
       t.assert.ifError(err)
-      t.assert.strictEqual(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.assert.strictEqual(res.body, "'/test/%world' is not a valid url component - FST_ERR_BAD_URL")
       done()
     }
   )
@@ -241,7 +248,7 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
   })
 
   fastify.get('/test/:id', (req, res) => {
-    res.send('{ hello: \'world\' }')
+    res.send("{ hello: 'world' }")
   })
 
   logStream.on('data', (json) => {
@@ -255,7 +262,7 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
     },
     (err, res) => {
       t.assert.ifError(err)
-      t.assert.strictEqual(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.assert.strictEqual(res.body, "'/test/%world' is not a valid url component - FST_ERR_BAD_URL")
       done()
     }
   )
@@ -269,14 +276,20 @@ test('Should honor frameworkErrors option - FST_ERR_ASYNC_CONSTRAINT', (t, done)
     storage: function () {
       const secrets = {}
       return {
-        get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        get: (secret) => {
+          return secrets[secret] || null
+        },
+        set: (secret, store) => {
+          secrets[secret] = store
+        }
       }
     },
     deriveConstraint: (req, ctx, done) => {
       done(Error('kaboom'))
     },
-    validate () { return true }
+    validate () {
+      return true
+    }
   }
 
   const fastify = Fastify({
@@ -321,14 +334,20 @@ test('Should supply Fastify request to the logger in frameworkErrors wrapper - F
     storage: function () {
       const secrets = {}
       return {
-        get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        get: (secret) => {
+          return secrets[secret] || null
+        },
+        set: (secret, store) => {
+          secrets[secret] = store
+        }
       }
     },
     deriveConstraint: (req, ctx, done) => {
       done(Error('kaboom'))
     },
-    validate () { return true }
+    validate () {
+      return true
+    }
   }
 
   const REQ_ID = 'REQ-1234'
@@ -389,14 +408,20 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
     storage: function () {
       const secrets = {}
       return {
-        get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store }
+        get: (secret) => {
+          return secrets[secret] || null
+        },
+        set: (secret, store) => {
+          secrets[secret] = store
+        }
       }
     },
     deriveConstraint: (req, ctx, done) => {
       done(Error('kaboom'))
     },
-    validate () { return true }
+    validate () {
+      return true
+    }
   }
 
   const logStream = split(JSON.parse)

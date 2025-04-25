@@ -19,22 +19,25 @@ const opts = {
   }
 }
 
-test('chainable - get', t => {
+test('chainable - get', (t) => {
   t.plan(1)
   t.assert.strictEqual(fastify.get('/', opts, noop), fastify)
 })
 
-test('chainable - post', t => {
+test('chainable - post', (t) => {
   t.plan(1)
   t.assert.strictEqual(fastify.post('/', opts, noop), fastify)
 })
 
-test('chainable - route', t => {
+test('chainable - route', (t) => {
   t.plan(1)
-  t.assert.strictEqual(fastify.route({
-    method: 'GET',
-    url: '/other',
-    schema: opts.schema,
-    handler: noop
-  }), fastify)
+  t.assert.strictEqual(
+    fastify.route({
+      method: 'GET',
+      url: '/other',
+      schema: opts.schema,
+      handler: noop
+    }),
+    fastify
+  )
 })

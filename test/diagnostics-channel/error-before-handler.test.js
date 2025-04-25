@@ -8,7 +8,7 @@ const Reply = require('../../lib/reply')
 const symbols = require('../../lib/symbols.js')
 const { preHandlerCallback } = require('../../lib/handleRequest')[Symbol.for('internals')]
 
-test('diagnostics channel handles an error before calling context handler', t => {
+test('diagnostics channel handles an error before calling context handler', (t) => {
   t.plan(3)
   let callOrder = 0
 

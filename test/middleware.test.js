@@ -2,18 +2,16 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const {
-  FST_ERR_DEC_ALREADY_PRESENT
-} = require('../lib/errors')
+const { FST_ERR_DEC_ALREADY_PRESENT } = require('../lib/errors')
 
-test('Should be able to override the default use API', t => {
+test('Should be able to override the default use API', (t) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.decorate('use', () => true)
   t.assert.strictEqual(fastify.use(), true)
 })
 
-test('Cannot decorate use twice', t => {
+test('Cannot decorate use twice', (t) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.decorate('use', () => true)
@@ -24,7 +22,7 @@ test('Cannot decorate use twice', t => {
   }
 })
 
-test('Encapsulation works', t => {
+test('Encapsulation works', (t) => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {

@@ -10,7 +10,7 @@ describe('upgrade to both servers', async () => {
   const localAddresses = await dns.lookup('localhost', { all: true })
   const skip = localAddresses.length === 1 && 'requires both IPv4 and IPv6'
 
-  await test('upgrade IPv4 and IPv6', { skip }, async t => {
+  await test('upgrade IPv4 and IPv6', { skip }, async (t) => {
     t.plan(2)
 
     const fastify = Fastify()

@@ -5,10 +5,10 @@ type TestType = void
 
 declare module '../../fastify' {
   interface FastifyRequest {
-    testProp: TestType;
+    testProp: TestType
   }
   interface FastifyReply {
-    testProp: TestType;
+    testProp: TestType
   }
 }
 

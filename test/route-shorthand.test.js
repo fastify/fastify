@@ -20,17 +20,20 @@ describe('route-shorthand', () => {
       t.after(() => fastify.close())
 
       await new Promise((resolve, reject) => {
-        sget({
-          method,
-          url: `http://localhost:${fastify.server.address().port}`
-        }, (err, response, body) => {
-          if (err) {
-            t.assert.ifError(err)
-            return reject(err)
+        sget(
+          {
+            method,
+            url: `http://localhost:${fastify.server.address().port}`
+          },
+          (err, response, body) => {
+            if (err) {
+              t.assert.ifError(err)
+              return reject(err)
+            }
+            t.assert.strictEqual(response.statusCode, 200)
+            resolve()
           }
-          t.assert.strictEqual(response.statusCode, 200)
-          resolve()
-        })
+        )
       })
     })
   }
@@ -49,17 +52,20 @@ describe('route-shorthand', () => {
     for (const method of supportedMethods) {
       currentMethod = method
       await new Promise((resolve, reject) => {
-        sget({
-          method,
-          url: `http://localhost:${fastify.server.address().port}`
-        }, (err, response, body) => {
-          if (err) {
-            t.assert.ifError(err)
-            return reject(err)
+        sget(
+          {
+            method,
+            url: `http://localhost:${fastify.server.address().port}`
+          },
+          (err, response, body) => {
+            if (err) {
+              t.assert.ifError(err)
+              return reject(err)
+            }
+            t.assert.strictEqual(response.statusCode, 200)
+            resolve()
           }
-          t.assert.strictEqual(response.statusCode, 200)
-          resolve()
-        })
+        )
       })
     }
   })

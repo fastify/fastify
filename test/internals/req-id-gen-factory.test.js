@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const { reqIdGenFactory } = require('../../lib/reqIdGenFactory')
 
-test('should create incremental ids deterministically', t => {
+test('should create incremental ids deterministically', (t) => {
   t.plan(1)
   const reqIdGen = reqIdGenFactory()
 
@@ -16,14 +16,14 @@ test('should create incremental ids deterministically', t => {
   t.assert.ok(true)
 })
 
-test('should have prefix "req-"', t => {
+test('should have prefix "req-"', (t) => {
   t.plan(1)
   const reqIdGen = reqIdGenFactory()
 
   t.assert.ok(reqIdGen().startsWith('req-'))
 })
 
-test('different id generator functions should have separate internal counters', t => {
+test('different id generator functions should have separate internal counters', (t) => {
   t.plan(5)
   const reqIdGenA = reqIdGenFactory()
   const reqIdGenB = reqIdGenFactory()
@@ -35,14 +35,14 @@ test('different id generator functions should have separate internal counters', 
   t.assert.strictEqual(reqIdGenB(), 'req-2')
 })
 
-test('should start counting with 1', t => {
+test('should start counting with 1', (t) => {
   t.plan(1)
   const reqIdGen = reqIdGenFactory()
 
   t.assert.strictEqual(reqIdGen(), 'req-1')
 })
 
-test('should handle requestIdHeader and return provided id in header', t => {
+test('should handle requestIdHeader and return provided id in header', (t) => {
   t.plan(1)
 
   const reqIdGen = reqIdGenFactory('id')
@@ -50,7 +50,7 @@ test('should handle requestIdHeader and return provided id in header', t => {
   t.assert.strictEqual(reqIdGen({ headers: { id: '1337' } }), '1337')
 })
 
-test('should handle requestIdHeader and fallback if id is not provided in header', t => {
+test('should handle requestIdHeader and fallback if id is not provided in header', (t) => {
   t.plan(1)
 
   const reqIdGen = reqIdGenFactory('id')
@@ -58,7 +58,7 @@ test('should handle requestIdHeader and fallback if id is not provided in header
   t.assert.strictEqual(reqIdGen({ headers: { notId: '1337' } }), 'req-1')
 })
 
-test('should handle requestIdHeader and increment internal counter if no header was provided', t => {
+test('should handle requestIdHeader and increment internal counter if no header was provided', (t) => {
   t.plan(4)
 
   const reqIdGen = reqIdGenFactory('id')
@@ -69,7 +69,7 @@ test('should handle requestIdHeader and increment internal counter if no header 
   t.assert.strictEqual(reqIdGen({ headers: {} }), 'req-3')
 })
 
-test('should use optGenReqId to generate ids', t => {
+test('should use optGenReqId to generate ids', (t) => {
   t.plan(4)
 
   let i = 1
@@ -86,7 +86,7 @@ test('should use optGenReqId to generate ids', t => {
   t.assert.strictEqual(reqIdGen(), '2')
 })
 
-test('should use optGenReqId to generate ids if requestIdHeader is used but not provided', t => {
+test('should use optGenReqId to generate ids if requestIdHeader is used but not provided', (t) => {
   t.plan(4)
 
   let i = 1
@@ -103,7 +103,7 @@ test('should use optGenReqId to generate ids if requestIdHeader is used but not 
   t.assert.strictEqual(reqIdGen({ headers: {} }), '2')
 })
 
-test('should not use optGenReqId to generate ids if requestIdHeader is used and provided', t => {
+test('should not use optGenReqId to generate ids if requestIdHeader is used and provided', (t) => {
   t.plan(2)
 
   function optGenReqId () {
@@ -115,7 +115,7 @@ test('should not use optGenReqId to generate ids if requestIdHeader is used and 
   t.assert.strictEqual(reqIdGen({ headers: { reqId: 'r2' } }), 'r2')
 })
 
-test('should fallback to use optGenReqId to generate ids if requestIdHeader is sometimes provided', t => {
+test('should fallback to use optGenReqId to generate ids if requestIdHeader is sometimes provided', (t) => {
   t.plan(4)
 
   let i = 1

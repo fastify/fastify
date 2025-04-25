@@ -4,7 +4,7 @@ const t = require('tap')
 const Fastify = require('../fastify')
 const immediate = require('node:util').promisify(setImmediate)
 
-t.test('onReady should be called in order', t => {
+t.test('onReady should be called in order', (t) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -32,7 +32,7 @@ t.test('onReady should be called in order', t => {
     })
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready((err) => t.error(err))
 })
 
 t.test('onReady should be called once', async (t) => {
@@ -51,7 +51,7 @@ t.test('onReady should be called once', async (t) => {
   t.equal(counter, 1, 'Should call onReady only once')
 })
 
-t.test('async onReady should be called in order', async t => {
+t.test('async onReady should be called in order', async (t) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -83,7 +83,7 @@ t.test('async onReady should be called in order', async t => {
   t.pass('ready')
 })
 
-t.test('mix ready and onReady', async t => {
+t.test('mix ready and onReady', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   let order = 0
@@ -100,7 +100,7 @@ t.test('mix ready and onReady', async t => {
   t.equal(order, 1, 'ready hooks execute once')
 })
 
-t.test('listen and onReady order', async t => {
+t.test('listen and onReady order', async (t) => {
   t.plan(9)
 
   const fastify = Fastify()
@@ -139,7 +139,7 @@ t.test('listen and onReady order', async t => {
   }
 })
 
-t.test('multiple ready calls', async t => {
+t.test('multiple ready calls', async (t) => {
   t.plan(11)
 
   const fastify = Fastify()
@@ -177,7 +177,7 @@ t.test('multiple ready calls', async t => {
   }
 })
 
-t.test('onReady should manage error in sync', t => {
+t.test('onReady should manage error in sync', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -199,13 +199,13 @@ t.test('onReady should manage error in sync', t => {
     })
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.ok(err)
     t.equal(err.message, 'FAIL ON READY')
   })
 })
 
-t.test('onReady should manage error in async', t => {
+t.test('onReady should manage error in async', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -227,13 +227,13 @@ t.test('onReady should manage error in async', t => {
     })
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.ok(err)
     t.equal(err.message, 'FAIL ON READY')
   })
 })
 
-t.test('onReady should manage sync error', t => {
+t.test('onReady should manage sync error', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -255,13 +255,13 @@ t.test('onReady should manage sync error', t => {
     })
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.ok(err)
     t.equal(err.message, 'FAIL UNWANTED SYNC EXCEPTION')
   })
 })
 
-t.test('onReady can not add decorators or application hooks', t => {
+t.test('onReady can not add decorators or application hooks', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -280,10 +280,12 @@ t.test('onReady can not add decorators or application hooks', t => {
     done()
   })
 
-  fastify.ready(err => { t.error(err) })
+  fastify.ready((err) => {
+    t.error(err)
+  })
 })
 
-t.test('onReady cannot add lifecycle hooks', t => {
+t.test('onReady cannot add lifecycle hooks', (t) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -303,10 +305,12 @@ t.test('onReady cannot add lifecycle hooks', t => {
   fastify.addHook('onRequest', (request, reply, done) => {})
   fastify.get('/', async () => 'hello')
 
-  fastify.ready((err) => { t.ok(err) })
+  fastify.ready((err) => {
+    t.ok(err)
+  })
 })
 
-t.test('onReady throw loading error', t => {
+t.test('onReady throw loading error', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -314,11 +318,11 @@ t.test('onReady throw loading error', t => {
     fastify.addHook('onReady', async function (done) {})
   } catch (e) {
     t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-    t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.ok(e.message === "Async function has too many arguments. Async hooks should not use the 'done' argument.")
   }
 })
 
-t.test('onReady does not call done', t => {
+t.test('onReady does not call done', (t) => {
   t.plan(6)
   const fastify = Fastify({ pluginTimeout: 500 })
 
@@ -327,26 +331,38 @@ t.test('onReady does not call done', t => {
     // done() // don't call done to test timeout
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.ok(err)
-    t.equal(err.message, 'A callback for \'onReady\' hook "someHookName" timed out. You may have forgotten to call \'done\' function or to resolve a Promise')
+    t.equal(
+      err.message,
+      "A callback for 'onReady' hook \"someHookName\" timed out. You may have forgotten to call 'done' function or to resolve a Promise"
+    )
     t.equal(err.code, 'FST_ERR_HOOK_TIMEOUT')
     t.ok(err.cause)
     t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
   })
 })
 
-t.test('onReady execution order', t => {
+t.test('onReady execution order', (t) => {
   t.plan(3)
-  const fastify = Fastify({ })
+  const fastify = Fastify({})
 
   let i = 0
-  fastify.ready(() => { i++; t.equal(i, 1) })
-  fastify.ready(() => { i++; t.equal(i, 2) })
-  fastify.ready(() => { i++; t.equal(i, 3) })
+  fastify.ready(() => {
+    i++
+    t.equal(i, 1)
+  })
+  fastify.ready(() => {
+    i++
+    t.equal(i, 2)
+  })
+  fastify.ready(() => {
+    i++
+    t.equal(i, 3)
+  })
 })
 
-t.test('ready return the server with callback', t => {
+t.test('ready return the server with callback', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -356,44 +372,59 @@ t.test('ready return the server with callback', t => {
   })
 })
 
-t.test('ready return the server with Promise', t => {
+t.test('ready return the server with Promise', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
-  fastify.ready()
-    .then(instance => { t.same(instance, fastify) })
-    .catch(err => { t.fail(err) })
+  fastify
+    .ready()
+    .then((instance) => {
+      t.same(instance, fastify)
+    })
+    .catch((err) => {
+      t.fail(err)
+    })
 })
 
-t.test('ready return registered', t => {
+t.test('ready return registered', (t) => {
   t.plan(4)
   const fastify = Fastify()
 
   fastify.register((one, opts, done) => {
-    one.ready().then(itself => { t.same(itself, one) })
+    one.ready().then((itself) => {
+      t.same(itself, one)
+    })
     done()
   })
 
   fastify.register((two, opts, done) => {
-    two.ready().then(itself => { t.same(itself, two) })
+    two.ready().then((itself) => {
+      t.same(itself, two)
+    })
 
     two.register((twoDotOne, opts, done) => {
-      twoDotOne.ready().then(itself => { t.same(itself, twoDotOne) })
+      twoDotOne.ready().then((itself) => {
+        t.same(itself, twoDotOne)
+      })
       done()
     })
     done()
   })
 
-  fastify.ready()
-    .then(instance => { t.same(instance, fastify) })
-    .catch(err => { t.fail(err) })
+  fastify
+    .ready()
+    .then((instance) => {
+      t.same(instance, fastify)
+    })
+    .catch((err) => {
+      t.fail(err)
+    })
 })
 
-t.test('do not crash with error in follow up onReady hook', async t => {
+t.test('do not crash with error in follow up onReady hook', async (t) => {
   const fastify = Fastify()
 
-  fastify.addHook('onReady', async function () {
-  })
+  fastify.addHook('onReady', async function () {})
 
   fastify.addHook('onReady', function () {
     throw new Error('kaboom')

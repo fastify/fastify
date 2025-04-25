@@ -32,40 +32,49 @@ test('test async hooks', (t, done) => {
   app.listen({ port: 0 }, function (err, address) {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + app.server.address().port,
-      body: {
-        hello: 'world'
-      },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-
-      sget({
+    sget(
+      {
         method: 'POST',
         url: 'http://localhost:' + app.server.address().port,
         body: {
           hello: 'world'
         },
         json: true
-      }, (err, response, body) => {
+      },
+      (err, response, body) => {
         t.assert.ifError(err)
         t.assert.strictEqual(response.statusCode, 200)
 
-        sget({
-          method: 'GET',
-          url: 'http://localhost:' + app.server.address().port,
-          json: true
-        }, (err, response, body) => {
-          t.assert.ifError(err)
-          t.assert.strictEqual(response.statusCode, 200)
-          app.close()
-          t.assert.strictEqual(remainingIds.size, 0)
-          done()
-        })
-      })
-    })
+        sget(
+          {
+            method: 'POST',
+            url: 'http://localhost:' + app.server.address().port,
+            body: {
+              hello: 'world'
+            },
+            json: true
+          },
+          (err, response, body) => {
+            t.assert.ifError(err)
+            t.assert.strictEqual(response.statusCode, 200)
+
+            sget(
+              {
+                method: 'GET',
+                url: 'http://localhost:' + app.server.address().port,
+                json: true
+              },
+              (err, response, body) => {
+                t.assert.ifError(err)
+                t.assert.strictEqual(response.statusCode, 200)
+                app.close()
+                t.assert.strictEqual(remainingIds.size, 0)
+                done()
+              }
+            )
+          }
+        )
+      }
+    )
   })
 })

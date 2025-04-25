@@ -5,15 +5,17 @@ const Fastify = require('..')
 const helper = require('./helper')
 const { networkInterfaces } = require('node:os')
 
-const isIPv6Missing = !Object.values(networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
+const isIPv6Missing = !Object.values(networkInterfaces())
+  .flat()
+  .some(({ family }) => family === 'IPv6')
 
 let localhostForURL
 
 before(async function () {
-  [, localhostForURL] = await helper.getLoopbackHost()
+  ;[, localhostForURL] = await helper.getLoopbackHost()
 })
 
-test('register after listen using Promise.resolve()', async t => {
+test('register after listen using Promise.resolve()', async (t) => {
   t.plan(1)
   const fastify = Fastify()
 

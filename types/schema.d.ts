@@ -8,33 +8,33 @@ import { FastifyInstance, SafePromiseLike } from '../fastify'
  * out here: https://github.com/fastify/fastify/blob/main/docs/Reference/TypeScript.md#json-schema
  */
 export interface FastifySchema {
-  body?: unknown;
-  querystring?: unknown;
-  params?: unknown;
-  headers?: unknown;
-  response?: unknown;
+  body?: unknown
+  querystring?: unknown
+  params?: unknown
+  headers?: unknown
+  response?: unknown
 }
 
 export interface FastifyRouteSchemaDef<T> {
-  schema: T;
-  method: string;
-  url: string;
-  httpPart?: string;
-  httpStatus?: string;
-  contentType?: string;
+  schema: T
+  method: string
+  url: string
+  httpPart?: string
+  httpStatus?: string
+  contentType?: string
 }
 
 export interface FastifySchemaValidationError {
-  keyword: string;
-  instancePath: string;
-  schemaPath: string;
-  params: Record<string, unknown>;
-  message?: string;
+  keyword: string
+  instancePath: string
+  schemaPath: string
+  params: Record<string, unknown>
+  message?: string
 }
 
 export interface FastifyValidationResult {
-  (data: any): boolean | SafePromiseLike<any> | { error?: Error, value?: any }
-  errors?: FastifySchemaValidationError[] | null;
+  (data: any): boolean | SafePromiseLike<any> | { error?: Error; value?: any }
+  errors?: FastifySchemaValidationError[] | null
 }
 
 /**
@@ -46,14 +46,14 @@ export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T
 
 export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {
-    add(schema: unknown): FastifyInstance;
-    getSchema(schemaId: string): unknown;
-    getSchemas(): Record<string, unknown>;
-  };
+    add(schema: unknown): FastifyInstance
+    getSchema(schemaId: string): unknown
+    getSchemas(): Record<string, unknown>
+  }
   compilersFactory?: {
-    buildValidator?: ValidatorFactory;
-    buildSerializer?: SerializerFactory;
-  };
+    buildValidator?: ValidatorFactory
+    buildSerializer?: SerializerFactory
+  }
 }
 
 export type SchemaErrorDataVar = 'body' | 'headers' | 'params' | 'querystring'

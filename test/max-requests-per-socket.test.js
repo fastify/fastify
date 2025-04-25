@@ -19,20 +19,20 @@ test('maxRequestsPerSocket', (t, done) => {
     const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-      client.once('data', data => {
+      client.once('data', (data) => {
         t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
         t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.assert.match(data.toString(), /200 OK/i)
 
         client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-        client.once('data', data => {
+        client.once('data', (data) => {
           t.assert.match(data.toString(), /Connection:\s*close/i)
           t.assert.match(data.toString(), /200 OK/i)
 
           client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-          client.once('data', data => {
+          client.once('data', (data) => {
             t.assert.match(data.toString(), /Connection:\s*close/i)
             t.assert.match(data.toString(), /503 Service Unavailable/i)
             client.end()
@@ -60,21 +60,21 @@ test('maxRequestsPerSocket zero should behave same as null', (t, done) => {
     const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-      client.once('data', data => {
+      client.once('data', (data) => {
         t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
         t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.assert.match(data.toString(), /200 OK/i)
 
         client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-        client.once('data', data => {
+        client.once('data', (data) => {
           t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
           t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
           t.assert.match(data.toString(), /200 OK/i)
 
           client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-          client.once('data', data => {
+          client.once('data', (data) => {
             t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
             t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
             t.assert.match(data.toString(), /200 OK/i)
@@ -102,7 +102,7 @@ test('maxRequestsPerSocket should 0', async (t) => {
   t.assert.deepStrictEqual(initialConfig.maxRequestsPerSocket, 0)
 })
 
-test('requestTimeout passed to server', t => {
+test('requestTimeout passed to server', (t) => {
   t.plan(2)
 
   const httpServer = Fastify({ maxRequestsPerSocket: 5 }).server

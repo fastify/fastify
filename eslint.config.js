@@ -3,17 +3,22 @@ const neostandard = require('neostandard')
 
 module.exports = [
   ...neostandard({
-    ignores: [
-      'lib/configValidator.js',
-      'lib/error-serializer.js',
-      'test/same-shape.test.js',
-      'test/types/import.js'
-    ],
+    ignores: ['lib/configValidator.js', 'lib/error-serializer.js', 'test/same-shape.test.js', 'test/types/import.js'],
     ts: true
   }),
   {
     rules: {
-      'comma-dangle': ['error', 'never']
+      'comma-dangle': ['error', 'never'],
+      'max-len': [
+        'error',
+        {
+          code: 120,
+          ignoreUrls: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+          ignoreRegExpLiterals: true
+        }
+      ]
     }
   }
 ]

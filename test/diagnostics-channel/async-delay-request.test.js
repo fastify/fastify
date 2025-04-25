@@ -59,16 +59,21 @@ test('diagnostics channel async events fire in expected order', (t, done) => {
   fastify.listen({ port: 0 }, function (err) {
     if (err) t.assert.ifError(err)
 
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
+    t.after(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: getServerUrl(fastify) + '/'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+        done()
+      }
+    )
   })
 })

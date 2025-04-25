@@ -8,10 +8,10 @@ let localhost
 let localhostForURL
 
 before(async function () {
-  [localhost, localhostForURL] = await helper.getLoopbackHost()
+  ;[localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
-test('listen works without arguments', async t => {
+test('listen works without arguments', async (t) => {
   const doNotWarn = () => {
     t.assert.fail('should not be deprecated')
   }
@@ -28,7 +28,7 @@ test('listen works without arguments', async t => {
   t.assert.ok(address.port > 0)
 })
 
-test('Async/await listen with arguments', async t => {
+test('Async/await listen with arguments', async (t) => {
   const doNotWarn = () => {
     t.assert.fail('should not be deprecated')
   }
@@ -80,36 +80,38 @@ test('listen accepts options and a callback', (t, done) => {
     fastify.close()
     process.removeListener('warning', doNotWarn)
   })
-  fastify.listen({
-    port: 0,
-    host: 'localhost',
-    backlog: 511,
-    exclusive: false,
-    readableAll: false,
-    writableAll: false,
-    ipv6Only: false
-  }, (err) => {
-    t.assert.ifError(err)
-    done()
-  })
+  fastify.listen(
+    {
+      port: 0,
+      host: 'localhost',
+      backlog: 511,
+      exclusive: false,
+      readableAll: false,
+      writableAll: false,
+      ipv6Only: false
+    },
+    (err) => {
+      t.assert.ifError(err)
+      done()
+    }
+  )
 })
 
 test('listen after Promise.resolve()', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
-  Promise.resolve()
-    .then(() => {
-      fastify.listen({ port: 0 }, (err, address) => {
-        fastify.server.unref()
-        t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
-        t.assert.ifError(err)
-        done()
-      })
+  Promise.resolve().then(() => {
+    fastify.listen({ port: 0 }, (err, address) => {
+      fastify.server.unref()
+      t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
+      t.assert.ifError(err)
+      done()
     })
+  })
 })
 
-test('listen works with undefined host', async t => {
+test('listen works with undefined host', async (t) => {
   const doNotWarn = () => {
     t.assert.fail('should not be deprecated')
   }
@@ -127,7 +129,7 @@ test('listen works with undefined host', async t => {
   t.assert.ok(address.port > 0)
 })
 
-test('listen works with null host', async t => {
+test('listen works with null host', async (t) => {
   const doNotWarn = () => {
     t.fail('should not be deprecated')
   }

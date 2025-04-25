@@ -8,4 +8,10 @@ const { version } = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'packa
 
 const fastifyJs = path.join(__dirname, '..', 'fastify.js')
 
-fs.writeFileSync(fastifyJs, fs.readFileSync(fastifyJs).toString('utf8').replace(/const\s*VERSION\s*=.*/, `const VERSION = '${version}'`))
+fs.writeFileSync(
+  fastifyJs,
+  fs
+    .readFileSync(fastifyJs)
+    .toString('utf8')
+    .replace(/const\s*VERSION\s*=.*/, `const VERSION = '${version}'`)
+)

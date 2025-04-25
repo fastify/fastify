@@ -3,29 +3,35 @@
 const { test } = require('node:test')
 const Fastify = require('../fastify')
 
-test('same route definition object on multiple prefixes', async t => {
+test('same route definition object on multiple prefixes', async (t) => {
   t.plan(2)
 
   const routeObject = {
-    handler: () => { },
+    handler: () => {},
     method: 'GET',
     url: '/simple'
   }
 
   const fastify = Fastify({ exposeHeadRoutes: false })
 
-  fastify.register(async function (f) {
-    f.addHook('onRoute', (routeOptions) => {
-      t.assert.strictEqual(routeOptions.url, '/v1/simple')
-    })
-    f.route(routeObject)
-  }, { prefix: '/v1' })
-  fastify.register(async function (f) {
-    f.addHook('onRoute', (routeOptions) => {
-      t.assert.strictEqual(routeOptions.url, '/v2/simple')
-    })
-    f.route(routeObject)
-  }, { prefix: '/v2' })
+  fastify.register(
+    async function (f) {
+      f.addHook('onRoute', (routeOptions) => {
+        t.assert.strictEqual(routeOptions.url, '/v1/simple')
+      })
+      f.route(routeObject)
+    },
+    { prefix: '/v1' }
+  )
+  fastify.register(
+    async function (f) {
+      f.addHook('onRoute', (routeOptions) => {
+        t.assert.strictEqual(routeOptions.url, '/v2/simple')
+      })
+      f.route(routeObject)
+    },
+    { prefix: '/v2' }
+  )
 
   await fastify.ready()
 })
@@ -55,7 +61,7 @@ test('path can be specified in place of uri', (t, done) => {
   })
 })
 
-test('invalid bodyLimit option - route', t => {
+test('invalid bodyLimit option - route', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -88,13 +94,16 @@ test('handler function in options of shorthand route should works correctly', (t
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }
+  )
 })

@@ -47,15 +47,20 @@ test('diagnostics channel events report on errors', (t, done) => {
   fastify.listen({ port: 0 }, function (err) {
     if (err) t.assert.ifError(err)
 
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      done()
+    t.after(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'GET',
+        url: getServerUrl(fastify) + '/'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 500)
+        done()
+      }
+    )
   })
 })

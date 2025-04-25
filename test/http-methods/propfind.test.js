@@ -13,15 +13,14 @@ const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
         </D:propfind>
       `
 
-test('can be created - propfind', t => {
+test('can be created - propfind', (t) => {
   t.plan(1)
   try {
     fastify.route({
       method: 'PROPFIND',
       url: '*',
       handler: function (req, reply) {
-        return reply.code(207)
-          .send(`<?xml version="1.0" encoding="utf-8"?>
+        return reply.code(207).send(`<?xml version="1.0" encoding="utf-8"?>
             <D:multistatus xmlns:D="DAV:">
               <D:response xmlns:lp1="DAV:">
                 <D:href>/</D:href>
@@ -57,8 +56,7 @@ test('can be created - propfind', t => {
                   <D:status>HTTP/1.1 200 OK</D:status>
                 </D:propstat>
               </D:response>
-            </D:multistatus>`
-          )
+            </D:multistatus>`)
       }
     })
     t.assert.ok(true)
@@ -67,7 +65,7 @@ test('can be created - propfind', t => {
   }
 })
 
-test('propfind test', async t => {
+test('propfind test', async (t) => {
   await fastify.listen({ port: 0 })
 
   t.after(() => {
@@ -76,71 +74,86 @@ test('propfind test', async t => {
 
   await t.test('request - propfind', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/`,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/`,
+        method: 'PROPFIND'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 
   await t.test('request with other path - propfind', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test`,
+        method: 'PROPFIND'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
   await t.test('request with body - propfind', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
-      headers: { 'content-type': 'text/plain' },
-      body: bodySample,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test`,
+        headers: { 'content-type': 'text/plain' },
+        body: bodySample,
+        method: 'PROPFIND'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 
   await t.test('request with body and no content type (415 error) - propfind', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
-      body: bodySample,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test`,
+        body: bodySample,
+        method: 'PROPFIND'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 
   await t.test('request without body - propfind', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test`,
+        method: 'PROPFIND'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 207)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 })

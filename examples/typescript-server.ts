@@ -16,29 +16,25 @@ import { Server, IncomingMessage, ServerResponse } from 'node:http'
 // Create an http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.
 // If using http2 we'd pass <http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>
-const server: FastifyInstance<
-  Server,
-  IncomingMessage,
-  ServerResponse
-> = fastify({ logger: true })
+const server: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({ logger: true })
 
 // Define interfaces for our request. We can create these automatically
 // off our JSON Schema files (See TypeScript.md) but for the purpose of this
 // example we manually define them.
 interface PingQuerystring {
-  foo?: number;
+  foo?: number
 }
 
 interface PingParams {
-  bar?: string;
+  bar?: string
 }
 
 interface PingHeaders {
-  a?: string;
+  a?: string
 }
 
 interface PingBody {
-  baz?: string;
+  baz?: string
 }
 
 // Define our route options with schema validation
@@ -57,10 +53,10 @@ const opts: RouteShorthandOptions = {
 
 // Add our route handler with correct types
 server.post<{
-  Querystring: PingQuerystring;
-  Params: PingParams;
-  Headers: PingHeaders;
-  Body: PingBody;
+  Querystring: PingQuerystring
+  Params: PingParams
+  Headers: PingHeaders
+  Body: PingBody
 }>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type `PingQuerystring`
   console.log(request.params) // this is of type `PingParams`

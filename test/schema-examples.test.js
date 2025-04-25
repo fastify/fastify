@@ -16,7 +16,7 @@ test('Example - URI $id', (t, done) => {
   })
 
   fastify.post('/', {
-    handler () { },
+    handler () {},
     schema: {
       body: {
         type: 'array',
@@ -25,7 +25,7 @@ test('Example - URI $id', (t, done) => {
     }
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -43,14 +43,14 @@ test('Example - string $id', (t, done) => {
   })
 
   fastify.post('/', {
-    handler () { },
+    handler () {},
     schema: {
       body: { $ref: 'commonSchema#' },
       headers: { $ref: 'commonSchema#' }
     }
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -73,22 +73,28 @@ test('Example - get schema', (t, done) => {
   done()
 })
 
-test('Example - get schema encapsulated', async t => {
+test('Example - get schema encapsulated', async (t) => {
   const fastify = Fastify()
 
   fastify.addSchema({ $id: 'one', my: 'hello' })
   // will return only `one` schema
-  fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
+  fastify.get('/', (request, reply) => {
+    reply.send(fastify.getSchemas())
+  })
 
   fastify.register((instance, opts, done) => {
     instance.addSchema({ $id: 'two', my: 'ciao' })
     // will return `one` and `two` schemas
-    instance.get('/sub', (request, reply) => { reply.send(instance.getSchemas()) })
+    instance.get('/sub', (request, reply) => {
+      reply.send(instance.getSchemas())
+    })
 
     instance.register((subinstance, opts, done) => {
       subinstance.addSchema({ $id: 'three', my: 'hola' })
       // will return `one`, `two` and `three`
-      subinstance.get('/deep', (request, reply) => { reply.send(subinstance.getSchemas()) })
+      subinstance.get('/deep', (request, reply) => {
+        reply.send(subinstance.getSchemas())
+      })
       done()
     })
     done()
@@ -112,7 +118,7 @@ test('Example - validation', (t, done) => {
       }
     }
   })
-  const handler = () => { }
+  const handler = () => {}
 
   const bodyJsonSchema = {
     type: 'object',
@@ -175,7 +181,7 @@ test('Example - validation', (t, done) => {
   }
 
   fastify.post('/the/url', { schema }, handler)
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -186,14 +192,14 @@ test('Example - ajv config', (t, done) => {
 
   const fastify = Fastify({
     ajv: {
-      plugins: [
-        require('ajv-merge-patch')
-      ]
+      plugins: [require('ajv-merge-patch')]
     }
   })
 
   fastify.post('/', {
-    handler (req, reply) { reply.send({ ok: 1 }) },
+    handler (req, reply) {
+      reply.send({ ok: 1 })
+    },
     schema: {
       body: {
         $patch: {
@@ -218,7 +224,9 @@ test('Example - ajv config', (t, done) => {
   })
 
   fastify.post('/foo', {
-    handler (req, reply) { reply.send({ ok: 1 }) },
+    handler (req, reply) {
+      reply.send({ ok: 1 })
+    },
     schema: {
       body: {
         $merge: {
@@ -238,7 +246,7 @@ test('Example - ajv config', (t, done) => {
     }
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -247,21 +255,27 @@ test('Example - ajv config', (t, done) => {
 test('Example Joi', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => { }
+  const handler = () => {}
 
   const Joi = require('joi')
-  fastify.post('/the/url', {
-    schema: {
-      body: Joi.object().keys({
-        hello: Joi.string().required()
-      }).required()
+  fastify.post(
+    '/the/url',
+    {
+      schema: {
+        body: Joi.object()
+          .keys({
+            hello: Joi.string().required()
+          })
+          .required()
+      },
+      validatorCompiler: ({ schema, method, url, httpPart }) => {
+        return (data) => schema.validate(data)
+      }
     },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return data => schema.validate(data)
-    }
-  }, handler)
+    handler
+  )
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -270,7 +284,7 @@ test('Example Joi', (t, done) => {
 test('Example yup', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => { }
+  const handler = () => {}
 
   const yup = require('yup')
   // Validation options to match ajv's baseline options used in Fastify
@@ -281,29 +295,37 @@ test('Example yup', (t, done) => {
     recursive: true
   }
 
-  fastify.post('/the/url', {
-    schema: {
-      body: yup.object({
-        age: yup.number().integer().required(),
-        sub: yup.object().shape({
-          name: yup.string().required()
-        }).required()
-      })
-    },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return function (data) {
-        // with option strict = false, yup `validateSync` function returns the coerced value if validation was successful, or throws if validation failed
-        try {
-          const result = schema.validateSync(data, yupOptions)
-          return { value: result }
-        } catch (e) {
-          return { error: e }
+  fastify.post(
+    '/the/url',
+    {
+      schema: {
+        body: yup.object({
+          age: yup.number().integer().required(),
+          sub: yup
+            .object()
+            .shape({
+              name: yup.string().required()
+            })
+            .required()
+        })
+      },
+      validatorCompiler: ({ schema, method, url, httpPart }) => {
+        return function (data) {
+          // with option strict = false, yup `validateSync` function returns the coerced value
+          // if validation was successful, or throws if validation failed
+          try {
+            const result = schema.validateSync(data, yupOptions)
+            return { value: result }
+          } catch (e) {
+            return { error: e }
+          }
         }
       }
-    }
-  }, handler)
+    },
+    handler
+  )
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -312,7 +334,7 @@ test('Example yup', (t, done) => {
 test('Example - serialization', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => { }
+  const handler = () => {}
 
   const schema = {
     response: {
@@ -327,7 +349,7 @@ test('Example - serialization', (t, done) => {
   }
 
   fastify.post('/the/url', { schema }, handler)
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -336,7 +358,7 @@ test('Example - serialization', (t, done) => {
 test('Example - serialization 2', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => { }
+  const handler = () => {}
 
   const schema = {
     response: {
@@ -355,7 +377,7 @@ test('Example - serialization 2', (t, done) => {
   }
 
   fastify.post('/the/url', { schema }, handler)
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -366,7 +388,7 @@ test('Example - serializator', (t, done) => {
   const fastify = Fastify()
 
   fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    return data => JSON.stringify(data)
+    return (data) => JSON.stringify(data)
   })
 
   fastify.get('/user', {
@@ -386,7 +408,7 @@ test('Example - serializator', (t, done) => {
     }
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -395,7 +417,7 @@ test('Example - serializator', (t, done) => {
 test('Example - schemas examples', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => { }
+  const handler = () => {}
 
   fastify.addSchema({
     $id: 'http://foo/common.json',
@@ -482,10 +504,9 @@ test('Example - schemas examples', (t, done) => {
       params: refToSharedSchemaId,
       query: refToSharedSchemaDefinitions
     }
-
   })
 
-  fastify.ready(err => {
+  fastify.ready((err) => {
     t.assert.ifError(err)
     done()
   })
@@ -497,9 +518,7 @@ test('should return custom error messages with ajv-errors', (t, done) => {
   const fastify = Fastify({
     ajv: {
       customOptions: { allErrors: true },
-      plugins: [
-        require('ajv-errors')
-      ]
+      plugins: [require('ajv-errors')]
     }
   })
 
@@ -531,24 +550,27 @@ test('should return custom error messages with ajv-errors', (t, done) => {
     reply.code(200).send(req.body.name)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      hello: 'salman',
-      age: 'bad'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        hello: 'salman',
+        age: 'bad'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'body/age bad age - should be num, body name please, body work please'
-    })
-    t.assert.strictEqual(res.statusCode, 400)
-    done()
-  })
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'body/age bad age - should be num, body name please, body work please'
+      })
+      t.assert.strictEqual(res.statusCode, 400)
+      done()
+    }
+  )
 })
 
 test('should be able to handle formats of ajv-formats when added by plugins option', (t, done) => {
@@ -556,9 +578,7 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
 
   const fastify = Fastify({
     ajv: {
-      plugins: [
-        require('ajv-formats')
-      ]
+      plugins: [require('ajv-formats')]
     }
   })
 
@@ -577,34 +597,40 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     reply.code(200).send(req.body.id)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      id: '254381a5-888c-4b41-8116-e3b1a54980bd',
-      email: 'info@fastify.dev'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        id: '254381a5-888c-4b41-8116-e3b1a54980bd',
+        email: 'info@fastify.dev'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (_err, res) => {
-    t.assert.strictEqual(res.body, '254381a5-888c-4b41-8116-e3b1a54980bd')
-    t.assert.strictEqual(res.statusCode, 200)
-  })
+    (_err, res) => {
+      t.assert.strictEqual(res.body, '254381a5-888c-4b41-8116-e3b1a54980bd')
+      t.assert.strictEqual(res.statusCode, 200)
+    }
+  )
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      id: 'invalid',
-      email: 'info@fastify.dev'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        id: 'invalid',
+        email: 'info@fastify.dev'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (_err, res) => {
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'body/id must match format "uuid"'
-    })
-    done()
-  })
+    (_err, res) => {
+      t.assert.deepStrictEqual(JSON.parse(res.payload), {
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION',
+        error: 'Bad Request',
+        message: 'body/id must match format "uuid"'
+      })
+      done()
+    }
+  )
 })
 
 test('should return localized error messages with ajv-i18n', (t, done) => {
@@ -640,22 +666,27 @@ test('should return localized error messages with ajv-i18n', (t, done) => {
     reply.code(200).send(req.body.name)
   })
 
-  fastify.inject({
-    method: 'POST',
-    payload: {
-      name: 'salman'
+  fastify.inject(
+    {
+      method: 'POST',
+      payload: {
+        name: 'salman'
+      },
+      url: '/'
     },
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), [{
-      instancePath: '',
-      keyword: 'required',
-      message: 'должно иметь обязательное поле work',
-      params: { missingProperty: 'work' },
-      schemaPath: '#/required'
-    }])
-    t.assert.strictEqual(res.statusCode, 400)
-    done()
-  })
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), [
+        {
+          instancePath: '',
+          keyword: 'required',
+          message: 'должно иметь обязательное поле work',
+          params: { missingProperty: 'work' },
+          schemaPath: '#/required'
+        }
+      ])
+      t.assert.strictEqual(res.statusCode, 400)
+      done()
+    }
+  )
 })

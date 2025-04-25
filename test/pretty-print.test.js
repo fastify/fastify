@@ -292,9 +292,19 @@ test('pretty print - includeMeta, includeHooks', (t, done) => {
   fastify.addHook('onTimeout', onTimeout)
 
   fastify.ready(() => {
-    const radixTree = fastify.printRoutes({ includeHooks: true, includeMeta: ['errorHandler'] })
-    const flatTree = fastify.printRoutes({ commonPrefix: false, includeHooks: true, includeMeta: ['errorHandler'] })
-    const hooksOnly = fastify.printRoutes({ commonPrefix: false, includeHooks: true })
+    const radixTree = fastify.printRoutes({
+      includeHooks: true,
+      includeMeta: ['errorHandler']
+    })
+    const flatTree = fastify.printRoutes({
+      commonPrefix: false,
+      includeHooks: true,
+      includeMeta: ['errorHandler']
+    })
+    const hooksOnly = fastify.printRoutes({
+      commonPrefix: false,
+      includeHooks: true
+    })
 
     const radixExpected = `\
 └── /

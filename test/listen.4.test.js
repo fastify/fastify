@@ -20,7 +20,7 @@ function getUrl (fastify, lookup) {
 }
 
 before(async function () {
-  [, localhostForURL] = await helper.getLoopbackHost()
+  ;[, localhostForURL] = await helper.getLoopbackHost()
 })
 
 test('listen twice on the same port without callback rejects', (t, done) => {
@@ -28,17 +28,17 @@ test('listen twice on the same port without callback rejects', (t, done) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 })
+  fastify
+    .listen({ port: 0 })
     .then(() => {
       const server2 = Fastify()
       t.after(() => server2.close())
-      server2.listen({ port: fastify.server.address().port })
-        .catch(err => {
-          t.assert.ok(err)
-          done()
-        })
+      server2.listen({ port: fastify.server.address().port }).catch((err) => {
+        t.assert.ok(err)
+        done()
+      })
     })
-    .catch(err => {
+    .catch((err) => {
       t.assert.ifError(err)
     })
 })
@@ -47,34 +47,33 @@ test('listen twice on the same port without callback rejects with (address)', (t
   t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
-  fastify.listen({ port: 0 })
-    .then(address => {
+  fastify
+    .listen({ port: 0 })
+    .then((address) => {
       const server2 = Fastify()
       t.after(() => server2.close())
       t.assert.strictEqual(address, `http://${localhostForURL}:${fastify.server.address().port}`)
 
-      server2.listen({ port: fastify.server.address().port })
-        .catch(err => {
-          t.assert.ok(err)
-          done()
-        })
+      server2.listen({ port: fastify.server.address().port }).catch((err) => {
+        t.assert.ok(err)
+        done()
+      })
     })
-    .catch(err => {
+    .catch((err) => {
       t.assert.ifError(err)
     })
 })
 
-test('listen on invalid port without callback rejects', t => {
+test('listen on invalid port without callback rejects', (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
-  return fastify.listen({ port: -1 })
-    .catch(err => {
-      t.assert.ok(err)
-      return true
-    })
+  return fastify.listen({ port: -1 }).catch((err) => {
+    t.assert.ok(err)
+    return true
+  })
 })
 
-test('listen logs the port as info', async t => {
+test('listen logs the port as info', async (t) => {
   t.plan(1)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -88,7 +87,7 @@ test('listen logs the port as info', async t => {
   t.assert.ok(/http:\/\//.test(msgs[0]))
 })
 
-test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
+test('listen on localhost binds IPv4 and IPv6 - promise interface', async (t) => {
   const localAddresses = await dns.lookup('localhost', { all: true })
   t.plan(2 * localAddresses.length)
 
@@ -99,22 +98,27 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
 
   for (const lookup of localAddresses) {
     await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: getUrl(app, lookup)
-      }, (err, response, body) => {
-        if (err) { return reject(err) }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body.toString(), 'hello localhost')
-        resolve()
-      })
+      sget(
+        {
+          method: 'GET',
+          url: getUrl(app, lookup)
+        },
+        (err, response, body) => {
+          if (err) {
+            return reject(err)
+          }
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(body.toString(), 'hello localhost')
+          resolve()
+        }
+      )
     })
   }
 })
 
 test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present) - callback interface', (t, done) => {
   dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
-    t.plan(2 + (3 * lookups.length))
+    t.plan(2 + 3 * lookups.length)
     t.assert.ifError(err)
 
     const app = Fastify()
@@ -128,16 +132,19 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
       // Loop over each lookup and perform the assertions
       if (lookups.length > 0) {
         for (const lookup of lookups) {
-          sget({
-            method: 'GET',
-            url: getUrl(app, lookup)
-          }, (err, response, body) => {
-            t.assert.ifError(err)
-            t.assert.strictEqual(response.statusCode, 200)
-            t.assert.deepStrictEqual(body.toString(), 'hello localhost')
-            // Call stepIn to report that a request has been completed
-            stepIn()
-          })
+          sget(
+            {
+              method: 'GET',
+              url: getUrl(app, lookup)
+            },
+            (err, response, body) => {
+              t.assert.ifError(err)
+              t.assert.strictEqual(response.statusCode, 200)
+              t.assert.deepStrictEqual(body.toString(), 'hello localhost')
+              // Call stepIn to report that a request has been completed
+              stepIn()
+            }
+          )
         }
         // When all requests have been completed, call done
         patience.then(() => done())
@@ -146,7 +153,7 @@ test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present
   })
 })
 
-test('addresses getter', async t => {
+test('addresses getter', async (t) => {
   let localAddresses = await dns.lookup('localhost', { all: true })
 
   t.plan(4)
@@ -163,15 +170,26 @@ test('addresses getter', async t => {
   // fix citgm
   // dns lookup may have duplicated addresses (rhel8-s390x rhel8-ppc64le debian10-x64)
 
-  localAddresses = [...new Set([...localAddresses.map(a => JSON.stringify({
-    address: a.address,
-    family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
-  }))])].sort()
+  localAddresses = [
+    ...new Set([
+      ...localAddresses.map((a) =>
+        JSON.stringify({
+          address: a.address,
+          family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
+        })
+      )
+    ])
+  ].sort()
 
-  const appAddresses = app.addresses().map(a => JSON.stringify({
-    address: a.address,
-    family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
-  })).sort()
+  const appAddresses = app
+    .addresses()
+    .map((a) =>
+      JSON.stringify({
+        address: a.address,
+        family: typeof a.family === 'number' ? 'IPv' + a.family : a.family
+      })
+    )
+    .sort()
 
   t.assert.deepStrictEqual(appAddresses, localAddresses, 'after listen')
 

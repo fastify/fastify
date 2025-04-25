@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const { Hooks } = require('../../lib/hooks')
 const noop = () => {}
 
-test('hooks should have 4 array with the registered hooks', t => {
+test('hooks should have 4 array with the registered hooks', (t) => {
   const hooks = new Hooks()
   t.assert.strictEqual(typeof hooks, 'object')
   t.assert.ok(Array.isArray(hooks.onRequest))
@@ -16,7 +16,7 @@ test('hooks should have 4 array with the registered hooks', t => {
   t.assert.ok(Array.isArray(hooks.onError))
 })
 
-test('hooks.add should add a hook to the given hook', t => {
+test('hooks.add should add a hook to the given hook', (t) => {
   const hooks = new Hooks()
   hooks.add('onRequest', noop)
   t.assert.strictEqual(hooks.onRequest.length, 1)
@@ -47,7 +47,7 @@ test('hooks.add should add a hook to the given hook', t => {
   t.assert.strictEqual(typeof hooks.onError[0], 'function')
 })
 
-test('hooks should throw on unexisting handler', t => {
+test('hooks should throw on unexisting handler', (t) => {
   t.plan(1)
   const hooks = new Hooks()
   try {
@@ -58,7 +58,7 @@ test('hooks should throw on unexisting handler', t => {
   }
 })
 
-test('should throw on wrong parameters', t => {
+test('should throw on wrong parameters', (t) => {
   const hooks = new Hooks()
   t.plan(4)
   try {

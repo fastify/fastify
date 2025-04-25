@@ -4,7 +4,7 @@ const Fastify = require('..')
 const http = require('node:http')
 const { test } = require('node:test')
 
-test('keepAliveTimeout', t => {
+test('keepAliveTimeout', (t) => {
   t.plan(6)
 
   try {

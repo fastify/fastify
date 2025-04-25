@@ -12,7 +12,7 @@ async function setup () {
 
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  test('Should support a custom https server', { skip: localAddresses.length < 1 }, async t => {
+  test('Should support a custom https server', { skip: localAddresses.length < 1 }, async (t) => {
     t.plan(4)
 
     const fastify = Fastify({
@@ -33,7 +33,9 @@ async function setup () {
       }
     })
 
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     fastify.get('/', (req, reply) => {
       t.assert.ok(req.raw.custom)
@@ -43,18 +45,21 @@ async function setup () {
     await fastify.listen({ port: 0 })
 
     await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
+      sget(
+        {
+          method: 'GET',
+          url: 'https://localhost:' + fastify.server.address().port,
+          rejectUnauthorized: false
+        },
+        (err, response, body) => {
+          if (err) {
+            return reject(err)
+          }
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+          resolve()
         }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
+      )
     })
   })
 }

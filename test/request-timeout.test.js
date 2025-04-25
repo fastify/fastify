@@ -4,7 +4,7 @@ const http = require('node:http')
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('requestTimeout passed to server', t => {
+test('requestTimeout passed to server', (t) => {
   t.plan(5)
 
   try {

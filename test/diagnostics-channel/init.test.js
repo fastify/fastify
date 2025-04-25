@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 
-test('diagnostics_channel when present and subscribers', t => {
+test('diagnostics_channel when present and subscribers', (t) => {
   t.plan(3)
 
   let fastifyInHook
@@ -28,7 +28,7 @@ test('diagnostics_channel when present and subscribers', t => {
   t.assert.strictEqual(fastifyInHook, fastify)
 })
 
-test('diagnostics_channel when present and no subscribers', t => {
+test('diagnostics_channel when present and no subscribers', (t) => {
   t.plan(1)
 
   const diagnostics = {

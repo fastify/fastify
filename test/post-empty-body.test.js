@@ -4,12 +4,14 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const { request, setGlobalDispatcher, Agent } = require('undici')
 
-setGlobalDispatcher(new Agent({
-  keepAliveTimeout: 10,
-  keepAliveMaxTimeout: 10
-}))
+setGlobalDispatcher(
+  new Agent({
+    keepAliveTimeout: 10,
+    keepAliveMaxTimeout: 10
+  })
+)
 
-test('post empty body', { timeout: 3_000 }, async t => {
+test('post empty body', { timeout: 3_000 }, async (t) => {
   const fastify = Fastify({ forceCloseConnections: true })
   const abortController = new AbortController()
   const { signal } = abortController

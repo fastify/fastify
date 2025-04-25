@@ -17,16 +17,16 @@ let localhost
 let localhostForURL
 
 before(async function () {
-  await buildCertificate();
-  [localhost, localhostForURL] = await helper.getLoopbackHost()
+  await buildCertificate()
+  ;[localhost, localhostForURL] = await helper.getLoopbackHost()
 })
 
-test('Fastify.initialConfig is an object', t => {
+test('Fastify.initialConfig is an object', (t) => {
   t.plan(1)
   t.assert.ok(typeof Fastify().initialConfig === 'object')
 })
 
-test('without options passed to Fastify, initialConfig should expose default values', t => {
+test('without options passed to Fastify, initialConfig should expose default values', (t) => {
   t.plan(1)
 
   const fastifyDefaultOptions = {
@@ -54,7 +54,7 @@ test('without options passed to Fastify, initialConfig should expose default val
   t.assert.deepStrictEqual(Fastify().initialConfig, fastifyDefaultOptions)
 })
 
-test('Fastify.initialConfig should expose all options', t => {
+test('Fastify.initialConfig should expose all options', (t) => {
   t.plan(22)
 
   const serverFactory = (handler, opts) => {
@@ -70,14 +70,20 @@ test('Fastify.initialConfig should expose all options', t => {
     storage: function () {
       const versions = {}
       return {
-        get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store }
+        get: (version) => {
+          return versions[version] || null
+        },
+        set: (version, store) => {
+          versions[version] = store
+        }
       }
     },
     deriveConstraint: (req, ctx) => {
       return req.headers.accept
     },
-    validate () { return true }
+    validate () {
+      return true
+    }
   }
 
   let reqId = 0
@@ -100,7 +106,7 @@ test('Fastify.initialConfig should expose all options', t => {
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
     useSemicolonDelimiter: false,
-    querystringParser: str => str,
+    querystringParser: (str) => str,
     genReqId: function (req) {
       return reqId++
     },
@@ -140,7 +146,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.assert.strictEqual(fastify.initialConfig.trustProxy, undefined)
 })
 
-test('Should throw if you try to modify Fastify.initialConfig', t => {
+test('Should throw if you try to modify Fastify.initialConfig', (t) => {
   t.plan(4)
 
   const fastify = Fastify({ ignoreTrailingSlash: true })
@@ -149,13 +155,16 @@ test('Should throw if you try to modify Fastify.initialConfig', t => {
     t.assert.fail()
   } catch (error) {
     t.assert.ok(error instanceof TypeError)
-    t.assert.strictEqual(error.message, "Cannot assign to read only property 'ignoreTrailingSlash' of object '#<Object>'")
+    t.assert.strictEqual(
+      error.message,
+      "Cannot assign to read only property 'ignoreTrailingSlash' of object '#<Object>'"
+    )
     t.assert.ok(error.stack)
     t.assert.ok(true)
   }
 })
 
-test('We must avoid shallow freezing and ensure that the whole object is freezed', t => {
+test('We must avoid shallow freezing and ensure that the whole object is freezed', (t) => {
   t.plan(4)
 
   const fastify = Fastify({
@@ -173,20 +182,24 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.assert.ok(error instanceof TypeError)
     t.assert.strictEqual(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
     t.assert.ok(error.stack)
-    t.assert.deepStrictEqual(fastify.initialConfig.https, {
-      allowHTTP1: true
-    }, 'key cert removed')
+    t.assert.deepStrictEqual(
+      fastify.initialConfig.https,
+      {
+        allowHTTP1: true
+      },
+      'key cert removed'
+    )
   }
 })
 
-test('https value check', t => {
+test('https value check', (t) => {
   t.plan(1)
 
   const fastify = Fastify({})
   t.assert.ok(!fastify.initialConfig.https)
 })
 
-test('Return an error if options do not match the validation schema', t => {
+test('Return an error if options do not match the validation schema', (t) => {
   t.plan(6)
 
   try {
@@ -203,7 +216,7 @@ test('Return an error if options do not match the validation schema', t => {
   }
 })
 
-test('Original options must not be frozen', t => {
+test('Original options must not be frozen', (t) => {
   t.plan(4)
 
   const originalOptions = {
@@ -222,7 +235,7 @@ test('Original options must not be frozen', t => {
   t.assert.strictEqual(Object.isFrozen(fastify.initialConfig.https), true)
 })
 
-test('Original options must not be altered (test deep cloning)', t => {
+test('Original options must not be altered (test deep cloning)', (t) => {
   t.plan(3)
 
   const originalOptions = {
@@ -298,10 +311,10 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
     reply.send({ hello: 'world' })
   })
 
-  stream.once('data', listenAtLogLine => {
+  stream.once('data', (listenAtLogLine) => {
     t.assert.ok(listenAtLogLine, 'listen at log message is ok')
 
-    stream.once('data', line => {
+    stream.once('data', (line) => {
       const id = line.reqId
       t.assert.ok(line.reqId, 'reqId is defined')
       t.assert.strictEqual(line.someBinding, 'value', 'child logger binding is set')
@@ -309,7 +322,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       t.assert.strictEqual(line.msg, 'incoming request', 'message is set')
       t.assert.strictEqual(line.req.method, 'GET', 'method is get')
 
-      stream.once('data', line => {
+      stream.once('data', (line) => {
         t.assert.strictEqual(line.reqId, id)
         t.assert.ok(line.reqId, 'reqId is defined')
         t.assert.strictEqual(line.someBinding, 'value', 'child logger binding is set')
@@ -321,9 +334,11 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
     })
   })
 
-  fastify.listen({ port: 0, host: localhost }, err => {
+  fastify.listen({ port: 0, host: localhost }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     http.get(`http://${localhostForURL}:${fastify.server.address().port}`, () => {
       done()
@@ -331,7 +346,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
   })
 })
 
-test('deepFreezeObject() should not throw on TypedArray', t => {
+test('deepFreezeObject() should not throw on TypedArray', (t) => {
   t.plan(5)
 
   const object = {
@@ -362,14 +377,14 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   }
 })
 
-test('pluginTimeout should be parsed correctly', t => {
+test('pluginTimeout should be parsed correctly', (t) => {
   const withDisabledTimeout = Fastify({ pluginTimeout: '0' })
   t.assert.strictEqual(withDisabledTimeout.initialConfig.pluginTimeout, 0)
   const withInvalidTimeout = Fastify({ pluginTimeout: undefined })
   t.assert.strictEqual(withInvalidTimeout.initialConfig.pluginTimeout, 10000)
 })
 
-test('Should not mutate the options object outside Fastify', async t => {
+test('Should not mutate the options object outside Fastify', async (t) => {
   const options = Object.freeze({})
 
   try {

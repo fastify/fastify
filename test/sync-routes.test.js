@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('sync route', async t => {
+test('sync route', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
   fastify.get('/', () => 'hello world')
@@ -12,7 +12,7 @@ test('sync route', async t => {
   t.assert.strictEqual(res.body, 'hello world')
 })
 
-test('sync route return null', async t => {
+test('sync route return null', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
   fastify.get('/', () => null)
@@ -21,7 +21,7 @@ test('sync route return null', async t => {
   t.assert.strictEqual(res.body, 'null')
 })
 
-test('sync route, error', async t => {
+test('sync route, error', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
   fastify.get('/', () => {

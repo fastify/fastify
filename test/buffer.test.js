@@ -3,15 +3,19 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('Buffer test', async t => {
+test('Buffer test', async (t) => {
   const fastify = Fastify()
-  fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, fastify.getDefaultJsonParser('error', 'ignore'))
+  fastify.addContentTypeParser(
+    'application/json',
+    { parseAs: 'buffer' },
+    fastify.getDefaultJsonParser('error', 'ignore')
+  )
 
   fastify.delete('/', async (request) => {
     return request.body
   })
 
-  await test('should return 200 if the body is not empty', async t => {
+  await test('should return 200 if the body is not empty', async (t) => {
     t.plan(3)
 
     const response = await fastify.inject({
@@ -28,7 +32,7 @@ test('Buffer test', async t => {
     t.assert.deepStrictEqual(response.payload.toString(), '{"hello":"world"}')
   })
 
-  await test('should return 400 if the body is empty', async t => {
+  await test('should return 400 if the body is empty', async (t) => {
     t.plan(3)
 
     const response = await fastify.inject({
@@ -45,7 +49,7 @@ test('Buffer test', async t => {
     t.assert.deepStrictEqual(JSON.parse(response.payload.toString()), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-      message: 'Body cannot be empty when content-type is set to \'application/json\'',
+      message: "Body cannot be empty when content-type is set to 'application/json'",
       statusCode: 400
     })
   })

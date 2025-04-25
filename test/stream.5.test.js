@@ -14,7 +14,7 @@ test('should destroy stream when response is ended', (t, done) => {
 
   fastify.get('/error', function (req, reply) {
     const reallyLongStream = new stream.Readable({
-      read: function () { },
+      read: function () {},
       destroy: function (err, callback) {
         t.assert.ok('called')
         callback(err)
@@ -24,7 +24,7 @@ test('should destroy stream when response is ended', (t, done) => {
     reply.raw.end(Buffer.from('hello\n'))
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
@@ -63,14 +63,17 @@ test('should mark reply as sent before pumping the payload stream into response 
     return reply.code(200).send(stream)
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
-    done()
-  })
+  fastify.inject(
+    {
+      url: '/',
+      method: 'GET'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+      done()
+    }
+  )
 })
 
 test('reply.send handles aborted requests', (t, done) => {
@@ -78,15 +81,17 @@ test('reply.send handles aborted requests', (t, done) => {
 
   const spyLogger = {
     level: 'error',
-    fatal: () => { },
+    fatal: () => {},
     error: () => {
       t.assert.fail('should not log an error')
     },
-    warn: () => { },
-    info: () => { },
-    debug: () => { },
-    trace: () => { },
-    child: () => { return spyLogger }
+    warn: () => {},
+    info: () => {},
+    debug: () => {},
+    trace: () => {},
+    child: () => {
+      return spyLogger
+    }
   }
   const fastify = Fastify({
     loggerInstance: spyLogger
@@ -103,17 +108,16 @@ test('reply.send handles aborted requests', (t, done) => {
     }, 6)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
     const port = fastify.server.address().port
     const http = require('node:http')
-    const req = http.get(`http://localhost:${port}`)
-      .on('error', (err) => {
-        t.assert.strictEqual(err.code, 'ECONNRESET')
-        done()
-      })
+    const req = http.get(`http://localhost:${port}`).on('error', (err) => {
+      t.assert.strictEqual(err.code, 'ECONNRESET')
+      done()
+    })
 
     setTimeout(() => {
       req.destroy()
@@ -126,15 +130,17 @@ test('request terminated should not crash fastify', (t, done) => {
 
   const spyLogger = {
     level: 'error',
-    fatal: () => { },
+    fatal: () => {},
     error: () => {
       t.assert.fail('should not log an error')
     },
-    warn: () => { },
-    info: () => { },
-    debug: () => { },
-    trace: () => { },
-    child: () => { return spyLogger }
+    warn: () => {},
+    info: () => {},
+    debug: () => {},
+    trace: () => {},
+    child: () => {
+      return spyLogger
+    }
   }
   const fastify = Fastify({
     loggerInstance: spyLogger
@@ -142,21 +148,23 @@ test('request terminated should not crash fastify', (t, done) => {
 
   fastify.get('/', async (req, reply) => {
     const stream = new Readable()
-    stream._read = () => { }
+    stream._read = () => {}
     reply.header('content-type', 'text/html; charset=utf-8')
     reply.header('transfer-encoding', 'chunked')
     stream.push('<h1>HTML</h1>')
 
     reply.send(stream)
 
-    await new Promise((resolve) => { setTimeout(resolve, 100).unref() })
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100).unref()
+    })
 
     stream.push('<h1>should display on second stream</h1>')
     stream.push(null)
     return reply
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 

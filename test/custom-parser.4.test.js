@@ -12,14 +12,18 @@ process.removeAllListeners('warning')
 test('should prefer string content types over RegExp ones', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
   })
 
   fastify.addContentTypeParser(/^application\/.*/, function (req, payload, done) {
     let data = ''
-    payload.on('data', chunk => { data += chunk })
+    payload.on('data', (chunk) => {
+      data += chunk
+    })
     payload.on('end', () => {
       done(null, data)
     })
@@ -31,37 +35,43 @@ test('should prefer string content types over RegExp ones', (t, testDone) => {
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const completion = waitForCb({ steps: 2 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"k1":"myValue", "k2": "myValue"}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"k1":"myValue", "k2": "myValue"}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.equal(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
-      completion.stepIn()
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'javascript',
-      headers: {
-        'Content-Type': 'application/javascript'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: 'javascript',
+        headers: {
+          'Content-Type': 'application/javascript'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.equal(body.toString(), 'javascript')
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), 'javascript')
-      completion.stepIn()
-    })
+    )
 
     completion.patience.then(testDone)
   })
@@ -93,49 +103,58 @@ test('removeContentTypeParser should support arrays of content types to remove',
     reply.send(req.body)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const completion = waitForCb({ steps: 3 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '<?xml version="1.0">',
+        headers: {
+          'Content-Type': 'application/xml'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.equal(body.toString(), 'xml')
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), 'xml')
-      completion.stepIn()
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'image/png'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '',
+        headers: {
+          'Content-Type': 'image/png'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{test: "test"}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{test: "test"}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
+    )
     completion.patience.then(testDone)
   })
 })
@@ -167,36 +186,42 @@ test('removeContentTypeParser should support encapsulation', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const completion = waitForCb({ steps: 2 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify) + '/encapsulated',
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify) + '/encapsulated',
+        body: '<?xml version="1.0">',
+        headers: {
+          'Content-Type': 'application/xml'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '<?xml version="1.0">',
+        headers: {
+          'Content-Type': 'application/xml'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.equal(body.toString(), 'xml')
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), 'xml')
-      completion.stepIn()
-    })
+    )
     completion.patience.then(testDone)
   })
 })
@@ -221,36 +246,42 @@ test('removeAllContentTypeParsers should support encapsulation', (t, testDone) =
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const completion = waitForCb({ steps: 2 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify) + '/encapsulated',
-      body: '{}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify) + '/encapsulated',
+        body: '{}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
+    )
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"test":1}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"test":1}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.equal(JSON.parse(body.toString()).test, 1)
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(JSON.parse(body.toString()).test, 1)
-      completion.stepIn()
-    })
+    )
     completion.patience.then(testDone)
   })
 })

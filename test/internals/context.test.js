@@ -6,10 +6,10 @@ const Context = require('../../lib/context')
 
 const Fastify = require('../..')
 
-test('context', async context => {
+test('context', async (context) => {
   context.plan(1)
 
-  await context.test('Should not contain undefined as key prop', async t => {
+  await context.test('Should not contain undefined as key prop', async (t) => {
     t.plan(4)
     const app = Fastify()
 

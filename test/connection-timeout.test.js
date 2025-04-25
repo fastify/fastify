@@ -4,7 +4,7 @@ const Fastify = require('..')
 const http = require('node:http')
 const { test } = require('node:test')
 
-test('connectionTimeout', async t => {
+test('connectionTimeout', async (t) => {
   t.plan(6)
 
   try {

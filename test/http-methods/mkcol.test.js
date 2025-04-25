@@ -5,7 +5,7 @@ const sget = require('simple-get').concat
 const fastify = require('../../')()
 fastify.addHttpMethod('MKCOL')
 
-test('can be created - mkcol', t => {
+test('can be created - mkcol', (t) => {
   t.plan(1)
   try {
     fastify.route({
@@ -21,19 +21,24 @@ test('can be created - mkcol', t => {
   }
 })
 
-test('mkcol test', async t => {
+test('mkcol test', async (t) => {
   await fastify.listen({ port: 0 })
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   await t.test('request - mkcol', (t, done) => {
     t.plan(2)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/`,
-      method: 'MKCOL'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 201)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test/`,
+        method: 'MKCOL'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 201)
+        done()
+      }
+    )
   })
 })

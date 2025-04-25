@@ -6,7 +6,7 @@ const { kRouteContext } = require('../lib/symbols')
 const Fastify = require('..')
 
 const schema = {
-  schema: { },
+  schema: {},
   config: {
     value1: 'foo',
     value2: true
@@ -17,14 +17,18 @@ function handler (req, reply) {
   reply.send(reply[kRouteContext].config)
 }
 
-test('config', async t => {
+test('config', async (t) => {
   t.plan(6)
   const fastify = Fastify()
 
-  fastify.get('/get', {
-    schema: schema.schema,
-    config: Object.assign({}, schema.config)
-  }, handler)
+  fastify.get(
+    '/get',
+    {
+      schema: schema.schema,
+      config: Object.assign({}, schema.config)
+    },
+    handler
+  )
 
   fastify.route({
     method: 'GET',
@@ -63,17 +67,24 @@ test('config', async t => {
   })
 
   t.assert.strictEqual(response.statusCode, 200)
-  t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
+  t.assert.deepStrictEqual(response.json(), {
+    url: '/no-config',
+    method: 'GET'
+  })
 })
 
-test('config with exposeHeadRoutes', async t => {
+test('config with exposeHeadRoutes', async (t) => {
   t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: true })
 
-  fastify.get('/get', {
-    schema: schema.schema,
-    config: Object.assign({}, schema.config)
-  }, handler)
+  fastify.get(
+    '/get',
+    {
+      schema: schema.schema,
+      config: Object.assign({}, schema.config)
+    },
+    handler
+  )
 
   fastify.route({
     method: 'GET',
@@ -112,17 +123,24 @@ test('config with exposeHeadRoutes', async t => {
   })
 
   t.assert.strictEqual(response.statusCode, 200)
-  t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
+  t.assert.deepStrictEqual(response.json(), {
+    url: '/no-config',
+    method: 'GET'
+  })
 })
 
-test('config without exposeHeadRoutes', async t => {
+test('config without exposeHeadRoutes', async (t) => {
   t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
-  fastify.get('/get', {
-    schema: schema.schema,
-    config: Object.assign({}, schema.config)
-  }, handler)
+  fastify.get(
+    '/get',
+    {
+      schema: schema.schema,
+      config: Object.assign({}, schema.config)
+    },
+    handler
+  )
 
   fastify.route({
     method: 'GET',
@@ -160,5 +178,8 @@ test('config without exposeHeadRoutes', async t => {
   })
 
   t.assert.strictEqual(response.statusCode, 200)
-  t.assert.deepStrictEqual(response.json(), { url: '/no-config', method: 'GET' })
+  t.assert.deepStrictEqual(response.json(), {
+    url: '/no-config',
+    method: 'GET'
+  })
 })

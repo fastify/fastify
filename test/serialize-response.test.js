@@ -5,20 +5,14 @@ const { S } = require('fluent-json-schema')
 const Fastify = require('../fastify')
 const sjson = require('secure-json-parse')
 
-const BadRequestSchema = S.object()
-  .prop('statusCode', S.number())
-  .prop('error', S.string())
-  .prop('message', S.string())
+const BadRequestSchema = S.object().prop('statusCode', S.number()).prop('error', S.string()).prop('message', S.string())
 
 const InternalServerErrorSchema = S.object()
   .prop('statusCode', S.number())
   .prop('error', S.string())
   .prop('message', S.string())
 
-const NotFoundSchema = S.object()
-  .prop('statusCode', S.number())
-  .prop('error', S.string())
-  .prop('message', S.string())
+const NotFoundSchema = S.object().prop('statusCode', S.number()).prop('error', S.string()).prop('message', S.string())
 
 const options = {
   schema: {
@@ -105,7 +99,7 @@ const handler = (request, reply) => {
   })
 }
 
-test('serialize the response for a Bad Request error, as defined on the schema', async t => {
+test('serialize the response for a Bad Request error, as defined on the schema', async (t) => {
   t.plan(2)
 
   const fastify = Fastify({})
@@ -124,7 +118,7 @@ test('serialize the response for a Bad Request error, as defined on the schema',
   })
 })
 
-test('serialize the response for a Not Found error, as defined on the schema', async t => {
+test('serialize the response for a Not Found error, as defined on the schema', async (t) => {
   t.plan(2)
 
   const fastify = Fastify({})
@@ -145,7 +139,7 @@ test('serialize the response for a Not Found error, as defined on the schema', a
   })
 })
 
-test('serialize the response for a Internal Server Error error, as defined on the schema', async t => {
+test('serialize the response for a Internal Server Error error, as defined on the schema', async (t) => {
   t.plan(2)
 
   const fastify = Fastify({})
@@ -166,7 +160,7 @@ test('serialize the response for a Internal Server Error error, as defined on th
   })
 })
 
-test('serialize the success response, as defined on the schema', async t => {
+test('serialize the success response, as defined on the schema', async (t) => {
   t.plan(2)
 
   const fastify = Fastify({})

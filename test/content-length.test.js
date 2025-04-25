@@ -72,10 +72,7 @@ test('custom 413 with bodyLimit option', async (t) => {
   })
 
   fastify.setErrorHandler(function (err, request, reply) {
-    reply
-      .code(err.statusCode)
-      .type('application/json; charset=utf-8')
-      .send(err)
+    reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
   })
 
   const response = await fastify.inject({
@@ -105,10 +102,7 @@ test('custom 400 with wrong content-length', async (t) => {
   })
 
   fastify.setErrorHandler(function (err, request, reply) {
-    reply
-      .code(err.statusCode)
-      .type('application/json; charset=utf-8')
-      .send(err)
+    reply.code(err.statusCode).type('application/json; charset=utf-8').send(err)
   })
 
   const response = await fastify.inject({
@@ -170,5 +164,7 @@ test('#2543 - wrong content-length with errorHandler', async (t) => {
   })
   t.assert.strictEqual(response.statusCode, 500)
   t.assert.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
-  t.assert.deepStrictEqual(JSON.parse(response.payload), { message: 'longer than 2 bytes' })
+  t.assert.deepStrictEqual(JSON.parse(response.payload), {
+    message: 'longer than 2 bytes'
+  })
 })

@@ -15,11 +15,14 @@ test('sends early hints', (t, done) => {
   })
 
   fastify.get('/', async (request, reply) => {
-    reply.writeEarlyHints({
-      link: '</styles.css>; rel=preload; as=style'
-    }, () => {
-      t.assert.ok('callback called')
-    })
+    reply.writeEarlyHints(
+      {
+        link: '</styles.css>; rel=preload; as=style'
+      },
+      () => {
+        t.assert.ok('callback called')
+      }
+    )
 
     return testResBody
   })

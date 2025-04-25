@@ -14,9 +14,11 @@ test('should respond with a stream', (t, testDone) => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.assert.ifError(err)
@@ -41,9 +43,11 @@ test('should respond with a stream (error)', (t, testDone) => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.assert.ifError(err)
@@ -67,15 +71,18 @@ test('should trigger the onSend hook', (t, testDone) => {
     done()
   })
 
-  fastify.inject({
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.headers['content-type'], 'application/javascript')
-    t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
-    fastify.close()
-    testDone()
-  })
+  fastify.inject(
+    {
+      url: '/'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.headers['content-type'], 'application/javascript')
+      t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+      fastify.close()
+      testDone()
+    }
+  )
 })
 
 test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', (t, testDone) => {
@@ -98,9 +105,11 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.assert.ifError(err)

@@ -58,13 +58,16 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       reply.send({ hello: 'world' })
     })
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/plugin', (req, reply) => {
-        req.log.info('Hello') // we should see this log
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logLevel: 'info' })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/plugin', (req, reply) => {
+          req.log.info('Hello') // we should see this log
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logLevel: 'info' }
+    )
 
     await fastify.ready()
 
@@ -99,13 +102,16 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     })
     t.after(() => fastify.close())
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/plugin', (req, reply) => {
-        req.log.info({ test: 'Hello' }) // we should see this log
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logLevel: 'info', logSerializers: { test: value => 'X' + value } })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/plugin', (req, reply) => {
+          req.log.info({ test: 'Hello' }) // we should see this log
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logLevel: 'info', logSerializers: { test: (value) => 'X' + value } }
+    )
 
     await fastify.ready()
 
@@ -140,23 +146,29 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       reply.send({ hello: 'world' })
     })
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/info', (req, reply) => {
-        req.log.info('info') // we should see this log
-        req.log.debug('hidden log')
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logLevel: 'info' })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/info', (req, reply) => {
+          req.log.info('info') // we should see this log
+          req.log.debug('hidden log')
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logLevel: 'info' }
+    )
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/debug', (req, reply) => {
-        req.log.debug('debug') // we should see this log
-        req.log.trace('hidden log')
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logLevel: 'debug' })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/debug', (req, reply) => {
+          req.log.debug('debug') // we should see this log
+          req.log.trace('hidden log')
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logLevel: 'debug' }
+    )
 
     await fastify.ready()
 
@@ -186,7 +198,17 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('Should set a custom logSerializers for every plugin', async (t) => {
-    const lines = ['incoming request', 'Hello', 'request completed', 'incoming request', 'XHello', 'request completed', 'incoming request', 'ZHello', 'request completed']
+    const lines = [
+      'incoming request',
+      'Hello',
+      'request completed',
+      'incoming request',
+      'XHello',
+      'request completed',
+      'incoming request',
+      'ZHello',
+      'request completed'
+    ]
     t.plan(lines.length + 3)
 
     const stream = split(JSON.parse)
@@ -202,21 +224,27 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       reply.send({ hello: 'world' })
     })
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/test1', (req, reply) => {
-        req.log.info({ test: 'Hello' })
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logSerializers: { test: value => 'X' + value } })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/test1', (req, reply) => {
+          req.log.info({ test: 'Hello' })
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logSerializers: { test: (value) => 'X' + value } }
+    )
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/test2', (req, reply) => {
-        req.log.info({ test: 'Hello' })
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logSerializers: { test: value => 'Z' + value } })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/test2', (req, reply) => {
+          req.log.info({ test: 'Hello' })
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logSerializers: { test: (value) => 'Z' + value } }
+    )
 
     await fastify.ready()
 
@@ -256,17 +284,24 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     })
     t.after(() => fastify.close())
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/', {
-        logSerializers: {
-          test: value => 'Z' + value // should override
-        }
-      }, (req, reply) => {
-        req.log.info({ test: 'Hello' })
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logSerializers: { test: value => 'X' + value } })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get(
+          '/',
+          {
+            logSerializers: {
+              test: (value) => 'Z' + value // should override
+            }
+          },
+          (req, reply) => {
+            req.log.info({ test: 'Hello' })
+            reply.send({ hello: 'world' })
+          }
+        )
+        done()
+      },
+      { logSerializers: { test: (value) => 'X' + value } }
+    )
 
     await fastify.ready()
 
@@ -294,14 +329,17 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     })
     t.after(() => fastify.close())
 
-    fastify.register(function (instance, opts, done) {
-      instance.register(context1, {
-        logSerializers: {
-          test: value => 'Z' + value // should override
-        }
-      })
-      done()
-    }, { logSerializers: { test: value => 'X' + value } })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.register(context1, {
+          logSerializers: {
+            test: (value) => 'Z' + value // should override
+          }
+        })
+        done()
+      },
+      { logSerializers: { test: (value) => 'X' + value } }
+    )
 
     function context1 (instance, opts, done) {
       instance.get('/', (req, reply) => {
@@ -338,13 +376,16 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     })
     t.after(() => fastify.close())
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/', (req, reply) => {
-        req.log.error('Hello') // we should see this log
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }, { logLevel: 'error' })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/', (req, reply) => {
+          req.log.error('Hello') // we should see this log
+          reply.send({ hello: 'world' })
+        })
+        done()
+      },
+      { logLevel: 'error' }
+    )
 
     await fastify.ready()
 
@@ -374,13 +415,16 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     })
     t.after(() => fastify.close())
 
-    fastify.register(function (instance, opts, done) {
-      instance.setNotFoundHandler(function (req, reply) {
-        req.log.error('Hello')
-        reply.code(404).send()
-      })
-      done()
-    }, { logLevel: 'error' })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.setNotFoundHandler(function (req, reply) {
+          req.log.error('Hello')
+          reply.code(404).send()
+        })
+        done()
+      },
+      { logLevel: 'error' }
+    )
 
     await fastify.ready()
 
@@ -409,18 +453,21 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     })
     t.after(() => fastify.close())
 
-    fastify.register(function (instance, opts, done) {
-      instance.get('/', (req, reply) => {
-        req.log.error('kaboom')
-        reply.send(new Error('kaboom'))
-      })
+    fastify.register(
+      function (instance, opts, done) {
+        instance.get('/', (req, reply) => {
+          req.log.error('kaboom')
+          reply.send(new Error('kaboom'))
+        })
 
-      instance.setErrorHandler(function (e, request, reply) {
-        reply.log.fatal('Hello')
-        reply.code(500).send()
-      })
-      done()
-    }, { logLevel: 'fatal' })
+        instance.setErrorHandler(function (e, request, reply) {
+          reply.log.fatal('Hello')
+          reply.code(500).send()
+        })
+        done()
+      },
+      { logLevel: 'fatal' }
+    )
 
     await fastify.ready()
 

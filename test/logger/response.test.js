@@ -14,11 +14,7 @@ t.test('response serialization', { timeout: 60000 }, async (t) => {
   t.plan(4)
 
   await t.test('Should use serializers from plugin and route', async (t) => {
-    const lines = [
-      { msg: 'incoming request' },
-      { test: 'XHello', test2: 'ZHello' },
-      { msg: 'request completed' }
-    ]
+    const lines = [{ msg: 'incoming request' }, { test: 'XHello', test2: 'ZHello' }, { msg: 'request completed' }]
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
@@ -30,18 +26,22 @@ t.test('response serialization', { timeout: 60000 }, async (t) => {
     t.after(() => fastify.close())
 
     fastify.register(context1, {
-      logSerializers: { test: value => 'X' + value }
+      logSerializers: { test: (value) => 'X' + value }
     })
 
     function context1 (instance, opts, done) {
-      instance.get('/', {
-        logSerializers: {
-          test2: value => 'Z' + value
+      instance.get(
+        '/',
+        {
+          logSerializers: {
+            test2: (value) => 'Z' + value
+          }
+        },
+        (req, reply) => {
+          req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
+          reply.send({ hello: 'world' })
         }
-      }, (req, reply) => {
-        req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
-        reply.send({ hello: 'world' })
-      })
+      )
       done()
     }
 
@@ -60,35 +60,38 @@ t.test('response serialization', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('Should use serializers from instance fastify and route', async (t) => {
-    const lines = [
-      { msg: 'incoming request' },
-      { test: 'XHello', test2: 'ZHello' },
-      { msg: 'request completed' }
-    ]
+    const lines = [{ msg: 'incoming request' }, { test: 'XHello', test2: 'ZHello' }, { msg: 'request completed' }]
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
 
-    const loggerInstance = pino({
-      level: 'info',
-      serializers: {
-        test: value => 'X' + value,
-        test2: value => 'This should be override - ' + value
-      }
-    }, stream)
+    const loggerInstance = pino(
+      {
+        level: 'info',
+        serializers: {
+          test: (value) => 'X' + value,
+          test2: (value) => 'This should be override - ' + value
+        }
+      },
+      stream
+    )
     const fastify = Fastify({
       loggerInstance
     })
     t.after(() => fastify.close())
 
-    fastify.get('/', {
-      logSerializers: {
-        test2: value => 'Z' + value
+    fastify.get(
+      '/',
+      {
+        logSerializers: {
+          test2: (value) => 'Z' + value
+        }
+      },
+      (req, reply) => {
+        req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
+        reply.send({ hello: 'world' })
       }
-    }, (req, reply) => {
-      req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
-      reply.send({ hello: 'world' })
-    })
+    )
 
     await fastify.ready()
 
@@ -114,27 +117,36 @@ t.test('response serialization', { timeout: 60000 }, async (t) => {
 
     const stream = split(JSON.parse)
 
-    const loggerInstance = pino({
-      level: 'info',
-      serializers: {
-        test: value => 'X' + value
-      }
-    }, stream)
+    const loggerInstance = pino(
+      {
+        level: 'info',
+        serializers: {
+          test: (value) => 'X' + value
+        }
+      },
+      stream
+    )
 
     const fastify = Fastify({ loggerInstance })
     t.after(() => fastify.close())
 
-    fastify.register(context1, { logSerializers: { test2: value => 'Y' + value } })
+    fastify.register(context1, {
+      logSerializers: { test2: (value) => 'Y' + value }
+    })
 
     function context1 (instance, opts, done) {
-      instance.get('/', {
-        logSerializers: {
-          test3: value => 'Z' + value
+      instance.get(
+        '/',
+        {
+          logSerializers: {
+            test3: (value) => 'Z' + value
+          }
+        },
+        (req, reply) => {
+          req.log.info({ test: 'Hello', test2: 'Hello', test3: 'Hello' }) // { test: 'XHello', test2: 'YHello', test3: 'ZHello' }
+          reply.send({ hello: 'world' })
         }
-      }, (req, reply) => {
-        req.log.info({ test: 'Hello', test2: 'Hello', test3: 'Hello' }) // { test: 'XHello', test2: 'YHello', test3: 'ZHello' }
-        reply.send({ hello: 'world' })
-      })
+      )
       done()
     }
 

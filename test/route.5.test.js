@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('route child logger factory does not affect other routes', async t => {
+test('route child logger factory does not affect other routes', async (t) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -47,7 +47,7 @@ test('route child logger factory does not affect other routes', async t => {
   })
   t.assert.strictEqual(res.statusCode, 200)
 })
-test('route child logger factory overrides global custom error handler', async t => {
+test('route child logger factory overrides global custom error handler', async (t) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -100,7 +100,7 @@ test('route child logger factory overrides global custom error handler', async t
   t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('Creates a HEAD route for each GET one (default)', async t => {
+test('Creates a HEAD route for each GET one (default)', async (t) => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -138,7 +138,7 @@ test('Creates a HEAD route for each GET one (default)', async t => {
   t.assert.strictEqual(res.body, '')
 })
 
-test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', async t => {
+test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', async (t) => {
   t.plan(2)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -172,7 +172,7 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', as
   t.assert.strictEqual(res.statusCode, 404)
 })
 
-test('Creates a HEAD route for each GET one', async t => {
+test('Creates a HEAD route for each GET one', async (t) => {
   t.plan(6)
 
   const fastify = Fastify({ exposeHeadRoutes: true })

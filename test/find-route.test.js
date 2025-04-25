@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const fastifyPlugin = require('fastify-plugin')
 
-test('findRoute should return null when route cannot be found due to a different method', t => {
+test('findRoute should return null when route cannot be found due to a different method', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -15,13 +15,16 @@ test('findRoute should return null when route cannot be found due to a different
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.assert.strictEqual(fastify.findRoute({
-    method: 'POST',
-    url: '/artists/:artistId'
-  }), null)
+  t.assert.strictEqual(
+    fastify.findRoute({
+      method: 'POST',
+      url: '/artists/:artistId'
+    }),
+    null
+  )
 })
 
-test('findRoute should return an immutable route to avoid leaking and runtime route modifications', t => {
+test('findRoute should return an immutable route to avoid leaking and runtime route modifications', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -50,7 +53,7 @@ test('findRoute should return an immutable route to avoid leaking and runtime ro
   t.assert.strictEqual(route.params.artistId, ':artistId')
 })
 
-test('findRoute should return null when when url is not passed', t => {
+test('findRoute should return null when when url is not passed', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -61,12 +64,15 @@ test('findRoute should return null when when url is not passed', t => {
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.assert.strictEqual(fastify.findRoute({
-    method: 'POST'
-  }), null)
+  t.assert.strictEqual(
+    fastify.findRoute({
+      method: 'POST'
+    }),
+    null
+  )
 })
 
-test('findRoute should return null when route cannot be found due to a different path', t => {
+test('findRoute should return null when route cannot be found due to a different path', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -77,13 +83,16 @@ test('findRoute should return null when route cannot be found due to a different
     handler: (req, reply) => reply.send(typeof req.params.artistId)
   })
 
-  t.assert.strictEqual(fastify.findRoute({
-    method: 'GET',
-    url: '/books/:bookId'
-  }), null)
+  t.assert.strictEqual(
+    fastify.findRoute({
+      method: 'GET',
+      url: '/books/:bookId'
+    }),
+    null
+  )
 })
 
-test('findRoute should return the route when found', t => {
+test('findRoute should return the route when found', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -116,10 +125,12 @@ test('findRoute should work correctly when used within plugins', (t, done) => {
 
   function validateRoutePlugin (instance, opts, done) {
     const validateParams = function () {
-      return instance.findRoute({
-        method: 'GET',
-        url: '/artists/:artistId'
-      }) !== null
+      return (
+        instance.findRoute({
+          method: 'GET',
+          url: '/artists/:artistId'
+        }) !== null
+      )
     }
     instance.decorate('validateRoutes', { validateParams })
     done()
@@ -133,7 +144,7 @@ test('findRoute should work correctly when used within plugins', (t, done) => {
   })
 })
 
-test('findRoute should not expose store', t => {
+test('findRoute should not expose store', (t) => {
   t.plan(1)
   const fastify = Fastify()
 

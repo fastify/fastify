@@ -7,8 +7,13 @@ fastify.get('/', function (request, reply) {
   reply.send({ hello: 'world' })
 })
 
-fastify.register(fp((instance, opts, done) => {
-  done()
-}, { fastify: '9.x' }))
+fastify.register(
+  fp(
+    (instance, opts, done) => {
+      done()
+    },
+    { fastify: '9.x' }
+  )
+)
 
 module.exports = fastify

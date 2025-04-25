@@ -28,7 +28,7 @@ const opts = {
   }
 }
 
-test('shorthand - output string', t => {
+test('shorthand - output string', (t) => {
   t.plan(1)
   try {
     fastify.get('/string', opts, function (req, reply) {
@@ -40,7 +40,7 @@ test('shorthand - output string', t => {
   }
 })
 
-test('shorthand - output number', t => {
+test('shorthand - output number', (t) => {
   t.plan(1)
   try {
     fastify.get('/number', opts, function (req, reply) {
@@ -52,7 +52,7 @@ test('shorthand - output number', t => {
   }
 })
 
-test('wrong object for schema - output', t => {
+test('wrong object for schema - output', (t) => {
   t.plan(1)
   try {
     fastify.get('/wrong-object-for-schema', opts, function (req, reply) {
@@ -65,7 +65,7 @@ test('wrong object for schema - output', t => {
   }
 })
 
-test('empty response', t => {
+test('empty response', (t) => {
   t.plan(1)
   try {
     // no checks
@@ -78,7 +78,7 @@ test('empty response', t => {
   }
 })
 
-test('unlisted response code', t => {
+test('unlisted response code', (t) => {
   t.plan(1)
   try {
     fastify.get('/400', opts, function (req, reply) {
@@ -90,74 +90,91 @@ test('unlisted response code', t => {
   }
 })
 
-fastify.listen({ port: 0 }, err => {
+fastify.listen({ port: 0 }, (err) => {
   t.error(err)
-  t.teardown(() => { fastify.close() })
-
-  test('shorthand - string get ok', t => {
-    t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/string'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
+  t.teardown(() => {
+    fastify.close()
   })
 
-  test('shorthand - number get ok', t => {
+  test('shorthand - string get ok', (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/number'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 201)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 55 })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/string'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'world' })
+      }
+    )
   })
 
-  test('shorthand - wrong-object-for-schema', t => {
+  test('shorthand - number get ok', (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: 'The value "world" cannot be converted to a number.'
-      })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/number'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 201)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 55 })
+      }
+    )
   })
 
-  test('shorthand - empty', t => {
+  test('shorthand - wrong-object-for-schema', (t) => {
+    t.plan(4)
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 500)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), {
+          statusCode: 500,
+          error: 'Internal Server Error',
+          message: 'The value "world" cannot be converted to a number.'
+        })
+      }
+    )
+  })
+
+  test('shorthand - empty', (t) => {
     t.plan(2)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/empty'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 204)
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/empty'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 204)
+      }
+    )
   })
 
-  test('shorthand - 400', t => {
+  test('shorthand - 400', (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/400'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'DOOM' })
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/400'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 400)
+        t.equal(response.headers['content-length'], '' + body.length)
+        t.same(JSON.parse(body), { hello: 'DOOM' })
+      }
+    )
   })
 })

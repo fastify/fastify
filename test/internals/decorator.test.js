@@ -2,11 +2,9 @@
 
 const { test } = require('node:test')
 const decorator = require('../../lib/decorate')
-const {
-  kState
-} = require('../../lib/symbols')
+const { kState } = require('../../lib/symbols')
 
-test('decorate should add the given method to its instance', t => {
+test('decorate should add the given method to its instance', (t) => {
   t.plan(1)
   function build () {
     server.add = decorator.add
@@ -24,7 +22,7 @@ test('decorate should add the given method to its instance', t => {
   t.assert.ok(server.test)
 })
 
-test('decorate is chainable', t => {
+test('decorate is chainable', (t) => {
   t.plan(3)
   function build () {
     server.add = decorator.add
@@ -48,13 +46,13 @@ test('decorate is chainable', t => {
   t.assert.ok(server.test3)
 })
 
-test('checkExistence should check if a property is part of the given instance', t => {
+test('checkExistence should check if a property is part of the given instance', (t) => {
   t.plan(1)
   const instance = { test: () => {} }
   t.assert.ok(decorator.exist(instance, 'test'))
 })
 
-test('checkExistence should find the instance if not given', t => {
+test('checkExistence should find the instance if not given', (t) => {
   t.plan(1)
   function build () {
     server.add = decorator.add
@@ -73,7 +71,7 @@ test('checkExistence should find the instance if not given', t => {
   t.assert.ok(server.check('test'))
 })
 
-test('checkExistence should check the prototype as well', t => {
+test('checkExistence should check the prototype as well', (t) => {
   t.plan(1)
   function Instance () {}
   Instance.prototype.test = () => {}
@@ -82,7 +80,7 @@ test('checkExistence should check the prototype as well', t => {
   t.assert.ok(decorator.exist(instance, 'test'))
 })
 
-test('checkDependencies should throw if a dependency is not present', t => {
+test('checkDependencies should throw if a dependency is not present', (t) => {
   t.plan(2)
   const instance = {}
   try {
@@ -90,11 +88,11 @@ test('checkDependencies should throw if a dependency is not present', t => {
     t.assert.fail()
   } catch (e) {
     t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.assert.strictEqual(e.message, 'The decorator is missing dependency \'test\'.')
+    t.assert.strictEqual(e.message, "The decorator is missing dependency 'test'.")
   }
 })
 
-test('decorate should internally call checkDependencies', t => {
+test('decorate should internally call checkDependencies', (t) => {
   t.plan(2)
   function build () {
     server.add = decorator.add
@@ -114,11 +112,11 @@ test('decorate should internally call checkDependencies', t => {
     t.assert.fail()
   } catch (e) {
     t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.assert.strictEqual(e.message, 'The decorator is missing dependency \'test\'.')
+    t.assert.strictEqual(e.message, "The decorator is missing dependency 'test'.")
   }
 })
 
-test('decorate should recognize getter/setter objects', t => {
+test('decorate should recognize getter/setter objects', (t) => {
   t.plan(6)
 
   const one = {

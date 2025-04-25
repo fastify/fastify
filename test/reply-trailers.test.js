@@ -7,7 +7,7 @@ const { Readable } = require('node:stream')
 const { createHash } = require('node:crypto')
 const { sleep } = require('./helper')
 
-test('send trailers when payload is empty string', t => {
+test('send trailers when payload is empty string', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
@@ -19,19 +19,22 @@ test('send trailers when payload is empty string', t => {
     reply.send('')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('send trailers when payload is empty buffer', t => {
+test('send trailers when payload is empty buffer', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
@@ -43,19 +46,22 @@ test('send trailers when payload is empty buffer', t => {
     reply.send(Buffer.alloc(0))
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('send trailers when payload is undefined', t => {
+test('send trailers when payload is undefined', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
@@ -67,19 +73,22 @@ test('send trailers when payload is undefined', t => {
     reply.send(undefined)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('send trailers when payload is json', t => {
+test('send trailers when payload is json', (t) => {
   t.plan(7)
 
   const fastify = Fastify()
@@ -98,20 +107,23 @@ test('send trailers when payload is json', t => {
     reply.send(data)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['transfer-encoding'], 'chunked')
-    t.equal(res.headers.trailer, 'content-md5')
-    t.equal(res.trailers['content-md5'], md5)
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['transfer-encoding'], 'chunked')
+      t.equal(res.headers.trailer, 'content-md5')
+      t.equal(res.trailers['content-md5'], md5)
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('send trailers when payload is stream', t => {
+test('send trailers when payload is stream', (t) => {
   t.plan(7)
 
   const fastify = Fastify()
@@ -125,20 +137,23 @@ test('send trailers when payload is stream', t => {
     reply.send(stream)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['transfer-encoding'], 'chunked')
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['transfer-encoding'], 'chunked')
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('send trailers when using async-await', t => {
+test('send trailers when using async-await', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
@@ -150,19 +165,22 @@ test('send trailers when using async-await', t => {
     reply.send('')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('error in trailers should be ignored', t => {
+test('error in trailers should be ignored', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
@@ -174,19 +192,22 @@ test('error in trailers should be ignored', t => {
     reply.send('')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.notHas(res.trailers, 'etag')
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.notHas(res.trailers, 'etag')
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('trailer handler counter', t => {
+test('trailer handler counter', (t) => {
   t.plan(2)
 
   const data = JSON.stringify({ hello: 'world' })
@@ -194,7 +215,7 @@ test('trailer handler counter', t => {
   hash.update(data)
   const md5 = hash.digest('hex')
 
-  t.test('callback with timeout', t => {
+  t.test('callback with timeout', (t) => {
     t.plan(9)
     const fastify = Fastify()
 
@@ -214,21 +235,24 @@ test('trailer handler counter', t => {
       reply.send(data)
     })
 
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (error, res) => {
-      t.error(error)
-      t.equal(res.statusCode, 200)
-      t.equal(res.headers['transfer-encoding'], 'chunked')
-      t.equal(res.headers.trailer, 'return-early content-md5')
-      t.equal(res.trailers['return-early'], 'return')
-      t.equal(res.trailers['content-md5'], md5)
-      t.notHas(res.headers, 'content-length')
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: '/'
+      },
+      (error, res) => {
+        t.error(error)
+        t.equal(res.statusCode, 200)
+        t.equal(res.headers['transfer-encoding'], 'chunked')
+        t.equal(res.headers.trailer, 'return-early content-md5')
+        t.equal(res.trailers['return-early'], 'return')
+        t.equal(res.trailers['content-md5'], md5)
+        t.notHas(res.headers, 'content-length')
+      }
+    )
   })
 
-  t.test('async-await', t => {
+  t.test('async-await', (t) => {
     t.plan(9)
     const fastify = Fastify()
 
@@ -247,22 +271,25 @@ test('trailer handler counter', t => {
       reply.send(data)
     })
 
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (error, res) => {
-      t.error(error)
-      t.equal(res.statusCode, 200)
-      t.equal(res.headers['transfer-encoding'], 'chunked')
-      t.equal(res.headers.trailer, 'return-early content-md5')
-      t.equal(res.trailers['return-early'], 'return')
-      t.equal(res.trailers['content-md5'], md5)
-      t.notHas(res.headers, 'content-length')
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: '/'
+      },
+      (error, res) => {
+        t.error(error)
+        t.equal(res.statusCode, 200)
+        t.equal(res.headers['transfer-encoding'], 'chunked')
+        t.equal(res.headers.trailer, 'return-early content-md5')
+        t.equal(res.trailers['return-early'], 'return')
+        t.equal(res.trailers['content-md5'], md5)
+        t.notHas(res.headers, 'content-length')
+      }
+    )
   })
 })
 
-test('removeTrailer', t => {
+test('removeTrailer', (t) => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -280,20 +307,23 @@ test('removeTrailer', t => {
     reply.send(undefined)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notOk(res.trailers['should-not-call'])
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notOk(res.trailers['should-not-call'])
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('remove all trailers', t => {
+test('remove all trailers', (t) => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -312,20 +342,23 @@ test('remove all trailers', t => {
     reply.send('')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.notOk(res.headers.trailer)
-    t.notOk(res.trailers.etag)
-    t.notOk(res.trailers['should-not-call'])
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.notOk(res.headers.trailer)
+      t.notOk(res.trailers.etag)
+      t.notOk(res.trailers['should-not-call'])
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('hasTrailer', t => {
+test('hasTrailer', (t) => {
   t.plan(10)
 
   const fastify = Fastify()
@@ -346,20 +379,23 @@ test('hasTrailer', t => {
     reply.send(undefined)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notOk(res.trailers['should-not-call'])
-    t.notHas(res.headers, 'content-length')
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notOk(res.trailers['should-not-call'])
+      t.notHas(res.headers, 'content-length')
+    }
+  )
 })
 
-test('throw error when trailer header name is not allowed', t => {
+test('throw error when trailer header name is not allowed', (t) => {
   const INVALID_TRAILERS = [
     'transfer-encoding',
     'content-length',
@@ -381,7 +417,7 @@ test('throw error when trailer header name is not allowed', t => {
   fastify.get('/', function (request, reply) {
     for (const key of INVALID_TRAILERS) {
       try {
-        reply.trailer(key, () => { })
+        reply.trailer(key, () => {})
       } catch (err) {
         t.equal(err.message, `Called reply.trailer with an invalid header name: ${key}`)
       }
@@ -389,26 +425,20 @@ test('throw error when trailer header name is not allowed', t => {
     reply.send('')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })
 
-test('throw error when trailer header value is not function', t => {
-  const INVALID_TRAILERS_VALUE = [
-    undefined,
-    null,
-    true,
-    false,
-    'invalid',
-    [],
-    new Date(),
-    {}
-  ]
+test('throw error when trailer header value is not function', (t) => {
+  const INVALID_TRAILERS_VALUE = [undefined, null, true, false, 'invalid', [], new Date(), {}]
   t.plan(INVALID_TRAILERS_VALUE.length + 2)
 
   const fastify = Fastify()
@@ -418,17 +448,23 @@ test('throw error when trailer header value is not function', t => {
       try {
         reply.trailer('invalid', value)
       } catch (err) {
-        t.equal(err.message, `Called reply.trailer('invalid', fn) with an invalid type: ${typeof value}. Expected a function.`)
+        t.equal(
+          err.message,
+          `Called reply.trailer('invalid', fn) with an invalid type: ${typeof value}. Expected a function.`
+        )
       }
     }
     reply.send('')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+    }
+  )
 })

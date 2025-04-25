@@ -10,30 +10,33 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
   const fastify = Fastify()
 
   const arr = []
-  fastify.register((instance, opts, next) => {
-    instance.addHook('onRoute', (routeOptions) => {
-      arr.push(`${routeOptions.method} ${routeOptions.url}`)
-    })
+  fastify.register(
+    (instance, opts, next) => {
+      instance.addHook('onRoute', (routeOptions) => {
+        arr.push(`${routeOptions.method} ${routeOptions.url}`)
+      })
 
-    instance.route({
-      method: 'GET',
-      path: '/',
-      exposeHeadRoute: true,
-      prefixTrailingSlash: 'both',
-      handler: (req, reply) => {
-        reply.send({ here: 'is coffee' })
-      }
-    })
+      instance.route({
+        method: 'GET',
+        path: '/',
+        exposeHeadRoute: true,
+        prefixTrailingSlash: 'both',
+        handler: (req, reply) => {
+          reply.send({ here: 'is coffee' })
+        }
+      })
 
-    next()
-  }, { prefix: '/v1' })
+      next()
+    },
+    { prefix: '/v1' }
+  )
 
   await fastify.ready()
 
   t.assert.ok(true)
 })
 
-test('Will not create a HEAD route that is not GET', async t => {
+test('Will not create a HEAD route that is not GET', async (t) => {
   t.plan(8)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
@@ -89,7 +92,7 @@ test('Will not create a HEAD route that is not GET', async t => {
   t.assert.strictEqual(res.statusCode, 404)
 })
 
-test('HEAD route should handle properly each response type', async t => {
+test('HEAD route should handle properly each response type', async (t) => {
   t.plan(20)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
@@ -185,7 +188,7 @@ test('HEAD route should handle properly each response type', async t => {
   t.assert.strictEqual(res.body, '')
 })
 
-test('HEAD route should respect custom onSend handlers', async t => {
+test('HEAD route should respect custom onSend handlers', async (t) => {
   t.plan(5)
 
   let counter = 0
@@ -217,7 +220,7 @@ test('HEAD route should respect custom onSend handlers', async t => {
   t.assert.strictEqual(counter, 2)
 })
 
-test('route onSend can be function or array of functions', async t => {
+test('route onSend can be function or array of functions', async (t) => {
   t.plan(10)
   const counters = { single: 0, multiple: 0 }
 
@@ -261,7 +264,7 @@ test('route onSend can be function or array of functions', async t => {
   t.assert.strictEqual(counters.multiple, 2)
 })
 
-test('no warning for exposeHeadRoute', async t => {
+test('no warning for exposeHeadRoute', async (t) => {
   const fastify = Fastify()
 
   fastify.route({

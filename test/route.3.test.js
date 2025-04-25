@@ -37,15 +37,18 @@ test('does not mutate joi schemas', (t, done) => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/foo/42'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.deepStrictEqual(res.json(), { hello: 'world' })
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/foo/42'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 200)
+      t.assert.deepStrictEqual(res.json(), { hello: 'world' })
+      done()
+    }
+  )
 })
 
 test('multiple routes with one schema', (t, done) => {
@@ -80,7 +83,7 @@ test('multiple routes with one schema', (t, done) => {
     }
   })
 
-  fastify.ready(error => {
+  fastify.ready((error) => {
     t.assert.ifError(error)
     t.assert.deepStrictEqual(schema, schema)
     done()
@@ -111,19 +114,22 @@ test('route error handler overrides default error handler', (t, done) => {
     errorHandler: customRouteErrorHandler
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/coffee'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 418)
-    t.assert.deepStrictEqual(res.json(), {
-      message: 'Make a brew',
-      statusCode: 418,
-      error: 'Wrong Pot Error'
-    })
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/coffee'
+    },
+    (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 418)
+      t.assert.deepStrictEqual(res.json(), {
+        message: 'Make a brew',
+        statusCode: 418,
+        error: 'Wrong Pot Error'
+      })
+      done()
+    }
+  )
 })
 
 test('route error handler does not affect other routes', (t, done) => {
@@ -158,19 +164,22 @@ test('route error handler does not affect other routes', (t, done) => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/tea'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.deepStrictEqual(res.json(), {
-      message: 'No tea today',
-      statusCode: 500,
-      error: 'Internal Server Error'
-    })
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/tea'
+    },
+    (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.deepStrictEqual(res.json(), {
+        message: 'No tea today',
+        statusCode: 500,
+        error: 'Internal Server Error'
+      })
+      done()
+    }
+  )
 })
 
 test('async error handler for a route', (t, done) => {
@@ -197,17 +206,20 @@ test('async error handler for a route', (t, done) => {
     errorHandler: customRouteErrorHandler
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/late-coffee'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 418)
-    t.assert.deepStrictEqual(res.json(), {
-      message: 'Make a brew sometime later',
-      statusCode: 418,
-      error: 'Delayed Pot Error'
-    })
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/late-coffee'
+    },
+    (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 418)
+      t.assert.deepStrictEqual(res.json(), {
+        message: 'Make a brew sometime later',
+        statusCode: 418,
+        error: 'Delayed Pot Error'
+      })
+      done()
+    }
+  )
 })

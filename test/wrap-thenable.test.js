@@ -5,8 +5,8 @@ const { kReplyHijacked } = require('../lib/symbols')
 const wrapThenable = require('../lib/wrapThenable')
 const Reply = require('../lib/reply')
 
-test('should resolve immediately when reply[kReplyHijacked] is true', async t => {
-  await new Promise(resolve => {
+test('should resolve immediately when reply[kReplyHijacked] is true', async (t) => {
+  await new Promise((resolve) => {
     const reply = {}
     reply[kReplyHijacked] = true
     const thenable = Promise.resolve()
@@ -15,7 +15,7 @@ test('should resolve immediately when reply[kReplyHijacked] is true', async t =>
   })
 })
 
-test('should reject immediately when reply[kReplyHijacked] is true', t => {
+test('should reject immediately when reply[kReplyHijacked] is true', (t) => {
   t.plan(1)
   const reply = new Reply({}, {}, {})
   reply[kReplyHijacked] = true

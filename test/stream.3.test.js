@@ -23,7 +23,7 @@ test('Destroying streams prematurely', (t, testDone) => {
   const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.on('data', line => {
+  logStream.on('data', (line) => {
     if (line.res) {
       t.assert.strictEqual(line.msg, 'stream closed prematurely')
       t.assert.strictEqual(line.level, 30)
@@ -47,7 +47,7 @@ test('Destroying streams prematurely', (t, testDone) => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
@@ -86,7 +86,7 @@ test('Destroying streams prematurely should call close method', (t, testDone) =>
   const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.on('data', line => {
+  logStream.on('data', (line) => {
     if (line.res) {
       t.assert.strictEqual(line.msg, 'stream closed prematurely')
       t.assert.strictEqual(line.level, 30)
@@ -113,9 +113,11 @@ test('Destroying streams prematurely should call close method', (t, testDone) =>
     reply.send(reallyLongStream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -151,7 +153,7 @@ test('Destroying streams prematurely should call close method when destroy is no
   const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.on('data', line => {
+  logStream.on('data', (line) => {
     if (line.res) {
       t.assert.strictEqual(line.msg, 'stream closed prematurely')
       t.assert.strictEqual(line.level, 30)
@@ -178,9 +180,11 @@ test('Destroying streams prematurely should call close method when destroy is no
     reply.send(reallyLongStream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 

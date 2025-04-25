@@ -20,12 +20,12 @@ function createTempFile () {
   function cleanup () {
     try {
       fs.unlinkSync(file)
-    } catch { }
+    } catch {}
   }
   return { file, cleanup }
 }
 
-function request (url, cleanup = () => { }) {
+function request (url, cleanup = () => {}) {
   const promise = createDeferredPromise()
   http.get(url, (res) => {
     const chunks = []

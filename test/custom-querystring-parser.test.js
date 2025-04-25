@@ -6,7 +6,7 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 const { waitForCb } = require('./toolkit')
 
-test('Custom querystring parser', t => {
+test('Custom querystring parser', (t) => {
   t.plan(9)
 
   const fastify = Fastify({
@@ -30,29 +30,35 @@ test('Custom querystring parser', t => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: `${address}?foo=bar&baz=faz`
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        completion.stepIn()
+      }
+    )
 
-    fastify.inject({
-      method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: `${address}?foo=bar&baz=faz`
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        completion.stepIn()
+      }
+    )
   })
 
   return completion.patience
 })
 
-test('Custom querystring parser should be called also if there is nothing to parse', t => {
+test('Custom querystring parser should be called also if there is nothing to parse', (t) => {
   t.plan(9)
 
   const fastify = Fastify({
@@ -73,29 +79,35 @@ test('Custom querystring parser should be called also if there is nothing to par
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: address
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        completion.stepIn()
+      }
+    )
 
-    fastify.inject({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: address
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        completion.stepIn()
+      }
+    )
   })
 
   return completion.patience
 })
 
-test('Querystring without value', t => {
+test('Querystring without value', (t) => {
   t.plan(9)
 
   const fastify = Fastify({
@@ -116,29 +128,35 @@ test('Querystring without value', t => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}?foo`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: `${address}?foo`
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        completion.stepIn()
+      }
+    )
 
-    fastify.inject({
-      method: 'GET',
-      url: `${address}?foo`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: `${address}?foo`
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        completion.stepIn()
+      }
+    )
   })
 
   return completion.patience
 })
 
-test('Custom querystring parser should be a function', t => {
+test('Custom querystring parser should be a function', (t) => {
   t.plan(1)
 
   try {
@@ -147,9 +165,6 @@ test('Custom querystring parser should be a function', t => {
     })
     t.assert.fail('Should throw')
   } catch (err) {
-    t.assert.strictEqual(
-      err.message,
-      "querystringParser option should be a function, instead got 'number'"
-    )
+    t.assert.strictEqual(err.message, "querystringParser option should be a function, instead got 'number'")
   }
 })

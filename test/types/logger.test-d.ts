@@ -16,55 +16,78 @@ expectType<FastifyLoggerInstance>(fastify().log)
 
 class Foo {}
 
-['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {
-  expectType<FastifyLogFn>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel])
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](''))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({}))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({ foo: 'bar' }))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Error()))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
+;['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach((logLevel) => {
+  expectType<FastifyLogFn>(
+    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]
+  )
+  expectType<void>(
+    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]('')
+  )
+  expectType<void>(
+    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({})
+  )
+  expectType<void>(
+    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({ foo: 'bar' })
+  )
+  expectType<void>(
+    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Error())
+  )
+  expectType<void>(
+    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo())
+  )
 })
 
 interface CustomLogger extends FastifyBaseLogger {
-  customMethod(msg: string, ...args: unknown[]): void;
+  customMethod(msg: string, ...args: unknown[]): void
 }
 
 class CustomLoggerImpl implements CustomLogger {
   level = 'info'
-  customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
+  customMethod (msg: string, ...args: unknown[]) {
+    console.log(msg, args)
+  }
 
   // Implementation signature must be compatible with all overloads of FastifyLogFn
   info (arg1: unknown, arg2?: unknown, ...args: unknown[]): void {
     console.log(arg1, arg2, ...args)
   }
 
-  warn (...args: unknown[]) { console.log(args) }
-  error (...args: unknown[]) { console.log(args) }
-  fatal (...args: unknown[]) { console.log(args) }
-  trace (...args: unknown[]) { console.log(args) }
-  debug (...args: unknown[]) { console.log(args) }
-  silent (...args: unknown[]) { }
+  warn (...args: unknown[]) {
+    console.log(args)
+  }
 
-  child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
+  error (...args: unknown[]) {
+    console.log(args)
+  }
+
+  fatal (...args: unknown[]) {
+    console.log(args)
+  }
+
+  trace (...args: unknown[]) {
+    console.log(args)
+  }
+
+  debug (...args: unknown[]) {
+    console.log(args)
+  }
+
+  silent (...args: unknown[]) {}
+
+  child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl {
+    return new CustomLoggerImpl()
+  }
 }
 
 const customLogger = new CustomLoggerImpl()
 
-const serverWithCustomLogger = fastify<
-Server,
-IncomingMessage,
-ServerResponse,
-CustomLoggerImpl
->({ logger: customLogger })
+const serverWithCustomLogger = fastify<Server, IncomingMessage, ServerResponse, CustomLoggerImpl>({
+  logger: customLogger
+})
 
 expectType<CustomLoggerImpl>(serverWithCustomLogger.log)
 
-const serverWithPino = fastify<
-Server,
-IncomingMessage,
-ServerResponse,
-P.Logger
->({
+const serverWithPino = fastify<Server, IncomingMessage, ServerResponse, P.Logger>({
   logger: P({
     level: 'info',
     redact: ['x-userinfo']
@@ -87,11 +110,7 @@ serverWithPino.get('/', function (request) {
   expectType<P.Logger>(request.log)
 })
 
-const serverWithLogOptions = fastify<
-Server,
-IncomingMessage,
-ServerResponse
->({
+const serverWithLogOptions = fastify<Server, IncomingMessage, ServerResponse>({
   logger: {
     level: 'info'
   }
@@ -99,11 +118,7 @@ ServerResponse
 
 expectType<FastifyLoggerInstance>(serverWithLogOptions.log)
 
-const serverWithFileOption = fastify<
-Server,
-IncomingMessage,
-ServerResponse
->({
+const serverWithFileOption = fastify<Server, IncomingMessage, ServerResponse>({
   logger: {
     level: 'info',
     file: '/path/to/file'
@@ -258,7 +273,9 @@ expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { redact: ['pass', 'pin'] }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { serializers: { key: () => {} } }))
-expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
+expectType<FastifyLoggerInstance>(
+  childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } })
+)
 
 // no option pass
 expectError(childParent.child())

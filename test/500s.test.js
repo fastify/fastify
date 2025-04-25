@@ -14,20 +14,23 @@ test('default 500', (t, done) => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
-      error: 'Internal Server Error',
-      message: 'kaboom',
-      statusCode: 500
-    })
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+      t.assert.deepStrictEqual(JSON.parse(res.payload), {
+        error: 'Internal Server Error',
+        message: 'kaboom',
+        statusCode: 500
+      })
+      done()
+    }
+  )
 })
 
 test('custom 500', (t, done) => {
@@ -49,19 +52,22 @@ test('custom 500', (t, done) => {
       .send('an error happened: ' + err.message)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-    t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+      t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
+      done()
+    }
+  )
 })
 
-test('encapsulated 500', async t => {
+test('encapsulated 500', async (t) => {
   t.plan(8)
 
   const fastify = Fastify()
@@ -71,22 +77,25 @@ test('encapsulated 500', async t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.register(function (f, opts, done) {
-    f.get('/', function (req, reply) {
-      reply.send(new Error('kaboom'))
-    })
+  fastify.register(
+    function (f, opts, done) {
+      f.get('/', function (req, reply) {
+        reply.send(new Error('kaboom'))
+      })
 
-    f.setErrorHandler(function (err, request, reply) {
-      t.assert.ok(typeof request === 'object')
-      t.assert.ok(request instanceof fastify[symbols.kRequest].parent)
-      reply
-        .code(500)
-        .type('text/plain')
-        .send('an error happened: ' + err.message)
-    })
+      f.setErrorHandler(function (err, request, reply) {
+        t.assert.ok(typeof request === 'object')
+        t.assert.ok(request instanceof fastify[symbols.kRequest].parent)
+        reply
+          .code(500)
+          .type('text/plain')
+          .send('an error happened: ' + err.message)
+      })
 
-    done()
-  }, { prefix: 'test' })
+      done()
+    },
+    { prefix: 'test' }
+  )
 
   {
     const response = await fastify.inject({
@@ -145,16 +154,19 @@ test('custom 500 with hooks', (t, done) => {
     done()
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-    t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+      t.assert.deepStrictEqual(res.payload.toString(), 'an error happened: kaboom')
+      done()
+    }
+  )
 })
 
 test('cannot set errorHandler after binding', (t, done) => {
@@ -163,11 +175,11 @@ test('cannot set errorHandler after binding', (t, done) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     try {
-      fastify.setErrorHandler(() => { })
+      fastify.setErrorHandler(() => {})
       t.assert.fail()
     } catch (e) {
       t.assert.ok(true)
@@ -183,11 +195,11 @@ test('cannot set childLoggerFactory after binding', (t, done) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     try {
-      fastify.setChildLoggerFactory(() => { })
+      fastify.setChildLoggerFactory(() => {})
       t.assert.fail()
     } catch (e) {
       t.assert.ok(true)
@@ -211,21 +223,24 @@ test('catch synchronous errors', (t, done) => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'Content-Type': 'application/json'
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      payload: JSON.stringify({ hello: 'world' }).substring(0, 5)
     },
-    payload: JSON.stringify({ hello: 'world' }).substring(0, 5)
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.deepStrictEqual(res.json(), {
-      error: 'Internal Server Error',
-      message: 'kaboom2',
-      statusCode: 500
-    })
-    done()
-  })
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.deepStrictEqual(res.json(), {
+        error: 'Internal Server Error',
+        message: 'kaboom2',
+        statusCode: 500
+      })
+      done()
+    }
+  )
 })

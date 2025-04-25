@@ -6,7 +6,7 @@ const pluginUtilsPublic = require('../../lib/pluginUtils.js')
 const symbols = require('../../lib/symbols.js')
 const pluginUtils = require('../../lib/pluginUtils')[symbols.kTestInternals]
 
-test("shouldSkipOverride should check the 'skip-override' symbol", t => {
+test("shouldSkipOverride should check the 'skip-override' symbol", (t) => {
   t.plan(2)
 
   yes[Symbol.for('skip-override')] = true
@@ -18,7 +18,7 @@ test("shouldSkipOverride should check the 'skip-override' symbol", t => {
   function no () {}
 })
 
-test('getPluginName should return plugin name if the file is cached', t => {
+test('getPluginName should return plugin name if the file is cached', (t) => {
   t.plan(1)
   const expectedPluginName = 'example'
   const fn = () => console.log('is just an example')
@@ -28,7 +28,7 @@ test('getPluginName should return plugin name if the file is cached', t => {
   t.assert.strictEqual(pluginName, expectedPluginName)
 })
 
-test('getPluginName should not throw when require.cache is undefined', t => {
+test('getPluginName should not throw when require.cache is undefined', (t) => {
   t.plan(1)
   function example () {
     console.log('is just an example')
@@ -43,7 +43,7 @@ test('getPluginName should not throw when require.cache is undefined', t => {
   t.assert.strictEqual(pluginName, 'example')
 })
 
-test("getMeta should return the object stored with the 'plugin-meta' symbol", t => {
+test("getMeta should return the object stored with the 'plugin-meta' symbol", (t) => {
   t.plan(1)
 
   const meta = { hello: 'world' }
@@ -54,7 +54,7 @@ test("getMeta should return the object stored with the 'plugin-meta' symbol", t 
   function fn () {}
 })
 
-test('checkDecorators should check if the given decorator is present in the instance', t => {
+test('checkDecorators should check if the given decorator is present in the instance', (t) => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
@@ -80,7 +80,7 @@ test('checkDecorators should check if the given decorator is present in the inst
   function fn () {}
 })
 
-test('checkDecorators should check if the given decorator is present in the instance (errored)', t => {
+test('checkDecorators should check if the given decorator is present in the instance (errored)', (t) => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
@@ -106,11 +106,11 @@ test('checkDecorators should check if the given decorator is present in the inst
   function fn () {}
 })
 
-test('checkDecorators should accept optional decorators', t => {
+test('checkDecorators should accept optional decorators', (t) => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
-    decorators: { }
+    decorators: {}
   }
 
   function context () {}
@@ -128,7 +128,7 @@ test('checkDecorators should accept optional decorators', t => {
   function fn () {}
 })
 
-test('checkDependencies should check if the given dependency is present in the instance', t => {
+test('checkDependencies should check if the given dependency is present in the instance', (t) => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
@@ -148,7 +148,7 @@ test('checkDependencies should check if the given dependency is present in the i
   function fn () {}
 })
 
-test('checkDependencies should check if the given dependency is present in the instance (errored)', t => {
+test('checkDependencies should check if the given dependency is present in the instance (errored)', (t) => {
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {

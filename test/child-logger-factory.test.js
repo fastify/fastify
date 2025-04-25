@@ -21,15 +21,18 @@ test('Should accept a custom childLoggerFactory function', (t, done) => {
 
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.assert.ifError(err)
-      done()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.assert.ifError(err)
+        done()
+      }
+    )
   })
 })
 
@@ -52,15 +55,18 @@ test('Should accept a custom childLoggerFactory function as option', (t, done) =
 
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.assert.ifError(err)
-      done()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.assert.ifError(err)
+        done()
+      }
+    )
   })
 })
 
@@ -81,15 +87,18 @@ test('req.log should be the instance returned by the factory', (t, done) => {
 
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.assert.ifError(err)
-      done()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.assert.ifError(err)
+        done()
+      }
+    )
   })
 })
 
@@ -108,21 +117,27 @@ test('should throw error if invalid logger is returned', (t, done) => {
 
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.assert.throws(() => {
-      try {
-        fastify.inject({
-          method: 'GET',
-          url: 'http://localhost:' + fastify.server.address().port
-        }, (err) => {
-          t.assert.fail('request should have failed but did not')
-          t.assert.ifError(err)
+    t.assert.throws(
+      () => {
+        try {
+          fastify.inject(
+            {
+              method: 'GET',
+              url: 'http://localhost:' + fastify.server.address().port
+            },
+            (err) => {
+              t.assert.fail('request should have failed but did not')
+              t.assert.ifError(err)
+              done()
+            }
+          )
+        } finally {
           done()
-        })
-      } finally {
-        done()
-      }
-    }, { code: 'FST_ERR_LOG_INVALID_LOGGER' })
+        }
+      },
+      { code: 'FST_ERR_LOG_INVALID_LOGGER' }
+    )
   })
 })

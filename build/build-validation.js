@@ -49,8 +49,14 @@ const schema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    connectionTimeout: { type: 'integer', default: defaultInitOptions.connectionTimeout },
-    keepAliveTimeout: { type: 'integer', default: defaultInitOptions.keepAliveTimeout },
+    connectionTimeout: {
+      type: 'integer',
+      default: defaultInitOptions.connectionTimeout
+    },
+    keepAliveTimeout: {
+      type: 'integer',
+      default: defaultInitOptions.keepAliveTimeout
+    },
     forceCloseConnections: {
       oneOf: [
         {
@@ -62,11 +68,24 @@ const schema = {
         }
       ]
     },
-    maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
-    requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
+    maxRequestsPerSocket: {
+      type: 'integer',
+      default: defaultInitOptions.maxRequestsPerSocket,
+      nullable: true
+    },
+    requestTimeout: {
+      type: 'integer',
+      default: defaultInitOptions.requestTimeout
+    },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
-    caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
-    allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.allowUnsafeRegex },
+    caseSensitive: {
+      type: 'boolean',
+      default: defaultInitOptions.caseSensitive
+    },
+    allowUnsafeRegex: {
+      type: 'boolean',
+      default: defaultInitOptions.allowUnsafeRegex
+    },
     http2: { type: 'boolean' },
     https: {
       if: {
@@ -87,21 +106,54 @@ const schema = {
       },
       then: { setDefaultValue: true }
     },
-    ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
-    ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
+    ignoreTrailingSlash: {
+      type: 'boolean',
+      default: defaultInitOptions.ignoreTrailingSlash
+    },
+    ignoreDuplicateSlashes: {
+      type: 'boolean',
+      default: defaultInitOptions.ignoreDuplicateSlashes
+    },
     disableRequestLogging: {
       type: 'boolean',
       default: false
     },
-    maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
-    onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
-    onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
-    pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
-    requestIdHeader: { anyOf: [{ type: 'boolean' }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
-    requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
-    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
-    exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
-    useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
+    maxParamLength: {
+      type: 'integer',
+      default: defaultInitOptions.maxParamLength
+    },
+    onProtoPoisoning: {
+      type: 'string',
+      default: defaultInitOptions.onProtoPoisoning
+    },
+    onConstructorPoisoning: {
+      type: 'string',
+      default: defaultInitOptions.onConstructorPoisoning
+    },
+    pluginTimeout: {
+      type: 'integer',
+      default: defaultInitOptions.pluginTimeout
+    },
+    requestIdHeader: {
+      anyOf: [{ type: 'boolean' }, { type: 'string' }],
+      default: defaultInitOptions.requestIdHeader
+    },
+    requestIdLogLabel: {
+      type: 'string',
+      default: defaultInitOptions.requestIdLogLabel
+    },
+    http2SessionTimeout: {
+      type: 'integer',
+      default: defaultInitOptions.http2SessionTimeout
+    },
+    exposeHeadRoutes: {
+      type: 'boolean',
+      default: defaultInitOptions.exposeHeadRoutes
+    },
+    useSemicolonDelimiter: {
+      type: 'boolean',
+      default: defaultInitOptions.useSemicolonDelimiter
+    },
     constraints: {
       type: 'object',
       additionalProperties: {
@@ -119,31 +171,34 @@ const schema = {
   }
 }
 
-const compiler = factory({}, {
-  customOptions: {
-    code: {
-      source: true,
-      lines: true,
-      optimize: 3
-    },
-    removeAdditional: true,
-    useDefaults: true,
-    coerceTypes: true,
-    keywords: [
-      {
-        keyword: 'setDefaultValue',
-        $data: true,
-        // error: false,
-        modifying: true,
-        valid: true,
-        code (keywordCxt) {
-          const { gen, it, schemaValue } = keywordCxt
-          const logicCode = gen.assign(_`${it.parentData}[${it.parentDataProperty}]`, schemaValue)
-          return logicCode
+const compiler = factory(
+  {},
+  {
+    customOptions: {
+      code: {
+        source: true,
+        lines: true,
+        optimize: 3
+      },
+      removeAdditional: true,
+      useDefaults: true,
+      coerceTypes: true,
+      keywords: [
+        {
+          keyword: 'setDefaultValue',
+          $data: true,
+          // error: false,
+          modifying: true,
+          valid: true,
+          code (keywordCxt) {
+            const { gen, it, schemaValue } = keywordCxt
+            const logicCode = gen.assign(_`${it.parentData}[${it.parentDataProperty}]`, schemaValue)
+            return logicCode
+          }
         }
-      }
-    ]
+      ]
+    }
   }
-})
+)
 
 compiler({ schema })

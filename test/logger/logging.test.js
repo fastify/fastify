@@ -19,7 +19,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   t.plan(13)
 
   t.before(async function () {
-    [localhost, localhostForURL] = await helper.getLoopbackHost()
+    ;[localhost, localhostForURL] = await helper.getLoopbackHost()
   })
 
   await t.test('The default 404 handler logs the incoming request', async (t) => {
@@ -38,7 +38,10 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     await fastify.ready()
 
     {
-      const response = await fastify.inject({ method: 'GET', url: '/not-found' })
+      const response = await fastify.inject({
+        method: 'GET',
+        url: '/not-found'
+      })
       t.assert.strictEqual(response.statusCode, 404)
     }
 
@@ -253,7 +256,10 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   await t.test('should not log incoming request and outgoing response when disabled', async (t) => {
     t.plan(1)
     const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
+    const fastify = Fastify({
+      disableRequestLogging: true,
+      logger: { level: 'info', stream }
+    })
     t.after(() => fastify.close())
 
     fastify.get('/500', (req, reply) => {
@@ -268,19 +274,25 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     t.assert.strictEqual(stream.readableLength, 0)
   })
 
-  await t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {
-    t.plan(1)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
-    t.after(() => fastify.close())
+  await t.test(
+    'should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled',
+    async (t) => {
+      t.plan(1)
+      const stream = split(JSON.parse)
+      const fastify = Fastify({
+        disableRequestLogging: true,
+        logger: { level: 'info', stream }
+      })
+      t.after(() => fastify.close())
 
-    await fastify.ready()
+      await fastify.ready()
 
-    await fastify.inject({ method: 'GET', url: '/%c0' })
+      await fastify.inject({ method: 'GET', url: '/%c0' })
 
-    // no more readable data
-    t.assert.strictEqual(stream.readableLength, 0)
-  })
+      // no more readable data
+      t.assert.strictEqual(stream.readableLength, 0)
+    }
+  )
 
   await t.test('defaults to info level', async (t) => {
     const lines = [

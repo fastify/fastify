@@ -28,7 +28,7 @@ test('Destroying streams prematurely should call abort method', (t, testDone) =>
   const http = require('node:http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.on('data', line => {
+  logStream.on('data', (line) => {
     if (line.res) {
       t.assert.strictEqual(line.msg, 'stream closed prematurely')
       t.assert.strictEqual(line.level, 30)
@@ -54,9 +54,11 @@ test('Destroying streams prematurely should call abort method', (t, testDone) =>
     reply.send(reallyLongStream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -107,9 +109,11 @@ test('Destroying streams prematurely, log is disabled', (t, testDone) => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 
@@ -137,9 +141,11 @@ test('should respond with a stream1', (t, testDone) => {
     stream.end({ a: 42 })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
       t.assert.ifError(err)
@@ -170,9 +176,11 @@ test('return a 404 if the stream emits a 404 error', (t, testDone) => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+    t.after(() => {
+      fastify.close()
+    })
 
     const port = fastify.server.address().port
 

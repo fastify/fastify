@@ -8,14 +8,16 @@ const helper = require('./helper')
 const { kState } = require('../lib/symbols')
 const { networkInterfaces } = require('node:os')
 
-const isIPv6Missing = !Object.values(networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
+const isIPv6Missing = !Object.values(networkInterfaces())
+  .flat()
+  .some(({ family }) => family === 'IPv6')
 
 let localhost
 before(async function () {
-  [localhost] = await helper.getLoopbackHost()
+  ;[localhost] = await helper.getLoopbackHost()
 })
 
-test('onListen should not be processed when .ready() is called', t => {
+test('onListen should not be processed when .ready() is called', (t) => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -25,10 +27,10 @@ test('onListen should not be processed when .ready() is called', t => {
     done()
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready((err) => t.error(err))
 })
 
-test('localhost onListen should be called in order', t => {
+test('localhost onListen should be called in order', (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -50,7 +52,7 @@ test('localhost onListen should be called in order', t => {
   })
 })
 
-test('localhost async onListen should be called in order', async t => {
+test('localhost async onListen should be called in order', async (t) => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -71,7 +73,7 @@ test('localhost async onListen should be called in order', async t => {
   t.equal(order, 2, 'the onListen hooks are awaited')
 })
 
-test('localhost onListen sync should log errors as warnings and continue /1', async t => {
+test('localhost onListen sync should log errors as warnings and continue /1', async (t) => {
   t.plan(8)
   let order = 0
   const stream = split(JSON.parse)
@@ -84,7 +86,7 @@ test('localhost onListen sync should log errors as warnings and continue /1', as
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.equal(order, 2)
       t.pass('Logged Error Message')
@@ -115,7 +117,7 @@ test('localhost onListen sync should log errors as warnings and continue /1', as
   })
 })
 
-test('localhost onListen sync should log errors as warnings and continue /2', t => {
+test('localhost onListen sync should log errors as warnings and continue /2', (t) => {
   t.plan(7)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -129,7 +131,7 @@ test('localhost onListen sync should log errors as warnings and continue /2', t 
 
   let order = 0
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.pass('Logged Error Message')
     }
@@ -159,7 +161,7 @@ test('localhost onListen sync should log errors as warnings and continue /2', t 
   })
 })
 
-test('localhost onListen async should log errors as warnings and continue', async t => {
+test('localhost onListen async should log errors as warnings and continue', async (t) => {
   t.plan(4)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -171,7 +173,7 @@ test('localhost onListen async should log errors as warnings and continue', asyn
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.pass('Logged Error Message')
     }
@@ -196,32 +198,36 @@ test('localhost onListen async should log errors as warnings and continue', asyn
   })
 })
 
-test('localhost Register onListen hook after a plugin inside a plugin', t => {
+test('localhost Register onListen hook after a plugin inside a plugin', (t) => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
-
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: 'localhost',
@@ -229,7 +235,7 @@ test('localhost Register onListen hook after a plugin inside a plugin', t => {
   })
 })
 
-test('localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', t => {
+test('localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', (t) => {
   t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -241,33 +247,37 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('Plugin Error')) {
       t.pass('Logged Error Message')
     }
   })
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+      done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+
+      instance.addHook('onListen', function () {
+        t.pass('called')
+        throw new Error('Plugin Error')
+      })
+
+      done()
     })
-
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: 'localhost',
@@ -275,7 +285,7 @@ test('localhost Register onListen hook after a plugin inside a plugin should log
   })
 })
 
-test('localhost onListen encapsulation should be called in order', async t => {
+test('localhost onListen encapsulation should be called in order', async (t) => {
   t.plan(8)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -315,7 +325,7 @@ test('localhost onListen encapsulation should be called in order', async t => {
   })
 })
 
-test('localhost onListen encapsulation with only nested hook', async t => {
+test('localhost onListen encapsulation with only nested hook', async (t) => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -335,7 +345,7 @@ test('localhost onListen encapsulation with only nested hook', async t => {
   })
 })
 
-test('localhost onListen peer encapsulations with only nested hooks', async t => {
+test('localhost onListen peer encapsulations with only nested hooks', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -362,7 +372,7 @@ test('localhost onListen peer encapsulations with only nested hooks', async t =>
   })
 })
 
-test('localhost onListen encapsulation should be called in order and should log errors as warnings and continue', t => {
+test('localhost onListen encapsulation should be called in order and should log errors as warnings and continue', (t) => {
   t.plan(7)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -374,7 +384,7 @@ test('localhost onListen encapsulation should be called in order and should log 
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('Error in onListen hook of childTwo')) {
       t.pass('Logged Error Message')
     }
@@ -408,7 +418,7 @@ test('localhost onListen encapsulation should be called in order and should log 
   })
 })
 
-test('non-localhost onListen should be called in order', { skip: isIPv6Missing }, t => {
+test('non-localhost onListen should be called in order', { skip: isIPv6Missing }, (t) => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -431,7 +441,7 @@ test('non-localhost onListen should be called in order', { skip: isIPv6Missing }
   })
 })
 
-test('non-localhost async onListen should be called in order', { skip: isIPv6Missing }, async t => {
+test('non-localhost async onListen should be called in order', { skip: isIPv6Missing }, async (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -451,7 +461,7 @@ test('non-localhost async onListen should be called in order', { skip: isIPv6Mis
   })
 })
 
-test('non-localhost sync onListen should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
+test('non-localhost sync onListen should log errors as warnings and continue', { skip: isIPv6Missing }, (t) => {
   t.plan(4)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -463,7 +473,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.pass('Logged Error Message')
     }
@@ -491,7 +501,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', {
   })
 })
 
-test('non-localhost async onListen should log errors as warnings and continue', { skip: isIPv6Missing }, async t => {
+test('non-localhost async onListen should log errors as warnings and continue', { skip: isIPv6Missing }, async (t) => {
   t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -503,7 +513,7 @@ test('non-localhost async onListen should log errors as warnings and continue', 
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.pass('Logged Error Message')
     }
@@ -532,32 +542,36 @@ test('non-localhost async onListen should log errors as warnings and continue', 
   })
 })
 
-test('non-localhost Register onListen hook after a plugin inside a plugin', { skip: isIPv6Missing }, t => {
+test('non-localhost Register onListen hook after a plugin inside a plugin', { skip: isIPv6Missing }, (t) => {
   t.plan(3)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
-
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({
     host: '::1',
@@ -565,53 +579,61 @@ test('non-localhost Register onListen hook after a plugin inside a plugin', { sk
   })
 })
 
-test('non-localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
-  t.plan(6)
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    forceCloseConnections: false,
-    logger: {
-      stream,
-      level: 'info'
-    }
-  })
-  t.teardown(fastify.close.bind(fastify))
-
-  stream.on('data', message => {
-    if (message.msg.includes('Plugin Error')) {
-      t.pass('Logged Error Message')
-    }
-  })
-
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+test(
+  'non-localhost Register onListen hook after a plugin inside a plugin should log errors as warnings and continue',
+  { skip: isIPv6Missing },
+  (t) => {
+    t.plan(6)
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      forceCloseConnections: false,
+      logger: {
+        stream,
+        level: 'info'
+      }
     })
-    done()
-  }))
+    t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+    stream.on('data', (message) => {
+      if (message.msg.includes('Plugin Error')) {
+        t.pass('Logged Error Message')
+      }
     })
 
-    instance.addHook('onListen', function () {
-      t.pass('called')
-      throw new Error('Plugin Error')
+    fastify.register(
+      fp(function (instance, opts, done) {
+        instance.addHook('onListen', function () {
+          t.pass('called')
+          throw new Error('Plugin Error')
+        })
+        done()
+      })
+    )
+
+    fastify.register(
+      fp(function (instance, opts, done) {
+        instance.addHook('onListen', function () {
+          t.pass('called')
+          throw new Error('Plugin Error')
+        })
+
+        instance.addHook('onListen', function () {
+          t.pass('called')
+          throw new Error('Plugin Error')
+        })
+
+        done()
+      })
+    )
+
+    fastify.listen({
+      host: '::1',
+      port: 0
     })
+  }
+)
 
-    done()
-  }))
-
-  fastify.listen({
-    host: '::1',
-    port: 0
-  })
-})
-
-test('non-localhost onListen encapsulation should be called in order', { skip: isIPv6Missing }, t => {
+test('non-localhost onListen encapsulation should be called in order', { skip: isIPv6Missing }, (t) => {
   t.plan(6)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -643,54 +665,58 @@ test('non-localhost onListen encapsulation should be called in order', { skip: i
   })
 })
 
-test('non-localhost onListen encapsulation should be called in order and should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
-  t.plan(7)
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    forceCloseConnections: false,
-    logger: {
-      stream,
-      level: 'info'
-    }
-  })
-  t.teardown(fastify.close.bind(fastify))
+test(
+  'non-localhost onListen encapsulation should be called in order and should log errors as warnings and continue',
+  { skip: isIPv6Missing },
+  (t) => {
+    t.plan(7)
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      forceCloseConnections: false,
+      logger: {
+        stream,
+        level: 'info'
+      }
+    })
+    t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
-    if (message.msg.includes('Error in onListen hook of childTwo')) {
-      t.pass('Logged Error Message')
-    }
-  })
+    stream.on('data', (message) => {
+      if (message.msg.includes('Error in onListen hook of childTwo')) {
+        t.pass('Logged Error Message')
+      }
+    })
 
-  let order = 0
+    let order = 0
 
-  fastify.addHook('onListen', function (done) {
-    t.equal(++order, 1, 'called in root')
+    fastify.addHook('onListen', function (done) {
+      t.equal(++order, 1, 'called in root')
 
-    t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
-    done()
-  })
-
-  fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
-      t.equal(++order, 2, 'called in childOne')
-      t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
       done()
     })
-    childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onListen', async function () {
-        t.equal(++order, 3, 'called in childTwo')
-        t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
-        throw new Error('Error in onListen hook of childTwo')
+
+    fastify.register(async (childOne, o) => {
+      childOne.addHook('onListen', function (done) {
+        t.equal(++order, 2, 'called in childOne')
+        t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+        done()
+      })
+      childOne.register(async (childTwo, o) => {
+        childTwo.addHook('onListen', async function () {
+          t.equal(++order, 3, 'called in childTwo')
+          t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+          throw new Error('Error in onListen hook of childTwo')
+        })
       })
     })
-  })
-  fastify.listen({
-    host: '::1',
-    port: 0
-  })
-})
+    fastify.listen({
+      host: '::1',
+      port: 0
+    })
+  }
+)
 
-test('onListen localhost should work in order with callback', t => {
+test('onListen localhost should work in order with callback', (t) => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -712,7 +738,7 @@ test('onListen localhost should work in order with callback', t => {
   })
 })
 
-test('onListen localhost should work in order with callback in async', t => {
+test('onListen localhost should work in order with callback in async', (t) => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -732,7 +758,7 @@ test('onListen localhost should work in order with callback in async', t => {
   })
 })
 
-test('onListen localhost sync with callback should log errors as warnings and continue', t => {
+test('onListen localhost sync with callback should log errors as warnings and continue', (t) => {
   t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -744,7 +770,7 @@ test('onListen localhost sync with callback should log errors as warnings and co
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.pass('Logged Error Message')
     }
@@ -773,7 +799,7 @@ test('onListen localhost sync with callback should log errors as warnings and co
   })
 })
 
-test('onListen localhost async with callback should log errors as warnings and continue', t => {
+test('onListen localhost async with callback should log errors as warnings and continue', (t) => {
   t.plan(6)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -785,7 +811,7 @@ test('onListen localhost async with callback should log errors as warnings and c
   })
   t.teardown(fastify.close.bind(fastify))
 
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     if (message.msg.includes('FAIL ON LISTEN')) {
       t.pass('Logged Error Message')
     }
@@ -812,32 +838,36 @@ test('onListen localhost async with callback should log errors as warnings and c
   })
 })
 
-test('Register onListen hook localhost with callback after a plugin inside a plugin', t => {
+test('Register onListen hook localhost with callback after a plugin inside a plugin', (t) => {
   t.plan(5)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
       done()
     })
-    done()
-  }))
+  )
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+  fastify.register(
+    fp(function (instance, opts, done) {
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
+      instance.addHook('onListen', function (done) {
+        t.pass('called')
+        done()
+      })
+
       done()
     })
-
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
-    })
-
-    done()
-  }))
+  )
 
   fastify.listen({ port: 0 }, (err) => {
     t.equal(fastify.server.address().address, localhost)
@@ -845,7 +875,7 @@ test('Register onListen hook localhost with callback after a plugin inside a plu
   })
 })
 
-test('onListen localhost with callback encapsulation should be called in order', t => {
+test('onListen localhost with callback encapsulation should be called in order', (t) => {
   t.plan(8)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -877,7 +907,7 @@ test('onListen localhost with callback encapsulation should be called in order',
   })
 })
 
-test('onListen non-localhost should work in order with callback in sync', { skip: isIPv6Missing }, t => {
+test('onListen non-localhost should work in order with callback in sync', { skip: isIPv6Missing }, (t) => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -899,7 +929,7 @@ test('onListen non-localhost should work in order with callback in sync', { skip
   })
 })
 
-test('onListen non-localhost should work in order with callback in async', { skip: isIPv6Missing }, t => {
+test('onListen non-localhost should work in order with callback in async', { skip: isIPv6Missing }, (t) => {
   t.plan(4)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -919,126 +949,142 @@ test('onListen non-localhost should work in order with callback in async', { ski
   })
 })
 
-test('onListen non-localhost sync with callback should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
-  t.plan(8)
+test(
+  'onListen non-localhost sync with callback should log errors as warnings and continue',
+  { skip: isIPv6Missing },
+  (t) => {
+    t.plan(8)
 
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    forceCloseConnections: false,
-    logger: {
-      stream,
-      level: 'info'
-    }
-  })
-  t.teardown(fastify.close.bind(fastify))
-
-  stream.on('data', message => {
-    if (message.msg.includes('FAIL ON LISTEN')) {
-      t.pass('Logged Error Message')
-    }
-  })
-
-  let order = 0
-
-  fastify.addHook('onListen', function (done) {
-    t.equal(++order, 1)
-    t.pass('1st called in root')
-    done()
-  })
-
-  fastify.addHook('onListen', function () {
-    t.equal(++order, 2)
-    throw new Error('FAIL ON LISTEN')
-  })
-
-  fastify.addHook('onListen', function (done) {
-    t.equal(++order, 3)
-    t.pass('3rd called in root')
-    done()
-  })
-
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
-    t.error(err)
-    t.equal(fastify.server.address().address, '::1')
-  })
-})
-
-test('onListen non-localhost async with callback should log errors as warnings and continue', { skip: isIPv6Missing }, t => {
-  t.plan(8)
-
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    forceCloseConnections: false,
-    logger: {
-      stream,
-      level: 'info'
-    }
-  })
-  t.teardown(fastify.close.bind(fastify))
-
-  stream.on('data', message => {
-    if (message.msg.includes('FAIL ON LISTEN')) {
-      t.pass('Logged Error Message')
-    }
-  })
-
-  let order = 0
-
-  fastify.addHook('onListen', async function () {
-    t.equal(++order, 1)
-    t.pass('1st called in root')
-  })
-
-  fastify.addHook('onListen', async function () {
-    t.equal(++order, 2, 'error sync called in root')
-    throw new Error('FAIL ON LISTEN')
-  })
-
-  fastify.addHook('onListen', async function () {
-    t.equal(++order, 3)
-    t.pass('3rd called in root')
-  })
-
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
-    t.error(err)
-    t.equal(fastify.server.address().address, '::1')
-  })
-})
-
-test('Register onListen hook non-localhost with callback after a plugin inside a plugin', { skip: isIPv6Missing }, t => {
-  t.plan(5)
-  const fastify = Fastify()
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
-      done()
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      forceCloseConnections: false,
+      logger: {
+        stream,
+        level: 'info'
+      }
     })
-    done()
-  }))
+    t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+    stream.on('data', (message) => {
+      if (message.msg.includes('FAIL ON LISTEN')) {
+        t.pass('Logged Error Message')
+      }
+    })
+
+    let order = 0
+
+    fastify.addHook('onListen', function (done) {
+      t.equal(++order, 1)
+      t.pass('1st called in root')
       done()
     })
 
-    instance.addHook('onListen', function (done) {
-      t.pass('called')
+    fastify.addHook('onListen', function () {
+      t.equal(++order, 2)
+      throw new Error('FAIL ON LISTEN')
+    })
+
+    fastify.addHook('onListen', function (done) {
+      t.equal(++order, 3)
+      t.pass('3rd called in root')
       done()
     })
 
-    done()
-  }))
+    fastify.listen({ host: '::1', port: 0 }, (err) => {
+      t.error(err)
+      t.equal(fastify.server.address().address, '::1')
+    })
+  }
+)
 
-  fastify.listen({ host: '::1', port: 0 }, (err) => {
-    t.equal(fastify.server.address().address, '::1')
-    t.error(err)
-  })
-})
+test(
+  'onListen non-localhost async with callback should log errors as warnings and continue',
+  { skip: isIPv6Missing },
+  (t) => {
+    t.plan(8)
 
-test('onListen non-localhost with callback encapsulation should be called in order', { skip: isIPv6Missing }, t => {
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      forceCloseConnections: false,
+      logger: {
+        stream,
+        level: 'info'
+      }
+    })
+    t.teardown(fastify.close.bind(fastify))
+
+    stream.on('data', (message) => {
+      if (message.msg.includes('FAIL ON LISTEN')) {
+        t.pass('Logged Error Message')
+      }
+    })
+
+    let order = 0
+
+    fastify.addHook('onListen', async function () {
+      t.equal(++order, 1)
+      t.pass('1st called in root')
+    })
+
+    fastify.addHook('onListen', async function () {
+      t.equal(++order, 2, 'error sync called in root')
+      throw new Error('FAIL ON LISTEN')
+    })
+
+    fastify.addHook('onListen', async function () {
+      t.equal(++order, 3)
+      t.pass('3rd called in root')
+    })
+
+    fastify.listen({ host: '::1', port: 0 }, (err) => {
+      t.error(err)
+      t.equal(fastify.server.address().address, '::1')
+    })
+  }
+)
+
+test(
+  'Register onListen hook non-localhost with callback after a plugin inside a plugin',
+  { skip: isIPv6Missing },
+  (t) => {
+    t.plan(5)
+    const fastify = Fastify()
+    t.teardown(fastify.close.bind(fastify))
+
+    fastify.register(
+      fp(function (instance, opts, done) {
+        instance.addHook('onListen', function (done) {
+          t.pass('called')
+          done()
+        })
+        done()
+      })
+    )
+
+    fastify.register(
+      fp(function (instance, opts, done) {
+        instance.addHook('onListen', function (done) {
+          t.pass('called')
+          done()
+        })
+
+        instance.addHook('onListen', function (done) {
+          t.pass('called')
+          done()
+        })
+
+        done()
+      })
+    )
+
+    fastify.listen({ host: '::1', port: 0 }, (err) => {
+      t.equal(fastify.server.address().address, '::1')
+      t.error(err)
+    })
+  }
+)
+
+test('onListen non-localhost with callback encapsulation should be called in order', { skip: isIPv6Missing }, (t) => {
   t.plan(8)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -1070,7 +1116,7 @@ test('onListen non-localhost with callback encapsulation should be called in ord
   })
 })
 
-test('onListen sync should work if user does not pass done', t => {
+test('onListen sync should work if user does not pass done', (t) => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -1090,7 +1136,7 @@ test('onListen sync should work if user does not pass done', t => {
   })
 })
 
-test('async onListen does not need to be awaited', t => {
+test('async onListen does not need to be awaited', (t) => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   let order = 0
@@ -1110,7 +1156,7 @@ test('async onListen does not need to be awaited', t => {
   })
 })
 
-test('onListen hooks do not block /1', t => {
+test('onListen hooks do not block /1', (t) => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -1121,15 +1167,18 @@ test('onListen hooks do not block /1', t => {
     done()
   })
 
-  fastify.listen({
-    host: 'localhost',
-    port: 0
-  }, err => {
-    t.error(err)
-  })
+  fastify.listen(
+    {
+      host: 'localhost',
+      port: 0
+    },
+    (err) => {
+      t.error(err)
+    }
+  )
 })
 
-test('onListen hooks do not block /2', async t => {
+test('onListen hooks do not block /2', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()

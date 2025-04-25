@@ -13,19 +13,24 @@ function runBadClientCall (reqOptions, payload) {
 
   const postData = JSON.stringify(payload)
 
-  const req = http.request({
-    ...reqOptions,
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(postData)
+  const req = http.request(
+    {
+      ...reqOptions,
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    },
+    () => {
+      innerReject(new Error('Request should have failed'))
     }
-  }, () => {
-    innerReject(new Error('Request should have failed'))
-  })
+  )
 
   // Kill the socket immediately (before sending data)
   req.on('socket', (socket) => {
-    setTimeout(() => { socket.destroy() }, 5)
+    setTimeout(() => {
+      socket.destroy()
+    }, 5)
   })
   req.on('error', innerResolve)
   req.write(postData)
@@ -62,7 +67,7 @@ test('should handle a soket error', async (t) => {
     request.onSendCalled = true
 
     // Introduce a delay
-    await new Promise(resolve => setTimeout(resolve, 5))
+    await new Promise((resolve) => setTimeout(resolve, 5))
     return payload
   })
 
@@ -74,11 +79,14 @@ test('should handle a soket error', async (t) => {
 
   await fastify.listen({ port: 0 })
 
-  const err = await runBadClientCall({
-    hostname: 'localhost',
-    port: fastify.server.address().port,
-    path: '/',
-    method: 'PUT'
-  }, { test: 'me' })
+  const err = await runBadClientCall(
+    {
+      hostname: 'localhost',
+      port: fastify.server.address().port,
+      path: '/',
+      method: 'PUT'
+    },
+    { test: 'me' }
+  )
   t.assert.equal(err.code, 'ECONNRESET')
 })

@@ -16,10 +16,10 @@ test('should response with a ReadableStream', async (t) => {
     reply.code(200).send(Readable.toWeb(stream))
   })
 
-  const {
-    statusCode,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -34,19 +34,20 @@ test('should response with a Response', async (t) => {
 
   fastify.get('/', function (request, reply) {
     const stream = fs.createReadStream(__filename)
-    reply.send(new Response(Readable.toWeb(stream), {
-      status: 200,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(Readable.toWeb(stream), {
+        status: 200,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -61,19 +62,20 @@ test('should response with a Response 204', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.send(new Response(null, {
-      status: 204,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(null, {
+        status: 204,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   t.assert.strictEqual(statusCode, 204)
   t.assert.strictEqual(body, '')
@@ -86,19 +88,20 @@ test('should response with a Response 304', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.send(new Response(null, {
-      status: 304,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(null, {
+        status: 304,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   t.assert.strictEqual(statusCode, 304)
   t.assert.strictEqual(body, '')
@@ -111,19 +114,20 @@ test('should response with a Response without body', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.send(new Response(null, {
-      status: 200,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(null, {
+        status: 200,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   t.assert.strictEqual(statusCode, 200)
   t.assert.strictEqual(body, '')
@@ -142,19 +146,21 @@ test('able to use in onSend hook - ReadableStream', async (t) => {
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.assert.strictEqual(Object.prototype.toString.call(payload), '[object ReadableStream]')
-    done(null, new Response(payload, {
-      status: 200,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    done(
+      null,
+      new Response(payload, {
+        status: 200,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   const expected = await fs.promises.readFile(__filename)
 
@@ -170,27 +176,31 @@ test('able to use in onSend hook - Response', async (t) => {
 
   fastify.get('/', function (request, reply) {
     const stream = fs.createReadStream(__filename)
-    reply.send(new Response(Readable.toWeb(stream), {
-      status: 500,
-      headers: {
-        hello: 'world'
-      }
-    }))
+    reply.send(
+      new Response(Readable.toWeb(stream), {
+        status: 500,
+        headers: {
+          hello: 'world'
+        }
+      })
+    )
   })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.assert.strictEqual(Object.prototype.toString.call(payload), '[object Response]')
-    done(null, new Response(payload.body, {
-      status: 200,
-      headers: payload.headers
-    }))
+    done(
+      null,
+      new Response(payload.body, {
+        status: 200,
+        headers: payload.headers
+      })
+    )
   })
 
-  const {
-    statusCode,
-    headers,
-    body
-  } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, headers, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
 
   const expected = await fs.promises.readFile(__filename)
 

@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const noopSet = require('../lib/noop-set')
 
-test('does a lot of nothing', async t => {
+test('does a lot of nothing', async (t) => {
   const aSet = noopSet()
   t.assert.ok(aSet, 'object')
 

@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('should remove content-type for setErrorHandler', async t => {
+test('should remove content-type for setErrorHandler', async (t) => {
   t.plan(8)
   let count = 0
 
@@ -36,7 +36,10 @@ test('should remove content-type for setErrorHandler', async t => {
     reply.send('plain-text')
   })
 
-  const { statusCode, body } = await fastify.inject({ method: 'GET', path: '/' })
+  const { statusCode, body } = await fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
   t.assert.strictEqual(statusCode, 400)
   t.assert.strictEqual(body, JSON.stringify({ foo: 'bar' }))
 })

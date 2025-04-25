@@ -9,7 +9,7 @@ const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
-test('Should have typeof body object with no custom parser defined, null body and content type = \'text/plain\'', (t, testDone) => {
+test("Should have typeof body object with no custom parser defined, null body and content type = 'text/plain'", (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -17,27 +17,30 @@ test('Should have typeof body object with no custom parser defined, null body an
     reply.send(req.body)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: null,
-      headers: {
-        'Content-Type': 'text/plain'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: null,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(typeof body, 'object')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(typeof body, 'object')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
-test('Should have typeof body object with no custom parser defined, undefined body and content type = \'text/plain\'', (t, testDone) => {
+test("Should have typeof body object with no custom parser defined, undefined body and content type = 'text/plain'", (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -45,23 +48,26 @@ test('Should have typeof body object with no custom parser defined, undefined bo
     reply.send(req.body)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: undefined,
-      headers: {
-        'Content-Type': 'text/plain'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: undefined,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(typeof body, 'object')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(typeof body, 'object')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
@@ -85,23 +91,26 @@ test('Should get the body as string /1', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': 'text/plain'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: 'hello world',
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello world')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'hello world')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
@@ -125,23 +134,26 @@ test('Should get the body as string /2', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': '   text/plain/test  '
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: 'hello world',
+        headers: {
+          'Content-Type': '   text/plain/test  '
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello world')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'hello world')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
@@ -165,23 +177,26 @@ test('Should get the body as buffer', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/json'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), '{"hello":"world"}')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
@@ -205,23 +220,26 @@ test('Should get the body as buffer', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': 'text/plain'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: 'hello world',
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello world')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'hello world')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
@@ -244,38 +262,46 @@ test('Should parse empty bodies as a string', (t) => {
 
   const completion = waitForCb({ steps: 2 })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '')
-      completion.stepIn()
+    t.after(() => {
+      fastify.close()
     })
 
-    sget({
-      method: 'DELETE',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain',
-        'Content-Length': '0'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '',
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), '')
+        completion.stepIn()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '')
-      completion.stepIn()
-    })
+    )
+
+    sget(
+      {
+        method: 'DELETE',
+        url: getServerUrl(fastify),
+        body: '',
+        headers: {
+          'Content-Type': 'text/plain',
+          'Content-Length': '0'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), '')
+        completion.stepIn()
+      }
+    )
   })
 
   return completion.patience
@@ -295,23 +321,26 @@ test('Should parse empty bodies as a buffer', (t, testDone) => {
     done(null, body)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '',
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.length, 0)
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.length, 0)
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })
 
@@ -330,22 +359,25 @@ test('The charset should not interfere with the content type handling', (t, test
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
+    sget(
+      {
+        method: 'POST',
+        url: getServerUrl(fastify),
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), '{"hello":"world"}')
+        fastify.close()
+        testDone()
       }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
-      fastify.close()
-      testDone()
-    })
+    )
   })
 })

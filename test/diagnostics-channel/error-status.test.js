@@ -20,20 +20,23 @@ test('Error.status property support', (t, done) => {
     return Promise.reject(err)
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 418)
-    t.assert.deepStrictEqual(
-      {
-        error: statusCodes['418'],
-        message: err.message,
-        statusCode: 418
-      },
-      JSON.parse(res.payload)
-    )
-    done()
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 418)
+      t.assert.deepStrictEqual(
+        {
+          error: statusCodes['418'],
+          message: err.message,
+          statusCode: 418
+        },
+        JSON.parse(res.payload)
+      )
+      done()
+    }
+  )
 })

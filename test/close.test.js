@@ -20,7 +20,7 @@ test('close callback', (t, testDone) => {
     done()
   }
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     fastify.close((err) => {
@@ -45,7 +45,7 @@ test('inside register', (t, done) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     fastify.close((err) => {
@@ -75,7 +75,7 @@ test('close order', (t, done) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     fastify.close((err) => {
@@ -86,13 +86,13 @@ test('close order', (t, done) => {
   })
 })
 
-test('close order - async', async t => {
+test('close order - async', async (t) => {
   t.plan(3)
   const fastify = Fastify()
   const order = [1, 2, 3]
 
   fastify.register(function (f, opts, done) {
-    f.addHook('onClose', async instance => {
+    f.addHook('onClose', async (instance) => {
       t.assert.strictEqual(order.shift(), 1)
     })
 
@@ -153,31 +153,38 @@ test('Should return error while closing (promise) - injection', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onClose', (instance, done) => { done() })
+  fastify.addHook('onClose', (instance, done) => {
+    done()
+  })
 
   fastify.get('/', (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 200)
-    fastify.close()
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 200)
+      fastify.close()
 
-    process.nextTick(() => {
-      fastify.inject({
-        method: 'GET',
-        url: '/'
-      }).catch(err => {
-        t.assert.ok(err)
-        t.assert.strictEqual(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
-        done()
-      })
-    }, 100)
-  })
+      process.nextTick(() => {
+        fastify
+          .inject({
+            method: 'GET',
+            url: '/'
+          })
+          .catch((err) => {
+            t.assert.ok(err)
+            t.assert.strictEqual(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+            done()
+          })
+      }, 100)
+    }
+  )
 })
 
 test('Should return error while closing (callback) - injection', (t, done) => {
@@ -192,25 +199,31 @@ test('Should return error while closing (callback) - injection', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 200)
-    fastify.close()
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 200)
+      fastify.close()
 
-    setTimeout(() => {
-      fastify.inject({
-        method: 'GET',
-        url: '/'
-      }, (err, res) => {
-        t.assert.ok(err)
-        t.assert.strictEqual(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
-        done()
-      })
-    }, 100)
-  })
+      setTimeout(() => {
+        fastify.inject(
+          {
+            method: 'GET',
+            url: '/'
+          },
+          (err, res) => {
+            t.assert.ok(err)
+            t.assert.strictEqual(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+            done()
+          }
+        )
+      }, 100)
+    }
+  )
 })
 
 test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false', (t, done) => {
@@ -225,7 +238,7 @@ test('Current opened connection should NOT continue to work after closing and re
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     const port = fastify.server.address().port
@@ -243,7 +256,7 @@ test('Current opened connection should NOT continue to work after closing and re
         done()
       })
 
-      client.once('data', data => {
+      client.once('data', (data) => {
         t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
         t.assert.match(data.toString(), /200 OK/i)
 
@@ -263,7 +276,7 @@ test('Current opened connection should not accept new incoming connections', (t,
     }, 250)
   })
 
-  fastify.listen({ port: 0 }, async err => {
+  fastify.listen({ port: 0 }, async (err) => {
     t.assert.ifError(err)
     const instance = new Client('http://localhost:' + fastify.server.address().port)
     let response = await instance.request({ path: '/', method: 'GET' })
@@ -288,7 +301,7 @@ test('rejected incoming connections should be logged', (t, done) => {
   })
 
   const messages = []
-  stream.on('data', message => {
+  stream.on('data', (message) => {
     messages.push(message)
   })
   fastify.get('/', (req, reply) => {
@@ -298,20 +311,20 @@ test('rejected incoming connections should be logged', (t, done) => {
     }, 250)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const instance = new Client('http://localhost:' + fastify.server.address().port)
     // initial request to trigger close
     instance.request({ path: '/', method: 'GET' })
     // subsequent request should be rejected
     instance.request({ path: '/', method: 'GET' }).then(() => {
-      t.assert.ok(messages.find(message => message.msg.includes('request aborted')))
+      t.assert.ok(messages.find((message) => message.msg.includes('request aborted')))
       done()
     })
   })
 })
 
-test('Cannot be reopened the closed server without listen callback', async t => {
+test('Cannot be reopened the closed server without listen callback', async (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -326,7 +339,7 @@ test('Cannot be reopened the closed server without listen callback', async t => 
   }
 })
 
-test('Cannot be reopened the closed server has listen callback', async t => {
+test('Cannot be reopened the closed server has listen callback', async (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -334,10 +347,10 @@ test('Cannot be reopened the closed server has listen callback', async t => {
   await fastify.close()
 
   await new Promise((resolve, reject) => {
-    fastify.listen({ port: 0 }, err => {
+    fastify.listen({ port: 0 }, (err) => {
       reject(err)
     })
-  }).catch(err => {
+  }).catch((err) => {
     t.assert.strictEqual(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
     t.assert.ok(err)
   })
@@ -362,10 +375,7 @@ test('shutsdown while keep-alive connections are active (non-async, native)', { 
   fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
 
-    const client = new Client(
-      'http://localhost:' + fastify.server.address().port,
-      { keepAliveTimeout: 1 * 60 * 1000 }
-    )
+    const client = new Client('http://localhost:' + fastify.server.address().port, { keepAliveTimeout: 1 * 60 * 1000 })
     client.request({ path: '/', method: 'GET' }, (err, response) => {
       t.assert.ifError(err)
       t.assert.strictEqual(client.closed, false)
@@ -401,10 +411,7 @@ test('shutsdown while keep-alive connections are active (non-async, idle, native
   fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
 
-    const client = new Client(
-      'http://localhost:' + fastify.server.address().port,
-      { keepAliveTimeout: 1 * 60 * 1000 }
-    )
+    const client = new Client('http://localhost:' + fastify.server.address().port, { keepAliveTimeout: 1 * 60 * 1000 })
     client.request({ path: '/', method: 'GET' }, (err, response) => {
       t.assert.ifError(err)
       t.assert.strictEqual(client.closed, false)
@@ -425,7 +432,7 @@ test('shutsdown while keep-alive connections are active (non-async, idle, native
   })
 })
 
-test('triggers on-close hook in the right order with multiple bindings', async t => {
+test('triggers on-close hook in the right order with multiple bindings', async (t) => {
   const expectedOrder = [1, 2, 3]
   const order = []
   const fastify = Fastify()
@@ -445,7 +452,7 @@ test('triggers on-close hook in the right order with multiple bindings', async t
 
   await new Promise((resolve, reject) => {
     setTimeout(() => {
-      fastify.close(err => {
+      fastify.close((err) => {
         order.push(3)
         t.assert.deepEqual(order, expectedOrder)
 
@@ -456,117 +463,139 @@ test('triggers on-close hook in the right order with multiple bindings', async t
   })
 })
 
-test('triggers on-close hook in the right order with multiple bindings (forceCloseConnections - idle)', { skip: noSupport }, async t => {
-  const expectedPayload = { hello: 'world' }
-  const timeoutTime = 2 * 60 * 1000
-  const expectedOrder = [1, 2]
-  const order = []
-  const fastify = Fastify({ forceCloseConnections: 'idle' })
+test(
+  'triggers on-close hook in the right order with multiple bindings (forceCloseConnections - idle)',
+  { skip: noSupport },
+  async (t) => {
+    const expectedPayload = { hello: 'world' }
+    const timeoutTime = 2 * 60 * 1000
+    const expectedOrder = [1, 2]
+    const order = []
+    const fastify = Fastify({ forceCloseConnections: 'idle' })
 
-  fastify.server.setTimeout(timeoutTime)
-  fastify.server.keepAliveTimeout = timeoutTime
+    fastify.server.setTimeout(timeoutTime)
+    fastify.server.keepAliveTimeout = timeoutTime
 
-  fastify.get('/', async (req, reply) => {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000)
-    })
-
-    return expectedPayload
-  })
-
-  fastify.addHook('onClose', () => {
-    order.push(1)
-  })
-
-  await fastify.listen({ port: 0 })
-  const addresses = fastify.addresses()
-  const testPlan = (addresses.length * 2) + 1
-
-  t.plan(testPlan)
-
-  for (const addr of addresses) {
-    const { family, address, port } = addr
-    const host = family === 'IPv6' ? `[${address}]` : address
-    const client = new Client(`http://${host}:${port}`, {
-      keepAliveTimeout: 1 * 60 * 1000
-    })
-
-    client.request({ path: '/', method: 'GET' })
-      .then((res) => res.body.json(), err => t.assert.ifError(err))
-      .then(json => {
-        t.assert.deepEqual(json, expectedPayload, 'should payload match')
-        t.assert.ok(!client.closed, 'should client not be closed')
-      }, err => t.assert.ifError(err))
-  }
-
-  await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      fastify.close(err => {
-        order.push(2)
-        t.assert.deepEqual(order, expectedOrder)
-
-        if (err) t.assert.ifError(err)
-        else resolve()
+    fastify.get('/', async (req, reply) => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000)
       })
-    }, 2000)
-  })
-})
 
-test('triggers on-close hook in the right order with multiple bindings (forceCloseConnections - true)', { skip: noSupport }, async t => {
-  const expectedPayload = { hello: 'world' }
-  const timeoutTime = 2 * 60 * 1000
-  const expectedOrder = [1, 2]
-  const order = []
-  const fastify = Fastify({ forceCloseConnections: true })
-
-  fastify.server.setTimeout(timeoutTime)
-  fastify.server.keepAliveTimeout = timeoutTime
-
-  fastify.get('/', async (req, reply) => {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000)
+      return expectedPayload
     })
 
-    return expectedPayload
-  })
-
-  fastify.addHook('onClose', () => {
-    order.push(1)
-  })
-
-  await fastify.listen({ port: 0 })
-  const addresses = fastify.addresses()
-  const testPlan = (addresses.length * 2) + 1
-
-  t.plan(testPlan)
-
-  for (const addr of addresses) {
-    const { family, address, port } = addr
-    const host = family === 'IPv6' ? `[${address}]` : address
-    const client = new Client(`http://${host}:${port}`, {
-      keepAliveTimeout: 1 * 60 * 1000
+    fastify.addHook('onClose', () => {
+      order.push(1)
     })
 
-    client.request({ path: '/', method: 'GET' })
-      .then((res) => res.body.json(), err => t.assert.ifError(err))
-      .then(json => {
-        t.assert.deepEqual(json, expectedPayload, 'should payload match')
-        t.assert.ok(!client.closed, 'should client not be closed')
-      }, err => t.assert.ifError(err))
-  }
+    await fastify.listen({ port: 0 })
+    const addresses = fastify.addresses()
+    const testPlan = addresses.length * 2 + 1
 
-  await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      fastify.close(err => {
-        order.push(2)
-        t.assert.deepEqual(order, expectedOrder)
+    t.plan(testPlan)
 
-        if (err) t.assert.ifError(err)
-        else resolve()
+    for (const addr of addresses) {
+      const { family, address, port } = addr
+      const host = family === 'IPv6' ? `[${address}]` : address
+      const client = new Client(`http://${host}:${port}`, {
+        keepAliveTimeout: 1 * 60 * 1000
       })
-    }, 2000)
-  })
-})
+
+      client
+        .request({ path: '/', method: 'GET' })
+        .then(
+          (res) => res.body.json(),
+          (err) => t.assert.ifError(err)
+        )
+        .then(
+          (json) => {
+            t.assert.deepEqual(json, expectedPayload, 'should payload match')
+            t.assert.ok(!client.closed, 'should client not be closed')
+          },
+          (err) => t.assert.ifError(err)
+        )
+    }
+
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        fastify.close((err) => {
+          order.push(2)
+          t.assert.deepEqual(order, expectedOrder)
+
+          if (err) t.assert.ifError(err)
+          else resolve()
+        })
+      }, 2000)
+    })
+  }
+)
+
+test(
+  'triggers on-close hook in the right order with multiple bindings (forceCloseConnections - true)',
+  { skip: noSupport },
+  async (t) => {
+    const expectedPayload = { hello: 'world' }
+    const timeoutTime = 2 * 60 * 1000
+    const expectedOrder = [1, 2]
+    const order = []
+    const fastify = Fastify({ forceCloseConnections: true })
+
+    fastify.server.setTimeout(timeoutTime)
+    fastify.server.keepAliveTimeout = timeoutTime
+
+    fastify.get('/', async (req, reply) => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000)
+      })
+
+      return expectedPayload
+    })
+
+    fastify.addHook('onClose', () => {
+      order.push(1)
+    })
+
+    await fastify.listen({ port: 0 })
+    const addresses = fastify.addresses()
+    const testPlan = addresses.length * 2 + 1
+
+    t.plan(testPlan)
+
+    for (const addr of addresses) {
+      const { family, address, port } = addr
+      const host = family === 'IPv6' ? `[${address}]` : address
+      const client = new Client(`http://${host}:${port}`, {
+        keepAliveTimeout: 1 * 60 * 1000
+      })
+
+      client
+        .request({ path: '/', method: 'GET' })
+        .then(
+          (res) => res.body.json(),
+          (err) => t.assert.ifError(err)
+        )
+        .then(
+          (json) => {
+            t.assert.deepEqual(json, expectedPayload, 'should payload match')
+            t.assert.ok(!client.closed, 'should client not be closed')
+          },
+          (err) => t.assert.ifError(err)
+        )
+    }
+
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        fastify.close((err) => {
+          order.push(2)
+          t.assert.deepEqual(order, expectedOrder)
+
+          if (err) t.assert.ifError(err)
+          else resolve()
+        })
+      }, 2000)
+    })
+  }
+)
 
 test('shutsdown while keep-alive connections are active (non-async, custom)', (t, done) => {
   t.plan(5)
@@ -593,10 +622,7 @@ test('shutsdown while keep-alive connections are active (non-async, custom)', (t
   fastify.listen({ port: 0 }, (err, address) => {
     t.assert.ifError(err)
 
-    const client = new Client(
-      'http://localhost:' + fastify.server.address().port,
-      { keepAliveTimeout: 1 * 60 * 1000 }
-    )
+    const client = new Client('http://localhost:' + fastify.server.address().port, { keepAliveTimeout: 1 * 60 * 1000 })
     client.request({ path: '/', method: 'GET' }, (err, response) => {
       t.assert.ifError(err)
       t.assert.strictEqual(client.closed, false)
@@ -634,7 +660,7 @@ test('preClose callback', (t, done) => {
     done()
   }
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     fastify.close((err) => {
@@ -645,7 +671,7 @@ test('preClose callback', (t, done) => {
   })
 })
 
-test('preClose async', async t => {
+test('preClose async', async (t) => {
   t.plan(2)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
@@ -694,7 +720,7 @@ test('preClose execution order', (t, done) => {
     }, 100)
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
     fastify.close((err) => {

@@ -22,15 +22,18 @@ test('missing method from http client', (t, done) => {
     t.assert.ifError(err)
 
     const port = fastify.server.address().port
-    const req = http.request({
-      port,
-      method: 'REBIND',
-      path: '/'
-    }, (res) => {
-      t.assert.strictEqual(res.statusCode, 404)
-      fastify.close()
-      done()
-    })
+    const req = http.request(
+      {
+        port,
+        method: 'REBIND',
+        path: '/'
+      },
+      (res) => {
+        t.assert.strictEqual(res.statusCode, 404)
+        fastify.close()
+        done()
+      }
+    )
 
     req.end()
   })
@@ -40,35 +43,46 @@ test('addHttpMethod increase the supported HTTP methods supported', (t, done) =>
   t.plan(8)
   const app = Fastify()
 
-  t.assert.throws(() => { addEcho(app, 'REBIND') }, /REBIND method is not supported./)
+  t.assert.throws(() => {
+    addEcho(app, 'REBIND')
+  }, /REBIND method is not supported./)
   t.assert.ok(!app.supportedMethods.includes('REBIND'))
   t.assert.ok(!app.rebind)
 
   app.addHttpMethod('REBIND')
-  t.assert.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
+  t.assert.doesNotThrow(() => {
+    addEcho(app, 'REBIND')
+  }, 'REBIND method is supported.')
   t.assert.ok(app.supportedMethods.includes('REBIND'))
   t.assert.ok(app.rebind)
 
   app.rebind('/foo', () => 'hello')
 
-  app.inject({
-    method: 'REBIND',
-    url: '/foo'
-  }, (err, response) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(response.payload, 'hello')
-    done()
-  })
+  app.inject(
+    {
+      method: 'REBIND',
+      url: '/foo'
+    },
+    (err, response) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.payload, 'hello')
+      done()
+    }
+  )
 })
 
-test('addHttpMethod adds a new custom method without body', t => {
+test('addHttpMethod adds a new custom method without body', (t) => {
   t.plan(3)
   const app = Fastify()
 
-  t.assert.throws(() => { addEcho(app, 'REBIND') }, /REBIND method is not supported./)
+  t.assert.throws(() => {
+    addEcho(app, 'REBIND')
+  }, /REBIND method is not supported./)
 
   app.addHttpMethod('REBIND')
-  t.assert.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
+  t.assert.doesNotThrow(() => {
+    addEcho(app, 'REBIND')
+  }, 'REBIND method is supported.')
 
   t.assert.throws(() => {
     app.route({
@@ -94,21 +108,28 @@ test('addHttpMethod adds a new custom method with body', (t, done) => {
   const app = Fastify()
 
   app.addHttpMethod('REBIND', { hasBody: true })
-  t.assert.doesNotThrow(() => { addEcho(app, 'REBIND') }, 'REBIND method is supported.')
+  t.assert.doesNotThrow(() => {
+    addEcho(app, 'REBIND')
+  }, 'REBIND method is supported.')
 
-  app.inject({
-    method: 'REBIND',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, response) => {
-    t.assert.ifError(err)
-    t.assert.deepStrictEqual(response.json(), { hello: 'world' })
-    done()
-  })
+  app.inject(
+    {
+      method: 'REBIND',
+      url: '/',
+      payload: { hello: 'world' }
+    },
+    (err, response) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+      done()
+    }
+  )
 })
 
-test('addHttpMethod rejects fake http method', t => {
+test('addHttpMethod rejects fake http method', (t) => {
   t.plan(1)
   const fastify = Fastify()
-  t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
+  t.assert.throws(() => {
+    fastify.addHttpMethod('FOOO')
+  }, /Provided method is invalid!/)
 })

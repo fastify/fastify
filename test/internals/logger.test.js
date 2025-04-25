@@ -5,7 +5,7 @@ const Fastify = require('../..')
 const loggerUtils = require('../../lib/logger-factory')
 const { serializers } = require('../../lib/logger-pino')
 
-test('time resolution', t => {
+test('time resolution', (t) => {
   t.plan(2)
   t.assert.strictEqual(typeof loggerUtils.now, 'function')
   t.assert.strictEqual(typeof loggerUtils.now(), 'number')
@@ -20,7 +20,7 @@ test('The logger should add a unique id for every request', (t, done) => {
     reply.send({ id: req.id })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     const queue = new Queue()
     for (let i = 0; i < 10; i++) {
@@ -33,16 +33,19 @@ test('The logger should add a unique id for every request', (t, done) => {
   })
 
   function checkId (done) {
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.assert.ifError(err)
-      const payload = JSON.parse(res.payload)
-      t.assert.ok(ids.indexOf(payload.id) === -1, 'the id should not be duplicated')
-      ids.push(payload.id)
-      done()
-    })
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, res) => {
+        t.assert.ifError(err)
+        const payload = JSON.parse(res.payload)
+        t.assert.ok(ids.indexOf(payload.id) === -1, 'the id should not be duplicated')
+        ids.push(payload.id)
+        done()
+      }
+    )
   }
 })
 
@@ -53,23 +56,29 @@ test('The logger should not reuse request id header for req.id', (t, done) => {
     reply.send({ id: req.id })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Request-Id': 'request-id-1'
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Request-Id': 'request-id-1'
+        }
+      },
+      (err, res) => {
+        t.assert.ifError(err)
+        const payload = JSON.parse(res.payload)
+        t.assert.ok(
+          payload.id !== 'request-id-1',
+          'the request id from the header should not be returned with default configuration'
+        )
+        t.assert.ok(payload.id === 'req-1') // first request id when using the default configuration
+        fastify.close()
+        done()
       }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      const payload = JSON.parse(res.payload)
-      t.assert.ok(payload.id !== 'request-id-1', 'the request id from the header should not be returned with default configuration')
-      t.assert.ok(payload.id === 'req-1') // first request id when using the default configuration
-      fastify.close()
-      done()
-    })
+    )
   })
 })
 
@@ -82,22 +91,25 @@ test('The logger should reuse request id header for req.id if requestIdHeader is
     reply.send({ id: req.id })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
 
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Request-Id': 'request-id-1'
+    fastify.inject(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Request-Id': 'request-id-1'
+        }
+      },
+      (err, res) => {
+        t.assert.ifError(err)
+        const payload = JSON.parse(res.payload)
+        t.assert.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
+        fastify.close()
+        done()
       }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      const payload = JSON.parse(res.payload)
-      t.assert.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
-      fastify.close()
-      done()
-    })
+    )
   })
 })
 
@@ -123,7 +135,7 @@ Queue.prototype.run = function run () {
   })
 }
 
-test('The logger should error if both stream and file destination are given', t => {
+test('The logger should error if both stream and file destination are given', (t) => {
   t.plan(2)
 
   const stream = require('node:stream').Writable
@@ -142,7 +154,7 @@ test('The logger should error if both stream and file destination are given', t 
   }
 })
 
-test('The serializer prevent fails if the request socket is undefined', t => {
+test('The serializer prevent fails if the request socket is undefined', (t) => {
   t.plan(1)
 
   const serialized = serializers.req({

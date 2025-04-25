@@ -6,7 +6,7 @@ const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
 
-test('if a plugin raises an error and there is not a callback to handle it, the server must not start', t => {
+test('if a plugin raises an error and there is not a callback to handle it, the server must not start', (t) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -14,13 +14,13 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
     done(new Error('err'))
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.ok(err instanceof Error)
     t.equal(err.message, 'err')
   })
 })
 
-test('add hooks after route declaration', t => {
+test('add hooks after route declaration', (t) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -57,109 +57,142 @@ test('add hooks after route declaration', t => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
-      fastify.close()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
+        fastify.close()
+      }
+    )
   })
 })
 
-test('nested plugins', t => {
+test('nested plugins', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(function (fastify, opts, done) {
-    fastify.register((fastify, opts, done) => {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 1')
-      })
+  fastify.register(
+    function (fastify, opts, done) {
+      fastify.register(
+        (fastify, opts, done) => {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 1')
+          })
+          done()
+        },
+        { prefix: '/child1' }
+      )
+
+      fastify.register(
+        (fastify, opts, done) => {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 2')
+          })
+          done()
+        },
+        { prefix: '/child2' }
+      )
+
       done()
-    }, { prefix: '/child1' })
+    },
+    { prefix: '/parent' }
+  )
 
-    fastify.register((fastify, opts, done) => {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 2')
-      })
-      done()
-    }, { prefix: '/child2' })
-
-    done()
-  }, { prefix: '/parent' })
-
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 1')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 1')
+      }
+    )
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 2')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 2')
+      }
+    )
   })
 })
 
-test('nested plugins awaited', t => {
+test('nested plugins awaited', (t) => {
   t.plan(5)
 
   const fastify = Fastify()
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.register(async function wrap (fastify, opts) {
-    await fastify.register(async function child1 (fastify, opts) {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 1')
-      })
-    }, { prefix: '/child1' })
+  fastify.register(
+    async function wrap (fastify, opts) {
+      await fastify.register(
+        async function child1 (fastify, opts) {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 1')
+          })
+        },
+        { prefix: '/child1' }
+      )
 
-    await fastify.register(async function child2 (fastify, opts) {
-      fastify.get('/', function (req, reply) {
-        reply.send('I am child 2')
-      })
-    }, { prefix: '/child2' })
-  }, { prefix: '/parent' })
+      await fastify.register(
+        async function child2 (fastify, opts) {
+          fastify.get('/', function (req, reply) {
+            reply.send('I am child 2')
+          })
+        },
+        { prefix: '/child2' }
+      )
+    },
+    { prefix: '/parent' }
+  )
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 1')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 1')
+      }
+    )
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 2')
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      },
+      (err, response, body) => {
+        t.error(err)
+        t.same(body.toString(), 'I am child 2')
+      }
+    )
   })
 })
 
-test('plugin metadata - decorators', t => {
+test('plugin metadata - decorators', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -188,7 +221,7 @@ test('plugin metadata - decorators', t => {
   }
 })
 
-test('plugin metadata - decorators - should throw', t => {
+test('plugin metadata - decorators - should throw', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -215,7 +248,7 @@ test('plugin metadata - decorators - should throw', t => {
   }
 })
 
-test('plugin metadata - decorators - should throw with plugin name', t => {
+test('plugin metadata - decorators - should throw with plugin name', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -243,7 +276,7 @@ test('plugin metadata - decorators - should throw with plugin name', t => {
   }
 })
 
-test('plugin metadata - dependencies', t => {
+test('plugin metadata - dependencies', (t) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -273,7 +306,7 @@ test('plugin metadata - dependencies', t => {
   }
 })
 
-test('plugin metadata - dependencies (nested)', t => {
+test('plugin metadata - dependencies (nested)', (t) => {
   t.plan(1)
   const fastify = Fastify()
 

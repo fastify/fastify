@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('route error handler overrides global custom error handler', async t => {
+test('route error handler overrides global custom error handler', async (t) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -45,7 +45,7 @@ test('route error handler overrides global custom error handler', async t => {
   })
 })
 
-test('throws when route with empty url', async t => {
+test('throws when route with empty url', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
@@ -62,21 +62,20 @@ test('throws when route with empty url', async t => {
   }
 })
 
-test('throws when route with empty url in shorthand declaration', async t => {
+test('throws when route with empty url in shorthand declaration', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
   try {
-    fastify.get(
-      '',
-      async function handler () { return {} }
-    )
+    fastify.get('', async function handler () {
+      return {}
+    })
   } catch (err) {
     t.assert.strictEqual(err.message, 'The path could not be empty')
   }
 })
 
-test('throws when route-level error handler is not a function', t => {
+test('throws when route-level error handler is not a function', (t) => {
   t.plan(1)
 
   const fastify = Fastify()
@@ -95,7 +94,7 @@ test('throws when route-level error handler is not a function', t => {
   }
 })
 
-test('route child logger factory overrides default child logger factory', async t => {
+test('route child logger factory overrides default child logger factory', async (t) => {
   t.plan(2)
 
   const fastify = Fastify()

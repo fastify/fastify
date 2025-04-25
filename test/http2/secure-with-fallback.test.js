@@ -39,7 +39,9 @@ test('secure with fallback', async (t) => {
     throw new Error('kaboom')
   })
 
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   await fastify.listen({ port: 0 })
 
@@ -82,29 +84,35 @@ test('secure with fallback', async (t) => {
 
   await t.test('http1 get request', (t, done) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'https://localhost:' + fastify.server.address().port,
-      rejectUnauthorized: false
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'https://localhost:' + fastify.server.address().port,
+        rejectUnauthorized: false
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+        done()
+      }
+    )
   })
 
   await t.test('http1 get error', (t, done) => {
     t.plan(2)
-    sget({
-      method: 'GET',
-      url: 'https://localhost:' + fastify.server.address().port + '/error',
-      rejectUnauthorized: false
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      done()
-    })
+    sget(
+      {
+        method: 'GET',
+        url: 'https://localhost:' + fastify.server.address().port + '/error',
+        rejectUnauthorized: false
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 500)
+        done()
+      }
+    )
   })
 })

@@ -7,7 +7,7 @@ const { resolve } = require('node:path')
 
 const expectedErrors = 85
 
-test(`should expose ${expectedErrors} errors`, t => {
+test(`should expose ${expectedErrors} errors`, (t) => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -19,7 +19,7 @@ test(`should expose ${expectedErrors} errors`, t => {
   t.assert.strictEqual(counter, expectedErrors)
 })
 
-test('ensure name and codes of Errors are identical', t => {
+test('ensure name and codes of Errors are identical', (t) => {
   t.plan(expectedErrors)
 
   const exportedKeys = Object.keys(errors)
@@ -30,7 +30,7 @@ test('ensure name and codes of Errors are identical', t => {
   }
 })
 
-test('FST_ERR_NOT_FOUND', t => {
+test('FST_ERR_NOT_FOUND', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_NOT_FOUND()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -40,7 +40,7 @@ test('FST_ERR_NOT_FOUND', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_OPTIONS_NOT_OBJ', t => {
+test('FST_ERR_OPTIONS_NOT_OBJ', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_OPTIONS_NOT_OBJ()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -50,7 +50,7 @@ test('FST_ERR_OPTIONS_NOT_OBJ', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_QSP_NOT_FN', t => {
+test('FST_ERR_QSP_NOT_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_QSP_NOT_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -60,7 +60,7 @@ test('FST_ERR_QSP_NOT_FN', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN', t => {
+test('FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -70,7 +70,7 @@ test('FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN', t => {
+test('FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -80,7 +80,7 @@ test('FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ', t => {
+test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -90,7 +90,7 @@ test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR', t => {
+test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -100,7 +100,7 @@ test('FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_CTP_ALREADY_PRESENT', t => {
+test('FST_ERR_CTP_ALREADY_PRESENT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_ALREADY_PRESENT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -110,7 +110,7 @@ test('FST_ERR_CTP_ALREADY_PRESENT', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_CTP_INVALID_TYPE', t => {
+test('FST_ERR_CTP_INVALID_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INVALID_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -120,7 +120,7 @@ test('FST_ERR_CTP_INVALID_TYPE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_CTP_EMPTY_TYPE', t => {
+test('FST_ERR_CTP_EMPTY_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_EMPTY_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -130,7 +130,7 @@ test('FST_ERR_CTP_EMPTY_TYPE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_CTP_INVALID_HANDLER', t => {
+test('FST_ERR_CTP_INVALID_HANDLER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INVALID_HANDLER()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -140,17 +140,20 @@ test('FST_ERR_CTP_INVALID_HANDLER', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_CTP_INVALID_PARSE_TYPE', t => {
+test('FST_ERR_CTP_INVALID_PARSE_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INVALID_PARSE_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
-  t.assert.strictEqual(error.message, "The body parser can only parse your data as 'string' or 'buffer', you asked '%s' which is not supported.")
+  t.assert.strictEqual(
+    error.message,
+    "The body parser can only parse your data as 'string' or 'buffer', you asked '%s' which is not supported."
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_CTP_BODY_TOO_LARGE', t => {
+test('FST_ERR_CTP_BODY_TOO_LARGE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_BODY_TOO_LARGE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -160,7 +163,7 @@ test('FST_ERR_CTP_BODY_TOO_LARGE', t => {
   t.assert.ok(error instanceof RangeError)
 })
 
-test('FST_ERR_CTP_INVALID_MEDIA_TYPE', t => {
+test('FST_ERR_CTP_INVALID_MEDIA_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INVALID_MEDIA_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -170,7 +173,7 @@ test('FST_ERR_CTP_INVALID_MEDIA_TYPE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_CTP_INVALID_CONTENT_LENGTH', t => {
+test('FST_ERR_CTP_INVALID_CONTENT_LENGTH', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INVALID_CONTENT_LENGTH()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -180,7 +183,7 @@ test('FST_ERR_CTP_INVALID_CONTENT_LENGTH', t => {
   t.assert.ok(error instanceof RangeError)
 })
 
-test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
+test('FST_ERR_CTP_EMPTY_JSON_BODY', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_EMPTY_JSON_BODY()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -190,7 +193,7 @@ test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', t => {
+test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INSTANCE_ALREADY_STARTED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -200,7 +203,7 @@ test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_DEC_ALREADY_PRESENT', t => {
+test('FST_ERR_DEC_ALREADY_PRESENT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DEC_ALREADY_PRESENT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -210,7 +213,7 @@ test('FST_ERR_DEC_ALREADY_PRESENT', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_DEC_DEPENDENCY_INVALID_TYPE', t => {
+test('FST_ERR_DEC_DEPENDENCY_INVALID_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DEC_DEPENDENCY_INVALID_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -220,7 +223,7 @@ test('FST_ERR_DEC_DEPENDENCY_INVALID_TYPE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_DEC_MISSING_DEPENDENCY', t => {
+test('FST_ERR_DEC_MISSING_DEPENDENCY', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DEC_MISSING_DEPENDENCY()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -230,7 +233,7 @@ test('FST_ERR_DEC_MISSING_DEPENDENCY', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_DEC_AFTER_START', t => {
+test('FST_ERR_DEC_AFTER_START', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DEC_AFTER_START()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -240,17 +243,20 @@ test('FST_ERR_DEC_AFTER_START', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_DEC_REFERENCE_TYPE', t => {
+test('FST_ERR_DEC_REFERENCE_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DEC_REFERENCE_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_DEC_REFERENCE_TYPE')
-  t.assert.strictEqual(error.message, "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead.")
+  t.assert.strictEqual(
+    error.message,
+    "The decorator '%s' of type '%s' is a reference type. Use the { getter, setter } interface instead."
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_DEC_UNDECLARED', t => {
+test('FST_ERR_DEC_UNDECLARED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DEC_UNDECLARED('myDecorator', 'request')
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -260,7 +266,7 @@ test('FST_ERR_DEC_UNDECLARED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_HOOK_INVALID_TYPE', t => {
+test('FST_ERR_HOOK_INVALID_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_INVALID_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -270,7 +276,7 @@ test('FST_ERR_HOOK_INVALID_TYPE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_HOOK_INVALID_HANDLER', t => {
+test('FST_ERR_HOOK_INVALID_HANDLER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_INVALID_HANDLER()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -280,17 +286,20 @@ test('FST_ERR_HOOK_INVALID_HANDLER', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_HOOK_INVALID_ASYNC_HANDLER', t => {
+test('FST_ERR_HOOK_INVALID_ASYNC_HANDLER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-  t.assert.strictEqual(error.message, "Async function has too many arguments. Async hooks should not use the 'done' argument.")
+  t.assert.strictEqual(
+    error.message,
+    "Async function has too many arguments. Async hooks should not use the 'done' argument."
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_HOOK_NOT_SUPPORTED', t => {
+test('FST_ERR_HOOK_NOT_SUPPORTED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_NOT_SUPPORTED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -300,27 +309,33 @@ test('FST_ERR_HOOK_NOT_SUPPORTED', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_MISSING_MIDDLEWARE', t => {
+test('FST_ERR_MISSING_MIDDLEWARE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_MISSING_MIDDLEWARE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_MISSING_MIDDLEWARE')
-  t.assert.strictEqual(error.message, 'You must register a plugin for handling middlewares, visit fastify.dev/docs/latest/Reference/Middleware/ for more info.')
+  t.assert.strictEqual(
+    error.message,
+    'You must register a plugin for handling middlewares, visit fastify.dev/docs/latest/Reference/Middleware/ for more info.'
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_HOOK_TIMEOUT', t => {
+test('FST_ERR_HOOK_TIMEOUT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_TIMEOUT()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_HOOK_TIMEOUT')
-  t.assert.strictEqual(error.message, "A callback for '%s' hook%s timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+  t.assert.strictEqual(
+    error.message,
+    "A callback for '%s' hook%s timed out. You may have forgotten to call 'done' function or to resolve a Promise"
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_LOG_INVALID_DESTINATION', t => {
+test('FST_ERR_LOG_INVALID_DESTINATION', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_LOG_INVALID_DESTINATION()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -330,17 +345,20 @@ test('FST_ERR_LOG_INVALID_DESTINATION', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_LOG_INVALID_LOGGER', t => {
+test('FST_ERR_LOG_INVALID_LOGGER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_LOG_INVALID_LOGGER()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_LOG_INVALID_LOGGER')
-  t.assert.strictEqual(error.message, "Invalid logger object provided. The logger instance should have these functions(s): '%s'.")
+  t.assert.strictEqual(
+    error.message,
+    "Invalid logger object provided. The logger instance should have these functions(s): '%s'."
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_LOG_INVALID_LOGGER_INSTANCE', t => {
+test('FST_ERR_LOG_INVALID_LOGGER_INSTANCE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_LOG_INVALID_LOGGER_INSTANCE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -350,7 +368,7 @@ test('FST_ERR_LOG_INVALID_LOGGER_INSTANCE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', t => {
+test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_LOG_INVALID_LOGGER_CONFIG()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -360,7 +378,7 @@ test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
+test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -370,7 +388,7 @@ test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
+test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_INVALID_PAYLOAD_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -380,7 +398,7 @@ test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', t => {
+test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_RESPONSE_BODY_CONSUMED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -390,17 +408,20 @@ test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_REP_READABLE_STREAM_LOCKED', t => {
+test('FST_ERR_REP_READABLE_STREAM_LOCKED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_READABLE_STREAM_LOCKED()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
-  t.assert.strictEqual(error.message, 'ReadableStream was locked. You should call releaseLock() method on reader before sending.')
+  t.assert.strictEqual(
+    error.message,
+    'ReadableStream was locked. You should call releaseLock() method on reader before sending.'
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_REP_ALREADY_SENT', t => {
+test('FST_ERR_REP_ALREADY_SENT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_ALREADY_SENT('/hello', 'GET')
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -410,7 +431,7 @@ test('FST_ERR_REP_ALREADY_SENT', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_REP_SENT_VALUE', t => {
+test('FST_ERR_REP_SENT_VALUE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_SENT_VALUE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -420,7 +441,7 @@ test('FST_ERR_REP_SENT_VALUE', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_SEND_INSIDE_ONERR', t => {
+test('FST_ERR_SEND_INSIDE_ONERR', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SEND_INSIDE_ONERR()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -430,7 +451,7 @@ test('FST_ERR_SEND_INSIDE_ONERR', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SEND_UNDEFINED_ERR', t => {
+test('FST_ERR_SEND_UNDEFINED_ERR', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SEND_UNDEFINED_ERR()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -440,7 +461,7 @@ test('FST_ERR_SEND_UNDEFINED_ERR', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_BAD_STATUS_CODE', t => {
+test('FST_ERR_BAD_STATUS_CODE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_BAD_STATUS_CODE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -450,7 +471,7 @@ test('FST_ERR_BAD_STATUS_CODE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_BAD_TRAILER_NAME', t => {
+test('FST_ERR_BAD_TRAILER_NAME', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_BAD_TRAILER_NAME()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -460,7 +481,7 @@ test('FST_ERR_BAD_TRAILER_NAME', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_BAD_TRAILER_VALUE', t => {
+test('FST_ERR_BAD_TRAILER_VALUE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_BAD_TRAILER_VALUE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -470,7 +491,7 @@ test('FST_ERR_BAD_TRAILER_VALUE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_FAILED_ERROR_SERIALIZATION', t => {
+test('FST_ERR_FAILED_ERROR_SERIALIZATION', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_FAILED_ERROR_SERIALIZATION()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -480,7 +501,7 @@ test('FST_ERR_FAILED_ERROR_SERIALIZATION', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_MISSING_SERIALIZATION_FN', t => {
+test('FST_ERR_MISSING_SERIALIZATION_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_MISSING_SERIALIZATION_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -490,7 +511,7 @@ test('FST_ERR_MISSING_SERIALIZATION_FN', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN', t => {
+test('FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -500,17 +521,20 @@ test('FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_REQ_INVALID_VALIDATION_INVOCATION', t => {
+test('FST_ERR_REQ_INVALID_VALIDATION_INVOCATION', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REQ_INVALID_VALIDATION_INVOCATION()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REQ_INVALID_VALIDATION_INVOCATION')
-  t.assert.strictEqual(error.message, 'Invalid validation invocation. Missing validation function for HTTP part "%s" nor schema provided.')
+  t.assert.strictEqual(
+    error.message,
+    'Invalid validation invocation. Missing validation function for HTTP part "%s" nor schema provided.'
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_MISSING_ID', t => {
+test('FST_ERR_SCH_MISSING_ID', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_MISSING_ID()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -520,7 +544,7 @@ test('FST_ERR_SCH_MISSING_ID', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_ALREADY_PRESENT', t => {
+test('FST_ERR_SCH_ALREADY_PRESENT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_ALREADY_PRESENT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -530,7 +554,7 @@ test('FST_ERR_SCH_ALREADY_PRESENT', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_CONTENT_MISSING_SCHEMA', t => {
+test('FST_ERR_SCH_CONTENT_MISSING_SCHEMA', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_CONTENT_MISSING_SCHEMA()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -540,7 +564,7 @@ test('FST_ERR_SCH_CONTENT_MISSING_SCHEMA', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_DUPLICATE', t => {
+test('FST_ERR_SCH_DUPLICATE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_DUPLICATE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -550,7 +574,7 @@ test('FST_ERR_SCH_DUPLICATE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_VALIDATION_BUILD', t => {
+test('FST_ERR_SCH_VALIDATION_BUILD', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_VALIDATION_BUILD()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -560,7 +584,7 @@ test('FST_ERR_SCH_VALIDATION_BUILD', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_SERIALIZATION_BUILD', t => {
+test('FST_ERR_SCH_SERIALIZATION_BUILD', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_SERIALIZATION_BUILD()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -570,17 +594,20 @@ test('FST_ERR_SCH_SERIALIZATION_BUILD', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX', t => {
+test('FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX')
-  t.assert.strictEqual(error.message, 'response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
+  t.assert.strictEqual(
+    error.message,
+    'response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }'
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_HTTP2_INVALID_VERSION', t => {
+test('FST_ERR_HTTP2_INVALID_VERSION', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_HTTP2_INVALID_VERSION()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -590,7 +617,7 @@ test('FST_ERR_HTTP2_INVALID_VERSION', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_INIT_OPTS_INVALID', t => {
+test('FST_ERR_INIT_OPTS_INVALID', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_INIT_OPTS_INVALID()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -600,17 +627,20 @@ test('FST_ERR_INIT_OPTS_INVALID', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE', t => {
+test('FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE')
-  t.assert.strictEqual(error.message, "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method")
+  t.assert.strictEqual(
+    error.message,
+    "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_DUPLICATED_ROUTE', t => {
+test('FST_ERR_DUPLICATED_ROUTE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_DUPLICATED_ROUTE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -620,7 +650,7 @@ test('FST_ERR_DUPLICATED_ROUTE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_BAD_URL', t => {
+test('FST_ERR_BAD_URL', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_BAD_URL()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -630,7 +660,7 @@ test('FST_ERR_BAD_URL', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ASYNC_CONSTRAINT', t => {
+test('FST_ERR_ASYNC_CONSTRAINT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ASYNC_CONSTRAINT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -640,7 +670,7 @@ test('FST_ERR_ASYNC_CONSTRAINT', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_INVALID_URL', t => {
+test('FST_ERR_INVALID_URL', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_INVALID_URL()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -650,7 +680,7 @@ test('FST_ERR_INVALID_URL', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ROUTE_OPTIONS_NOT_OBJ', t => {
+test('FST_ERR_ROUTE_OPTIONS_NOT_OBJ', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_OPTIONS_NOT_OBJ()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -660,7 +690,7 @@ test('FST_ERR_ROUTE_OPTIONS_NOT_OBJ', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ROUTE_DUPLICATED_HANDLER', t => {
+test('FST_ERR_ROUTE_DUPLICATED_HANDLER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_DUPLICATED_HANDLER()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -670,7 +700,7 @@ test('FST_ERR_ROUTE_DUPLICATED_HANDLER', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ROUTE_HANDLER_NOT_FN', t => {
+test('FST_ERR_ROUTE_HANDLER_NOT_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_HANDLER_NOT_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -680,7 +710,7 @@ test('FST_ERR_ROUTE_HANDLER_NOT_FN', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ROUTE_MISSING_HANDLER', t => {
+test('FST_ERR_ROUTE_MISSING_HANDLER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_MISSING_HANDLER()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -690,7 +720,7 @@ test('FST_ERR_ROUTE_MISSING_HANDLER', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ROUTE_METHOD_INVALID', t => {
+test('FST_ERR_ROUTE_METHOD_INVALID', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_METHOD_INVALID()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -700,7 +730,7 @@ test('FST_ERR_ROUTE_METHOD_INVALID', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
+test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_METHOD_NOT_SUPPORTED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -710,7 +740,7 @@ test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', t => {
+test('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -720,7 +750,7 @@ test('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', t => {
+test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -730,7 +760,7 @@ test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', t => {
+test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -740,7 +770,7 @@ test('FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
+test('FST_ERR_ROUTE_REWRITE_NOT_STR', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_REWRITE_NOT_STR()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -750,7 +780,7 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
+test('FST_ERR_REOPENED_CLOSE_SERVER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REOPENED_CLOSE_SERVER()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -760,7 +790,7 @@ test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_REOPENED_SERVER', t => {
+test('FST_ERR_REOPENED_SERVER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_REOPENED_SERVER()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -770,7 +800,7 @@ test('FST_ERR_REOPENED_SERVER', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_INSTANCE_ALREADY_LISTENING', t => {
+test('FST_ERR_INSTANCE_ALREADY_LISTENING', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_INSTANCE_ALREADY_LISTENING()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -780,7 +810,7 @@ test('FST_ERR_INSTANCE_ALREADY_LISTENING', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_PLUGIN_VERSION_MISMATCH', t => {
+test('FST_ERR_PLUGIN_VERSION_MISMATCH', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_VERSION_MISMATCH()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -790,7 +820,7 @@ test('FST_ERR_PLUGIN_VERSION_MISMATCH', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE', t => {
+test('FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -800,17 +830,20 @@ test('FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', t => {
+test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER('easter-egg')
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER')
-  t.assert.strictEqual(error.message, 'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
+  t.assert.strictEqual(
+    error.message,
+    'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.'
+  )
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {
+test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_CALLBACK_NOT_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -820,7 +853,7 @@ test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_PLUGIN_NOT_VALID', t => {
+test('FST_ERR_PLUGIN_NOT_VALID', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_NOT_VALID()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -830,7 +863,7 @@ test('FST_ERR_PLUGIN_NOT_VALID', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ROOT_PLG_BOOTED', t => {
+test('FST_ERR_ROOT_PLG_BOOTED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ROOT_PLG_BOOTED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -840,7 +873,7 @@ test('FST_ERR_ROOT_PLG_BOOTED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_PARENT_PLUGIN_BOOTED', t => {
+test('FST_ERR_PARENT_PLUGIN_BOOTED', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PARENT_PLUGIN_BOOTED()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -850,7 +883,7 @@ test('FST_ERR_PARENT_PLUGIN_BOOTED', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_PLUGIN_TIMEOUT', t => {
+test('FST_ERR_PLUGIN_TIMEOUT', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_PLUGIN_TIMEOUT()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -860,7 +893,7 @@ test('FST_ERR_PLUGIN_TIMEOUT', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_VALIDATION', t => {
+test('FST_ERR_VALIDATION', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_VALIDATION()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -870,7 +903,7 @@ test('FST_ERR_VALIDATION', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
+test('FST_ERR_LISTEN_OPTIONS_INVALID', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_LISTEN_OPTIONS_INVALID()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -880,7 +913,7 @@ test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
+test('FST_ERR_ERROR_HANDLER_NOT_FN', (t) => {
   t.plan(5)
   const error = new errors.FST_ERR_ERROR_HANDLER_NOT_FN()
   t.assert.strictEqual(error.name, 'FastifyError')
@@ -890,7 +923,7 @@ test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
-test('Ensure that all errors are in Errors.md TOC', t => {
+test('Ensure that all errors are in Errors.md TOC', (t) => {
   t.plan(expectedErrors)
 
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
@@ -903,7 +936,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
   }
 })
 
-test('Ensure that non-existing errors are not in Errors.md TOC', t => {
+test('Ensure that non-existing errors are not in Errors.md TOC', (t) => {
   t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
@@ -916,7 +949,7 @@ test('Ensure that non-existing errors are not in Errors.md TOC', t => {
   }
 })
 
-test('Ensure that all errors are in Errors.md documented', t => {
+test('Ensure that all errors are in Errors.md documented', (t) => {
   t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
@@ -928,7 +961,7 @@ test('Ensure that all errors are in Errors.md documented', t => {
   }
 })
 
-test('Ensure that non-existing errors are not in Errors.md documented', t => {
+test('Ensure that non-existing errors are not in Errors.md documented', (t) => {
   t.plan(expectedErrors)
 
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')

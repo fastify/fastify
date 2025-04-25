@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('TRACE')
 
-test('shorthand - trace', t => {
+test('shorthand - trace', (t) => {
   t.plan(1)
   try {
     fastify.route({

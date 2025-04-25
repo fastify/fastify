@@ -4,15 +4,11 @@ const { test } = require('node:test')
 
 const Request = require('../../lib/request')
 const Context = require('../../lib/context')
-const {
-  kReply,
-  kRequest,
-  kOptions
-} = require('../../lib/symbols')
+const { kReply, kRequest, kOptions } = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
 
-test('Regular request', t => {
+test('Regular request', (t) => {
   const headers = {
     host: 'hostname'
   }
@@ -71,7 +67,7 @@ test('Regular request', t => {
   t.assert.ok(!('undefined' in request))
 })
 
-test('Request with undefined config', t => {
+test('Request with undefined config', (t) => {
   const headers = {
     host: 'hostname'
   }
@@ -126,7 +122,7 @@ test('Request with undefined config', t => {
   t.assert.ok(!('undefined' in request))
 })
 
-test('Regular request - hostname from authority', t => {
+test('Regular request - hostname from authority', (t) => {
   t.plan(3)
   const headers = {
     ':authority': 'authority'
@@ -168,7 +164,7 @@ test('Regular request - hostname from authority', t => {
   t.assert.strictEqual(request.port, null)
 })
 
-test('Regular request - host header has precedence over authority', t => {
+test('Regular request - host header has precedence over authority', (t) => {
   t.plan(3)
   const headers = {
     host: 'hostname',
@@ -210,7 +206,7 @@ test('Regular request - host header has precedence over authority', t => {
   t.assert.strictEqual(request.port, null)
 })
 
-test('Request with trust proxy', t => {
+test('Request with trust proxy', (t) => {
   t.plan(18)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
@@ -268,7 +264,7 @@ test('Request with trust proxy', t => {
   t.assert.ok(request.compileValidationSchema instanceof Function)
 })
 
-test('Request with trust proxy, encrypted', t => {
+test('Request with trust proxy, encrypted', (t) => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
@@ -287,7 +283,7 @@ test('Request with trust proxy, encrypted', t => {
   t.assert.strictEqual(request.protocol, 'https')
 })
 
-test('Request with trust proxy - no x-forwarded-host header', t => {
+test('Request with trust proxy - no x-forwarded-host header', (t) => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
@@ -330,7 +326,7 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
   t.assert.strictEqual(request.host, 'hostname')
 })
 
-test('Request with trust proxy - no x-forwarded-host header and fallback to authority', t => {
+test('Request with trust proxy - no x-forwarded-host header and fallback to authority', (t) => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
@@ -373,7 +369,7 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
   t.assert.strictEqual(request.host, 'authority')
 })
 
-test('Request with trust proxy - x-forwarded-host header has precedence over host', t => {
+test('Request with trust proxy - x-forwarded-host header has precedence over host', (t) => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': ' 2.2.2.2, 1.1.1.1',
@@ -393,7 +389,7 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   t.assert.strictEqual(request.host, 'example.com')
 })
 
-test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
+test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', (t) => {
   t.plan(3)
   const headers = {
     'x-forwarded-host': 'example2.com, example.com',
@@ -413,7 +409,7 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   t.assert.strictEqual(request.protocol, 'https')
 })
 
-test('Request with trust proxy - plain', t => {
+test('Request with trust proxy - plain', (t) => {
   t.plan(1)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
@@ -431,7 +427,7 @@ test('Request with trust proxy - plain', t => {
   t.assert.deepStrictEqual(request.protocol, 'http')
 })
 
-test('Request with undefined socket', t => {
+test('Request with undefined socket', (t) => {
   t.plan(18)
   const headers = {
     host: 'hostname'
@@ -487,7 +483,7 @@ test('Request with undefined socket', t => {
   t.assert.ok(request.compileValidationSchema instanceof Function)
 })
 
-test('Request with trust proxy and undefined socket', t => {
+test('Request with trust proxy and undefined socket', (t) => {
   t.plan(1)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',

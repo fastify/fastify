@@ -5,7 +5,7 @@ const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
-test('http2 plain test', async t => {
+test('http2 plain test', async (t) => {
   let fastify
   try {
     fastify = Fastify({
@@ -28,7 +28,9 @@ test('http2 plain test', async t => {
     reply.code(200).send({ hostname: req.hostname, port: req.port })
   })
 
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   await fastify.listen({ port: 0 })
 

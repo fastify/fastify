@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import Fastify from '../../fastify.js'
 
-test('esm support', async t => {
+test('esm support', async (t) => {
   const fastify = Fastify()
 
   fastify.register(import('./plugin.mjs'), { foo: 'bar' })

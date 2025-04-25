@@ -10,7 +10,7 @@ const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/e
 async function setup () {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
-  test('Should support a custom http server', { skip: localAddresses.length < 1 }, async t => {
+  test('Should support a custom http server', { skip: localAddresses.length < 1 }, async (t) => {
     t.plan(4)
 
     const fastify = Fastify({
@@ -35,22 +35,25 @@ async function setup () {
     await fastify.listen({ port: 0 })
 
     await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
+      sget(
+        {
+          method: 'GET',
+          url: 'http://localhost:' + fastify.server.address().port,
+          rejectUnauthorized: false
+        },
+        (err, response, body) => {
+          if (err) {
+            return reject(err)
+          }
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+          resolve()
         }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
+      )
     })
   })
 
-  test('Should not allow forceCloseConnection=idle if the server does not support closeIdleConnections', t => {
+  test('Should not allow forceCloseConnection=idle if the server does not support closeIdleConnections', (t) => {
     t.plan(1)
 
     t.assert.throws(
@@ -59,9 +62,7 @@ async function setup () {
           forceCloseConnections: 'idle',
           serverFactory (handler, opts) {
             return {
-              on () {
-
-              }
+              on () {}
             }
           }
         })
@@ -71,16 +72,18 @@ async function setup () {
     )
   })
 
-  test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
-    const server = http.createServer(() => { })
-    t.after(() => new Promise(resolve => server.close(resolve)))
+  test('Should accept user defined serverFactory and ignore secondary server creation', async (t) => {
+    const server = http.createServer(() => {})
+    t.after(() => new Promise((resolve) => server.close(resolve)))
     const app = Fastify({
       serverFactory: () => server
     })
-    await t.assert.doesNotReject(async () => { await app.listen({ port: 0 }) })
+    await t.assert.doesNotReject(async () => {
+      await app.listen({ port: 0 })
+    })
   })
 
-  test('Should not call close on the server if it has not created it', async t => {
+  test('Should not call close on the server if it has not created it', async (t) => {
     const server = http.createServer()
 
     const serverFactory = (handler, opts) => {

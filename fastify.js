@@ -50,11 +50,7 @@ const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const noopSet = require('./lib/noop-set')
-const {
-  appendStackTrace,
-  AVVIO_ERRORS_MAP,
-  ...errorCodes
-} = require('./lib/errors')
+const { appendStackTrace, AVVIO_ERRORS_MAP, ...errorCodes } = require('./lib/errors')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -85,7 +81,7 @@ function defaultBuildPrettyMeta (route) {
   const cleanKeys = {}
   const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
 
-  allowedProps.concat(supportedHooks).forEach(k => {
+  allowedProps.concat(supportedHooks).forEach((k) => {
     cleanKeys[k] = route.store[k]
   })
 
@@ -108,22 +104,32 @@ function fastify (options) {
     throw new FST_ERR_QSP_NOT_FN(typeof options.querystringParser)
   }
 
-  if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
+  if (
+    options.schemaController &&
+    options.schemaController.bucket &&
+    typeof options.schemaController.bucket !== 'function'
+  ) {
     throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
   }
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
+  const requestIdHeader =
+    typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0
+      ? options.requestIdHeader.toLowerCase()
+      : options.requestIdHeader === true && 'request-id'
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
 
-  const ajvOptions = Object.assign({
-    customOptions: {},
-    plugins: []
-  }, options.ajv)
+  const ajvOptions = Object.assign(
+    {
+      customOptions: {},
+      plugins: []
+    },
+    options.ajv
+  )
   const frameworkErrors = options.frameworkErrors
 
   // Ajv options
@@ -241,8 +247,8 @@ function fastify (options) {
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
-      (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+      options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning,
+      options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
@@ -255,31 +261,76 @@ function fastify (options) {
     routing: httpHandler,
     // routes shorthand methods
     delete: function _delete (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'DELETE',
+        url,
+        options,
+        handler
+      })
     },
     get: function _get (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'GET', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'GET',
+        url,
+        options,
+        handler
+      })
     },
     head: function _head (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'HEAD',
+        url,
+        options,
+        handler
+      })
     },
     trace: function _trace (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'TRACE',
+        url,
+        options,
+        handler
+      })
     },
     patch: function _patch (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'PATCH',
+        url,
+        options,
+        handler
+      })
     },
     post: function _post (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'POST', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'POST',
+        url,
+        options,
+        handler
+      })
     },
     put: function _put (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PUT', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'PUT',
+        url,
+        options,
+        handler
+      })
     },
     options: function _options (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: 'OPTIONS',
+        url,
+        options,
+        handler
+      })
     },
     all: function _all (url, options, handler) {
-      return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
+      return router.prepareRoute.call(this, {
+        method: this.supportedMethods,
+        url,
+        options,
+        handler
+      })
     },
     // extended route
     route: function _route (options) {
@@ -332,9 +383,9 @@ function fastify (options) {
     server,
     addresses: function () {
       /* istanbul ignore next */
-      const binded = this[kServerBindings].map(b => b.address())
+      const binded = this[kServerBindings].map((b) => b.address())
       binded.push(this.server.address())
-      return binded.filter(adr => adr)
+      return binded.filter((adr) => adr)
     },
     // extend fastify objects
     decorate: decorator.add,
@@ -385,23 +436,33 @@ function fastify (options) {
     },
     prefix: {
       configurable: true,
-      get () { return this[kRoutePrefix] }
+      get () {
+        return this[kRoutePrefix]
+      }
     },
     validatorCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getValidatorCompiler() }
+      get () {
+        return this[kSchemaController].getValidatorCompiler()
+      }
     },
     serializerCompiler: {
       configurable: true,
-      get () { return this[kSchemaController].getSerializerCompiler() }
+      get () {
+        return this[kSchemaController].getSerializerCompiler()
+      }
     },
     childLoggerFactory: {
       configurable: true,
-      get () { return this[kChildLoggerFactory] }
+      get () {
+        return this[kChildLoggerFactory]
+      }
     },
     version: {
       configurable: true,
-      get () { return VERSION }
+      get () {
+        return VERSION
+      }
     },
     errorHandler: {
       configurable: true,
@@ -411,15 +472,14 @@ function fastify (options) {
     },
     genReqId: {
       configurable: true,
-      get () { return this[kGenReqId] }
+      get () {
+        return this[kGenReqId]
+      }
     },
     supportedMethods: {
       configurable: false,
       get () {
-        return [
-          ...this[kSupportedHTTPMethods].bodyless,
-          ...this[kSupportedHTTPMethods].bodywith
-        ]
+        return [...this[kSupportedHTTPMethods].bodyless, ...this[kSupportedHTTPMethods].bodywith]
       }
     }
   })
@@ -564,7 +624,7 @@ function fastify (options) {
     }
 
     if (cb) {
-      this.ready(err => {
+      this.ready((err) => {
         if (err) cb(err, null)
         else lightMyRequest(httpHandler, opts, cb)
       })
@@ -629,9 +689,10 @@ function fastify (options) {
       // If the error comes out of Avvio's Error codes
       // We create a make and preserve the previous error
       // as cause
-      err = err != null && AVVIO_ERRORS_MAP[err.code] != null
-        ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
-        : err
+      err =
+        err != null && AVVIO_ERRORS_MAP[err.code] != null
+          ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
+          : err
 
       if (err) {
         return rejectReady(err)
@@ -689,7 +750,7 @@ function fastify (options) {
 
     function _addHook (name, fn) {
       this[kHooks].add(name, fn)
-      this[kChildren].forEach(child => _addHook.call(child, name, fn))
+      this[kChildren].forEach((child) => _addHook.call(child, name, fn))
     }
   }
 
@@ -697,7 +758,7 @@ function fastify (options) {
   function addSchema (schema) {
     throwIfAlreadyStarted('Cannot call "addSchema"!')
     this[kSchemaController].add(schema)
-    this[kChildren].forEach(child => child.addSchema(schema))
+    this[kChildren].forEach((child) => child.addSchema(schema))
     return this
   }
 
@@ -736,7 +797,9 @@ function fastify (options) {
 
     // If the socket is not writable, there is no reason to try to send data.
     if (socket.writable) {
-      socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+      socket.write(
+        `HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`
+      )
     }
     socket.destroy(err)
   }
@@ -793,7 +856,8 @@ function fastify (options) {
 
           return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
-        const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
+        const body =
+          '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
         res.writeHead(500, {
           'Content-Type': 'application/json',
           'Content-Length': body.length
@@ -832,7 +896,10 @@ function fastify (options) {
   function setSchemaController (schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController"!')
     const old = this[kSchemaController]
-    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(
+      old,
+      Object.assign({}, old.opts, schemaControllerOpts)
+    )
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
@@ -867,7 +934,11 @@ function fastify (options) {
 
   function printRoutes (opts = {}) {
     // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
-    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    opts.includeMeta = opts.includeHooks
+      ? opts.includeMeta
+        ? supportedHooks.concat(opts.includeMeta)
+        : supportedHooks
+      : opts.includeMeta
     return router.printRoutes(opts)
   }
 

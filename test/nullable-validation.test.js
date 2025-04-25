@@ -39,17 +39,20 @@ test('nullable string', (t, done) => {
       }
     }
   })
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      hello: null
+  fastify.inject(
+    {
+      method: 'POST',
+      url: '/',
+      body: {
+        hello: null
+      }
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.json().hello, null)
+      done()
     }
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.json().hello, null)
-    done()
-  })
+  )
 })
 
 test('object or null body', (t, done) => {
@@ -90,17 +93,22 @@ test('object or null body', (t, done) => {
 
   fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { isUndefinedBody: true })
-      done()
+    t.after(() => {
+      fastify.close()
     })
+
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(body), { isUndefinedBody: true })
+        done()
+      }
+    )
   })
 })
 
@@ -145,15 +153,18 @@ test('nullable body', (t, done) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { isUndefinedBody: true })
-      done()
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(body), { isUndefinedBody: true })
+        done()
+      }
+    )
   })
 })
 
@@ -187,14 +198,17 @@ test('Nullable body with 204', (t, done) => {
     t.assert.ifError(err)
     t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 204)
-      t.assert.strictEqual(body.length, 0)
-      done()
-    })
+    sget(
+      {
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 204)
+        t.assert.strictEqual(body.length, 0)
+        done()
+      }
+    )
   })
 })

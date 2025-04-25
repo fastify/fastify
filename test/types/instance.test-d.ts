@@ -18,15 +18,21 @@ import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 const server = fastify()
 
-expectAssignable<FastifyInstance>(server.addSchema({
-  type: 'null'
-}))
-expectAssignable<FastifyInstance>(server.addSchema({
-  schemaId: 'id'
-}))
-expectAssignable<FastifyInstance>(server.addSchema({
-  schemas: []
-}))
+expectAssignable<FastifyInstance>(
+  server.addSchema({
+    type: 'null'
+  })
+)
+expectAssignable<FastifyInstance>(
+  server.addSchema({
+    schemaId: 'id'
+  })
+)
+expectAssignable<FastifyInstance>(
+  server.addSchema({
+    schemas: []
+  })
+)
 
 expectType<string>(server.pluginName)
 
@@ -70,12 +76,16 @@ async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyEr
 server.setErrorHandler(asyncFastifyErrorHandler)
 
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {
-  if (error) { throw error }
+  if (error) {
+    throw error
+  }
 }
 server.setErrorHandler(nodeJSErrorHandler)
 
 function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {
-  if (error) { throw error }
+  if (error) {
+    throw error
+  }
 }
 server.setErrorHandler(asyncNodeJSErrorHandler)
 
@@ -84,18 +94,36 @@ class CustomError extends Error {
 }
 interface ReplyPayload {
   Reply: {
-    test: boolean;
-  };
+    test: boolean
+  }
 }
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<
+    (
+    payload?: ReplyPayload['Reply']
+    ) => FastifyReply<
+      ReplyPayload,
+      RawServerDefault,
+      RawRequestDefaultExpression<RawServerDefault>,
+      RawReplyDefaultExpression<RawServerDefault>
+    >
+      >(reply.send)
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<
+    (
+    payload?: ReplyPayload['Reply']
+    ) => FastifyReply<
+      ReplyPayload,
+      RawServerDefault,
+      RawRequestDefaultExpression<RawServerDefault>,
+      RawReplyDefaultExpression<RawServerDefault>
+    >
+      >(reply.send)
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
@@ -103,20 +131,24 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
   return { test: true }
 })
 // typed sync error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
-  expectType<CustomError>(error)
-  reply.send({ test: 'foo' })
-}))
+expectError(
+  server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+    expectType<CustomError>(error)
+    reply.send({ test: 'foo' })
+  })
+)
 // typed sync error handler return error
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
 })
 // typed async error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
-  expectType<CustomError>(error)
-  reply.send({ test: 'foo' })
-}))
+expectError(
+  server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+    expectType<CustomError>(error)
+    reply.send({ test: 'foo' })
+  })
+)
 // typed async error handler return error
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
@@ -125,9 +157,13 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
+function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) {
+  done()
+}
 async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
+function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) {
+  done()
+}
 async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
 
 server.setNotFoundHandler(notFoundHandler)
@@ -135,14 +171,26 @@ server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHan
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler(
+  {
+    preHandler: notFoundpreHandlerHandler,
+    preValidation: notFoundpreValidationHandler
+  },
+  notFoundHandler
+)
 
 server.setNotFoundHandler(notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler(
+  {
+    preHandler: notFoundpreHandlerHandler,
+    preValidation: notFoundpreValidationHandler
+  },
+  notFoundAsyncHandler
+)
 
 server.setNotFoundHandler(function (_, reply) {
   return reply.send('')
@@ -190,7 +238,9 @@ function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
 function invalidSchemaErrorFormatter (err: Error) {
-  if (err) { throw err }
+  if (err) {
+    throw err
+  }
 }
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
@@ -199,7 +249,14 @@ expectType<FastifyInstance>(server.addHttpMethod('SEARCH', { hasBody: true }))
 // test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }))
+expectAssignable<PromiseLike<string>>(
+  server.listen({
+    port: 3000,
+    listenTextResolver: (address) => {
+      return `address: ${address}`
+    }
+  })
+)
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
@@ -207,7 +264,17 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', 
 
 expectAssignable<void>(server.listen(() => {}))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {}))
+expectAssignable<void>(
+  server.listen(
+    {
+      port: 3000,
+      listenTextResolver: (address) => {
+        return `address: ${address}`
+      }
+    },
+    () => {}
+  )
+)
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
@@ -230,42 +297,52 @@ expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, 
 
 // test after method
 expectAssignable<FastifyInstance>(server.after())
-expectAssignable<FastifyInstance>(server.after((err) => {
-  expectType<Error | null>(err)
-}))
+expectAssignable<FastifyInstance>(
+  server.after((err) => {
+    expectType<Error | null>(err)
+  })
+)
 
 // test ready method
 expectAssignable<FastifyInstance>(server.ready())
-expectAssignable<FastifyInstance>(server.ready((err) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<FastifyInstance>(server.ready(async (err) => {
-  expectType<Error | null>(err)
-}))
+expectAssignable<FastifyInstance>(
+  server.ready((err) => {
+    expectType<Error | null>(err)
+  })
+)
+expectAssignable<FastifyInstance>(
+  server.ready(async (err) => {
+    expectType<Error | null>(err)
+  })
+)
 expectAssignable<Parameters<typeof server.ready>[0]>(async (err) => {
   expectType<Error | null>(err)
 })
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
-expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
-  handler: () => {},
-  errorHandler: (error, request, reply) => {
-    expectAssignable<FastifyError>(error)
-    expectAssignable<FastifyRequest>(request)
-    expectAssignable<{ contextKey: string }>(request.routeOptions.config)
-    expectAssignable<FastifyReply>(reply)
-    expectAssignable<void>(server.errorHandler(error, request, reply))
-  }
-}))
+expectType<FastifyInstance>(
+  fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
+    handler: () => {},
+    errorHandler: (error, request, reply) => {
+      expectAssignable<FastifyError>(error)
+      expectAssignable<FastifyRequest>(request)
+      expectAssignable<{ contextKey: string }>(request.routeOptions.config)
+      expectAssignable<FastifyReply>(reply)
+      expectAssignable<void>(server.errorHandler(error, request, reply))
+    }
+  })
+)
 
-expectType<FastifyInstance>(fastify().get('/', {
-  handler: () => {},
-  childLoggerFactory: (logger, bindings, opts, req) => {
-    expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
-    return server.childLoggerFactory(logger, bindings, opts, req)
-  }
-}))
+expectType<FastifyInstance>(
+  fastify().get('/', {
+    handler: () => {},
+    childLoggerFactory: (logger, bindings, opts, req) => {
+      expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
+      return server.childLoggerFactory(logger, bindings, opts, req)
+    }
+  })
+)
 
 expectAssignable<FastifyInstance>(
   server.setChildLoggerFactory(function (logger, bindings, opts, req) {
@@ -284,31 +361,37 @@ expectAssignable<FastifyInstance>(
   })
 )
 
-function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+function childLoggerFactory (
+  this: FastifyInstance,
+  logger: FastifyBaseLogger,
+  bindings: Bindings,
+  opts: ChildLoggerOptions,
+  req: RawRequestDefaultExpression
+) {
   return logger.child(bindings, opts)
 }
 server.setChildLoggerFactory(childLoggerFactory)
 server.setChildLoggerFactory(server.childLoggerFactory)
 
 type InitialConfig = Readonly<{
-  connectionTimeout?: number,
-  keepAliveTimeout?: number,
-  bodyLimit?: number,
-  caseSensitive?: boolean,
-  allowUnsafeRegex?: boolean,
-  forceCloseConnections?: boolean,
-  http2?: boolean,
-  https?: boolean | Readonly<{ allowHTTP1: boolean }>,
-  ignoreTrailingSlash?: boolean,
-  ignoreDuplicateSlashes?: boolean,
-  disableRequestLogging?: boolean,
-  maxParamLength?: number,
-  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
-  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
-  pluginTimeout?: number,
-  requestIdHeader?: string | false,
-  requestIdLogLabel?: string,
-  http2SessionTimeout?: number,
+  connectionTimeout?: number
+  keepAliveTimeout?: number
+  bodyLimit?: number
+  caseSensitive?: boolean
+  allowUnsafeRegex?: boolean
+  forceCloseConnections?: boolean
+  http2?: boolean
+  https?: boolean | Readonly<{ allowHTTP1: boolean }>
+  ignoreTrailingSlash?: boolean
+  ignoreDuplicateSlashes?: boolean
+  disableRequestLogging?: boolean
+  maxParamLength?: number
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore'
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore'
+  pluginTimeout?: number
+  requestIdHeader?: string | false
+  requestIdLogLabel?: string
+  http2SessionTimeout?: number
   useSemicolonDelimiter?: boolean
 }>
 
@@ -318,7 +401,13 @@ expectType<FastifyBodyParser<string>>(server.defaultTextParser)
 
 expectType<FastifyBodyParser<string>>(server.getDefaultJsonParser('ignore', 'error'))
 
-expectType<string>(server.printRoutes({ includeHooks: true, commonPrefix: false, includeMeta: true }))
+expectType<string>(
+  server.printRoutes({
+    includeHooks: true,
+    commonPrefix: false,
+    includeMeta: true
+  })
+)
 
 expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] }))
 
@@ -370,35 +459,41 @@ server.decorateReply('test')
 server.decorateReply('test', null, ['foo'])
 
 expectError(server.decorate<string>('test', true))
-expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
-  return ''
-}))
-expectError(server.decorate<string>('test', {
-  getter () {
-    return true
-  }
-}))
-expectError(server.decorate<string>('test', {
-  setter (x) {}
-}))
+expectError(
+  server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
+    return ''
+  })
+)
+expectError(
+  server.decorate<string>('test', {
+    getter () {
+      return true
+    }
+  })
+)
+expectError(
+  server.decorate<string>('test', {
+    setter (x) {}
+  })
+)
 
 declare module '../../fastify' {
   interface FastifyInstance {
     typedTestProperty: boolean
     typedTestPropertyGetterSetter: string
-    typedTestMethod (x: string): string
+    typedTestMethod(x: string): string
   }
 
   interface FastifyRequest {
     typedTestRequestProperty: boolean
     typedTestRequestPropertyGetterSetter: string
-    typedTestRequestMethod (x: string): string
+    typedTestRequestMethod(x: string): string
   }
 
   interface FastifyReply {
     typedTestReplyProperty: boolean
     typedTestReplyPropertyGetterSetter: string
-    typedTestReplyMethod (x: string): string
+    typedTestReplyMethod(x: string): string
   }
 }
 
@@ -421,26 +516,34 @@ server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
 expectError(server.decorate('typedTestProperty', null))
 expectError(server.decorate('typedTestProperty', 'foo'))
-expectError(server.decorate('typedTestProperty', {
-  getter () {
-    return 'foo'
-  }
-}))
+expectError(
+  server.decorate('typedTestProperty', {
+    getter () {
+      return 'foo'
+    }
+  })
+)
 server.decorate('typedTestMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyInstance>(this)
   return 'foo'
 })
-server.decorate('typedTestMethod', x => x)
-expectError(server.decorate('typedTestMethod', function (x: boolean) {
-  return 'foo'
-}))
-expectError(server.decorate('typedTestMethod', function (x) {
-  return true
-}))
-expectError(server.decorate('typedTestMethod', async function (x) {
-  return 'foo'
-}))
+server.decorate('typedTestMethod', (x) => x)
+expectError(
+  server.decorate('typedTestMethod', function (x: boolean) {
+    return 'foo'
+  })
+)
+expectError(
+  server.decorate('typedTestMethod', function (x) {
+    return true
+  })
+)
+expectError(
+  server.decorate('typedTestMethod', async function (x) {
+    return 'foo'
+  })
+)
 
 server.decorateRequest('typedTestRequestProperty', false)
 server.decorateRequest('typedTestRequestProperty', {
@@ -461,26 +564,34 @@ server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
 expectError(server.decorateRequest('typedTestRequestProperty', null))
 expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
-expectError(server.decorateRequest('typedTestRequestProperty', {
-  getter () {
-    return 'foo'
-  }
-}))
+expectError(
+  server.decorateRequest('typedTestRequestProperty', {
+    getter () {
+      return 'foo'
+    }
+  })
+)
 server.decorateRequest('typedTestRequestMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyRequest>(this)
   return 'foo'
 })
-server.decorateRequest('typedTestRequestMethod', x => x)
-expectError(server.decorateRequest('typedTestRequestMethod', function (x: boolean) {
-  return 'foo'
-}))
-expectError(server.decorateRequest('typedTestRequestMethod', function (x) {
-  return true
-}))
-expectError(server.decorateRequest('typedTestRequestMethod', async function (x) {
-  return 'foo'
-}))
+server.decorateRequest('typedTestRequestMethod', (x) => x)
+expectError(
+  server.decorateRequest('typedTestRequestMethod', function (x: boolean) {
+    return 'foo'
+  })
+)
+expectError(
+  server.decorateRequest('typedTestRequestMethod', function (x) {
+    return true
+  })
+)
+expectError(
+  server.decorateRequest('typedTestRequestMethod', async function (x) {
+    return 'foo'
+  })
+)
 
 server.decorateReply('typedTestReplyProperty', false)
 server.decorateReply('typedTestReplyProperty', {
@@ -501,26 +612,34 @@ server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
 expectError(server.decorateReply('typedTestReplyProperty', null))
 expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
-expectError(server.decorateReply('typedTestReplyProperty', {
-  getter () {
-    return 'foo'
-  }
-}))
+expectError(
+  server.decorateReply('typedTestReplyProperty', {
+    getter () {
+      return 'foo'
+    }
+  })
+)
 server.decorateReply('typedTestReplyMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyReply>(this)
   return 'foo'
 })
-server.decorateReply('typedTestReplyMethod', x => x)
-expectError(server.decorateReply('typedTestReplyMethod', function (x: boolean) {
-  return 'foo'
-}))
-expectError(server.decorateReply('typedTestReplyMethod', function (x) {
-  return true
-}))
-expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
-  return 'foo'
-}))
+server.decorateReply('typedTestReplyMethod', (x) => x)
+expectError(
+  server.decorateReply('typedTestReplyMethod', function (x: boolean) {
+    return 'foo'
+  })
+)
+expectError(
+  server.decorateReply('typedTestReplyMethod', function (x) {
+    return true
+  })
+)
+expectError(
+  server.decorateReply('typedTestReplyMethod', async function (x) {
+    return 'foo'
+  })
+)
 
 const foo = server.getDecorator<string>('foo')
 expectType<string>(foo)
@@ -529,9 +648,9 @@ const versionConstraintStrategy = {
   name: 'version',
   storage: () => ({
     get: () => () => {},
-    set: () => { },
-    del: () => { },
-    empty: () => { }
+    set: () => {},
+    del: () => {},
+    empty: () => {}
   }),
   validate () {},
   deriveConstraint: () => 'foo'

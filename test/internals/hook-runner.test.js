@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const { hookRunnerGenerator, onSendHookRunner } = require('../../lib/hooks')
 
-test('hookRunner - Basic', t => {
+test('hookRunner - Basic', (t) => {
   t.plan(9)
 
   const hookRunner = hookRunnerGenerator(iterator)
@@ -39,7 +39,7 @@ test('hookRunner - Basic', t => {
   }
 })
 
-test('hookRunner - In case of error should skip to done', t => {
+test('hookRunner - In case of error should skip to done', (t) => {
   t.plan(7)
 
   const hookRunner = hookRunnerGenerator(iterator)
@@ -73,7 +73,7 @@ test('hookRunner - In case of error should skip to done', t => {
   }
 })
 
-test('hookRunner - Should handle throw', t => {
+test('hookRunner - Should handle throw', (t) => {
   t.plan(7)
 
   const hookRunner = hookRunnerGenerator(iterator)
@@ -107,7 +107,7 @@ test('hookRunner - Should handle throw', t => {
   }
 })
 
-test('hookRunner - Should handle promises', t => {
+test('hookRunner - Should handle promises', (t) => {
   t.plan(9)
 
   const hookRunner = hookRunnerGenerator(iterator)
@@ -143,7 +143,7 @@ test('hookRunner - Should handle promises', t => {
   }
 })
 
-test('hookRunner - In case of error should skip to done (with promises)', t => {
+test('hookRunner - In case of error should skip to done (with promises)', (t) => {
   t.plan(7)
 
   const hookRunner = hookRunnerGenerator(iterator)
@@ -177,7 +177,7 @@ test('hookRunner - In case of error should skip to done (with promises)', t => {
   }
 })
 
-test('hookRunner - Be able to exit before its natural end', t => {
+test('hookRunner - Be able to exit before its natural end', (t) => {
   t.plan(4)
 
   const hookRunner = hookRunnerGenerator(iterator)
@@ -214,7 +214,7 @@ test('hookRunner - Be able to exit before its natural end', t => {
   }
 })
 
-test('hookRunner - Promises that resolve to a value do not change the state', t => {
+test('hookRunner - Promises that resolve to a value do not change the state', (t) => {
   t.plan(5)
 
   const originalState = { a: 'a', b: 'b' }
@@ -248,7 +248,7 @@ test('hookRunner - Promises that resolve to a value do not change the state', t 
   }
 })
 
-test('onSendHookRunner - Basic', t => {
+test('onSendHookRunner - Basic', (t) => {
   t.plan(13)
 
   const originalRequest = { body: null }
@@ -286,7 +286,7 @@ test('onSendHookRunner - Basic', t => {
   }
 })
 
-test('onSendHookRunner - Can change the payload', t => {
+test('onSendHookRunner - Can change the payload', (t) => {
   t.plan(7)
 
   const originalRequest = { body: null }
@@ -321,7 +321,7 @@ test('onSendHookRunner - Can change the payload', t => {
   }
 })
 
-test('onSendHookRunner - In case of error should skip to done', t => {
+test('onSendHookRunner - In case of error should skip to done', (t) => {
   t.plan(6)
 
   const originalRequest = { body: null }
@@ -353,7 +353,7 @@ test('onSendHookRunner - In case of error should skip to done', t => {
   }
 })
 
-test('onSendHookRunner - Should handle promises', t => {
+test('onSendHookRunner - Should handle promises', (t) => {
   t.plan(7)
 
   const originalRequest = { body: null }
@@ -388,7 +388,7 @@ test('onSendHookRunner - Should handle promises', t => {
   }
 })
 
-test('onSendHookRunner - In case of error should skip to done (with promises)', t => {
+test('onSendHookRunner - In case of error should skip to done (with promises)', (t) => {
   t.plan(6)
 
   const originalRequest = { body: null }
@@ -420,7 +420,7 @@ test('onSendHookRunner - In case of error should skip to done (with promises)', 
   }
 })
 
-test('onSendHookRunner - Be able to exit before its natural end', t => {
+test('onSendHookRunner - Be able to exit before its natural end', (t) => {
   t.plan(2)
 
   const originalRequest = { body: null }

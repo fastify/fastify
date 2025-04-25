@@ -5,7 +5,7 @@ const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
-test('http2 unknown http method', async t => {
+test('http2 unknown http method', async (t) => {
   const fastify = Fastify({
     http2: true
   })
@@ -14,7 +14,9 @@ test('http2 unknown http method', async t => {
     reply.code(200).send(msg)
   })
 
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
   await fastify.listen({ port: 0 })
 
   await t.test('http UNKNOWN_METHOD request', async (t) => {

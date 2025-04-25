@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('../fastify')
 
 // asyncDispose doesn't exist in node <= 16
-test('async dispose should close fastify', { skip: !('asyncDispose' in Symbol) }, async t => {
+test('async dispose should close fastify', { skip: !('asyncDispose' in Symbol) }, async (t) => {
   t.plan(2)
 
   const fastify = Fastify()

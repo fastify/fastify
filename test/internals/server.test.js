@@ -11,14 +11,14 @@ const handler = (req, res) => {
   res.end(JSON.stringify({ data: 'Hello World!' }))
 }
 
-test('start listening', async t => {
+test('start listening', async (t) => {
   const { server, listen } = createServer({}, handler)
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
   server.close()
   t.assert.ok(true, 'server started')
 })
 
-test('DNS errors does not stop the main server on localhost - promise interface', async t => {
+test('DNS errors does not stop the main server on localhost - promise interface', async (t) => {
   const { createServer } = proxyquire('../../lib/server', {
     'node:dns': {
       lookup: (hostname, options, cb) => {

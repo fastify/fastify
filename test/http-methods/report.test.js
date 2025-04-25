@@ -73,7 +73,7 @@ test('can be created - report', (t) => {
   }
 })
 
-test('report test', async t => {
+test('report test', async (t) => {
   await fastify.listen({ port: 0 })
 
   t.after(() => {

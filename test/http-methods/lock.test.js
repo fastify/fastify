@@ -14,16 +14,14 @@ const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
           </D:owner>
         </D:lockinfo> `
 
-test('can be created - lock', t => {
+test('can be created - lock', (t) => {
   t.plan(1)
   try {
     fastify.route({
       method: 'LOCK',
       url: '*',
       handler: function (req, reply) {
-        reply
-          .code(200)
-          .send(`<?xml version="1.0" encoding="utf-8" ?>
+        reply.code(200).send(`<?xml version="1.0" encoding="utf-8" ?>
             <D:prop xmlns:D="DAV:">
               <D:lockdiscovery>
                 <D:activelock>
@@ -46,8 +44,7 @@ test('can be created - lock', t => {
                   </D:lockroot>
                 </D:activelock>
               </D:lockdiscovery>
-            </D:prop>`
-          )
+            </D:prop>`)
       }
     })
     t.assert.ok(true)
@@ -56,7 +53,7 @@ test('can be created - lock', t => {
   }
 })
 
-test('lock test', async t => {
+test('lock test', async (t) => {
   await fastify.listen({ port: 0 })
   t.after(() => {
     fastify.close()
@@ -65,44 +62,53 @@ test('lock test', async t => {
   // a specific content type parser
   await t.test('request with body - lock', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
-      headers: { 'content-type': 'text/plain' },
-      body: bodySample,
-      method: 'LOCK'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+        headers: { 'content-type': 'text/plain' },
+        body: bodySample,
+        method: 'LOCK'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 
   await t.test('request with body and no content type (415 error) - lock', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
-      body: bodySample,
-      method: 'LOCK'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+        body: bodySample,
+        method: 'LOCK'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 415)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 
   await t.test('request without body - lock', (t, done) => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
-      headers: { 'content-type': 'text/plain' },
-      method: 'LOCK'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
-    })
+    sget(
+      {
+        url: `http://localhost:${fastify.server.address().port}/test/a.txt`,
+        headers: { 'content-type': 'text/plain' },
+        method: 'LOCK'
+      },
+      (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+        done()
+      }
+    )
   })
 })

@@ -61,10 +61,13 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
   }
 
   const fastify = Fastify()
-  fastify.register((instance, opts, done) => {
-    instance.post('/form', { schema: { body: badSchema } }, () => {})
-    done()
-  }, { prefix: 'hello' })
+  fastify.register(
+    (instance, opts, done) => {
+      instance.post('/form', { schema: { body: badSchema } }, () => {})
+      done()
+    },
+    { prefix: 'hello' }
+  )
 
   await t.assert.rejects(fastify.ready(), {
     code: 'FST_ERR_SCH_VALIDATION_BUILD',
@@ -121,7 +124,9 @@ test('Should throw if one method is unsupported', async (t) => {
 test('Should throw on duplicate content type parser', async (t) => {
   t.plan(1)
   const fastify = Fastify()
-  function customParser (req, payload, done) { done(null, '') }
+  function customParser (req, payload, done) {
+    done(null, '')
+  }
 
   fastify.addContentTypeParser('application/qq', customParser)
   try {
@@ -175,7 +180,7 @@ test('Should throw on duplicate request decorator', async (t) => {
     t.assert.fail()
   } catch (e) {
     t.assert.strictEqual(e.code, 'FST_ERR_DEC_ALREADY_PRESENT')
-    t.assert.strictEqual(e.message, 'The decorator \'foo\' has already been added!')
+    t.assert.strictEqual(e.message, "The decorator 'foo' has already been added!")
   }
 })
 
@@ -189,7 +194,7 @@ test('Should throw if request decorator dependencies are not met', async (t) => 
     t.assert.fail()
   } catch (e) {
     t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.assert.strictEqual(e.message, 'The decorator is missing dependency \'world\'.')
+    t.assert.strictEqual(e.message, "The decorator is missing dependency 'world'.")
   }
 })
 
@@ -349,9 +354,13 @@ test('Should throw if found duplicate handler as the third parameter to the shor
   const fastify = Fastify()
 
   try {
-    fastify.get('/foo/abc', {
-      handler: (req, res) => {}
-    }, (req, res) => {})
+    fastify.get(
+      '/foo/abc',
+      {
+        handler: (req, res) => {}
+      },
+      (req, res) => {}
+    )
     t.assert.fail()
   } catch (e) {
     t.assert.ok(true)

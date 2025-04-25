@@ -6,7 +6,7 @@ const Fastify = require('..')
 // Because of how error handlers wrap things, following the control flow can be tricky
 // In this test file numbered comments indicate the order statements are expected to execute
 
-test('encapsulates an asynchronous error handler', async t => {
+test('encapsulates an asynchronous error handler', async (t) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -36,7 +36,7 @@ test('encapsulates an asynchronous error handler', async t => {
 })
 
 // See discussion in https://github.com/fastify/fastify/pull/5222#discussion_r1432573655
-test('encapsulates a synchronous error handler', async t => {
+test('encapsulates a synchronous error handler', async (t) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -65,7 +65,7 @@ test('encapsulates a synchronous error handler', async t => {
   t.assert.strictEqual(res.json().message, 'from_outer')
 })
 
-test('onError hook nested', async t => {
+test('onError hook nested', async (t) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -100,7 +100,7 @@ test('onError hook nested', async t => {
 })
 
 // See https://github.com/fastify/fastify/issues/5220
-test('encapuslates an error handler, for errors thrown in hooks', async t => {
+test('encapuslates an error handler, for errors thrown in hooks', async (t) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -131,7 +131,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
 })
 
 // See https://github.com/fastify/fastify/issues/5220
-test('encapuslates many synchronous error handlers that rethrow errors', async t => {
+test('encapuslates many synchronous error handlers that rethrow errors', async (t) => {
   const DEPTH = 100
   t.plan(DEPTH + 2)
 
@@ -183,9 +183,11 @@ test('encapuslates many synchronous error handlers that rethrow errors', async t
 })
 
 // See https://github.com/fastify/fastify/issues/5220
-// This was not failing previously, but we want to make sure the behavior continues to work in the same way across async and sync handlers
-// Plus, the current setup is somewhat fragile to tweaks to wrapThenable as that's what retries (by calling res.send(err) again)
-test('encapuslates many asynchronous error handlers that rethrow errors', async t => {
+// This was not failing previously, but we want to make sure the behavior continues to work
+// in the same way across async and sync handlers
+// Plus, the current setup is somewhat fragile to tweaks to wrapThenable as that's what
+// retries (by calling res.send(err) again)
+test('encapuslates many asynchronous error handlers that rethrow errors', async (t) => {
   const DEPTH = 100
   t.plan(DEPTH + 2)
 

@@ -35,7 +35,9 @@ test('secure', async (t) => {
     reply.code(200).send({ hostname: req.hostname, port: req.port })
   })
 
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
   await fastify.listen({ port: 0 })
 
   await t.test('https get request', async (t) => {
@@ -53,8 +55,20 @@ test('secure', async (t) => {
     t.plan(2)
 
     const url = `https://localhost:${fastify.server.address().port}/proto`
-    t.assert.deepStrictEqual(JSON.parse((await h2url.concat({ url })).body), { proto: 'https' })
-    t.assert.deepStrictEqual(JSON.parse((await h2url.concat({ url, headers: { 'X-Forwarded-Proto': 'lorem' } })).body), { proto: 'https' })
+    t.assert.deepStrictEqual(JSON.parse((await h2url.concat({ url })).body), {
+      proto: 'https'
+    })
+    t.assert.deepStrictEqual(
+      JSON.parse(
+        (
+          await h2url.concat({
+            url,
+            headers: { 'X-Forwarded-Proto': 'lorem' }
+          })
+        ).body
+      ),
+      { proto: 'https' }
+    )
   })
   await t.test('https get request - test hostname and port', async (t) => {
     t.plan(2)

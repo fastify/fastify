@@ -22,7 +22,7 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
 
   t.plan(11)
   t.before(async function () {
-    [localhost, localhostForURL] = await helper.getLoopbackHost()
+    ;[localhost, localhostForURL] = await helper.getLoopbackHost()
   })
 
   await t.test('can use external logger instance', async (t) => {
@@ -90,11 +90,11 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
 
   const interfaces = os.networkInterfaces()
   const ipv6 = Object.keys(interfaces)
-    .filter(name => name.substr(0, 2) === 'lo')
-    .map(name => interfaces[name])
+    .filter((name) => name.substr(0, 2) === 'lo')
+    .map((name) => interfaces[name])
     .reduce((list, set) => list.concat(set), [])
-    .filter(info => info.family === 'IPv6')
-    .map(info => info.address)
+    .filter((info) => info.family === 'IPv6')
+    .map((info) => info.address)
     .shift()
 
   await t.test('Wrap IPv6 address in listening log message', { skip: !ipv6 }, async (t) => {
@@ -141,7 +141,9 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
   await t.test('file option', async (t) => {
     const { file, cleanup } = createTempFile(t)
     // 0600 permissions (read/write for owner only)
-    if (process.env.CITGM) { fs.writeFileSync(file, '', { mode: 0o600 }) }
+    if (process.env.CITGM) {
+      fs.writeFileSync(file, '', { mode: 0o600 })
+    }
 
     const fastify = Fastify({
       logger: { file }
@@ -198,12 +200,24 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
     t.plan(7)
 
     const loggerInstance = {
-      fatal: (msg) => { t.assert.strictEqual(msg, 'fatal') },
-      error: (msg) => { t.assert.strictEqual(msg, 'error') },
-      warn: (msg) => { t.assert.strictEqual(msg, 'warn') },
-      info: (msg) => { t.assert.strictEqual(msg, 'info') },
-      debug: (msg) => { t.assert.strictEqual(msg, 'debug') },
-      trace: (msg) => { t.assert.strictEqual(msg, 'trace') },
+      fatal: (msg) => {
+        t.assert.strictEqual(msg, 'fatal')
+      },
+      error: (msg) => {
+        t.assert.strictEqual(msg, 'error')
+      },
+      warn: (msg) => {
+        t.assert.strictEqual(msg, 'warn')
+      },
+      info: (msg) => {
+        t.assert.strictEqual(msg, 'info')
+      },
+      debug: (msg) => {
+        t.assert.strictEqual(msg, 'debug')
+      },
+      trace: (msg) => {
+        t.assert.strictEqual(msg, 'trace')
+      },
       child: () => loggerInstance
     }
 
@@ -236,20 +250,28 @@ t.test('logger instantiation', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('can use external logger instance with custom serializer', async (t) => {
-    const lines = [['level', 30], ['req', { url: '/foo' }], ['level', 30], ['res', { statusCode: 200 }]]
+    const lines = [
+      ['level', 30],
+      ['req', { url: '/foo' }],
+      ['level', 30],
+      ['res', { statusCode: 200 }]
+    ]
     t.plan(lines.length + 1)
 
     const stream = split(JSON.parse)
-    const loggerInstance = require('pino')({
-      level: 'info',
-      serializers: {
-        req: function (req) {
-          return {
-            url: req.url
+    const loggerInstance = require('pino')(
+      {
+        level: 'info',
+        serializers: {
+          req: function (req) {
+            return {
+              url: req.url
+            }
           }
         }
-      }
-    }, stream)
+      },
+      stream
+    )
 
     const fastify = Fastify({
       loggerInstance

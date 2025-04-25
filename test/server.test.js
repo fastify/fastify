@@ -5,34 +5,28 @@ const Fastify = require('..')
 const sget = require('simple-get').concat
 const undici = require('undici')
 
-test('listen should accept null port', async t => {
+test('listen should accept null port', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await t.assert.doesNotReject(
-    fastify.listen({ port: null })
-  )
+  await t.assert.doesNotReject(fastify.listen({ port: null }))
 })
 
-test('listen should accept undefined port', async t => {
+test('listen should accept undefined port', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await t.assert.doesNotReject(
-    fastify.listen({ port: undefined })
-  )
+  await t.assert.doesNotReject(fastify.listen({ port: undefined }))
 })
 
-test('listen should accept stringified number port', async t => {
+test('listen should accept stringified number port', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  await t.assert.doesNotReject(
-    fastify.listen({ port: '1234' })
-  )
+  await t.assert.doesNotReject(fastify.listen({ port: '1234' }))
 })
 
-test('listen should accept log text resolution function', async t => {
+test('listen should accept log text resolution function', async (t) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -77,11 +71,13 @@ test('Test for hostname and port', (t, end) => {
   })
 
   app.listen({ port: 8000 }, () => {
-    sget('http://localhost:8000/host', () => { end() })
+    sget('http://localhost:8000/host', () => {
+      end()
+    })
   })
 })
 
-test('abort signal', async t => {
+test('abort signal', async (t) => {
   await t.test('listen should not start server', (t, end) => {
     t.plan(2)
     function onClose (instance, done) {
@@ -118,7 +114,7 @@ test('abort signal', async t => {
     t.assert.strictEqual(fastify.server.listening, false)
   })
 
-  await t.test('listen should throw if received invalid signal', t => {
+  await t.test('listen should throw if received invalid signal', (t) => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -129,7 +125,7 @@ test('abort signal', async t => {
       t.assert.fail('should throw')
     } catch (e) {
       t.assert.strictEqual(e.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
-      t.assert.strictEqual(e.message, 'Invalid listen options: \'Invalid options.signal\'')
+      t.assert.strictEqual(e.message, "Invalid listen options: 'Invalid options.signal'")
     }
   })
 })
@@ -146,7 +142,9 @@ test('#5180 - preClose should be called before closing secondary server', async 
 
   fastify.get('/', async (req, reply) => {
     // request will be pending for 1 second to simulate a slow request
-    await new Promise((resolve) => { setTimeout(resolve, 1000) })
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000)
+    })
     return { hello: 'world' }
   })
 
@@ -158,9 +156,8 @@ test('#5180 - preClose should be called before closing secondary server', async 
     for (const addr of addresses) {
       if (addr.family !== mainServerAddress.family) {
         secondaryAddress = addr
-        secondaryAddress.address = secondaryAddress.family === 'IPv6'
-          ? `[${secondaryAddress.address}]`
-          : secondaryAddress.address
+        secondaryAddress.address =
+          secondaryAddress.family === 'IPv6' ? `[${secondaryAddress.address}]` : secondaryAddress.address
         break
       }
     }
@@ -170,13 +167,14 @@ test('#5180 - preClose should be called before closing secondary server', async 
       return
     }
 
-    undici.request(`http://${secondaryAddress.address}:${secondaryAddress.port}/`)
-      .then(
-        () => { t.assert.fail('Request should not succeed') },
-        () => {
-          t.assert.ok(flag)
-        }
-      )
+    undici.request(`http://${secondaryAddress.address}:${secondaryAddress.port}/`).then(
+      () => {
+        t.assert.fail('Request should not succeed')
+      },
+      () => {
+        t.assert.ok(flag)
+      }
+    )
 
     // Close the server while the slow request is pending
     setTimeout(fastify.close, 250)
@@ -184,5 +182,7 @@ test('#5180 - preClose should be called before closing secondary server', async 
 
   // Wait 1000ms to ensure that the test is finished and async operations are
   // completed
-  await new Promise((resolve) => { setTimeout(resolve, 1000) })
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1000)
+  })
 })

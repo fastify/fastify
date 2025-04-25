@@ -1,7 +1,10 @@
 'use strict'
 
 const { test } = require('node:test')
-const fastify = require('..')({ requestTimeout: 5, http: { connectionsCheckingInterval: 1000 } })
+const fastify = require('..')({
+  requestTimeout: 5,
+  http: { connectionsCheckingInterval: 1000 }
+})
 const { connect } = require('node:net')
 
 test('requestTimeout should return 408', (t, done) => {
@@ -12,11 +15,11 @@ test('requestTimeout should return 408', (t, done) => {
   })
 
   fastify.post('/', async function (req, reply) {
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     return reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
+  fastify.listen({ port: 0 }, (err) => {
     if (err) {
       throw err
     }
@@ -26,7 +29,7 @@ test('requestTimeout should return 408', (t, done) => {
 
     socket.write('POST / HTTP/1.1\r\nHost: example.com\r\nConnection-Length: 1\r\n')
 
-    socket.on('data', c => (data = Buffer.concat([data, c])))
+    socket.on('data', (c) => (data = Buffer.concat([data, c])))
     socket.on('end', () => {
       t.assert.strictEqual(
         data.toString('utf-8'),

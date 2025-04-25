@@ -19,7 +19,9 @@ test('http2 HEAD test', async (t) => {
   fastify.all('/', function (req, reply) {
     reply.code(200).send(msg)
   })
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   await fastify.listen({ port: 0 })
 

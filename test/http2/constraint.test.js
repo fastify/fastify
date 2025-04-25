@@ -52,7 +52,9 @@ test('A route supports host constraints under http2 protocol and secure connecti
       reply.code(200).send({ ...beta, hostname: req.hostname })
     }
   })
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   await fastify.listen({ port: 0 })
 

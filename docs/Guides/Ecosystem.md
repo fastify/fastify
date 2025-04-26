@@ -390,6 +390,7 @@ section.
   good Fastify sessions plugin focused on speed.
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage)
   Fastify plugin that exposes a GCP Cloud Storage client instance.
+- [fastify-gpt-swagger](https://github.com/irzix/fastify-gpt-swagger) A minimal Fastify plugin that automatically generates both OpenAPI schemas and AJV validation rules for your routes using GPT.
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown)
   Shutdown Fastify gracefully and asynchronously.
 - [`fastify-grant`](https://github.com/simov/fastify-grant)
@@ -731,7 +732,6 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [fastify-gpt-swagger](https://github.com/irzix/fastify-gpt-swagger) | A minimal Fastify plugin that automatically generates both OpenAPI schemas and AJV validation rules for your routes using GPT.
 
 
 #### [Community Tools](#community-tools)

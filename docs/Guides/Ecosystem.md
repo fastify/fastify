@@ -746,3 +746,6 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
+- [`Jeasx`](https://www.jeasx.dev)
+  A flexible server-rendering framework built on Fastify that leverages asynchronous JSX to simplify web development.
+  

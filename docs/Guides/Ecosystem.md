@@ -390,7 +390,7 @@ section.
   good Fastify sessions plugin focused on speed.
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage)
   Fastify plugin that exposes a GCP Cloud Storage client instance.
-- [`fastify-gpt-swagger`](https://github.com/irzix/fastify-gpt-swagger) A Fastify plugin
+- [`fastify-gpt-swagger`](https://github.com/irzix/fastify-gpt-swagger) A plugin
   automatically generates OpenAPI schemas and validation rules using GPT.
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown)
   Shutdown Fastify gracefully and asynchronously.

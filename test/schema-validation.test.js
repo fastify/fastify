@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
-const { request } = require('undici')
+const { request, Agent } = require('undici')
 
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
@@ -1356,6 +1356,7 @@ test('Schema validation will not be bypass by different content type', async t =
   const address = fastify.listeningOrigin
 
   const correct1 = await request(address, {
+    dispatcher: new Agent({ pipelining: 0 }),
     method: 'POST',
     url: '/',
     headers: {
@@ -1367,6 +1368,7 @@ test('Schema validation will not be bypass by different content type', async t =
   await correct1.body.dump()
 
   const correct2 = await request(address, {
+    dispatcher: new Agent({ pipelining: 0 }),
     method: 'POST',
     url: '/',
     headers: {
@@ -1378,6 +1380,7 @@ test('Schema validation will not be bypass by different content type', async t =
   await correct2.body.dump()
 
   const invalid1 = await request(address, {
+    dispatcher: new Agent({ pipelining: 0 }),
     method: 'POST',
     url: '/',
     headers: {
@@ -1389,6 +1392,7 @@ test('Schema validation will not be bypass by different content type', async t =
   t.equal((await invalid1.body.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 
   const invalid2 = await request(address, {
+    dispatcher: new Agent({ pipelining: 0 }),
     method: 'POST',
     url: '/',
     headers: {
@@ -1400,6 +1404,7 @@ test('Schema validation will not be bypass by different content type', async t =
   t.equal((await invalid2.body.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 
   const invalid3 = await request(address, {
+    dispatcher: new Agent({ pipelining: 0 }),
     method: 'POST',
     url: '/',
     headers: {
@@ -1411,6 +1416,7 @@ test('Schema validation will not be bypass by different content type', async t =
   t.equal((await invalid3.body.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 
   const invalid4 = await request(address, {
+    dispatcher: new Agent({ pipelining: 0 }),
     method: 'POST',
     url: '/',
     headers: {

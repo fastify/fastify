@@ -6,7 +6,7 @@ on:
      - main
      - master
      - next
-     - 'v*'
+     - '*.x'
     paths-ignore:
       - 'docs/**'
       - '*.md'

@@ -740,12 +740,12 @@ middlewares into Fastify plugins
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
+- [`jeasx`](https://www.jeasx.dev)
+  A flexible server-rendering framework built on Fastify that leverages asynchronous JSX to simplify web development.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
   generate JSON Schema from TypeScript interfaces.
 - [`vite-plugin-fastify`](https://github.com/Vanilla-IceCream/vite-plugin-fastify)
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
-- [`Jeasx`](https://www.jeasx.dev)
-  A flexible server-rendering framework built on Fastify that leverages asynchronous JSX to simplify web development.
   

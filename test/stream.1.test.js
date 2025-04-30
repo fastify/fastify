@@ -1,12 +1,11 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const fs = require('node:fs')
 const Fastify = require('../fastify')
 
-test('should respond with a stream', t => {
+test('should respond with a stream', (t, testDone) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -16,23 +15,24 @@ test('should respond with a stream', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
-      t.error(err)
-      t.equal(response.headers['content-type'], undefined)
-      t.equal(response.statusCode, 200)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.headers['content-type'], undefined)
+      t.assert.strictEqual(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
-        t.error(err)
-        t.equal(expected.toString(), data.toString())
+        t.assert.ifError(err)
+        t.assert.strictEqual(expected.toString(), data.toString())
+        testDone()
       })
     })
   })
 })
 
-test('should respond with a stream (error)', t => {
+test('should respond with a stream (error)', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -42,17 +42,18 @@ test('should respond with a stream (error)', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
-      t.error(err)
-      t.equal(response.statusCode, 500)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      testDone()
     })
   })
 })
 
-test('should trigger the onSend hook', t => {
+test('should trigger the onSend hook', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -61,7 +62,7 @@ test('should trigger the onSend hook', t => {
   })
 
   fastify.addHook('onSend', (req, reply, payload, done) => {
-    t.ok(payload._readableState)
+    t.assert.ok(payload._readableState)
     reply.header('Content-Type', 'application/javascript')
     done()
   })
@@ -69,14 +70,15 @@ test('should trigger the onSend hook', t => {
   fastify.inject({
     url: '/'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['content-type'], 'application/javascript')
-    t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.headers['content-type'], 'application/javascript')
+    t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
     fastify.close()
+    testDone()
   })
 })
 
-test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', t => {
+test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -87,22 +89,23 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
   let counter = 0
   fastify.addHook('onSend', (req, reply, payload, done) => {
     if (counter === 0) {
-      t.ok(payload._readableState)
+      t.assert.ok(payload._readableState)
     } else if (counter === 1) {
       const error = JSON.parse(payload)
-      t.equal(error.statusCode, 500)
+      t.assert.strictEqual(error.statusCode, 500)
     }
     counter++
     done()
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
-      t.error(err)
-      t.equal(response.statusCode, 500)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      testDone()
     })
   })
 })

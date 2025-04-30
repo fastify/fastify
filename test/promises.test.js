@@ -1,8 +1,11 @@
 'use strict'
 
-const { test, before, after } = require('node:test')
+const { test } = require('node:test')
+const assert = require('node:assert')
+const sget = require('simple-get').concat
 const fastify = require('..')()
-const sgetAsync = require('./sget-async')
+
+test.after(() => fastify.close())
 
 const opts = {
   schema: {
@@ -20,7 +23,7 @@ const opts = {
 }
 
 fastify.get('/return', opts, function (req, reply) {
-  const promise = new Promise((resolve) => {
+  const promise = new Promise((resolve, reject) => {
     resolve({ hello: 'world' })
   })
   return promise
@@ -59,77 +62,85 @@ fastify.get('/return-reply', opts, function (req, reply) {
   return reply.send({ hello: 'world' })
 })
 
-// Setup Fastify to listen before tests
-before(async () => {
-  try {
-    await fastify.listen({ port: 0 })
-  } catch (err) {
-    throw new Error('Failed to start Fastify server')
-  }
-})
+fastify.listen({ port: 0 }, err => {
+  assert.ifError(err)
 
-// Cleanup after all tests
-after(() => {
-  fastify.close()
-})
-
-test('shorthand - sget return promise es6 get', async (t) => {
-  const { response, body } = await sgetAsync({
-    method: 'GET',
-    url: `http://localhost:${fastify.server.address().port}/return`
+  test('shorthand - sget return promise es6 get', (t, done) => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/return'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      done()
+    })
   })
 
-  t.assert.strictEqual(response.statusCode, 200)
-  t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-})
-
-test('shorthand - sget promise es6 get return error', async (t) => {
-  const { response } = await sgetAsync({
-    method: 'GET',
-    url: `http://localhost:${fastify.server.address().port}/return-error`
+  test('shorthand - sget promise es6 get return error', (t, done) => {
+    t.plan(2)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/return-error'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      done()
+    })
   })
 
-  t.assert.strictEqual(response.statusCode, 500)
-})
-
-test('sget promise double send', async (t) => {
-  const { response, body } = await sgetAsync({
-    method: 'GET',
-    url: `http://localhost:${fastify.server.address().port}/double`
+  test('sget promise double send', (t, done) => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/double'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: '42' })
+      done()
+    })
   })
 
-  t.assert.strictEqual(response.statusCode, 200)
-  t.assert.deepStrictEqual(JSON.parse(body), { hello: '42' })
-})
-
-test('thenable', async (t) => {
-  const { response, body } = await sgetAsync({
-    method: 'GET',
-    url: `http://localhost:${fastify.server.address().port}/thenable`
+  test('thenable', (t, done) => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/thenable'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      done()
+    })
   })
 
-  t.assert.strictEqual(response.statusCode, 200)
-  t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-})
-
-test('thenable (error)', async (t) => {
-  const { response } = await sgetAsync({
-    method: 'GET',
-    url: `http://localhost:${fastify.server.address().port}/thenable-error`
+  test('thenable (error)', (t, done) => {
+    t.plan(2)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/thenable-error'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      done()
+    })
   })
 
-  t.assert.strictEqual(response.statusCode, 500)
-})
-
-test('return-reply', async (t) => {
-  const { response, body } = await sgetAsync({
-    method: 'GET',
-    url: `http://localhost:${fastify.server.address().port}/return-reply`
+  test('return-reply', (t, done) => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/return-reply'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      done()
+    })
   })
-
-  t.assert.strictEqual(response.statusCode, 200)
-  t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })

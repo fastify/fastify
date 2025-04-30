@@ -172,7 +172,7 @@
     "ajv-i18n": "^4.2.0",
     "ajv-merge-patch": "^5.0.1",
     "autocannon": "^8.0.0",
-    "borp": "^0.19.0",
+    "borp": "^0.20.0",
     "branch-comparer": "^1.1.0",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",

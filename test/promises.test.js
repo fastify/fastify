@@ -1,9 +1,11 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
+const assert = require('node:assert')
 const sget = require('simple-get').concat
 const fastify = require('..')()
+
+test.after(() => fastify.close())
 
 const opts = {
   schema: {
@@ -61,80 +63,78 @@ fastify.get('/return-reply', opts, function (req, reply) {
 })
 
 fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+  assert.ifError(err)
 
-  test('shorthand - sget return promise es6 get', t => {
-    t.plan(4)
+  test('shorthand - sget return promise es6 get', (t, testDone) => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/return'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      testDone()
     })
   })
 
-  test('shorthand - sget promise es6 get return error', t => {
-    t.plan(2)
+  test('shorthand - sget promise es6 get return error', (t, testDone) => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/return-error'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      testDone()
     })
   })
 
-  test('sget promise double send', t => {
-    t.plan(3)
-
+  test('sget promise double send', (t, testDone) => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/double'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { hello: '42' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: '42' })
+      testDone()
     })
   })
 
-  test('thenable', t => {
-    t.plan(4)
+  test('thenable', (t, testDone) => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/thenable'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      testDone()
     })
   })
 
-  test('thenable (error)', t => {
-    t.plan(2)
+  test('thenable (error)', (t, testDone) => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/thenable-error'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      testDone()
     })
   })
 
-  test('return-reply', t => {
-    t.plan(4)
+  test('return-reply', (t, testDone) => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/return-reply'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      testDone()
     })
   })
 })

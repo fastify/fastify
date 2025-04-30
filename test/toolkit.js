@@ -1,5 +1,25 @@
 'use strict'
 
+exports.sequence = function (steps) {
+  let index = 0
+
+  function next (stop) {
+    if (index >= steps.length) {
+      if (stop) {
+        stop()
+      }
+
+      return
+    }
+
+    const step = steps[index++]
+
+    step(next)
+  }
+
+  next()
+}
+
 exports.waitForCb = function (options) {
   let count = null
   let done = false

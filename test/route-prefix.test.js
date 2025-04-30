@@ -1,10 +1,10 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
+const { sequence } = require('./toolkit')
 
-test('Prefix options should add a prefix for all the routes inside a register / 1', t => {
+test('Prefix options should add a prefix for all the routes inside a register / 1', (t, testDone) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -27,32 +27,33 @@ test('Prefix options should add a prefix for all the routes inside a register / 
     done()
   }, { prefix: '/v1' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/first'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/first' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/first'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/first' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/v2/first'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/v2/first' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/first'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/first' })
+      done()
+    }), (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/first'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/first' })
+      done()
+    }), (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/v2/first'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/v2/first' })
+      done(testDone)
+    })
+  ])
 })
 
-test('Prefix options should add a prefix for all the routes inside a register / 2', t => {
+test('Prefix options should add a prefix for all the routes inside a register / 2', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -67,24 +68,27 @@ test('Prefix options should add a prefix for all the routes inside a register / 
     done()
   }, { prefix: '/v1' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/first'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/first' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/second'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/second' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/first'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/first' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/second'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/second' })
+      done(testDone)
+    })
+  ])
 })
 
-test('Prefix options should add a prefix for all the chained routes inside a register / 3', t => {
+test('Prefix options should add a prefix for all the chained routes inside a register / 3', (t, testDone) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -100,24 +104,27 @@ test('Prefix options should add a prefix for all the chained routes inside a reg
     done()
   }, { prefix: '/v1' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/first'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/first' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/second'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/second' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/first'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/first' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/second'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/second' })
+      done(testDone)
+    })
+  ])
 })
 
-test('Prefix should support parameters as well', t => {
+test('Prefix should support parameters as well', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -132,12 +139,13 @@ test('Prefix should support parameters as well', t => {
     method: 'GET',
     url: '/v1/param/hello'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { id: 'param' })
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { id: 'param' })
+    testDone()
   })
 })
 
-test('Prefix should support /', t => {
+test('Prefix should support /', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -152,12 +160,13 @@ test('Prefix should support /', t => {
     method: 'GET',
     url: '/v1'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    testDone()
   })
 })
 
-test('Prefix without /', t => {
+test('Prefix without /', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -172,12 +181,13 @@ test('Prefix without /', t => {
     method: 'GET',
     url: '/v1'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    testDone()
   })
 })
 
-test('Prefix with trailing /', t => {
+test('Prefix with trailing /', (t, testDone) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -199,32 +209,35 @@ test('Prefix with trailing /', t => {
     done()
   }, { prefix: '/v1/' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/route1'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world1' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/route2'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world2' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/inner/route3'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world3' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/route1'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world1' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/route2'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world2' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/inner/route3'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world3' })
+      done(testDone)
+    })
+  ])
 })
 
-test('Prefix works multiple levels deep', t => {
+test('Prefix works multiple levels deep', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -248,12 +261,13 @@ test('Prefix works multiple levels deep', t => {
     method: 'GET',
     url: '/v1/v2/v3'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    testDone()
   })
 })
 
-test('Different register - encapsulation check', t => {
+test('Different register - encapsulation check', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -281,24 +295,27 @@ test('Different register - encapsulation check', t => {
     done()
   }, { prefix: '/v3' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/v2'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v1/v2' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v3/v4'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { route: '/v3/v4' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/v2'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v1/v2' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v3/v4'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/v3/v4' })
+      done(testDone)
+    })
+  ])
 })
 
-test('Can retrieve prefix within encapsulated instances', t => {
+test('Can retrieve prefix within encapsulated instances', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -317,24 +334,27 @@ test('Can retrieve prefix within encapsulated instances', t => {
     done()
   }, { prefix: '/v1' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/one'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '/v1')
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/v1/v2/two'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '/v1/v2')
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/one'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(res.payload, '/v1')
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/v1/v2/two'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(res.payload, '/v1/v2')
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/ with a / route', t => {
+test('matches both /prefix and /prefix/ with a / route', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -346,24 +366,27 @@ test('matches both /prefix and /prefix/ with a / route', t => {
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('prefix "/prefix/" does not match "/prefix" with a / route', t => {
+test('prefix "/prefix/" does not match "/prefix" with a / route', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -375,24 +398,27 @@ test('prefix "/prefix/" does not match "/prefix" with a / route', t => {
     done()
   }, { prefix: '/prefix/' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(res.statusCode, 404)
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true', t => {
+test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true
@@ -406,24 +432,27 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/ with a / route - ignoreDuplicateSlashes: true', t => {
+test('matches both /prefix and /prefix/ with a / route - ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreDuplicateSlashes: true
@@ -437,24 +466,27 @@ test('matches both /prefix and /prefix/ with a / route - ignoreDuplicateSlashes:
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: false', t => {
+test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -473,24 +505,27 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: false', t => {
+test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreDuplicateSlashes: false
@@ -509,24 +544,27 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true, ignoreDuplicateSlashes: true', t => {
+test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true, ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -541,24 +579,27 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true, ignoreDuplicateSlashes: false', t => {
+test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true, ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -573,24 +614,27 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done(testDone)
+    })
+  ])
 })
 
-test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "both" (default), ignoreTrailingSlash: true', t => {
+test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "both" (default), ignoreTrailingSlash: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
     ignoreTrailingSlash: true
@@ -612,16 +656,17 @@ test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "
     method: 'GET',
     url: '/prefix//'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Not Found',
       message: 'Route GET:/prefix// not found',
       statusCode: 404
     })
+    testDone()
   })
 })
 
-test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: true', t => {
+test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
     ignoreDuplicateSlashes: true
@@ -643,40 +688,13 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
     method: 'GET',
     url: '/prefix//'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    testDone()
   })
 })
 
-test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: true, ignoreDuplicateSlashes: true', t => {
-  t.plan(2)
-  const fastify = Fastify({
-    ignoreTrailingSlash: true,
-    ignoreDuplicateSlashes: true
-  })
-
-  fastify.register(function (fastify, opts, done) {
-    fastify.route({
-      method: 'GET',
-      url: '/',
-      handler: (req, reply) => {
-        reply.send({ hello: 'world' })
-      }
-    })
-
-    done()
-  }, { prefix: '/prefix/' })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix//'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-})
-
-test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: true', t => {
+test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: true, ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -699,12 +717,42 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
     method: 'GET',
     url: '/prefix//'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    testDone()
   })
 })
 
-test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreTrailingSlash: false', t => {
+test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: true', (t, testDone) => {
+  t.plan(2)
+  const fastify = Fastify({
+    ignoreTrailingSlash: true,
+    ignoreDuplicateSlashes: true
+  })
+
+  fastify.register(function (fastify, opts, done) {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    done()
+  }, { prefix: '/prefix/' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix//'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    testDone()
+  })
+})
+
+test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreTrailingSlash: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -723,24 +771,27 @@ test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ig
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(JSON.parse(res.payload).statusCode, 404)
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload).statusCode, 404)
+      done(testDone)
+    })
+  ])
 })
 
-test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreDuplicateSlashes: false', t => {
+test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreDuplicateSlashes: false
@@ -759,24 +810,27 @@ test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ig
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(JSON.parse(res.payload).statusCode, 404)
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload).statusCode, 404)
+      done(testDone)
+    })
+  ])
 })
 
-test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", ignoreTrailingSlash: false', t => {
+test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", ignoreTrailingSlash: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -795,21 +849,24 @@ test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", igno
     done()
   }, { prefix: '/prefix' })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/prefix'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(JSON.parse(res.payload).statusCode, 404)
-  })
+  sequence([
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix/'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+      done()
+    }),
+    (done) => fastify.inject({
+      method: 'GET',
+      url: '/prefix'
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload).statusCode, 404)
+      done(testDone)
+    })
+  ])
 })
 
 test('calls onRoute only once when prefixing', async t => {
@@ -839,5 +896,5 @@ test('calls onRoute only once when prefixing', async t => {
 
   await fastify.ready()
 
-  t.same(onRouteCalled, 1)
+  t.assert.deepStrictEqual(onRouteCalled, 1)
 })

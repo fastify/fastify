@@ -146,22 +146,24 @@ test('nested plugins awaited', (t, testDone) => {
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
-      testDone()
-    })
+    sequence([
+      done => sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      }, (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.deepStrictEqual(body.toString(), 'I am child 1')
+        done()
+      }),
+      done => sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      }, (err, response, body) => {
+        t.assert.ifError(err)
+        t.assert.deepStrictEqual(body.toString(), 'I am child 2')
+        done(testDone)
+      })
+    ])
   })
 })
 

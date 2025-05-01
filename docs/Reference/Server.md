@@ -1574,6 +1574,18 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+
+⚠️ Calling setErrorHandler more than once in the same scope will silently override the previous handler. Don't do this:
+```js
+app.setErrorHandler(function freeSomeResources () {
+  // Never executed, memory leaks
+})
+
+app.setErrorHandler(function anotherErrorHandler () {
+  // Overrides the previous handler
+})
+```
+
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>
 

@@ -31,7 +31,8 @@ const {
   kErrorHandler,
   kKeepAliveConnections,
   kChildLoggerFactory,
-  kGenReqId
+  kGenReqId,
+  kErrorHandlerAlreadySet
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -72,6 +73,7 @@ const {
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_ALREADY_SET,
   FST_ERR_ROUTE_METHOD_INVALID
 } = errorCodes
 
@@ -237,6 +239,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
+    [kErrorHandlerAlreadySet]: false,
     [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -858,6 +861,11 @@ function fastify (options) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
+    if (this[kErrorHandlerAlreadySet]) {
+      throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
+    }
+
+    this[kErrorHandlerAlreadySet] = true
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }

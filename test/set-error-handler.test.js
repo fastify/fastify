@@ -30,8 +30,19 @@ test('setErrorHandler should throw if called more than once in the same scope', 
   const fastify = Fastify()
 
   fastify.setErrorHandler(() => {})
+  t.assert.throws(() => fastify.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
+})
 
-  t.assert.throws(() => {
-    fastify.setErrorHandler(() => {})
-  }, new FST_ERR_ERROR_HANDLER_ALREADY_SET())
+test('setErrorHandler should throw if called more than once in the same scope 2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.register(async (child) => {
+    child.setErrorHandler(() => {})
+    t.assert.throws(() => child.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
+  })
+
+  await fastify.ready()
 })

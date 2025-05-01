@@ -1340,7 +1340,7 @@ test('chain of decorators on Reply', async (t) => {
   }
 })
 
-test('getDecorator should return the decorator', t => {
+test('getDecorator should return the decorator', (t, done) => {
   t.plan(12)
   const fastify = Fastify()
 
@@ -1348,10 +1348,10 @@ test('getDecorator should return the decorator', t => {
   fastify.decorateRequest('root', 'from_root_request')
   fastify.decorateReply('root', 'from_root_reply')
 
-  t.equal(fastify.getDecorator('root'), 'from_root')
+  t.assert.strictEqual(fastify.getDecorator('root'), 'from_root')
   fastify.get('/', async (req, res) => {
-    t.equal(req.getDecorator('root'), 'from_root_request')
-    t.equal(res.getDecorator('root'), 'from_root_reply')
+    t.assert.strictEqual(req.getDecorator('root'), 'from_root_request')
+    t.assert.strictEqual(res.getDecorator('root'), 'from_root_reply')
 
     res.send()
   })
@@ -1359,32 +1359,33 @@ test('getDecorator should return the decorator', t => {
   fastify.register((child) => {
     child.decorate('child', 'from_child')
 
-    t.equal(child.getDecorator('child'), 'from_child')
-    t.equal(child.getDecorator('root'), 'from_root')
+    t.assert.strictEqual(child.getDecorator('child'), 'from_child')
+    t.assert.strictEqual(child.getDecorator('root'), 'from_root')
 
     child.get('/child', async (req, res) => {
-      t.equal(req.getDecorator('root'), 'from_root_request')
-      t.equal(res.getDecorator('root'), 'from_root_reply')
+      t.assert.strictEqual(req.getDecorator('root'), 'from_root_request')
+      t.assert.strictEqual(res.getDecorator('root'), 'from_root_reply')
 
       res.send()
     })
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true)
     })
 
     fastify.inject({ url: '/child' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true)
+      done()
     })
   })
 })
 
-test('getDecorator should return function decorators with expected binded context', t => {
+test('getDecorator should return function decorators with expected binded context', (t, done) => {
   t.plan(12)
   const fastify = Fastify()
 
@@ -1403,49 +1404,48 @@ test('getDecorator should return function decorators with expected binded contex
       return this
     })
 
-    t.same(child.getDecorator('a')(), child)
+    t.assert.deepEqual(child.getDecorator('a')(), child)
     child.get('/child', async (req, res) => {
-      t.same(req.getDecorator('b')(), req)
-      t.same(res.getDecorator('c')(), res)
+      t.assert.deepEqual(req.getDecorator('b')(), req)
+      t.assert.deepEqual(res.getDecorator('c')(), res)
 
       res.send()
     })
   })
 
-  t.same(fastify.getDecorator('a')(), fastify)
+  t.assert.deepEqual(fastify.getDecorator('a')(), fastify)
   fastify.get('/', async (req, res) => {
-    t.same(req.getDecorator('b')(), req)
-    t.same(res.getDecorator('c')(), res)
-
+    t.assert.deepEqual(req.getDecorator('b')(), req)
+    t.assert.deepEqual(res.getDecorator('c')(), res)
     res.send()
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
     })
 
     fastify.inject({ url: '/child' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
+      done()
     })
-
-    t.pass()
+    t.assert.ok(true, 'passed')
   })
 })
 
-test('getDecorator should only return decorators existing in the scope', t => {
+test('getDecorator should only return decorators existing in the scope', (t, done) => {
   t.plan(9)
 
   function assertsThrowOnUndeclaredDecorator (notDecorated, instanceType) {
     try {
       notDecorated.getDecorator('foo')
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
-      t.same(e.message, `No decorator 'foo' has been declared on ${instanceType}.`)
+      t.assert.deepEqual(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.assert.deepEqual(e.message, `No decorator 'foo' has been declared on ${instanceType}.`)
     }
   }
 
@@ -1464,17 +1464,18 @@ test('getDecorator should only return decorators existing in the scope', t => {
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
 
     assertsThrowOnUndeclaredDecorator(fastify, 'instance')
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
+      done()
     })
   })
 })
 
-test('Request.setDecorator should update an existing decorator', t => {
+test('Request.setDecorator should update an existing decorator', (t, done) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -1487,25 +1488,26 @@ test('Request.setDecorator should update an existing decorator', t => {
     })
     try {
       req.setDecorator('foo', { user: 'Jean' })
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
-      t.same(e.message, "No decorator 'foo' has been declared on request.")
+      t.assert.deepEqual(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.assert.deepEqual(e.message, "No decorator 'foo' has been declared on request.")
     }
   })
 
   fastify.get('/', async (req, res) => {
-    t.strictSame(req.getDecorator('session'), { user: 'Jean' })
-    t.same(req.getDecorator('utility')(), req)
+    t.assert.deepEqual(req.getDecorator('session'), { user: 'Jean' })
+    t.assert.deepEqual(req.getDecorator('utility')(), req)
 
     res.send()
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
+      done()
     })
   })
 })

@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const {
-  FST_ERR_INSTANCE_ALREADY_LISTENING,
+  FST_ERR_INSTANCE_ALREADY_STARTED,
   FST_ERR_ROUTE_METHOD_INVALID
 } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
@@ -284,7 +284,7 @@ test('route', async t => {
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
         }
-      }), new FST_ERR_INSTANCE_ALREADY_LISTENING('Cannot add route!'))
+      }), new FST_ERR_INSTANCE_ALREADY_STARTED('Cannot add route!'))
 
       done()
     })

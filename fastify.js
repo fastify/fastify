@@ -67,7 +67,7 @@ const {
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
-  FST_ERR_INSTANCE_ALREADY_LISTENING,
+  FST_ERR_INSTANCE_ALREADY_STARTED,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
@@ -536,7 +536,7 @@ function fastify (options) {
   return fastify
 
   function throwIfAlreadyStarted (msg) {
-    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
+    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_STARTED(msg)
   }
 
   // HTTP injection handling

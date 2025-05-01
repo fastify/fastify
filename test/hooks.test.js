@@ -12,7 +12,7 @@ const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
 const { connect } = require('node:net')
 const { sleep, getServerUrl } = require('./helper')
-const { sequence } = require('./toolkit.js')
+const { sequence, waitForCb } = require('./toolkit.js')
 
 process.removeAllListeners('warning')
 
@@ -3520,10 +3520,14 @@ test('onRequestAbort should be triggered', (t, testDone) => {
   t.plan(7)
   t.after(() => fastify.close())
 
+  const completion = waitForCb({ steps: 2 })
+  completion.patience.then(testDone)
+
   fastify.addHook('onRequestAbort', function (req, done) {
     t.assert.strictEqual(++order, 1, 'called in hook')
     t.assert.ok(req.pendingResolve, 'request has pendingResolve')
     req.pendingResolve()
+    completion.stepIn()
     done()
   })
 
@@ -3556,6 +3560,7 @@ test('onRequestAbort should be triggered', (t, testDone) => {
     },
     async onRequestAbort (req) {
       t.assert.strictEqual(++order, 2, 'called in route')
+      completion.stepIn()
     }
   })
 
@@ -3565,8 +3570,6 @@ test('onRequestAbort should be triggered', (t, testDone) => {
     const socket = connect(fastify.server.address().port)
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
-
-    socket.on('close', testDone)
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3580,9 +3583,13 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
   t.plan(6)
   t.after(() => fastify.close())
 
+  const completion = waitForCb({ steps: 2 })
+  completion.patience.then(testDone)
+
   fastify.addHook('onRequestAbort', function (req, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.deepStrictEqual(this.pluginName, child.pluginName)
+    completion.stepIn()
     done()
   })
 
@@ -3592,6 +3599,7 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
     fastify.addHook('onRequestAbort', async function (req) {
       t.assert.strictEqual(++order, 2, 'called in child')
       t.assert.deepStrictEqual(this.pluginName, child.pluginName)
+      completion.stepIn()
     })
 
     child.route({
@@ -3614,8 +3622,6 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    socket.on('close', testDone)
-
     sleep(500).then(() => socket.destroy())
   })
 })
@@ -3627,7 +3633,10 @@ test('onRequestAbort should handle errors / 1', (t, testDone) => {
   t.after(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
-    process.nextTick(() => t.assert.ok('should pass'))
+    process.nextTick(() => {
+      t.assert.ok('should pass')
+      testDone()
+    })
     done(new Error('KABOOM!'))
   })
 
@@ -3647,8 +3656,6 @@ test('onRequestAbort should handle errors / 1', (t, testDone) => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    socket.on('close', testDone)
-
     sleep(500).then(() => socket.destroy())
   })
 })
@@ -3660,7 +3667,10 @@ test('onRequestAbort should handle errors / 2', (t, testDone) => {
   t.after(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
-    process.nextTick(() => t.assert.ok('should pass'))
+    process.nextTick(() => {
+      t.assert.ok('should pass')
+      testDone()
+    })
     throw new Error('KABOOM!')
   })
 
@@ -3679,8 +3689,6 @@ test('onRequestAbort should handle errors / 2', (t, testDone) => {
     const socket = connect(fastify.server.address().port)
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
-
-    socket.on('close', testDone)
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3693,7 +3701,10 @@ test('onRequestAbort should handle async errors / 1', (t, testDone) => {
   t.after(() => fastify.close())
 
   fastify.addHook('onRequestAbort', async function (req) {
-    process.nextTick(() => t.assert.ok('should pass'))
+    process.nextTick(() => {
+      t.assert.ok('should pass')
+      testDone()
+    })
     throw new Error('KABOOM!')
   })
 
@@ -3713,8 +3724,6 @@ test('onRequestAbort should handle async errors / 1', (t, testDone) => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    socket.on('close', testDone)
-
     sleep(500).then(() => socket.destroy())
   })
 })
@@ -3726,7 +3735,10 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
   t.after(() => fastify.close())
 
   fastify.addHook('onRequestAbort', async function (req) {
-    process.nextTick(() => t.assert.ok('should pass'))
+    process.nextTick(() => {
+      t.assert.ok('should pass')
+      testDone()
+    })
 
     return Promise.reject()
   })
@@ -3746,8 +3758,6 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
     const socket = connect(fastify.server.address().port)
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
-
-    socket.on('close', testDone)
 
     sleep(500).then(() => socket.destroy())
   })

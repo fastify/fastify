@@ -5,7 +5,7 @@ on:
     branches:
      - main
      - next
-     - 'v*'
+     - '*.x'
     paths-ignore:
       - 'docs/**'
       - '*.md'

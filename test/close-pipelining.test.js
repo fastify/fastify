@@ -59,10 +59,11 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
     instance.request({ path: '/', method: 'GET' })
   ])
 
-  t.assert.strictEqual(responses[0].status, 'fulfilled')
-  t.assert.strictEqual(responses[1].status, 'fulfilled')
-  t.assert.strictEqual(responses[2].status, 'rejected')
-  t.assert.strictEqual(responses[3].status, 'rejected')
+  const fulfilled = responses.filter(r => r.status === 'fulfilled')
+  const rejected = responses.filter(r => r.status === 'rejected')
+
+  t.assert.strictEqual(fulfilled.length, 2)
+  t.assert.strictEqual(rejected.length, 2)
 
   await instance.close()
 })

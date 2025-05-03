@@ -15,7 +15,8 @@ before(async function () {
   [localhost] = await helper.getLoopbackHost()
 })
 
-test('onListen should not be processed when .ready() is called', t => {
+test('onListen should not be processed when .ready() is called', (t, testDone) => {
+  t.plan(1)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -24,7 +25,10 @@ test('onListen should not be processed when .ready() is called', t => {
     done()
   })
 
-  fastify.ready(err => t.assert.ifError(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
 })
 
 test('localhost onListen should be called in order', (t, testDone) => {

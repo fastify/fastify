@@ -151,9 +151,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-  options.allowErrorHandlerOverride = options.allowErrorHandlerOverride !== undefined
-    ? options.allowErrorHandlerOverride
-    : defaultInitOptions.allowErrorHandlerOverride
+  options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
 

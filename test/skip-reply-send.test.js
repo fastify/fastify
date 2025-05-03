@@ -259,12 +259,11 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       await Promise.race([
         app.inject({ method: 'GET', url: '/' }),
         new Promise((resolve, reject) => setTimeout(resolve, 1000))
-      ]).then((err, res) => {
-        t.assert.ifError(err)
-        if (hookOrHandler === 'handler') {
-          t.assert.strictEqual(errorSeen, true)
-        }
-      })
+      ])
+
+      if (hookOrHandler === 'handler') {
+        t.assert.strictEqual(errorSeen, true)
+      }
     })
 
     test('Calling reply.send() after hijacking logs a warning', async (t) => {
@@ -304,10 +303,9 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       await Promise.race([
         app.inject({ method: 'GET', url: '/' }),
         new Promise((resolve, reject) => setTimeout(resolve, 1000))
-      ]).then((err, res) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(errorSeen, true)
-      })
+      ])
+
+      t.assert.strictEqual(errorSeen, true)
     })
   })
 }

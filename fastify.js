@@ -151,6 +151,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.allowErrorHandlerOverride = options.allowErrorHandlerOverride || defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -861,7 +862,7 @@ function fastify (options) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
-    if (this[kErrorHandlerAlreadySet]) {
+    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
     }
 

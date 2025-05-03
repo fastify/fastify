@@ -46,3 +46,22 @@ test('setErrorHandler should throw if called more than once in the same scope 2'
 
   await fastify.ready()
 })
+
+test('setErrorHandler can be overriden if allowErrorHandlerOverride is set to true', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({
+    allowErrorHandlerOverride: true
+  })
+  t.after(() => fastify.close())
+
+  fastify.register(async (child) => {
+    child.setErrorHandler(() => {})
+    t.assert.doesNotThrow(() => child.setErrorHandler(() => {}))
+  })
+
+  fastify.setErrorHandler(() => {})
+  t.assert.doesNotThrow(() => fastify.setErrorHandler(() => {}))
+
+  await fastify.ready()
+})

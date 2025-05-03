@@ -1575,19 +1575,20 @@ if (statusCode >= 500) {
 }
 ```
 
-⚠️ Avoid calling setErrorHandler multiple times in the same scope.
-Only the last handler will take effect, and previous ones will be silently overridden.
+⚠ Warning:
+> Avoid calling setErrorHandler multiple times in the same scope.
+> Only the last handler will take effect, and previous ones will be silently overridden.
 
-Incorrect usage:
-```js
-app.setErrorHandler(function freeSomeResources () {
-  // Never executed, memory leaks
-})
-
-app.setErrorHandler(function anotherErrorHandler () {
-  // Overrides the previous handler
-})
-```
+> Incorrect usage:
+> ```js
+> app.setErrorHandler(function freeSomeResources () {
+>   // Never executed, memory leaks
+> })
+> 
+> app.setErrorHandler(function anotherErrorHandler () {
+>   // Overrides the previous handler
+> })
+> ```
 
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>

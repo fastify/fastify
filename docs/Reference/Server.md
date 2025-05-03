@@ -1575,8 +1575,10 @@ if (statusCode >= 500) {
 }
 ```
 
-⚠️ Calling setErrorHandler more than once in the same scope will 
-silently override the previous handler. Don't do this:
+⚠️ Avoid calling setErrorHandler multiple times in the same scope.
+Only the last handler will take effect, and previous ones will be silently overridden.
+
+Incorrect usage:
 ```js
 app.setErrorHandler(function freeSomeResources () {
   // Never executed, memory leaks

@@ -1575,10 +1575,10 @@ if (statusCode >= 500) {
 }
 ```
 
-⚠ Warning:
+> ⚠ Warning:
 > Avoid calling setErrorHandler multiple times in the same scope.
 > Only the last handler will take effect, and previous ones will be silently overridden.
-
+>
 > Incorrect usage:
 > ```js
 > app.setErrorHandler(function freeSomeResources () {

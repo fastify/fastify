@@ -2,10 +2,8 @@
 
 const VERSION = '5.3.3'
 
-const Avvio = require('avvio')
 const http = require('node:http')
 const diagnostics = require('node:diagnostics_channel')
-let lightMyRequest
 
 const {
   kAvvioBoot,
@@ -18,7 +16,6 @@ const {
   kLogSerializers,
   kHooks,
   kSchemaController,
-  kRequestAcceptVersion,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -41,14 +38,13 @@ const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
+const { Hooks, supportedHooks, addHook } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/pluginUtils')
 const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-const override = require('./lib/pluginOverride')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
@@ -68,7 +64,6 @@ const {
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
   FST_ERR_INSTANCE_ALREADY_LISTENING,
-  FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
@@ -76,6 +71,10 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+const setupInject = require('./lib/setup/setupInject.js')
+const setupAvvio = require('./lib/setup/setupAvvio.js')
+const setupReady = require('./lib/setup/setupReady.js')
+const setupClientErrorHandler = require('./lib/setup/setupClientErrorHandler.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -148,17 +147,18 @@ function fastify (options) {
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
-  options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
 
   const initialConfig = getSecuredInitialConfig(options)
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
+  // 404 router, used for handling encapsulated 404 handlers
+  const fourOhFour = build404(options)
+
   // Default router
   const router = buildRouting({
     config: {
-      defaultRoute,
       onBadUrl,
       constraints: options.constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
@@ -171,9 +171,6 @@ function fastify (options) {
       useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
     }
   })
-
-  // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = build404(options)
 
   // HTTP server and its handler
   const httpHandler = wrapRouting(router, options)
@@ -298,8 +295,11 @@ function fastify (options) {
     // type provider
     withTypeProvider,
     // hooks
-    addHook,
-    // schemas
+    addHook: function _addHook (name, fn) {
+      throwIfAlreadyStarted('Cannot call "addHook"!')
+      return addHook.call(this, name, fn)
+    },
+    // wrapper that we expose to the user for schemas handling
     addSchema,
     getSchema: schemaController.getSchema.bind(schemaController),
     getSchemas: schemaController.getSchemas.bind(schemaController),
@@ -346,7 +346,7 @@ function fastify (options) {
     getDecorator: decorator.getInstanceDecorator,
     addHttpMethod,
     // fake http injection
-    inject,
+    inject: null,
     // pretty print of the registered routes
     printRoutes,
     // custom error handling
@@ -424,6 +424,13 @@ function fastify (options) {
     }
   })
 
+  // HTTP injection handling
+  // If the server is not ready yet, this
+  // utility will automatically force it.
+  fastify.inject = setupInject(fastify, {
+    httpHandler
+  })
+
   if (options.schemaErrorFormatter) {
     validateSchemaErrorFormatter(options.schemaErrorFormatter)
     fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
@@ -436,68 +443,14 @@ function fastify (options) {
   // - ready
   // - onClose
   // - close
-
-  const avvioPluginTimeout = Number(options.pluginTimeout)
-  const avvio = Avvio(fastify, {
-    autostart: false,
-    timeout: isNaN(avvioPluginTimeout) === false ? avvioPluginTimeout : defaultInitOptions.pluginTimeout,
-    expose: {
-      use: 'register'
-    }
+  const avvio = setupAvvio(fastify, {
+    options,
+    defaultInitOptions,
+    forceCloseConnections,
+    serverHasCloseAllConnections,
+    router
   })
-  // Override to allow the plugin encapsulation
-  avvio.override = override
-  avvio.on('start', () => (fastify[kState].started = true))
-  fastify[kAvvioBoot] = fastify.ready // the avvio ready function
-  fastify.ready = ready // overwrite the avvio ready function
-  fastify.printPlugins = avvio.prettyPrint.bind(avvio)
-
-  // cache the closing value, since we are checking it in an hot path
-  avvio.once('preReady', () => {
-    fastify.onClose((instance, done) => {
-      fastify[kState].closing = true
-      router.closeRoutes()
-
-      hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
-        if (fastify[kState].listening) {
-          /* istanbul ignore next: Cannot test this without Node.js core support */
-          if (forceCloseConnections === 'idle') {
-            // Not needed in Node 19
-            instance.server.closeIdleConnections()
-            /* istanbul ignore next: Cannot test this without Node.js core support */
-          } else if (serverHasCloseAllConnections && forceCloseConnections) {
-            instance.server.closeAllConnections()
-          } else if (forceCloseConnections === true) {
-            for (const conn of fastify[kKeepAliveConnections]) {
-              // We must invoke the destroy method instead of merely unreffing
-              // the sockets. If we only unref, then the callback passed to
-              // `fastify.close` will never be invoked; nor will any of the
-              // registered `onClose` hooks.
-              conn.destroy()
-              fastify[kKeepAliveConnections].delete(conn)
-            }
-          }
-        }
-
-        // No new TCP connections are accepted.
-        // We must call close on the server even if we are not listening
-        // otherwise memory will be leaked.
-        // https://github.com/nodejs/node/issues/48604
-        if (!options.serverFactory || fastify[kState].listening) {
-          instance.server.close(function (err) {
-            /* c8 ignore next 6 */
-            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
-              done(null)
-            } else {
-              done()
-            }
-          })
-        } else {
-          process.nextTick(done, null)
-        }
-      })
-    })
-  })
+  fastify.ready = setupReady(fastify) // overwrite the avvio ready function
 
   // Create bad URL context
   const onBadUrlContext = new Context({
@@ -519,8 +472,10 @@ function fastify (options) {
     keepAliveConnections
   })
 
-  // Delay configuring clientError handler so that it can access fastify state.
-  server.on('clientError', options.clientErrorHandler.bind(fastify))
+  setupClientErrorHandler(fastify, {
+    options,
+    server
+  })
 
   if (initChannel.hasSubscribers) {
     initChannel.publish({ fastify })
@@ -539,162 +494,9 @@ function fastify (options) {
     if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
   }
 
-  // HTTP injection handling
-  // If the server is not ready yet, this
-  // utility will automatically force it.
-  function inject (opts, cb) {
-    // lightMyRequest is dynamically loaded as it seems very expensive
-    // because of Ajv
-    if (lightMyRequest === undefined) {
-      lightMyRequest = require('light-my-request')
-    }
-
-    if (fastify[kState].started) {
-      if (fastify[kState].closing) {
-        // Force to return an error
-        const error = new FST_ERR_REOPENED_CLOSE_SERVER()
-        if (cb) {
-          cb(error)
-          return
-        } else {
-          return Promise.reject(error)
-        }
-      }
-      return lightMyRequest(httpHandler, opts, cb)
-    }
-
-    if (cb) {
-      this.ready(err => {
-        if (err) cb(err, null)
-        else lightMyRequest(httpHandler, opts, cb)
-      })
-    } else {
-      return lightMyRequest((req, res) => {
-        this.ready(function (err) {
-          if (err) {
-            res.emit('error', err)
-            return
-          }
-          httpHandler(req, res)
-        })
-      }, opts)
-    }
-  }
-
-  function ready (cb) {
-    if (this[kState].readyPromise !== null) {
-      if (cb != null) {
-        this[kState].readyPromise.then(() => cb(null, fastify), cb)
-        return
-      }
-
-      return this[kState].readyPromise
-    }
-
-    let resolveReady
-    let rejectReady
-
-    // run the hooks after returning the promise
-    process.nextTick(runHooks)
-
-    // Create a promise no matter what
-    // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
-    // as well as a flow control mechanism to chain cbs and further
-    // promises
-    this[kState].readyPromise = new Promise(function (resolve, reject) {
-      resolveReady = resolve
-      rejectReady = reject
-    })
-
-    if (!cb) {
-      return this[kState].readyPromise
-    } else {
-      this[kState].readyPromise.then(() => cb(null, fastify), cb)
-    }
-
-    function runHooks () {
-      // start loading
-      fastify[kAvvioBoot]((err, done) => {
-        if (err || fastify[kState].started || fastify[kState].ready || fastify[kState].booting) {
-          manageErr(err)
-        } else {
-          fastify[kState].booting = true
-          hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
-        }
-        done()
-      })
-    }
-
-    function manageErr (err) {
-      // If the error comes out of Avvio's Error codes
-      // We create a make and preserve the previous error
-      // as cause
-      err = err != null && AVVIO_ERRORS_MAP[err.code] != null
-        ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
-        : err
-
-      if (err) {
-        return rejectReady(err)
-      }
-
-      resolveReady(fastify)
-      fastify[kState].booting = false
-      fastify[kState].ready = true
-      fastify[kState].readyPromise = null
-    }
-  }
-
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
   function withTypeProvider () {
     return this
-  }
-
-  // wrapper that we expose to the user for hooks handling
-  function addHook (name, fn) {
-    throwIfAlreadyStarted('Cannot call "addHook"!')
-
-    if (fn == null) {
-      throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
-    }
-
-    if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    } else if (name === 'onReady' || name === 'onListen') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    } else if (name === 'onRequestAbort') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 1) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    } else {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    }
-
-    if (name === 'onClose') {
-      this.onClose(fn.bind(this))
-    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
-      this[kHooks].add(name, fn)
-    } else {
-      this.after((err, done) => {
-        try {
-          _addHook.call(this, name, fn)
-          done(err)
-        } catch (err) {
-          done(err)
-        }
-      })
-    }
-    return this
-
-    function _addHook (name, fn) {
-      this[kHooks].add(name, fn)
-      this[kChildren].forEach(child => _addHook.call(child, name, fn))
-    }
   }
 
   // wrapper that we expose to the user for schemas handling
@@ -703,59 +505,6 @@ function fastify (options) {
     this[kSchemaController].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this
-  }
-
-  function defaultClientErrorHandler (err, socket) {
-    // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
-    // https://nodejs.org/api/http.html#http_event_clienterror
-    if (err.code === 'ECONNRESET' || socket.destroyed) {
-      return
-    }
-
-    let body, errorCode, errorStatus, errorLabel
-
-    if (err.code === 'ERR_HTTP_REQUEST_TIMEOUT') {
-      errorCode = '408'
-      errorStatus = http.STATUS_CODES[errorCode]
-      body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
-      errorLabel = 'timeout'
-    } else if (err.code === 'HPE_HEADER_OVERFLOW') {
-      errorCode = '431'
-      errorStatus = http.STATUS_CODES[errorCode]
-      body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
-      errorLabel = 'header_overflow'
-    } else {
-      errorCode = '400'
-      errorStatus = http.STATUS_CODES[errorCode]
-      body = `{"error":"${errorStatus}","message":"Client Error","statusCode":400}`
-      errorLabel = 'error'
-    }
-
-    // Most devs do not know what to do with this error.
-    // In the vast majority of cases, it's a network error and/or some
-    // config issue on the load balancer side.
-    this.log.trace({ err }, `client ${errorLabel}`)
-    // Copying standard node behavior
-    // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
-
-    // If the socket is not writable, there is no reason to try to send data.
-    if (socket.writable) {
-      socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
-    }
-    socket.destroy(err)
-  }
-
-  // If the router does not match any route, every request will land here
-  // req and res are Node.js core objects
-  function defaultRoute (req, res) {
-    if (req.headers['accept-version'] !== undefined) {
-      // we remove the accept-version header for performance result
-      // because we do not want to go through the constraint checking
-      // the usage of symbol here to prevent any collision on custom header name
-      req.headers[kRequestAcceptVersion] = req.headers['accept-version']
-      req.headers['accept-version'] = undefined
-    }
-    fourOhFour.router.lookup(req, res)
   }
 
   function onBadUrl (path, req, res) {

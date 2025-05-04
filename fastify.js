@@ -94,7 +94,10 @@ function defaultBuildPrettyMeta (route) {
  * @param {import('./fastify.js').FastifyServerOptions} options
  */
 function fastify (options) {
-  // Options validations
+  // === OPTIONS PREPROCESSING ===========================================
+  //
+  // Normalise and validate the user-supplied `options` object, then
+  // fill in default values.
   if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
   } else {
@@ -193,7 +196,10 @@ function fastify (options) {
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
-  // Public API
+  // === INSTANCE OBJECT =================================================
+  //
+  // Construct the main `fastify` object: public API, symbol-backed
+  //
   const fastify = {
     // Fastify internals
     [kState]: {
@@ -421,6 +427,14 @@ function fastify (options) {
       }
     }
   })
+  // === INSTANCE SETUP PHASE ===========================================
+  //
+  // Wire Avvio, router, 404 handler, diagnostics channel, HTTP injection,
+  // and any other side-effects that mutate the instance after construction.
+  if (options.schemaErrorFormatter) {
+    validateSchemaErrorFormatter(options.schemaErrorFormatter)
+    fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
+  }
 
   // HTTP injection handling
   // If the server is not ready yet, this
@@ -428,11 +442,6 @@ function fastify (options) {
   fastify.inject = setupInject(fastify, {
     httpHandler
   })
-
-  if (options.schemaErrorFormatter) {
-    validateSchemaErrorFormatter(options.schemaErrorFormatter)
-    fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
-  }
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
@@ -490,8 +499,14 @@ function fastify (options) {
 
   return fastify
 
-  function throwIfAlreadyStarted (msg) {
-    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
+  // === INSTANCE METHODS ===============================================
+  //
+  // Public methods attached to `fastify`.
+  function setNotFoundHandler (opts, handler) {
+    throwIfAlreadyStarted('Cannot call "setNotFoundHandler"!')
+
+    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
+    return this
   }
 
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
@@ -504,40 +519,6 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "addSchema"!')
     this[kSchemaController].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
-    return this
-  }
-
-  function buildAsyncConstraintCallback (isAsync, req, res) {
-    if (isAsync === false) return undefined
-    return function onAsyncConstraintError (err) {
-      if (err) {
-        if (frameworkErrors) {
-          const id = getGenReqId(onBadUrlContext.server, req)
-          const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
-
-          const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
-          const reply = new Reply(res, request, childLogger)
-
-          if (disableRequestLogging === false) {
-            childLogger.info({ req: request }, 'incoming request')
-          }
-
-          return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
-        }
-        const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
-        res.writeHead(500, {
-          'Content-Type': 'application/json',
-          'Content-Length': body.length
-        })
-        res.end(body)
-      }
-    }
-  }
-
-  function setNotFoundHandler (opts, handler) {
-    throwIfAlreadyStarted('Cannot call "setNotFoundHandler"!')
-
-    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
     return this
   }
 
@@ -602,25 +583,6 @@ function fastify (options) {
     return router.printRoutes(opts)
   }
 
-  function wrapRouting (router, { rewriteUrl, logger }) {
-    let isAsync
-    return function preRouting (req, res) {
-      // only call isAsyncConstraint once
-      if (isAsync === undefined) isAsync = router.isAsyncConstraint()
-      if (rewriteUrl) {
-        req.originalUrl = req.url
-        const url = rewriteUrl.call(fastify, req)
-        if (typeof url === 'string') {
-          req.url = url
-        } else {
-          const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
-          req.destroy(err)
-        }
-      }
-      router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
-    }
-  }
-
   function setGenReqId (func) {
     throwIfAlreadyStarted('Cannot call "setGenReqId"!')
 
@@ -649,6 +611,60 @@ function fastify (options) {
     }
 
     return this
+  }
+
+  // === INTERNAL HELPERS ===============================================
+  //
+  // Private utilities used only inside this factory
+  //
+  function throwIfAlreadyStarted (msg) {
+    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
+  }
+
+  function buildAsyncConstraintCallback (isAsync, req, res) {
+    if (isAsync === false) return undefined
+    return function onAsyncConstraintError (err) {
+      if (err) {
+        if (frameworkErrors) {
+          const id = getGenReqId(onBadUrlContext.server, req)
+          const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
+
+          const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+          const reply = new Reply(res, request, childLogger)
+
+          if (disableRequestLogging === false) {
+            childLogger.info({ req: request }, 'incoming request')
+          }
+
+          return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
+        }
+        const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
+        res.writeHead(500, {
+          'Content-Type': 'application/json',
+          'Content-Length': body.length
+        })
+        res.end(body)
+      }
+    }
+  }
+
+  function wrapRouting (router, { rewriteUrl, logger }) {
+    let isAsync
+    return function preRouting (req, res) {
+      // only call isAsyncConstraint once
+      if (isAsync === undefined) isAsync = router.isAsyncConstraint()
+      if (rewriteUrl) {
+        req.originalUrl = req.url
+        const url = rewriteUrl.call(fastify, req)
+        if (typeof url === 'string') {
+          req.url = url
+        } else {
+          const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
+          req.destroy(err)
+        }
+      }
+      router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
+    }
   }
 }
 

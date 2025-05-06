@@ -479,7 +479,7 @@ test('Should not throw on access to routeConfig frameworkErrors handler - FST_ER
     frameworkErrors: function (err, req, res) {
       t.assert.ok(typeof req.id === 'string')
       t.assert.ok(req.raw instanceof Readable)
-      t.assert.deepStrictEqual(req.routerPath, undefined)
+      t.assert.deepStrictEqual(req.routeOptions.url, undefined)
       res.send(`${err.message} - ${err.code}`)
     }
   })

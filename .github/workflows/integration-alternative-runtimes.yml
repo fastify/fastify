@@ -30,9 +30,12 @@ jobs:
         node-version: [20]
         pnpm-version: [8]
         include:
-          - nsolid-version: 5
+          - runtime: nsolid
             node-version: 20
-            runtime: nsolid
+            nsolid-version: 5
+          - runtime: nsolid
+            node-version: 22
+            nsolid-version: 5
     steps:
       - uses: actions/checkout@v4
         with:

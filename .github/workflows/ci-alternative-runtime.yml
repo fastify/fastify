@@ -35,6 +35,9 @@ jobs:
           - runtime: nsolid
             node-version: 20
             nsolid-version: 5
+          - runtime: nsolid
+            node-version: 22
+            nsolid-version: 5
     steps:
       - uses: actions/checkout@v4
         with:

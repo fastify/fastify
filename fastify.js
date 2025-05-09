@@ -199,7 +199,6 @@ function fastify (options) {
   // === INSTANCE OBJECT =================================================
   //
   // Construct the main `fastify` object: public API, symbol-backed
-  //
   const fastify = {
     // Fastify internals
     [kState]: {
@@ -436,20 +435,10 @@ function fastify (options) {
     fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
   }
 
-  // HTTP injection handling
-  // If the server is not ready yet, this
-  // utility will automatically force it.
   fastify.inject = setupInject(fastify, {
     httpHandler
   })
 
-  // Install and configure Avvio
-  // Avvio will update the following Fastify methods:
-  // - register
-  // - after
-  // - ready
-  // - onClose
-  // - close
   const avvio = setupAvvio(fastify, {
     options,
     defaultInitOptions,

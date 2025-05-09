@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 <h1 style="text-align: center;">Fastify</h1>
 
 # Testing

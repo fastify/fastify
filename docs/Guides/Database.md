@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 <h1 align="center">Fastify</h1>
 
 ## Database

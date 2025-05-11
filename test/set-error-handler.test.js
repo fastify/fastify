@@ -24,35 +24,10 @@ test('setErrorHandler can be set independently in parent and child scopes', asyn
   })
 })
 
-test('setErrorHandler should throw if called more than once in the same scope', t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-
-  fastify.setErrorHandler(() => {})
-  t.assert.throws(() => fastify.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
-})
-
-test('setErrorHandler should throw if called more than once in the same scope 2', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  t.after(() => fastify.close())
-
-  fastify.register(async (child) => {
-    child.setErrorHandler(() => {})
-    t.assert.throws(() => child.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
-  })
-
-  await fastify.ready()
-})
-
 test('setErrorHandler can be overriden if allowErrorHandlerOverride is set to true', async t => {
   t.plan(2)
 
-  const fastify = Fastify({
-    allowErrorHandlerOverride: true
-  })
+  const fastify = Fastify()
   t.after(() => fastify.close())
 
   fastify.register(async (child) => {
@@ -62,6 +37,33 @@ test('setErrorHandler can be overriden if allowErrorHandlerOverride is set to tr
 
   fastify.setErrorHandler(() => {})
   t.assert.doesNotThrow(() => fastify.setErrorHandler(() => {}))
+
+  await fastify.ready()
+})
+
+test('if `allowErrorHandlerOverride` is disabled, setErrorHandler should throw if called more than once in the same scope', t => {
+  t.plan(1)
+
+  const fastify = Fastify({
+    allowErrorHandlerOverride: false
+  })
+
+  fastify.setErrorHandler(() => {})
+  t.assert.throws(() => fastify.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
+})
+
+test('if `allowErrorHandlerOverride` is disabled, setErrorHandler should throw if called more than once in the same scope 2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify({
+    allowErrorHandlerOverride: false
+  })
+  t.after(() => fastify.close())
+
+  fastify.register(async (child) => {
+    child.setErrorHandler(() => {})
+    t.assert.throws(() => child.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
+  })
 
   await fastify.ready()
 })

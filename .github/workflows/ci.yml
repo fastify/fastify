@@ -13,6 +13,12 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+  workflow_dispatch:
+    inputs:
+      nodejs-version:
+        description: 'Node.js version to use (e.g., 24.0.0-rc.1)'
+        required: true
+        type: string
 
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
@@ -127,6 +133,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install
+        run: |
+          npm install --ignore-scripts
+
+      - name: Run tests
+        run: |
+          npm run unit
+
+  # Useful for testing Release Candidates of Node.js
+  test-unit-custom:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Custom Node.js Version
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ github.event.inputs.nodejs-version }}
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true

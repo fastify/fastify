@@ -193,13 +193,13 @@ jobs:
           npm install --ignore-scripts
       - name: install webpack stack
         run: |
-          cd test/bundler/webpack && npm install
+          cd test/bundler/webpack && npm install --ignore-scripts
       - name: Test webpack bundle
         run: |
           cd test/bundler/webpack && npm run test
       - name: install esbuild stack
         run: |
-          cd test/bundler/esbuild && npm install
+          cd test/bundler/esbuild && npm install --ignore-scripts
       - name: Test esbuild bundle
         run: |
           cd test/bundler/esbuild && npm run test

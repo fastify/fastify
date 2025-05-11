@@ -40,8 +40,6 @@ section.
   plugin for adding
   [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to
   Fastify.
-- [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel)
-  Plugin to deal with `diagnostics_channel` on Fastify.
 - [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch)
   Plugin to share the same ES client.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check

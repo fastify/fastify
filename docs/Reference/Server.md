@@ -1529,7 +1529,7 @@ plugins.
 > 🛈 Note:
 > Some config properties from the request object will be
 > undefined inside the custom not found handler. E.g.:
-> `request.routerPath`, `routerMethod` and `context.config`.
+> `request.routeOptions.url`, `routeOptions.method` and `routeOptions.config`.
 > This method design goal is to allow calling the common not found route.
 > To return a per-route customized 404 response, you can do it in
 > the response itself.

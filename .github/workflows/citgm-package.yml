@@ -87,7 +87,7 @@ jobs:
         - name: Install Dependencies for ${{inputs.package}}
           working-directory: package
           run: |
-            npm install
+            npm install --ignore-scripts
         - name: Sym Link Fastify
           working-directory: package
           run: |

@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 85
+const expectedErrors = 84
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -576,16 +576,6 @@ test('FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX')
   t.assert.strictEqual(error.message, 'response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
-  t.assert.strictEqual(error.statusCode, 500)
-  t.assert.ok(error instanceof Error)
-})
-
-test('FST_ERR_HTTP2_INVALID_VERSION', t => {
-  t.plan(5)
-  const error = new errors.FST_ERR_HTTP2_INVALID_VERSION()
-  t.assert.strictEqual(error.name, 'FastifyError')
-  t.assert.strictEqual(error.code, 'FST_ERR_HTTP2_INVALID_VERSION')
-  t.assert.strictEqual(error.message, 'HTTP2 is available only from node >= 8.8.1')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

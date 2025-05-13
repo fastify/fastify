@@ -6,7 +6,7 @@ const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('node:fs')
 const { sleep } = require('./helper')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
@@ -59,34 +59,38 @@ test('async hooks', (t, testDone) => {
     t.assert.ifError(err)
     t.after(() => { fastify.close() })
 
-    sequence([
-      (next) => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        next()
-      }),
-      (next) => sget({
-        method: 'HEAD',
-        url: 'http://localhost:' + fastify.server.address().port
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 500)
-        next()
-      }),
-      (next) => sget({
-        method: 'DELETE',
-        url: 'http://localhost:' + fastify.server.address().port
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 500)
-        next(testDone)
-      })
-    ])
+    const completion = waitForCb({
+      steps: 3
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completion.stepIn()
+    })
+    sget({
+      method: 'HEAD',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      completion.stepIn()
+    })
+    sget({
+      method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
+      completion.stepIn()
+    })
+
+    completion.patience.then(testDone)
   })
 })
 

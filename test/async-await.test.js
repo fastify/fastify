@@ -6,7 +6,7 @@ const Fastify = require('..')
 const split = require('split2')
 const pino = require('pino')
 const { sleep } = require('./helper')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 const statusCodes = require('node:http').STATUS_CODES
 
 const opts = {
@@ -80,39 +80,45 @@ test('async await', (t, testDone) => {
     t.assert.ifError(err)
     t.after(() => { fastify.close() })
 
-    sequence([
-      (done) => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        done()
-      }),
-      (done) => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/no-await'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        done()
-      }),
-      (done) => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/await/hostname_port'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        const parsedBody = JSON.parse(body)
-        t.assert.strictEqual(parsedBody.hostname, 'localhost')
-        t.assert.strictEqual(parseInt(parsedBody.port), fastify.server.address().port)
-        done(testDone)
-      })
-    ])
+    const completion = waitForCb({
+      steps: 3
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completion.stepIn()
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/no-await'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completion.stepIn()
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/await/hostname_port'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      const parsedBody = JSON.parse(body)
+      t.assert.strictEqual(parsedBody.hostname, 'localhost')
+      t.assert.strictEqual(parseInt(parsedBody.port), fastify.server.address().port)
+      completion.stepIn()
+    })
+
+    completion.patience.then(testDone)
   })
 })
 

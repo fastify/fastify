@@ -78,6 +78,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+const { FSTWRN004 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -865,8 +866,8 @@ function fastify (options) {
     if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
     } else if (this[kErrorHandlerAlreadySet]) {
-      this.log.warn('It seems that you are overriding an errorHandler in the same scope, which can lead to subtle bugs.')
-      this.log.warn("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
+      FSTWRN004('It seems that you are overriding an errorHandler in the same scope, which can lead to subtle bugs.')
+      FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
     }
 
     this[kErrorHandlerAlreadySet] = true

@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 
 const echoBody = (req, reply) => { reply.send(req.body) }
 
@@ -272,92 +272,93 @@ test('Different content types', (t, testDone) => {
     }
   })
 
-  sequence([
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ name: 'Foo', image: 'profile picture', address: 'New Node' }))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify([{ name: 'Boo', age: 18, verified: false }, { name: 'Woo', age: 30, verified: true }]))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }]))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v2+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ fullName: 'Jhon Smith', phone: '01090000000' }))
-      t.assert.strictEqual(res.statusCode, 300)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v3+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' }))
-      t.assert.strictEqual(res.statusCode, 300)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, '"[object Object]"')
-      t.assert.strictEqual(res.statusCode, 201)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v5+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, '"Processing exclusive content"')
-      t.assert.strictEqual(res.statusCode, 202)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v6+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
-      t.assert.strictEqual(res.statusCode, 400)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v7+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
-      t.assert.strictEqual(res.statusCode, 400)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v8+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ desc: 'age is missing', details: 'validation error' }))
-      t.assert.strictEqual(res.statusCode, 500)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v9+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
-      t.assert.strictEqual(res.statusCode, 500)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/test', headers: { Code: '200' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ age: 18, city: 'AU' }))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/test', headers: { Code: '201' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
-      t.assert.strictEqual(res.statusCode, 201)
-      done()
-    }),
-    (done) => fastify.inject({ method: 'GET', url: '/test', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, JSON.stringify({ created: true }))
-      t.assert.strictEqual(res.statusCode, 201)
-      done(testDone())
-    })
-  ])
+  const completion = waitForCb({ steps: 14 })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ name: 'Foo', image: 'profile picture', address: 'New Node' }))
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify([{ name: 'Boo', age: 18, verified: false }, { name: 'Woo', age: 30, verified: true }]))
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }]))
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v2+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ fullName: 'Jhon Smith', phone: '01090000000' }))
+    t.assert.strictEqual(res.statusCode, 300)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v3+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' }))
+    t.assert.strictEqual(res.statusCode, 300)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, '"[object Object]"')
+    t.assert.strictEqual(res.statusCode, 201)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v5+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, '"Processing exclusive content"')
+    t.assert.strictEqual(res.statusCode, 202)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v6+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v7+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v8+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ desc: 'age is missing', details: 'validation error' }))
+    t.assert.strictEqual(res.statusCode, 500)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v9+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.assert.strictEqual(res.statusCode, 500)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/test', headers: { Code: '200' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ age: 18, city: 'AU' }))
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/test', headers: { Code: '201' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.assert.strictEqual(res.statusCode, 201)
+    completion.stepIn()
+  })
+  fastify.inject({ method: 'GET', url: '/test', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, JSON.stringify({ created: true }))
+    t.assert.strictEqual(res.statusCode, 201)
+    completion.stepIn()
+  })
+
+  completion.patience.then(testDone)
 })
 
 test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCHEMA error', (t, testDone) => {
@@ -486,32 +487,33 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', (t, testDo
     test: { id: Date.now() }
   }
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.json(), payload)
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { test: { id: Date.now() } }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        error: 'Bad Request',
-        message: "body must have required property 'address'",
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION'
-      })
-      done(testDone)
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.json(), payload)
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { test: { id: Date.now() } }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      error: 'Bad Request',
+      message: "body must have required property 'address'",
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
-  ])
+    completion.stepIn()
+  })
+
+  completion.patience.then(testDone)
 })
 
 test('Shared schema should be pass to serializer and validator ($ref to shared schema /definitions)', (t, testDone) => {

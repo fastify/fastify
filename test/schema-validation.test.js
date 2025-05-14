@@ -6,7 +6,7 @@ const { request } = require('undici')
 
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 
 const customSchemaCompilers = {
   body: new AJV({
@@ -83,31 +83,31 @@ test('Basic validation test', (t, testDone) => {
     reply.code(200).send(req.body.name)
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      payload: {
-        name: 'michelangelo',
-        work: 'sculptor, painter, architect and poet'
-      },
-      url: '/'
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.payload, 'michelangelo')
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      payload: { name: 'michelangelo' },
-      url: '/'
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
-      t.assert.strictEqual(res.statusCode, 400)
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      name: 'michelangelo',
+      work: 'sculptor, painter, architect and poet'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'michelangelo')
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    payload: { name: 'michelangelo' },
+    url: '/'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Different schema per content type', (t, testDone) => {
@@ -139,55 +139,55 @@ test('Different schema per content type', (t, testDone) => {
     return reply.send(req.body)
   })
 
-  sequence([
-    (done) => fastify.inject({
-      url: '/',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: {
-        name: 'michelangelo',
-        work: 'sculptor, painter, architect and poet'
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(JSON.parse(res.payload).name, 'michelangelo')
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({
-      url: '/',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: { name: 'michelangelo' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
-      t.assert.strictEqual(res.statusCode, 400)
-      done(testDone)
-    }),
-    (done) => fastify.inject({
-      url: '/',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/octet-stream' },
-      body: Buffer.from('AAAAAAAA')
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({
-      url: '/',
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: 'AAAAAAAA'
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
-      t.assert.strictEqual(res.statusCode, 200)
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 4 })
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: {
+      name: 'michelangelo',
+      work: 'sculptor, painter, architect and poet'
+    }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload).name, 'michelangelo')
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: { name: 'michelangelo' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.json(), { statusCode: 400, code: 'FST_ERR_VALIDATION', error: 'Bad Request', message: "body must have required property 'work'" })
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream' },
+    body: Buffer.from('AAAAAAAA')
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: 'AAAAAAAA'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Skip validation if no schema for content type', (t, testDone) => {
@@ -208,7 +208,6 @@ test('Skip validation if no schema for content type', (t, testDone) => {
   }, async function (req, reply) {
     return reply.send(req.body)
   })
-
   fastify.inject({
     url: '/',
     method: 'POST',
@@ -237,7 +236,6 @@ test('Skip validation if no content type schemas', (t, testDone) => {
   }, async function (req, reply) {
     return reply.send(req.body)
   })
-
   fastify.inject({
     url: '/',
     method: 'POST',
@@ -278,26 +276,26 @@ test('External AJV instance', (t, testDone) => {
     }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { foo: 42 }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { foo: 'not a number' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 42 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 'not a number' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Encapsulation', (t, testDone) => {
@@ -362,66 +360,66 @@ test('Encapsulation', (t, testDone) => {
     done()
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/one',
-      payload: { foo: 1 }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), { foo: 'one' })
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/one',
-      payload: { wrongFoo: 'bar' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/two',
-      payload: { foo: 2 }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), { foo: 'two' })
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/two',
-      payload: { wrongFoo: 'bar' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/three',
-      payload: { wrongFoo: 'but works' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), { foo: 'three' })
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/clean',
-      payload: { wrongFoo: 'bar' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), { foo: 'bar' })
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 6 })
+  fastify.inject({
+    method: 'POST',
+    url: '/one',
+    payload: { foo: 1 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { foo: 'one' })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/one',
+    payload: { wrongFoo: 'bar' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/two',
+    payload: { foo: 2 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { foo: 'two' })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/two',
+    payload: { wrongFoo: 'bar' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/three',
+    payload: { wrongFoo: 'but works' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { foo: 'three' })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/clean',
+    payload: { wrongFoo: 'bar' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { foo: 'bar' })
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Triple $ref with a simple $id', (t, testDone) => {
@@ -453,28 +451,28 @@ test('Triple $ref with a simple $id', (t, testDone) => {
     }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { foo: 43 }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), { foo: 105 })
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { fool: 'bar' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json().message, "body must have required property 'foo'")
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 43 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { foo: 105 })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { fool: 'bar' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json().message, "body must have required property 'foo'")
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Extending schema', (t, testDone) => {
@@ -517,7 +515,6 @@ test('Extending schema', (t, testDone) => {
       }
     }
   })
-
   fastify.inject({
     method: 'POST',
     url: '/',
@@ -531,7 +528,6 @@ test('Extending schema', (t, testDone) => {
     t.assert.ifError(err)
     t.assert.strictEqual(res.statusCode, 400)
   })
-
   fastify.inject({
     method: 'POST',
     url: '/',
@@ -579,32 +575,32 @@ test('Should work with nested ids', (t, testDone) => {
     }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/123',
-      payload: {
-        hello: 'world'
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.strictEqual(res.payload, 'number')
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/abc',
-      payload: {
-        hello: 'world'
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.strictEqual(res.json().message, 'params/id must be number')
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/123',
+    payload: {
+      hello: 'world'
+    }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'number')
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/abc',
+    payload: {
+      hello: 'world'
+    }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.json().message, 'params/id must be number')
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Use the same schema across multiple routes', async (t) => {
@@ -683,32 +679,31 @@ test('JSON Schema validation keywords', (t, testDone) => {
     }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'GET',
-      url: '/127.0.0.1'
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.strictEqual(res.payload, 'string')
-      done()
-    }),
-
-    (done) => fastify.inject({
-      method: 'GET',
-      url: '/localhost'
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION',
-        error: 'Bad Request',
-        message: 'params/ip must match format "ipv4"'
-      })
-      done(testDone)
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'GET',
+    url: '/127.0.0.1'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'string')
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'GET',
+    url: '/localhost'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'params/ip must match format "ipv4"'
     })
-  ])
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Nested id calls', (t, testDone) => {
@@ -741,34 +736,33 @@ test('Nested id calls', (t, testDone) => {
     }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { host: { ip: '127.0.0.1' } }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.strictEqual(res.payload, 'string')
-      done()
-    }),
-
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { host: { ip: 'localhost' } }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        error: 'Bad Request',
-        message: 'body/host/ip must match format "ipv4"',
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION'
-      })
-      done(testDone)
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { host: { ip: '127.0.0.1' } }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'string')
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { host: { ip: 'localhost' } }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      error: 'Bad Request',
+      message: 'body/host/ip must match format "ipv4"',
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
-  ])
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Use the same schema id in different places', (t, testDone) => {
@@ -792,7 +786,6 @@ test('Use the same schema id in different places', (t, testDone) => {
       }
     }
   })
-
   fastify.inject({
     method: 'POST',
     url: '/',
@@ -847,36 +840,35 @@ test('Use shared schema and $ref with $id ($ref to $id)', (t, testDone) => {
   })
 
   const id = Date.now()
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: {
-        address: { city: 'New Node' },
-        test: { id }
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.json(), { id })
-      done()
-    }),
-
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { test: { id } }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        error: 'Bad Request',
-        message: "body must have required property 'address'",
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION'
-      })
-      done(testDone)
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {
+      address: { city: 'New Node' },
+      test: { id }
+    }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.json(), { id })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { test: { id } }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      error: 'Bad Request',
+      message: "body must have required property 'address'",
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
-  ])
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Use items with $ref', (t, testDone) => {
@@ -901,26 +893,26 @@ test('Use items with $ref', (t, testDone) => {
     handler: (_, r) => { r.send('ok') }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: [{ hello: 'world' }]
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.payload, 'ok')
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: [{ hello: 'world' }]
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, 'ok')
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Use $ref to /definitions', (t, testDone) => {
@@ -970,36 +962,36 @@ test('Use $ref to /definitions', (t, testDone) => {
     address: { city: 'New Node' },
     test: { id: Date.now() }
   }
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), payload)
-      done()
-    }),
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: {
-        address: { city: 'New Node' },
-        test: { id: 'wrong' }
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        error: 'Bad Request',
-        message: 'body/test/id must be number',
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION'
-      })
-      done(testDone)
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), payload)
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {
+      address: { city: 'New Node' },
+      test: { id: 'wrong' }
+    }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      error: 'Bad Request',
+      message: 'body/test/id must be number',
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION'
     })
-  ])
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Custom AJV settings - pt1', (t, testDone) => {
@@ -1020,7 +1012,6 @@ test('Custom AJV settings - pt1', (t, testDone) => {
       reply.send(req.body)
     }
   })
-
   fastify.inject({
     method: 'POST',
     url: '/',
@@ -1058,7 +1049,6 @@ test('Custom AJV settings - pt2', (t, testDone) => {
       t.fail('the handler is not called because the "12" is not coerced to number')
     }
   })
-
   fastify.inject({
     method: 'POST',
     url: '/',
@@ -1098,7 +1088,6 @@ test('Custom AJV settings on different parameters - pt1', (t, testDone) => {
       t.fail('the handler is not called because the "12" is not coerced to number')
     }
   })
-
   fastify.inject({
     method: 'POST',
     url: '/api/42',
@@ -1143,7 +1132,6 @@ test('Custom AJV settings on different parameters - pt2', (t, testDone) => {
       testDone()
     }
   })
-
   fastify.inject({
     method: 'POST',
     url: '/api/42',
@@ -1204,26 +1192,26 @@ test("The same $id in route's schema must not overwrite others", (t, testDone) =
       handler: () => { return 'ok' }
     })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/user',
-      body: {}
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.json().message, "body must have required property 'username'")
-      done()
-    }),
-    (done) => fastify.inject({
-      url: '/user/1',
-      method: 'PATCH',
-      body: {}
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(res.payload, 'ok')
-      done(testDone)
-    })
-  ])
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'POST',
+    url: '/user',
+    body: {}
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.json().message, "body must have required property 'username'")
+    completion.stepIn()
+  })
+  fastify.inject({
+    url: '/user/1',
+    method: 'PATCH',
+    body: {}
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'ok')
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Custom validator compiler should not mutate schema', async t => {

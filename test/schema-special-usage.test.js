@@ -9,7 +9,7 @@ const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 const proxyquire = require('proxyquire')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 
 test('Ajv plugins array parameter', (t, testDone) => {
   t.plan(3)
@@ -260,26 +260,26 @@ test('Should handle $patch keywords in body', (t, testDone) => {
   fastify.ready(err => {
     t.assert.ifError(err)
 
-    sequence([
-      (done) => fastify.inject({
-        method: 'POST',
-        url: '/',
-        payload: { q: 'foo' }
-      }, (err, res) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(res.statusCode, 400)
-        done()
-      }),
-      (done) => fastify.inject({
-        method: 'POST',
-        url: '/',
-        payload: { q: 10 }
-      }, (err, res) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(res.statusCode, 200)
-        done(testDone)
-      })
-    ])
+    const completion = waitForCb({ steps: 2 })
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { q: 'foo' }
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 400)
+      completion.stepIn()
+    })
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { q: 10 }
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 200)
+      completion.stepIn()
+    })
+    completion.patience.then(testDone)
   })
 })
 
@@ -799,33 +799,34 @@ test('Supports async JOI validation', (t, testDone) => {
     reply.send(request.headers)
   })
 
-  sequence([
-    (done) => fastify.inject('/', (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(res.json(), {
-        'user-agent': 'lightMyRequest',
-        host: 'localhost:80'
-      })
-      done()
-    }),
-    (done) => fastify.inject({
-      url: '/',
-      headers: {
-        'user-agent': 'invalid'
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION',
-        error: 'Bad Request',
-        message: 'Invalid user-agent (user-agent)'
-      })
-      done(testDone)
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), {
+      'user-agent': 'lightMyRequest',
+      host: 'localhost:80'
     })
-  ])
+    completion.stepIn()
+  })
+  fastify.inject({
+    url: '/',
+    headers: {
+      'user-agent': 'invalid'
+    }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'Invalid user-agent (user-agent)'
+    })
+    completion.stepIn()
+  })
+
+  completion.patience.then(testDone)
 })
 
 test('Supports async AJV validation', (t, testDone) => {
@@ -887,66 +888,64 @@ test('Supports async AJV validation', (t, testDone) => {
     handler (req, reply) { reply.send(req.body) }
   })
 
-  sequence([
-    (done) => fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { userId: 99 }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 400)
-      t.assert.deepStrictEqual(res.json(), {
-        statusCode: 400,
-        code: 'FST_ERR_VALIDATION',
-        error: 'Bad Request',
-        message: 'validation failed'
-      })
-      done()
-    }), (done) =>
+  const completion = waitForCb({ steps: 4 })
 
-      fastify.inject({
-        method: 'POST',
-        url: '/',
-        payload: { userId: 500 }
-      }, (err, res) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(res.statusCode, 400)
-        t.assert.deepStrictEqual(res.json(), {
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION',
-          error: 'Bad Request',
-          message: 'custom error'
-        })
-        done()
-      }), (done) =>
-
-      fastify.inject({
-        method: 'POST',
-        url: '/',
-        payload: { userId: 42 }
-      }, (err, res) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(res.statusCode, 200)
-        t.assert.deepStrictEqual(res.json(), { userId: 42 })
-        done()
-      }), (done) =>
-
-      fastify.inject({
-        method: 'POST',
-        url: '/',
-        payload: { userId: 42, postId: 19 }
-      }, (err, res) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(res.statusCode, 400)
-        t.assert.deepStrictEqual(res.json(), {
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION',
-          error: 'Bad Request',
-          message: 'validation failed'
-        })
-        done(testDone)
-      })
-  ])
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 99 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'validation failed'
+    })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 500 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'custom error'
+    })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 42 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { userId: 42 })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { userId: 42, postId: 19 }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 400,
+      code: 'FST_ERR_VALIDATION',
+      error: 'Bad Request',
+      message: 'validation failed'
+    })
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
 })
 
 test('Check all the async AJV validation paths', async (t) => {

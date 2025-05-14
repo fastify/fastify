@@ -36,6 +36,9 @@ test('async hooks', (t, testDone) => {
     t.assert.ok('onSend called')
   })
 
+  const completion = waitForCb({
+    steps: 3
+  })
   fastify.addHook('onResponse', async function (request, reply) {
     await sleep(1)
     t.assert.ok('onResponse called')
@@ -59,10 +62,6 @@ test('async hooks', (t, testDone) => {
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
     t.after(() => { fastify.close() })
-
-    const completion = waitForCb({
-      steps: 3
-    })
 
     sget({
       method: 'GET',

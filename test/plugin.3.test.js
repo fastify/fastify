@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 
 test('if a plugin raises an error and there is not a callback to handle it, the server must not start', (t, testDone) => {
   t.plan(2)
@@ -101,24 +101,28 @@ test('nested plugins', (t, testDone) => {
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
 
-    sequence([
-      done => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.deepStrictEqual(body.toString(), 'I am child 1')
-        done()
-      }),
-      done => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.deepStrictEqual(body.toString(), 'I am child 2')
-        done(testDone)
-      })
-    ])
+    const completion = waitForCb({
+      steps: 2
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
+      completion.stepIn()
+    })
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
+      completion.stepIn()
+    })
+
+    completion.patience.then(testDone)
   })
 })
 
@@ -146,24 +150,28 @@ test('nested plugins awaited', (t, testDone) => {
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
 
-    sequence([
-      done => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.deepStrictEqual(body.toString(), 'I am child 1')
-        done()
-      }),
-      done => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.deepStrictEqual(body.toString(), 'I am child 2')
-        done(testDone)
-      })
-    ])
+    const completion = waitForCb({
+      steps: 2
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
+      completion.stepIn()
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
+      completion.stepIn()
+    })
+    completion.patience.then(testDone)
   })
 })
 

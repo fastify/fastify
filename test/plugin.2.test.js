@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
-const { sequence } = require('./toolkit')
+const { waitForCb } = require('./toolkit')
 
 test('check dependencies - should not throw', (t, testDone) => {
   t.plan(12)
@@ -313,28 +313,32 @@ test('plugin encapsulation', (t, testDone) => {
     t.assert.ifError(err)
     t.after(() => { fastify.close() })
 
-    sequence([
-      done => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/first'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        t.assert.deepStrictEqual(JSON.parse(body), { plugin: 'first' })
-        done()
-      }),
+    const completion = waitForCb({
+      steps: 2
+    })
 
-      done => sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/second'
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        t.assert.deepStrictEqual(JSON.parse(body), { plugin: 'second' })
-        done(testDone)
-      })
-    ])
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { plugin: 'first' })
+      completion.stepIn()
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { plugin: 'second' })
+      completion.stepIn()
+    })
+
+    completion.patience.then(testDone)
   })
 })

@@ -11,7 +11,7 @@ const { waitForCb } = require('./toolkit')
 process.removeAllListeners('warning')
 
 test('async hooks', (t, testDone) => {
-  t.plan(20)
+  t.plan(21)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRequest', async function (request, reply) {
     await sleep(1)

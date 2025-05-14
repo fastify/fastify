@@ -755,16 +755,16 @@ test('FST_ERR_REOPENED_SERVER', t => {
   const error = new errors.FST_ERR_REOPENED_SERVER()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REOPENED_SERVER')
-  t.assert.strictEqual(error.message, 'Fastify is already listening')
+  t.assert.strictEqual(error.message, 'Fastify is already started')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_INSTANCE_ALREADY_LISTENING', t => {
+test('FST_ERR_INSTANCE_ALREADY_STARTED', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_INSTANCE_ALREADY_LISTENING()
+  const error = new errors.FST_ERR_INSTANCE_ALREADY_STARTED()
   t.assert.strictEqual(error.name, 'FastifyError')
-  t.assert.strictEqual(error.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
+  t.assert.strictEqual(error.code, 'FST_ERR_INSTANCE_ALREADY_STARTED')
   t.assert.strictEqual(error.message, 'Fastify instance is already listening. %s')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)

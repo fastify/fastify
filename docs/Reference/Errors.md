@@ -30,7 +30,7 @@
     - [FST_ERR_CTP_INVALID_CONTENT_LENGTH](#fst_err_ctp_invalid_content_length)
     - [FST_ERR_CTP_EMPTY_JSON_BODY](#fst_err_ctp_empty_json_body)
     - [FST_ERR_CTP_INSTANCE_ALREADY_STARTED](#fst_err_ctp_instance_already_started)
-    - [FST_ERR_INSTANCE_ALREADY_LISTENING](#fst_err_instance_already_listening)
+    - [FST_ERR_INSTANCE_ALREADY_STARTED](#fst_err_instance_already_started)
     - [FST_ERR_DEC_ALREADY_PRESENT](#fst_err_dec_already_present)
     - [FST_ERR_DEC_DEPENDENCY_INVALID_TYPE](#fst_err_dec_dependency_invalid_type)
     - [FST_ERR_DEC_MISSING_DEPENDENCY](#fst_err_dec_missing_dependency)
@@ -300,7 +300,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_ctp_invalid_content_length">FST_ERR_CTP_INVALID_CONTENT_LENGTH</a> | Request body size did not match <code>Content-Length</code>. | Check the request body size and the <code>Content-Length</code> header. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_empty_json_body">FST_ERR_CTP_EMPTY_JSON_BODY</a> | Body cannot be empty when content-type is set to <code>application/json</code>. | Check the request body. | [#1253](https://github.com/fastify/fastify/pull/1253) |
 | <a id="fst_err_ctp_instance_already_started">FST_ERR_CTP_INSTANCE_ALREADY_STARTED</a> | Fastify is already started. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
-| <a id="fst_err_instance_already_listening">FST_ERR_INSTANCE_ALREADY_LISTENING</a> | Fastify instance is already listening. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_instance_already_started">FST_ERR_INSTANCE_ALREADY_STARTED</a> | Fastify instance is already started. | - | [#6098](https://github.com/fastify/fastify/pull/6098) |
 | <a id="fst_err_dec_already_present">FST_ERR_DEC_ALREADY_PRESENT</a> | A decorator with the same name is already registered. | Use a different decorator name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_dependency_invalid_type">FST_ERR_DEC_DEPENDENCY_INVALID_TYPE</a> | The dependencies of decorator must be of type `Array`. | Use an array for the dependencies. | [#3090](https://github.com/fastify/fastify/pull/3090) |
 | <a id="fst_err_dec_missing_dependency">FST_ERR_DEC_MISSING_DEPENDENCY</a> | The decorator cannot be registered due to a missing dependency. | Register the missing dependency. | [#1168](https://github.com/fastify/fastify/pull/1168) |
@@ -355,7 +355,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_route_body_limit_option_not_int">FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT</a> | `bodyLimit` option must be an integer. | Use an integer for the `bodyLimit` option. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_rewrite_not_str">FST_ERR_ROUTE_REWRITE_NOT_STR</a> | `rewriteUrl` needs to be of type `string`. | Use a string for the `rewriteUrl`. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_reopened_close_server">FST_ERR_REOPENED_CLOSE_SERVER</a> | Fastify has already been closed and cannot be reopened. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |
-| <a id="fst_err_reopened_server">FST_ERR_REOPENED_SERVER</a> | Fastify is already listening. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |
+| <a id="fst_err_reopened_server">FST_ERR_REOPENED_SERVER</a> | Fastify is already started. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |
 | <a id="fst_err_plugin_version_mismatch">FST_ERR_PLUGIN_VERSION_MISMATCH</a> | Installed Fastify plugin mismatched expected version. | Use a compatible version of the plugin. | [#2549](https://github.com/fastify/fastify/pull/2549) |
 | <a id="fst_err_plugin_callback_not_fn">FST_ERR_PLUGIN_CALLBACK_NOT_FN</a> | Callback for a hook is not a function. | Use a function for the callback. | [#3106](https://github.com/fastify/fastify/pull/3106) |
 | <a id="fst_err_plugin_not_valid">FST_ERR_PLUGIN_NOT_VALID</a> | Plugin must be a function or a promise. | Use a function or a promise for the plugin. | [#3106](https://github.com/fastify/fastify/pull/3106) |

@@ -1794,7 +1794,7 @@ test('cannot set the replySerializer when the server is running', (t, done) => {
       fastify.setReplySerializer(() => { })
       t.assert.fail('this serializer should not be setup')
     } catch (e) {
-      t.assert.strictEqual(e.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
+      t.assert.strictEqual(e.code, 'FST_ERR_INSTANCE_ALREADY_STARTED')
     } finally {
       done()
     }

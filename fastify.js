@@ -70,10 +70,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const setupInject = require('./lib/setup/setup-inject.js')
-const setupAvvio = require('./lib/setup/setup-avvio.js')
-const setupReady = require('./lib/setup/setup-ready.js')
-const setupClientErrorHandler = require('./lib/setup/setup-client-error-handler.js')
+const { setupInject, setupAvvio, setupReady, setupClientErrorHandler } = require('./lib/setupInstance.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 

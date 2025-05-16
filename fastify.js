@@ -1,5 +1,3 @@
-'use strict'
-
 const VERSION = '5.3.3'
 
 const Avvio = require('avvio')

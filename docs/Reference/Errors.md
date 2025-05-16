@@ -48,6 +48,7 @@
     - [FST_ERR_LOG_INVALID_LOGGER_INSTANCE](#fst_err_log_invalid_logger_instance)
     - [FST_ERR_LOG_INVALID_LOGGER_CONFIG](#fst_err_log_invalid_logger_config)
     - [FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED](#fst_err_log_logger_and_logger_instance_provided)
+    - [FST_ERR_LOG_INVALID_LOGGER_LEVEL](#fst_err_log_invalid_logger_level)
     - [FST_ERR_REP_INVALID_PAYLOAD_TYPE](#fst_err_rep_invalid_payload_type)
     - [FST_ERR_REP_RESPONSE_BODY_CONSUMED](#fst_err_rep_response_body_consumed)
     - [FST_ERR_REP_READABLE_STREAM_LOCKED](#fst_err_rep_readable_stream_locked)
@@ -318,6 +319,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_log_invalid_logger_instance">FST_ERR_LOG_INVALID_LOGGER_INSTANCE</a> | The `loggerInstance` only accepts a logger instance, not a configuration object. | To pass a configuration object, use `'logger'` instead. | [#5020](https://github.com/fastify/fastify/pull/5020) |
 | <a id="fst_err_log_invalid_logger_config">FST_ERR_LOG_INVALID_LOGGER_CONFIG</a> | The logger option only accepts a configuration object, not a logger instance. | To pass an instance, use `'loggerInstance'` instead.  | [#5020](https://github.com/fastify/fastify/pull/5020) |
 | <a id="fst_err_log_logger_and_logger_instance_provided">FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED</a> | You cannot provide both `'logger'` and `'loggerInstance'`. | Please provide only one option.  | [#5020](https://github.com/fastify/fastify/pull/5020) |
+| <a id="fst_err_log_invalid_logger_level">FST_ERR_LOG_INVALID_LOGGER_LEVEL</a> | Must be one of trace, debug, info, warn, error, fatal or one of customLevels.  | [#6129](https://github.com/fastify/fastify/pull/6129) |
 | <a id="fst_err_rep_invalid_payload_type">FST_ERR_REP_INVALID_PAYLOAD_TYPE</a> | Reply payload can be either a `string` or a `Buffer`. | Use a `string` or a `Buffer` for the payload. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_rep_response_body_consumed">FST_ERR_REP_RESPONSE_BODY_CONSUMED</a> | Using `Response` as reply payload, but the body is being consumed. | Make sure you don't consume the `Response.body` | [#5286](https://github.com/fastify/fastify/pull/5286) |
 | <a id="fst_err_rep_readable_stream_locked">FST_ERR_REP_READABLE_STREAM_LOCKED</a> | Using `ReadableStream` as reply payload, but locked with another reader. | Make sure you don't call the `Readable.getReader` before sending or release lock with `reader.releaseLock()` before sending. | [#5920](https://github.com/fastify/fastify/pull/5920) |

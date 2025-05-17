@@ -1,5 +1,7 @@
 'use strict'
 
+const dns = require('node:dns')
+const http = require('node:http')
 const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
@@ -185,4 +187,79 @@ test('#5180 - preClose should be called before closing secondary server', async 
   // Wait 1000ms to ensure that the test is finished and async operations are
   // completed
   await new Promise((resolve) => { setTimeout(resolve, 1000) })
+})
+
+test('closeAllConnections', async (t) => {
+  const cases = [
+    {
+      scenario: 'should be called when forceCloseConnections is set to true',
+      forceCloseConnections: true,
+      expectedCalls: 1
+    },
+    {
+      scenario: 'should not be called when forceCloseConnections is set to false',
+      forceCloseConnections: false,
+      expectedCalls: 0
+    }
+  ]
+
+  for (const c of cases) {
+    await t.test(c.scenario, (t, end) => {
+      // dns.lookup uses the operating system’s resolver to return the list of addresses.
+      // this results in cases where only IPv4 is returned (and secondary servers are not created)
+      // mocking the method will ensure that the secondary server is always created when specifying localhost as host
+      t.mock.method(dns, 'lookup', (hostname, options, callback) => {
+        if (typeof options === 'function') {
+          callback = options
+          options = {}
+        }
+
+        if (options.all) {
+          callback(null, [
+            { address: '127.0.0.1', family: 4 },
+            { address: '::1', family: 6 }
+          ])
+        } else {
+          callback(null, '127.0.0.1', 4)
+        }
+      })
+
+      // list of servers created by fastify (main and secondary)
+      const servers = []
+
+      // in order to track calls to closeAllConnections we need to monkey patch http.createServer
+      // and set a spy on closeAllConnections method for the returned server instances
+      const originalCreateServer = http.createServer
+      t.mock.method(http, 'createServer', (http, httpHandler) => {
+        const server = originalCreateServer(http, httpHandler)
+
+        t.mock.method(server, 'closeAllConnections')
+        servers.push(server)
+
+        return server
+      })
+
+      const fastify = Fastify({
+        forceCloseConnections: c.forceCloseConnections
+      })
+
+      fastify.addHook('onClose', (instance, done) => {
+        // for each server created, check if closeAllConnections was called
+        for (const server of servers) {
+          t.assert.strictEqual(server.closeAllConnections.mock.callCount(), c.expectedCalls)
+        }
+        done()
+        end()
+      })
+
+      fastify.listen({ port: 0 }, (err) => {
+        t.assert.ifError(err)
+        // ensure that main and secondary server are created
+        t.assert.strictEqual(servers.length, 2)
+
+        // close the server
+        fastify.close()
+      })
+    })
+  }
 })

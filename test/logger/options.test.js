@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(16)
+  t.plan(17)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -433,6 +433,25 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.deepEqual(line.level, 60)
       t.assert.deepEqual(line.msg, lines.shift())
       if (lines.length === 0) break
+    }
+  })
+
+  await t.test('should throw an error if logging level is invalid', async (t) => {
+    t.plan(2)
+    const fastify = Fastify({
+      logger: true
+    })
+    try {
+      fastify.get('/', { logLevel: 'invalid' }, (req, reply) => {
+        reply.send({ hello: 'world' })
+      })
+      await fastify.ready()
+      await fastify.listen({ port: 0 })
+    } catch (err) {
+      t.assert.ok(err instanceof Error)
+      t.assert.strictEqual(err.message, 'Must be one of trace, debug, info, warn, warn, error, fatal.')
+    } finally {
+      await fastify.close().catch(() => {})
     }
   })
 

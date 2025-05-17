@@ -32,6 +32,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
   schema?: SchemaCompiler; // it is empty for 404 requests
   handler: RouteHandlerMethod;
+  version?: string;
 }
 
 /**

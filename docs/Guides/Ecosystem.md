@@ -193,11 +193,6 @@ section.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).
-- [`@immobiliarelabs/fastify-sentry`](https://github.com/immobiliare/fastify-sentry)
-  Sentry errors handler that just works! Install, add your DSN and you're good
-  to go!
-  A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
-  on Fastify
 - [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
   A plugin to integrate [Papr](https://github.com/plexinc/papr), 
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.

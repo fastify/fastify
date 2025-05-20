@@ -152,14 +152,14 @@ section.
 
 #### [Community](#community)
 
-> ⚠ Notice:
+> 🛈 Note:
 > Fastify community plugins are part of the broader community efforts,
-> and we’re thankful for these contributions. However, they are not
+> and we are thankful for these contributions. However, they are not
 > maintained by the Fastify team.
 > Use them at your own discretion.
 > If you find malicious code, please
 > [open an issue](https://github.com/fastify/fastify/issues/new/choose) or
-> submit a PR to remove the plugin.
+> submit a PR to remove the plugin from the list.
 
 - [`@aaroncadillac/crudify-mongo`](https://github.com/aaroncadillac/crudify-mongo)
   A simple way to add a crud in your fastify project.

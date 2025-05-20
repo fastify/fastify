@@ -152,10 +152,10 @@ section.
 
 #### [Community](#community)
 
-> ⚠ Warning:
+> ⚠ Notice:
 > Fastify community plugins are part of the broader community efforts,
 > and we’re thankful for these contributions. However, they are not
-> maintained or reviewed by the Fastify team.
+> maintained by the Fastify team.
 > Use them at your own discretion.
 > If you find malicious code, please
 > [open an issue](https://github.com/fastify/fastify/issues/new/choose) or

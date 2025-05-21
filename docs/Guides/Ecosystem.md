@@ -152,7 +152,7 @@ section.
 
 #### [Community](#community)
 
-> 🛈 Note:
+> ℹ️ Note:
 > Fastify community plugins are part of the broader community efforts,
 > and we are thankful for these contributions. However, they are not
 > maintained by the Fastify team.

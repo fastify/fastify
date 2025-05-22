@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.3.2'
+const VERSION = '5.3.3'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -681,8 +681,12 @@ function fastify (options) {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
-        _addHook.call(this, name, fn)
-        done(err)
+        try {
+          _addHook.call(this, name, fn)
+          done(err)
+        } catch (err) {
+          done(err)
+        }
       })
     }
     return this

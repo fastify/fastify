@@ -162,3 +162,46 @@ test('http/2 server side session emits a timeout event', async t => {
   await p
   await fastify.close()
 })
+
+test('http/2 sessions closed after closing server', async t => {
+  t.plan(1)
+  const fastify = Fastify({
+    http2: true,
+    http2SessionTimeout: 100
+  })
+  await fastify.listen()
+  const url = getServerUrl(fastify)
+  const waitSessionConnect = once(fastify.server, 'session')
+  const session = http2.connect(url)
+  await once(session, 'connect')
+  await waitSessionConnect
+  const waitSessionClosed = once(session, 'close')
+  await fastify.close()
+  await waitSessionClosed
+  t.assert.strictEqual(session.closed, true)
+})
+
+test('http/2 sessions should be closed when setting forceClosedConnections to true', async t => {
+  t.plan(2)
+  const fastify = Fastify({ http2: true, http2SessionTimeout: 100, forceCloseConnections: true })
+  fastify.get('/', () => 'hello world')
+  await fastify.listen()
+  const client = await connect(getServerUrl(fastify))
+  const req = client.request({
+    [http2.HTTP2_HEADER_PATH]: '/',
+    [http2.HTTP2_HEADER_METHOD]: 'GET'
+  })
+  await once(req, 'response')
+  fastify.close()
+  const r2 = client.request({
+    [http2.HTTP2_HEADER_PATH]: '/',
+    [http2.TTP2_HEADER_METHOD]: 'GET'
+  })
+  r2.on('error', (err) => {
+    t.assert.strictEqual(err.toString(), 'Error [ERR_HTTP2_STREAM_ERROR]: Stream closed with error code NGHTTP2_REFUSED_STREAM')
+  })
+  await once(r2, 'error')
+  r2.end()
+  t.assert.strictEqual(client.closed, true)
+  client.destroy()
+})

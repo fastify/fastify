@@ -162,3 +162,21 @@ test('http/2 server side session emits a timeout event', async t => {
   await p
   await fastify.close()
 })
+
+test('http/2 sessions closed after closing server', async t => {
+  t.plan(1)
+  const fastify = Fastify({
+    http2: true,
+    http2SessionTimeout: 100
+  })
+  await fastify.listen()
+  const url = getServerUrl(fastify)
+  const waitSessionConnect = once(fastify.server, 'session')
+  const session = http2.connect(url)
+  await once(session, 'connect')
+  await waitSessionConnect
+  const waitSessionClosed = once(session, 'close')
+  await fastify.close()
+  await waitSessionClosed
+  t.assert.strictEqual(session.closed, true)
+})

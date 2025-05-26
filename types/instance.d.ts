@@ -468,8 +468,19 @@ export interface FastifyInstance<
   /**
    * Set a function that will be called whenever an error happens
    */
-  setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, TypeProvider>) => any | Promise<any>
+
+  setErrorHandler<
+    TError extends FastifyError = FastifyError,
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+    TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+  >(
+    handler: (
+      this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+      error: TError,
+      request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+      reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, TypeProvider>
+    ) => any | Promise<any>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**

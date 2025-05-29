@@ -1511,3 +1511,27 @@ test('Request.setDecorator should update an existing decorator', (t, done) => {
     })
   })
 })
+
+test('Fastify.getDecorator should not bind to Fastify if boundToFastify option is set to false', (t, done) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  function foo () {
+    return this
+  }
+  foo.bar = 1
+
+  fastify.decorate('foo', foo)
+  const boundToFastify = fastify.getDecorator('foo')
+
+  t.assert.ok(boundToFastify() === fastify)
+  t.assert.strictEqual(boundToFastify.bar, undefined)
+
+  const notBountToFastify = fastify.getDecorator('foo', {
+    boundToFastify: false
+  })
+
+  t.assert.strictEqual(notBountToFastify(), undefined)
+  t.assert.strictEqual(notBountToFastify.bar, 1)
+  done()
+})

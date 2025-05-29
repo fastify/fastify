@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 84
+const expectedErrors = 85
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -256,6 +256,16 @@ test('FST_ERR_DEC_UNDECLARED', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_DEC_UNDECLARED')
   t.assert.strictEqual(error.message, "No decorator 'myDecorator' has been declared on request.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_DEC_INVALID_BOUND_OPTION', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_INVALID_BOUND_OPTION('myDecorator')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_INVALID_BOUND_OPTION')
+  t.assert.strictEqual(error.message, "Decorator 'myDecorator' is not a function, use of option 'boundToFastify' is irrelevant.")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

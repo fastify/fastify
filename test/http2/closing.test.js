@@ -8,6 +8,7 @@ const connect = promisify(http2.connect)
 const { once } = require('node:events')
 const { buildCertificate } = require('../build-certificate')
 const { getServerUrl } = require('../helper')
+const { kHttp2ServerSessions } = require('../../lib/symbols')
 
 test.before(buildCertificate)
 
@@ -204,4 +205,48 @@ test('http/2 sessions should be closed when setting forceClosedConnections to tr
   r2.end()
   t.assert.strictEqual(client.closed, true)
   client.destroy()
+})
+
+test('http/2 sessions should be removed from server[kHttp2ServerSessions] Set on goaway', async t => {
+  t.plan(2)
+  const fastify = Fastify({ http2: true, http2SessionTimeout: 100, forceCloseConnections: true })
+  await fastify.listen()
+  const waitSession = once(fastify.server, 'session')
+  const client = http2.connect(getServerUrl(fastify))
+  const [session] = await waitSession
+  const waitGoaway = once(session, 'goaway')
+  t.assert.strictEqual(fastify.server[kHttp2ServerSessions].size, 1)
+  client.goaway()
+  await waitGoaway
+  t.assert.strictEqual(fastify.server[kHttp2ServerSessions].size, 0)
+  client.destroy()
+  await fastify.close()
+})
+
+test('http/2 sessions should be removed from server[kHttp2ServerSessions] Set on frameError', async t => {
+  t.plan(2)
+  const fastify = Fastify({ http2: true, http2SessionTimeout: 100, forceCloseConnections: true })
+  await fastify.listen()
+  const waitSession = once(fastify.server, 'session')
+  const client = http2.connect(getServerUrl(fastify))
+  const [session] = await waitSession
+  t.assert.strictEqual(fastify.server[kHttp2ServerSessions].size, 1)
+  session.emit('frameError', 0, 0, 0)
+  t.assert.strictEqual(fastify.server[kHttp2ServerSessions].size, 0)
+  client.destroy()
+  await fastify.close()
+})
+
+test('http/2 sessions should not be removed from server[kHttp2ServerSessions] from Set if stream id passed on frameError', async t => {
+  t.plan(2)
+  const fastify = Fastify({ http2: true, http2SessionTimeout: 100, forceCloseConnections: true })
+  await fastify.listen()
+  const waitSession = once(fastify.server, 'session')
+  const client = http2.connect(getServerUrl(fastify))
+  const [session] = await waitSession
+  t.assert.strictEqual(fastify.server[kHttp2ServerSessions].size, 1)
+  session.emit('frameError', 0, 0, 1)
+  t.assert.strictEqual(fastify.server[kHttp2ServerSessions].size, 1)
+  client.destroy()
+  await fastify.close()
 })

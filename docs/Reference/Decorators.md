@@ -476,6 +476,34 @@ serverTwo.register(async function (fastify) {
 })
 ```
 
+#### Returning unbound functions
+
+Some libraries return a function that also contains properties and methods.
+By default, `fastify.getDecorator` binds decorated functions to the Fastify instance.
+This is useful when the function relies on `this` referring to the Fastify instance.
+However, it can break libraries that depend on their own internal `this` context.
+
+To avoid this, set the `boundToFastify` option to `false` when retrieving such decorators.
+
+Example:
+```ts
+import knex from 'knex'
+
+fastify.decorate('knex', knex(opts))
+
+// This will bind knex to the Fastify instance and break it
+const knexBoundToFastify = fastify.getDecorator<Knex>('knex')
+console.log(knexBoundToFastify.raw) // undefined
+
+// This preserves knex's original structure and methods
+const knexNotBoundToFastify = fastify.getDecorator<Knex>('knex', { boundToFastify: false })
+console.log(typeof knexNotBoundToFastify.raw === 'function') // true
+```
+
+> **Note:** The `boundToFastify` option is not available on 
+> `request.getDecorator()` or `reply.getDecorator()`.
+
+
 #### Bound functions inference
 
 To save time, it's common to infer function types instead of 

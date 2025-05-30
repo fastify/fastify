@@ -279,14 +279,14 @@ const { createHash } = require('node:crypto')
 reply.trailer('content-md5', function(reply, payload, done) {
   const hash = createHash('md5')
   hash.update(payload)
-  done(null, hash.disgest('hex'))
+  done(null, hash.digest('hex'))
 })
 
 // when you prefer async-await
 reply.trailer('content-md5', async function(reply, payload) {
   const hash = createHash('md5')
   hash.update(payload)
-  return hash.disgest('hex')
+  return hash.digest('hex')
 })
 ```
 

@@ -483,7 +483,7 @@ By default, `fastify.getDecorator` binds decorated functions to the Fastify inst
 This is useful when the function relies on `this` referring to the Fastify instance.
 However, it can break libraries that depend on their own internal `this` context.
 
-To avoid this, set the `boundToFastify` option to `false` when retrieving such decorators.
+To avoid this, set the `bound` option to `false` when retrieving such decorators.
 
 Example:
 ```ts
@@ -496,11 +496,11 @@ const knexBoundToFastify = fastify.getDecorator<Knex>('knex')
 console.log(knexBoundToFastify.raw) // undefined
 
 // This preserves knex's original structure and methods
-const knexNotBoundToFastify = fastify.getDecorator<Knex>('knex', { boundToFastify: false })
+const knexNotBoundToFastify = fastify.getDecorator<Knex>('knex', { bound: false })
 console.log(typeof knexNotBoundToFastify.raw === 'function') // true
 ```
 
-> **Note:** The `boundToFastify` option is not available on 
+> **Note:** The `bound` option is not available on 
 > `request.getDecorator()` or `reply.getDecorator()`.
 
 

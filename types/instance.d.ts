@@ -153,7 +153,7 @@ export interface FastifyInstance<
   decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
 
   getDecorator<T>(name: string | symbol, opts?: {
-    boundToFastify?: boolean
+    bound?: boolean
   }): T;
 
   hasDecorator(decorator: string | symbol): boolean;

@@ -524,10 +524,10 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
 
 expectType<string>(server.getDecorator<string>('foo'))
 expectType<string>(server.getDecorator<string>('foo', {
-  boundToFastify: true
+  bound: true
 }))
 expectType<string>(server.getDecorator<string>('foo', {
-  boundToFastify: false
+  bound: false
 }))
 
 const versionConstraintStrategy = {

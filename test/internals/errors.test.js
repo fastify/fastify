@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 84
+const expectedErrors = 85
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -368,6 +368,15 @@ test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
   t.assert.strictEqual(error.message, 'You cannot provide both logger and loggerInstance. Please provide only one.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_INVALID_LOGGER_LEVEL', t => {
+  t.plan(4)
+  const error = new errors.FST_ERR_LOG_INVALID_LOGGER_LEVEL()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_LOG_INVALID_LOGGER_LEVEL')
+  t.assert.strictEqual(error.message, 'Must be one of trace, debug, info, warn, error, fatal or one of customLevels.')
+  t.assert.strictEqual(error.statusCode, 500)
 })
 
 test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {

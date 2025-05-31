@@ -46,6 +46,3 @@ updates:
         patterns:
           - "ajv"
           - "ajv-*"
-    ignore:
-        - dependency-name: tap
-          update-types: ["version-update:semver-major"]

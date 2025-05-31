@@ -2,8 +2,7 @@
 
 /* eslint no-prototype-builtins: 0 */
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 
@@ -24,8 +23,8 @@ test('plugin namespace', async t => {
   }, { namepace: 'foo' })
 
   // ! but outside the plugin the decorator would be app.foo.utility()
-  t.ok(app.foo.utility)
+  t.assert.ok(app.foo.utility)
 
   const res = await app.inject('/')
-  t.same(res.json(), { utility: 'utility' })
+  t.assert.deepStrictEqual(res.json(), { utility: 'utility' })
 })

@@ -2599,6 +2599,35 @@ test('onError hook', (t, testDone) => {
   })
 })
 
+test('onError hook should be called after error handler', (t, testDone) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  const calls = []
+  fastify.setErrorHandler((err, request, reply) => {
+    calls.push('setErrorHandler')
+    reply.send(err)
+  })
+
+  fastify.addHook('onError', async () => {
+    calls.push('onError')
+  })
+
+  fastify.get('/', (_req, reply) => {
+    reply.send(new Error('test error'))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(calls, ['setErrorHandler', 'onError'])
+    testDone()
+  })
+})
+
 test('reply.send should throw if called inside the onError hook', (t, testDone) => {
   t.plan(3)
 

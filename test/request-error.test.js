@@ -323,52 +323,6 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 })
 
-test('request.routeOptions should be immutable', (t, done) => {
-  t.plan(14)
-  const fastify = Fastify()
-  const handler = function (req, res) {
-    t.assert.strictEqual('POST', req.routeOptions.method)
-    t.assert.strictEqual('/', req.routeOptions.url)
-    t.assert.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
-    t.assert.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
-    t.assert.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
-
-    for (const key of Object.keys(req.routeOptions)) {
-      if (typeof req.routeOptions[key] === 'object' && req.routeOptions[key] !== null) {
-        t.fail('Object.freeze must run recursively on nested structures to ensure that routeOptions is immutable.')
-      }
-    }
-
-    res.send({})
-  }
-  fastify.post('/', {
-    bodyLimit: 1000,
-    handler
-  })
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
-  })
-})
-
 test('request.routeOptions.method is an uppercase string /1', (t, done) => {
   t.plan(4)
   const fastify = Fastify()

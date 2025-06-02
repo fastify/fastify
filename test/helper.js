@@ -12,7 +12,7 @@ module.exports.sleep = promisify(setTimeout)
 
 /**
  * @param method HTTP request method
- * @param t tap instance
+ * @param t node:test instance
  * @param isSetErrorHandler true: using setErrorHandler
  */
 module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {

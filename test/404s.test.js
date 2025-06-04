@@ -102,10 +102,9 @@ test('customized 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
   await t.test('framework-unsupported method', async (t) => {
@@ -116,30 +115,27 @@ test('customized 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
   await t.test('unsupported route', async (t) => {
     t.plan(3)
     const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
   await t.test('with error object', async (t) => {
     t.plan(3)
     const response = await fetch(getServerUrl(fastify) + '/with-error')
 
-    const body = await response.json()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.deepStrictEqual(body, {
+    t.assert.deepStrictEqual(await response.json(), {
       error: 'Not Found',
       message: 'Not Found',
       statusCode: 404
@@ -150,11 +146,10 @@ test('customized 404', async t => {
     t.plan(4)
     const response = await fetch(getServerUrl(fastify) + '/with-error-custom-header')
 
-    const body = await response.json()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
     t.assert.strictEqual(response.headers.get('x-foo'), 'bar')
-    t.assert.deepStrictEqual(body, {
+    t.assert.deepStrictEqual(await response.json(), {
       error: 'Not Found',
       message: 'Not Found',
       statusCode: 404
@@ -179,11 +174,10 @@ test('custom header in notFound handler', async t => {
     t.plan(4)
     const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
     t.assert.strictEqual(response.headers.get('x-foo'), 'bar')
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 })
 
@@ -369,10 +363,9 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
   await t.test('root framework-unsupported method', async (t) => {
@@ -383,20 +376,18 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
   await t.test('root unsupported route', async (t) => {
     t.plan(3)
     const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
   await t.test('unsupported method', async (t) => {
@@ -407,10 +398,9 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 2')
+    t.assert.strictEqual(await response.text(), 'this was not found 2')
   })
 
   await t.test('framework-unsupported method', async (t) => {
@@ -421,20 +411,18 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 2')
+    t.assert.strictEqual(await response.text(), 'this was not found 2')
   })
 
   await t.test('unsupported route', async (t) => {
     t.plan(3)
     const response = await fetch(getServerUrl(fastify) + '/test/notSupported')
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 2')
+    t.assert.strictEqual(await response.text(), 'this was not found 2')
   })
 
   await t.test('unsupported method 2', async (t) => {
@@ -445,10 +433,9 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 3')
+    t.assert.strictEqual(await response.text(), 'this was not found 3')
   })
 
   await t.test('framework-unsupported method 2', async (t) => {
@@ -459,20 +446,18 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 3')
+    t.assert.strictEqual(await response.text(), 'this was not found 3')
   })
 
   await t.test('unsupported route 2', async (t) => {
     t.plan(3)
     const response = await fetch(getServerUrl(fastify) + '/test2/notSupported')
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 3')
+    t.assert.strictEqual(await response.text(), 'this was not found 3')
   })
 
   await t.test('unsupported method 3', async (t) => {
@@ -483,10 +468,9 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 4')
+    t.assert.strictEqual(await response.text(), 'this was not found 4')
   })
 
   await t.test('framework-unsupported method 3', async (t) => {
@@ -497,20 +481,18 @@ test('encapsulated 404', async t => {
       headers: { 'Content-Type': 'application/json' }
     })
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 4')
+    t.assert.strictEqual(await response.text(), 'this was not found 4')
   })
 
   await t.test('unsupported route 3', async (t) => {
     t.plan(3)
     const response = await fetch(getServerUrl(fastify) + '/test3/notSupported')
 
-    const body = await response.text()
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
-    t.assert.strictEqual(body, 'this was not found 4')
+    t.assert.strictEqual(await response.text(), 'this was not found 4')
   })
 })
 
@@ -1038,8 +1020,8 @@ test('Unknown method', async t => {
 
   t.assert.ok(!response.ok)
   t.assert.strictEqual(response.status, 400)
-  const body = await response.json()
-  t.assert.deepStrictEqual(body, {
+
+  t.assert.deepStrictEqual(await response.json(), {
     error: 'Bad Request',
     message: 'Client Error',
     statusCode: 400

@@ -386,19 +386,18 @@ test('encapsulated 404', async t => {
     t.assert.strictEqual(body, 'this was not found')
   })
 
-  await t.test('root framework-unsupported method', (t, done) => {
+  await t.test('root framework-unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify), {
       method: 'PROPFIND',
-      url: getServerUrl(fastify),
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
     })
+
+    const body = await response.text()
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(body, 'this was not found')
   })
 
   await t.test('root unsupported route', (t, done) => {

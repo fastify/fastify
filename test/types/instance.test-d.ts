@@ -36,6 +36,7 @@ expectType<unknown>(server.getSchema('SchemaId'))
 expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())
 expectType<string>(server.listeningOrigin)
+expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
@@ -520,6 +521,9 @@ expectError(server.decorateReply('typedTestReplyMethod', function (x) {
 expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
   return 'foo'
 }))
+
+const foo = server.getDecorator<string>('foo')
+expectType<string>(foo)
 
 const versionConstraintStrategy = {
   name: 'version',

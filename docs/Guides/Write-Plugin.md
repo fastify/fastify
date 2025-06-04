@@ -14,7 +14,7 @@ suggestion"](https://github.com/fastify/fastify/issues?q=is%3Aissue+is%3Aopen+la
 in our issue tracker!*
 
 ## Code
-Fastify uses different techniques to optimize its code, many of them are
+Fastify uses different techniques to optimize its code, many of which are
 documented in our Guides. We highly recommend you read [the hitchhiker's guide
 to plugins](./Plugins-Guide.md) to discover all the APIs you can use to build
 your plugin and learn how to use them.
@@ -53,8 +53,7 @@ Always put an example file in your repository. Examples are very helpful for
 users and give a very fast way to test your plugin. Your users will be grateful.
 
 ## Test
-It is extremely important that a plugin is thoroughly tested to verify that is
-working properly.
+A plugin **must** be thoroughly tested to verify that is working properly.
 
 A plugin without tests will not be accepted to the ecosystem list. A lack of
 tests does not inspire trust nor guarantee that the code will continue to work

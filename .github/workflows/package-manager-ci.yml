@@ -11,6 +11,8 @@ permissions:
 jobs:
   pnpm:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     strategy:
       matrix:
@@ -35,7 +37,7 @@ jobs:
         with:
           version: ${{ matrix.pnpm-version }}
 
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
 
       - name: Run tests
         run: |
@@ -45,6 +47,8 @@ jobs:
 
   yarn:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     strategy:
       matrix:
@@ -66,7 +70,7 @@ jobs:
       - name: Install with yarn
         run: |
           curl -o- -L https://yarnpkg.com/install.sh | bash
-          yarn install --ignore-engines
+          yarn install --ignore-engines --ignore-scripts
 
       - run: yarn
 

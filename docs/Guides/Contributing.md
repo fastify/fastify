@@ -6,9 +6,10 @@ receive your support and knowledge. This guide is our attempt to help you help
 us.
 
 > ## Note
-> This is an informal guide. Please review the formal [CONTRIBUTING
-> document](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md) for
-> full details and our [Developer Certificate of
+> This is an informal guide. For full details, please review the formal
+> [CONTRIBUTING 
+> document](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
+> our [Developer Certificate of
 > Origin](https://en.wikipedia.org/wiki/Developer_Certificate_of_Origin).
 
 ## Table Of Contents
@@ -50,7 +51,7 @@ should expect from others):
 * We have a [Code of
   Conduct](https://github.com/fastify/fastify/blob/main/CODE_OF_CONDUCT.md). You
   must adhere to it to participate in this project.
-* If you open a pull request, please ensure that your contribution passes all
+* If you open a pull request, please ensure your contribution passes all
   tests. If there are test failures, you will need to address them before we can
   merge your contribution.
 
@@ -79,7 +80,7 @@ https://github.com/github/opensource.guide/blob/2868efbf0c14aec821909c19e210c360
 
 Please adhere to the project's code and documentation style. Some popular tools
 that automatically "correct" code and documentation do not follow a style that
-conforms to the styles this project uses. Notably, this project uses
+conforms to this project's styles. Notably, this project uses
 [StandardJS](https://standardjs.com) for code formatting.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/fastify/fastify)

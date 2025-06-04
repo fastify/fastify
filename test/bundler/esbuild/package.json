@@ -5,6 +5,6 @@
     "test": "npm run bundle && node bundler-test.js"
   },
   "devDependencies": {
-    "esbuild": "^0.14.11"
+    "esbuild": "^0.25.0"
   }
 }

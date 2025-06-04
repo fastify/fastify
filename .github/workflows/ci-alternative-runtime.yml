@@ -19,9 +19,13 @@ concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   test-unit:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     permissions:
       contents: read
     strategy:

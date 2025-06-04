@@ -4,7 +4,6 @@ on:
   push:
     branches:
      - main
-     - master
      - next
      - 'v*'
     paths-ignore:
@@ -14,6 +13,9 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+
+permissions:
+  contents: read
 
 jobs:
   install-production:
@@ -45,7 +47,7 @@ jobs:
 
       - name: Install Production
         run: |
-          pnpm install --prod
+          pnpm install --ignore-scripts --prod
 
       - name: Run server
         run: |

@@ -37,6 +37,7 @@
     - [FST_ERR_DEC_MISSING_DEPENDENCY](#fst_err_dec_missing_dependency)
     - [FST_ERR_DEC_AFTER_START](#fst_err_dec_after_start)
     - [FST_ERR_DEC_REFERENCE_TYPE](#fst_err_dec_reference_type)
+    - [FST_ERR_DEC_UNDECLARED](#fst_err_dec_undeclared)
     - [FST_ERR_HOOK_INVALID_TYPE](#fst_err_hook_invalid_type)
     - [FST_ERR_HOOK_INVALID_HANDLER](#fst_err_hook_invalid_handler)
     - [FST_ERR_HOOK_INVALID_ASYNC_HANDLER](#fst_err_hook_invalid_async_handler)
@@ -69,7 +70,6 @@
     - [FST_ERR_SCH_VALIDATION_BUILD](#fst_err_sch_validation_build)
     - [FST_ERR_SCH_SERIALIZATION_BUILD](#fst_err_sch_serialization_build)
     - [FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX](#fst_err_sch_response_schema_not_nested_2xx)
-    - [FST_ERR_HTTP2_INVALID_VERSION](#fst_err_http2_invalid_version)
     - [FST_ERR_INIT_OPTS_INVALID](#fst_err_init_opts_invalid)
     - [FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE](#fst_err_force_close_connections_idle_not_available)
     - [FST_ERR_DUPLICATED_ROUTE](#fst_err_duplicated_route)
@@ -103,8 +103,8 @@
 <a id="error-handling"></a>
 
 #### Uncaught Errors
-In Node.js, uncaught errors are likely to cause memory leaks, file descriptor
-leaks, and other major production issues.
+In Node.js, uncaught errors can cause memory leaks, file descriptor leaks, and
+other major production issues.
 [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were a failed
 attempt to fix this.
 
@@ -113,29 +113,28 @@ way to deal with them is to
 [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly).
 
 #### Catching Errors In Promises
-If you are using promises, you should attach a `.catch()` handler synchronously.
+When using promises, attach a `.catch()` handler synchronously.
 
 ### Errors In Fastify
-Fastify follows an all-or-nothing approach and aims to be lean and optimal as
-much as possible. The developer is responsible for making sure that the errors
-are handled properly.
+Fastify follows an all-or-nothing approach and aims to be lean and optimal. The
+developer is responsible for ensuring errors are handled properly.
 
 #### Errors In Input Data
-Most errors are a result of unexpected input data, so we recommend [validating
-your input data against a JSON schema](./Validation-and-Serialization.md).
+Most errors result from unexpected input data, so it is recommended to
+[validate input data against a JSON schema](./Validation-and-Serialization.md).
 
 #### Catching Uncaught Errors In Fastify
-Fastify tries to catch as many uncaught errors as it can without hindering
+Fastify tries to catch as many uncaught errors as possible without hindering
 performance. This includes:
 
 1. synchronous routes, e.g. `app.get('/', () => { throw new Error('kaboom') })`
 2. `async` routes, e.g. `app.get('/', async () => { throw new Error('kaboom')
    })`
 
-The error in both cases will be caught safely and routed to Fastify's default
-error handler for a generic `500 Internal Server Error` response.
+In both cases, the error will be caught safely and routed to Fastify's default
+error handler, resulting in a generic `500 Internal Server Error` response.
 
-To customize this behavior you should use
+To customize this behavior, use
 [`setErrorHandler`](./Server.md#seterrorhandler).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
@@ -145,52 +144,50 @@ From the [Hooks documentation](./Hooks.md#manage-errors-from-a-hook):
 > `done()` and Fastify will automatically close the request and send the
 > appropriate error code to the user.
 
-When a custom error handler has been defined through
-[`setErrorHandler`](./Server.md#seterrorhandler), the custom error handler will
-receive the error passed to the `done()` callback (or through other supported
-automatic error handling mechanisms). If `setErrorHandler` has been used
-multiple times to define multiple handlers, the error will be routed to the most
-precedent handler defined within the error [encapsulation
-context](./Encapsulation.md). Error handlers are fully encapsulated, so a
-`setErrorHandler` call within a plugin will limit the error handler to that
-plugin's context.
+When a custom error handler is defined through
+[`setErrorHandler`](./Server.md#seterrorhandler), it will receive the error
+passed to the `done()` callback or through other supported automatic error
+handling mechanisms. If `setErrorHandler` is used multiple times, the error will
+be routed to the most precedent handler within the error
+[encapsulation context](./Encapsulation.md). Error handlers are fully
+encapsulated, so a `setErrorHandler` call within a plugin will limit the error
+handler to that plugin's context.
 
 The root error handler is Fastify's generic error handler. This error handler
 will use the headers and status code in the `Error` object, if they exist. The
 headers and status code will not be automatically set if a custom error handler
 is provided.
 
-Some things to consider in your custom error handler:
+The following should be considered when using a custom error handler:
 
-- you can `reply.send(data)`, which will behave as it would in [regular route
-  handlers](./Reply.md#senddata)
+- `reply.send(data)` behaves as in [regular route handlers](./Reply.md#senddata)
   - objects are serialized, triggering the `preSerialization` lifecycle hook if
-    you have one defined
-  - strings, buffers, and streams are sent to the client, with appropriate
-    headers (no serialization)
+    defined
+  - strings, buffers, and streams are sent to the client with appropriate headers
+    (no serialization)
 
-- You can throw a new error in your custom error handler - errors (new error or
-	the received error parameter re-thrown) - will call the parent `errorHandler`.
-  - `onError` hook will be triggered once only for the first error being thrown.
-  - an error will not be triggered twice from a lifecycle hook - Fastify
-    internally monitors the error invocation to avoid infinite loops for errors
-    thrown in the reply phases of the lifecycle. (those after the route handler)
+- Throwing a new error in a custom error handler will call the parent
+  `errorHandler`.
+  - The `onError` hook will be triggered once for the first error thrown
+  - An error will not be triggered twice from a lifecycle hook. Fastify
+    internally monitors error invocation to avoid infinite loops for errors
+    thrown in the reply phases of the lifecycle (those after the route handler)
 
-When utilizing Fastify's custom error handling through [`setErrorHandler`](./Server.md#seterrorhandler),
-you should be aware of how errors are propagated between custom and default
-error handlers.
+When using Fastify's custom error handling through
+[`setErrorHandler`](./Server.md#seterrorhandler), be aware of how errors are
+propagated between custom and default error handlers.
 
-If a plugin's error handler re-throws an error, and the error is not an
-instance of [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
-(as seen in the `/bad` route in the following example), it will not propagate
-to the parent context error handler. Instead, it will be caught by the default
-error handler.
+If a plugin's error handler re-throws an error that is not an instance of
+[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error),
+it will not propagate to the parent context error handler. Instead, it will be
+caught by the default error handler. This can be seen in the `/bad` route of the
+example below.
 
-To ensure consistent error handling, it is recommended to throw instances of
-`Error`. For instance, in the following example, replacing `throw 'foo'` with
-`throw new Error('foo')` in the `/bad` route ensures that errors propagate through
-the custom error handling chain as intended. This practice helps avoid potential
-pitfalls when working with custom error handling in Fastify.
+To ensure consistent error handling, throw instances of `Error`. For example,
+replace `throw 'foo'` with `throw new Error('foo')` in the `/bad` route to
+ensure errors propagate through the custom error handling chain as intended.
+This practice helps avoid potential pitfalls when working with custom error
+handling in Fastify.
 
 For example:
 ```js
@@ -243,7 +240,7 @@ You can access `errorCodes` for mapping:
 // ESM
 import { errorCodes } from 'fastify'
 
-// CommonJs
+// CommonJS
 const errorCodes = require('fastify').errorCodes
 ```
 
@@ -268,7 +265,7 @@ fastify.setErrorHandler(function (error, request, reply) {
     // Send error response
     reply.status(500).send({ ok: false })
   } else {
-    // fastify will use parent error handler to handle this
+    // Fastify will use parent error handler to handle this
     reply.send(error)
   }
 })
@@ -283,7 +280,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
-Below is a table with all the error codes that Fastify uses.
+Below is a table with all the error codes used by Fastify.
 
 | Code | Description | How to solve | Discussion |
 |------|-------------|--------------|------------|
@@ -311,6 +308,7 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_dec_missing_dependency">FST_ERR_DEC_MISSING_DEPENDENCY</a> | The decorator cannot be registered due to a missing dependency. | Register the missing dependency. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_after_start">FST_ERR_DEC_AFTER_START</a> | The decorator cannot be added after start. | Add the decorator before starting the server. | [#2128](https://github.com/fastify/fastify/pull/2128) |
 | <a id="fst_err_dec_reference_type">FST_ERR_DEC_REFERENCE_TYPE</a> | The decorator cannot be a reference type. | Define the decorator with a getter/setter interface or an empty decorator with a hook. | [#5462](https://github.com/fastify/fastify/pull/5462) |
+| <a id="fst_err_dec_undeclared">FST_ERR_DEC_UNDECLARED</a> | An attempt was made to access a decorator that has not been declared. | Declare the decorator before using it. | [#](https://github.com/fastify/fastify/pull/)
 | <a id="fst_err_hook_invalid_type">FST_ERR_HOOK_INVALID_TYPE</a> | The hook name must be a string. | Use a string for the hook name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_handler">FST_ERR_HOOK_INVALID_HANDLER</a> | The hook callback must be a function. | Use a function for the hook callback. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_async_handler">FST_ERR_HOOK_INVALID_ASYNC_HANDLER</a> | Async function has too many arguments. Async hooks should not use the `done` argument. | Remove the `done` argument from the async hook. | [#4367](https://github.com/fastify/fastify/pull/4367) |
@@ -343,7 +341,6 @@ Below is a table with all the error codes that Fastify uses.
 | <a id="fst_err_sch_validation_build">FST_ERR_SCH_VALIDATION_BUILD</a> | The JSON schema provided for validation to a route is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_serialization_build">FST_ERR_SCH_SERIALIZATION_BUILD</a> | The JSON schema provided for serialization of a route response is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_response_schema_not_nested_2xx">FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX</a> | Response schemas should be nested under a valid status code (2XX). | Use a valid status code. | [#4554](https://github.com/fastify/fastify/pull/4554) |
-| <a id="fst_err_http2_invalid_version">FST_ERR_HTTP2_INVALID_VERSION</a> | HTTP2 is available only from node >= 8.8.1. | Use a higher version of node. | [#1346](https://github.com/fastify/fastify/pull/1346) |
 | <a id="fst_err_init_opts_invalid">FST_ERR_INIT_OPTS_INVALID</a> | Invalid initialization options. | Use valid initialization options. | [#1471](https://github.com/fastify/fastify/pull/1471) |
 | <a id="fst_err_force_close_connections_idle_not_available">FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE</a> | Cannot set forceCloseConnections to `idle` as your HTTP server does not support `closeIdleConnections` method. | Use a different value for `forceCloseConnections`. | [#3925](https://github.com/fastify/fastify/pull/3925) |
 | <a id="fst_err_duplicated_route">FST_ERR_DUPLICATED_ROUTE</a> | The HTTP method already has a registered controller for that URL. | Use a different URL or register the controller for another HTTP method. | [#2954](https://github.com/fastify/fastify/pull/2954) |

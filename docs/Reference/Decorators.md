@@ -2,16 +2,15 @@
 
 ## Decorators
 
-The decorators API allows customization of the core Fastify objects, such as the
-server instance itself and any request and reply objects used during the HTTP
-request lifecycle. The decorators API can be used to attach any type of property
-to the core objects, e.g. functions, plain objects, or native types.
+The decorators API customizes core Fastify objects, such as the server instance
+and any request and reply objects used during the HTTP request lifecycle. It
+can attach any type of property to core objects, e.g., functions, plain
+objects, or native types.
 
-This API is *synchronous*. Attempting to define a decoration asynchronously
-could result in the Fastify instance booting before the decoration completes its
-initialization. To avoid this issue, and register an asynchronous decoration,
-the `register` API, in combination with `fastify-plugin`, must be used instead.
-To learn more, see the [Plugins](./Plugins.md) documentation.
+This API is *synchronous*. Defining a decoration asynchronously could result in
+the Fastify instance booting before the decoration completes. To register an
+asynchronous decoration, use the `register` API with `fastify-plugin`. See the
+[Plugins](./Plugins.md) documentation for more details.
 
 Decorating core objects with this API allows the underlying JavaScript engine to
 optimize the handling of server, request, and reply objects. This is
@@ -35,9 +34,9 @@ fastify.get('/', function (req, reply) {
 })
 ```
 
-Since the above example mutates the request object after it has already been
-instantiated, the JavaScript engine must deoptimize access to the request
-object. By using the decoration API this deoptimization is avoided:
+The above example mutates the request object after instantiation, causing the
+JavaScript engine to deoptimize access. Using the decoration API avoids this
+deoptimization:
 
 ```js
 // Decorate request with a 'user' property
@@ -54,17 +53,13 @@ fastify.get('/', (req, reply) => {
 })
 ```
 
-Note that it is important to keep the initial shape of a decorated field as
-close as possible to the value intended to be set dynamically in the future.
-Initialize a decorator as a `''` if the intended value is a string, and as
-`null` if it will be an object or a function.
-
-Remember this example works only with value types as reference types will
-thrown and error during the fastify startup. See [decorateRequest](#decorate-request).
-
-See [JavaScript engine fundamentals: Shapes and Inline
-Caches](https://mathiasbynens.be/notes/shapes-ics) for more information on this
-topic.
+Keep the initial shape of a decorated field close to its future dynamic value.
+Initialize a decorator as `''` for strings and `null` for objects or functions.
+This works only with value types; reference types will throw an error during
+Fastify startup. See [decorateRequest](#decorate-request) and
+[JavaScript engine fundamentals: Shapes
+and Inline Caches](https://mathiasbynens.be/notes/shapes-ics)
+for more information.
 
 ### Usage
 <a id="usage"></a>
@@ -72,8 +67,7 @@ topic.
 #### `decorate(name, value, [dependencies])`
 <a id="decorate"></a>
 
-This method is used to customize the Fastify [server](./Server.md)
-instance.
+This method customizes the Fastify [server](./Server.md) instance.
 
 For example, to attach a new method to the server instance:
 
@@ -83,7 +77,7 @@ fastify.decorate('utility', function () {
 })
 ```
 
-As mentioned above, non-function values can be attached to the server instance as:
+Non-function values can also be attached to the server instance:
 
 ```js
 fastify.decorate('conf', {
@@ -118,9 +112,9 @@ fastify.get('/', async function (request, reply) {
 ```
 
 The `dependencies` parameter is an optional list of decorators that the
-decorator being defined relies upon. This list is simply a list of string names
-of other decorators. In the following example, the "utility" decorator depends
-upon "greet" and "hi" decorators:
+decorator being defined relies upon. This list contains the names of other
+decorators. In the following example, the "utility" decorator depends on the
+"greet" and "hi" decorators:
 
 ```js
 async function greetDecorator (fastify, opts) {
@@ -155,18 +149,17 @@ fastify.listen({ port: 3000 }, (err, address) => {
 })
 ```
 
-Note: using an arrow function will break the binding of `this` to the
-`FastifyInstance`.
+Using an arrow function breaks the binding of `this` to
+the `FastifyInstance`.
 
-If a dependency is not satisfied, the `decorate` method will throw an exception.
-The dependency check is performed before the server instance is booted. Thus, it
-cannot occur during runtime.
+If a dependency is not satisfied, the `decorate` method throws an exception.
+The dependency check occurs before the server instance boots, not during
+runtime.
 
 #### `decorateReply(name, value, [dependencies])`
 <a id="decorate-reply"></a>
 
-As the name suggests, this API is used to add new methods/properties to the core
-`Reply` object:
+This API adds new methods/properties to the core `Reply` object:
 
 ```js
 fastify.decorateReply('utility', function () {
@@ -174,29 +167,29 @@ fastify.decorateReply('utility', function () {
 })
 ```
 
-Note: using an arrow function will break the binding of `this` to the Fastify
+Using an arrow function will break the binding of `this` to the Fastify
 `Reply` instance.
 
-Note: using `decorateReply` will throw and error if used with a reference type:
+Using `decorateReply` will throw and error if used with a reference type:
 
 ```js
 // Don't do this
 fastify.decorateReply('foo', { bar: 'fizz'})
 ```
-In this example, the reference of the object would be shared with all the requests
-and **any mutation will impact all requests, potentially creating security
-vulnerabilities or memory leaks**, so Fastify blocks it.
+In this example, the object reference would be shared with all requests, and
+**any mutation will impact all requests, potentially creating security
+vulnerabilities or memory leaks**. Fastify blocks this.
 
 To achieve proper encapsulation across requests configure a new value for each
-incoming request in the [`'onRequest'` hook](./Hooks.md#onrequest). Example:
+incoming request in the [`'onRequest'` hook](./Hooks.md#onrequest).
 
 ```js
 const fp = require('fastify-plugin')
 
 async function myPlugin (app) {
-  app.decorateRequest('foo')
+  app.decorateReply('foo')
   app.addHook('onRequest', async (req, reply) => {
-    req.foo = { bar: 42 }
+    reply.foo = { bar: 42 }
   })
 }
 
@@ -208,8 +201,8 @@ See [`decorate`](#decorate) for information about the `dependencies` parameter.
 #### `decorateRequest(name, value, [dependencies])`
 <a id="decorate-request"></a>
 
-As above with [`decorateReply`](#decorate-reply), this API is used add new
-methods/properties to the core `Request` object:
+As with [`decorateReply`](#decorate-reply), this API adds new methods/properties
+to the core `Request` object:
 
 ```js
 fastify.decorateRequest('utility', function () {
@@ -217,18 +210,18 @@ fastify.decorateRequest('utility', function () {
 })
 ```
 
-Note: using an arrow function will break the binding of `this` to the Fastify
+Using an arrow function will break the binding of `this` to the Fastify
 `Request` instance.
 
-Note: using `decorateRequest` will emit an error if used with a reference type:
+Using `decorateRequest` will emit an error if used with a reference type:
 
 ```js
 // Don't do this
 fastify.decorateRequest('foo', { bar: 'fizz'})
 ```
-In this example, the reference of the object would be shared with all the requests
-and **any mutation will impact all requests, potentially creating security
-vulnerabilities or memory leaks**, so Fastify blocks it.
+In this example, the object reference would be shared with all requests, and
+**any mutation will impact all requests, potentially creating security
+vulnerabilities or memory leaks**. Fastify blocks this.
 
 To achieve proper encapsulation across requests configure a new value for each
 incoming request in the [`'onRequest'` hook](./Hooks.md#onrequest).
@@ -249,7 +242,7 @@ module.exports = fp(myPlugin)
 ```
 
 The hook solution is more flexible and allows for more complex initialization
-because you can add more logic to the `onRequest` hook.
+because more logic can be added to the `onRequest` hook.
 
 Another approach is to use the getter/setter pattern, but it requires 2 decorators:
 
@@ -268,8 +261,7 @@ fastify.get('/', async function (req, reply) {
 })
 ```
 
-This ensures that the `user` property is always unique for each
-request.
+This ensures that the `user` property is always unique for each request.
 
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
@@ -305,9 +297,7 @@ fastify.hasReplyDecorator('utility')
 
 Defining a decorator (using `decorate`, `decorateRequest`, or `decorateReply`)
 with the same name more than once in the same **encapsulated** context will
-throw an exception.
-
-As an example, the following will throw:
+throw an exception. For example, the following will throw:
 
 ```js
 const server = require('fastify')()
@@ -358,9 +348,9 @@ server.listen({ port: 3000 })
 ### Getters and Setters
 <a id="getters-setters"></a>
 
-Decorators accept special "getter/setter" objects. These objects have functions
-named `getter` and `setter` (though the `setter` function is optional). This
-allows defining properties via decorators, for example:
+Decorators accept special "getter/setter" objects with `getter` and optional
+`setter` functions. This allows defining properties via decorators,
+for example:
 
 ```js
 fastify.decorate('foo', {
@@ -374,4 +364,203 @@ Will define the `foo` property on the Fastify instance:
 
 ```js
 console.log(fastify.foo) // 'a getter'
+```
+
+### `getDecorator<T>` API
+
+Fastify's `getDecorator<T>` API retrieves an existing decorator from the
+Fastify instance, `Request`, or `Reply`. If the decorator is not defined, an
+`FST_ERR_DEC_UNDECLARED` error is thrown.
+
+#### Use cases
+
+**Early Plugin Dependency Validation**
+
+`getDecorator<T>` on Fastify instance verifies that required decorators are
+available at registration time. 
+
+For example:
+
+```js
+fastify.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator('usersRepository')
+
+  fastify.get('/users', async function (request, reply) {
+    // We are sure `usersRepository` exists at runtime
+    return usersRepository.findAll()
+  })
+})
+```
+
+**Handling Missing Decorators**
+
+Directly accessing a decorator may lead to unexpected behavior if it is not declared:
+
+```ts
+const user = request.user;
+if (user && user.isAdmin) {
+  // Execute admin tasks.
+}
+```
+
+If `request.user` doesn't exist, then `user` will be set to `undefined`. 
+This makes it unclear whether the user is unauthenticated or the decorator is missing.
+
+Using `getDecorator` enforces runtime safety:
+
+```ts
+// If the decorator is missing, an explicit `FST_ERR_DEC_UNDECLARED` 
+// error is thrown immediately.
+const user = request.getDecorator('user');
+if (user && user.isAdmin) {
+  // Execute admin tasks.
+}
+```
+
+**Alternative to Module Augmentation**
+
+Decorators are typically typed via module augmentation:
+
+```ts
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersRepository: IUsersRepository
+  }
+  interface FastifyRequest {
+    session: ISession
+  }
+  interface FastifyReply {
+    sendSuccess: SendSuccessFn
+  }
+}
+```
+
+This approach modifies the Fastify instance globally, which may lead to
+conflicts and inconsistent behavior in multi-server setups or with plugin
+encapsulation.
+
+Using `getDecorator<T>` allows to limit types scope:
+
+```ts
+serverOne.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<PostgreUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateRequest('session', null)
+  fastify.addHook('onRequest', async (req, reply) => {
+    // Yes, the request object has a setDecorator method. 
+    // More information will be provided soon.
+    req.setDecorator('session', { user: 'Jean' })
+  })
+
+  fastify.get('/me', (request, reply) => {
+    const session = request.getDecorator<ISession>('session')
+    reply.send(session)
+  })
+})
+
+serverTwo.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<SqlLiteUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateReply('sendSuccess', function (data) {
+    return this.send({ success: true })
+  })
+
+  fastify.get('/success', async (request, reply) => {
+    const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+    await sendSuccess()
+  })
+})
+```
+
+#### Bound functions inference
+
+To save time, it's common to infer function types instead of 
+writing them manually:
+
+```ts
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+export type SendSuccess = typeof sendSuccess
+```
+
+However, `getDecorator` returns functions with the `this` 
+context already **bound**, meaning the `this` parameter disappears 
+from the function signature.
+
+To correctly type it, you should use `OmitThisParameter` utility:
+
+```ts
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+type BoundSendSuccess = OmitThisParameter<typeof sendSuccess>
+
+fastify.decorateReply('sendSuccess', sendSuccess)
+fastify.get('/success', async (request, reply) => {
+  const sendSuccess = reply.getDecorator<BoundSendSuccess>('sendSuccess')
+  await sendSuccess()
+})
+```
+
+### `Request.setDecorator<T>` Method
+
+The `setDecorator<T>` method provides a safe and convenient way to 
+update the value of a `Request` decorator.  
+If the decorator does not exist, a `FST_ERR_DEC_UNDECLARED` error 
+is thrown.
+
+#### Use Cases
+
+**Runtime Safety**
+
+A typical way to set a `Request` decorator looks like this:
+
+```ts
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  req.user = 'Bob Dylan'
+})
+```
+
+However, there is no guarantee that the decorator actually exists 
+unless you manually check beforehand.  
+Additionally, typos are common, e.g. `account`, `acount`, or `accout`.
+
+By using `setDecorator`, you are always sure that the decorator exists:
+
+```ts
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  // Throws FST_ERR_DEC_UNDECLARED if the decorator does not exist
+  req.setDecorator('user-with-typo', 'Bob Dylan')
+})
+```
+
+---
+
+**Type Safety**
+
+If the `FastifyRequest` interface does not declare the decorator, you 
+would typically need to use type assertions:
+
+```ts
+fastify.addHook('preHandler', async (req, reply) => {
+  (req as typeof req & { user: string }).user = 'Bob Dylan'
+})
+```
+
+The `setDecorator<T>` method eliminates the need for explicit type 
+assertions while allowing type safety:
+
+```ts
+fastify.addHook('preHandler', async (req, reply) => {
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
 ```

@@ -152,6 +152,8 @@ export interface FastifyInstance<
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
 
+  getDecorator<T>(name: string | symbol): T;
+
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;
@@ -548,6 +550,10 @@ export interface FastifyInstance<
    * Remove all content type parsers, including the default ones
    */
   removeAllContentTypeParsers: removeAllContentTypeParsers
+  /**
+   * Returns an array of strings containing the list of supported HTTP methods
+   */
+  supportedMethods: string[]
   /**
    * Add a non-standard HTTP method
    *

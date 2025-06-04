@@ -10,7 +10,7 @@ const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
-test('async hooks', (t, testDone) => {
+test('async hooks', t => {
   t.plan(21)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRequest', async function (request, reply) {
@@ -37,7 +37,7 @@ test('async hooks', (t, testDone) => {
   })
 
   const completion = waitForCb({
-    steps: 3
+    steps: 6
   })
   fastify.addHook('onResponse', async function (request, reply) {
     await sleep(1)
@@ -71,6 +71,7 @@ test('async hooks', (t, testDone) => {
       t.assert.strictEqual(response.statusCode, 200)
       t.assert.strictEqual(response.headers['content-length'], '' + body.length)
       t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completion.stepIn()
     })
     sget({
       method: 'HEAD',
@@ -78,6 +79,7 @@ test('async hooks', (t, testDone) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 500)
+      completion.stepIn()
     })
     sget({
       method: 'DELETE',
@@ -85,10 +87,11 @@ test('async hooks', (t, testDone) => {
     }, (err, response, body) => {
       t.assert.ifError(err)
       t.assert.strictEqual(response.statusCode, 500)
+      completion.stepIn()
     })
-
-    completion.patience.then(testDone)
   })
+
+  return completion.patience
 })
 
 test('modify payload', (t, testDone) => {

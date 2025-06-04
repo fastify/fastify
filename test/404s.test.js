@@ -153,21 +153,20 @@ test('customized 404', async t => {
     })
   })
 
-  await t.test('error object with headers property', (t, done) => {
+  await t.test('error object with headers property', async (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/with-error-custom-header'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['x-foo'], 'bar')
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Not Found',
-        message: 'Not Found',
-        statusCode: 404
-      })
-      done()
+    const response = await fetch(getServerUrl(fastify) + '/with-error-custom-header', {
+      method: 'GET'
+    })
+
+    const body = await response.json()
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(response.headers.get('x-foo'), 'bar')
+    t.assert.deepStrictEqual(body, {
+      error: 'Not Found',
+      message: 'Not Found',
+      statusCode: 404
     })
   })
 })

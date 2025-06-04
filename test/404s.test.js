@@ -184,18 +184,17 @@ test('custom header in notFound handler', async t => {
 
   await fastify.listen({ port: 0 })
 
-  await t.test('not found with custom header', (t, done) => {
+  await t.test('not found with custom header', async (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['x-foo'], 'bar')
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
+    const response = await fetch(getServerUrl(fastify) + '/notSupported', {
+      method: 'GET'
     })
+
+    const body = await response.text()
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(response.headers.get('x-foo'), 'bar')
+    t.assert.strictEqual(body, 'this was not found')
   })
 })
 

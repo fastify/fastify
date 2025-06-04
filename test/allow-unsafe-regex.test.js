@@ -19,8 +19,7 @@ test('allow unsafe regex', async t => {
 
   const result = await fetch(`http://localhost:${fastify.server.address().port}/1234`)
   t.assert.strictEqual(result.status, 200)
-  const body = await result.json()
-  t.assert.deepStrictEqual(body, { foo: '1234' })
+  t.assert.deepStrictEqual(await result.json(), { foo: '1234' })
 })
 
 test('allow unsafe regex not match', async t => {
@@ -89,6 +88,5 @@ test('allow unsafe regex allow unsafe', async t => {
 
   const result = await fetch(`http://localhost:${fastify.server.address().port}/1234`)
   t.assert.strictEqual(result.status, 200)
-  const body = await result.json()
-  t.assert.deepStrictEqual(body, { foo: '1234' })
+  t.assert.deepStrictEqual(await result.json(), { foo: '1234' })
 })

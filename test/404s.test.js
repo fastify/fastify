@@ -1058,8 +1058,8 @@ test('Unknown method', async t => {
 
   t.assert.ok(!response.ok)
   t.assert.strictEqual(response.status, 400)
-  const body = await response.text()
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  const body = await response.json()
+  t.assert.deepStrictEqual(body, {
     error: 'Bad Request',
     message: 'Client Error',
     statusCode: 400
@@ -1090,8 +1090,7 @@ test('recognizes errors from the http-errors module', async t => {
   const response = await fetch(getServerUrl(fastify))
 
   t.assert.ok(!response.ok)
-  const body = await response.text()
-  const obj = JSON.parse(body.toString())
+  const obj = await response.json()
   t.assert.deepStrictEqual(obj, {
     error: 'Not Found',
     message: 'Not Found',

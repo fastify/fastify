@@ -45,9 +45,7 @@ test('default 404', async t => {
 
   await t.test('unsupported route', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 404)
@@ -126,9 +124,7 @@ test('customized 404', async t => {
 
   await t.test('unsupported route', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
     const body = await response.text()
     t.assert.ok(!response.ok)
@@ -138,9 +134,7 @@ test('customized 404', async t => {
 
   await t.test('with error object', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/with-error', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/with-error')
 
     const body = await response.json()
     t.assert.ok(!response.ok)
@@ -154,9 +148,7 @@ test('customized 404', async t => {
 
   await t.test('error object with headers property', async (t) => {
     t.plan(4)
-    const response = await fetch(getServerUrl(fastify) + '/with-error-custom-header', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/with-error-custom-header')
 
     const body = await response.json()
     t.assert.ok(!response.ok)
@@ -185,9 +177,7 @@ test('custom header in notFound handler', async t => {
 
   await t.test('not found with custom header', async (t) => {
     t.plan(4)
-    const response = await fetch(getServerUrl(fastify) + '/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
     const body = await response.text()
     t.assert.ok(!response.ok)
@@ -401,9 +391,7 @@ test('encapsulated 404', async t => {
 
   await t.test('root unsupported route', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
 
     const body = await response.text()
     t.assert.ok(!response.ok)
@@ -441,9 +429,7 @@ test('encapsulated 404', async t => {
 
   await t.test('unsupported route', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/test/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/test/notSupported')
 
     const body = await response.text()
     t.assert.ok(!response.ok)
@@ -481,9 +467,7 @@ test('encapsulated 404', async t => {
 
   await t.test('unsupported route 2', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/test2/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/test2/notSupported')
 
     const body = await response.text()
     t.assert.ok(!response.ok)
@@ -521,9 +505,7 @@ test('encapsulated 404', async t => {
 
   await t.test('unsupported route 3', async (t) => {
     t.plan(3)
-    const response = await fetch(getServerUrl(fastify) + '/test3/notSupported', {
-      method: 'GET'
-    })
+    const response = await fetch(getServerUrl(fastify) + '/test3/notSupported')
 
     const body = await response.text()
     t.assert.ok(!response.ok)
@@ -957,9 +939,7 @@ test('hooks check 404', async t => {
   t.assert.ok(!response1.ok)
   t.assert.strictEqual(response1.status, 404)
 
-  const response2 = await fetch(getServerUrl(fastify) + '/notSupported?foo=asd', {
-    method: 'GET'
-  })
+  const response2 = await fetch(getServerUrl(fastify) + '/notSupported?foo=asd')
 
   t.assert.ok(!response2.ok)
   t.assert.strictEqual(response2.status, 404)
@@ -1232,9 +1212,7 @@ test('404 inside onSend', async t => {
 
   await fastify.listen({ port: 0 })
 
-  const response = await fetch(getServerUrl(fastify), {
-    method: 'GET'
-  })
+  const response = await fetch(getServerUrl(fastify))
 
   t.assert.ok(!response.ok)
   t.assert.strictEqual(response.status, 404)

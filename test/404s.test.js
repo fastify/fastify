@@ -400,17 +400,16 @@ test('encapsulated 404', async t => {
     t.assert.strictEqual(body, 'this was not found')
   })
 
-  await t.test('root unsupported route', (t, done) => {
+  await t.test('root unsupported route', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
+    const response = await fetch(getServerUrl(fastify) + '/notSupported', {
+      method: 'GET'
     })
+
+    const body = await response.text()
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(body, 'this was not found')
   })
 
   await t.test('unsupported method', (t, done) => {

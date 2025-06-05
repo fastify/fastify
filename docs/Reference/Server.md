@@ -9,97 +9,96 @@ options object which is used to customize the resulting instance. This document
 describes the properties available in that options object.
 
 - [Factory](#factory)
-  - [`http`](#http)
-  - [`http2`](#http2)
-  - [`https`](#https)
-  - [`connectionTimeout`](#connectiontimeout)
-  - [`keepAliveTimeout`](#keepalivetimeout)
-  - [`forceCloseConnections`](#forcecloseconnections)
-  - [`maxRequestsPerSocket`](#maxrequestspersocket)
-  - [`requestTimeout`](#requesttimeout)
-  - [`ignoreTrailingSlash`](#ignoretrailingslash)
-  - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
-  - [`maxParamLength`](#maxparamlength)
-  - [`bodyLimit`](#bodylimit)
-  - [`onProtoPoisoning`](#onprotopoisoning)
-  - [`onConstructorPoisoning`](#onconstructorpoisoning)
-  - [`logger`](#logger)
-  - [`loggerInstance`](#loggerInstance)
-  - [`disableRequestLogging`](#disablerequestlogging)
-  - [`serverFactory`](#serverfactory)
-  - [`caseSensitive`](#casesensitive)
-  - [`allowUnsafeRegex`](#allowunsaferegex)
-  - [`requestIdHeader`](#requestidheader)
-  - [`requestIdLogLabel`](#requestidloglabel)
-  - [`genReqId`](#genreqid)
-  - [`trustProxy`](#trustproxy)
-  - [`pluginTimeout`](#plugintimeout)
-  - [`querystringParser`](#querystringparser)
-  - [`exposeHeadRoutes`](#exposeheadroutes)
-  - [`constraints`](#constraints)
-  - [`return503OnClosing`](#return503onclosing)
-  - [`ajv`](#ajv)
-  - [`serializerOpts`](#serializeropts)
-  - [`http2SessionTimeout`](#http2sessiontimeout)
-  - [`frameworkErrors`](#frameworkerrors)
-  - [`clientErrorHandler`](#clienterrorhandler)
-  - [`rewriteUrl`](#rewriteurl)
-  - [`useSemicolonDelimiter`](#usesemicolondelimiter)
+  - [http](#http)
+  - [http2](#http2)
+  - [https](#https)
+  - [connectionTimeout](#connectiontimeout)
+  - [keepAliveTimeout](#keepalivetimeout)
+  - [forceCloseConnections](#forcecloseconnections)
+  - [maxRequestsPerSocket](#maxrequestspersocket)
+  - [requestTimeout](#requesttimeout)
+  - [ignoreTrailingSlash](#ignoretrailingslash)
+  - [ignoreDuplicateSlashes](#ignoreduplicateslashes)
+  - [maxParamLength](#maxparamlength)
+  - [bodyLimit](#bodylimit)
+  - [onProtoPoisoning](#onprotopoisoning)
+  - [onConstructorPoisoning](#onconstructorpoisoning)
+  - [logger](#logger)
+  - [loggerInstance](#loggerInstance)
+  - [disableRequestLogging](#disablerequestlogging)
+  - [serverFactory](#serverfactory)
+  - [caseSensitive](#casesensitive)
+  - [allowUnsafeRegex](#allowunsaferegex)
+  - [requestIdHeader](#requestidheader)
+  - [requestIdLogLabel](#requestidloglabel)
+  - [genReqId](#genreqid)
+  - [trustProxy](#trustproxy)
+  - [pluginTimeout](#plugintimeout)
+  - [querystringParser](#querystringparser)
+  - [exposeHeadRoutes](#exposeheadroutes)
+  - [constraints](#constraints)
+  - [return503OnClosing](#return503onclosing)
+  - [ajv](#ajv)
+  - [serializerOpts](#serializeropts)
+  - [http2SessionTimeout](#http2sessiontimeout)
+  - [frameworkErrors](#frameworkerrors)
+  - [clientErrorHandler](#clienterrorhandler)
+  - [rewriteUrl](#rewriteurl)
+  - [useSemicolonDelimiter](#usesemicolondelimiter)
 - [Instance](#instance)
-  - [Server Methods](#server-methods)
-    - [server](#server)
-    - [after](#after)
-    - [ready](#ready)
-    - [listen](#listen)
-  - [`listenTextResolver`](#listentextresolver)
-    - [addresses](#addresses)
-    - [routing](#routing)
-    - [route](#route)
-    - [hasRoute](#hasroute)
-    - [findRoute](#findroute)
-    - [close](#close)
-    - [decorate\*](#decorate)
-    - [register](#register)
-    - [addHook](#addhook)
-    - [prefix](#prefix)
-    - [pluginName](#pluginname)
-    - [hasPlugin](#hasplugin)
+  - [server](#server)
+  - [after](#after)
+  - [ready](#ready)
+  - [listen](#listen)
+  - [listenTextResolver](#listentextresolver)
+  - [addresses](#addresses)
+  - [routing](#routing)
+  - [route](#route)
+  - [hasRoute](#hasroute)
+  - [findRoute](#findroute)
+  - [close](#close)
+  - [decorate\*](#decorate)
+  - [register](#register)
+  - [addHook](#addhook)
+  - [prefix](#prefix)
+  - [pluginName](#pluginname)
+  - [hasPlugin](#hasplugin)
   - [listeningOrigin](#listeningorigin)
-    - [log](#log)
-    - [version](#version)
-    - [inject](#inject)
-    - [addHttpMethod](#addHttpMethod)
-    - [addSchema](#addschema)
-    - [getSchemas](#getschemas)
-    - [getSchema](#getschema)
-    - [setReplySerializer](#setreplyserializer)
-    - [setValidatorCompiler](#setvalidatorcompiler)
-    - [setSchemaErrorFormatter](#setschemaerrorformatter)
-    - [setSerializerCompiler](#setserializercompiler)
-    - [validatorCompiler](#validatorcompiler)
-    - [serializerCompiler](#serializercompiler)
-    - [schemaErrorFormatter](#schemaerrorformatter)
-    - [schemaController](#schemacontroller)
-    - [setNotFoundHandler](#setnotfoundhandler)
-    - [setErrorHandler](#seterrorhandler)
-    - [setChildLoggerFactory](#setchildloggerfactory)
-    - [setGenReqId](#setGenReqId)
-    - [addConstraintStrategy](#addconstraintstrategy)
-    - [hasConstraintStrategy](#hasconstraintstrategy)
-    - [printRoutes](#printroutes)
-    - [printPlugins](#printplugins)
-    - [addContentTypeParser](#addcontenttypeparser)
-    - [hasContentTypeParser](#hascontenttypeparser)
-    - [removeContentTypeParser](#removecontenttypeparser)
-    - [removeAllContentTypeParsers](#removeallcontenttypeparsers)
-    - [getDefaultJsonParser](#getdefaultjsonparser)
-    - [defaultTextParser](#defaulttextparser)
-    - [errorHandler](#errorhandler)
-    - [childLoggerFactory](#childloggerfactory)
-    - [Symbol.asyncDispose](#symbolasyncdispose)
-    - [initialConfig](#initialconfig)
+  - [log](#log)
+  - [version](#version)
+  - [inject](#inject)
+  - [addHttpMethod](#addHttpMethod)
+  - [addSchema](#addschema)
+  - [getSchemas](#getschemas)
+  - [getSchema](#getschema)
+  - [setReplySerializer](#setreplyserializer)
+  - [setValidatorCompiler](#setvalidatorcompiler)
+  - [setSchemaErrorFormatter](#setschemaerrorformatter)
+  - [setSerializerCompiler](#setserializercompiler)
+  - [validatorCompiler](#validatorcompiler)
+  - [serializerCompiler](#serializercompiler)
+  - [schemaErrorFormatter](#schemaerrorformatter)
+  - [schemaController](#schemacontroller)
+  - [setNotFoundHandler](#setnotfoundhandler)
+  - [setErrorHandler](#seterrorhandler)
+  - [setChildLoggerFactory](#setchildloggerfactory)
+  - [setGenReqId](#setGenReqId)
+  - [addConstraintStrategy](#addconstraintstrategy)
+  - [hasConstraintStrategy](#hasconstraintstrategy)
+  - [printRoutes](#printroutes)
+  - [printPlugins](#printplugins)
+  - [addContentTypeParser](#addcontenttypeparser)
+  - [hasContentTypeParser](#hascontenttypeparser)
+  - [removeContentTypeParser](#removecontenttypeparser)
+  - [removeAllContentTypeParsers](#removeallcontenttypeparsers)
+  - [getDefaultJsonParser](#getdefaultjsonparser)
+  - [defaultTextParser](#defaulttextparser)
+  - [errorHandler](#errorhandler)
+  - [childLoggerFactory](#childloggerfactory)
+  - [Symbol.asyncDispose](#symbolasyncdispose)
+  - [initialConfig](#initialconfig)
 
-### `http`
+### http
 <a id="factory-http"></a>
 
 + Default: `null`
@@ -111,7 +110,7 @@ method](https://nodejs.org/docs/latest-v20.x/api/http.html#httpcreateserveroptio
 This option is ignored if options [`http2`](#factory-http2) or
 [`https`](#factory-https) are set.
 
-### `http2`
+### http2
 <a id="factory-http2"></a>
 
 + Default: `false`
@@ -120,7 +119,7 @@ If `true` Node.js core's
 [HTTP/2](https://nodejs.org/dist/latest-v20.x/docs/api/http2.html) module is
 used for binding the socket.
 
-### `https`
+### https
 <a id="factory-https"></a>
 
 + Default: `null`
@@ -132,7 +131,7 @@ When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the [`http2`](#factory-http2) option is set.
 
-### `connectionTimeout`
+### connectionTimeout
 <a id="factory-connection-timeout"></a>
 
 + Default: `0` (no timeout)
@@ -144,7 +143,7 @@ the effect of this option.
 
 When `serverFactory` option is specified this option is ignored.
 
-### `keepAliveTimeout`
+### keepAliveTimeout
 <a id="factory-keep-alive-timeout"></a>
 
 + Default: `72000` (72 seconds)
@@ -157,7 +156,7 @@ use.
 
 When `serverFactory` option is specified this option is ignored.
 
-### `forceCloseConnections`
+### forceCloseConnections
 <a id="forcecloseconnections"></a>
 
 + Default: `"idle"` if the HTTP server allows it, `false` otherwise
@@ -181,7 +180,7 @@ supports the
 [`closeIdleConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseidleconnections)
 method, otherwise attempting to set it will throw an exception.
 
-### `maxRequestsPerSocket`
+### maxRequestsPerSocket
 <a id="factory-max-requests-per-socket"></a>
 
 + Default: `0` (no limit)
@@ -196,7 +195,7 @@ ignored.
 > ℹ️ Note:
 >  At the time of writing, only node >= v16.10.0 supports this option.
 
-### `requestTimeout`
+### requestTimeout
 <a id="factory-request-timeout"></a>
 
 + Default: `0` (no limit)
@@ -214,7 +213,7 @@ in front.
 > ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
 
-### `ignoreTrailingSlash`
+### ignoreTrailingSlash
 <a id="factory-ignore-slash"></a>
 
 + Default: `false`
@@ -242,7 +241,7 @@ fastify.get('/bar', function (req, reply) {
 })
 ```
 
-### `ignoreDuplicateSlashes`
+### ignoreDuplicateSlashes
 <a id="factory-ignore-duplicate-slashes"></a>
 
 + Default: `false`
@@ -268,7 +267,7 @@ fastify.get('///foo//bar//', function (req, reply) {
 })
 ```
 
-### `maxParamLength`
+### maxParamLength
 <a id="factory-max-param-length"></a>
 
 + Default: `100`
@@ -282,7 +281,7 @@ This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
 attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
 
-### `bodyLimit`
+### bodyLimit
 <a id="factory-body-limit"></a>
 
 + Default: `1048576` (1MiB)
@@ -293,7 +292,7 @@ reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
-### `onProtoPoisoning`
+### onProtoPoisoning
 <a id="factory-on-proto-poisoning"></a>
 
 + Default: `'error'`
@@ -306,7 +305,7 @@ prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'`, or `'ignore'`.
 
-### `onConstructorPoisoning`
+### onConstructorPoisoning
 <a id="factory-on-constructor-poisoning"></a>
 
 + Default: `'error'`
@@ -319,7 +318,7 @@ prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'`, or `'ignore'`.
 
-### `logger`
+### logger
 <a id="factory-logger"></a>
 
 Fastify includes built-in logging via the [Pino](https://getpino.io/) logger.
@@ -350,7 +349,7 @@ The possible values this property may have are:
       Any user-supplied serializer will override the default serializer of the
       corresponding property.
 
-### `loggerInstance`
+### loggerInstance
 <a id="factory-logger-instance"></a>
 
 + Default: `null`
@@ -378,7 +377,7 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
   const fastify = require('fastify')({logger: customLogger});
   ```
 
-### `disableRequestLogging`
+### disableRequestLogging
 <a id="factory-disable-request-logging"></a>
 
 + Default: `false`
@@ -413,7 +412,7 @@ fastify.addHook('onResponse', (req, reply, done) => {
 })
 ```
 
-### `serverFactory`
+### serverFactory
 <a id="custom-http-server"></a>
 
 You can pass a custom HTTP server to Fastify by using the `serverFactory`
@@ -446,7 +445,7 @@ custom server you must be sure to have the same API exposed. If not, you can
 enhance the server instance inside the `serverFactory` function before the
 `return` statement.
 
-### `caseSensitive`
+### caseSensitive
 <a id="factory-case-sensitive"></a>
 
 + Default: `true`
@@ -471,7 +470,7 @@ fastify.get('/user/:username', (request, reply) => {
 })
 ```
 
-### `allowUnsafeRegex`
+### allowUnsafeRegex
 <a id="factory-allow-unsafe-regex"></a>
 
 + Default `false`
@@ -485,7 +484,7 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 })
 ```
 
-### `requestIdHeader`
+### requestIdHeader
 <a id="factory-request-id-header"></a>
 
 + Default: `'request-id'`
@@ -509,14 +508,14 @@ const fastify = require('fastify')({
 })
 ```
 
-### `requestIdLogLabel`
+### requestIdLogLabel
 <a id="factory-request-id-log-label"></a>
 
 + Default: `'reqId'`
 
 Defines the label used for the request identifier when logging the request.
 
-### `genReqId`
+### genReqId
 <a id="factory-gen-request-id"></a>
 
 + Default: `value of 'request-id' header if provided or monotonically increasing
@@ -541,7 +540,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `trustProxy`
+### trustProxy
 <a id="factory-trust-proxy"></a>
 
 + Default: `false`
@@ -586,7 +585,7 @@ fastify.get('/', (request, reply) => {
 > headers, it is only the last one that is used to derive `request.hostname`
 > and `request.protocol`.
 
-### `pluginTimeout`
+### pluginTimeout
 <a id="plugin-timeout"></a>
 
 + Default: `10000`
@@ -596,7 +595,7 @@ The maximum amount of time in *milliseconds* in which a plugin can load. If not,
 `'ERR_AVVIO_PLUGIN_TIMEOUT'`. When set to `0`, disables this check. This
 controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 
-### `querystringParser`
+### querystringParser
 <a id="factory-querystring-parser"></a>
 
 The default query string parser that Fastify uses is a more performant fork 
@@ -626,7 +625,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `exposeHeadRoutes`
+### exposeHeadRoutes
 <a id="exposeHeadRoutes"></a>
 
 + Default: `true`
@@ -635,7 +634,7 @@ Automatically creates a sibling `HEAD` route for each `GET` route defined. If
 you want a custom `HEAD` handler without disabling this option, make sure to
 define it before the `GET` route.
 
-### `constraints`
+### constraints
 <a id="constraints"></a>
 
 Fastify's built-in route constraints are provided by `find-my-way`, which
@@ -666,7 +665,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `return503OnClosing`
+### return503OnClosing
 <a id="factory-return-503-on-closing"></a>
 
 + Default: `true`
@@ -674,7 +673,7 @@ const fastify = require('fastify')({
 Returns 503 after calling `close` server method. If `false`, the server routes
 the incoming request as usual.
 
-### `ajv`
+### ajv
 <a id="factory-ajv"></a>
 
 Configure the Ajv v8 instance used by Fastify without providing a custom one.
@@ -697,7 +696,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `serializerOpts`
+### serializerOpts
 <a id="serializer-opts"></a>
 
 Customize the options of the default
@@ -712,7 +711,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `http2SessionTimeout`
+### http2SessionTimeout
 <a id="http2-session-timeout"></a>
 
 + Default: `72000`
@@ -727,7 +726,7 @@ HTTP/2. The low default has been chosen to mitigate denial of service attacks.
 When the server is behind a load balancer or can scale automatically this value
 can be increased to fit the use case. Node core defaults this to `0`.
 
-### `frameworkErrors`
+### frameworkErrors
 <a id="framework-errors"></a>
 
 + Default: `null`
@@ -755,7 +754,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `clientErrorHandler`
+### clientErrorHandler
 <a id="client-error-handler"></a>
 
 Set a
@@ -818,7 +817,7 @@ const fastify = require('fastify')({
 })
 ```
 
-### `rewriteUrl`
+### rewriteUrl
 <a id="rewrite-url"></a>
 
 Set a sync callback function that must return a string that allows rewriting
@@ -842,7 +841,7 @@ function rewriteUrl (req) {
 }
 ```
 
-### `useSemicolonDelimiter`
+### useSemicolonDelimiter
 <a id="use-semicolon-delimiter"></a>
 
 + Default `false`
@@ -868,8 +867,10 @@ fastify.get('/dev', async (request, reply) => {
 
 
 ## Instance
+<a id="instance"></a>
 
-### Server Methods
+### Server Methods and Attributes
+<a id="server-methods-and-attributes"></a>
 
 #### server
 <a id="server"></a>
@@ -956,7 +957,7 @@ core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
 object. Thus, all core options are available with the following additional
 Fastify specific options:
 
-### `listenTextResolver`
+##### listenTextResolver
 <a id="listen-text-resolver"></a>
 
 Set an optional resolver for the text to log after server has been successfully
@@ -1247,7 +1248,7 @@ fastify.ready(() => {
 })
 ```
 
-### listeningOrigin
+#### listeningOrigin
 <a id="listeningOrigin"></a>
 
 The current origin the server is listening to.

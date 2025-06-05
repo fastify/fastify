@@ -19,18 +19,17 @@ const {
 const fs = require('node:fs')
 const path = require('node:path')
 
-const agent = new http.Agent({ keepAlive: false })
-
-const doGet = function (url) {
-  return new Promise((resolve, reject) => {
-    sget({ method: 'GET', url, followRedirects: false, agent }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve({ response, body })
-      }
-    })
+const doGet = async function (url) {
+  const result = await fetch(url, {
+    method: 'GET',
+    redirect: 'manual',
+    keepAlive: false
   })
+
+  return {
+    response: result,
+    body: await result.json().catch(() => undefined)
+  }
 }
 
 test('Once called, Reply should return an object with methods', t => {
@@ -1941,8 +1940,8 @@ test('redirect to an invalid URL should not crash the server', async t => {
 
   {
     const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=1`)
-    t.assert.strictEqual(response.statusCode, 500)
-    t.assert.deepStrictEqual(JSON.parse(body), {
+    t.assert.strictEqual(response.status, 500)
+    t.assert.deepStrictEqual(body, {
       statusCode: 500,
       code: 'ERR_INVALID_CHAR',
       error: 'Internal Server Error',
@@ -1951,14 +1950,14 @@ test('redirect to an invalid URL should not crash the server', async t => {
   }
   {
     const { response } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=2`)
-    t.assert.strictEqual(response.statusCode, 302)
-    t.assert.strictEqual(response.headers.location, '/?key=a%E2%80%99b')
+    t.assert.strictEqual(response.status, 302)
+    t.assert.strictEqual(response.headers.get('location'), '/?key=a%E2%80%99b')
   }
 
   {
     const { response } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=3`)
-    t.assert.strictEqual(response.statusCode, 302)
-    t.assert.strictEqual(response.headers.location, '/?key=ab')
+    t.assert.strictEqual(response.status, 302)
+    t.assert.strictEqual(response.headers.get('location'), '/?key=ab')
   }
 
   await fastify.close()
@@ -1986,8 +1985,8 @@ test('invalid response headers should not crash the server', async t => {
   await fastify.listen({ port: 0 })
 
   const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(body, {
     statusCode: 500,
     code: 'ERR_INVALID_CHAR',
     error: 'Internal Server Error',
@@ -2015,8 +2014,8 @@ test('invalid response headers when sending back an error', async t => {
   await fastify.listen({ port: 0 })
 
   const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(body, {
     statusCode: 500,
     code: 'ERR_INVALID_CHAR',
     error: 'Internal Server Error',
@@ -2049,8 +2048,8 @@ test('invalid response headers and custom error handler', async t => {
   await fastify.listen({ port: 0 })
 
   const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(body, {
     statusCode: 500,
     code: 'ERR_INVALID_CHAR',
     error: 'Internal Server Error',

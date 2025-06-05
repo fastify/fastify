@@ -1052,8 +1052,7 @@ test('recognizes errors from the http-errors module', async t => {
   const response = await fetch(getServerUrl(fastify))
 
   t.assert.ok(!response.ok)
-  const obj = await response.json()
-  t.assert.deepStrictEqual(obj, {
+  t.assert.deepStrictEqual(await response.json(), {
     error: 'Not Found',
     message: 'Not Found',
     statusCode: 404

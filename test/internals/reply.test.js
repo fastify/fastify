@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Request = require('../../lib/request')
@@ -1108,8 +1107,8 @@ test('reply.header can reset the value', async t => {
 })
 
 // https://github.com/fastify/fastify/issues/3030
-test('reply.hasHeader computes raw and fastify headers', (t, done) => {
-  t.plan(3)
+test('reply.hasHeader computes raw and fastify headers', async t => {
+  t.plan(2)
 
   const fastify = require('../../')()
 
@@ -1124,16 +1123,10 @@ test('reply.hasHeader computes raw and fastify headers', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {
-      done()
-    })
-  })
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  await fetch(`http://127.0.0.1:${fastify.server.address().port}/headers`)
 })
 
 test('Reply should handle JSON content type with a charset', async t => {
@@ -1282,7 +1275,7 @@ test('.statusCode is getter and setter', (t, done) => {
 })
 
 test('reply.header setting multiple cookies as multiple Set-Cookie headers', async t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = require('../../')()
   t.after(() => fastify.close())
@@ -1298,19 +1291,10 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', asy
 
   await fastify.listen({ port: 0 })
 
-  await new Promise((resolve, reject) => {
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      }
-      t.assert.ok(response.headers['set-cookie'])
-      t.assert.deepStrictEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
-      resolve()
-    })
-  })
+  const result = await fetch(`http://127.0.0.1:${fastify.server.address().port}/headers`)
+  t.assert.ok(result.ok)
+  t.assert.ok(result.headers.get('set-cookie'))
+  t.assert.deepStrictEqual(result.headers.getSetCookie(), ['one', 'two', 'three', 'four', 'five', 'six'])
 
   const response = await fastify.inject('/headers')
   t.assert.ok(response.headers['set-cookie'])

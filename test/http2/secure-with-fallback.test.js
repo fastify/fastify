@@ -3,10 +3,10 @@
 const { test } = require('node:test')
 const Fastify = require('../..')
 const h2url = require('h2url')
-const sget = require('simple-get').concat
 const msg = { hello: 'world' }
 
 const { buildCertificate } = require('../build-certificate')
+const { Agent } = require('undici')
 test.before(buildCertificate)
 
 test('secure with fallback', async (t) => {
@@ -41,12 +41,12 @@ test('secure with fallback', async (t) => {
 
   t.after(() => { fastify.close() })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
   await t.test('https get error', async (t) => {
     t.plan(1)
 
-    const url = `https://localhost:${fastify.server.address().port}/error`
+    const url = `${fastifyServer}/error`
     const res = await h2url.concat({ url })
 
     t.assert.strictEqual(res.headers[':status'], 500)
@@ -55,9 +55,8 @@ test('secure with fallback', async (t) => {
   await t.test('https post', async (t) => {
     t.plan(2)
 
-    const url = `https://localhost:${fastify.server.address().port}`
     const res = await h2url.concat({
-      url,
+      url: fastifyServer,
       method: 'POST',
       body: JSON.stringify({ hello: 'http2' }),
       headers: {
@@ -72,39 +71,41 @@ test('secure with fallback', async (t) => {
   await t.test('https get request', async (t) => {
     t.plan(3)
 
-    const url = `https://localhost:${fastify.server.address().port}`
-    const res = await h2url.concat({ url })
+    const res = await h2url.concat({ url: fastifyServer })
 
     t.assert.strictEqual(res.headers[':status'], 200)
     t.assert.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
     t.assert.deepStrictEqual(JSON.parse(res.body), msg)
   })
 
-  await t.test('http1 get request', (t, done) => {
+  await t.test('http1 get request', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'https://localhost:' + fastify.server.address().port,
-      rejectUnauthorized: false
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
+    const result = await fetch(fastifyServer, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
     })
+
+    const body = await result.text()
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), msg)
   })
 
-  await t.test('http1 get error', (t, done) => {
+  await t.test('http1 get error', async t => {
     t.plan(2)
-    sget({
-      method: 'GET',
-      url: 'https://localhost:' + fastify.server.address().port + '/error',
-      rejectUnauthorized: false
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      done()
+    const result = await fetch(`${fastifyServer}/error`, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
     })
+
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 500)
   })
 })

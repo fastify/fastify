@@ -7,7 +7,6 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const { kRouteContext } = require('../../lib/symbols')
 const buildSchema = require('../../lib/validation').compileSchemasForValidation
-const sget = require('simple-get').concat
 
 const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
@@ -129,8 +128,8 @@ test('handler function - preValidationCallback with finished response', t => {
   internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
 })
 
-test('request should be defined in onSend Hook on post request with content type application/json', (t, done) => {
-  t.plan(8)
+test('request should be defined in onSend Hook on post request with content type application/json', async t => {
+  t.plan(6)
   const fastify = require('../..')()
 
   t.after(() => {
@@ -149,28 +148,24 @@ test('request should be defined in onSend Hook on post request with content type
     reply.send(200)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'content-type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      // a 400 error is expected because of no body
-      t.assert.strictEqual(response.statusCode, 400)
-      done()
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    }
   })
+
+  t.assert.strictEqual(result.status, 400)
 })
 
-test('request should be defined in onSend Hook on post request with content type application/x-www-form-urlencoded', (t, done) => {
-  t.plan(7)
+test('request should be defined in onSend Hook on post request with content type application/x-www-form-urlencoded', async t => {
+  t.plan(5)
   const fastify = require('../..')()
 
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.assert.ok(request)
@@ -183,29 +178,25 @@ test('request should be defined in onSend Hook on post request with content type
     reply.send(200)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      // a 415 error is expected because of missing content type parser
-      t.assert.strictEqual(response.statusCode, 415)
-      done()
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
   })
+
+  // a 415 error is expected because of missing content type parser
+  t.assert.strictEqual(result.status, 415)
 })
 
-test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded', (t, done) => {
-  t.plan(7)
+test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded', async t => {
+  t.plan(5)
   const fastify = require('../..')()
 
-  t.after(() => { fastify.close() })
+  t.after(() => {
+    fastify.close()
+  })
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.assert.ok(request)
@@ -218,26 +209,20 @@ test('request should be defined in onSend Hook on options request with content t
     reply.send(200)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-
-    sget({
-      method: 'OPTIONS',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      // Body parsing skipped, so no body sent
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const result = await fetch(fastifyServer, {
+    method: 'OPTIONS',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
   })
+
+  // Body parsing skipped, so no body sent
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('request should respond with an error if an unserialized payload is sent inside an async handler', (t, done) => {
-  t.plan(3)
+test('request should respond with an error if an unserialized payload is sent inside an async handler', async t => {
+  t.plan(2)
 
   const fastify = require('../..')()
 
@@ -246,18 +231,16 @@ test('request should respond with an error if an unserialized payload is sent in
     return Promise.resolve(request.headers)
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     method: 'GET',
     url: '/'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), {
-      error: 'Internal Server Error',
-      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
-      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
-      statusCode: 500
-    })
-    done()
+  })
+
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    error: 'Internal Server Error',
+    code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
+    message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+    statusCode: 500
   })
 })

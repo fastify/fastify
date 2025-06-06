@@ -2,7 +2,6 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
 test('Should rewrite url', async t => {
   t.plan(4)

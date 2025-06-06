@@ -3,7 +3,6 @@
 const { test } = require('node:test')
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
-const { getServerUrl } = require('./helper')
 
 process.removeAllListeners('warning')
 

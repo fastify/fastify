@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('SEARCH', { hasBody: true })
 
@@ -130,119 +129,105 @@ test('search test', async t => {
   t.after(() => { fastify.close() })
   const url = `http://localhost:${fastify.server.address().port}`
 
-  await t.test('request - search', (t, done) => {
+  await t.test('request - search', async t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
+    const result = await fetch(url, {
+      method: 'SEARCH'
     })
+    const body = await result.text()
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  await t.test('request search params schema', (t, done) => {
+  await t.test('request search params schema', async t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/params/world/123`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { foo: 'world', test: 123 })
-      done()
+    const result = await fetch(`${url}/params/world/123`, {
+      method: 'SEARCH'
     })
+    const body = await result.text()
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { foo: 'world', test: 123 })
   })
 
-  await t.test('request search params schema error', (t, done) => {
+  await t.test('request search params schema error', async t => {
     t.plan(3)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/params/world/string`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'params/test must be integer',
-        statusCode: 400
-      })
-      done()
+    const result = await fetch(`${url}/params/world/string`, {
+      method: 'SEARCH'
+    })
+    const body = await result.text()
+    t.assert.strictEqual(result.status, 400)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'params/test must be integer',
+      statusCode: 400
     })
   })
 
-  await t.test('request search querystring schema', (t, done) => {
+  await t.test('request search querystring schema', async t => {
     t.plan(4)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/query?hello=123`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 123 })
-      done()
+    const result = await fetch(`${url}/query?hello=123`, {
+      method: 'SEARCH'
     })
+    const body = await result.text()
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 123 })
   })
 
-  await t.test('request search querystring schema error', (t, done) => {
+  await t.test('request search querystring schema error', async t => {
     t.plan(3)
-    sget({
-      method: 'SEARCH',
-      url: `${url}/query?hello=world`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'querystring/hello must be integer',
-        statusCode: 400
-      })
-      done()
+    const result = await fetch(`${url}/query?hello=world`, {
+      method: 'SEARCH'
+    })
+    const body = await result.text()
+    t.assert.strictEqual(result.status, 400)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'querystring/hello must be integer',
+      statusCode: 400
     })
   })
 
-  await t.test('request search body schema', (t, done) => {
+  await t.test('request search body schema', async t => {
     t.plan(4)
     const replyBody = { foo: 'bar', test: 5 }
-    sget({
+    const result = await fetch(`${url}/body`, {
       method: 'SEARCH',
-      url: `${url}/body`,
       body: JSON.stringify(replyBody),
       headers: { 'content-type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), replyBody)
-      done()
     })
+    const body = await result.text()
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), replyBody)
   })
 
-  await t.test('request search body schema error', (t, done) => {
+  await t.test('request search body schema error', async t => {
     t.plan(4)
-    sget({
+    const result = await fetch(`${url}/body`, {
       method: 'SEARCH',
-      url: `${url}/body`,
       body: JSON.stringify({ foo: 'bar', test: 'test' }),
       headers: { 'content-type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'body/test must be integer',
-        statusCode: 400
-      })
-      done()
+    })
+    const body = await result.text()
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 400)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'body/test must be integer',
+      statusCode: 400
     })
   })
 })

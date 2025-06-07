@@ -3,7 +3,6 @@
 const { test } = require('node:test')
 const { S } = require('fluent-json-schema')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
 const BadRequestSchema = S.object()
   .prop('statusCode', S.number())
@@ -105,32 +104,29 @@ const handler = (request, reply) => {
   })
 }
 
-test('serialize the response for a Bad Request error, as defined on the schema', (t, done) => {
+test('serialize the response for a Bad Request error, as defined on the schema', async t => {
   const fastify = Fastify({})
 
   t.after(() => fastify.close())
 
   fastify.post('/', options, handler)
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const url = `http://localhost:${fastify.server.address().port}/`
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: '12'
+  })
 
-    sget({
-      method: 'POST',
-      url,
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      t.assert.deepStrictEqual(body, {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body must be object'
-      })
-      done()
-    })
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 400)
+  t.assert.deepStrictEqual(await result.json(), {
+    statusCode: 400,
+    error: 'Bad Request',
+    message: 'body must be object'
   })
 })
 

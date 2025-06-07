@@ -2,9 +2,7 @@
 
 const { test } = require('node:test')
 const Fastify = require('../fastify')
-const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
-const { waitForCb } = require('./toolkit')
 
 test('if a plugin raises an error and there is not a callback to handle it, the server must not start', (t, testDone) => {
   t.plan(2)
@@ -21,8 +19,8 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
   })
 })
 
-test('add hooks after route declaration', (t, testDone) => {
-  t.plan(3)
+test('add hooks after route declaration', async t => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -59,22 +57,15 @@ test('add hooks after route declaration', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(await result.json(), { hook1: true, hook2: true, hook3: true })
 })
 
-test('nested plugins', (t, testDone) => {
-  t.plan(5)
+test('nested plugins', async t => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -98,36 +89,19 @@ test('nested plugins', (t, testDone) => {
     done()
   }, { prefix: '/parent' })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({
-      steps: 2
-    })
+  const result1 = await fetch(fastifyServer + '/parent/child1')
+  t.assert.ok(result1.ok)
+  t.assert.deepStrictEqual(await result1.text(), 'I am child 1')
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
-      completion.stepIn()
-    })
-
-    completion.patience.then(testDone)
-  })
+  const result2 = await fetch(fastifyServer + '/parent/child2')
+  t.assert.ok(result2.ok)
+  t.assert.deepStrictEqual(await result2.text(), 'I am child 2')
 })
 
-test('nested plugins awaited', (t, testDone) => {
-  t.plan(5)
+test('nested plugins awaited', async t => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -147,32 +121,15 @@ test('nested plugins awaited', (t, testDone) => {
     }, { prefix: '/child2' })
   }, { prefix: '/parent' })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({
-      steps: 2
-    })
+  const result1 = await fetch(fastifyServer + '/parent/child1')
+  t.assert.ok(result1.ok)
+  t.assert.deepStrictEqual(await result1.text(), 'I am child 1')
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result2 = await fetch(fastifyServer + '/parent/child2')
+  t.assert.ok(result2.ok)
+  t.assert.deepStrictEqual(await result2.text(), 'I am child 2')
 })
 
 test('plugin metadata - decorators', (t, testDone) => {

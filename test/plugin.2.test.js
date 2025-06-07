@@ -2,12 +2,10 @@
 
 const { test } = require('node:test')
 const Fastify = require('../fastify')
-const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
-const { waitForCb } = require('./toolkit')
 
-test('check dependencies - should not throw', (t, testDone) => {
-  t.plan(12)
+test('check dependencies - should not throw', async t => {
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -42,25 +40,19 @@ test('check dependencies - should not throw', (t, testDone) => {
     t.assert.ok(!fastify.otherTest)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })
 
-test('check dependencies - should throw', (t, testDone) => {
-  t.plan(12)
+test('check dependencies - should throw', async t => {
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -95,21 +87,15 @@ test('check dependencies - should throw', (t, testDone) => {
     t.assert.ok(!fastify.test)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })
 
 test('set the plugin name based on the plugin displayName symbol', (t, testDone) => {
@@ -274,8 +260,8 @@ test('approximate a plugin name also when fastify-plugin has no meta data', (t, 
   })
 })
 
-test('plugin encapsulation', (t, testDone) => {
-  t.plan(10)
+test('plugin encapsulation', async t => {
+  t.plan(9)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -309,36 +295,20 @@ test('plugin encapsulation', (t, testDone) => {
     t.assert.ok(!fastify.test)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    const completion = waitForCb({
-      steps: 2
-    })
+  const result1 = await fetch(fastifyServer + '/first')
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.text()
+  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { plugin: 'first' })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { plugin: 'first' })
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { plugin: 'second' })
-      completion.stepIn()
-    })
-
-    completion.patience.then(testDone)
-  })
+  const result2 = await fetch(fastifyServer + '/second')
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  const body2 = await result2.text()
+  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
+  t.assert.deepStrictEqual(JSON.parse(body2), { plugin: 'second' })
 })

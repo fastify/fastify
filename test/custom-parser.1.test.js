@@ -224,8 +224,7 @@ test('Should parse empty bodies as a string', async (t) => {
 
   t.assert.ok(postResult.ok)
   t.assert.strictEqual(postResult.status, 200)
-  const postBody = await postResult.text()
-  t.assert.strictEqual(postBody, '')
+  t.assert.strictEqual(await postResult.text(), '')
 
   const deleteResult = await fetch(fastifyServer, {
     method: 'DELETE',
@@ -238,8 +237,7 @@ test('Should parse empty bodies as a string', async (t) => {
 
   t.assert.ok(deleteResult.ok)
   t.assert.strictEqual(deleteResult.status, 200)
-  const deleteBody = await deleteResult.text()
-  t.assert.strictEqual(deleteBody, '')
+  t.assert.strictEqual(await deleteResult.text(), '')
 })
 
 test('Should parse empty bodies as a buffer', async (t) => {

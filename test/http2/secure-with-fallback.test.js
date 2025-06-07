@@ -3,10 +3,10 @@
 const { test } = require('node:test')
 const Fastify = require('../..')
 const h2url = require('h2url')
-const sget = require('simple-get').concat
 const msg = { hello: 'world' }
 
 const { buildCertificate } = require('../build-certificate')
+const { Agent } = require('undici')
 test.before(buildCertificate)
 
 test('secure with fallback', async (t) => {
@@ -80,31 +80,38 @@ test('secure with fallback', async (t) => {
     t.assert.deepStrictEqual(JSON.parse(res.body), msg)
   })
 
-  await t.test('http1 get request', (t, done) => {
+  await t.test('http1 get request', async t => {
     t.plan(4)
-    sget({
+
+    const result = await fetch('https://localhost:' + fastify.server.address().port, {
       method: 'GET',
-      url: 'https://localhost:' + fastify.server.address().port,
-      rejectUnauthorized: false
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
     })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  await t.test('http1 get error', (t, done) => {
+  await t.test('http1 get error', async t => {
     t.plan(2)
-    sget({
+
+    const result = await fetch('https://localhost:' + fastify.server.address().port + '/error', {
       method: 'GET',
-      url: 'https://localhost:' + fastify.server.address().port + '/error',
-      rejectUnauthorized: false
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      done()
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
     })
+
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 500)
   })
 })

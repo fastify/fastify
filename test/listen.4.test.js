@@ -3,10 +3,8 @@
 const { test, before } = require('node:test')
 const dns = require('node:dns').promises
 const dnsCb = require('node:dns')
-const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const helper = require('./helper')
-const { waitForCb } = require('./toolkit')
 
 let localhostForURL
 
@@ -90,7 +88,7 @@ test('listen logs the port as info', async t => {
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
-  t.plan(2 * localAddresses.length)
+  t.plan(3 * localAddresses.length)
 
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
@@ -98,52 +96,42 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
   await app.listen({ port: 0, host: 'localhost' })
 
   for (const lookup of localAddresses) {
-    await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: getUrl(app, lookup)
-      }, (err, response, body) => {
-        if (err) { return reject(err) }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body.toString(), 'hello localhost')
-        resolve()
-      })
+    const result = await fetch(getUrl(app, lookup), {
+      method: 'GET'
     })
+
+    t.assert.ok(result.ok)
+    t.assert.deepEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.text(), 'hello localhost')
   }
 })
 
-test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present) - callback interface', (t, done) => {
-  dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
-    t.plan(2 + (3 * lookups.length))
-    t.assert.ifError(err)
-
-    const app = Fastify()
-    app.get('/', async () => 'hello localhost')
-    app.listen({ port: 0, host: 'localhost' }, (err) => {
-      t.assert.ifError(err)
-      t.after(() => app.close())
-
-      const { stepIn, patience } = waitForCb({ steps: lookups.length })
-
-      // Loop over each lookup and perform the assertions
-      if (lookups.length > 0) {
-        for (const lookup of lookups) {
-          sget({
-            method: 'GET',
-            url: getUrl(app, lookup)
-          }, (err, response, body) => {
-            t.assert.ifError(err)
-            t.assert.strictEqual(response.statusCode, 200)
-            t.assert.deepStrictEqual(body.toString(), 'hello localhost')
-            // Call stepIn to report that a request has been completed
-            stepIn()
-          })
-        }
-        // When all requests have been completed, call done
-        patience.then(() => done())
-      }
+test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present) - callback interface', async (t) => {
+  const lookups = await new Promise((resolve, reject) => {
+    dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
+      if (err) return reject(err)
+      resolve(lookups)
     })
   })
+
+  t.plan(3 * lookups.length)
+
+  const app = Fastify()
+  app.get('/', async () => 'hello localhost')
+  t.after(() => app.close())
+
+  await app.listen({ port: 0, host: 'localhost' })
+
+  // Loop over each lookup and perform the assertions
+  for (const lookup of lookups) {
+    const result = await fetch(getUrl(app, lookup), {
+      method: 'GET'
+    })
+
+    t.assert.ok(result.ok)
+    t.assert.deepEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.text(), 'hello localhost')
+  }
 })
 
 test('addresses getter', async t => {

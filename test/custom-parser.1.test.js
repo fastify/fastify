@@ -1,72 +1,61 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
-const { getServerUrl } = require('./helper')
-const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
-test('Should have typeof body object with no custom parser defined, null body and content type = \'text/plain\'', (t, testDone) => {
-  t.plan(4)
+test('Should have typeof body object with no custom parser defined, null body and content type = \'text/plain\'', async (t) => {
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: null,
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(typeof body, 'object')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: null,
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), '')
 })
 
-test('Should have typeof body object with no custom parser defined, undefined body and content type = \'text/plain\'', (t, testDone) => {
-  t.plan(4)
+test('Should have typeof body object with no custom parser defined, undefined body and content type = \'text/plain\'', async (t) => {
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: undefined,
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(typeof body, 'object')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: undefined,
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), '')
 })
 
-test('Should get the body as string /1', (t, testDone) => {
-  t.plan(6)
+test('Should get the body as string /1', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -85,28 +74,23 @@ test('Should get the body as string /1', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'hello world')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: 'hello world',
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
+
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), 'hello world')
 })
 
-test('Should get the body as string /2', (t, testDone) => {
-  t.plan(6)
+test('Should get the body as string /2', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -125,28 +109,23 @@ test('Should get the body as string /2', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': '   text/plain/test  '
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'hello world')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: 'hello world',
+    headers: {
+      'Content-Type': '   text/plain/test  '
+    }
   })
+
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), 'hello world')
 })
 
-test('Should get the body as buffer', (t, testDone) => {
-  t.plan(6)
+test('Should get the body as buffer', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -165,28 +144,23 @@ test('Should get the body as buffer', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '{"hello":"world"}',
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
+
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), '{"hello":"world"}')
 })
 
-test('Should get the body as buffer', (t, testDone) => {
-  t.plan(6)
+test('Should get the body as buffer', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -205,28 +179,23 @@ test('Should get the body as buffer', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'hello world')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: 'hello world',
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
+
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), 'hello world')
 })
 
-test('Should parse empty bodies as a string', (t) => {
-  t.plan(9)
+test('Should parse empty bodies as a string', async (t) => {
+  t.plan(8)
   const fastify = Fastify()
 
   fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
@@ -242,47 +211,37 @@ test('Should parse empty bodies as a string', (t) => {
     }
   })
 
-  const completion = waitForCb({ steps: 2 })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '')
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'DELETE',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain',
-        'Content-Length': '0'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '')
-      completion.stepIn()
-    })
+  const postResult = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '',
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
 
-  return completion.patience
+  t.assert.ok(postResult.ok)
+  t.assert.strictEqual(postResult.status, 200)
+  t.assert.strictEqual(await postResult.text(), '')
+
+  const deleteResult = await fetch(fastifyServer, {
+    method: 'DELETE',
+    body: '',
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Length': '0'
+    }
+  })
+
+  t.assert.ok(deleteResult.ok)
+  t.assert.strictEqual(deleteResult.status, 200)
+  t.assert.strictEqual(await deleteResult.text(), '')
 })
 
-test('Should parse empty bodies as a buffer', (t, testDone) => {
-  t.plan(6)
+test('Should parse empty bodies as a buffer', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -295,28 +254,23 @@ test('Should parse empty bodies as a buffer', (t, testDone) => {
     done(null, body)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.length, 0)
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '',
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
+
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual((await result.arrayBuffer()).byteLength, 0)
 })
 
-test('The charset should not interfere with the content type handling', (t, testDone) => {
-  t.plan(5)
+test('The charset should not interfere with the content type handling', async (t) => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -330,22 +284,18 @@ test('The charset should not interfere with the content type handling', (t, test
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
-      fastify.close()
-      testDone()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '{"hello":"world"}',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), '{"hello":"world"}')
 })

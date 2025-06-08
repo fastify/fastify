@@ -2,7 +2,6 @@
 
 const { test } = require('node:test')
 const fp = require('fastify-plugin')
-const sget = require('simple-get').concat
 const errors = require('http-errors')
 const split = require('split2')
 const Fastify = require('..')
@@ -21,50 +20,36 @@ test('default 404', async t => {
 
   await fastify.listen({ port: 0 })
 
-  await t.test('unsupported method', (t, done) => {
+  await t.test('unsupported method', async (t) => {
     t.plan(3)
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify),
-      body: {},
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      done()
+    const result = await fetch(getServerUrl(fastify), {
+      method: 'PUT'
     })
+
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 404)
+    t.assert.strictEqual(result.headers.get('content-type'), 'application/json; charset=utf-8')
   })
 
   // Return 404 instead of 405 see https://github.com/fastify/fastify/pull/862 for discussion
-  await t.test('framework-unsupported method', (t, done) => {
+  await t.test('framework-unsupported method', async (t) => {
     t.plan(3)
-    sget({
-      method: 'PROPFIND',
-      url: getServerUrl(fastify),
-      body: {},
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      done()
+    const result = await fetch(getServerUrl(fastify), {
+      method: 'PROPFIND'
     })
+
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 404)
+    t.assert.strictEqual(result.headers.get('content-type'), 'application/json; charset=utf-8')
   })
 
-  await t.test('unsupported route', (t, done) => {
+  await t.test('unsupported route', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported',
-      body: {},
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(response.headers.get('content-type'), 'application/json; charset=utf-8')
   })
 
   await t.test('using post method and multipart/formdata', async t => {
@@ -109,81 +94,65 @@ test('customized 404', async t => {
 
   await fastify.listen({ port: 0 })
 
-  await t.test('unsupported method', (t, done) => {
+  await t.test('unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify), {
       method: 'PUT',
-      url: getServerUrl(fastify),
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
-  await t.test('framework-unsupported method', (t, done) => {
+  await t.test('framework-unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify), {
       method: 'PROPFIND',
-      url: getServerUrl(fastify),
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
-  await t.test('unsupported route', (t, done) => {
+  await t.test('unsupported route', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
-  await t.test('with error object', (t, done) => {
+  await t.test('with error object', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/with-error'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Not Found',
-        message: 'Not Found',
-        statusCode: 404
-      })
-      done()
+    const response = await fetch(getServerUrl(fastify) + '/with-error')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.deepStrictEqual(await response.json(), {
+      error: 'Not Found',
+      message: 'Not Found',
+      statusCode: 404
     })
   })
 
-  await t.test('error object with headers property', (t, done) => {
+  await t.test('error object with headers property', async (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/with-error-custom-header'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['x-foo'], 'bar')
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Not Found',
-        message: 'Not Found',
-        statusCode: 404
-      })
-      done()
+    const response = await fetch(getServerUrl(fastify) + '/with-error-custom-header')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(response.headers.get('x-foo'), 'bar')
+    t.assert.deepStrictEqual(await response.json(), {
+      error: 'Not Found',
+      message: 'Not Found',
+      statusCode: 404
     })
   })
 })
@@ -201,18 +170,14 @@ test('custom header in notFound handler', async t => {
 
   await fastify.listen({ port: 0 })
 
-  await t.test('not found with custom header', (t, done) => {
+  await t.test('not found with custom header', async (t) => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['x-foo'], 'bar')
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(response.headers.get('x-foo'), 'bar')
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 })
 
@@ -390,176 +355,144 @@ test('encapsulated 404', async t => {
 
   await fastify.listen({ port: 0 })
 
-  await t.test('root unsupported method', (t, done) => {
+  await t.test('root unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify), {
       method: 'PUT',
-      url: getServerUrl(fastify),
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
-  await t.test('root framework-unsupported method', (t, done) => {
+  await t.test('root framework-unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify), {
       method: 'PROPFIND',
-      url: getServerUrl(fastify),
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
-  await t.test('root unsupported route', (t, done) => {
+  await t.test('root unsupported route', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found')
   })
 
-  await t.test('unsupported method', (t, done) => {
+  await t.test('unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify) + '/test', {
       method: 'PUT',
-      url: getServerUrl(fastify) + '/test',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 2')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 2')
   })
 
-  await t.test('framework-unsupported method', (t, done) => {
+  await t.test('framework-unsupported method', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify) + '/test', {
       method: 'PROPFIND',
-      url: getServerUrl(fastify) + '/test',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 2')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 2')
   })
 
-  await t.test('unsupported route', (t, done) => {
+  await t.test('unsupported route', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/test/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 2')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/test/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 2')
   })
 
-  await t.test('unsupported method 2', (t, done) => {
+  await t.test('unsupported method 2', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify) + '/test2', {
       method: 'PUT',
-      url: getServerUrl(fastify) + '/test2',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 3')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 3')
   })
 
-  await t.test('framework-unsupported method 2', (t, done) => {
+  await t.test('framework-unsupported method 2', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify) + '/test2', {
       method: 'PROPFIND',
-      url: getServerUrl(fastify) + '/test2',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 3')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 3')
   })
 
-  await t.test('unsupported route 2', (t, done) => {
+  await t.test('unsupported route 2', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/test2/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 3')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/test2/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 3')
   })
 
-  await t.test('unsupported method 3', (t, done) => {
+  await t.test('unsupported method 3', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify) + '/test3/', {
       method: 'PUT',
-      url: getServerUrl(fastify) + '/test3/',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 4')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 4')
   })
 
-  await t.test('framework-unsupported method 3', (t, done) => {
+  await t.test('framework-unsupported method 3', async (t) => {
     t.plan(3)
-    sget({
+    const response = await fetch(getServerUrl(fastify) + '/test3/', {
       method: 'PROPFIND',
-      url: getServerUrl(fastify) + '/test3/',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 4')
-      done()
     })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 4')
   })
 
-  await t.test('unsupported route 3', (t, done) => {
+  await t.test('unsupported route 3', async (t) => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/test3/notSupported'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(body.toString(), 'this was not found 4')
-      done()
-    })
+    const response = await fetch(getServerUrl(fastify) + '/test3/notSupported')
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 404)
+    t.assert.strictEqual(await response.text(), 'this was not found 4')
   })
 })
 
@@ -682,8 +615,8 @@ test('encapsulated custom 404 without - prefix hook and handler context', (t, do
   })
 })
 
-test('run hooks on default 404', (t, done) => {
-  t.plan(7)
+test('run hooks on default 404', async t => {
+  t.plan(6)
 
   const fastify = Fastify()
 
@@ -713,20 +646,16 @@ test('run hooks on default 404', (t, done) => {
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify),
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
-    })
+  const response = await fetch(getServerUrl(fastify), {
+    method: 'PUT',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 404)
 })
 
 test('run non-encapsulated plugin hooks on default 404', (t, done) => {
@@ -822,8 +751,8 @@ test('run non-encapsulated plugin hooks on custom 404', (t, done) => {
   })
 })
 
-test('run hook with encapsulated 404', (t, done) => {
-  t.plan(11)
+test('run hook with encapsulated 404', async t => {
+  t.plan(10)
 
   const fastify = Fastify()
 
@@ -877,24 +806,20 @@ test('run hook with encapsulated 404', (t, done) => {
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify) + '/test',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
-    })
+  const response = await fetch(getServerUrl(fastify) + '/test', {
+    method: 'PUT',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 404)
 })
 
-test('run hook with encapsulated 404 and framework-unsupported method', (t, done) => {
-  t.plan(11)
+test('run hook with encapsulated 404 and framework-unsupported method', async t => {
+  t.plan(10)
 
   const fastify = Fastify()
 
@@ -948,24 +873,20 @@ test('run hook with encapsulated 404 and framework-unsupported method', (t, done
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'PROPFIND',
-      url: getServerUrl(fastify) + '/test',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
-    })
+  const response = await fetch(getServerUrl(fastify) + '/test', {
+    method: 'PROPFIND',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 404)
 })
 
-test('hooks check 404', (t, done) => {
-  t.plan(13)
+test('hooks check 404', async t => {
+  t.plan(12)
 
   const fastify = Fastify()
 
@@ -989,28 +910,21 @@ test('hooks check 404', (t, done) => {
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'PUT',
-      url: getServerUrl(fastify) + '?foo=asd',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-    })
-
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/notSupported?foo=asd'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
-    })
+  const response1 = await fetch(getServerUrl(fastify) + '?foo=asd', {
+    method: 'PUT',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+
+  t.assert.ok(!response1.ok)
+  t.assert.strictEqual(response1.status, 404)
+
+  const response2 = await fetch(getServerUrl(fastify) + '/notSupported?foo=asd')
+
+  t.assert.ok(!response2.ok)
+  t.assert.strictEqual(response2.status, 404)
 })
 
 test('setNotFoundHandler should not suppress duplicated routes checking', t => {
@@ -1080,8 +994,8 @@ test('log debug for 404', async t => {
   })
 })
 
-test('Unknown method', (t, done) => {
-  t.plan(5)
+test('Unknown method', async t => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -1091,34 +1005,31 @@ test('Unknown method', (t, done) => {
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    const handler = () => {}
-    // See https://github.com/fastify/light-my-request/pull/20
-    t.assert.throws(() => fastify.inject({
-      method: 'UNKNOWN_METHOD',
-      url: '/'
-    }, handler), Error)
+  const handler = () => {}
+  // See https://github.com/fastify/light-my-request/pull/20
+  t.assert.throws(() => fastify.inject({
+    method: 'UNKNOWN_METHOD',
+    url: '/'
+  }, handler), Error)
 
-    sget({
-      method: 'UNKNOWN_METHOD',
-      url: getServerUrl(fastify)
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        error: 'Bad Request',
-        message: 'Client Error',
-        statusCode: 400
-      })
-      done()
-    })
+  const response = await fetch(getServerUrl(fastify), {
+    method: 'UNKNOWN_METHOD'
+  })
+
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 400)
+
+  t.assert.deepStrictEqual(await response.json(), {
+    error: 'Bad Request',
+    message: 'Client Error',
+    statusCode: 400
   })
 })
 
-test('recognizes errors from the http-errors module', (t, done) => {
-  t.plan(5)
+test('recognizes errors from the http-errors module', async t => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -1128,27 +1039,23 @@ test('recognizes errors from the http-errors module', (t, done) => {
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
+  await fastify.listen({ port: 0 })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
     t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+  })
 
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 404)
+  const response = await fetch(getServerUrl(fastify))
 
-      sget(getServerUrl(fastify), (err, response, body) => {
-        t.assert.ifError(err)
-        const obj = JSON.parse(body.toString())
-        t.assert.deepStrictEqual(obj, {
-          error: 'Not Found',
-          message: 'Not Found',
-          statusCode: 404
-        })
-        done()
-      })
-    })
+  t.assert.ok(!response.ok)
+  t.assert.deepStrictEqual(await response.json(), {
+    error: 'Not Found',
+    message: 'Not Found',
+    statusCode: 404
   })
 })
 
@@ -1262,8 +1169,8 @@ test('cannot set notFoundHandler after binding', (t, done) => {
   })
 })
 
-test('404 inside onSend', (t, done) => {
-  t.plan(3)
+test('404 inside onSend', async t => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -1284,18 +1191,12 @@ test('404 inside onSend', (t, done) => {
 
   t.after(() => { fastify.close() })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify)
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
-    })
-  })
+  const response = await fetch(getServerUrl(fastify))
+
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 404)
 })
 
 // https://github.com/fastify/fastify/issues/868

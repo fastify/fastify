@@ -31,6 +31,8 @@ test('proto-poisoning remove', async (t) => {
 
   const fastify = Fastify({ onProtoPoisoning: 'remove' })
 
+  t.after(() => fastify.close())
+
   fastify.post('/', (request, reply) => {
     t.assert.strictEqual(undefined, Object.assign({}, request.body).a)
     reply.send({ ok: true })

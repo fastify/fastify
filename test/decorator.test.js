@@ -1,7 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test, describe } = require('node:test')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
@@ -10,87 +9,96 @@ const symbols = require('../lib/symbols.js')
 test('server methods should exist', t => {
   t.plan(2)
   const fastify = Fastify()
-  t.ok(fastify.decorate)
-  t.ok(fastify.hasDecorator)
+  t.assert.ok(fastify.decorate)
+  t.assert.ok(fastify.hasDecorator)
 })
 
-test('should check if the given decoration already exist when null', t => {
+test('should check if the given decoration already exist when null', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.decorate('null', null)
   fastify.ready(() => {
-    t.ok(fastify.hasDecorator('null'))
+    t.assert.ok(fastify.hasDecorator('null'))
+    done()
   })
 })
 
-test('server methods should be encapsulated via .register', t => {
+test('server methods should be encapsulated via .register', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorate('test', () => {})
-    t.ok(instance.test)
+    t.assert.ok(instance.test)
     done()
   })
 
   fastify.ready(() => {
-    t.notOk(fastify.test)
+    t.assert.strictEqual(fastify.test, undefined)
+    done()
   })
 })
 
-test('hasServerMethod should check if the given method already exist', t => {
+test('hasServerMethod should check if the given method already exist', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorate('test', () => {})
-    t.ok(instance.hasDecorator('test'))
+    t.assert.ok(instance.hasDecorator('test'))
     done()
   })
 
   fastify.ready(() => {
-    t.notOk(fastify.hasDecorator('test'))
+    t.assert.strictEqual(fastify.hasDecorator('test'), false)
+    done()
   })
 })
 
-test('decorate should throw if a declared dependency is not present', t => {
+test('decorate should throw if a declared dependency is not present', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     try {
       instance.decorate('test', () => {}, ['dependency'])
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-      t.same(e.message, 'The decorator is missing dependency \'dependency\'.')
+      t.assert.strictEqual(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+      t.assert.strictEqual(e.message, 'The decorator is missing dependency \'dependency\'.')
     }
     done()
   })
 
-  fastify.ready(() => t.pass())
+  fastify.ready(() => {
+    t.assert.ok('ready')
+    done()
+  })
 })
 
-test('decorate should throw if declared dependency is not array', t => {
+test('decorate should throw if declared dependency is not array', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     try {
       instance.decorate('test', () => {}, {})
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_DEPENDENCY_INVALID_TYPE')
-      t.same(e.message, 'The dependencies of decorator \'test\' must be of type Array.')
+      t.assert.strictEqual(e.code, 'FST_ERR_DEC_DEPENDENCY_INVALID_TYPE')
+      t.assert.strictEqual(e.message, 'The dependencies of decorator \'test\' must be of type Array.')
     }
     done()
   })
 
-  fastify.ready(() => t.pass())
+  fastify.ready(() => {
+    t.assert.ok('ready')
+    done()
+  })
 })
 
 // issue #777
-test('should pass error for missing request decorator', t => {
+test('should pass error for missing request decorator', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -104,12 +112,13 @@ test('should pass error for missing request decorator', t => {
   fastify
     .register(plugin)
     .ready((err) => {
-      t.type(err, Error)
-      t.match(err, /The decorator 'foo'/)
+      t.assert.ok(err instanceof Error)
+      t.assert.ok(err.message.includes("'foo'"))
+      done()
     })
 })
 
-test('decorateReply inside register', t => {
+test('decorateReply inside register', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -117,7 +126,7 @@ test('decorateReply inside register', t => {
     instance.decorateReply('test', 'test')
 
     instance.get('/yes', (req, reply) => {
-      t.ok(reply.test, 'test exists')
+      t.assert.ok(reply.test, 'test exists')
       reply.send({ hello: 'world' })
     })
 
@@ -125,37 +134,47 @@ test('decorateReply inside register', t => {
   })
 
   fastify.get('/no', (req, reply) => {
-    t.notOk(reply.test)
+    t.assert.ok(!reply.test)
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
   })
 })
 
-test('decorateReply as plugin (inside .after)', t => {
+test('decorateReply as plugin (inside .after)', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -165,7 +184,7 @@ test('decorateReply as plugin (inside .after)', t => {
       n()
     })).after(() => {
       instance.get('/yes', (req, reply) => {
-        t.ok(reply.test)
+        t.assert.ok(reply.test)
         reply.send({ hello: 'world' })
       })
     })
@@ -173,37 +192,47 @@ test('decorateReply as plugin (inside .after)', t => {
   })
 
   fastify.get('/no', (req, reply) => {
-    t.notOk(reply.test)
+    t.assert.ok(!reply.test)
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
   })
 })
 
-test('decorateReply as plugin (outside .after)', t => {
+test('decorateReply as plugin (outside .after)', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -214,44 +243,54 @@ test('decorateReply as plugin (outside .after)', t => {
     }))
 
     instance.get('/yes', (req, reply) => {
-      t.ok(reply.test)
+      t.assert.ok(reply.test)
       reply.send({ hello: 'world' })
     })
     done()
   })
 
   fastify.get('/no', (req, reply) => {
-    t.notOk(reply.test)
+    t.assert.ok(!reply.test)
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
   })
 })
 
-test('decorateRequest inside register', t => {
+test('decorateRequest inside register', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -259,7 +298,7 @@ test('decorateRequest inside register', t => {
     instance.decorateRequest('test', 'test')
 
     instance.get('/yes', (req, reply) => {
-      t.ok(req.test, 'test exists')
+      t.assert.ok(req.test, 'test exists')
       reply.send({ hello: 'world' })
     })
 
@@ -267,37 +306,47 @@ test('decorateRequest inside register', t => {
   })
 
   fastify.get('/no', (req, reply) => {
-    t.notOk(req.test)
+    t.assert.ok(!req.test)
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
   })
 })
 
-test('decorateRequest as plugin (inside .after)', t => {
+test('decorateRequest as plugin (inside .after)', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -307,7 +356,7 @@ test('decorateRequest as plugin (inside .after)', t => {
       n()
     })).after(() => {
       instance.get('/yes', (req, reply) => {
-        t.ok(req.test)
+        t.assert.ok(req.test)
         reply.send({ hello: 'world' })
       })
     })
@@ -315,37 +364,47 @@ test('decorateRequest as plugin (inside .after)', t => {
   })
 
   fastify.get('/no', (req, reply) => {
-    t.notOk(req.test)
+    t.assert.ok(!req.test)
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
   })
 })
 
-test('decorateRequest as plugin (outside .after)', t => {
+test('decorateRequest as plugin (outside .after)', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -356,44 +415,54 @@ test('decorateRequest as plugin (outside .after)', t => {
     }))
 
     instance.get('/yes', (req, reply) => {
-      t.ok(req.test)
+      t.assert.ok(req.test)
       reply.send({ hello: 'world' })
     })
     done()
   })
 
   fastify.get('/no', (req, reply) => {
-    t.notOk(req.test)
+    t.assert.ok(!req.test)
     reply.send({ hello: 'world' })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    let pending = 2
+
+    function completed () {
+      if (--pending === 0) {
+        done()
+      }
+    }
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      completed()
     })
   })
 })
 
-test('decorators should be instance separated', t => {
+test('decorators should be instance separated', (t, done) => {
   t.plan(1)
 
   const fastify1 = Fastify()
@@ -408,140 +477,119 @@ test('decorators should be instance separated', t => {
   fastify1.decorateReply('test', 'foo')
   fastify2.decorateReply('test', 'foo')
 
-  t.pass()
+  t.assert.ok('Done')
+  done()
 })
 
-test('hasRequestDecorator', t => {
+describe('hasRequestDecorator', () => {
   const requestDecoratorName = 'my-decorator-name'
 
-  t.test('is a function', t => {
-    t.plan(1)
+  test('is a function', async t => {
     const fastify = Fastify()
-    t.ok(fastify.hasRequestDecorator)
+    t.assert.ok(fastify.hasRequestDecorator)
   })
 
-  t.test('should check if the given request decoration already exist', t => {
-    t.plan(2)
+  test('should check if the given request decoration already exist', async t => {
     const fastify = Fastify()
 
-    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    t.assert.ok(!fastify.hasRequestDecorator(requestDecoratorName))
     fastify.decorateRequest(requestDecoratorName, 42)
-    t.ok(fastify.hasRequestDecorator(requestDecoratorName))
+    t.assert.ok(fastify.hasRequestDecorator(requestDecoratorName))
   })
 
-  t.test('should check if the given request decoration already exist when null', t => {
-    t.plan(2)
+  test('should check if the given request decoration already exist when null', async t => {
     const fastify = Fastify()
 
-    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    t.assert.ok(!fastify.hasRequestDecorator(requestDecoratorName))
     fastify.decorateRequest(requestDecoratorName, null)
-    t.ok(fastify.hasRequestDecorator(requestDecoratorName))
+    t.assert.ok(fastify.hasRequestDecorator(requestDecoratorName))
   })
 
-  t.test('should be plugin encapsulable', t => {
-    t.plan(4)
+  test('should be plugin encapsulable', async t => {
     const fastify = Fastify()
 
-    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    t.assert.ok(!fastify.hasRequestDecorator(requestDecoratorName))
 
-    fastify.register(function (fastify2, opts, done) {
+    await fastify.register(async function (fastify2, opts) {
       fastify2.decorateRequest(requestDecoratorName, 42)
-      t.ok(fastify2.hasRequestDecorator(requestDecoratorName))
-      done()
+      t.assert.ok(fastify2.hasRequestDecorator(requestDecoratorName))
     })
 
-    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    t.assert.ok(!fastify.hasRequestDecorator(requestDecoratorName))
 
-    fastify.ready(function () {
-      t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
-    })
+    await fastify.ready()
+    t.assert.ok(!fastify.hasRequestDecorator(requestDecoratorName))
   })
 
-  t.test('should be inherited', t => {
-    t.plan(2)
+  test('should be inherited', async t => {
     const fastify = Fastify()
 
     fastify.decorateRequest(requestDecoratorName, 42)
 
-    fastify.register(function (fastify2, opts, done) {
-      t.ok(fastify2.hasRequestDecorator(requestDecoratorName))
-      done()
+    await fastify.register(async function (fastify2, opts) {
+      t.assert.ok(fastify2.hasRequestDecorator(requestDecoratorName))
     })
 
-    fastify.ready(function () {
-      t.ok(fastify.hasRequestDecorator(requestDecoratorName))
-    })
+    await fastify.ready()
+    t.assert.ok(fastify.hasRequestDecorator(requestDecoratorName))
   })
-
-  t.end()
 })
 
-test('hasReplyDecorator', t => {
+describe('hasReplyDecorator', () => {
   const replyDecoratorName = 'my-decorator-name'
 
-  t.test('is a function', t => {
-    t.plan(1)
+  test('is a function', async t => {
     const fastify = Fastify()
-    t.ok(fastify.hasReplyDecorator)
+    t.assert.ok(fastify.hasReplyDecorator)
   })
 
-  t.test('should check if the given reply decoration already exist', t => {
-    t.plan(2)
+  test('should check if the given reply decoration already exist', async t => {
     const fastify = Fastify()
 
-    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    t.assert.ok(!fastify.hasReplyDecorator(replyDecoratorName))
     fastify.decorateReply(replyDecoratorName, 42)
-    t.ok(fastify.hasReplyDecorator(replyDecoratorName))
+    t.assert.ok(fastify.hasReplyDecorator(replyDecoratorName))
   })
 
-  t.test('should check if the given reply decoration already exist when null', t => {
-    t.plan(2)
+  test('should check if the given reply decoration already exist when null', async t => {
     const fastify = Fastify()
 
-    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    t.assert.ok(!fastify.hasReplyDecorator(replyDecoratorName))
     fastify.decorateReply(replyDecoratorName, null)
-    t.ok(fastify.hasReplyDecorator(replyDecoratorName))
+    t.assert.ok(fastify.hasReplyDecorator(replyDecoratorName))
   })
 
-  t.test('should be plugin encapsulable', t => {
-    t.plan(4)
+  test('should be plugin encapsulable', async t => {
     const fastify = Fastify()
 
-    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    t.assert.ok(!fastify.hasReplyDecorator(replyDecoratorName))
 
-    fastify.register(function (fastify2, opts, done) {
+    await fastify.register(async function (fastify2, opts) {
       fastify2.decorateReply(replyDecoratorName, 42)
-      t.ok(fastify2.hasReplyDecorator(replyDecoratorName))
-      done()
+      t.assert.ok(fastify2.hasReplyDecorator(replyDecoratorName))
     })
 
-    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    t.assert.ok(!fastify.hasReplyDecorator(replyDecoratorName))
 
-    fastify.ready(function () {
-      t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
-    })
+    await fastify.ready()
+    t.assert.ok(!fastify.hasReplyDecorator(replyDecoratorName))
   })
 
-  t.test('should be inherited', t => {
-    t.plan(2)
+  test('should be inherited', async t => {
     const fastify = Fastify()
 
     fastify.decorateReply(replyDecoratorName, 42)
 
-    fastify.register(function (fastify2, opts, done) {
-      t.ok(fastify2.hasReplyDecorator(replyDecoratorName))
-      done()
+    await fastify.register(async function (fastify2, opts) {
+      t.assert.ok(fastify2.hasReplyDecorator(replyDecoratorName))
     })
 
-    fastify.ready(function () {
-      t.ok(fastify.hasReplyDecorator(replyDecoratorName))
-    })
+    await fastify.ready()
+    t.assert.ok(fastify.hasReplyDecorator(replyDecoratorName))
   })
-
-  t.end()
 })
 
-test('should register properties via getter/setter objects', t => {
+test('should register properties via getter/setter objects', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -551,17 +599,18 @@ test('should register properties via getter/setter objects', t => {
         return 'a getter'
       }
     })
-    t.ok(instance.test)
-    t.ok(instance.test, 'a getter')
+    t.assert.ok(instance.test)
+    t.assert.ok(instance.test, 'a getter')
     done()
   })
 
   fastify.ready(() => {
-    t.notOk(fastify.test)
+    t.assert.ok(!fastify.test)
+    done()
   })
 })
 
-test('decorateRequest should work with getter/setter', t => {
+test('decorateRequest should work with getter/setter', (t, done) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -580,24 +629,34 @@ test('decorateRequest should work with getter/setter', t => {
   })
 
   fastify.get('/not-decorated', (req, res) => {
-    t.notOk(req.test)
+    t.assert.ok(!req.test)
     res.send()
   })
 
+  let pending = 2
+
+  function completed () {
+    if (--pending === 0) {
+      done()
+    }
+  }
+
   fastify.ready(() => {
     fastify.inject({ url: '/req-decorated-get-set' }, (err, res) => {
-      t.error(err)
-      t.same(JSON.parse(res.payload), { test: 'a getter' })
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { test: 'a getter' })
+      completed()
     })
 
     fastify.inject({ url: '/not-decorated' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok('ok', 'not decorated')
+      completed()
     })
   })
 })
 
-test('decorateReply should work with getter/setter', t => {
+test('decorateReply should work with getter/setter', (t, done) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -616,39 +675,49 @@ test('decorateReply should work with getter/setter', t => {
   })
 
   fastify.get('/not-decorated', (req, res) => {
-    t.notOk(res.test)
+    t.assert.ok(!res.test)
     res.send()
   })
 
+  let pending = 2
+
+  function completed () {
+    if (--pending === 0) {
+      done()
+    }
+  }
   fastify.ready(() => {
     fastify.inject({ url: '/res-decorated-get-set' }, (err, res) => {
-      t.error(err)
-      t.same(JSON.parse(res.payload), { test: 'a getter' })
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(res.payload), { test: 'a getter' })
+      completed()
     })
 
     fastify.inject({ url: '/not-decorated' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok('ok')
+      completed()
     })
   })
 })
 
-test('should register empty values', t => {
+test('should register empty values', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorate('test', null)
-    t.ok(Object.hasOwn(instance, 'test'))
+    t.assert.ok(Object.hasOwn(instance, 'test'))
     done()
   })
 
   fastify.ready(() => {
-    t.notOk(fastify.test)
+    t.assert.ok(!fastify.test)
+    done()
   })
 })
 
-test('nested plugins can override things', t => {
+test('nested plugins can override things', (t, done) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -663,20 +732,21 @@ test('nested plugins can override things', t => {
     instance.decorateRequest('test', func)
     instance.decorateReply('test', func)
 
-    t.equal(instance.test, func)
-    t.equal(instance[symbols.kRequest].prototype.test, func)
-    t.equal(instance[symbols.kReply].prototype.test, func)
+    t.assert.strictEqual(instance.test, func)
+    t.assert.strictEqual(instance[symbols.kRequest].prototype.test, func)
+    t.assert.strictEqual(instance[symbols.kReply].prototype.test, func)
     done()
   })
 
   fastify.ready(() => {
-    t.equal(fastify.test, rootFunc)
-    t.equal(fastify[symbols.kRequest].prototype.test, rootFunc)
-    t.equal(fastify[symbols.kReply].prototype.test, rootFunc)
+    t.assert.strictEqual(fastify.test, rootFunc)
+    t.assert.strictEqual(fastify[symbols.kRequest].prototype.test, rootFunc)
+    t.assert.strictEqual(fastify[symbols.kReply].prototype.test, rootFunc)
+    done()
   })
 })
 
-test('a decorator should addSchema to all the encapsulated tree', t => {
+test('a decorator should addSchema to all the encapsulated tree', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -700,10 +770,13 @@ test('a decorator should addSchema to all the encapsulated tree', t => {
     done()
   })
 
-  fastify.ready(t.error)
+  fastify.ready(() => {
+    t.assert.ifError()
+    done()
+  })
 })
 
-test('after can access to a decorated instance and previous plugin decoration', t => {
+test('after can access to a decorated instance and previous plugin decoration', (t, done) => {
   t.plan(11)
   const TEST_VALUE = {}
   const OTHER_TEST_VALUE = {}
@@ -716,38 +789,39 @@ test('after can access to a decorated instance and previous plugin decoration', 
 
     done()
   })).after(function (err, instance, done) {
-    t.error(err)
-    t.equal(instance.test, TEST_VALUE)
+    t.assert.ifError(err)
+    t.assert.strictEqual(instance.test, TEST_VALUE)
 
     instance.decorate('test2', OTHER_TEST_VALUE)
     done()
   })
 
   fastify.register(fp(function (instance, options, done) {
-    t.equal(instance.test, TEST_VALUE)
-    t.equal(instance.test2, OTHER_TEST_VALUE)
+    t.assert.strictEqual(instance.test, TEST_VALUE)
+    t.assert.strictEqual(instance.test2, OTHER_TEST_VALUE)
 
     instance.decorate('test3', NEW_TEST_VALUE)
 
     done()
   })).after(function (err, instance, done) {
-    t.error(err)
-    t.equal(instance.test, TEST_VALUE)
-    t.equal(instance.test2, OTHER_TEST_VALUE)
-    t.equal(instance.test3, NEW_TEST_VALUE)
+    t.assert.ifError(err)
+    t.assert.strictEqual(instance.test, TEST_VALUE)
+    t.assert.strictEqual(instance.test2, OTHER_TEST_VALUE)
+    t.assert.strictEqual(instance.test3, NEW_TEST_VALUE)
 
     done()
   })
 
   fastify.get('/', function (req, res) {
-    t.equal(this.test, TEST_VALUE)
-    t.equal(this.test2, OTHER_TEST_VALUE)
+    t.assert.strictEqual(this.test, TEST_VALUE)
+    t.assert.strictEqual(this.test2, OTHER_TEST_VALUE)
     res.send({})
   })
 
   fastify.inject('/')
     .then(response => {
-      t.equal(response.statusCode, 200)
+      t.assert.strictEqual(response.statusCode, 200)
+      done()
     })
 })
 
@@ -764,24 +838,24 @@ test('decorate* should throw if called after ready', async t => {
   await fastify.listen({ port: 0 })
   try {
     fastify.decorate('test', true)
-    t.fail('should not decorate')
+    t.assert.fail('should not decorate')
   } catch (err) {
-    t.same(err.code, 'FST_ERR_DEC_AFTER_START')
-    t.same(err.message, "The decorator 'test' has been added after start!")
+    t.assert.strictEqual(err.code, 'FST_ERR_DEC_AFTER_START')
+    t.assert.strictEqual(err.message, "The decorator 'test' has been added after start!")
   }
   try {
     fastify.decorateRequest('test', true)
-    t.fail('should not decorate')
+    t.assert.fail('should not decorate')
   } catch (e) {
-    t.same(e.code, 'FST_ERR_DEC_AFTER_START')
-    t.same(e.message, "The decorator 'test' has been added after start!")
+    t.assert.strictEqual(e.code, 'FST_ERR_DEC_AFTER_START')
+    t.assert.strictEqual(e.message, "The decorator 'test' has been added after start!")
   }
   try {
     fastify.decorateReply('test', true)
-    t.fail('should not decorate')
+    t.assert.fail('should not decorate')
   } catch (e) {
-    t.same(e.code, 'FST_ERR_DEC_AFTER_START')
-    t.same(e.message, "The decorator 'test' has been added after start!")
+    t.assert.strictEqual(e.code, 'FST_ERR_DEC_AFTER_START')
+    t.assert.strictEqual(e.message, "The decorator 'test' has been added after start!")
   }
   await fastify.close()
 })
@@ -792,10 +866,10 @@ test('decorate* should emit error if an array is passed', t => {
   const fastify = Fastify()
   try {
     fastify.decorateRequest('test_array', [])
-    t.fail('should not decorate')
+    t.assert.fail('should not decorate')
   } catch (err) {
-    t.same(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
-    t.same(err.message, "The decorator 'test_array' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+    t.assert.strictEqual(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.assert.strictEqual(err.message, "The decorator 'test_array' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
   }
 })
 
@@ -806,7 +880,7 @@ test('server.decorate should not emit error if reference type is passed', async 
   fastify.decorate('test_array', [])
   fastify.decorate('test_object', {})
   await fastify.ready()
-  t.pass('Done')
+  t.assert.ok('Done')
 })
 
 test('decorate* should emit warning if object type is passed', t => {
@@ -815,10 +889,10 @@ test('decorate* should emit warning if object type is passed', t => {
   const fastify = Fastify()
   try {
     fastify.decorateRequest('test_object', { foo: 'bar' })
-    t.fail('should not decorate')
+    t.assert.fail('should not decorate')
   } catch (err) {
-    t.same(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
-    t.same(err.message, "The decorator 'test_object' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
+    t.assert.strictEqual(err.code, 'FST_ERR_DEC_REFERENCE_TYPE')
+    t.assert.strictEqual(err.message, "The decorator 'test_object' of type 'object' is a reference type. Use the { getter, setter } interface instead.")
   }
 })
 
@@ -833,7 +907,7 @@ test('decorate* should not emit warning if object with getter/setter is passed',
       return 'a getter'
     }
   })
-  t.end('Done')
+  t.assert.ok('Done')
 })
 
 test('decorateRequest with getter/setter can handle encapsulation', async t => {
@@ -850,22 +924,22 @@ test('decorateRequest with getter/setter can handle encapsulation', async t => {
   })
 
   fastify.get('/', async function (req, reply) {
-    t.same(req.test_getter_setter, {}, 'a getter')
+    t.assert.deepStrictEqual(req.test_getter_setter, {}, 'a getter')
     req.test_getter_setter.a = req.id
-    t.same(req.test_getter_setter, { a: req.id })
+    t.assert.deepStrictEqual(req.test_getter_setter, { a: req.id })
   })
 
   fastify.addHook('onResponse', async function hook (req, reply) {
-    t.same(req.test_getter_setter, { a: req.id })
+    t.assert.deepStrictEqual(req.test_getter_setter, { a: req.id })
   })
 
   await Promise.all([
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200))
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200))
   ])
 })
 
@@ -883,22 +957,22 @@ test('decorateRequest with getter/setter can handle encapsulation with arrays', 
   })
 
   fastify.get('/', async function (req, reply) {
-    t.same(req.my_array, [])
+    t.assert.deepStrictEqual(req.my_array, [])
     req.my_array.push(req.id)
-    t.same(req.my_array, [req.id])
+    t.assert.deepStrictEqual(req.my_array, [req.id])
   })
 
   fastify.addHook('onResponse', async function hook (req, reply) {
-    t.same(req.my_array, [req.id])
+    t.assert.deepStrictEqual(req.my_array, [req.id])
   })
 
   await Promise.all([
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200)),
-    fastify.inject('/').then(res => t.same(res.statusCode, 200))
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200)),
+    fastify.inject('/').then(res => t.assert.strictEqual(res.statusCode, 200))
   ])
 })
 
@@ -915,7 +989,7 @@ test('decorate* should not emit error if string,bool,numbers are passed', t => {
   fastify.decorateReply('test_number', 42)
   fastify.decorateReply('test_null', null)
   fastify.decorateReply('test_undefined', undefined)
-  t.end('Done')
+  t.assert.ok('Done')
 })
 
 test('Request/reply decorators should be able to access the server instance', async t => {
@@ -948,12 +1022,12 @@ test('Request/reply decorators should be able to access the server instance', as
 
   // ----
   function rootAssert () {
-    t.equal(this.server, server)
+    t.assert.strictEqual(this.server, server)
   }
 
   function nestedAssert () {
-    t.not(this.server, server)
-    t.equal(this.server.foo, 'bar')
+    t.assert.notStrictEqual(this.server, server)
+    t.assert.strictEqual(this.server.foo, 'bar')
   }
 })
 
@@ -990,94 +1064,97 @@ test('plugin required decorators', async t => {
   await app.ready()
 })
 
-test('decorateRequest/decorateReply empty string', t => {
+test('decorateRequest/decorateReply empty string', (t, done) => {
   t.plan(7)
   const fastify = Fastify()
 
   fastify.decorateRequest('test', '')
   fastify.decorateReply('test2', '')
   fastify.get('/yes', (req, reply) => {
-    t.equal(req.test, '')
-    t.equal(reply.test2, '')
+    t.assert.strictEqual(req.test, '')
+    t.assert.strictEqual(reply.test2, '')
     reply.send({ hello: 'world' })
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      done()
     })
   })
 })
 
-test('decorateRequest/decorateReply is undefined', t => {
+test('decorateRequest/decorateReply is undefined', (t, done) => {
   t.plan(7)
   const fastify = Fastify()
 
   fastify.decorateRequest('test', undefined)
   fastify.decorateReply('test2', undefined)
   fastify.get('/yes', (req, reply) => {
-    t.equal(req.test, undefined)
-    t.equal(reply.test2, undefined)
+    t.assert.strictEqual(req.test, undefined)
+    t.assert.strictEqual(reply.test2, undefined)
     reply.send({ hello: 'world' })
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      done()
     })
   })
 })
 
-test('decorateRequest/decorateReply is not set to a value', t => {
+test('decorateRequest/decorateReply is not set to a value', (t, done) => {
   t.plan(7)
   const fastify = Fastify()
 
   fastify.decorateRequest('test')
   fastify.decorateReply('test2')
   fastify.get('/yes', (req, reply) => {
-    t.equal(req.test, undefined)
-    t.equal(reply.test2, undefined)
+    t.assert.strictEqual(req.test, undefined)
+    t.assert.strictEqual(reply.test2, undefined)
     reply.send({ hello: 'world' })
   })
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
+      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+      done()
     })
   })
 })
 
-test('decorateRequest with dependencies', (t) => {
+test('decorateRequest with dependencies', (t, done) => {
   t.plan(2)
   const app = Fastify()
 
@@ -1091,12 +1168,13 @@ test('decorateRequest with dependencies', (t) => {
     app.hasDecorator('decorator1') &&
     app.hasRequestDecorator('decorator1')
   ) {
-    t.doesNotThrow(() => app.decorateRequest('decorator2', decorator2, ['decorator1']))
-    t.ok(app.hasRequestDecorator('decorator2'))
+    t.assert.doesNotThrow(() => app.decorateRequest('decorator2', decorator2, ['decorator1']))
+    t.assert.ok(app.hasRequestDecorator('decorator2'))
+    done()
   }
 })
 
-test('decorateRequest with dependencies (functions)', (t) => {
+test('decorateRequest with dependencies (functions)', (t, done) => {
   t.plan(2)
   const app = Fastify()
 
@@ -1110,12 +1188,13 @@ test('decorateRequest with dependencies (functions)', (t) => {
     app.hasDecorator('decorator1') &&
     app.hasRequestDecorator('decorator1')
   ) {
-    t.doesNotThrow(() => app.decorateRequest('decorator2', decorator2, ['decorator1']))
-    t.ok(app.hasRequestDecorator('decorator2'))
+    t.assert.doesNotThrow(() => app.decorateRequest('decorator2', decorator2, ['decorator1']))
+    t.assert.ok(app.hasRequestDecorator('decorator2'))
+    done()
   }
 })
 
-test('chain of decorators on Request', async (t) => {
+test('chain of decorators on Request', async t => {
   const fastify = Fastify()
   fastify.register(fp(async function (fastify) {
     fastify.decorateRequest('foo', 'toto')
@@ -1159,32 +1238,32 @@ test('chain of decorators on Request', async (t) => {
 
   {
     const response = await fastify.inject('/foo')
-    t.equal(response.body, 'toto')
+    t.assert.strictEqual(response.body, 'toto')
   }
 
   {
     const response = await fastify.inject('/bar')
-    t.equal(response.body, 'tata')
+    t.assert.strictEqual(response.body, 'tata')
   }
 
   {
     const response = await fastify.inject('/plugin2/foo')
-    t.equal(response.body, 'toto')
+    t.assert.strictEqual(response.body, 'toto')
   }
 
   {
     const response = await fastify.inject('/plugin2/bar')
-    t.equal(response.body, 'tata')
+    t.assert.strictEqual(response.body, 'tata')
   }
 
   {
     const response = await fastify.inject('/plugin2/plugin3/foo')
-    t.equal(response.body, 'toto')
+    t.assert.strictEqual(response.body, 'toto')
   }
 
   {
     const response = await fastify.inject('/plugin2/plugin3/bar')
-    t.equal(response.body, 'tata')
+    t.assert.strictEqual(response.body, 'tata')
   }
 })
 
@@ -1232,36 +1311,36 @@ test('chain of decorators on Reply', async (t) => {
 
   {
     const response = await fastify.inject('/foo')
-    t.equal(response.body, 'toto')
+    t.assert.strictEqual(response.body, 'toto')
   }
 
   {
     const response = await fastify.inject('/bar')
-    t.equal(response.body, 'tata')
+    t.assert.strictEqual(response.body, 'tata')
   }
 
   {
     const response = await fastify.inject('/plugin2/foo')
-    t.equal(response.body, 'toto')
+    t.assert.strictEqual(response.body, 'toto')
   }
 
   {
     const response = await fastify.inject('/plugin2/bar')
-    t.equal(response.body, 'tata')
+    t.assert.strictEqual(response.body, 'tata')
   }
 
   {
     const response = await fastify.inject('/plugin2/plugin3/foo')
-    t.equal(response.body, 'toto')
+    t.assert.strictEqual(response.body, 'toto')
   }
 
   {
     const response = await fastify.inject('/plugin2/plugin3/bar')
-    t.equal(response.body, 'tata')
+    t.assert.strictEqual(response.body, 'tata')
   }
 })
 
-test('getDecorator should return the decorator', t => {
+test('getDecorator should return the decorator', (t, done) => {
   t.plan(12)
   const fastify = Fastify()
 
@@ -1269,10 +1348,10 @@ test('getDecorator should return the decorator', t => {
   fastify.decorateRequest('root', 'from_root_request')
   fastify.decorateReply('root', 'from_root_reply')
 
-  t.equal(fastify.getDecorator('root'), 'from_root')
+  t.assert.strictEqual(fastify.getDecorator('root'), 'from_root')
   fastify.get('/', async (req, res) => {
-    t.equal(req.getDecorator('root'), 'from_root_request')
-    t.equal(res.getDecorator('root'), 'from_root_reply')
+    t.assert.strictEqual(req.getDecorator('root'), 'from_root_request')
+    t.assert.strictEqual(res.getDecorator('root'), 'from_root_reply')
 
     res.send()
   })
@@ -1280,32 +1359,33 @@ test('getDecorator should return the decorator', t => {
   fastify.register((child) => {
     child.decorate('child', 'from_child')
 
-    t.equal(child.getDecorator('child'), 'from_child')
-    t.equal(child.getDecorator('root'), 'from_root')
+    t.assert.strictEqual(child.getDecorator('child'), 'from_child')
+    t.assert.strictEqual(child.getDecorator('root'), 'from_root')
 
     child.get('/child', async (req, res) => {
-      t.equal(req.getDecorator('root'), 'from_root_request')
-      t.equal(res.getDecorator('root'), 'from_root_reply')
+      t.assert.strictEqual(req.getDecorator('root'), 'from_root_request')
+      t.assert.strictEqual(res.getDecorator('root'), 'from_root_reply')
 
       res.send()
     })
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true)
     })
 
     fastify.inject({ url: '/child' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true)
+      done()
     })
   })
 })
 
-test('getDecorator should return function decorators with expected binded context', t => {
+test('getDecorator should return function decorators with expected binded context', (t, done) => {
   t.plan(12)
   const fastify = Fastify()
 
@@ -1324,49 +1404,48 @@ test('getDecorator should return function decorators with expected binded contex
       return this
     })
 
-    t.same(child.getDecorator('a')(), child)
+    t.assert.deepEqual(child.getDecorator('a')(), child)
     child.get('/child', async (req, res) => {
-      t.same(req.getDecorator('b')(), req)
-      t.same(res.getDecorator('c')(), res)
+      t.assert.deepEqual(req.getDecorator('b')(), req)
+      t.assert.deepEqual(res.getDecorator('c')(), res)
 
       res.send()
     })
   })
 
-  t.same(fastify.getDecorator('a')(), fastify)
+  t.assert.deepEqual(fastify.getDecorator('a')(), fastify)
   fastify.get('/', async (req, res) => {
-    t.same(req.getDecorator('b')(), req)
-    t.same(res.getDecorator('c')(), res)
-
+    t.assert.deepEqual(req.getDecorator('b')(), req)
+    t.assert.deepEqual(res.getDecorator('c')(), res)
     res.send()
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
     })
 
     fastify.inject({ url: '/child' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
+      done()
     })
-
-    t.pass()
+    t.assert.ok(true, 'passed')
   })
 })
 
-test('getDecorator should only return decorators existing in the scope', t => {
+test('getDecorator should only return decorators existing in the scope', (t, done) => {
   t.plan(9)
 
   function assertsThrowOnUndeclaredDecorator (notDecorated, instanceType) {
     try {
       notDecorated.getDecorator('foo')
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
-      t.same(e.message, `No decorator 'foo' has been declared on ${instanceType}.`)
+      t.assert.deepEqual(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.assert.deepEqual(e.message, `No decorator 'foo' has been declared on ${instanceType}.`)
     }
   }
 
@@ -1385,17 +1464,18 @@ test('getDecorator should only return decorators existing in the scope', t => {
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
 
     assertsThrowOnUndeclaredDecorator(fastify, 'instance')
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
+      done()
     })
   })
 })
 
-test('Request.setDecorator should update an existing decorator', t => {
+test('Request.setDecorator should update an existing decorator', (t, done) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -1408,25 +1488,26 @@ test('Request.setDecorator should update an existing decorator', t => {
     })
     try {
       req.setDecorator('foo', { user: 'Jean' })
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.same(e.code, 'FST_ERR_DEC_UNDECLARED')
-      t.same(e.message, "No decorator 'foo' has been declared on request.")
+      t.assert.deepEqual(e.code, 'FST_ERR_DEC_UNDECLARED')
+      t.assert.deepEqual(e.message, "No decorator 'foo' has been declared on request.")
     }
   })
 
   fastify.get('/', async (req, res) => {
-    t.strictSame(req.getDecorator('session'), { user: 'Jean' })
-    t.same(req.getDecorator('utility')(), req)
+    t.assert.deepEqual(req.getDecorator('session'), { user: 'Jean' })
+    t.assert.deepEqual(req.getDecorator('utility')(), req)
 
     res.send()
   })
 
   fastify.ready((err) => {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.inject({ url: '/' }, (err, res) => {
-      t.error(err)
-      t.pass()
+      t.assert.ifError(err)
+      t.assert.ok(true, 'passed')
+      done()
     })
   })
 })

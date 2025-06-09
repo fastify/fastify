@@ -12,7 +12,7 @@ The modules we will use:
   tool written in node.
 - [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout
   multiple git branches, execute scripts, and log the results.
-- [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands
+- [Concurrently](https://github.com/open-cli-tools/concurrently): Run commands
   concurrently.
 - [Npx](https://github.com/npm/npx): NPM package runner used to run scripts
   against different Node.js Versions and execute local binaries. Shipped with

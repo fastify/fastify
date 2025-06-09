@@ -197,7 +197,7 @@ to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
 
-> 🛈 Note:
+> ℹ️ Note:
 >  At the time of writing, only node >= v16.10.0 supports this option.
 
 ### `requestTimeout`
@@ -215,7 +215,7 @@ It must be set to a non-zero value (e.g. 120 seconds) to protect against potenti
 Denial-of-Service attacks in case the server is deployed without a reverse proxy
 in front.
 
-> 🛈 Note:
+> ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
 
 ### `bodyLimit`
@@ -427,7 +427,7 @@ Especially in distributed systems, you may want to override the default ID
 generation behavior as shown below. For generating `UUID`s you may want to check
 out [hyperid](https://github.com/mcollina/hyperid).
 
-> 🛈 Note:
+> ℹ️ Note:
 > `genReqId` will be not called if the header set in
 > <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
 > 'request-id').
@@ -479,7 +479,7 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
-> 🛈 Note:
+> ℹ️ Note:
 > If a request contains multiple `x-forwarded-host` or `x-forwarded-proto`
 > headers, it is only the last one that is used to derive `request.hostname`
 > and `request.protocol`.
@@ -603,7 +603,7 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-> 🛈 Note:
+> ℹ️ Note:
 > Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
 
 ```js
@@ -656,7 +656,7 @@ function defaultClientErrorHandler (err, socket) {
 }
 ```
 
-> 🛈 Note:
+> ℹ️ Note:
 > `clientErrorHandler` operates with raw sockets. The handler is expected to
 > return a properly formed HTTP response that includes a status line, HTTP headers
 > and a message body. Before attempting to write the socket, the handler should
@@ -1474,7 +1474,7 @@ Set the schema error formatter for all routes. See
 Set the schema serializer compiler for all routes. See
 [#schema-serializer](./Validation-and-Serialization.md#schema-serializer).
 
-> 🛈 Note:
+> ℹ️ Note:
 > [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 #### validatorCompiler
@@ -1607,7 +1607,7 @@ lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
 You can also register [`preValidation`](./Hooks.md#route-hooks) and
 [`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
 
-> 🛈 Note:
+> ℹ️ Note:
 > The `preValidation` hook registered using this method will run for a
 > route that Fastify does not recognize and **not** when a route handler manually
 > calls [`reply.callNotFound`](./Reply.md#call-not-found). In which case, only
@@ -1643,10 +1643,10 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
-> 🛈 Note:
+> ℹ️ Note:
 > Some config properties from the request object will be
 > undefined inside the custom not found handler. E.g.:
-> `request.routerPath`, `routerMethod` and `context.config`.
+> `request.routeOptions.url`, `routeOptions.method` and `routeOptions.config`.
 > This method design goal is to allow calling the common not found route.
 > To return a per-route customized 404 response, you can do it in
 > the response itself.
@@ -1691,6 +1691,22 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+
+> ⚠ Warning:
+> Avoid calling setErrorHandler multiple times in the same scope.
+> Only the last handler will take effect, and previous ones will be silently overridden.
+>
+> Incorrect usage:
+> ```js
+> app.setErrorHandler(function freeSomeResources () {
+>   // Never executed, memory leaks
+> })
+> 
+> app.setErrorHandler(function anotherErrorHandler () {
+>   // Overrides the previous handler
+> })
+> ```
+
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>
 

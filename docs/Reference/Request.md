@@ -84,7 +84,7 @@ This operation adds new values to the request headers, accessible via
 For performance reasons, `Symbol('fastify.RequestAcceptVersion')` may be added
 to headers on `not found` routes.
 
-> 🛈 Note: Schema validation may mutate the `request.headers` and
+> ℹ️ Note: Schema validation may mutate the `request.headers` and
 > `request.raw.headers` objects, causing the headers to become empty.
 
 ```js

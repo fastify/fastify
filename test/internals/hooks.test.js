@@ -2,6 +2,7 @@
 
 const { test } = require('node:test')
 const { Hooks } = require('../../lib/hooks')
+const { default: fastify } = require('../../fastify')
 const noop = () => {}
 
 test('hooks should have 4 array with the registered hooks', t => {
@@ -75,5 +76,21 @@ test('should throw on wrong parameters', t => {
   } catch (e) {
     t.assert.strictEqual(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
     t.assert.strictEqual(e.message, 'onSend hook should be a function, instead got [object Null]')
+  }
+})
+
+test('Integration test: internal function _addHook should be turned into app.ready() rejection', async (t) => {
+  const app = fastify()
+
+  app.register(async function () {
+    app.addHook('notRealHook', async () => {})
+  })
+
+  try {
+    await app.ready()
+    t.assert.fail('Expected ready() to throw')
+  } catch (err) {
+    t.assert.strictEqual(err.code, 'FST_ERR_HOOK_NOT_SUPPORTED')
+    t.assert.match(err.message, /hook not supported/i)
   }
 })

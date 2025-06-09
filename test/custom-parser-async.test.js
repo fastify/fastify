@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 
 process.removeAllListeners('warning')
@@ -24,41 +23,37 @@ test('contentTypeParser should add a custom async parser', async t => {
   })
 
   t.after(() => fastify.close())
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  await t.test('in POST', (t, done) => {
+  await t.test('in POST', async t => {
     t.plan(3)
 
-    sget({
+    const result = await fetch(fastifyServer, {
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
-      done()
+      },
+      body: '{"hello":"world"}'
     })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
   })
 
-  await t.test('in OPTIONS', (t, done) => {
+  await t.test('in OPTIONS', async t => {
     t.plan(3)
 
-    sget({
+    const result = await fetch(fastifyServer, {
       method: 'OPTIONS',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/jsoff'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
-      done()
+      },
+      body: '{"hello":"world"}'
     })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
   })
 })

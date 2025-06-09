@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Production
         run: |
-          pnpm install --prod
+          pnpm install --ignore-scripts --prod
 
       - name: Run server
         run: |

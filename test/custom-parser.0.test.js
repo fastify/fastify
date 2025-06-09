@@ -1,22 +1,22 @@
 'use strict'
 
 const fs = require('node:fs')
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
 const { getServerUrl, plainTextParser } = require('./helper')
+const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
 test('contentTypeParser method should exist', t => {
   t.plan(1)
   const fastify = Fastify()
-  t.ok(fastify.addContentTypeParser)
+  t.assert.ok(fastify.addContentTypeParser)
 })
 
-test('contentTypeParser should add a custom parser', t => {
+test('contentTypeParser should add a custom parser', (t, mainTestDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -35,11 +35,13 @@ test('contentTypeParser should add a custom parser', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
-    t.teardown(() => fastify.close())
+    const completion = waitForCb({ steps: 2 })
 
-    t.test('in POST', t => {
+    t.after(() => fastify.close())
+
+    t.test('in POST', (t, testDone) => {
       t.plan(3)
 
       sget({
@@ -50,13 +52,15 @@ test('contentTypeParser should add a custom parser', t => {
           'Content-Type': 'application/jsoff'
         }
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        testDone()
+        completion.stepIn()
       })
     })
 
-    t.test('in OPTIONS', t => {
+    t.test('in OPTIONS', (t, testDone) => {
       t.plan(3)
 
       sget({
@@ -67,15 +71,18 @@ test('contentTypeParser should add a custom parser', t => {
           'Content-Type': 'application/jsoff'
         }
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        testDone()
+        completion.stepIn()
       })
     })
+    completion.patience.then(mainTestDone)
   })
 })
 
-test('contentTypeParser should handle multiple custom parsers', t => {
+test('contentTypeParser should handle multiple custom parsers', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -97,8 +104,10 @@ test('contentTypeParser should handle multiple custom parsers', t => {
   fastify.addContentTypeParser('application/ffosj', customParser)
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
+
+    const completion = waitForCb({ steps: 2 })
 
     sget({
       method: 'POST',
@@ -108,9 +117,10 @@ test('contentTypeParser should handle multiple custom parsers', t => {
         'Content-Type': 'application/jsoff'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      completion.stepIn()
     })
 
     sget({
@@ -121,14 +131,16 @@ test('contentTypeParser should handle multiple custom parsers', t => {
         'Content-Type': 'application/ffosj'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      completion.stepIn()
     })
+    completion.patience.then(testDone)
   })
 })
 
-test('contentTypeParser should handle an array of custom contentTypes', t => {
+test('contentTypeParser should handle an array of custom contentTypes', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -149,8 +161,10 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
   fastify.addContentTypeParser(['application/jsoff', 'application/ffosj'], customParser)
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
+
+    const completion = waitForCb({ steps: 2 })
 
     sget({
       method: 'POST',
@@ -160,9 +174,10 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
         'Content-Type': 'application/jsoff'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      completion.stepIn()
     })
 
     sget({
@@ -173,14 +188,16 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
         'Content-Type': 'application/ffosj'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      completion.stepIn()
     })
+    completion.patience.then(testDone)
   })
 })
 
-test('contentTypeParser should handle errors', t => {
+test('contentTypeParser should handle errors', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -193,7 +210,7 @@ test('contentTypeParser should handle errors', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -203,25 +220,26 @@ test('contentTypeParser should handle errors', t => {
         'Content-Type': 'application/jsoff'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 500)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 500)
       fastify.close()
+      testDone()
     })
   })
 })
 
-test('contentTypeParser should support encapsulation', t => {
+test('contentTypeParser should support encapsulation', (t, testDone) => {
   t.plan(6)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.addContentTypeParser('application/jsoff', () => {})
-    t.ok(instance.hasContentTypeParser('application/jsoff'))
+    t.assert.ok(instance.hasContentTypeParser('application/jsoff'))
 
     instance.register((instance, opts, done) => {
       instance.addContentTypeParser('application/ffosj', () => {})
-      t.ok(instance.hasContentTypeParser('application/jsoff'))
-      t.ok(instance.hasContentTypeParser('application/ffosj'))
+      t.assert.ok(instance.hasContentTypeParser('application/jsoff'))
+      t.assert.ok(instance.hasContentTypeParser('application/ffosj'))
       done()
     })
 
@@ -229,13 +247,14 @@ test('contentTypeParser should support encapsulation', t => {
   })
 
   fastify.ready(err => {
-    t.error(err)
-    t.notOk(fastify.hasContentTypeParser('application/jsoff'))
-    t.notOk(fastify.hasContentTypeParser('application/ffosj'))
+    t.assert.ifError(err)
+    t.assert.ok(!fastify.hasContentTypeParser('application/jsoff'))
+    t.assert.ok(!fastify.hasContentTypeParser('application/ffosj'))
+    testDone()
   })
 })
 
-test('contentTypeParser should support encapsulation, second try', t => {
+test('contentTypeParser should support encapsulation, second try', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -254,7 +273,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -264,15 +283,16 @@ test('contentTypeParser should support encapsulation, second try', t => {
         'Content-Type': 'application/jsoff'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       fastify.close()
+      testDone()
     })
   })
 })
 
-test('contentTypeParser shouldn\'t support request with undefined "Content-Type"', t => {
+test('contentTypeParser shouldn\'t support request with undefined "Content-Type"', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -287,7 +307,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -297,9 +317,10 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
         // 'Content-Type': undefined
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 415)
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 415)
       fastify.close()
+      testDone()
     })
   })
 })
@@ -310,10 +331,10 @@ test('the content type should be a string or RegExp', t => {
 
   try {
     fastify.addContentTypeParser(null, () => {})
-    t.fail()
+    t.assert.fail()
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_CTP_INVALID_TYPE')
-    t.equal(err.message, 'The content type should be a string or a RegExp')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_INVALID_TYPE')
+    t.assert.strictEqual(err.message, 'The content type should be a string or a RegExp')
   }
 })
 
@@ -323,10 +344,10 @@ test('the content type cannot be an empty string', t => {
 
   try {
     fastify.addContentTypeParser('', () => {})
-    t.fail()
+    t.assert.fail()
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
-    t.equal(err.message, 'The content type cannot be an empty string')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
+    t.assert.strictEqual(err.message, 'The content type cannot be an empty string')
   }
 })
 
@@ -336,14 +357,14 @@ test('the content type handler should be a function', t => {
 
   try {
     fastify.addContentTypeParser('aaa', null)
-    t.fail()
+    t.assert.fail()
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
-    t.equal(err.message, 'The content type handler should be a function')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
+    t.assert.strictEqual(err.message, 'The content type handler should be a function')
   }
 })
 
-test('catch all content type parser', t => {
+test('catch all content type parser', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -360,7 +381,7 @@ test('catch all content type parser', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -370,9 +391,9 @@ test('catch all content type parser', t => {
         'Content-Type': 'application/jsoff'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'hello')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello')
 
       sget({
         method: 'POST',
@@ -382,16 +403,17 @@ test('catch all content type parser', t => {
           'Content-Type': 'very-weird-content-type'
         }
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), 'hello')
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello')
         fastify.close()
+        testDone()
       })
     })
   })
 })
 
-test('catch all content type parser should not interfere with other conte type parsers', t => {
+test('catch all content type parser should not interfere with other conte type parsers', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -414,7 +436,7 @@ test('catch all content type parser should not interfere with other conte type p
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -424,9 +446,9 @@ test('catch all content type parser should not interfere with other conte type p
         'Content-Type': 'application/jsoff'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), JSON.stringify({ hello: 'world' }))
 
       sget({
         method: 'POST',
@@ -436,22 +458,23 @@ test('catch all content type parser should not interfere with other conte type p
           'Content-Type': 'very-weird-content-type'
         }
       }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), 'hello')
+        t.assert.ifError(err)
+        t.assert.strictEqual(response.statusCode, 200)
+        t.assert.strictEqual(body.toString(), 'hello')
         fastify.close()
+        testDone()
       })
     })
   })
 })
 
 // Issue 492 https://github.com/fastify/fastify/issues/492
-test('\'*\' catch undefined Content-Type requests', t => {
+test('\'*\' catch undefined Content-Type requests', (t, testDone) => {
   t.plan(4)
 
   const fastify = Fastify()
 
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
     let data = ''
@@ -467,7 +490,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     const fileStream = fs.createReadStream(__filename)
 
@@ -476,37 +499,39 @@ test('\'*\' catch undefined Content-Type requests', t => {
       url: getServerUrl(fastify) + '/',
       body: fileStream
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body + '', fs.readFileSync(__filename).toString())
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body + '', fs.readFileSync(__filename).toString())
+      testDone()
     })
   })
 })
 
-test('cannot add custom parser after binding', t => {
+test('cannot add custom parser after binding', (t, testDone) => {
   t.plan(2)
 
   const fastify = Fastify()
 
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.post('/', (req, res) => {
     res.type('text/plain').send(req.body)
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
 
     try {
       fastify.addContentTypeParser('*', () => {})
-      t.fail()
+      t.assert.fail()
     } catch (e) {
-      t.pass()
+      t.assert.ok(true)
+      testDone()
     }
   })
 })
 
-test('Can override the default json parser', t => {
+test('Can override the default json parser', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -515,14 +540,14 @@ test('Can override the default json parser', t => {
   })
 
   fastify.addContentTypeParser('application/json', function (req, payload, done) {
-    t.ok('called')
+    t.assert.ok('called')
     jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -532,15 +557,16 @@ test('Can override the default json parser', t => {
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), '{"hello":"world"}')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
+      testDone()
     })
   })
 })
 
-test('Can override the default plain text parser', t => {
+test('Can override the default plain text parser', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -549,14 +575,14 @@ test('Can override the default plain text parser', t => {
   })
 
   fastify.addContentTypeParser('text/plain', function (req, payload, done) {
-    t.ok('called')
+    t.assert.ok('called')
     plainTextParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -566,21 +592,22 @@ test('Can override the default plain text parser', t => {
         'Content-Type': 'text/plain'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'hello world')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
+      testDone()
     })
   })
 })
 
-test('Can override the default json parser in a plugin', t => {
+test('Can override the default json parser in a plugin', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.addContentTypeParser('application/json', function (req, payload, done) {
-      t.ok('called')
+      t.assert.ok('called')
       jsonParser(payload, function (err, body) {
         done(err, body)
       })
@@ -594,7 +621,7 @@ test('Can override the default json parser in a plugin', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -604,10 +631,11 @@ test('Can override the default json parser in a plugin', t => {
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), '{"hello":"world"}')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
+      testDone()
     })
   })
 })
@@ -624,14 +652,14 @@ test('Can\'t override the json parser multiple times', t => {
 
   try {
     fastify.addContentTypeParser('application/json', function (req, payload, done) {
-      t.ok('called')
+      t.assert.ok('called')
       jsonParser(payload, function (err, body) {
         done(err, body)
       })
     })
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.equal(err.message, 'Content type parser \'application/json\' already present.')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
+    t.assert.strictEqual(err.message, 'Content type parser \'application/json\' already present.')
   }
 })
 
@@ -647,18 +675,18 @@ test('Can\'t override the plain text parser multiple times', t => {
 
   try {
     fastify.addContentTypeParser('text/plain', function (req, payload, done) {
-      t.ok('called')
+      t.assert.ok('called')
       plainTextParser(payload, function (err, body) {
         done(err, body)
       })
     })
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.equal(err.message, 'Content type parser \'text/plain\' already present.')
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
+    t.assert.strictEqual(err.message, 'Content type parser \'text/plain\' already present.')
   }
 })
 
-test('Should get the body as string', t => {
+test('Should get the body as string', (t, testDone) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -667,8 +695,8 @@ test('Should get the body as string', t => {
   })
 
   fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
-    t.ok('called')
-    t.ok(typeof body === 'string')
+    t.assert.ok('called')
+    t.assert.ok(typeof body === 'string')
     try {
       const json = JSON.parse(body)
       done(null, json)
@@ -679,7 +707,7 @@ test('Should get the body as string', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -689,15 +717,16 @@ test('Should get the body as string', t => {
         'Content-Type': 'application/json'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), '{"hello":"world"}')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), '{"hello":"world"}')
       fastify.close()
+      testDone()
     })
   })
 })
 
-test('Should return defined body with no custom parser defined and content type = \'text/plain\'', t => {
+test('Should return defined body with no custom parser defined and content type = \'text/plain\'', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -706,7 +735,7 @@ test('Should return defined body with no custom parser defined and content type 
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -716,15 +745,16 @@ test('Should return defined body with no custom parser defined and content type 
         'Content-Type': 'text/plain'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'hello world')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(body.toString(), 'hello world')
       fastify.close()
+      testDone()
     })
   })
 })
 
-test('Should have typeof body object with no custom parser defined, no body defined and content type = \'text/plain\'', t => {
+test('Should have typeof body object with no custom parser defined, no body defined and content type = \'text/plain\'', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -733,7 +763,7 @@ test('Should have typeof body object with no custom parser defined, no body defi
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'POST',
@@ -742,10 +772,11 @@ test('Should have typeof body object with no custom parser defined, no body defi
         'Content-Type': 'text/plain'
       }
     }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(typeof body, 'object')
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(typeof body, 'object')
       fastify.close()
+      testDone()
     })
   })
 })

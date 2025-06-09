@@ -3,7 +3,14 @@
 const { test } = require('node:test')
 const http = require('node:http')
 const Fastify = require('../fastify')
+const { setTimeout } = require('node:timers')
 
+/*
+* Ensure that a socket error during the request does not cause the
+* onSend hook to be called multiple times.
+*
+* @see https://github.com/fastify/fastify/issues/4959
+*/
 function runBadClientCall (reqOptions, payload) {
   let innerResolve, innerReject
   const promise = new Promise((resolve, reject) => {
@@ -17,7 +24,7 @@ function runBadClientCall (reqOptions, payload) {
     ...reqOptions,
     headers: {
       'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(postData),
+      'Content-Length': Buffer.byteLength(postData)
     }
   }, () => {
     innerReject(new Error('Request should have failed'))
@@ -25,7 +32,9 @@ function runBadClientCall (reqOptions, payload) {
 
   // Kill the socket immediately (before sending data)
   req.on('socket', (socket) => {
-    setTimeout(() => { socket.destroy() }, 5)
+    socket.on('connect', () => {
+      setTimeout(() => { socket.destroy() }, 0)
+    })
   })
   req.on('error', innerResolve)
   req.write(postData)
@@ -34,7 +43,7 @@ function runBadClientCall (reqOptions, payload) {
   return promise
 }
 
-test('should handle a soket error', async (t) => {
+test('should handle a socket error', async (t) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -78,7 +87,7 @@ test('should handle a soket error', async (t) => {
     hostname: 'localhost',
     port: fastify.server.address().port,
     path: '/',
-    method: 'PUT',
+    method: 'PUT'
   }, { test: 'me' })
   t.assert.equal(err.code, 'ECONNRESET')
 })

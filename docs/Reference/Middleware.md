@@ -50,7 +50,7 @@ that already has the Fastify [Request](./Request.md#request) and
 To run middleware under certain paths, pass the path as the first parameter to
 `use`.
 
-> 🛈 Note: This does not support routes with parameters
+> ℹ️ Note: This does not support routes with parameters
 > (e.g. `/user/:id/comments`) and wildcards are not supported in multiple paths.
 
 ```js

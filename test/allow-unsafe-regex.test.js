@@ -2,10 +2,9 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
-test('allow unsafe regex', (t, done) => {
-  t.plan(4)
+test('allow unsafe regex', async t => {
+  t.plan(2)
 
   const fastify = Fastify({
     allowUnsafeRegex: false
@@ -16,25 +15,15 @@ test('allow unsafe regex', (t, done) => {
     reply.send({ foo: req.params.foo })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        foo: '1234'
-      })
-      done()
-    })
-  })
+  const result = await fetch(`http://localhost:${fastify.server.address().port}/1234`)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { foo: '1234' })
 })
 
-test('allow unsafe regex not match', (t, done) => {
-  t.plan(3)
+test('allow unsafe regex not match', async t => {
+  t.plan(1)
 
   const fastify = Fastify({
     allowUnsafeRegex: false
@@ -45,18 +34,10 @@ test('allow unsafe regex not match', (t, done) => {
     reply.send({ foo: req.params.foo })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/a1234'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      done()
-    })
-  })
+  const result = await fetch(`http://localhost:${fastify.server.address().port}/a1234`)
+  t.assert.strictEqual(result.status, 404)
 })
 
 test('allow unsafe regex not safe', (t, done) => {
@@ -89,8 +70,8 @@ test('allow unsafe regex not safe by default', (t, done) => {
   done()
 })
 
-test('allow unsafe regex allow unsafe', (t, done) => {
-  t.plan(5)
+test('allow unsafe regex allow unsafe', async t => {
+  t.plan(3)
 
   const fastify = Fastify({
     allowUnsafeRegex: true
@@ -103,19 +84,9 @@ test('allow unsafe regex allow unsafe', (t, done) => {
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/1234'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        foo: '1234'
-      })
-      done()
-    })
-  })
+  const result = await fetch(`http://localhost:${fastify.server.address().port}/1234`)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { foo: '1234' })
 })

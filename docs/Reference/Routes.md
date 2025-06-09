@@ -137,7 +137,7 @@ fastify.route(options)
 
 * `reply` is defined in [Reply](./Reply.md).
 
-> 🛈 Note: The documentation for `onRequest`, `preParsing`, `preValidation`,
+> ℹ️ Note: The documentation for `onRequest`, `preParsing`, `preValidation`,
 > `preHandler`, `preSerialization`, `onSend`, and `onResponse` is detailed in
 > [Hooks](./Hooks.md). To send a response before the request is handled by the
 > `handler`, see [Respond to a request from
@@ -233,7 +233,7 @@ const opts = {
 fastify.get('/', opts)
 ```
 
-> 🛈 Note: Specifying the handler in both `options` and as the third parameter to
+> ℹ️ Note: Specifying the handler in both `options` and as the third parameter to
 > the shortcut method throws a duplicate `handler` error.
 
 ### Url building
@@ -402,7 +402,7 @@ This approach supports both `callback-style` and `async-await` with minimal
 trade-off. However, it is recommended to use only one style for consistent
 error handling within your application.
 
-> 🛈 Note: Every async function returns a promise by itself.
+> ℹ️ Note: Every async function returns a promise by itself.
 
 ### Route Prefixing
 <a id="route-prefixing"></a>

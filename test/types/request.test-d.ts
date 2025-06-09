@@ -78,6 +78,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifySchema | undefined>(request.routeOptions.schema)
   expectType<RouteHandlerMethod>(request.routeOptions.handler)
   expectType<string | undefined>(request.routeOptions.url)
+  expectType<string | undefined>(request.routeOptions.version)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}

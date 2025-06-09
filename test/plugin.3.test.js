@@ -1,12 +1,12 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../fastify')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
+const { waitForCb } = require('./toolkit')
 
-test('if a plugin raises an error and there is not a callback to handle it, the server must not start', t => {
+test('if a plugin raises an error and there is not a callback to handle it, the server must not start', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -15,14 +15,16 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.ok(err instanceof Error)
-    t.equal(err.message, 'err')
+    t.assert.ok(err instanceof Error)
+    t.assert.strictEqual(err.message, 'err')
+    testDone()
   })
 })
 
-test('add hooks after route declaration', t => {
+test('add hooks after route declaration', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
+  t.after(() => fastify.close())
 
   function plugin (instance, opts, done) {
     instance.decorateRequest('check', null)
@@ -58,25 +60,25 @@ test('add hooks after route declaration', t => {
   })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
-      t.error(err)
-      t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
-      fastify.close()
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
+      testDone()
     })
   })
 })
 
-test('nested plugins', t => {
+test('nested plugins', (t, testDone) => {
   t.plan(5)
 
   const fastify = Fastify()
 
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.register(function (fastify, opts, done) {
     fastify.register((fastify, opts, done) => {
@@ -97,32 +99,39 @@ test('nested plugins', t => {
   }, { prefix: '/parent' })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
+
+    const completion = waitForCb({
+      steps: 2
+    })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
     }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 1')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
+      completion.stepIn()
     })
-
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
     }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 2')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
+      completion.stepIn()
     })
+
+    completion.patience.then(testDone)
   })
 })
 
-test('nested plugins awaited', t => {
+test('nested plugins awaited', (t, testDone) => {
   t.plan(5)
 
   const fastify = Fastify()
 
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
   fastify.register(async function wrap (fastify, opts) {
     await fastify.register(async function child1 (fastify, opts) {
@@ -139,27 +148,34 @@ test('nested plugins awaited', t => {
   }, { prefix: '/parent' })
 
   fastify.listen({ port: 0 }, err => {
-    t.error(err)
+    t.assert.ifError(err)
+
+    const completion = waitForCb({
+      steps: 2
+    })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
     }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 1')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 1')
+      completion.stepIn()
     })
 
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
     }, (err, response, body) => {
-      t.error(err)
-      t.same(body.toString(), 'I am child 2')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), 'I am child 2')
+      completion.stepIn()
     })
+    completion.patience.then(testDone)
   })
 })
 
-test('plugin metadata - decorators', t => {
+test('plugin metadata - decorators', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -179,7 +195,8 @@ test('plugin metadata - decorators', t => {
   fastify.register(plugin)
 
   fastify.ready(() => {
-    t.ok(fastify.plugin)
+    t.assert.ok(fastify.plugin)
+    testDone()
   })
 
   function plugin (instance, opts, done) {
@@ -188,7 +205,7 @@ test('plugin metadata - decorators', t => {
   }
 })
 
-test('plugin metadata - decorators - should throw', t => {
+test('plugin metadata - decorators - should throw', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -206,7 +223,8 @@ test('plugin metadata - decorators - should throw', t => {
 
   fastify.register(plugin)
   fastify.ready((err) => {
-    t.equal(err.message, "The decorator 'plugin1' is not present in Request")
+    t.assert.strictEqual(err.message, "The decorator 'plugin1' is not present in Request")
+    testDone()
   })
 
   function plugin (instance, opts, done) {
@@ -215,7 +233,7 @@ test('plugin metadata - decorators - should throw', t => {
   }
 })
 
-test('plugin metadata - decorators - should throw with plugin name', t => {
+test('plugin metadata - decorators - should throw with plugin name', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -234,7 +252,8 @@ test('plugin metadata - decorators - should throw with plugin name', t => {
 
   fastify.register(plugin)
   fastify.ready((err) => {
-    t.equal(err.message, "The decorator 'plugin1' required by 'the-plugin' is not present in Request")
+    t.assert.strictEqual(err.message, "The decorator 'plugin1' required by 'the-plugin' is not present in Request")
+    testDone()
   })
 
   function plugin (instance, opts, done) {
@@ -243,7 +262,7 @@ test('plugin metadata - decorators - should throw with plugin name', t => {
   }
 })
 
-test('plugin metadata - dependencies', t => {
+test('plugin metadata - dependencies', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -261,7 +280,8 @@ test('plugin metadata - dependencies', t => {
   fastify.register(plugin)
 
   fastify.ready(() => {
-    t.pass('everything right')
+    t.assert.ok('everything right')
+    testDone()
   })
 
   function dependency (instance, opts, done) {
@@ -273,7 +293,7 @@ test('plugin metadata - dependencies', t => {
   }
 })
 
-test('plugin metadata - dependencies (nested)', t => {
+test('plugin metadata - dependencies (nested)', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -291,7 +311,8 @@ test('plugin metadata - dependencies (nested)', t => {
   fastify.register(plugin)
 
   fastify.ready(() => {
-    t.pass('everything right')
+    t.assert.ok('everything right')
+    testDone()
   })
 
   function dependency (instance, opts, done) {

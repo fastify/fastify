@@ -529,9 +529,9 @@ since that was not one of the requests we asked our plugin to filter, it
 succeeded. That could also be used as a means of informing an interested party
 whether or not we were ready to serve requests (although `/ping` is more
 commonly associated with *liveness* checks and that would be the responsibility
-of a *readiness* check -- the curious reader can get more info on these terms
-[here](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes))
-with the `ready` field. Below is the response to that request:
+of a *readiness* check -- the curious reader can get more info on these
+[terms](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes))
+here with the `ready` field. Below is the response to that request:
 
 ```sh
 HTTP/1.1 200 OK

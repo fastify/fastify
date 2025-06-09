@@ -64,6 +64,11 @@ test('http/2 request while fastify closing Node >=24', { skip: !isNode24OrGreate
 
     const url = getServerUrl(fastify)
     const session = http2.connect(url, function () {
+      session.on('error', () => {
+        // Nothing to do here,
+        // we are not interested in this error that might
+        // happen or not
+      })
       session.on('close', () => {
         done()
       })

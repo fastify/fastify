@@ -157,7 +157,8 @@ declare namespace fastify {
      * listener to error events emitted by client connections
      */
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
-    childLoggerFactory?: FastifyChildLoggerFactory
+    childLoggerFactory?: FastifyChildLoggerFactory,
+    allowErrorHandlerOverride?: boolean
   }
 
   /**

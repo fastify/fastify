@@ -306,6 +306,8 @@ listed in alphabetical order.
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
 * [__KaKa Ng__](https://github.com/climba03003),
   <https://www.npmjs.com/~climba03003>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),

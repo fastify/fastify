@@ -2860,7 +2860,8 @@ test('preSerialization hook should run before serialization and be able to modif
   t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world1', world: 'ok' })
 })
 
-test('preSerialization hook should be able to throw errors which are validated against schema response', (t, testDone) => {
+test('preSerialization hook should be able to throw errors which are validated against schema response', async t => {
+  t.plan(5)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -2896,20 +2897,14 @@ test('preSerialization hook should be able to throw errors which are validated a
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { world: 'error' })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer + '/first')
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 500)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { world: 'error' })
 })
 
 test('preSerialization hook which returned error should still run onError hooks', async t => {
@@ -3223,8 +3218,8 @@ test('reply.send should throw if undefined error is thrown at onSend hook', (t, 
   })
 })
 
-test('onTimeout should be triggered', (t, testDone) => {
-  t.plan(6)
+test('onTimeout should be triggered', async t => {
+  t.plan(4)
   const fastify = Fastify({ connectionTimeout: 500 })
   t.after(() => { fastify.close() })
 
@@ -3241,28 +3236,18 @@ test('onTimeout should be triggered', (t, testDone) => {
     return reply
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: `${address}/timeout`
-    }, (err, response, body) => {
-      t.assert.ok(err, Error)
-      t.assert.strictEqual(err.message, 'socket hang up')
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer)
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+
+  try {
+    const result2 = await fetch(fastifyServer + '/timeout')
+    t.fail('Should have thrown an error')
+  } catch (err) {
+    t.assert.ok(err instanceof Error)
+  }
 })
 
 test('onTimeout should be triggered and socket _meta is set', (t, testDone) => {

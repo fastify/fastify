@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const stream = require('node:stream')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
@@ -3242,16 +3241,11 @@ test('onTimeout should be triggered', async t => {
   t.assert.ok(result1.ok)
   t.assert.strictEqual(result1.status, 200)
 
-  try {
-    const result2 = await fetch(fastifyServer + '/timeout')
-    t.fail('Should have thrown an error')
-  } catch (err) {
-    t.assert.ok(err instanceof Error)
-  }
+  await t.assert.rejects(() => fetch(fastifyServer + '/timeout'))
 })
 
-test('onTimeout should be triggered and socket _meta is set', (t, testDone) => {
-  t.plan(6)
+test('onTimeout should be triggered and socket _meta is set', async t => {
+  t.plan(4)
   const fastify = Fastify({ connectionTimeout: 500 })
   t.after(() => { fastify.close() })
 
@@ -3269,28 +3263,18 @@ test('onTimeout should be triggered and socket _meta is set', (t, testDone) => {
     return reply
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: `${address}/timeout`
-    }, (err, response, body) => {
-      t.assert.ok(err, Error)
-      t.assert.strictEqual(err.message, 'socket hang up')
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer)
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+
+  try {
+    await fetch(fastifyServer + '/timeout')
+    t.fail('Should have thrown an error')
+  } catch (err) {
+    t.assert.ok(err instanceof Error)
+  }
 })
 
 test('registering invalid hooks should throw an error', async t => {

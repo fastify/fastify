@@ -2,12 +2,11 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
 const maxHeaderSize = 1024
 
-test('Should return 431 if request header fields are too large', (t, done) => {
-  t.plan(3)
+test('Should return 431 if request header fields are too large', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify({ http: { maxHeaderSize } })
   fastify.route({
@@ -18,27 +17,23 @@ test('Should return 431 if request header fields are too large', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Large-Header': 'a'.repeat(maxHeaderSize)
-      }
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 431)
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'GET',
+    headers: {
+      'Large-Header': 'a'.repeat(maxHeaderSize)
+    }
   })
+
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 431)
 
   t.after(() => fastify.close())
 })
 
-test('Should return 431 if URI is too long', (t, done) => {
-  t.plan(3)
+test('Should return 431 if URI is too long', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify({ http: { maxHeaderSize } })
   fastify.route({
@@ -49,18 +44,12 @@ test('Should return 431 if URI is too long', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + `/${'a'.repeat(maxHeaderSize)}`
-    }, (err, res) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 431)
-      done()
-    })
-  })
+  const result = await fetch(`${fastifyServer}/${'a'.repeat(maxHeaderSize)}`)
+
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 431)
 
   t.after(() => fastify.close())
 })

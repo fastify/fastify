@@ -185,35 +185,35 @@ test('catch all content type parser should not interfere with content type parse
 
   const fastifyServer = await fastify.listen({ port: 0 })
 
-  const result1 = await fetch(fastifyServer, {
-    method: 'POST',
-    body: '{"myKey":"myValue"}',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+  const [result1, result2, result3] = await Promise.all([
+    fetch(fastifyServer, {
+      method: 'POST',
+      body: '{"myKey":"myValue"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }),
+    fetch(fastifyServer, {
+      method: 'POST',
+      body: 'body',
+      headers: {
+        'Content-Type': 'very-weird-content-type'
+      }
+    }),
+    fetch(fastifyServer, {
+      method: 'POST',
+      body: 'my text',
+      headers: {
+        'Content-Type': 'text/html'
+      }
+    })
+  ])
 
   t.assert.ok(result1.ok)
   t.assert.deepStrictEqual(await result1.text(), JSON.stringify({ myKey: 'myValue' }))
 
-  const result2 = await fetch(fastifyServer, {
-    method: 'POST',
-    body: 'body',
-    headers: {
-      'Content-Type': 'very-weird-content-type'
-    }
-  })
-
   t.assert.ok(result2.ok)
   t.assert.deepStrictEqual(await result2.text(), 'body')
-
-  const result3 = await fetch(fastifyServer, {
-    method: 'POST',
-    body: 'my text',
-    headers: {
-      'Content-Type': 'text/html'
-    }
-  })
 
   t.assert.ok(result3.ok)
   t.assert.deepStrictEqual(await result3.text(), 'my texthtml')

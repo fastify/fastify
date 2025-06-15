@@ -1,16 +1,13 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
-const { getServerUrl } = require('./helper')
-const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
-test('should prefer string content types over RegExp ones', (t, testDone) => {
-  t.plan(7)
+test('should prefer string content types over RegExp ones', async (t) => {
+  t.plan(6)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
   fastify.post('/', (req, reply) => {
@@ -31,44 +28,35 @@ test('should prefer string content types over RegExp ones', (t, testDone) => {
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    const completion = waitForCb({ steps: 2 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"k1":"myValue", "k2": "myValue"}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'javascript',
-      headers: {
-        'Content-Type': 'application/javascript'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), 'javascript')
-      completion.stepIn()
-    })
-
-    completion.patience.then(testDone)
+  const result1 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '{"k1":"myValue", "k2": "myValue"}',
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
+
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  t.assert.equal(await result1.text(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: 'javascript',
+    headers: {
+      'Content-Type': 'application/javascript'
+    }
+  })
+
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  t.assert.equal(await result2.text(), 'javascript')
 })
 
-test('removeContentTypeParser should support arrays of content types to remove', (t, testDone) => {
-  t.plan(8)
+test('removeContentTypeParser should support arrays of content types to remove', async (t) => {
+  t.plan(7)
 
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -93,55 +81,45 @@ test('removeContentTypeParser should support arrays of content types to remove',
     reply.send(req.body)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    const completion = waitForCb({ steps: 3 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), 'xml')
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '',
-      headers: {
-        'Content-Type': 'image/png'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{test: "test"}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
+  const result1 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '<?xml version="1.0">',
+    headers: {
+      'Content-Type': 'application/xml'
+    }
   })
+
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  t.assert.equal(await result1.text(), 'xml')
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '',
+    headers: {
+      'Content-Type': 'image/png'
+    }
+  })
+
+  t.assert.ok(!result2.ok)
+  t.assert.strictEqual(result2.status, 415)
+
+  const result3 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '{test: "test"}',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  t.assert.ok(!result3.ok)
+  t.assert.strictEqual(result3.status, 415)
 })
 
-test('removeContentTypeParser should support encapsulation', (t, testDone) => {
-  t.plan(6)
+test('removeContentTypeParser should support encapsulation', async (t) => {
+  t.plan(5)
 
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -167,42 +145,34 @@ test('removeContentTypeParser should support encapsulation', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    const completion = waitForCb({ steps: 2 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify) + '/encapsulated',
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '<?xml version="1.0">',
-      headers: {
-        'Content-Type': 'application/xml'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(body.toString(), 'xml')
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
+  const result1 = await fetch(fastifyServer + '/encapsulated', {
+    method: 'POST',
+    body: '<?xml version="1.0">',
+    headers: {
+      'Content-Type': 'application/xml'
+    }
   })
+
+  t.assert.ok(!result1.ok)
+  t.assert.strictEqual(result1.status, 415)
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '<?xml version="1.0">',
+    headers: {
+      'Content-Type': 'application/xml'
+    }
+  })
+
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  t.assert.equal(await result2.text(), 'xml')
 })
 
-test('removeAllContentTypeParsers should support encapsulation', (t, testDone) => {
-  t.plan(6)
+test('removeAllContentTypeParsers should support encapsulation', async (t) => {
+  t.plan(5)
 
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -221,36 +191,28 @@ test('removeAllContentTypeParsers should support encapsulation', (t, testDone) =
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    const completion = waitForCb({ steps: 2 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify) + '/encapsulated',
-      body: '{}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      completion.stepIn()
-    })
-
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"test":1}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.equal(JSON.parse(body.toString()).test, 1)
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
+  const result1 = await fetch(fastifyServer + '/encapsulated', {
+    method: 'POST',
+    body: '{}',
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
+
+  t.assert.ok(!result1.ok)
+  t.assert.strictEqual(result1.status, 415)
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '{"test":1}',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  t.assert.equal(JSON.parse(await result2.text()).test, 1)
 })

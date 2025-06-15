@@ -11,16 +11,13 @@ const { getServerUrl } = require('../helper')
 
 test.before(buildCertificate)
 
-test('http/2 request while fastify closing', (t, done) => {
-  let fastify
-  try {
-    fastify = Fastify({
-      http2: true
-    })
-    t.assert.ok('http2 successfully loaded')
-  } catch (e) {
-    t.assert.fail('http2 loading failed')
-  }
+const isNode24OrGreater = Number(process.versions.node.split('.')[0]) >= 24
+
+test('http/2 request while fastify closing Node <24', { skip: isNode24OrGreater }, (t, done) => {
+  const fastify = Fastify({
+    http2: true
+  })
+  t.assert.ok('http2 successfully loaded')
 
   fastify.get('/', () => Promise.resolve({}))
 
@@ -53,17 +50,38 @@ test('http/2 request while fastify closing', (t, done) => {
   })
 })
 
-test('http/2 request while fastify closing - return503OnClosing: false', (t, done) => {
-  let fastify
-  try {
-    fastify = Fastify({
-      http2: true,
-      return503OnClosing: false
+test('http/2 request while fastify closing Node >=24', { skip: !isNode24OrGreater }, (t, done) => {
+  const fastify = Fastify({
+    http2: true
+  })
+  t.assert.ok('http2 successfully loaded')
+
+  fastify.get('/', () => Promise.resolve({}))
+
+  t.after(() => { fastify.close() })
+  fastify.listen({ port: 0 }, err => {
+    t.assert.ifError(err)
+
+    const url = getServerUrl(fastify)
+    const session = http2.connect(url, function () {
+      session.on('error', () => {
+        // Nothing to do here,
+        // we are not interested in this error that might
+        // happen or not
+      })
+      session.on('close', () => {
+        done()
+      })
+      fastify.close()
     })
-    t.assert.ok('http2 successfully loaded')
-  } catch (e) {
-    t.assert.fail('http2 loading failed')
-  }
+  })
+})
+
+test('http/2 request while fastify closing - return503OnClosing: false', { skip: isNode24OrGreater }, (t, done) => {
+  const fastify = Fastify({
+    http2: true,
+    return503OnClosing: false
+  })
 
   t.after(() => { fastify.close() })
 

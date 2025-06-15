@@ -7,7 +7,7 @@ fastify.addHttpMethod('COPY')
 test('can be created - copy', async t => {
   t.plan(3)
 
-  t.after(() => { fastify.close() })
+  t.after(() => fastify.close())
 
   try {
     fastify.route({

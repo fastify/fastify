@@ -97,6 +97,7 @@
     - [FST_ERR_VALIDATION](#fst_err_validation)
     - [FST_ERR_LISTEN_OPTIONS_INVALID](#fst_err_listen_options_invalid)
     - [FST_ERR_ERROR_HANDLER_NOT_FN](#fst_err_error_handler_not_fn)
+    - [FST_ERR_ERROR_HANDLER_ALREADY_SET](#fst_err_error_handler_already_set)
 
 ### Error Handling In Node.js
 <a id="error-handling"></a>
@@ -366,5 +367,4 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_plugin_invalid_async_handler">FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER</a> | The plugin being registered mixes async and callback styles. | - | [#5141](https://github.com/fastify/fastify/pull/5141) |
 | <a id="fst_err_validation">FST_ERR_VALIDATION</a> | The Request failed the payload validation. | Check the request payload. | [#4824](https://github.com/fastify/fastify/pull/4824) |
 | <a id="fst_err_listen_options_invalid">FST_ERR_LISTEN_OPTIONS_INVALID</a> | Invalid listen options. | Check the listen options. | [#4886](https://github.com/fastify/fastify/pull/4886) |
-| <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) |
-
+| <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) | <a id="fst_err_error_handler_already_set">FST_ERR_ERROR_HANDLER_ALREADY_SET</a> | Error Handler already set in this scope. Set `allowErrorHandlerOverride: true` to allow overriding. | By default, `setErrorHandler` can only be called once per encapsulation context. | [#6097](https://github.com/fastify/fastify/pull/6098) |

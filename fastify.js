@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.3.3'
+const VERSION = '5.4.0'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -31,7 +31,8 @@ const {
   kErrorHandler,
   kKeepAliveConnections,
   kChildLoggerFactory,
-  kGenReqId
+  kGenReqId,
+  kErrorHandlerAlreadySet
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -72,10 +73,12 @@ const {
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_ALREADY_SET,
   FST_ERR_ROUTE_METHOD_INVALID
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+const { FSTWRN004 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -149,6 +152,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -237,6 +241,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
+    [kErrorHandlerAlreadySet]: false,
     [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -858,6 +863,13 @@ function fastify (options) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
+    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+      throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
+    } else if (this[kErrorHandlerAlreadySet]) {
+      FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
+    }
+
+    this[kErrorHandlerAlreadySet] = true
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }

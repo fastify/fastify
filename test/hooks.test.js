@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const stream = require('node:stream')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
@@ -11,13 +10,13 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
 const { connect } = require('node:net')
-const { sleep, getServerUrl } = require('./helper')
+const { sleep } = require('./helper')
 const { waitForCb } = require('./toolkit.js')
 
 process.removeAllListeners('warning')
 
-test('hooks', (t, testDone) => {
-  t.plan(49)
+test('hooks', async t => {
+  t.plan(48)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
   try {
@@ -148,39 +147,23 @@ test('hooks', (t, testDone) => {
     reply.code(200).send(payload)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    const completion = waitForCb({ steps: 3 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'HEAD',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
-    sget({
-      method: 'DELETE',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const getResult = await fetch(fastifyServer)
+  t.assert.ok(getResult.ok)
+  t.assert.strictEqual(getResult.status, 200)
+  const getBody = await getResult.text()
+  t.assert.strictEqual(getResult.headers.get('content-length'), '' + getBody.length)
+  t.assert.deepStrictEqual(JSON.parse(getBody), { hello: 'world' })
+
+  const headResult = await fetch(fastifyServer, { method: 'HEAD' })
+  t.assert.ok(!headResult.ok)
+  t.assert.strictEqual(headResult.status, 500)
+
+  const deleteResult = await fetch(fastifyServer, { method: 'DELETE' })
+  t.assert.ok(!deleteResult.ok)
+  t.assert.strictEqual(deleteResult.status, 500)
 })
 
 test('onRequest hook should support encapsulation / 1', (t, testDone) => {
@@ -237,8 +220,8 @@ test('onRequest hook should support encapsulation / 2', (t, testDone) => {
   })
 })
 
-test('onRequest hook should support encapsulation / 3', (t, testDone) => {
-  t.plan(20)
+test('onRequest hook should support encapsulation / 3', async t => {
+  t.plan(19)
   const fastify = Fastify()
   fastify.decorate('hello', 'world')
 
@@ -276,37 +259,26 @@ test('onRequest hook should support encapsulation / 3', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const firstResult = await fetch(fastifyServer + '/first', { method: 'GET' })
+  t.assert.ok(firstResult.ok)
+  t.assert.strictEqual(firstResult.status, 200)
+  const firstBody = await firstResult.text()
+  t.assert.strictEqual(firstResult.headers.get('content-length'), '' + firstBody.length)
+  t.assert.deepStrictEqual(JSON.parse(firstBody), { hello: 'world' })
+
+  const secondResult = await fetch(fastifyServer + '/second', { method: 'GET' })
+  t.assert.ok(secondResult.ok)
+  t.assert.strictEqual(secondResult.status, 200)
+  const secondBody = await secondResult.text()
+  t.assert.strictEqual(secondResult.headers.get('content-length'), '' + secondBody.length)
+  t.assert.deepStrictEqual(JSON.parse(secondBody), { hello: 'world' })
 })
 
-test('preHandler hook should support encapsulation / 5', (t, testDone) => {
-  t.plan(17)
+test('preHandler hook should support encapsulation / 5', async t => {
+  t.plan(16)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
   fastify.decorate('hello', 'world')
@@ -341,32 +313,21 @@ test('preHandler hook should support encapsulation / 5', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const firstResult = await fetch(fastifyServer + '/first')
+  t.assert.ok(firstResult.ok)
+  t.assert.strictEqual(firstResult.status, 200)
+  const firstBody = await firstResult.text()
+  t.assert.strictEqual(firstResult.headers.get('content-length'), '' + firstBody.length)
+  t.assert.deepStrictEqual(JSON.parse(firstBody), { hello: 'world' })
+
+  const secondResult = await fetch(fastifyServer + '/second')
+  t.assert.ok(secondResult.ok)
+  t.assert.strictEqual(secondResult.status, 200)
+  const secondBody = await secondResult.text()
+  t.assert.strictEqual(secondResult.headers.get('content-length'), '' + secondBody.length)
+  t.assert.deepStrictEqual(JSON.parse(secondBody), { hello: 'world' })
 })
 
 test('onRoute hook should be called / 1', (t, testDone) => {
@@ -750,8 +711,8 @@ test('onRoute hook should be called once when prefixTrailingSlash', (t, testDone
   })
 })
 
-test('onRoute hook should able to change the route url', (t, testDone) => {
-  t.plan(5)
+test('onRoute hook should able to change the route url', async t => {
+  t.plan(4)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
   t.after(() => { fastify.close() })
@@ -769,19 +730,12 @@ test('onRoute hook should able to change the route url', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + encodeURI('/foo')
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'here /foo')
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer + encodeURI('/foo'))
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), 'here /foo')
 })
 
 test('onRoute hook that throws should be caught', (t, testDone) => {
@@ -951,8 +905,8 @@ test('onResponse hook should support encapsulation / 2', (t, testDone) => {
   })
 })
 
-test('onResponse hook should support encapsulation / 3', (t, testDone) => {
-  t.plan(16)
+test('onResponse hook should support encapsulation / 3', async t => {
+  t.plan(15)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
   fastify.decorate('hello', 'world')
@@ -983,32 +937,21 @@ test('onResponse hook should support encapsulation / 3', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const firstResult = await fetch(fastifyServer + '/first', { method: 'GET' })
+  t.assert.ok(firstResult.ok)
+  t.assert.strictEqual(firstResult.status, 200)
+  const firstBody = await firstResult.text()
+  t.assert.strictEqual(firstResult.headers.get('content-length'), '' + firstBody.length)
+  t.assert.deepStrictEqual(JSON.parse(firstBody), { hello: 'world' })
+
+  const secondResult = await fetch(fastifyServer + '/second')
+  t.assert.ok(secondResult.ok)
+  t.assert.strictEqual(secondResult.status, 200)
+  const secondBody = await secondResult.text()
+  t.assert.strictEqual(secondResult.headers.get('content-length'), '' + secondBody.length)
+  t.assert.deepStrictEqual(JSON.parse(secondBody), { hello: 'world' })
 })
 
 test('onSend hook should support encapsulation / 1', (t, testDone) => {
@@ -1032,8 +975,8 @@ test('onSend hook should support encapsulation / 1', (t, testDone) => {
   })
 })
 
-test('onSend hook should support encapsulation / 2', (t, testDone) => {
-  t.plan(16)
+test('onSend hook should support encapsulation / 2', async t => {
+  t.plan(15)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
   fastify.decorate('hello', 'world')
@@ -1064,33 +1007,21 @@ test('onSend hook should support encapsulation / 2', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
+  const firstResult = await fetch(fastifyServer + '/first')
+  t.assert.ok(firstResult.ok)
+  t.assert.strictEqual(firstResult.status, 200)
+  const firstBody = await firstResult.text()
+  t.assert.strictEqual(firstResult.headers.get('content-length'), '' + firstBody.length)
+  t.assert.deepStrictEqual(JSON.parse(firstBody), { hello: 'world' })
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const secondResult = await fetch(fastifyServer + '/second')
+  t.assert.ok(secondResult.ok)
+  t.assert.strictEqual(secondResult.status, 200)
+  const secondBody = await secondResult.text()
+  t.assert.strictEqual(secondResult.headers.get('content-length'), '' + secondBody.length)
+  t.assert.deepStrictEqual(JSON.parse(secondBody), { hello: 'world' })
 })
 
 test('onSend hook is called after payload is serialized and headers are set', (t, testDone) => {
@@ -1312,8 +1243,8 @@ test('clear payload', (t, testDone) => {
   })
 })
 
-test('onSend hook throws', (t, testDone) => {
-  t.plan(11)
+test('onSend hook throws', async t => {
+  t.plan(10)
   const Fastify = proxyquire('..', {
     './lib/schemas.js': {
       getSchemaSerializer: (param1, param2, param3) => {
@@ -1372,46 +1303,26 @@ test('onSend hook throws', (t, testDone) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 4 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
-    sget({
-      method: 'DELETE',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
-    sget({
-      method: 'PUT',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const getResult = await fetch(fastifyServer)
+  t.assert.ok(getResult.ok)
+  t.assert.strictEqual(getResult.status, 200)
+  const getBody = await getResult.text()
+  t.assert.strictEqual(getResult.headers.get('content-length'), '' + getBody.length)
+  t.assert.deepStrictEqual(JSON.parse(getBody), { hello: 'world' })
+
+  const postResult = await fetch(fastifyServer, { method: 'POST' })
+  t.assert.ok(!postResult.ok)
+  t.assert.strictEqual(postResult.status, 500)
+
+  const deleteResult = await fetch(fastifyServer, { method: 'DELETE' })
+  t.assert.ok(!deleteResult.ok)
+  t.assert.strictEqual(deleteResult.status, 500)
+
+  const putResult = await fetch(fastifyServer, { method: 'PUT' })
+  t.assert.ok(!putResult.ok)
+  t.assert.strictEqual(putResult.status, 500)
 })
 
 test('onSend hook should receive valid request and reply objects if onRequest hook fails', (t, testDone) => {
@@ -2501,8 +2412,8 @@ test('preValidation hook should support encapsulation / 2', (t, testDone) => {
   })
 })
 
-test('preValidation hook should support encapsulation / 3', (t, testDone) => {
-  t.plan(20)
+test('preValidation hook should support encapsulation / 3', async t => {
+  t.plan(19)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
   fastify.decorate('hello', 'world')
@@ -2541,32 +2452,21 @@ test('preValidation hook should support encapsulation / 3', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer + '/first')
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.text()
+  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
+
+  const result2 = await fetch(fastifyServer + '/second')
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  const body2 = await result2.text()
+  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
+  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
 })
 
 test('onError hook', (t, testDone) => {
@@ -2669,8 +2569,8 @@ test('onError hook with setErrorHandler', (t, testDone) => {
   })
 })
 
-test('preParsing hook should run before parsing and be able to modify the payload', (t, testDone) => {
-  t.plan(5)
+test('preParsing hook should run before parsing and be able to modify the payload', async t => {
+  t.plan(4)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -2690,26 +2590,22 @@ test('preParsing hook should run before parsing and be able to modify the payloa
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
-      body: { hello: 'world' },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
-      t.assert.deepStrictEqual(body, { hello: 'another world' })
-      testDone()
-    })
+  const result = await fetch(fastifyServer + '/first', {
+    method: 'POST',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'another world' })
 })
 
-test('preParsing hooks should run in the order in which they are defined', (t, testDone) => {
-  t.plan(5)
+test('preParsing hooks should run in the order in which they are defined', async t => {
+  t.plan(4)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -2734,26 +2630,22 @@ test('preParsing hooks should run in the order in which they are defined', (t, t
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
-      body: { hello: 'world' },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
-      t.assert.deepStrictEqual(body, { hello: 'another world' })
-      testDone()
-    })
+  const result = await fetch(fastifyServer + '/first', {
+    method: 'POST',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'another world' })
 })
 
-test('preParsing hooks should support encapsulation', (t, testDone) => {
-  t.plan(9)
+test('preParsing hooks should support encapsulation', async t => {
+  t.plan(8)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -2785,36 +2677,29 @@ test('preParsing hooks should support encapsulation', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first',
-      body: { hello: 'world' },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
-      t.assert.deepStrictEqual(body, { hello: 'another world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'POST',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second',
-      body: { hello: 'world' },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
-      t.assert.deepStrictEqual(body, { hello: 'encapsulated world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
+  const result1 = await fetch(fastifyServer + '/first', {
+    method: 'POST',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
   })
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.text()
+  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'another world' })
+
+  const result2 = await fetch(fastifyServer + '/second', {
+    method: 'POST',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  const body2 = await result2.text()
+  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
+  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'encapsulated world' })
 })
 
 test('preParsing hook should support encapsulation / 1', (t, testDone) => {
@@ -2870,8 +2755,8 @@ test('preParsing hook should support encapsulation / 2', (t, testDone) => {
   })
 })
 
-test('preParsing hook should support encapsulation / 3', (t, testDone) => {
-  t.plan(20)
+test('preParsing hook should support encapsulation / 3', async t => {
+  t.plan(19)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
   fastify.decorate('hello', 'world')
@@ -2910,36 +2795,25 @@ test('preParsing hook should support encapsulation / 3', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer + '/first')
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.text()
+  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
+
+  const result2 = await fetch(fastifyServer + '/second')
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  const body2 = await result2.text()
+  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
+  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
 })
 
-test('preSerialization hook should run before serialization and be able to modify the payload', (t, testDone) => {
-  t.plan(5)
+test('preSerialization hook should run before serialization and be able to modify the payload', async t => {
+  t.plan(4)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -2975,23 +2849,18 @@ test('preSerialization hook should run before serialization and be able to modif
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world1', world: 'ok' })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer + '/first')
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world1', world: 'ok' })
 })
 
-test('preSerialization hook should be able to throw errors which are validated against schema response', (t, testDone) => {
+test('preSerialization hook should be able to throw errors which are validated against schema response', async t => {
+  t.plan(5)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -3027,24 +2896,18 @@ test('preSerialization hook should be able to throw errors which are validated a
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { world: 'error' })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer + '/first')
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 500)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { world: 'error' })
 })
 
-test('preSerialization hook which returned error should still run onError hooks', (t, testDone) => {
-  t.plan(4)
+test('preSerialization hook which returned error should still run onError hooks', async t => {
+  t.plan(3)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -3061,22 +2924,15 @@ test('preSerialization hook which returned error should still run onError hooks'
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer + '/first')
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 500)
 })
 
-test('preSerialization hooks should run in the order in which they are defined', (t, testDone) => {
-  t.plan(5)
+test('preSerialization hooks should run in the order in which they are defined', async t => {
+  t.plan(4)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -3093,27 +2949,21 @@ test('preSerialization hooks should run in the order in which they are defined',
   })
 
   fastify.get('/first', (req, reply) => {
-    reply.send(payload)
+    reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world21' })
-      testDone()
-    })
-  })
+  const result = await fetch(fastifyServer + '/first')
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world21' })
 })
 
-test('preSerialization hooks should support encapsulation', (t, testDone) => {
-  t.plan(9)
+test('preSerialization hooks should support encapsulation', async t => {
+  t.plan(8)
   const fastify = Fastify()
   t.after(() => { fastify.close() })
 
@@ -3141,32 +2991,21 @@ test('preSerialization hooks should support encapsulation', (t, testDone) => {
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world1' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world12' })
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer + '/first')
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.text()
+  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world1' })
+
+  const result2 = await fetch(fastifyServer + '/second')
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  const body2 = await result2.text()
+  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
+  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world12' })
 })
 
 test('onRegister hook should be called / 1', (t, testDone) => {
@@ -3378,8 +3217,8 @@ test('reply.send should throw if undefined error is thrown at onSend hook', (t, 
   })
 })
 
-test('onTimeout should be triggered', (t, testDone) => {
-  t.plan(6)
+test('onTimeout should be triggered', async t => {
+  t.plan(4)
   const fastify = Fastify({ connectionTimeout: 500 })
   t.after(() => { fastify.close() })
 
@@ -3396,32 +3235,17 @@ test('onTimeout should be triggered', (t, testDone) => {
     return reply
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: `${address}/timeout`
-    }, (err, response, body) => {
-      t.assert.ok(err, Error)
-      t.assert.strictEqual(err.message, 'socket hang up')
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer)
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+
+  await t.assert.rejects(() => fetch(fastifyServer + '/timeout'))
 })
 
-test('onTimeout should be triggered and socket _meta is set', (t, testDone) => {
-  t.plan(6)
+test('onTimeout should be triggered and socket _meta is set', async t => {
+  t.plan(4)
   const fastify = Fastify({ connectionTimeout: 500 })
   t.after(() => { fastify.close() })
 
@@ -3439,28 +3263,18 @@ test('onTimeout should be triggered and socket _meta is set', (t, testDone) => {
     return reply
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    const completion = waitForCb({ steps: 2 })
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completion.stepIn()
-    })
-    sget({
-      method: 'GET',
-      url: `${address}/timeout`
-    }, (err, response, body) => {
-      t.assert.ok(err, Error)
-      t.assert.strictEqual(err.message, 'socket hang up')
-      completion.stepIn()
-    })
-    completion.patience.then(testDone)
-  })
+  const result1 = await fetch(fastifyServer)
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+
+  try {
+    await fetch(fastifyServer + '/timeout')
+    t.fail('Should have thrown an error')
+  } catch (err) {
+    t.assert.ok(err instanceof Error)
+  }
 })
 
 test('registering invalid hooks should throw an error', async t => {

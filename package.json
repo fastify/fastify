@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.3.3",
+  "version": "5.4.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -23,7 +23,7 @@
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
     "test:typescript": "tsc test/types/import.ts --target es2022 --moduleResolution node16 --module node16 --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
-    "unit": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage",
+    "unit": "borp",
     "unit:report": "c8 --reporter html borp --reporter=@jsumners/line-reporter",
     "citgm": "borp --reporter=@jsumners/line-reporter --coverage --check-coverage --concurrency=1"
   },

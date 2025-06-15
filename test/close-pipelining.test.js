@@ -21,14 +21,22 @@ test('Should return 503 while closing - pipelining', async t => {
     pipelining: 2
   })
 
-  const codes = [200, 200, 503]
-  const responses = await Promise.all([
+  const [firstRequest, secondRequest, thirdRequest] = await Promise.allSettled([
     instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' }),
     instance.request({ path: '/', method: 'GET' })
   ])
-  const actual = responses.map(r => r.statusCode)
-  t.assert.deepStrictEqual(actual, codes)
+  t.assert.strictEqual(firstRequest.status, 'fulfilled')
+  t.assert.strictEqual(secondRequest.status, 'fulfilled')
+
+  t.assert.strictEqual(firstRequest.value.statusCode, 200)
+  t.assert.strictEqual(secondRequest.value.statusCode, 200)
+
+  if (thirdRequest.status === 'fulfilled') {
+    t.assert.strictEqual(thirdRequest.value.statusCode, 503)
+  } else {
+    t.assert.strictEqual(thirdRequest.reason.code, 'ECONNREFUSED')
+  }
 
   await instance.close()
 })

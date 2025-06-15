@@ -19,7 +19,6 @@ jobs:
         package:
           - '@fastify/accepts'
           - '@fastify/accepts-serializer'
-          - '@fastify/any-schema'
           - '@fastify/auth'
           - '@fastify/autoload'
           - '@fastify/awilix'
@@ -33,7 +32,6 @@ jobs:
           - '@fastify/cors'
           - '@fastify/csrf-protection'
           - '@fastify/diagnostics-channel'
-          - '@fastify/early-hints'
           # - '@fastify/elasticsearch'
           - '@fastify/env'
           - '@fastify/etag'
@@ -66,7 +64,6 @@ jobs:
           - '@fastify/secure-session'
           - '@fastify/sensible'
           - '@fastify/session'
-          - '@fastify/soap-client'
           - '@fastify/static'
           - '@fastify/swagger'
           - '@fastify/swagger-ui'

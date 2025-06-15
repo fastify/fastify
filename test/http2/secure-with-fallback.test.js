@@ -39,7 +39,7 @@ test('secure with fallback', async (t) => {
     throw new Error('kaboom')
   })
 
-  t.after(() => { fastify.close() })
+  t.after(() => fastify.close())
 
   const fastifyServer = await fastify.listen({ port: 0 })
 

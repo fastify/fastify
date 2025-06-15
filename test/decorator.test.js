@@ -117,6 +117,22 @@ test('should pass error for missing request decorator', (t, done) => {
     })
 })
 
+const runTests = async (t, fastifyServer) => {
+  const endpoints = [
+    { path: '/yes', expectedBody: { hello: 'world' } },
+    { path: '/no', expectedBody: { hello: 'world' } }
+  ]
+
+  for (const { path, expectedBody } of endpoints) {
+    const result = await fetch(`${fastifyServer}${path}`)
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), expectedBody)
+  }
+}
+
 test('decorateReply inside register', async (t) => {
   t.plan(10)
   const fastify = Fastify()
@@ -140,19 +156,7 @@ test('decorateReply inside register', async (t) => {
   const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const result1 = await fetch(`${fastifyServer}/yes`)
-  t.assert.ok(result1.ok)
-  t.assert.strictEqual(result1.status, 200)
-  const body1 = await result1.text()
-  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
-  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
-
-  const result2 = await fetch(`${fastifyServer}/no`)
-  t.assert.ok(result2.ok)
-  t.assert.strictEqual(result2.status, 200)
-  const body2 = await result2.text()
-  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
-  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
+  await runTests(t, fastifyServer)
 })
 
 test('decorateReply as plugin (inside .after)', async t => {
@@ -180,19 +184,7 @@ test('decorateReply as plugin (inside .after)', async t => {
   const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const result1 = await fetch(`${fastifyServer}/yes`)
-  t.assert.ok(result1.ok)
-  t.assert.strictEqual(result1.status, 200)
-  const body1 = await result1.text()
-  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
-  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
-
-  const result2 = await fetch(`${fastifyServer}/no`)
-  t.assert.ok(result2.ok)
-  t.assert.strictEqual(result2.status, 200)
-  const body2 = await result2.text()
-  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
-  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
+  await runTests(t, fastifyServer)
 })
 
 test('decorateReply as plugin (outside .after)', async t => {
@@ -220,19 +212,7 @@ test('decorateReply as plugin (outside .after)', async t => {
   const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const result1 = await fetch(`${fastifyServer}/yes`)
-  t.assert.ok(result1.ok)
-  t.assert.strictEqual(result1.status, 200)
-  const body1 = await result1.text()
-  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
-  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
-
-  const result2 = await fetch(`${fastifyServer}/no`)
-  t.assert.ok(result2.ok)
-  t.assert.strictEqual(result2.status, 200)
-  const body2 = await result2.text()
-  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
-  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
+  await runTests(t, fastifyServer)
 })
 
 test('decorateRequest inside register', async t => {
@@ -258,19 +238,7 @@ test('decorateRequest inside register', async t => {
   const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const result1 = await fetch(`${fastifyServer}/yes`)
-  t.assert.ok(result1.ok)
-  t.assert.strictEqual(result1.status, 200)
-  const body1 = await result1.text()
-  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
-  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
-
-  const result2 = await fetch(`${fastifyServer}/no`)
-  t.assert.ok(result2.ok)
-  t.assert.strictEqual(result2.status, 200)
-  const body2 = await result2.text()
-  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
-  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
+  await runTests(t, fastifyServer)
 })
 
 test('decorateRequest as plugin (inside .after)', async t => {
@@ -298,19 +266,7 @@ test('decorateRequest as plugin (inside .after)', async t => {
   const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const result1 = await fetch(`${fastifyServer}/yes`)
-  t.assert.ok(result1.ok)
-  t.assert.strictEqual(result1.status, 200)
-  const body1 = await result1.text()
-  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
-  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
-
-  const result2 = await fetch(`${fastifyServer}/no`)
-  t.assert.ok(result2.ok)
-  t.assert.strictEqual(result2.status, 200)
-  const body2 = await result2.text()
-  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
-  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
+  await runTests(t, fastifyServer)
 })
 
 test('decorateRequest as plugin (outside .after)', async (t) => {
@@ -338,19 +294,7 @@ test('decorateRequest as plugin (outside .after)', async (t) => {
   const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const result1 = await fetch(`${fastifyServer}/yes`)
-  t.assert.ok(result1.ok)
-  t.assert.strictEqual(result1.status, 200)
-  const body1 = await result1.text()
-  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
-  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
-
-  const result2 = await fetch(`${fastifyServer}/no`)
-  t.assert.ok(result2.ok)
-  t.assert.strictEqual(result2.status, 200)
-  const body2 = await result2.text()
-  t.assert.strictEqual(result2.headers.get('content-length'), '' + body2.length)
-  t.assert.deepStrictEqual(JSON.parse(body2), { hello: 'world' })
+  await runTests(t, fastifyServer)
 })
 
 test('decorators should be instance separated', (t, done) => {

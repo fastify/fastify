@@ -616,6 +616,9 @@ middlewares into Fastify plugins
   Fastify Rob-Config integration.
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
   Convenient grouping and inheritance of routes.
+- [`fastify-route-preset`](https://github.com/inyourtime/fastify-route-preset)
+  A Fastify plugin that enables you to create route configurations that can be 
+  applied to multiple routes.
 - [`fastify-s3-buckets`](https://github.com/kibertoad/fastify-s3-buckets)
   Ensure the existence of defined S3 buckets on the application startup.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint)

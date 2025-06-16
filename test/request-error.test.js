@@ -1,7 +1,6 @@
 'use strict'
 
 const { connect } = require('node:net')
-const sget = require('simple-get').concat
 const { test } = require('node:test')
 const Fastify = require('..')
 const { kRequest } = require('../lib/symbols.js')
@@ -323,8 +322,8 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 })
 
-test('request.routeOptions.method is an uppercase string /1', (t, done) => {
-  t.plan(4)
+test('request.routeOptions.method is an uppercase string /1', async t => {
+  t.plan(3)
   const fastify = Fastify()
   const handler = function (req, res) {
     t.assert.strictEqual('POST', req.routeOptions.method)
@@ -335,26 +334,20 @@ test('request.routeOptions.method is an uppercase string /1', (t, done) => {
     bodyLimit: 1000,
     handler
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('request.routeOptions.method is an uppercase string /2', (t, done) => {
-  t.plan(4)
+test('request.routeOptions.method is an uppercase string /2', async t => {
+  t.plan(3)
   const fastify = Fastify()
   const handler = function (req, res) {
     t.assert.strictEqual('POST', req.routeOptions.method)
@@ -367,26 +360,20 @@ test('request.routeOptions.method is an uppercase string /2', (t, done) => {
     bodyLimit: 1000,
     handler
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('request.routeOptions.method is an uppercase string /3', (t, done) => {
-  t.plan(4)
+test('request.routeOptions.method is an uppercase string /3', async t => {
+  t.plan(3)
   const fastify = Fastify()
   const handler = function (req, res) {
     t.assert.strictEqual('POST', req.routeOptions.method)
@@ -399,26 +386,20 @@ test('request.routeOptions.method is an uppercase string /3', (t, done) => {
     bodyLimit: 1000,
     handler
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('request.routeOptions.method is an array with uppercase string', (t, done) => {
-  t.plan(4)
+test('request.routeOptions.method is an array with uppercase string', async t => {
+  t.plan(3)
   const fastify = Fastify()
   const handler = function (req, res) {
     t.assert.deepStrictEqual(['POST'], req.routeOptions.method)
@@ -431,26 +412,20 @@ test('request.routeOptions.method is an array with uppercase string', (t, done) 
     bodyLimit: 1000,
     handler
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('test request.routeOptions.version', (t, done) => {
-  t.plan(7)
+test('test request.routeOptions.version', async t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.route({
@@ -471,40 +446,22 @@ test('test request.routeOptions.version', (t, done) => {
       reply.send({})
     }
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/version',
-      headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completed()
-    })
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      completed()
-    })
+  const result1 = await fetch(fastifyServer + '/version', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
+    body: JSON.stringify([])
   })
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+
+  const result2 = await fetch(fastifyServer + '/version-undefined', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
+  })
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
 })

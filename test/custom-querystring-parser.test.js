@@ -240,7 +240,7 @@ test('Custom querystring parser should be a function', t => {
     })
     t.fail('Should throw')
   } catch (err) {
-    t.equal(
+    t.assert.equal(
       err.message,
       "querystringParser option should be a function, instead got 'number'"
     )

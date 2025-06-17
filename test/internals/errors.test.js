@@ -943,7 +943,7 @@ test('Ensure that all errors are in errors.d.ts', t => {
 
   const errorCodeRE = /'([A-Z0-9_]+)'/g
   const matches = errorCodeType.matchAll(errorCodeRE)
-  const errorTypes = [...matches.map(match => match[1])]
+  const errorTypes = [...matches].map(match => match[1])
   const exportedKeys = Object.keys(errors)
 
   for (const key of exportedKeys) {

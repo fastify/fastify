@@ -3,7 +3,7 @@ import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
 
-import { Options as AjvOptions, ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
 import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
@@ -89,6 +89,8 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
+  type ValidatorCompilerOptions = Parameters<BuildCompilerFromPool>[1]
+
   /**
    * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
    */
@@ -137,10 +139,7 @@ declare namespace fastify {
       };
     };
     return503OnClosing?: boolean,
-    ajv?: {
-      customOptions?: AjvOptions,
-      plugins?: (Function | [Function, unknown])[]
-    },
+    ajv?: ValidatorCompilerOptions & { plugins?: (Function | [Function, unknown])[] },
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       error: FastifyError,
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,

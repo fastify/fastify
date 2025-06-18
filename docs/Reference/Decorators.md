@@ -366,132 +366,75 @@ Will define the `foo` property on the Fastify instance:
 console.log(fastify.foo) // 'a getter'
 ```
 
-### `getDecorator` API
+#### `getDecorator(name)`
+<a id="get-decorator"></a>
 
-Fastify's `getDecorator` API retrieves an existing decorator from the
-Fastify instance, `Request`, or `Reply`. If the decorator is not defined, an
-`FST_ERR_DEC_UNDECLARED` error is thrown.
+Used to retrieve an existing decorator from the Fastify instance, `Request`, or `Reply`.
+If the decorator is not defined, an `FST_ERR_DEC_UNDECLARED` error is thrown.
 
-#### Use cases
+```js
+// Get a decorator from the Fastify instance
+const utility = fastify.getDecorator('utility')
 
-**Early Plugin Dependency Validation**
+// Get a decorator from the request object
+const user = request.getDecorator('user')
 
-`getDecorator` on Fastify instance verifies that required decorators are
-available at registration time.
+// Get a decorator from the reply object
+const helper = reply.getDecorator('helper')
+```
 
-For example:
+**Use Cases**
+
+The `getDecorator` method is useful for:
+
+- **Plugin dependency validation**: Verify that required decorators exist at registration time
+- **Runtime safety**: Ensure decorators exist before using them, avoiding undefined access
+- **Plugin encapsulation**: Access decorators within specific plugin contexts
 
 ```js
 fastify.register(async function (fastify) {
+  // Verify the decorator exists before using it
   const usersRepository = fastify.getDecorator('usersRepository')
 
   fastify.get('/users', async function (request, reply) {
-    // We are sure `usersRepository` exists at runtime
     return usersRepository.findAll()
   })
 })
 ```
 
-**Handling Missing Decorators**
+> **Note**: For TypeScript users, `getDecorator` supports generic type parameters.
+> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced typing examples.
 
-Directly accessing a decorator may lead to unexpected behavior if it is not declared:
+#### `setDecorator(name, value)`
+<a id="set-decorator"></a>
 
-```js
-const user = request.user;
-if (user && user.isAdmin) {
-  // Execute admin tasks.
-}
-```
-
-If `request.user` doesn't exist, then `user` will be set to `undefined`.
-This makes it unclear whether the user is unauthenticated or the decorator is missing.
-
-Using `getDecorator` enforces runtime safety:
+Used to safely update the value of a `Request` decorator.
+If the decorator does not exist, a `FST_ERR_DEC_UNDECLARED` error is thrown.
 
 ```js
-// If the decorator is missing, an explicit `FST_ERR_DEC_UNDECLARED`
-// error is thrown immediately.
-const user = request.getDecorator('user');
-if (user && user.isAdmin) {
-  // Execute admin tasks.
-}
-```
+fastify.decorateRequest('user', null)
 
-**Plugin Encapsulation**
-
-`getDecorator` works well with Fastify's plugin encapsulation system:
-
-```js
-fastify.register(async function (fastify) {
-  const usersRepository = fastify.getDecorator('usersRepository')
-
-  fastify.decorateRequest('session', null)
-  fastify.addHook('onRequest', async (req, reply) => {
-    req.setDecorator('session', { user: 'Jean' })
-  })
-
-  fastify.get('/me', (request, reply) => {
-    const session = request.getDecorator('session')
-    reply.send(session)
-  })
-})
-
-fastify.register(async function (fastify) {
-  const usersRepository = fastify.getDecorator('usersRepository')
-
-  fastify.decorateReply('sendSuccess', function (data) {
-    return this.send({ success: true })
-  })
-
-  fastify.get('/success', async (request, reply) => {
-    const sendSuccess = reply.getDecorator('sendSuccess')
-    await sendSuccess()
-  })
-})
-```
-
-### `setDecorator` Method
-
-The `setDecorator` method provides a safe and convenient way to
-update the value of a `Request` decorator.
-If the decorator does not exist, a `FST_ERR_DEC_UNDECLARED` error
-is thrown.
-
-#### Use Cases
-
-**Runtime Safety**
-
-A typical way to set a `Request` decorator looks like this:
-
-```js
-fastify.decorateRequest('user', '')
 fastify.addHook('preHandler', async (req, reply) => {
-  req.user = 'Bob Dylan'
-})
-```
-
-However, there is no guarantee that the decorator actually exists
-unless you manually check beforehand.
-Additionally, typos are common, e.g. `account`, `acount`, or `accout`.
-
-By using `setDecorator`, you are always sure that the decorator exists:
-
-```js
-fastify.decorateRequest('user', '')
-fastify.addHook('preHandler', async (req, reply) => {
-  // Throws FST_ERR_DEC_UNDECLARED if the decorator does not exist
+  // Safely set the decorator value
   req.setDecorator('user', 'Bob Dylan')
 })
 ```
 
-**Error Prevention**
+**Use Cases**
 
-The `setDecorator` method helps prevent common mistakes:
+The `setDecorator` method provides:
+
+- **Runtime safety**: Ensures the decorator exists before setting its value
+- **Error prevention**: Catches typos in decorator names at runtime
+- **Type safety**: When used with TypeScript, provides better type checking
 
 ```js
 fastify.decorateRequest('account', null)
 fastify.addHook('preHandler', async (req, reply) => {
-  // This will throw FST_ERR_DEC_UNDECLARED due to typo
+  // This will throw FST_ERR_DEC_UNDECLARED due to typo in decorator name
   req.setDecorator('acount', { id: 123 })
 })
 ```
+
+> **Note**: For TypeScript users, `setDecorator` supports generic type parameters for enhanced type safety.
+> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced typing examples.

@@ -687,6 +687,136 @@ Or even explicit config on tsconfig
 }
 ```
 
+### Decorators
+
+Fastify's decorator system allows you to extend the Fastify instance, request, and reply objects. When using TypeScript, decorators provide additional type safety and advanced features beyond the basic JavaScript usage documented in the [Decorators reference](./Decorators.md).
+
+#### `getDecorator<T>` with Type Parameters
+
+The `getDecorator<T>` method supports generic type parameters for enhanced type safety:
+
+```typescript
+// Type-safe decorator retrieval
+const usersRepository = fastify.getDecorator<IUsersRepository>('usersRepository')
+const session = request.getDecorator<ISession>('session')
+const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+```
+
+**Alternative to Module Augmentation**
+
+Decorators are typically typed via module augmentation:
+
+```typescript
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersRepository: IUsersRepository
+  }
+  interface FastifyRequest {
+    session: ISession
+  }
+  interface FastifyReply {
+    sendSuccess: SendSuccessFn
+  }
+}
+```
+
+This approach modifies the Fastify instance globally, which may lead to conflicts and inconsistent behavior in multi-server setups or with plugin encapsulation.
+
+Using `getDecorator<T>` allows you to limit types scope:
+
+```typescript
+serverOne.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<PostgreUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateRequest('session', null)
+  fastify.addHook('onRequest', async (req, reply) => {
+    req.setDecorator('session', { user: 'Jean' })
+  })
+
+  fastify.get('/me', (request, reply) => {
+    const session = request.getDecorator<ISession>('session')
+    reply.send(session)
+  })
+})
+
+serverTwo.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<SqlLiteUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateReply('sendSuccess', function (data) {
+    return this.send({ success: true })
+  })
+
+  fastify.get('/success', async (request, reply) => {
+    const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+    await sendSuccess()
+  })
+})
+```
+
+**Bound Functions Inference**
+
+To save time, it's common to infer function types instead of writing them manually:
+
+```typescript
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+export type SendSuccess = typeof sendSuccess
+```
+
+However, `getDecorator` returns functions with the `this` context already **bound**, meaning the `this` parameter disappears from the function signature.
+
+To correctly type it, you should use `OmitThisParameter` utility:
+
+```typescript
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+type BoundSendSuccess = OmitThisParameter<typeof sendSuccess>
+
+fastify.decorateReply('sendSuccess', sendSuccess)
+fastify.get('/success', async (request, reply) => {
+  const sendSuccess = reply.getDecorator<BoundSendSuccess>('sendSuccess')
+  await sendSuccess()
+})
+```
+
+#### `setDecorator<T>` with Type Parameters
+
+The `setDecorator<T>` method provides enhanced type safety for updating request decorators:
+
+```typescript
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  // Type-safe decorator setting
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
+```
+
+**Type Safety Benefits**
+
+If the `FastifyRequest` interface does not declare the decorator, you would typically need to use type assertions:
+
+```typescript
+fastify.addHook('preHandler', async (req, reply) => {
+  (req as typeof req & { user: string }).user = 'Bob Dylan'
+})
+```
+
+The `setDecorator<T>` method eliminates the need for explicit type assertions while providing type safety:
+
+```typescript
+fastify.addHook('preHandler', async (req, reply) => {
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
+```
+
 ## Code Completion In Vanilla JavaScript
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.

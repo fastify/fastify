@@ -600,8 +600,8 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is a more performant fork 
-of Node.js's core `querystring` module called 
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
 [`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
@@ -872,11 +872,11 @@ fastify.get('/dev', async (request, reply) => {
 
 * **Default:** `true`
 
-> ⚠ **Warning:** This option will be set to `false` by default 
+> ⚠ **Warning:** This option will be set to `false` by default
 > in the next major release.
 
-When set to `false`, it prevents `setErrorHandler` from being called 
-multiple times within the same scope, ensuring that the previous error 
+When set to `false`, it prevents `setErrorHandler` from being called
+multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
 
 #### Example of incorrect usage:
@@ -1562,7 +1562,7 @@ plugins.
 <a id="set-error-handler"></a>
 
 `fastify.setErrorHandler(handler(error, request, reply))`: Set a function that
-will be called whenever an error happens. The handler is bound to the Fastify
+will be invoked whenever an exception is thrown during the request lifecycle. The handler is bound to the Fastify
 instance and is fully encapsulated, so different plugins can set different error
 handlers. *async-await* is supported as well.
 
@@ -1570,7 +1570,7 @@ If the error `statusCode` is less than 400, Fastify will automatically
 set it to 500 before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
-- errors thrown in an `onResponse` hook because the response has already been
+- exceptions thrown in an `onResponse` hook because the response has already been
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.

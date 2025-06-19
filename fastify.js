@@ -586,7 +586,7 @@ function fastify (options) {
     }
   }
 
-  function ready (cb) {
+  function ready (cb, options) {
     if (this[kState].readyPromise !== null) {
       if (cb != null) {
         this[kState].readyPromise.then(() => cb(null, fastify), cb)
@@ -598,6 +598,7 @@ function fastify (options) {
 
     let resolveReady
     let rejectReady
+    const signal = options?.signal
 
     // run the hooks after returning the promise
     process.nextTick(runHooks)
@@ -610,6 +611,22 @@ function fastify (options) {
       resolveReady = resolve
       rejectReady = reject
     })
+
+    if (typeof signal?.addEventListener === 'function') {
+      if (signal.aborted) {
+        rejectReady(signal.reason)
+      } else {
+        const doRejectPromise = (event) => {
+          rejectReady(event.target.reason)
+        }
+        const cleanup = () => {
+          signal.removeEventListener('abort', doRejectPromise)
+        }
+
+        signal.addEventListener('abort', doRejectPromise, { once: true })
+        this[kState].readyPromise.then(cleanup, cleanup)
+      }
+    }
 
     if (!cb) {
       return this[kState].readyPromise

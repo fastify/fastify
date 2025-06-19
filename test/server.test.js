@@ -83,7 +83,7 @@ test('Test for hostname and port', (t, end) => {
 
 test('abort signal', async t => {
   await t.test('listen should not start server', (t, end) => {
-    t.plan(2)
+    t.plan(3)
     function onClose (instance, done) {
       t.assert.strictEqual(instance, fastify)
       done()
@@ -94,14 +94,14 @@ test('abort signal', async t => {
     const fastify = Fastify()
     fastify.addHook('onClose', onClose)
     fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
-      t.assert.ifError(err)
+      t.assert.strictEqual(err.message, 'This operation was aborted')
     })
     controller.abort()
     t.assert.strictEqual(fastify.server.listening, false)
   })
 
   await t.test('listen should not start server if already aborted', (t, end) => {
-    t.plan(2)
+    t.plan(3)
     function onClose (instance, done) {
       t.assert.strictEqual(instance, fastify)
       done()
@@ -113,8 +113,22 @@ test('abort signal', async t => {
     const fastify = Fastify()
     fastify.addHook('onClose', onClose)
     fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
-      t.assert.ifError(err)
+      t.assert.strictEqual(err.message, 'This operation was aborted')
     })
+    t.assert.strictEqual(fastify.server.listening, false)
+  })
+
+  await t.test('listen should not start server if already aborted 2', async (t) => {
+    t.plan(2)
+
+    const controller = new AbortController()
+    controller.abort(new Error('aborting before actual start'))
+    const fastify = Fastify()
+    try {
+      await fastify.listen({ port: 1234, signal: controller.signal })
+    } catch (e) {
+      t.assert.strictEqual(e.message, 'aborting before actual start')
+    }
     t.assert.strictEqual(fastify.server.listening, false)
   })
 
@@ -131,6 +145,41 @@ test('abort signal', async t => {
       t.assert.strictEqual(e.code, 'FST_ERR_LISTEN_OPTIONS_INVALID')
       t.assert.strictEqual(e.message, 'Invalid listen options: \'Invalid options.signal\'')
     }
+  })
+
+  await t.test('listen should not start server with timeout', (t, end) => {
+    t.plan(3)
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      end()
+    }
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    fastify.listen({ port: 1234, signal: AbortSignal.timeout(0) }, (err) => {
+      t.assert.strictEqual(err.message, 'The operation was aborted due to timeout')
+    })
+    t.assert.strictEqual(fastify.server.listening, false)
+  })
+
+  await t.test('listen should not start server with synthetic minimal timeout', async (t) => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    const controller = new AbortController()
+
+    queueMicrotask(() => {
+      controller.abort()
+    })
+
+    try {
+      await fastify.listen({ port: 1234, signal: controller.signal })
+    } catch (err) {
+      t.assert.strictEqual(err.message, 'This operation was aborted')
+    }
+
+    t.assert.strictEqual(fastify.server.listening, false)
   })
 })
 

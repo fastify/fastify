@@ -190,6 +190,16 @@ test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_CTP_INVALID_JSON_BODY', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTP_INVALID_JSON_BODY()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_JSON_BODY')
+  t.assert.strictEqual(error.message, "Body is not valid JSON but content-type is set to 'application/json'")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', t => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INSTANCE_ALREADY_STARTED()

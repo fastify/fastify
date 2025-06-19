@@ -600,8 +600,8 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is a more performant fork
-of Node.js's core `querystring` module called
+The default query string parser that Fastify uses is a more performant fork 
+of Node.js's core `querystring` module called 
 [`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
@@ -872,11 +872,11 @@ fastify.get('/dev', async (request, reply) => {
 
 * **Default:** `true`
 
-> ⚠ **Warning:** This option will be set to `false` by default
+> ⚠ **Warning:** This option will be set to `false` by default 
 > in the next major release.
 
-When set to `false`, it prevents `setErrorHandler` from being called
-multiple times within the same scope, ensuring that the previous error
+When set to `false`, it prevents `setErrorHandler` from being called 
+multiple times within the same scope, ensuring that the previous error 
 handler is not unintentionally overridden.
 
 #### Example of incorrect usage:

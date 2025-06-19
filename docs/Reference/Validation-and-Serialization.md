@@ -22,6 +22,12 @@ specification.
 > it should not be used for initial validation. Accessing databases during
 > validation may lead to Denial of Service attacks. Use
 > [Fastify's hooks](./Hooks.md) like `preHandler` for `async` tasks after validation.
+>
+> ⚠ **Important**: When using custom validators with async `preValidation` hooks,
+> validators **must return** `{error}` objects instead of throwing errors.
+> Throwing errors from custom validators will cause unhandled promise rejections
+> that crash your application when combined with async hooks. See the
+> [custom validator examples](#using-other-validation-libraries) below for the correct pattern.
 
 ### Core concepts
 Validation and serialization are handled by two customizable dependencies:
@@ -446,14 +452,37 @@ JavaScript validation libraries like [joi](https://github.com/hapijs/joi/) or
 ```js
 const Joi = require('joi')
 
+// ❌ WRONG: This will crash your app with async preValidation hooks
+fastify.setValidatorCompiler(({ schema }) => {
+  return (data) => {
+    const { error, value } = schema.validate(data)
+    if (error) {
+      throw error // This causes unhandled promise rejections!
+    }
+    return { value }
+  }
+})
+
+// ✅ CORRECT: Return error objects instead of throwing
+fastify.setValidatorCompiler(({ schema }) => {
+  return (data) => {
+    try {
+      const { error, value } = schema.validate(data)
+      if (error) {
+        return { error } // Return the error, don't throw it
+      }
+      return { value }
+    } catch (e) {
+      return { error: e } // Catch any unexpected errors too
+    }
+  }
+})
+
 fastify.post('/the/url', {
   schema: {
     body: Joi.object().keys({
       hello: Joi.string().required()
     }).required()
-  },
-  validatorCompiler: ({ schema, method, url, httpPart }) => {
-    return data => schema.validate(data)
   }
 }, handler)
 ```
@@ -491,6 +520,44 @@ fastify.post('/the/url', {
   }
 }, handler)
 ```
+
+##### Custom Validator Best Practices
+
+When implementing custom validators, follow these patterns to ensure compatibility with all Fastify features:
+
+**✅ Always return objects, never throw:**
+```js
+// CORRECT
+return { value: validatedData }  // On success
+return { error: validationError } // On failure
+```
+
+**❌ Never throw errors directly:**
+```js
+// WRONG - will crash with async hooks
+throw new Error('Validation failed')
+```
+
+**✅ Use try-catch for safety:**
+```js
+fastify.setValidatorCompiler(({ schema }) => {
+  return (data) => {
+    try {
+      // Your validation logic here
+      const result = schema.validate(data)
+      if (result.error) {
+        return { error: result.error }
+      }
+      return { value: result.value }
+    } catch (e) {
+      // Catch any unexpected errors
+      return { error: e }
+    }
+  }
+})
+```
+
+This pattern ensures your validators work correctly with both sync and async `preValidation` hooks, preventing unhandled promise rejections that can crash your application.
 
 ##### .statusCode property
 

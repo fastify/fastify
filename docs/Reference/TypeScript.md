@@ -689,7 +689,10 @@ Or even explicit config on tsconfig
 
 ### Decorators
 
-Fastify's decorator system allows you to extend the Fastify instance, request, and reply objects. When using TypeScript, decorators provide additional type safety and advanced features beyond the basic JavaScript usage documented in the [Decorators reference](./Decorators.md).
+Fastify's decorator system allows you to extend the Fastify instance, request, and
+reply objects. When using TypeScript, decorators provide additional type safety and
+advanced features beyond the basic JavaScript usage documented in the
+[Decorators reference](./Decorators.md).
 
 #### `getDecorator<T>` with Type Parameters
 
@@ -720,7 +723,8 @@ declare module 'fastify' {
 }
 ```
 
-This approach modifies the Fastify instance globally, which may lead to conflicts and inconsistent behavior in multi-server setups or with plugin encapsulation.
+This approach modifies the Fastify instance globally, which may lead to conflicts
+and inconsistent behavior in multi-server setups or with plugin encapsulation.
 
 Using `getDecorator<T>` allows you to limit types scope:
 
@@ -769,7 +773,8 @@ function sendSuccess (this: FastifyReply) {
 export type SendSuccess = typeof sendSuccess
 ```
 
-However, `getDecorator` returns functions with the `this` context already **bound**, meaning the `this` parameter disappears from the function signature.
+However, `getDecorator` returns functions with the `this` context already **bound**,
+meaning the `this` parameter disappears from the function signature.
 
 To correctly type it, you should use `OmitThisParameter` utility:
 
@@ -789,7 +794,8 @@ fastify.get('/success', async (request, reply) => {
 
 #### `setDecorator<T>` with Type Parameters
 
-The `setDecorator<T>` method provides enhanced type safety for updating request decorators:
+The `setDecorator<T>` method provides enhanced type safety for updating request
+decorators:
 
 ```typescript
 fastify.decorateRequest('user', '')
@@ -801,7 +807,8 @@ fastify.addHook('preHandler', async (req, reply) => {
 
 **Type Safety Benefits**
 
-If the `FastifyRequest` interface does not declare the decorator, you would typically need to use type assertions:
+If the `FastifyRequest` interface does not declare the decorator, you would
+typically need to use type assertions:
 
 ```typescript
 fastify.addHook('preHandler', async (req, reply) => {
@@ -809,7 +816,8 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-The `setDecorator<T>` method eliminates the need for explicit type assertions while providing type safety:
+The `setDecorator<T>` method eliminates the need for explicit type assertions
+while providing type safety:
 
 ```typescript
 fastify.addHook('preHandler', async (req, reply) => {

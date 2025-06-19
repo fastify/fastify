@@ -387,8 +387,10 @@ const helper = reply.getDecorator('helper')
 
 The `getDecorator` method is useful for:
 
-- **Plugin dependency validation**: Verify that required decorators exist at registration time
-- **Runtime safety**: Ensure decorators exist before using them, avoiding undefined access
+- **Plugin dependency validation**: Verify that required decorators exist at
+  registration time
+- **Runtime safety**: Ensure decorators exist before using them, avoiding
+  undefined access
 - **Plugin encapsulation**: Access decorators within specific plugin contexts
 
 ```js
@@ -403,7 +405,8 @@ fastify.register(async function (fastify) {
 ```
 
 > **Note**: For TypeScript users, `getDecorator` supports generic type parameters.
-> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced typing examples.
+> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
+> advanced typing examples.
 
 #### `setDecorator(name, value)`
 <a id="set-decorator"></a>
@@ -436,5 +439,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-> **Note**: For TypeScript users, `setDecorator` supports generic type parameters for enhanced type safety.
-> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced typing examples.
+> **Note**: For TypeScript users, `setDecorator` supports generic type parameters
+> for enhanced type safety.
+> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
+> advanced typing examples.

@@ -1519,10 +1519,7 @@ specific header in case of error.
 It is not intended for changing the error, and calling reply.send will throw an
 exception.
 
-This hook will be executed only before the customErrorHandler is executed.
-The `onError` hook is useful for logging errors or adding custom headers,
-but it cannot modify the error or prevent the error handler from running (Note that
-the default customErrorHandler always sends the error back to the user).
+This hook will be executed before the customErrorHandler.
 
 Notice: unlike the other hooks, pass an error to the done function is not
 supported.

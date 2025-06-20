@@ -189,12 +189,8 @@ specific header in case of error.
 It is not intended for changing the error, and calling `reply.send` will throw
 an exception.
 
-This hook will be executed only before
-the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler)
-is executed. The `onError` hook is useful for logging errors or adding custom headers,
-but it cannot modify the error or prevent the error handler from running
-*(Note that the default error handler always sends the error back to the
-user)*.
+This hook will be executed before
+the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler).
 
 > ℹ️ Note: Unlike the other hooks, passing an error to the `done` function is not
 > supported.

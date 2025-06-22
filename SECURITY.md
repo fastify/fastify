@@ -6,8 +6,10 @@ project and its official plugins.
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
-complete a vulnerability report via the dedicated HackerOne page:
-[https://hackerone.com/fastify](https://hackerone.com/fastify).
+complete a vulnerability report via the dedicated pages:
+
+1. [HackerOne](https://hackerone.com/fastify)
+2. [GitHub Security Advisory](https://github.com/fastify/fastify/security/advisories/new)
 
 ### Strict measures when reporting vulnerabilities
 
@@ -15,13 +17,13 @@ It is of the utmost importance that you read carefully and follow these
 guidelines to ensure the ecosystem as a whole isn't disrupted due to improperly
 reported vulnerabilities:
 
-* Avoid creating new "informative" reports on HackerOne. Only create new
-  HackerOne reports on a vulnerability if you are absolutely sure this should be
+* Avoid creating new "informative" reports. Only create new
+  reports on a vulnerability if you are absolutely sure this should be
   tagged as an actual vulnerability. Third-party vendors and individuals are
-  tracking any new vulnerabilities reported in HackerOne and will flag them as
-  such for their customers (think about snyk, npm audit, ...).
-* HackerOne reports should never be created and triaged by the same person. If
-  you are creating a HackerOne report for a vulnerability that you found, or on
+  tracking any new vulnerabilities reported in HackerOne or GitHub and will flag
+  them as such for their customers (think about snyk, npm audit, ...).
+* Security reports should never be created and triaged by the same person. If
+  you are creating a report for a vulnerability that you found, or on
   behalf of someone else, there should always be a 2nd Security Team member who
   triages it. If in doubt, invite more Fastify Collaborators to help triage the
   validity of the report. In any case, the report should follow the same process
@@ -39,8 +41,8 @@ reported vulnerabilities:
 
 ### Vulnerabilities found outside this process
 
-⚠ The Fastify project does not support any reporting outside the HackerOne
-process.
+⚠ The Fastify project does not support any reporting outside the process mentioned
+in this document.
 
 ## Handling vulnerability reports
 
@@ -54,9 +56,9 @@ Within 4 business days, a member of the security team provides a first answer to
 the individual who submitted the potential vulnerability. The possible responses
 can be:
 
-* Acceptance: what was reported is considered as a new vulnerability
-* Rejection: what was reported is not considered as a new vulnerability
-* Need more information: the security team needs more information in order to
+* **Acceptance**: what was reported is considered as a new vulnerability
+* **Rejection**: what was reported is not considered as a new vulnerability
+* **Need more information**: the security team needs more information in order to
   evaluate what was reported.
 
 Triaging should include updating issue fields:
@@ -100,7 +102,7 @@ If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability.
 
-At this point, a CVE should be requested through the HackerOne platform through
+At this point, a CVE should be requested through the selected platform through
 the UI, which should include the Report ID and a summary.
 
 Within HackerOne, this is handled through a "public disclosure request".
@@ -110,8 +112,8 @@ Disclosure](https://docs.hackerone.com/hackers/disclosure.html)
 
 ## The Fastify Security team
 
-The core team is responsible for the management of HackerOne program and this
-policy and process.
+The core team is responsible for the management of the security program and
+this policy and process.
 
 Members of this team are expected to keep all information that they have
 privileged access to by being on the team completely private to the team. This

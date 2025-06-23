@@ -387,11 +387,9 @@ const helper = reply.getDecorator('helper')
 
 The `getDecorator` method is useful for:
 
-- **Plugin dependency validation**: Verify that required decorators exist at
-  registration time
-- **Runtime safety**: Ensure decorators exist before using them, avoiding
-  undefined access
-- **Plugin encapsulation**: Access decorators within specific plugin contexts
+- **Dependency validation**: `getDecorator` can be used to check for required
+  decorators at registration time. If any are missing, it fails at boot,
+  ensuring dependencies are available during the request lifecycle.
 
 ```js
 fastify.register(async function (fastify) {

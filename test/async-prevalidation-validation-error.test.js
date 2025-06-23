@@ -53,3 +53,53 @@ test('thrown validation error inside async preValidation reaches error handler',
   t.assert.strictEqual(res.statusCode, 400)
   t.assert.deepStrictEqual(JSON.parse(res.payload), { message: 'kaboom' })
 })
+
+test('validation error with attachValidation after async preValidation', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  // Custom compiler that always throws to simulate a validation failure
+  fastify.setValidatorCompiler(() => {
+    return function () {
+      throw new Error('validation failed')
+    }
+  })
+
+  // Async preValidation hook (no done callback)
+  fastify.addHook('preValidation', async () => {
+    // do nothing – the presence of an async hook is enough to reproduce the scenario
+  })
+
+  // Route with attachValidation enabled
+  fastify.get('/:id', {
+    attachValidation: true,
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        },
+        required: ['id']
+      }
+    }
+  }, (request, reply) => {
+    // When attachValidation is true, validation errors should be attached to request
+    if (request.validationError) {
+      reply.code(422).send({
+        error: 'Custom validation error handling',
+        message: request.validationError.message
+      })
+    } else {
+      reply.send({ id: request.params.id })
+    }
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/123' })
+
+  t.assert.strictEqual(res.statusCode, 422)
+  t.assert.deepStrictEqual(JSON.parse(res.payload), {
+    error: 'Custom validation error handling',
+    message: 'validation failed'
+  })
+})

@@ -1562,15 +1562,16 @@ plugins.
 <a id="set-error-handler"></a>
 
 `fastify.setErrorHandler(handler(error, request, reply))`: Set a function that
-will be called whenever an error happens. The handler is bound to the Fastify
-instance and is fully encapsulated, so different plugins can set different error
-handlers. *async-await* is supported as well.
+will be invoked whenever an exception is thrown during the request lifecycle.
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set different error handlers. *async-await* is
+supported as well.
 
 If the error `statusCode` is less than 400, Fastify will automatically
 set it to 500 before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
-- errors thrown in an `onResponse` hook because the response has already been
+- exceptions thrown in an `onResponse` hook because the response has already been
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.

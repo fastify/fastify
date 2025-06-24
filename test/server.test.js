@@ -101,7 +101,7 @@ test('abort signal', async t => {
   })
 
   await t.test('should close server when aborted after - promise', async (t) => {
-    t.plan(1)
+    t.plan(2)
     const resolver = {}
     resolver.promise = new Promise(function (resolve) {
       resolver.resolve = resolve
@@ -116,7 +116,8 @@ test('abort signal', async t => {
 
     const fastify = Fastify()
     fastify.addHook('onClose', onClose)
-    await fastify.listen({ port: 1234, signal: controller.signal })
+    const address = await fastify.listen({ port: 1234, signal: controller.signal })
+    t.assert.ok(address)
     controller.abort()
     await resolver.promise
   })
@@ -140,7 +141,7 @@ test('abort signal', async t => {
   })
 
   await t.test('should close server when aborted before - promise', async (t) => {
-    t.plan(1)
+    t.plan(2)
     const resolver = {}
     resolver.promise = new Promise(function (resolve) {
       resolver.resolve = resolve
@@ -156,7 +157,8 @@ test('abort signal', async t => {
 
     const fastify = Fastify()
     fastify.addHook('onClose', onClose)
-    await fastify.listen({ port: 1234, signal: controller.signal })
+    const address = await fastify.listen({ port: 1234, signal: controller.signal })
+    t.assert.strictEqual(address, undefined) // ensure the API signature
     await resolver.promise
   })
 

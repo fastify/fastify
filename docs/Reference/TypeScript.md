@@ -689,7 +689,7 @@ Or even explicit config on tsconfig
 
 #### Decorators
 
-Fastify's decorator system allows you to extend the Fastify instance, request, and
+Fastify's decorator system allows extending the Fastify instance, request, and
 reply objects. When using TypeScript, decorators provide additional type safety and
 advanced features beyond the basic JavaScript usage documented in the
 [Decorators reference](./Decorators.md).
@@ -726,7 +726,7 @@ declare module 'fastify' {
 This approach modifies the Fastify instance globally, which may lead to conflicts
 and inconsistent behavior in multi-server setups or with plugin encapsulation.
 
-Using `getDecorator<T>` allows you to limit types scope:
+Using `getDecorator<T>` allows limiting types scope:
 
 ```typescript
 serverOne.register(async function (fastify) {
@@ -776,7 +776,7 @@ export type SendSuccess = typeof sendSuccess
 However, `getDecorator` returns functions with the `this` context already **bound**,
 meaning the `this` parameter disappears from the function signature.
 
-To correctly type it, you should use `OmitThisParameter` utility:
+To correctly type it, use the `OmitThisParameter` utility:
 
 ```typescript
 function sendSuccess (this: FastifyReply) {
@@ -807,8 +807,8 @@ fastify.addHook('preHandler', async (req, reply) => {
 
 **Type Safety Benefits**
 
-If the `FastifyRequest` interface does not declare the decorator, you would
-typically need to use type assertions:
+If the `FastifyRequest` interface does not declare the decorator, type assertions
+are typically needed:
 
 ```typescript
 fastify.addHook('preHandler', async (req, reply) => {

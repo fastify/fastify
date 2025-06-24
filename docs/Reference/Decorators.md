@@ -383,13 +383,9 @@ const user = request.getDecorator('user')
 const helper = reply.getDecorator('helper')
 ```
 
-**Use Cases**
-
-The `getDecorator` method is useful for:
-
-- **Dependency validation**: `getDecorator` can be used to check for required
-  decorators at registration time. If any are missing, it fails at boot,
-  ensuring dependencies are available during the request lifecycle.
+The `getDecorator` method is useful for dependency validation - it can be used to
+check for required decorators at registration time. If any are missing, it fails
+at boot, ensuring dependencies are available during the request lifecycle.
 
 ```js
 fastify.register(async function (fastify) {
@@ -402,7 +398,7 @@ fastify.register(async function (fastify) {
 })
 ```
 
-> **Note**: For TypeScript users, `getDecorator` supports generic type parameters.
+> ℹ️ Note: For TypeScript users, `getDecorator` supports generic type parameters.
 > See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
 > advanced typing examples.
 
@@ -421,13 +417,8 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-**Use Cases**
-
-The `setDecorator` method provides:
-
-- **Runtime safety**: Ensures the decorator exists before setting its value
-- **Error prevention**: Catches typos in decorator names at runtime
-- **Type safety**: When used with TypeScript, provides better type checking
+The `setDecorator` method provides runtime safety by ensuring the decorator exists
+before setting its value, preventing errors from typos in decorator names.
 
 ```js
 fastify.decorateRequest('account', null)
@@ -437,7 +428,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-> **Note**: For TypeScript users, `setDecorator` supports generic type parameters
+> ℹ️ Note: For TypeScript users, `setDecorator` supports generic type parameters
 > for enhanced type safety.
 > See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
 > advanced typing examples.

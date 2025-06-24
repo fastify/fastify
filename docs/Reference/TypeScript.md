@@ -763,7 +763,7 @@ serverTwo.register(async function (fastify) {
 
 **Bound Functions Inference**
 
-To save time, it's common to infer function types instead of writing them manually:
+To save time, it is common to infer function types instead of writing them manually:
 
 ```typescript
 function sendSuccess (this: FastifyReply) {

@@ -841,7 +841,10 @@ function fastify (options) {
   function setSchemaController (schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController"!')
     const old = this[kSchemaController]
-    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(
+      old,
+      Object.assign({}, old.opts, schemaControllerOpts)
+    )
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
@@ -883,7 +886,9 @@ function fastify (options) {
 
   function printRoutes (opts = {}) {
     // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
-    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    opts.includeMeta = opts.includeHooks
+      ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks
+      : opts.includeMeta
     return router.printRoutes(opts)
   }
 

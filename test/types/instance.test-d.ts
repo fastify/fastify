@@ -125,24 +125,44 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreHandlerHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: HookHandlerDoneFunction
+) { done() }
+async function notFoundpreHandlerAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}
+function notFoundpreValidationHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: HookHandlerDoneFunction
+) { done() }
+async function notFoundpreValidationAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}
 
 server.setNotFoundHandler(notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler(
+  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  notFoundHandler
+)
 
 server.setNotFoundHandler(notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler(
+  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  notFoundAsyncHandler
+)
 
 server.setNotFoundHandler(function (_, reply) {
   return reply.send('')
@@ -284,7 +304,13 @@ expectAssignable<FastifyInstance>(
   })
 )
 
-function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+function childLoggerFactory (
+  this: FastifyInstance,
+  logger: FastifyBaseLogger,
+  bindings: Bindings,
+  opts: ChildLoggerOptions,
+  req: RawRequestDefaultExpression
+) {
   return logger.child(bindings, opts)
 }
 server.setChildLoggerFactory(childLoggerFactory)

@@ -25,20 +25,53 @@ import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 // FastifyInstance
 // http server
-expectError<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & Promise<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({}))
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ http: {} }))
+expectError<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  Promise<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify())
+expectAssignable<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify())
+expectType<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify())
+expectType<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({}))
+expectType<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({ http: {} }))
 // https server
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: null }))
+expectType<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({ https: {} }))
+expectType<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({ https: null }))
 // http2 server
-expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> & SafePromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
-expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & SafePromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
+expectType<
+  FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> &
+  SafePromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>
+>(fastify({ http2: true, http2SessionTimeout: 1000 }))
+expectType<
+  FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> &
+  SafePromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>
+>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ schemaController: {} }))
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(
+expectType<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({ schemaController: {} }))
+expectType<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(
   fastify({
     schemaController: {
       compilersFactory: {}
@@ -61,13 +94,18 @@ expectAssignable<InjectOptions>({ query: '' })
 fastify({ http2: true, https: {} }).inject().then((resp) => {
   expectAssignable<LightMyRequestResponse>(resp)
 })
-const lightMyRequestCallback: LightMyRequestCallback = (err: Error | undefined, response: LightMyRequestResponse | undefined) => {
+const lightMyRequestCallback: LightMyRequestCallback = (
+  err: Error | undefined,
+  response: LightMyRequestResponse | undefined
+) => {
   if (err) throw err
 }
 fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
 
 // server options
-expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
+expectAssignable<
+  FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>
+>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreDuplicateSlashes: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
@@ -81,11 +119,17 @@ expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ onProtoPoisoning: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { rounding: 'ceil' } }))
-expectAssignable<FastifyInstance>(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } }))
+expectAssignable<FastifyInstance>(
+  fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } })
+)
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: {} } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: {} } }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
+expectAssignable<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
+>(fastify({ logger: true }))
+expectAssignable<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
+>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({
   logger: {
     level: 'info',
@@ -126,7 +170,9 @@ const customLogger = {
   debug: () => { },
   child: () => customLogger
 }
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: customLogger }))
+expectAssignable<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
+>(fastify({ logger: customLogger }))
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
@@ -221,7 +267,13 @@ expectAssignable<FastifyInstance>(fastify({
 }))
 
 expectAssignable<FastifyInstance>(fastify({
-  childLoggerFactory: function (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+  childLoggerFactory: function (
+    this: FastifyInstance,
+    logger: FastifyBaseLogger,
+    bindings: Bindings,
+    opts: ChildLoggerOptions,
+    req: RawRequestDefaultExpression
+  ) {
     expectType<FastifyBaseLogger>(logger)
     expectType<Bindings>(bindings)
     expectType<ChildLoggerOptions>(opts)

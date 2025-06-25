@@ -20,7 +20,9 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<number>(reply.elapsedTime)
   expectType<number>(reply.statusCode)
   expectType<boolean>(reply.sent)
-  expectType<(hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void>(reply.writeEarlyHints)
+  expectType<
+          (hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void
+            >(reply.writeEarlyHints)
   expectType<((payload?: unknown) => FastifyReply)>(reply.send)
   expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
   expectAssignable<(values: { [key: string]: any }) => FastifyReply>(reply.headers)
@@ -35,14 +37,29 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
   expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)
   expectType<(fulfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
-  expectType<(key: string, fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) | ((reply: FastifyReply, payload: string | Buffer | null, done: (err: Error | null, value?: string) => void) => void)) => FastifyReply>(reply.trailer)
+  expectType<
+      (
+      key: string,
+      fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) |
+        ((reply: FastifyReply, payload: string | Buffer | null,
+          done: (err: Error | null, value?: string) => void) => void)
+      ) => FastifyReply
+        >(reply.trailer)
   expectType<(key: string) => boolean>(reply.hasTrailer)
   expectType<(key: string) => FastifyReply>(reply.removeTrailer)
   expectType<FastifyInstance>(reply.server)
-  expectAssignable<((httpStatus: string) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
-  expectAssignable<((schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined)>(reply.getSerializationFunction)
-  expectAssignable<((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
-  expectAssignable<((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)>(reply.serializeInput)
+  expectAssignable<
+          ((httpStatus: string) => DefaultSerializationFunction | undefined)
+            >(reply.getSerializationFunction)
+  expectAssignable<
+          ((schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined)
+            >(reply.getSerializationFunction)
+  expectAssignable<
+          ((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)
+            >(reply.compileSerializationSchema)
+  expectAssignable<
+          ((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)
+            >(reply.serializeInput)
   expectAssignable<((input: { [key: string]: unknown }, httpStatus: string) => unknown)>(reply.serializeInput)
   expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(reply.routeOptions.config)
   expectType<string>(reply.getDecorator<string>('foo'))

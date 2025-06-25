@@ -212,6 +212,7 @@ function fastify (options) {
       started: false,
       ready: false,
       booting: false,
+      aborted: false,
       readyResolver: null
     },
     [kKeepAliveConnections]: keepAliveConnections,

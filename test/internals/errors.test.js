@@ -940,3 +940,42 @@ test('Ensure that non-existing errors are not in Errors.md documented', t => {
     t.assert.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
   }
 })
+
+test('Ensure that all errors are in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
+  const errorTypes = [...matches].map(match => match[1])
+  const exportedKeys = Object.keys(errors)
+
+  for (const key of exportedKeys) {
+    if (errors[key].name === 'FastifyError') {
+      t.assert.ok(errorTypes.includes(key), key)
+    }
+  }
+})
+
+test('Ensure that non-existing errors are not in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
+  const exportedKeys = Object.keys(errors)
+
+  for (const match of matches) {
+    t.assert.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
+  }
+})

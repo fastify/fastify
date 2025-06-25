@@ -3,7 +3,6 @@
 const { createHook } = require('node:async_hooks')
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
 const remainingIds = new Set()
 
@@ -20,7 +19,7 @@ createHook({
 
 const app = Fastify({ logger: false })
 
-test('test async hooks', (t, done) => {
+test('test async hooks', async (t) => {
   app.get('/', function (request, reply) {
     reply.send({ id: 42 })
   })
@@ -29,43 +28,25 @@ test('test async hooks', (t, done) => {
     reply.send({ id: 42 })
   })
 
-  app.listen({ port: 0 }, function (err, address) {
-    t.assert.ifError(err)
+  t.after(() => app.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + app.server.address().port,
-      body: {
-        hello: 'world'
-      },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
+  const fastifyServer = await app.listen({ port: 0 })
 
-      sget({
-        method: 'POST',
-        url: 'http://localhost:' + app.server.address().port,
-        body: {
-          hello: 'world'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-
-        sget({
-          method: 'GET',
-          url: 'http://localhost:' + app.server.address().port,
-          json: true
-        }, (err, response, body) => {
-          t.assert.ifError(err)
-          t.assert.strictEqual(response.statusCode, 200)
-          app.close()
-          t.assert.strictEqual(remainingIds.size, 0)
-          done()
-        })
-      })
-    })
+  const result1 = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hello: 'world' })
   })
+  t.assert.strictEqual(result1.status, 200)
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hello: 'world' })
+  })
+  t.assert.strictEqual(result2.status, 200)
+
+  const result3 = await fetch(fastifyServer)
+  t.assert.strictEqual(result3.status, 200)
+  t.assert.strictEqual(remainingIds.size, 0)
 })

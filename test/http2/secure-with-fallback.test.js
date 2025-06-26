@@ -39,7 +39,7 @@ test('secure with fallback', async (t) => {
     throw new Error('kaboom')
   })
 
-  t.after(() => { fastify.close() })
+  t.after(() => fastify.close())
 
   const fastifyServer = await fastify.listen({ port: 0 })
 
@@ -80,6 +80,7 @@ test('secure with fallback', async (t) => {
 
   await t.test('http1 get request', async t => {
     t.plan(4)
+
     const result = await fetch(fastifyServer, {
       dispatcher: new Agent({
         connect: {
@@ -97,6 +98,7 @@ test('secure with fallback', async (t) => {
 
   await t.test('http1 get error', async t => {
     t.plan(2)
+
     const result = await fetch(`${fastifyServer}/error`, {
       dispatcher: new Agent({
         connect: {

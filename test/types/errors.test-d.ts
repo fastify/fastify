@@ -37,13 +37,10 @@ expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_MISSING_MIDDLEWARE)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_HOOK_TIMEOUT)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_LOG_INVALID_DESTINATION)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_LOG_INVALID_LOGGER)
-<<<<<<< logger
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_LOG_INVALID_LOGGER_LEVEL)
-=======
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_LOG_INVALID_LOGGER_INSTANCE)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_LOG_INVALID_LOGGER_CONFIG)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED)
->>>>>>> main
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_REP_INVALID_PAYLOAD_TYPE)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_REP_RESPONSE_BODY_CONSUMED)
 expectAssignable<FastifyErrorConstructor>(errorCodes.FST_ERR_REP_READABLE_STREAM_LOCKED)

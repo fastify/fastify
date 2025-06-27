@@ -296,5 +296,5 @@ test('fastify instance should ensure ready promise cleanup on ready', async t =>
   t.plan(1)
   const fastify = Fastify()
   await fastify.ready()
-  t.assert.strictEqual(fastify[kState].readyPromise, null)
+  t.assert.strictEqual(fastify[kState].readyResolver, null)
 })

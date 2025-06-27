@@ -111,8 +111,10 @@ Follow the official [SECURITY policy](https://github.com/fastify/fastify/blob/ma
 
 ## Security Measures
 
-At Fastify, we are committed to maintaining a secure codebase through regular vulnerability scanning,
-automated security checks in our CI/CD pipelines, and enforced secure coding practices with mandatory code reviews.
+At Fastify, we are committed to maintaining a secure codebase
+through regular vulnerability scanning,
+automated security checks in our CI/CD pipelines, and enforced secure
+coding practices with mandatory code reviews.
 We prioritize fast patch releases for critical issues to protect our users.
 
 To stay protected, users should ensure they are running the latest version of Fastify

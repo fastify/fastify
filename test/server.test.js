@@ -1,9 +1,11 @@
 'use strict'
 
+const dns = require('node:dns')
 const { test } = require('node:test')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const undici = require('undici')
+const proxyquire = require('proxyquire')
 
 test('listen should accept null port', async t => {
   const fastify = Fastify()
@@ -82,6 +84,144 @@ test('Test for hostname and port', (t, end) => {
 })
 
 test('abort signal', async t => {
+  await t.test('should close server when aborted after', (t, end) => {
+    t.plan(2)
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      end()
+    }
+
+    const controller = new AbortController()
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    fastify.listen({ port: 1234, signal: controller.signal }, (err) => {
+      t.assert.ifError(err)
+      controller.abort()
+    })
+  })
+
+  await t.test('should close server when aborted after - promise', async (t) => {
+    t.plan(2)
+    const resolver = {}
+    resolver.promise = new Promise(function (resolve) {
+      resolver.resolve = resolve
+    })
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      resolver.resolve()
+    }
+
+    const controller = new AbortController()
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    const address = await fastify.listen({ port: 1234, signal: controller.signal })
+    t.assert.ok(address)
+    controller.abort()
+    await resolver.promise
+  })
+
+  await t.test('should close server when aborted during fastify.ready - promise', async (t) => {
+    t.plan(2)
+    const resolver = {}
+    resolver.promise = new Promise(function (resolve) {
+      resolver.resolve = resolve
+    })
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      resolver.resolve()
+    }
+
+    const controller = new AbortController()
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    const promise = fastify.listen({ port: 1234, signal: controller.signal })
+    controller.abort()
+    const address = await promise
+    // since the main server is not listening yet, or will not listen
+    // it should return undefined
+    t.assert.strictEqual(address, undefined)
+    await resolver.promise
+  })
+
+  await t.test('should close server when aborted during dns.lookup - promise', async (t) => {
+    t.plan(2)
+    const Fastify = proxyquire('..', {
+      './lib/server.js': proxyquire('../lib/server.js', {
+        'node:dns': {
+          lookup: function (host, option, callback) {
+            controller.abort()
+            dns.lookup(host, option, callback)
+          }
+        }
+      })
+    })
+    const resolver = {}
+    resolver.promise = new Promise(function (resolve) {
+      resolver.resolve = resolve
+    })
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      resolver.resolve()
+    }
+
+    const controller = new AbortController()
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    const address = await fastify.listen({ port: 1234, signal: controller.signal })
+    // since the main server is already listening then close
+    // it should return address
+    t.assert.ok(address)
+    await resolver.promise
+  })
+
+  await t.test('should close server when aborted before', (t, end) => {
+    t.plan(1)
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      end()
+    }
+
+    const controller = new AbortController()
+    controller.abort()
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    fastify.listen({ port: 1234, signal: controller.signal }, () => {
+      t.assert.fail('should not reach callback')
+    })
+  })
+
+  await t.test('should close server when aborted before - promise', async (t) => {
+    t.plan(2)
+    const resolver = {}
+    resolver.promise = new Promise(function (resolve) {
+      resolver.resolve = resolve
+    })
+    function onClose (instance, done) {
+      t.assert.strictEqual(instance, fastify)
+      done()
+      resolver.resolve()
+    }
+
+    const controller = new AbortController()
+    controller.abort()
+
+    const fastify = Fastify()
+    fastify.addHook('onClose', onClose)
+    const address = await fastify.listen({ port: 1234, signal: controller.signal })
+    t.assert.strictEqual(address, undefined) // ensure the API signature
+    await resolver.promise
+  })
+
   await t.test('listen should not start server', (t, end) => {
     t.plan(2)
     function onClose (instance, done) {

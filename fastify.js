@@ -56,6 +56,7 @@ const {
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
+const PonyPromise = require('./lib/promise')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -216,7 +217,8 @@ function fastify (options) {
       started: false,
       ready: false,
       booting: false,
-      readyPromise: null
+      aborted: false,
+      readyResolver: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kSupportedHTTPMethods]: {
@@ -592,17 +594,14 @@ function fastify (options) {
   }
 
   function ready (cb) {
-    if (this[kState].readyPromise !== null) {
+    if (this[kState].readyResolver !== null) {
       if (cb != null) {
-        this[kState].readyPromise.then(() => cb(null, fastify), cb)
+        this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
         return
       }
 
-      return this[kState].readyPromise
+      return this[kState].readyResolver.promise
     }
-
-    let resolveReady
-    let rejectReady
 
     // run the hooks after returning the promise
     process.nextTick(runHooks)
@@ -611,15 +610,12 @@ function fastify (options) {
     // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
     // as well as a flow control mechanism to chain cbs and further
     // promises
-    this[kState].readyPromise = new Promise(function (resolve, reject) {
-      resolveReady = resolve
-      rejectReady = reject
-    })
+    this[kState].readyResolver = PonyPromise.withResolvers()
 
     if (!cb) {
-      return this[kState].readyPromise
+      return this[kState].readyResolver.promise
     } else {
-      this[kState].readyPromise.then(() => cb(null, fastify), cb)
+      this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
     }
 
     function runHooks () {
@@ -644,13 +640,13 @@ function fastify (options) {
         : err
 
       if (err) {
-        return rejectReady(err)
+        return fastify[kState].readyResolver.reject(err)
       }
 
-      resolveReady(fastify)
+      fastify[kState].readyResolver.resolve(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true
-      fastify[kState].readyPromise = null
+      fastify[kState].readyResolver = null
     }
   }
 

@@ -45,6 +45,7 @@ describes the properties available in that options object.
   - [`clientErrorHandler`](#clienterrorhandler)
   - [`rewriteUrl`](#rewriteurl)
   - [`useSemicolonDelimiter`](#usesemicolondelimiter)
+  - [`allowErrorHandlerOverride`](#allowerrorhandleroverride)
 - [Instance](#instance)
   - [Server Methods](#server-methods)
     - [server](#server)
@@ -866,6 +867,29 @@ fastify.get('/dev', async (request, reply) => {
 })
 ```
 
+### `allowErrorHandlerOverride`
+<a id="allow-error-handler-override"></a>
+
+* **Default:** `true`
+
+> ⚠ **Warning:** This option will be set to `false` by default 
+> in the next major release.
+
+When set to `false`, it prevents `setErrorHandler` from being called 
+multiple times within the same scope, ensuring that the previous error 
+handler is not unintentionally overridden.
+
+#### Example of incorrect usage:
+
+```js
+app.setErrorHandler(function freeSomeResources () {
+  // Never executed, memory leaks
+})
+
+app.setErrorHandler(function anotherErrorHandler () {
+  // Overrides the previous handler
+})
+```
 
 ## Instance
 
@@ -1538,15 +1562,16 @@ plugins.
 <a id="set-error-handler"></a>
 
 `fastify.setErrorHandler(handler(error, request, reply))`: Set a function that
-will be called whenever an error happens. The handler is bound to the Fastify
-instance and is fully encapsulated, so different plugins can set different error
-handlers. *async-await* is supported as well.
+will be invoked whenever an exception is thrown during the request lifecycle.
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set different error handlers. *async-await* is
+supported as well.
 
 If the error `statusCode` is less than 400, Fastify will automatically
 set it to 500 before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
-- errors thrown in an `onResponse` hook because the response has already been
+- exceptions thrown in an `onResponse` hook because the response has already been
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
@@ -1577,18 +1602,8 @@ if (statusCode >= 500) {
 
 > ⚠ Warning:
 > Avoid calling setErrorHandler multiple times in the same scope.
-> Only the last handler will take effect, and previous ones will be silently overridden.
->
-> Incorrect usage:
-> ```js
-> app.setErrorHandler(function freeSomeResources () {
->   // Never executed, memory leaks
-> })
-> 
-> app.setErrorHandler(function anotherErrorHandler () {
->   // Overrides the previous handler
-> })
-> ```
+> See [`allowErrorHandlerOverride`](#allowerrorhandleroverride).
+
 
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>

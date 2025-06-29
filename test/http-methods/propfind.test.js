@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('../../')()
 fastify.addHttpMethod('PROPFIND', { hasBody: true })
 
@@ -74,73 +73,64 @@ test('propfind test', async t => {
     fastify.close()
   })
 
-  await t.test('request - propfind', (t, done) => {
+  await t.test('request - propfind', async t => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/`,
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/`, {
       method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
-  await t.test('request with other path - propfind', (t, done) => {
+  await t.test('request with other path - propfind', async t => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
       method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  await t.test('request with body - propfind', (t, done) => {
+  await t.test('request with body - propfind', async t => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
+      method: 'PROPFIND',
       headers: { 'content-type': 'text/plain' },
-      body: bodySample,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
+      body: bodySample
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
-  await t.test('request with body and no content type (415 error) - propfind', (t, done) => {
+  await t.test('request with body and no content type (415 error) - propfind', async t => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
+      method: 'PROPFIND',
       body: bodySample,
-      method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 415)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
+      headers: { 'content-type': '' }
     })
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 415)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
-  await t.test('request without body - propfind', (t, done) => {
+  await t.test('request without body - propfind', async t => {
     t.plan(3)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test`,
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
       method: 'PROPFIND'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 207)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      done()
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 })

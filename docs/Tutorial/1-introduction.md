@@ -3,16 +3,16 @@
 This tutorial is designed to give a clear and practical understanding 
 of how to build applications with Fastify.
 
-We’ll progressively build up a a small REST API named *Quote Vault* - 
+We’ll progressively build a small REST API named *Quote Vault* - 
 that allows users to store, retrieve, update, and delete memorable quotes. 
 The name fits the purpose: we’ll treat quotes as something worth protecting, 
-applying authentication, role-based access control, and security 
+applying authentication, role-based access control, and other security 
 best practices - all while benefiting from the performance Fastify is 
 known for.
 
 ### Basics
 
-We’ll start by exploring Fastify’s core features through direct, hands-on examples:
+We’ll start by exploring Fastify’s core features:
 
 - Setting up a basic Fastify server and defining routes
 - Decorating the Fastify instance, request, and response objects
@@ -27,12 +27,12 @@ Once the fundamentals are clear, we’ll introduce how to:
 - Leverage the plugin system to modularize the application
 - Use encapsulation to reduce overhead and scoped utilities 
 to leak into the global context
-- Share logic globally
+- Share utilities globally
 
 ### Plugin Ecosystem and Integration
 
 We’ll integrate some Core Fastify plugins to 
-extend the application with practical features:
+extend the application:
 
 - Configuration
 - Database integration
@@ -47,9 +47,9 @@ extend the application with practical features:
 
 To ensure reliability and maintainability, we’ll set up a solid testing workflow:
 
-- Use the built-in **Node.js test runner** for writing and organizing tests
+- Use the built-in **Node.js test runner**
 - Test routes and behaviors with **`fastify.inject()`**
-- Get **code coverage** using tools like 
+- Get **code coverage** using
 [`borp`](https://github.com/mcollina/borp), 
 a lightweight runner with TypeScript support and built-in coverage
 

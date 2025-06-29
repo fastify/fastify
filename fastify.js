@@ -189,6 +189,7 @@ function fastify (options) {
 
   const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
   const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
+  const serverHasCloseHttp2Sessions = typeof server.closeHttp2Sessions === 'function'
 
   let forceCloseConnections = options.forceCloseConnections
   if (forceCloseConnections === 'idle' && !serverHasCloseIdleConnections) {
@@ -484,6 +485,10 @@ function fastify (options) {
               fastify[kKeepAliveConnections].delete(conn)
             }
           }
+        }
+
+        if (serverHasCloseHttp2Sessions) {
+          instance.server.closeHttp2Sessions()
         }
 
         // No new TCP connections are accepted.

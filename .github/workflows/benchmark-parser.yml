@@ -75,7 +75,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@65f9e5c9a1f2cd378bd74b2e057c9736982a8e74 # v3.0.1
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           message: |

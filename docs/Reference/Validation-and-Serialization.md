@@ -27,7 +27,8 @@ specification.
 > validators **must return** `{error}` objects instead of throwing errors.
 > Throwing errors from custom validators will cause unhandled promise rejections
 > that crash the application when combined with async hooks. See the
-> [custom validator examples](#using-other-validation-libraries) below for the correct pattern.
+> [custom validator examples](#using-other-validation-libraries) below for the
+> correct pattern.
 
 ### Core concepts
 Validation and serialization are handled by two customizable dependencies:
@@ -511,7 +512,8 @@ fastify.post('/the/url', {
 
 ##### Custom Validator Best Practices
 
-When implementing custom validators, follow these patterns to ensure compatibility with all Fastify features:
+When implementing custom validators, follow these patterns to ensure compatibility
+with all Fastify features:
 
 ** Always return objects, never throw:**
 ```js
@@ -538,7 +540,9 @@ fastify.setValidatorCompiler(({ schema }) => {
 })
 ```
 
-This pattern ensures validators work correctly with both sync and async `preValidation` hooks, preventing unhandled promise rejections that can crash an application.
+This pattern ensures validators work correctly with both sync and async
+`preValidation` hooks, preventing unhandled promise rejections that can crash
+an application.
 
 ##### .statusCode property
 

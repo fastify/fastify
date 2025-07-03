@@ -3,7 +3,6 @@
 const { test } = require('node:test')
 const diagnostics = require('node:diagnostics_channel')
 const Fastify = require('../..')
-const { getServerUrl } = require('../helper')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 

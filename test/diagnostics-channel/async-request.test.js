@@ -56,13 +56,9 @@ test('diagnostics channel async events fire in expected order', async t => {
 
   t.after(() => { fastify.close() })
 
-  try {
-    const response = await fetch(fastifyServer)
-    t.assert.ok(response.ok)
-    t.assert.strictEqual(response.status, 200)
-    const body = await response.text()
-    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-  } catch (err) {
-    t.assert.ifError(err)
-  }
+  const response = await fetch(fastifyServer)
+  t.assert.ok(response.ok)
+  t.assert.strictEqual(response.status, 200)
+  const body = await response.text()
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })

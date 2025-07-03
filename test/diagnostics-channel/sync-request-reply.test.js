@@ -3,7 +3,6 @@
 const { test } = require('node:test')
 const diagnostics = require('node:diagnostics_channel')
 const Fastify = require('../..')
-const { getServerUrl } = require('../helper')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
@@ -39,10 +38,10 @@ test('diagnostics channel sync events fire in expected order', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => { fastify.close() })
 
-  const response = await fetch(getServerUrl(fastify) + '/', {
+  const response = await fetch(fastifyServer, {
     method: 'GET'
   })
   t.assert.ok(response.ok)

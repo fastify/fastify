@@ -831,3 +831,52 @@ test('plugin override', async (t) => {
   })
   t.assert.strictEqual(response5.statusCode, 400)
 })
+
+test('async preValidation with custom validator should trigger error handler when validator throws', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  // Set up error handler
+  fastify.setErrorHandler((error, request, reply) => {
+    t.assert.ok(error instanceof Error, 'error should be an Error instance')
+    t.assert.strictEqual(error.message, 'Custom validation failed')
+    reply.status(400).send({ error: error.message })
+  })
+
+  // Add async preValidation hook
+  fastify.addHook('preValidation', async (request, reply) => {
+    // This hook makes the validation async
+    await new Promise(resolve => setImmediate(resolve))
+  })
+
+  // Route with custom validator that throws
+  fastify.post('/', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          name: { type: 'string' }
+        }
+      }
+    },
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
+      return function (data) {
+        // This custom validator throws an error instead of returning {error}
+        throw new Error('Custom validation failed')
+      }
+    }
+  }, function (request, reply) {
+    t.assert.fail('Handler should not be called')
+    reply.send({ success: true })
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { name: 'test' }
+  })
+
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
+})

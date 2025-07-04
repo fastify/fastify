@@ -1,11 +1,10 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('register', async (t) => {
-  t.plan(14)
+  t.plan(16)
 
   const fastify = Fastify()
 
@@ -35,28 +34,19 @@ test('register', async (t) => {
     done()
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
   await makeRequest('first')
   await makeRequest('second')
 
   async function makeRequest (path) {
-    return new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/' + path
-      }, (err, response, body) => {
-        if (err) {
-          t.assert.ifError(err)
-          return reject(err)
-        }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
-    })
+    const response = await fetch(fastifyServer + '/' + path)
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   }
 })
 

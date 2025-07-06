@@ -5,7 +5,6 @@ const Fastify = require('..')
 const {
   FST_ERR_INVALID_URL
 } = require('../lib/errors')
-const { getServerUrl } = require('./helper')
 
 test('Request and Reply share the route options', async t => {
   t.plan(3)

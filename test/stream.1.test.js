@@ -13,10 +13,10 @@ test('should respond with a stream', async t => {
     reply.code(200).send(stream)
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => { fastify.close() })
 
-  const response = await fetch(`http://localhost:${fastify.server.address().port}`)
+  const response = await fetch(fastifyServer)
   t.assert.ok(response.ok)
   t.assert.strictEqual(response.headers.get('content-type'), null)
   t.assert.strictEqual(response.status, 200)
@@ -35,10 +35,10 @@ test('should respond with a stream (error)', async t => {
     reply.code(200).send(stream)
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const response = await fetch(`http://localhost:${fastify.server.address().port}/error`)
+  const response = await fetch(`${fastifyServer}/error`)
   t.assert.ok(!response.ok)
   t.assert.strictEqual(response.status, 500)
 })
@@ -85,10 +85,10 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
     done()
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => { fastify.close() })
 
-  const response = await fetch(`http://localhost:${fastify.server.address().port}`)
+  const response = await fetch(fastifyServer)
   t.assert.ok(!response.ok)
   t.assert.strictEqual(response.status, 500)
 })

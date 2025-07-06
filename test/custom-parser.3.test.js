@@ -3,7 +3,6 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 const jsonParser = require('fast-json-body')
-const { Client } = require('undici')
 
 process.removeAllListeners('warning')
 

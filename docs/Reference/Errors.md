@@ -29,6 +29,7 @@
     - [FST_ERR_CTP_INVALID_MEDIA_TYPE](#fst_err_ctp_invalid_media_type)
     - [FST_ERR_CTP_INVALID_CONTENT_LENGTH](#fst_err_ctp_invalid_content_length)
     - [FST_ERR_CTP_EMPTY_JSON_BODY](#fst_err_ctp_empty_json_body)
+    - [FST_ERR_CTP_INVALID_JSON_BODY](#fst_err_ctp_invalid_json_body)
     - [FST_ERR_CTP_INSTANCE_ALREADY_STARTED](#fst_err_ctp_instance_already_started)
     - [FST_ERR_INSTANCE_ALREADY_LISTENING](#fst_err_instance_already_listening)
     - [FST_ERR_DEC_ALREADY_PRESENT](#fst_err_dec_already_present)
@@ -299,7 +300,8 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_ctp_body_too_large">FST_ERR_CTP_BODY_TOO_LARGE</a> | The request body is larger than the provided limit. | Increase the limit in the Fastify server instance setting: [bodyLimit](./Server.md#bodylimit) | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_invalid_media_type">FST_ERR_CTP_INVALID_MEDIA_TYPE</a> | The received media type is not supported (i.e. there is no suitable `Content-Type` parser for it). | Use a different content type. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_invalid_content_length">FST_ERR_CTP_INVALID_CONTENT_LENGTH</a> | Request body size did not match <code>Content-Length</code>. | Check the request body size and the <code>Content-Length</code> header. | [#1168](https://github.com/fastify/fastify/pull/1168) |
-| <a id="fst_err_ctp_empty_json_body">FST_ERR_CTP_EMPTY_JSON_BODY</a> | Body cannot be empty when content-type is set to <code>application/json</code>. | Check the request body. | [#1253](https://github.com/fastify/fastify/pull/1253) |
+| <a id="fst_err_ctp_empty_json_body">FST_ERR_CTP_EMPTY_JSON_BODY</a> | Body is not valid JSON but content-type is set to <code>application/json</code>. | Check if the request body is valid JSON. | [#5925](https://github.com/fastify/fastify/pull/5925) |
+| <a id="fst_err_ctp_invalid_json_body">FST_ERR_CTP_INVALID_JSON_BODY</a> | Body cannot be empty when content-type is set to <code>application/json</code>. | Check the request body. | [#1253](https://github.com/fastify/fastify/pull/1253) |
 | <a id="fst_err_ctp_instance_already_started">FST_ERR_CTP_INSTANCE_ALREADY_STARTED</a> | Fastify is already started. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_instance_already_listening">FST_ERR_INSTANCE_ALREADY_LISTENING</a> | Fastify instance is already listening. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_dec_already_present">FST_ERR_DEC_ALREADY_PRESENT</a> | A decorator with the same name is already registered. | Use a different decorator name. | [#1168](https://github.com/fastify/fastify/pull/1168) |

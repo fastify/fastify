@@ -28,8 +28,7 @@ test('should be able to use default parser for extra content type', async t => {
   })
   t.assert.ok(response.ok)
   t.assert.strictEqual(response.status, 200)
-  const body = await response.text()
-  t.assert.deepStrictEqual(JSON.parse(body.toString()), { hello: 'world' })
+  t.assert.deepStrictEqual(await response.json(), { hello: 'world' })
 })
 
 test('contentTypeParser should add a custom parser with RegExp value', async (t) => {
@@ -188,39 +187,22 @@ test('catch all content type parser should not interfere with content type parse
 
   const fastifyServer = await fastify.listen({ port: 0 })
 
-  const response1 = await fetch(fastifyServer, {
-    method: 'POST',
-    body: '{"myKey":"myValue"}',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  t.assert.ok(response1.ok)
-  t.assert.strictEqual(response1.status, 200)
-  const body1 = await response1.text()
-  t.assert.deepStrictEqual(body1.toString(), JSON.stringify({ myKey: 'myValue' }))
+  const assertions = [
+    { body: '{"myKey":"myValue"}', contentType: 'application/json', expected: JSON.stringify({ myKey: 'myValue' }) },
+    { body: 'body', contentType: 'very-weird-content-type', expected: 'body' },
+    { body: 'my text', contentType: 'text/html', expected: 'my texthtml' }
+  ]
 
-  const response2 = await fetch(fastifyServer, {
-    method: 'POST',
-    body: 'body',
-    headers: {
-      'Content-Type': 'very-weird-content-type'
-    }
-  })
-  t.assert.ok(response2.ok)
-  t.assert.strictEqual(response2.status, 200)
-  const body2 = await response2.text()
-  t.assert.deepStrictEqual(body2.toString(), 'body')
-
-  const response3 = await fetch(fastifyServer, {
-    method: 'POST',
-    body: 'my text',
-    headers: {
-      'Content-Type': 'text/html'
-    }
-  })
-  t.assert.ok(response3.ok)
-  t.assert.strictEqual(response3.status, 200)
-  const body3 = await response3.text()
-  t.assert.deepStrictEqual(body3.toString(), 'my texthtml')
+  for (const { body, contentType, expected } of assertions) {
+    const response = await fetch(fastifyServer, {
+      method: 'POST',
+      body,
+      headers: {
+        'Content-Type': contentType
+      }
+    })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    t.assert.deepStrictEqual(await response.text(), expected)
+  }
 })

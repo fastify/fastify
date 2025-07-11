@@ -196,8 +196,7 @@ test('delete tests', async t => {
 
     t.assert.ok(!response.ok)
     t.assert.strictEqual(response.status, 400)
-    const body = await response.text()
-    t.assert.deepStrictEqual(JSON.parse(body), {
+    t.assert.deepStrictEqual(await response.json(), {
       error: 'Bad Request',
       code: 'FST_ERR_VALIDATION',
       message: 'params/test must be integer',

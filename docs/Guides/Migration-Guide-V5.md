@@ -557,7 +557,6 @@ and provides a way to trace the lifecycle of a request.
 'use strict'
 
 const diagnostics = require('node:diagnostics_channel')
-const sget = require('simple-get').concat
 const Fastify = require('fastify')
 
 diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
@@ -583,15 +582,12 @@ fastify.route({
   }
 })
 
-fastify.listen({ port: 0 }, function () {
-  sget({
-    method: 'GET',
-    url: fastify.listeningOrigin + '/7'
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(body), { hello: 'world' })
-  })
+fastify.listen({ port: 0 }, async function () {
+  const result = await fetch(fastify.listeningOrigin + '/7')
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(response.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
 })
 ```
 

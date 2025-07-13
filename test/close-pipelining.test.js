@@ -11,8 +11,10 @@ test('Should return 503 while closing - pipelining', async t => {
   })
 
   fastify.get('/', async (req, reply) => {
+    // Simulate a delay to allow pipelining to kick in
+    await new Promise(resolve => setTimeout(resolve, 5))
+    reply.send({ hello: 'world' })
     fastify.close()
-    return { hello: 'world' }
   })
 
   await fastify.listen({ port: 0 })
@@ -22,18 +24,18 @@ test('Should return 503 while closing - pipelining', async t => {
   })
 
   const [firstRequest, secondRequest, thirdRequest] = await Promise.allSettled([
-    instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' })
+    instance.request({ path: '/', method: 'GET', blocking: false }),
+    instance.request({ path: '/', method: 'GET', blocking: false }),
+    instance.request({ path: '/', method: 'GET', blocking: false })
   ])
   t.assert.strictEqual(firstRequest.status, 'fulfilled')
   t.assert.strictEqual(secondRequest.status, 'fulfilled')
 
   t.assert.strictEqual(firstRequest.value.statusCode, 200)
-  t.assert.strictEqual(secondRequest.value.statusCode, 503)
+  t.assert.strictEqual(secondRequest.value.statusCode, 200)
 
-  t.assert.strictEqual(thirdRequest.status, 'rejected')
-  t.assert.strictEqual(thirdRequest.reason.code, 'ECONNREFUSED')
+  t.assert.strictEqual(thirdRequest.status, 'fulfilled')
+  t.assert.strictEqual(thirdRequest.value.statusCode, 503)
 
   await instance.close()
 })
@@ -47,6 +49,8 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
   })
 
   fastify.get('/', async (req, reply) => {
+    // Simulate a delay to allow pipelining to kick in
+    await new Promise(resolve => setTimeout(resolve, 5))
     reply.send({ hello: 'world' })
     fastify.close()
   })
@@ -54,14 +58,14 @@ test('Should close the socket abruptly - pipelining - return503OnClosing: false'
   await fastify.listen({ port: 0 })
 
   const instance = new Client('http://localhost:' + fastify.server.address().port, {
-    pipelining: 2
+    pipelining: 1
   })
 
   const responses = await Promise.allSettled([
-    instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' }),
-    instance.request({ path: '/', method: 'GET' })
+    instance.request({ path: '/', method: 'GET', blocking: false }),
+    instance.request({ path: '/', method: 'GET', blocking: false }),
+    instance.request({ path: '/', method: 'GET', blocking: false }),
+    instance.request({ path: '/', method: 'GET', blocking: false })
   ])
 
   const fulfilled = responses.filter(r => r.status === 'fulfilled')

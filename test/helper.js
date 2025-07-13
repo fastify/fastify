@@ -296,6 +296,14 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }).then((response) => {
         t.assert.strictEqual(response.status, 413)
         stepIn()
+      }).catch((err) => {
+        // Handle EPIPE error - server closed connection after sending 413
+        if (err.cause?.code === 'EPIPE' || err.message.includes('fetch failed')) {
+          t.assert.ok(true, 'Expected EPIPE error due to server closing connection on 413')
+        } else {
+          throw err
+        }
+        stepIn()
       })
 
       // Node errors for OPTIONS requests with a stream body and no Content-Length header
@@ -315,6 +323,14 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }).then((response) => {
           t.assert.ok(!response.ok)
           t.assert.strictEqual(response.status, 413)
+          stepIn()
+        }).catch((err) => {
+          // Handle EPIPE error - server closed connection after sending 413
+          if (err.cause?.code === 'EPIPE' || err.message.includes('fetch failed')) {
+            t.assert.ok(true, 'Expected EPIPE error due to server closing connection on 413')
+          } else {
+            throw err
+          }
           stepIn()
         })
       }

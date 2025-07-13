@@ -6,7 +6,6 @@ const { promisify } = require('node:util')
 const symbols = require('../lib/symbols')
 const { waitForCb } = require('./toolkit')
 const assert = require('node:assert')
-const { request } = require('undici')
 
 module.exports.sleep = promisify(setTimeout)
 
@@ -259,7 +258,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(async (response) => {
+      }).then((response) => {
         t.assert.ok(!response.ok)
         t.assert.strictEqual(response.status, 400)
         stepIn()
@@ -272,7 +271,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
             'Content-Type': 'application/json',
             'Content-Length': '0'
           }
-        }).then(async (response) => {
+        }).then((response) => {
           t.assert.ok(!response.ok)
           t.assert.strictEqual(response.status, 400)
           stepIn()
@@ -288,14 +287,14 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
 
       const { stepIn, patience } = waitForCb({ steps: isOptions ? 2 : 3 })
 
-      request(`http://localhost:${fastify.server.address().port}`, {
+      fetch(`http://localhost:${fastify.server.address().port}`, {
         method: upMethod,
         body: JSON.stringify({ w: 'w'.repeat(1024 * 1024 + 1) }),
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(async (response) => {
-        t.assert.strictEqual(response.statusCode, 413)
+      }).then((response) => {
+        t.assert.strictEqual(response.status, 413)
         stepIn()
       })
 
@@ -313,7 +312,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           headers: { 'Content-Type': 'application/json' },
           body: largeStream,
           duplex: 'half'
-        }).then(async (response) => {
+        }).then((response) => {
           t.assert.ok(!response.ok)
           t.assert.strictEqual(response.status, 413)
           stepIn()
@@ -324,7 +323,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         method: upMethod,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
-      }).then(async (response) => {
+      }).then((response) => {
         t.assert.ok(!response.ok)
         t.assert.strictEqual(response.status, 413)
         stepIn()

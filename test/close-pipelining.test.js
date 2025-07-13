@@ -40,7 +40,7 @@ test('Should return 503 while closing - pipelining', { skip: 'flaky test' }, asy
   await instance.close()
 })
 
-test('Should close the socket abruptly - pipelining - return503OnClosing: false', { skip: 'flaky test' }, async t => {
+test('Should close the socket abruptly - pipelining - return503OnClosing: false', async t => {
   // Since Node v20, we will always invoke server.closeIdleConnections()
   // therefore our socket will be closed
   const fastify = Fastify({

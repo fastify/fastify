@@ -4,7 +4,7 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const { Client } = require('undici')
 
-test('Should return 503 while closing - pipelining', { skip: 'flaky test' }, async t => {
+test('Should return 503 while closing - pipelining', async t => {
   const fastify = Fastify({
     return503OnClosing: true,
     forceCloseConnections: false

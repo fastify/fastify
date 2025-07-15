@@ -782,7 +782,7 @@ const secret = {
 > const Fastify = require('fastify')
 >
 > const fastify = Fastify({
->   frameworkErrors: function (err, res, res) {
+>   frameworkErrors: function (err, req, res) {
 >     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")

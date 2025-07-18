@@ -3,7 +3,6 @@
 const dns = require('node:dns')
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 const undici = require('undici')
 const proxyquire = require('proxyquire')
 
@@ -67,7 +66,7 @@ test('listen should reject string port', async (t) => {
   }
 })
 
-test('Test for hostname and port', (t, end) => {
+test('Test for hostname and port', async (t) => {
   const app = Fastify()
   t.after(() => app.close())
   app.get('/host', (req, res) => {
@@ -78,9 +77,8 @@ test('Test for hostname and port', (t, end) => {
     res.send('ok')
   })
 
-  app.listen({ port: 8000 }, () => {
-    sget('http://localhost:8000/host', () => { end() })
-  })
+  await app.listen({ port: 8000 })
+  await fetch('http://localhost:8000/host')
 })
 
 test('abort signal', async t => {

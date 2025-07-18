@@ -56,7 +56,6 @@ describes the properties available in that options object.
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
-  - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
     - [routing](#routing)
     - [route](#route)
@@ -69,7 +68,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
-  - [listeningOrigin](#listeningorigin)
+    - [listeningOrigin](#listeningorigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -1097,20 +1096,16 @@ core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
 object. Thus, all core options are available with the following additional
 Fastify specific options:
 
-### `listenTextResolver`
-<a id="listen-text-resolver"></a>
+* listenTextResolver: Set an optional resolver for the text to log after server
+has been successfully started. It is possible to override the default
+`Server listening at [address]` log entry using this option.
 
-Set an optional resolver for the text to log after server has been successfully
-started.
-It is possible to override the default `Server listening at [address]` log
-entry using this option.
-
-```js
-server.listen({
-  port: 9080,
-  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` }
-})
-```
+    ```js
+    server.listen({
+      port: 9080,
+      listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` }
+    })
+    ```
 
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
@@ -1388,7 +1383,7 @@ fastify.ready(() => {
 })
 ```
 
-### listeningOrigin
+#### listeningOrigin
 <a id="listeningOrigin"></a>
 
 The current origin the server is listening to.

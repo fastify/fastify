@@ -45,13 +45,13 @@ describes the properties available in that options object.
   - [`clientErrorHandler`](#clienterrorhandler)
   - [`rewriteUrl`](#rewriteurl)
   - [`useSemicolonDelimiter`](#usesemicolondelimiter)
+  - [`allowErrorHandlerOverride`](#allowerrorhandleroverride)
 - [Instance](#instance)
   - [Server Methods](#server-methods)
     - [server](#server)
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
-  - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
     - [routing](#routing)
     - [route](#route)
@@ -64,7 +64,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
-  - [listeningOrigin](#listeningorigin)
+    - [listeningOrigin](#listeningorigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -872,6 +872,29 @@ fastify.get('/dev', async (request, reply) => {
 })
 ```
 
+### `allowErrorHandlerOverride`
+<a id="allow-error-handler-override"></a>
+
+* **Default:** `true`
+
+> ⚠ **Warning:** This option will be set to `false` by default 
+> in the next major release.
+
+When set to `false`, it prevents `setErrorHandler` from being called 
+multiple times within the same scope, ensuring that the previous error 
+handler is not unintentionally overridden.
+
+#### Example of incorrect usage:
+
+```js
+app.setErrorHandler(function freeSomeResources () {
+  // Never executed, memory leaks
+})
+
+app.setErrorHandler(function anotherErrorHandler () {
+  // Overrides the previous handler
+})
+```
 
 ## Instance
 
@@ -962,20 +985,16 @@ core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
 object. Thus, all core options are available with the following additional
 Fastify specific options:
 
-### `listenTextResolver`
-<a id="listen-text-resolver"></a>
+* listenTextResolver: Set an optional resolver for the text to log after server
+has been successfully started. It is possible to override the default
+`Server listening at [address]` log entry using this option.
 
-Set an optional resolver for the text to log after server has been successfully
-started.
-It is possible to override the default `Server listening at [address]` log
-entry using this option.
-
-```js
-server.listen({
-  port: 9080,
-  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` }
-})
-```
+    ```js
+    server.listen({
+      port: 9080,
+      listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` }
+    })
+    ```
 
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
@@ -1253,7 +1272,7 @@ fastify.ready(() => {
 })
 ```
 
-### listeningOrigin
+#### listeningOrigin
 <a id="listeningOrigin"></a>
 
 The current origin the server is listening to.
@@ -1544,15 +1563,16 @@ plugins.
 <a id="set-error-handler"></a>
 
 `fastify.setErrorHandler(handler(error, request, reply))`: Set a function that
-will be called whenever an error happens. The handler is bound to the Fastify
-instance and is fully encapsulated, so different plugins can set different error
-handlers. *async-await* is supported as well.
+will be invoked whenever an exception is thrown during the request lifecycle.
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set different error handlers. *async-await* is
+supported as well.
 
 If the error `statusCode` is less than 400, Fastify will automatically
 set it to 500 before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
-- errors thrown in an `onResponse` hook because the response has already been
+- exceptions thrown in an `onResponse` hook because the response has already been
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
@@ -1583,18 +1603,8 @@ if (statusCode >= 500) {
 
 > ⚠ Warning:
 > Avoid calling setErrorHandler multiple times in the same scope.
-> Only the last handler will take effect, and previous ones will be silently overridden.
->
-> Incorrect usage:
-> ```js
-> app.setErrorHandler(function freeSomeResources () {
->   // Never executed, memory leaks
-> })
-> 
-> app.setErrorHandler(function anotherErrorHandler () {
->   // Overrides the previous handler
-> })
-> ```
+> See [`allowErrorHandlerOverride`](#allowerrorhandleroverride).
+
 
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>

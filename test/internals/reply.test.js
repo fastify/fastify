@@ -34,7 +34,12 @@ const doGet = async function (url) {
 test('Once called, Reply should return an object with methods', t => {
   t.plan(15)
   const response = { res: 'res' }
-  const context = { config: { onSend: [] }, schema: {}, _parserOptions: {}, server: { hasConstraintStrategy: () => false, initialConfig: {} } }
+  const context = {
+    config: { onSend: [] },
+    schema: {},
+    _parserOptions: {},
+    server: { hasConstraintStrategy: () => false, initialConfig: {} }
+  }
   const request = new Request(null, null, null, null, null, context)
   const reply = new Reply(response, request)
   t.assert.strictEqual(typeof reply, 'object')
@@ -465,7 +470,14 @@ test('Uint16Array without content type should send a application/octet-stream an
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
-      t.assert.deepStrictEqual(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(50).fill(0xffffffff))
+      t.assert.deepStrictEqual(
+        new Uint16Array(
+          res.rawPayload.buffer,
+          res.rawPayload.byteOffset,
+          res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT
+        ),
+        new Uint16Array(50).fill(0xffffffff)
+      )
       done()
     })
   })
@@ -490,7 +502,14 @@ test('TypedArray with content type should not send application/octet-stream', (t
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(1024).fill(0xffffffff))
+      t.assert.deepStrictEqual(
+        new Uint16Array(
+          res.rawPayload.buffer,
+          res.rawPayload.byteOffset,
+          res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT
+        ),
+        new Uint16Array(1024).fill(0xffffffff)
+      )
       done()
     })
   })

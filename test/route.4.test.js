@@ -45,35 +45,64 @@ test('route error handler overrides global custom error handler', async t => {
   })
 })
 
-test('throws when route with empty url', async t => {
-  t.plan(1)
+test("Set '/' when empty path", async t => {
+  t.plan(2)
 
-  const fastify = Fastify()
-  try {
+  for (const path of ['', undefined]) {
+    const fastify = Fastify()
     fastify.route({
       method: 'GET',
-      url: '',
+      path,
       handler: (req, res) => {
         res.send('hi!')
       }
     })
-  } catch (err) {
-    t.assert.strictEqual(err.message, 'The path could not be empty')
+
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/'
+    })
+
+    t.assert.strictEqual(res.statusCode, 200)
   }
 })
 
-test('throws when route with empty url in shorthand declaration', async t => {
+test("Set '/' when empty url", async t => {
+  t.plan(2)
+
+  for (const url of ['', undefined]) {
+    const fastify = Fastify()
+    fastify.route({
+      method: 'GET',
+      url,
+      handler: (req, res) => {
+        res.send('hi!')
+      }
+    })
+
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/'
+    })
+
+    t.assert.strictEqual(res.statusCode, 200)
+  }
+})
+
+test("Set '/' when empty url in shorthand declaration", async t => {
   t.plan(1)
 
   const fastify = Fastify()
-  try {
-    fastify.get(
-      '',
-      async function handler () { return {} }
-    )
-  } catch (err) {
-    t.assert.strictEqual(err.message, 'The path could not be empty')
-  }
+  fastify.get(
+    '',
+    async function handler () { return {} }
+  )
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
 })
 
 test('throws when route-level error handler is not a function', t => {

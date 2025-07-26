@@ -59,8 +59,9 @@ fastify.route(options)
   one.
 * `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) called
   as soon as a request is received, it could also be an array of functions.
-* `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called
-  before parsing the request, it could also be an array of functions.
+* `preParsing(request, reply, payload, done)`: a
+  [function](./Hooks.md#preparsing) called before parsing the request, it could
+  also be an array of functions.
 * `preValidation(request, reply, done)`: a [function](./Hooks.md#prevalidation)
   called after the shared `preValidation` hooks, useful if you need to perform
   authentication at route level for example, it could also be an array of
@@ -781,7 +782,7 @@ const secret = {
 > const Fastify = require('fastify')
 >
 > const fastify = Fastify({
->   frameworkErrors: function (err, res, res) {
+>   frameworkErrors: function (err, req, res) {
 >     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")

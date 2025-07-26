@@ -2,13 +2,11 @@
 
 const { test } = require('node:test')
 const diagnostics = require('node:diagnostics_channel')
-const sget = require('simple-get').concat
 const Fastify = require('../..')
-const { getServerUrl } = require('../helper')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
-test('diagnostics channel events report on errors', (t, done) => {
+test('diagnostics channel events report on errors', async t => {
   t.plan(14)
   let callOrder = 0
   let firstEncounteredMessage
@@ -44,18 +42,12 @@ test('diagnostics channel events report on errors', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    if (err) t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    t.after(() => { fastify.close() })
-
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      done()
-    })
+  const response = await fetch(fastifyServer, {
+    method: 'GET'
   })
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 500)
 })

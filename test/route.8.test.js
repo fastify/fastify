@@ -1,12 +1,10 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('..')
 const {
   FST_ERR_INVALID_URL
 } = require('../lib/errors')
-const { getServerUrl } = require('./helper')
 
 test('Request and Reply share the route options', async t => {
   t.plan(3)
@@ -64,8 +62,8 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
   t.assert.ok(true)
 })
 
-test('route with non-english characters', (t, done) => {
-  t.plan(4)
+test('route with non-english characters', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -73,20 +71,14 @@ test('route with non-english characters', (t, done) => {
     reply.send('here /föö')
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + encodeURI('/föö')
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(body.toString(), 'here /föö')
-      done()
-    })
-  })
+  const response = await fetch(fastifyServer + encodeURI('/föö'))
+  t.assert.ok(response.ok)
+  t.assert.strictEqual(response.status, 200)
+  const body = await response.text()
+  t.assert.strictEqual(body, 'here /föö')
 })
 
 test('invalid url attribute - non string URL', t => {

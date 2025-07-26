@@ -2,7 +2,6 @@
 
 const { Readable } = require('node:stream')
 const { test, describe } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('node:fs')
 const { sleep } = require('./helper')
@@ -10,8 +9,8 @@ const { waitForCb } = require('./toolkit')
 
 process.removeAllListeners('warning')
 
-test('async hooks', t => {
-  t.plan(21)
+test('async hooks', async t => {
+  t.plan(20)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRequest', async function (request, reply) {
     await sleep(1)
@@ -59,37 +58,32 @@ test('async hooks', t => {
     reply.code(200).send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completion.stepIn()
-    })
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 500)
-      completion.stepIn()
-    })
+  const response1 = await fetch(fastifyServer, {
+    method: 'GET'
   })
+  t.assert.ok(response1.ok)
+  t.assert.strictEqual(response1.status, 200)
+  const body1 = await response1.text()
+  t.assert.strictEqual(response1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
+  completion.stepIn()
+
+  const response2 = await fetch(fastifyServer, {
+    method: 'HEAD'
+  })
+  t.assert.ok(!response2.ok)
+  t.assert.strictEqual(response2.status, 500)
+  completion.stepIn()
+
+  const response3 = await fetch(fastifyServer, {
+    method: 'DELETE'
+  })
+  t.assert.ok(!response3.ok)
+  t.assert.strictEqual(response3.status, 500)
+  completion.stepIn()
 
   return completion.patience
 })

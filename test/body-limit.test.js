@@ -191,7 +191,7 @@ test('bodyLimit should use byte length for UTF-8 strings, not character length',
   // Set body limit to 7 bytes - this should reject the string (9 bytes)
   // even though string.length (3) would be under any reasonable limit
   fastify.post('/test-utf8', {
-    bodyLimit: 5
+    bodyLimit: 7
   }, (request, reply) => {
     reply.send({ body: request.body, length: request.body.length })
   })

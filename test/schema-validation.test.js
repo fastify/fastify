@@ -2,7 +2,6 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const { request } = require('undici')
 
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
@@ -1417,7 +1416,7 @@ test('Schema validation will not be bypass by different content type', async t =
   t.after(() => fastify.close())
   const address = fastify.listeningOrigin
 
-  const correct1 = await request(address, {
+  const correct1 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1425,10 +1424,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ foo: 'string' })
   })
-  t.assert.strictEqual(correct1.statusCode, 200)
-  await correct1.body.dump()
+  t.assert.strictEqual(correct1.status, 200)
+  await correct1.bytes()
 
-  const correct2 = await request(address, {
+  const correct2 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1436,10 +1435,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ foo: 'string' })
   })
-  t.assert.strictEqual(correct2.statusCode, 200)
-  await correct2.body.dump()
+  t.assert.strictEqual(correct2.status, 200)
+  await correct2.bytes()
 
-  const invalid1 = await request(address, {
+  const invalid1 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1447,10 +1446,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid1.statusCode, 400)
-  t.assert.strictEqual((await invalid1.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid1.status, 400)
+  t.assert.strictEqual((await invalid1.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid2 = await request(address, {
+  const invalid2 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1458,10 +1457,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid2.statusCode, 400)
-  t.assert.strictEqual((await invalid2.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid2.status, 400)
+  t.assert.strictEqual((await invalid2.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid3 = await request(address, {
+  const invalid3 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1469,10 +1468,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid3.statusCode, 400)
-  t.assert.strictEqual((await invalid3.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid3.status, 400)
+  t.assert.strictEqual((await invalid3.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid4 = await request(address, {
+  const invalid4 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1480,10 +1479,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid4.statusCode, 400)
-  t.assert.strictEqual((await invalid4.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid4.status, 400)
+  t.assert.strictEqual((await invalid4.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid5 = await request(address, {
+  const invalid5 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1491,10 +1490,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid5.statusCode, 400)
-  t.assert.strictEqual((await invalid5.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid5.status, 400)
+  t.assert.strictEqual((await invalid5.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid6 = await request(address, {
+  const invalid6 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1502,10 +1501,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid6.statusCode, 415)
-  t.assert.strictEqual((await invalid6.body.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+  t.assert.strictEqual(invalid6.status, 415)
+  t.assert.strictEqual((await invalid6.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 
-  const invalid7 = await request(address, {
+  const invalid7 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1513,10 +1512,10 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid7.statusCode, 400)
-  t.assert.strictEqual((await invalid7.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid7.status, 400)
+  t.assert.strictEqual((await invalid7.json()).code, 'FST_ERR_VALIDATION')
 
-  const invalid8 = await request(address, {
+  const invalid8 = await fetch(address, {
     method: 'POST',
     url: '/',
     headers: {
@@ -1524,6 +1523,6 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid8.statusCode, 400)
-  t.assert.strictEqual((await invalid8.body.json()).code, 'FST_ERR_VALIDATION')
+  t.assert.strictEqual(invalid8.status, 400)
+  t.assert.strictEqual((await invalid8.json()).code, 'FST_ERR_VALIDATION')
 })

@@ -507,6 +507,8 @@ middlewares into Fastify plugins
   [MS Graph Change Notifications webhooks](https://learn.microsoft.com/it-it/graph/change-notifications-delivery-webhooks?tabs=http).
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin
   for handling multipart/form-data, which is primarily used for uploading files.
+- [`fastify-multilingual`](https://github.com/gbrugger/fastify-multilingual) Unobtrusively
+  decorates fastify request with Polyglot.js for i18n.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share
   [NATS](https://nats.io) client across Fastify.
 - [`fastify-next-auth`](https://github.com/wobsoriano/fastify-next-auth)

@@ -3,7 +3,7 @@
 ## Purpose
 
 This Incident Response Plan (IRP) outlines the procedures the Fastify
-core team will follow in response to security vulnerability
+core team will follow in response to security vulnerabilities
 reported via the [project's accepted channels](https://github.com/fastify/fastify/blob/main/SECURITY.md).
 Our goal is to ensure rapid, consistent, and transparent handling
 of such events while minimizing harm to users and contributors.
@@ -34,25 +34,20 @@ Remediation Developer | Develop a patch or solution based on the reported vulner
 
 ### Step 0: Security Report Received
 
-When a potential vulnerability is reported, one of the [Security Team Members](https://github.com/fastify/fastify/blob/main/SECURITY.md#the-fastify-security-team)
-will be promoted as Incident Commander and will start the process.
+A [Security Team Member](https://github.com/fastify/fastify/blob/main/SECURITY.md#the-fastify-security-team)
+is assigned as Incident Commander and starts the process.
 
 ### Step 1: Triage
 
 **Delay:** 4 business days
 
-Within 4 business days, the Incident Commander provides a first answer to
-the individual who submitted the potential vulnerability.
-A member of the security team can be elected to Analyst to help the Incident
-Commander validating the reported issue.
+Within 4 business days, the Incident Commander replies to the reporter.
+An Analyst may be assigned to help validate the issue.
 
-The possible responses
-can be:
-
-* **Acceptance**: what was reported is considered as a new vulnerability
-* **Rejection**: what was reported is not considered as a new vulnerability
-* **Need more information**: the security team needs more information in order to
-  evaluate what was reported.
+Possible responses can be:
+- **Accepted**: Confirmed vulnerability
+- **Rejected**: Not a vulnerability
+- **Need more info**: More details required
 
 Triaging should include updating issue fields:
 * Asset - set/create the module affected by the report
@@ -92,9 +87,8 @@ by the Incident Commander.
 v.3](https://www.first.org/cvss/user-guide). More information can be found on
 [HackerOne documentation](https://docs.hackerone.com/hackers/severity.html)
 
-If the package maintainer is actively developing a patch, an additional delay
-can be added with the approval of the security team and the individual who
-reported the vulnerability.
+If a patch is in progress, a delay may be approved by the security team and
+reporter.
 
 At this point, a CVE should be requested through the selected platform through
 the UI, which should include the Report ID and a summary.

@@ -559,7 +559,7 @@ middlewares into Fastify plugins
   A set of Fastify plugins to integrate Apple Wallet Web Service specification
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
-- [`fastify-permissions`](https://tinyurl.com/fastify-permissions)
+- [`fastify-permissions`](https://github.com/pckrishnadas88/fastify-permissions)
   Route-level permission middleware for Fastify supports
   custom permission checks.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker

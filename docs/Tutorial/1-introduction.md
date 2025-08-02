@@ -1,4 +1,4 @@
-###  Introduction
+#  Introduction
 
 This tutorial is designed to give a clear and practical understanding 
 of how to build applications with Fastify.

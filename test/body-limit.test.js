@@ -171,3 +171,54 @@ test('request.routeOptions.bodyLimit should be equal to server limit', async t =
   t.assert.ok(result.ok)
   t.assert.strictEqual(result.status, 200)
 })
+
+test('bodyLimit should use byte length for UTF-8 strings, not character length', async t => {
+  t.plan(4)
+
+  // Create a string with multi-byte UTF-8 characters
+  // Use Japanese characters that are 3 bytes each in UTF-8
+  const multiByteString = 'あああ' // 3 characters, 9 bytes in UTF-8
+  t.assert.strictEqual(multiByteString.length, 3) // 3 characters
+  t.assert.strictEqual(Buffer.byteLength(multiByteString, 'utf8'), 9) // 9 bytes
+
+  const fastify = Fastify()
+
+  // Add a custom text parser that returns the string as-is
+  fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
+    done(null, body)
+  })
+
+  // Set body limit to 7 bytes - this should reject the string (9 bytes)
+  // even though string.length (3) would be under any reasonable limit
+  fastify.post('/test-utf8', {
+    bodyLimit: 7
+  }, (request, reply) => {
+    reply.send({ body: request.body, length: request.body.length })
+  })
+
+  await t.test('should reject body when byte length exceeds limit', async (t) => {
+    const result = await fastify.inject({
+      method: 'POST',
+      url: '/test-utf8',
+      headers: { 'Content-Type': 'text/plain', 'Content-Length': null },
+      payload: multiByteString
+    })
+
+    t.assert.strictEqual(result.statusCode, 413)
+  })
+
+  await t.test('should accept body when byte length is within limit', async (t) => {
+    const smallString = 'あ' // 1 character, 3 bytes, under the 7 byte limit
+
+    const result = await fastify.inject({
+      method: 'POST',
+      url: '/test-utf8',
+      headers: { 'Content-Type': 'text/plain' },
+      payload: smallString
+    })
+
+    t.assert.strictEqual(result.statusCode, 200)
+    t.assert.strictEqual(result.json().body, smallString)
+    t.assert.strictEqual(result.json().length, 1) // 1 character
+  })
+})

@@ -13,7 +13,8 @@ module.exports = [
   }),
   {
     rules: {
-      'comma-dangle': ['error', 'never']
+      'comma-dangle': ['error', 'never'],
+      'max-len': ['error', { code: 100 }]
     }
   }
 ]

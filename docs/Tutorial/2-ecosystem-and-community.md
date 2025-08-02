@@ -1,10 +1,10 @@
 # Fastify ecosystem and community
 
- Before diving into code, it's worth understanding the people, values, 
- and structure behind the project. 
- Like any open source effort, the strength of Fastify lies not just in its 
- technical design, but in the maintainers, contributors, and ecosystem that 
- support it. 
+Before diving into code, it's worth understanding the people, values, 
+and structure behind the project. 
+Like any open source effort, the strength of Fastify lies not just in its 
+technical design, but in the maintainers, contributors, and ecosystem that 
+support it. 
 
 ### Active maintainers
 The team is highly responsive. They regularly review issues and pull requests, 

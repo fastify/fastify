@@ -212,13 +212,14 @@ test('request should be defined in onSend Hook on options request with content t
   const fastifyServer = await fastify.listen({ port: 0 })
   const result = await fetch(fastifyServer, {
     method: 'OPTIONS',
+    body: 'first-name=OPTIONS&last-name=METHOD',
     headers: {
       'content-type': 'application/x-www-form-urlencoded'
     }
   })
 
-  // Body parsing skipped, so no body sent
-  t.assert.strictEqual(result.status, 200)
+  // Content-Type is not supported
+  t.assert.strictEqual(result.status, 415)
 })
 
 test('request should respond with an error if an unserialized payload is sent inside an async handler', async t => {

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-###  Introduction
-=======
 #  Introduction
->>>>>>> docs/tutorials-part-2
 
 This tutorial is designed to give a clear and practical understanding 
 of how to build applications with Fastify.

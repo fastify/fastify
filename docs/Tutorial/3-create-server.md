@@ -2,9 +2,7 @@
 
 In this chapter, we'll guide you through setting up a basic Fastify server. 
 We'll briefly introduce essential concepts and internal mechanisms of Fastify 
-to deepen your understanding of the framework. This knowledge will equip you 
-to become an effective and responsible user, capable of contributing to the 
-Fastify ecosystem.
+to deepen your understanding of the framework.
 
 ### Initialize the Project
 
@@ -56,7 +54,6 @@ const app = Fastify({
 
 // Set up graceful shutdown
 closeWithGrace(
-  { delay: 500 },
   async ({ err }) => {
     if (err != null) {
       app.log.error(err);
@@ -83,7 +80,7 @@ node server.js
 
 You should see a message indicating your Fastify server is running on port 3000.
 
-### Fastify Internals
+### Internals involved
 
 The instance returned by the factory function provides access to public 
 methods like `listen()`, which we used above. 

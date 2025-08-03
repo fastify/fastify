@@ -56,7 +56,7 @@ a lightweight runner with TypeScript support and built-in coverage
 ### Developer Experience and TypeScript
 
 To finish, we’ll introduce Fastify’s TypeScript tools
-and best practises:
+and best practices:
 
 - `@fastify/type-provider-typebox` for type-safe schemas
 - Module augmentation to type decorators 

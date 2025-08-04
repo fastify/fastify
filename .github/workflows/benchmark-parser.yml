@@ -16,11 +16,13 @@ jobs:
     outputs:
       PR-BENCH-20: ${{ steps.benchmark-pr.outputs.BENCH_RESULT20 }}
       PR-BENCH-22: ${{ steps.benchmark-pr.outputs.BENCH_RESULT22 }}
+      PR-BENCH-24: ${{ steps.benchmark-pr.outputs.BENCH_RESULT24 }}
       MAIN-BENCH-20: ${{ steps.benchmark-main.outputs.BENCH_RESULT20 }}
       MAIN-BENCH-22: ${{ steps.benchmark-main.outputs.BENCH_RESULT22 }}
+      MAIN-BENCH-24: ${{ steps.benchmark-main.outputs.BENCH_RESULT24 }}
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,7 +75,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v3
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           message: |
@@ -86,3 +88,9 @@ jobs:
             **Node**: 22
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-22 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-22 }}
+
+            ---
+
+            **Node**: 24
+            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-24 }}
+            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-24 }}

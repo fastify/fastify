@@ -507,6 +507,8 @@ middlewares into Fastify plugins
   [MS Graph Change Notifications webhooks](https://learn.microsoft.com/it-it/graph/change-notifications-delivery-webhooks?tabs=http).
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin
   for handling multipart/form-data, which is primarily used for uploading files.
+- [`fastify-multilingual`](https://github.com/gbrugger/fastify-multilingual) Unobtrusively
+  decorates fastify request with Polyglot.js for i18n.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share
   [NATS](https://nats.io) client across Fastify.
 - [`fastify-next-auth`](https://github.com/wobsoriano/fastify-next-auth)
@@ -616,6 +618,9 @@ middlewares into Fastify plugins
   Fastify Rob-Config integration.
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
   Convenient grouping and inheritance of routes.
+- [`fastify-route-preset`](https://github.com/inyourtime/fastify-route-preset)
+  A Fastify plugin that enables you to create route configurations that can be 
+  applied to multiple routes.
 - [`fastify-s3-buckets`](https://github.com/kibertoad/fastify-s3-buckets)
   Ensure the existence of defined S3 buckets on the application startup.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint)

@@ -428,7 +428,4 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-> ℹ️ Note: For TypeScript users, `setDecorator` supports generic type parameters
-> for enhanced type safety.
-> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
-> advanced typing examples.
+> ℹ️ Note: For TypeScript users, see the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced typing examples using `setDecorator<T>`.

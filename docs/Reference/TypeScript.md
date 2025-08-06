@@ -690,9 +690,6 @@ Or even explicit config on tsconfig
 #### `getDecorator<T>`
 
 Fastify's `getDecorator<T>` method retrieves decorators with enhanced type safety.
-The method supports generic type parameters for better TypeScript integration,
-providing an alternative to module augmentation documented in the
-[Decorators reference](./Decorators.md).
 
 The `getDecorator<T>` method supports generic type parameters for enhanced type safety:
 
@@ -793,8 +790,7 @@ fastify.get('/success', async (request, reply) => {
 #### `setDecorator<T>`
 
 Fastify's `setDecorator<T>` method provides enhanced type safety for updating request
-decorators. The method supports generic type parameters for better TypeScript integration
-as documented in the [Decorators reference](./Decorators.md).
+decorators.
 
 The `setDecorator<T>` method provides enhanced type safety for updating request
 decorators:

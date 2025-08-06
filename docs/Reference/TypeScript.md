@@ -687,14 +687,12 @@ Or even explicit config on tsconfig
 }
 ```
 
-#### Decorators
+#### `getDecorator<T>`
 
-Fastify's decorator system allows extending the Fastify instance, request, and
-reply objects. When using TypeScript, decorators provide additional type safety and
-advanced features beyond the basic JavaScript usage documented in the
+Fastify's `getDecorator<T>` method retrieves decorators with enhanced type safety.
+The method supports generic type parameters for better TypeScript integration,
+providing an alternative to module augmentation documented in the
 [Decorators reference](./Decorators.md).
-
-##### `getDecorator<T>` with Type Parameters
 
 The `getDecorator<T>` method supports generic type parameters for enhanced type safety:
 
@@ -792,7 +790,11 @@ fastify.get('/success', async (request, reply) => {
 })
 ```
 
-##### `setDecorator<T>` with Type Parameters
+#### `setDecorator<T>`
+
+Fastify's `setDecorator<T>` method provides enhanced type safety for updating request
+decorators. The method supports generic type parameters for better TypeScript integration
+as documented in the [Decorators reference](./Decorators.md).
 
 The `setDecorator<T>` method provides enhanced type safety for updating request
 decorators:

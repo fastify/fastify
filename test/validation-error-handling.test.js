@@ -841,7 +841,7 @@ test('async preValidation with custom validator should trigger error handler whe
   fastify.setErrorHandler((error, request, reply) => {
     t.assert.ok(error instanceof Error, 'error should be an Error instance')
     t.assert.strictEqual(error.message, 'Custom validation failed')
-    reply.send({ error: error.message })
+    reply.status(500).send({ error: error.message })
   })
 
   // Add async preValidation hook
@@ -877,6 +877,6 @@ test('async preValidation with custom validator should trigger error handler whe
     payload: { name: 'test' }
   })
 
-  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.statusCode, 500)
   t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
 })

@@ -109,3 +109,21 @@ test('Custom querystring parser should be a function', t => {
     )
   }
 })
+
+test('Custom querystring parser should be a function', t => {
+  t.plan(1)
+
+  try {
+    Fastify({
+      routerOptions: {
+        querystringParser: 10
+      }
+    })
+    t.fail('Should throw')
+  } catch (err) {
+    t.assert.equal(
+      err.message,
+      "querystringParser option should be a function, instead got 'number'"
+    )
+  }
+})

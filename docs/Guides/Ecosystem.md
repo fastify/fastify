@@ -199,6 +199,8 @@ section.
   Run REST APIs and other web applications using your existing Node.js
   application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda,
   Huawei and many other clouds.
+- [`@hey-api/openapi-ts`](https://heyapi.dev/openapi-ts/plugins/fastify)
+  The OpenAPI to TypeScript codegen. Generate clients, SDKs, validators, and more.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).

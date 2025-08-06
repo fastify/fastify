@@ -364,7 +364,11 @@ test('pretty print - includeMeta, includeHooks', (t, done) => {
     done()
   })
 })
-test('printRoutes with commonPrefix: true and false', async t => {
+// test/printRoutes-commonPrefix.test.js
+
+const assert = require('node:assert')
+
+test('printRoutes with commonPrefix: true and false', async (t) => {
   const fastify = Fastify()
 
   fastify.get('/fooupdate', async () => 'update')
@@ -379,13 +383,12 @@ test('printRoutes with commonPrefix: true and false', async t => {
   const withPrefix = fastify.printRoutes({ commonPrefix: true })
   const withoutPrefix = fastify.printRoutes({ commonPrefix: false })
 
-  t.comment('With commonPrefix: true')
-  t.match(withPrefix, /buildpatch/)
-  t.match(withPrefix, /experimental/)
-  t.match(withPrefix, /mymethod/)
+  // Check if expected route segments exist in the outputs
+  assert.match(withPrefix, /buildpatch/, 'withPrefix should include "buildpatch"')
+  assert.match(withPrefix, /experimental/, 'withPrefix should include "experimental"')
+  assert.match(withPrefix, /mymethod/, 'withPrefix should include "mymethod"')
 
-  t.comment('With commonPrefix: false')
-  t.match(withoutPrefix, /\/buildpatch/)
-  t.match(withoutPrefix, /\/buildpatch\/experimental/)
-  t.match(withoutPrefix, /\/mymethod\/42/)
+  assert.match(withoutPrefix, /\/buildpatch/, 'withoutPrefix should include "/buildpatch"')
+  assert.match(withoutPrefix, /\/buildpatch\/experimental/, 'withoutPrefix should include "/buildpatch/experimental"')
+  assert.match(withoutPrefix, /\/mymethod\/42/, 'withoutPrefix should include "/mymethod/42"')
 })

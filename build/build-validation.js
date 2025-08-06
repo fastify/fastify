@@ -43,7 +43,14 @@ const defaultInitOptions = {
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
   useSemicolonDelimiter: false,
-  allowErrorHandlerOverride: true // TODO: set to false in v6
+  allowErrorHandlerOverride: true, // TODO: set to false in v6
+  routerOptions: {
+    ignoreTrailingSlash: false,
+    ignoreDuplicateSlashes: false,
+    maxParamLength: 100,
+    allowUnsafeRegex: false,
+    useSemicolonDelimiter: false
+  }
 }
 
 const schema = {
@@ -103,6 +110,17 @@ const schema = {
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
+    routerOptions: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
+        ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },
+        maxParamLength: { type: 'integer', default: defaultInitOptions.routerOptions.maxParamLength },
+        allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.routerOptions.allowUnsafeRegex },
+        useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.routerOptions.useSemicolonDelimiter }
+      }
+    },
     constraints: {
       type: 'object',
       additionalProperties: {

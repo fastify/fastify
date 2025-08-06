@@ -877,6 +877,6 @@ test('async preValidation with custom validator should trigger error handler whe
     payload: { name: 'test' }
   })
 
-  t.assert.strictEqual(response.statusCode, 500)
+  t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
 })

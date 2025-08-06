@@ -103,3 +103,29 @@ test('validation error with attachValidation after async preValidation', async t
     message: 'validation failed'
   })
 })
+
+test('synchronous error in preValidation hook should be caught and handled', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  // Sync preValidation hook that throws synchronously
+  fastify.addHook('preValidation', (request, reply, done) => {
+    throw new Error('sync preValidation error')
+  })
+
+  // Error handler that should be invoked when preValidation fails
+  fastify.setErrorHandler((err, _request, reply) => {
+    reply.code(500).send({ message: err.message })
+  })
+
+  // Simple route
+  fastify.get('/', () => {
+    // We should never reach the handler due to preValidation failure
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.deepStrictEqual(JSON.parse(res.payload), { message: 'sync preValidation error' })
+})

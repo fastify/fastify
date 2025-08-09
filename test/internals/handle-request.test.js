@@ -307,7 +307,10 @@ test('request should be defined in onSend Hook on options request with content t
   const result = await fastify.inject({
     method: 'OPTIONS',
     url: '/',
-    body: 'first-name=OPTIONS&last-name=METHOD'
+    body: 'first-name=OPTIONS&last-name=METHOD',
+    headers: {
+      'content-type': null
+    }
   })
 
   // Content-Type is not supported

@@ -15,6 +15,8 @@ import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
+import { ConstraintStrategy } from 'find-my-way'
+import { FindMyWayVersion } from '../../types/instance'
 
 const server = fastify()
 
@@ -291,25 +293,40 @@ server.setChildLoggerFactory(childLoggerFactory)
 server.setChildLoggerFactory(server.childLoggerFactory)
 
 type InitialConfig = Readonly<{
-  connectionTimeout?: number,
-  keepAliveTimeout?: number,
+  allowUnsafeRegex?: boolean,
   bodyLimit?: number,
   caseSensitive?: boolean,
-  allowUnsafeRegex?: boolean,
+  connectionTimeout?: number,
+  disableRequestLogging?: boolean,
   forceCloseConnections?: boolean,
   http2?: boolean,
+  http2SessionTimeout?: number,
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,
-  ignoreTrailingSlash?: boolean,
   ignoreDuplicateSlashes?: boolean,
-  disableRequestLogging?: boolean,
+  ignoreTrailingSlash?: boolean,
+  keepAliveTimeout?: number,
   maxParamLength?: number,
-  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   pluginTimeout?: number,
   requestIdHeader?: string | false,
   requestIdLogLabel?: string,
-  http2SessionTimeout?: number,
   useSemicolonDelimiter?: boolean
+  routerOptions?: {
+    allowUnsafeRegex?: boolean,
+    buildPrettyMeta: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
+    caseSensitive?: boolean,
+    constraints?: {
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
+    }
+    defaultRoute: (req: FastifyRequest, res: FastifyReply) => void,
+    ignoreDuplicateSlashes?: boolean,
+    ignoreTrailingSlash?: boolean,
+    maxParamLength?: number,
+    onBadUrl: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+    querystringParser?: (str: string) => { [key: string]: unknown },
+    useSemicolonDelimiter?: boolean,
+  }
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)

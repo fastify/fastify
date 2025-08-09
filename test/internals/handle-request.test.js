@@ -159,38 +159,6 @@ test('request should be defined in onSend Hook on post request with content type
   t.assert.strictEqual(result.status, 400)
 })
 
-test('request should be defined in onSend Hook on post request with content type application/json /2', async t => {
-  t.plan(6)
-  const fastify = require('../..')()
-
-  t.after(() => {
-    fastify.close()
-  })
-
-  fastify.addHook('onSend', (request, reply, payload, done) => {
-    t.assert.ok(request)
-    t.assert.ok(request.raw)
-    t.assert.ok(request.id)
-    t.assert.ok(request.params)
-    t.assert.ok(request.query)
-    done()
-  })
-  fastify.post('/', (request, reply) => {
-    reply.send(200)
-  })
-
-  const fastifyServer = await fastify.listen({ port: 0 })
-  const result = await fetch(fastifyServer, {
-    method: 'POST',
-    body: JSON.stringify({ name: 'test' }),
-    headers: {
-      'content-type': 'application/json'
-    }
-  })
-
-  t.assert.strictEqual(result.status, 200)
-})
-
 test('request should be defined in onSend Hook on post request with content type application/x-www-form-urlencoded', async t => {
   t.plan(5)
   const fastify = require('../..')()

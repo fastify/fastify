@@ -285,6 +285,35 @@ test('request should be defined in onSend Hook on options request with content t
   t.assert.strictEqual(result.status, 415)
 })
 
+test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded /3', async t => {
+  t.plan(5)
+  const fastify = require('../..')()
+
+  t.after(() => {
+    fastify.close()
+  })
+
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    t.assert.ok(request)
+    t.assert.ok(request.raw)
+    t.assert.ok(request.params)
+    t.assert.ok(request.query)
+    done()
+  })
+  fastify.options('/', (request, reply) => {
+    reply.send(200)
+  })
+
+  const result = await fastify.inject({
+    method: 'OPTIONS',
+    url: '/',
+    body: 'first-name=OPTIONS&last-name=METHOD'
+  })
+
+  // Content-Type is not supported
+  t.assert.strictEqual(result.statusCode, 415)
+})
+
 test('request should respond with an error if an unserialized payload is sent inside an async handler', async t => {
   t.plan(2)
 

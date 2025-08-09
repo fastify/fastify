@@ -191,7 +191,7 @@ test('request should be defined in onSend Hook on post request with content type
 })
 
 test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded', async t => {
-  t.plan(5)
+  t.plan(15)
   const fastify = require('../..')()
 
   t.after(() => {
@@ -209,16 +209,40 @@ test('request should be defined in onSend Hook on options request with content t
     reply.send(200)
   })
 
-  const fastifyServer = await fastify.listen({ port: 0 })
-  const result = await fetch(fastifyServer, {
+  // Test 1: OPTIONS with body and content-type header
+  const result1 = await fastify.inject({
     method: 'OPTIONS',
+    url: '/',
+    body: 'first-name=OPTIONS&last-name=METHOD',
     headers: {
       'content-type': 'application/x-www-form-urlencoded'
     }
   })
 
-  // Body parsing skipped, so no body sent
-  t.assert.strictEqual(result.status, 200)
+  // Content-Type is not supported
+  t.assert.strictEqual(result1.statusCode, 415)
+
+  // Test 2: OPTIONS with content-type header only (no body)
+  const result2 = await fastify.inject({
+    method: 'OPTIONS',
+    url: '/',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
+  })
+
+  // Content-Type is not supported
+  t.assert.strictEqual(result2.statusCode, 415)
+
+  // Test 3: OPTIONS with body but no content-type header
+  const result3 = await fastify.inject({
+    method: 'OPTIONS',
+    url: '/',
+    body: 'first-name=OPTIONS&last-name=METHOD'
+  })
+
+  // No content-type with payload
+  t.assert.strictEqual(result3.statusCode, 415)
 })
 
 test('request should respond with an error if an unserialized payload is sent inside an async handler', async t => {

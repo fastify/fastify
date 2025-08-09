@@ -293,28 +293,28 @@ server.setChildLoggerFactory(childLoggerFactory)
 server.setChildLoggerFactory(server.childLoggerFactory)
 
 type InitialConfig = Readonly<{
-  allowUnsafeRegex?: boolean,
+  connectionTimeout?: number,
+  keepAliveTimeout?: number,
   bodyLimit?: number,
   caseSensitive?: boolean,
-  connectionTimeout?: number,
-  disableRequestLogging?: boolean,
+  allowUnsafeRegex?: boolean,
   forceCloseConnections?: boolean,
   http2?: boolean,
-  http2SessionTimeout?: number,
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,
-  ignoreDuplicateSlashes?: boolean,
   ignoreTrailingSlash?: boolean,
-  keepAliveTimeout?: number,
+  ignoreDuplicateSlashes?: boolean,
+  disableRequestLogging?: boolean,
   maxParamLength?: number,
-  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   pluginTimeout?: number,
   requestIdHeader?: string | false,
   requestIdLogLabel?: string,
-  useSemicolonDelimiter?: boolean
+  http2SessionTimeout?: number,
+  useSemicolonDelimiter?: boolean,
   routerOptions?: {
     allowUnsafeRegex?: boolean,
-    buildPrettyMeta: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
+    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
     caseSensitive?: boolean,
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>

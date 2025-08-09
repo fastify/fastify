@@ -161,16 +161,16 @@ declare namespace fastify {
     allowErrorHandlerOverride?: boolean
     routerOptions?: {
       allowUnsafeRegex?: boolean,
-      buildPrettyMeta: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
+      buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
       caseSensitive?: boolean,
       constraints?: {
         [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
       },
-      defaultRoute: (req: FastifyRequest, res: FastifyReply) => void,
+      defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
       ignoreDuplicateSlashes?: boolean,
       ignoreTrailingSlash?: boolean,
       maxParamLength?: number,
-      onBadUrl: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+      onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
       querystringParser?: (str: string) => { [key: string]: unknown },
       useSemicolonDelimiter?: boolean,
     }

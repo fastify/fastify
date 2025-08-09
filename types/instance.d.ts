@@ -610,11 +610,11 @@ export interface FastifyInstance<
       constraints?: {
         [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
       },
-      defaultRoute: (req: FastifyRequest, res: FastifyReply) => void,
+      defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
       ignoreDuplicateSlashes?: boolean,
       ignoreTrailingSlash?: boolean,
       maxParamLength?: number,
-      onBadUrl: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+      onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
       querystringParser?: (str: string) => { [key: string]: unknown },
       useSemicolonDelimiter?: boolean,
     }

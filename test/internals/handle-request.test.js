@@ -313,7 +313,7 @@ test('request should be defined in onSend Hook on options request with content t
     }
   })
 
-  // Content-Type is not supported
+  // No content-type with payload
   t.assert.strictEqual(result.statusCode, 415)
 })
 

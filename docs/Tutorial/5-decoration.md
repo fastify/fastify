@@ -14,7 +14,7 @@ libraries (e.g. a DI container).
 ## Why decorators?
 
 Decorators give you a straightforward way to attach capabilities to Fastify. 
-Defining these capabilities up front also lets Node.js (on **V8**) optimize memory 
+Defining these capabilities up front also lets  **V8** optimize memory 
 usage by stabilizing the shape of server, request, and reply objects before they’re 
 instantiated and used.
 

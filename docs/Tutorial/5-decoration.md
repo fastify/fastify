@@ -6,8 +6,8 @@ built-in mechanism to attach features and data to:
 - the [**Request**](https://fastify.dev/docs/latest/Reference/Request/) object,
 - the [**Reply**](https://fastify.dev/docs/latest/Reference/Reply/) object.
 
-We’ll focus on decorating the **Fastify instance** with a small in-memory database and 
-a `quotesRepository` built on top of it.  
+We’ll focus on decorating the **Fastify instance** with a small 
+in-memory database and a `quotesRepository` built on top of it.  
 Later in this tutorial, we’ll explore alternative dependency patterns and 
 libraries (e.g. a DI container).
 
@@ -15,8 +15,8 @@ libraries (e.g. a DI container).
 
 Decorators give you a straightforward way to attach capabilities to Fastify. 
 Defining these capabilities up front also lets  **V8** optimize memory 
-usage by stabilizing the shape of server, request, and reply objects before they’re 
-instantiated and used.
+usage by stabilizing the shape of server, request, and reply objects before 
+they’re instantiated and used.
 
 Read more about object-shape handling in JS engines [in this article](https://mathiasbynens.be/notes/shapes-ics#shapes).
 
@@ -27,11 +27,11 @@ We’ll replace our previous globals:
 - `let dbId = 1;`
 - `const quotes = [];`
 
-…with a single database that manages multiple collections. Each collection keeps its own `id` 
-counter and `Map` of documents.
+…with a single database that manages multiple collections. Each collection 
+keeps its own `id` counter and `Map` of documents.
 
-Because our server file is starting to grow and take on too many responsibilities, let’s decouple
-services into separate files.
+Because our server file is starting to grow and take on too many 
+responsibilities, let’s decouple services into separate files.
 
 ```js
 // db.js

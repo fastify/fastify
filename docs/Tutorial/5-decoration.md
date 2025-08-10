@@ -30,7 +30,7 @@ We’ll replace our previous globals:
 …with a single database that manages multiple collections. Each collection keeps its own `id` 
 counter and `Map` of documents.
 
-Because our server file is starting to grow and take on too many responsibilities, let’s **decouple** 
+Because our server file is starting to grow and take on too many responsibilities, let’s decouple
 services into separate files.
 
 ```js
@@ -81,7 +81,7 @@ export function createDb() {
     },
   };
 }
-````
+```
 
 Then, import and decorate the Fastify instance:
 
@@ -126,7 +126,7 @@ export function createQuotesRepository(app) {
 Then, import and decorate:
 
 ```js
-// server.js (excerpt)
+// server.js
 import { createQuotesRepository } from "./quotes-repository.js";
 
 // Declare dependency on "db" so Fastify enforces registration order.

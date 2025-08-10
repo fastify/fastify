@@ -15,7 +15,7 @@ known for.
 We’ll start by exploring Fastify’s core features:
 
 - Setting up a basic Fastify server and defining routes
-- Decorating the Fastify instance, request, and response objects
+- Decorating the Fastify instance
 - Adding validation and response serialization using JSON schemas
 - Understanding and using application and request lifecycle hooks
 - Implementing custom error handling and fallback (404) routes

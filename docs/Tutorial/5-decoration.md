@@ -203,6 +203,38 @@ In application code, most of the time you’ll:
 We’ll see examples and deeper explanations for request/reply decorators later 
 in the chapters on **hooks** and **authentication**.
 
-## Internals involves
 
-To continue...
+## Internals involved
+
+Fastify’s decorator system is implemented in
+[`lib/decorate.js`](https://github.com/fastify/fastify/blob/main/lib/decorate.js).
+It provides the core functions for attaching properties to:
+
+* the **Fastify instance** (`decorate` and `checkDependencies`)
+* the **Request** object (`decorateRequest`)
+* the **Reply** object (`decorateReply`)
+
+For **Fastify instance** decoration, `decorate` ensures you don’t overwrite 
+existing properties and validates dependencies via `checkDependencies`.
+
+For **request** and **reply** decoration, `decorateRequest` and `decorateReply` 
+add properties or methods to the constructors for those objects.
+Because Request and Reply are created **for every incoming HTTP request**, 
+Fastify adds some safeguards:
+
+* `checkReferenceType`
+rejects plain objects to avoid accidental sharing of mutable state between 
+requests. 
+Use the [*getter/setter* approach](https://fastify.dev/docs/latest/Reference/Decorators/#getters-and-setters)
+if you need to expose objects safely.
+* If you decorate with a non-function value, Fastify stores it in a `props`
+array on the constructor. At runtime, these values are assigned as 
+**own properties** inside
+[`buildRegularRequest`](https://github.com/fastify/fastify/blob/main/lib/request.js) 
+and
+[`buildReply`](https://github.com/fastify/fastify/blob/main/lib/reply.js),
+so each request/reply instance gets its own copy.
+
+This design keeps function decorators fast (shared on the prototype) while 
+preventing shared mutable state for values, which is crucial for correctness 
+and security in concurrent HTTP servers.

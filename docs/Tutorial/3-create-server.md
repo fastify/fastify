@@ -48,6 +48,7 @@ Create a `server.js` file:
 import Fastify from 'fastify';
 import closeWithGrace from 'close-with-grace';
 
+// Factory function
 const app = Fastify({ 
   logger: true // Activate logging
 });

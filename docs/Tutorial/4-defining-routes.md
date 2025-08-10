@@ -26,23 +26,29 @@ let id = 1;
 const quotes = [];
 
 app.get("/quotes", async (request, reply) => {
-  const { limit = 10 } = request.query;
+  const { limit = 10 } = request.query; // [1]
   return quotes.slice(0, limit);
 });
 
-app.get('/quotes/:id', async (request, reply) => {
-  const id = Number(request.params.id);
-  const quote = quotes.find(q => q.id === id);
+app.get("/quotes/:id", async (request, reply) => {
+  const id = Number(
+    // [2]
+    request.params.id
+  );
+  const quote = quotes.find((q) => q.id === id);
   if (!quote) {
-    reply.code(404).send({ message: 'Quote not found' });
+    reply.code(404).send({ message: "Quote not found" });
   }
-  return quote;
+  return quote; // [4]
 });
 
-app.post('/quotes', async (request, reply) => {
-  const quote = { id: id++, text: request.body.text };
+app.post("/quotes", async (request, reply) => {
+  const quote = {
+    id: id++,
+    text: request.body.text, // [3]
+  };
   quotes.push(quote);
-  reply.code(201).send(quote);
+  reply.code(201).send(quote); // [5]
 });
 ```
 
@@ -52,35 +58,28 @@ Let's discuss a few important things here.
 
    Fastify exposes parsed request data through intuitive properties:
 
-   * **Route parameters** (`request.params`):
+   * **[1] Query parameters** (`request.query`):
+     Typically used for pagination, e.g. `/quotes?limit=1`.
+
+   * **[2] Route parameters** (`request.params`):
      Defined in the route path using `:` syntax, e.g. `/quotes/:id`.
 
-   * **Request body** (`request.body`):
+   * **[3] Request body** (`request.body`):
      The parsed payload sent by the client.
 
-   * **Query parameters** (`request.query`):
-     Typically used for pagination, e.g. `/quotes?limit=1`.
 
 2. **Sending Responses: `return` vs. `reply.send()`**
 
    There are two ways to send a response in Fastify:
 
-   **Returning a value directly**
-
-   ```js
-   return { hello: 'world' };
-   ```
+   **[4] Returning a value directly**
 
    Fastify automatically handles:
 
    * Serialization (e.g., JSON encoding)
    * Setting the correct `Content-Type` header
 
-   **Using `reply.send()` explicitly**
-
-   ```js
-   reply.send({ hello: 'world' });
-   ```
+   **[5] Using `reply.send()` explicitly**
 
    #### Important Caveats
 
@@ -100,14 +99,21 @@ Let's discuss a few important things here.
 #### Let's create all our routes now
 
 ```js
-let id = 1;
-const quotes = [];
-
+/**
+ * GET /quotes
+ * Returns a list of quotes, limited by the `limit` query parameter.
+ * Default limit is 10.
+ */
 app.get("/quotes", async (request, reply) => {
-  const { limit = 10 } = request.query;
+  const limit = Number(request.query.limit ?? 10);
   return quotes.slice(0, limit);
 });
 
+/**
+ * GET /quotes/:id
+ * Returns a single quote by its ID.
+ * Responds with 404 if not found.
+ */
 app.get("/quotes/:id", async (request, reply) => {
   const id = Number(request.params.id);
   const quote = quotes.find((q) => q.id === id);
@@ -118,13 +124,23 @@ app.get("/quotes/:id", async (request, reply) => {
   return quote;
 });
 
+/**
+ * POST /quotes
+ * Creates a new quote. Expects JSON body with `text`.
+ * Responds with 201 Created and the new quote.
+ */
 app.post("/quotes", async (request, reply) => {
-  const quote = { id: id++, text: request.body.text };
+  const quote = { id: dbId++, text: request.body.text };
   quotes.push(quote);
   reply.code(201);
   return quote;
 });
 
+/**
+ * PUT /quotes/:id
+ * Updates an existing quote by ID.
+ * Responds with 404 if not found.
+ */
 app.put("/quotes/:id", async (request, reply) => {
   const id = Number(request.params.id);
   const quote = quotes.find((q) => q.id === id);
@@ -137,6 +153,11 @@ app.put("/quotes/:id", async (request, reply) => {
   return quote;
 });
 
+/**
+ * DELETE /quotes/:id
+ * Deletes a quote by ID.
+ * Responds with 204 No Content if successful, 404 if not found.
+ */
 app.delete("/quotes/:id", async (request, reply) => {
   const id = Number(request.params.id);
   const index = quotes.findIndex((q) => q.id === id);
@@ -147,7 +168,11 @@ app.delete("/quotes/:id", async (request, reply) => {
 
   quotes.splice(index, 1);
 
-  reply.code(204).send(); // Remember, undefined cannot be returned.
+  reply
+    // 204 No Content: successful deletion, no body in response
+    .code(204)
+    // `undefined` cannot be returned directly, we must use send()
+    .send();
 });
 ```
 
@@ -166,7 +191,7 @@ You can test your routes using `curl` commands:
 ```bash
 curl -X POST http://localhost:3000/quotes \
   -H "Content-Type: application/json" \
-  -d '{"text":"Fastify is awesome!"}'
+  -d '{"text":"Premature optimization is the root of all evil. – Donald Knuth"}'
 ```
 
 * **Retrieve all quotes:**
@@ -188,7 +213,7 @@ curl http://localhost:3000/quotes/<quote-id>
 ```bash
 curl -X PUT http://localhost:3000/quotes/<quote-id> \
   -H "Content-Type: application/json" \
-  -d '{"text":"Updated quote text."}'
+  -d '{"text":"In God we trust. All others must bring data. – W. Edwards Deming"}'
 ```
 
 * **Delete a quote:**
@@ -203,22 +228,21 @@ for convenience.
 
 > Later in this tutorial, we’ll look at how to write integration and end-to-end
 > tests using `fastify.inject()`.
-> This will help automate testing, reduce reliance on manual curl commands, and
-> avoid regressions.
+> This will help automate testing and avoid regressions.
 
 ### Internals involved
 
 Fastify's routing is powered by the
 [`find-my-way`](https://github.com/delvedor/find-my-way)
 router, developed and maintained by Fastify's contributors.
-This router uses a highly performant Radix Tree (compact prefix tree)
+This router uses a highly performant 
+[Radix tree](https://en.wikipedia.org/wiki/Radix_tree)
 for efficient request/route matching.
 
 The internal function responsible for route configuration is
 [`buildRouting`](https://github.com/fastify/fastify/blob/main/lib/route.js).
 This function integrates `find-my-way` into Fastify's plugin system
 and request lifecycle.
-
 
 Fastify initializes the router and attach methods to the fastify instance 
 inside the [factory](https://github.com/fastify/fastify/blob/main/fastify.js).

@@ -124,6 +124,7 @@ const customLogger = {
   trace: () => { },
   debug: () => { },
   child: () => customLogger,
+  msgPrefix: undefined,
   silent: () => { }
 }
 const serverWithTypeProviderAndLogger = fastify({

@@ -44,6 +44,7 @@ class CustomLoggerImpl implements CustomLogger {
   trace (...args: unknown[]) { console.log(args) }
   debug (...args: unknown[]) { console.log(args) }
   silent (...args: unknown[]) { }
+  get msgPrefix (): string | undefined { return undefined }
 
   child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
 }

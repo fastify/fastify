@@ -147,6 +147,7 @@ const customLogger: CustomLoggerInterface = {
   fatal: () => { },
   trace: () => { },
   debug: () => { },
+  msgPrefix: undefined,
   foo: () => { }, // custom severity logger method
   child: () => customLogger
 }

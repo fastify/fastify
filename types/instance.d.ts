@@ -23,6 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { FastifyRouterOptions } from '../fastify'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -603,20 +604,6 @@ export interface FastifyInstance<
     requestIdLogLabel?: string,
     http2SessionTimeout?: number,
     useSemicolonDelimiter?: boolean,
-    routerOptions?: {
-      allowUnsafeRegex?: boolean,
-      buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
-      caseSensitive?: boolean,
-      constraints?: {
-        [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
-      },
-      defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
-      ignoreDuplicateSlashes?: boolean,
-      ignoreTrailingSlash?: boolean,
-      maxParamLength?: number,
-      onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
-      querystringParser?: (str: string) => { [key: string]: unknown },
-      useSemicolonDelimiter?: boolean,
-    }
+    routerOptions?: FastifyRouterOptions<RawServer>
   }>
 }

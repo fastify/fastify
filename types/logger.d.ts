@@ -7,7 +7,7 @@ import { FastifySchema } from './schema'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
-import pino from 'pino'
+import * as pino from 'pino'
 
 /**
  * Standard Fastify logging function

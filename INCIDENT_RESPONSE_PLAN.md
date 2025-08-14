@@ -90,7 +90,7 @@ v.3](https://www.first.org/cvss/user-guide). More information can be found on
 If a patch is in progress, a delay may be approved by the security team and
 reporter.
 
-At this point, a CVE should be requested through the selected platform through
+At this point, a CVE should be requested through the selected platform via
 the UI, which should include the Report ID and a summary.
 
 Within HackerOne, this is handled through a "public disclosure request".

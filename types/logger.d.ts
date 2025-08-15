@@ -7,20 +7,24 @@ import { FastifySchema } from './schema'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
-import pino from 'pino'
+import type {
+  BaseLogger,
+  LogFn as FastifyLogFn,
+  LevelWithSilent as LogLevel,
+  Bindings,
+  ChildLoggerOptions,
+  LoggerOptions as PinoLoggerOptions
+} from 'pino'
 
-/**
- * Standard Fastify logging function
- */
-export type FastifyLogFn = pino.LogFn
+export type {
+  FastifyLogFn,
+  LogLevel,
+  Bindings,
+  ChildLoggerOptions,
+  PinoLoggerOptions
+}
 
-export type LogLevel = pino.LevelWithSilent
-
-export type Bindings = pino.Bindings
-
-export type ChildLoggerOptions = pino.ChildLoggerOptions
-
-export interface FastifyBaseLogger extends pino.BaseLogger {
+export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace' | 'silent'> {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
@@ -33,8 +37,6 @@ export type FastifyLoggerInstance = FastifyBaseLogger
 export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
 }
-
-export type PinoLoggerOptions = pino.LoggerOptions
 
 // TODO: once node 18 is EOL, this type can be replaced with plain FastifyReply.
 /**

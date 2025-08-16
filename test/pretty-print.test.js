@@ -364,3 +364,26 @@ test('pretty print - includeMeta, includeHooks', (t, done) => {
     done()
   })
 })
+test('printRoutes with commonPrefix: true and false', async (t) => {
+  const fastify = Fastify()
+
+  fastify.get('/fooupdate', async () => 'update')
+  fastify.get('/foodelete', async () => 'delete')
+  fastify.get('/buildpatch', async () => 'buildpatch')
+  fastify.get('/buildpatch/experimental', async () => 'experimental')
+  fastify.get('/mymethod', async () => 'mymethod')
+  fastify.get('/mymethod/42', async () => '42')
+
+  await fastify.ready()
+
+  const withPrefix = fastify.printRoutes({ commonPrefix: true })
+  const withoutPrefix = fastify.printRoutes({ commonPrefix: false })
+
+  t.assert.match(withPrefix, /buildpatch/, 'withPrefix should include "buildpatch"')
+  t.assert.match(withPrefix, /experimental/, 'withPrefix should include "experimental"')
+  t.assert.match(withPrefix, /mymethod/, 'withPrefix should include "mymethod"')
+
+  t.assert.match(withoutPrefix, /\/buildpatch/, 'withoutPrefix should include "/buildpatch"')
+  t.assert.match(withoutPrefix, /\/buildpatch\/experimental/, 'withoutPrefix should include "/buildpatch/experimental"')
+  t.assert.match(withoutPrefix, /\/mymethod\/42/, 'withoutPrefix should include "/mymethod/42"')
+})

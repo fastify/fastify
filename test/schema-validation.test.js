@@ -1514,3 +1514,136 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(invalid8.status, 400)
   t.assert.strictEqual((await invalid8.json()).code, 'FST_ERR_VALIDATION')
 })
+
+test('should support Zod-generated JSON schemas with $schema property', async (t) => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  // Simulating Zod's toJSONSchema() output format
+  const zodGeneratedHeaderSchema = {
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    type: 'object',
+    properties: {
+      Authorization: {
+        type: 'string',
+        pattern: '^Bearer [\\s\\S]{0,}$'
+      }
+    },
+    required: ['Authorization'],
+    additionalProperties: false
+  }
+
+  const zodGeneratedBodySchema = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      age: { type: 'number', minimum: 0 }
+    },
+    required: ['name'],
+    additionalProperties: false
+  }
+
+  const zodGeneratedQuerySchema = {
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    type: 'object',
+    properties: {
+      filter: { type: 'string' }
+    },
+    additionalProperties: false
+  }
+
+  fastify.post('/zod-test/:id', {
+    schema: {
+      headers: zodGeneratedHeaderSchema,
+      body: zodGeneratedBodySchema,
+      querystring: zodGeneratedQuerySchema,
+      params: {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        type: 'object',
+        properties: {
+          id: { type: 'string', pattern: '^[0-9]+$' }
+        },
+        required: ['id'],
+        additionalProperties: false
+      }
+    },
+    handler: (request, reply) => {
+      reply.send({
+        received: {
+          headers: { authorization: request.headers.authorization },
+          body: request.body,
+          query: request.query,
+          params: request.params
+        }
+      })
+    }
+  })
+
+  await fastify.ready()
+
+  // Test valid request
+  const validResponse = await fastify.inject({
+    method: 'POST',
+    url: '/zod-test/123?filter=active',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer valid-token-123'
+    },
+    payload: JSON.stringify({
+      name: 'John Doe',
+      age: 30
+    })
+  })
+
+  t.assert.strictEqual(validResponse.statusCode, 200)
+  const validData = JSON.parse(validResponse.payload)
+  t.assert.strictEqual(validData.received.body.name, 'John Doe')
+  t.assert.strictEqual(validData.received.body.age, 30)
+
+  // Test invalid header (missing Authorization)
+  const invalidHeaderResponse = await fastify.inject({
+    method: 'POST',
+    url: '/zod-test/123?filter=active',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify({
+      name: 'John Doe',
+      age: 30
+    })
+  })
+
+  t.assert.strictEqual(invalidHeaderResponse.statusCode, 400)
+
+  // Test invalid body (missing required name)
+  const invalidBodyResponse = await fastify.inject({
+    method: 'POST',
+    url: '/zod-test/123?filter=active',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer valid-token-123'
+    },
+    payload: JSON.stringify({
+      age: 30
+    })
+  })
+
+  t.assert.strictEqual(invalidBodyResponse.statusCode, 400)
+
+  // Test invalid params (non-numeric id)
+  const invalidParamsResponse = await fastify.inject({
+    method: 'POST',
+    url: '/zod-test/abc?filter=active',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer valid-token-123'
+    },
+    payload: JSON.stringify({
+      name: 'John Doe',
+      age: 30
+    })
+  })
+
+  t.assert.strictEqual(invalidParamsResponse.statusCode, 400)
+})

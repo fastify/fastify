@@ -8,47 +8,56 @@ section.
 
 #### [Core](#core)
 
-## Auth
+## Security
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify.
 - [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic auth plugin for Fastify.
 - [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer auth plugin for Fastify.
 - [`@fastify/csrf-protection`](https://github.com/fastify/csrf-protection) Add CSRF protection to Fastify.
-- [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify.
+- [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses fast-jwt.
+- [`@fastify/cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
+- [`@fastify/cors`](https://github.com/fastify/fastify-cors) Enables the use of CORS in a Fastify application.
+- [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) Important Security headers for Fastify.
 
 ## Database
-- [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES   client.
-- [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection.
-- [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) MongoDB connection plugin.
+- [`@fastify/elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES client.
+- [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
+- [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify MongoDB connection plugin, with which
+  you can share the same MongoDB connection pool across every part of your server.
 - [`@fastify/mysql`](https://github.com/fastify/fastify-mysql) MySQL connection plugin.
-- [`@fastify/kafka`](https://github.com/fastify/fastify-kafka) Plugin to interact with Apache Kafka. *(could also go Misc depending on maintainer preference)*
+- [`@fastify/kafka`](https://github.com/fastify/fastify-kafka) Plugin to interact with Apache Kafka. 
 
-## Web
-- [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) Add `accepts` in your request object.
-- [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) Serialize output    according to the `Accept` header.
+
+## Architecture
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all plugins in a directory.
-- [`@fastify/aws-lambda`](https://github.com/fastify/aws-lambda-fastify) Run Fastify on AWS Lambda.
+- [`@fastify/aws-lambda`](https://github.com/fastify/aws-lambda-fastify) allows you to easily build serverless web
+  applications/services and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 - [`@fastify/express`](https://github.com/fastify/fastify-express) Express compatibility layer for Fastify.
-- [`@fastify/http-proxy`](https://github.com/fastify/fastify-http-proxy) Proxy HTTP requests to another server.
+- [`@fastify/http-proxy`](https://github.com/fastify/fastify-http-proxy) Proxy your HTTP requests to another server, with hooks.
 - [`@fastify/middie`](https://github.com/fastify/middie) Middleware engine for Fastify.
-- [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart support.
-- [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) Next.js server-side rendering support.
-
-## Observability
-- [`@fastify/circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) Circuit breaker for routes.
-- [`@fastify/caching`](https://github.com/fastify/fastify-caching) Server-side cache and ETag support.
-- [`@fastify/etag`](https://github.com/fastify/fastify-etag) Automatically generate ETags.
-
-## Misc
-- [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) Dependency injection support for Fastify.
-- [`@fastify/compress`](https://github.com/fastify/fastify-compress) Compression utilities.
-- [`@fastify/cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookies.
-- [`@fastify/cors`](https://github.com/fastify/fastify-cors) Enable CORS.
+- [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) Dependency injection support for Fastify, based on awilix.
 - [`@fastify/env`](https://github.com/fastify/fastify-env) Load and check configuration.
-- [`@fastify/flash`](https://github.com/fastify/fastify-flash) Flash messages with sessions.
-- [`@fastify/formbody`](https://github.com/fastify/fastify-formbody) Parse urlencoded bodies.
-- [`@fastify/funky`](https://github.com/fastify/fastify-funky) Functional programming utilities.
-- [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) Security headers (could also go under Auth/  Security depending on maintainer preference).
-- [`@fastify/hotwire`](https://github.com/fastify/fastify-hotwire) Hotwire pattern support.
+
+## Observability & Perfomance
+- [`@fastify/circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) A low overhead circuit breaker for your routes.
+- [`@fastify/caching`](https://github.com/fastify/fastify-caching) General server-side cache and ETag support.
+- [`@fastify/etag`](https://github.com/fastify/fastify-etag) Automatically generate ETags for HTTP responses.
+- [`@fastify/compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
+
+
+## Utilities
+- [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) Add `accepts` in your request object.
+- [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) Serialize output according to the `Accept` header.
+- [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart support for Fastify.
+- [`@fastify/formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
+- [`@fastify/funky`](https://github.com/fastify/fastify-funky) Makes functional programming in Fastify more convenient. 
+  Adds support for Fastify routes returning functional structures, such as Either, Task or plain parameterless function.
+
+## Frontend/UI
+- [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React server-side rendering support for Fastify with Next.
+- [`@fastify/flash`](https://github.com/fastify/fastify-flash) Set and get flash messages using the session.
+- [`@fastify/hotwire`](https://github.com/fastify/fastify-hotwire) Use the Hotwire pattern with Fastify.
+
+     -----------------------------********************------------------------------
 
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).

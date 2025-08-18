@@ -405,6 +405,17 @@ expectType<FastifyInstance>(fastify().route({
 }))
 
 expectType<FastifyInstance>(fastify().route({
+  method: 'GET',
+  handler: routeHandler
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  path: '/',
+  method: 'GET',
+  handler: routeHandler
+}))
+
+expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'OPTIONS',
   handler: routeHandler

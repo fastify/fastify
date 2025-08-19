@@ -12,7 +12,7 @@ test('GET / should return Hello', async t => {
   fastify.get('/', async function (request, reply) {
     return reply
       .type('application/json; charset=utf-8')
-      .send("Hello") // send string
+      .send('Hello') // send string
   })
 
   // Simulate GET /

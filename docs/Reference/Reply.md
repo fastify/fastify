@@ -151,7 +151,7 @@ fastify.get('/', async function (req, rep) {
 Sets a response header. If the value is omitted or undefined, it is coerced to
 `''`.
 
-> 🛈 Note: The header's value must be properly encoded using
+> ℹ️ Note: The header's value must be properly encoded using
 > [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 > or similar modules such as
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid characters
@@ -260,10 +260,10 @@ requires heavy resources to be sent after the `data`, for example,
 `Server-Timing` and `Etag`. It can ensure the client receives the response data
 as soon as possible.
 
-> 🛈 Note: The header `Transfer-Encoding: chunked` will be added once you use
+> ℹ️ Note: The header `Transfer-Encoding: chunked` will be added once you use
 > the trailer. It is a hard requirement for using trailer in Node.js.
 
-> 🛈 Note: Any error passed to `done` callback will be ignored. If you interested
+> ℹ️ Note: Any error passed to `done` callback will be ignored. If you interested
 > in the error, you can turn on `debug` level logging.*
 
 ```js
@@ -279,14 +279,14 @@ const { createHash } = require('node:crypto')
 reply.trailer('content-md5', function(reply, payload, done) {
   const hash = createHash('md5')
   hash.update(payload)
-  done(null, hash.disgest('hex'))
+  done(null, hash.digest('hex'))
 })
 
 // when you prefer async-await
 reply.trailer('content-md5', async function(reply, payload) {
   const hash = createHash('md5')
   hash.update(payload)
-  return hash.disgest('hex')
+  return hash.digest('hex')
 })
 ```
 
@@ -314,7 +314,7 @@ reply.getTrailer('server-timing') // undefined
 Redirects a request to the specified URL, the status code is optional, default
 to `302` (if status code is not already set by calling `code`).
 
-> 🛈 Note: The input URL must be properly encoded using
+> ℹ️ Note: The input URL must be properly encoded using
 > [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 > or similar modules such as
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
@@ -823,7 +823,7 @@ automatically create an error structured as the following:
 You can add custom properties to the Error object, such as `headers`, that will
 be used to enhance the HTTP response.
 
-> 🛈 Note: If you are passing an error to `send` and the statusCode is less than
+> ℹ️ Note: If you are passing an error to `send` and the statusCode is less than
 > 400, Fastify will automatically set it at 500.
 
 Tip: you can simplify errors by using the
@@ -871,7 +871,7 @@ fastify.get('/', {
 If you want to customize error handling, check out
 [`setErrorHandler`](./Server.md#seterrorhandler) API.
 
-> 🛈 Note: you are responsible for logging when customizing the error handler.
+> ℹ️ Note: you are responsible for logging when customizing the error handler.
 
 API:
 

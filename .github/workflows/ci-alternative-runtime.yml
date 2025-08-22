@@ -25,6 +25,7 @@ permissions:
 jobs:
   test-unit:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     permissions:
       contents: read
     strategy:
@@ -40,7 +41,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         if: ${{ matrix.runtime == 'nsolid' }}
         with:
           node-version: ${{ matrix.node-version }}
@@ -51,7 +52,6 @@ jobs:
           npm install --ignore-scripts
 
       - name: Run tests
-        continue-on-error: true
         run: |
           npm run unit
 
@@ -65,7 +65,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         with:
           node-version: 20
           nsolid-version: 5
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         with:
           nsolid-version: 5
       - name: install fastify

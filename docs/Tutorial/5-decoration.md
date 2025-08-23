@@ -1,15 +1,14 @@
 # Decorating Fastify
 
-In this chapter, we’ll extend Fastify using **decorators** — the 
+In this chapter, we’ll extend Fastify using **decorators** - the 
 built-in mechanism to attach features and data to:
 - the **Fastify instance**,
 - the [**Request**](https://fastify.dev/docs/latest/Reference/Request/) object,
 - the [**Reply**](https://fastify.dev/docs/latest/Reference/Reply/) object.
 
 We’ll focus on decorating the **Fastify instance** with a small 
-in-memory database and a `quotesRepository` built on top of it.  
-Later in this tutorial, we’ll explore alternative dependency patterns and 
-libraries (e.g. a DI container).
+in-memory document database and a `quotesRepository` built on top of it.  
+Later in this tutorial, we’ll explore alternative dependency patterns.
 
 ## Why decorators?
 
@@ -18,20 +17,20 @@ Defining these capabilities up front also lets  **V8** optimize memory
 usage by stabilizing the shape of server, request, and reply objects before 
 they’re instantiated and used.
 
-Read more about object-shape handling in JS engines [in this article](https://mathiasbynens.be/notes/shapes-ics#shapes).
+Read more about object-shape handling in JS engines
+[in this article](https://mathiasbynens.be/notes/shapes-ics#shapes).
 
 ## Database Decorator
 
-We’ll replace our previous globals:
-
-- `let dbId = 1;`
-- `const quotes = [];`
-
-…with a single database that manages multiple collections. Each collection 
-keeps its own `id` counter and `Map` of documents.
+Let's first create our in-memory document database that manages multiple
+collections. 
+Each collection keeps its own `id` counter and `Map` of documents.
 
 Because our server file is starting to grow and take on too many 
-responsibilities, let’s decouple services into separate files.
+responsibilities, we're gonna start ti decouple different concerns 
+into separate files.
+
+So let's create our db in a `db.js` file:
 
 ```js
 // db.js
@@ -86,19 +85,18 @@ export function createDb() {
 Then, import and decorate the Fastify instance:
 
 ```js
-// server.js (excerpt)
+// server.js
 import { createDb } from "./db.js";
 
-// IMPORTANT: Avoid arrow functions for decorators/handlers where `this` must be Fastify.
 app.decorate("db", createDb());
 ```
 
 ## A Repository That Depends on the Database
 
 It’s convenient to have specific services in charge of interacting with our DB.
-We’ll define a repository for quotes.
-To ensure the `db` decorator is available first, we’ll declare it as a dependency
-with `decorate(name, value, [dependencies])`.
+We’ll then define a repository for quotes.
+To ensure the `db` decorator is available first, we’ll declare it as a
+dependency (`decorate` signature: `decorate(name, value, [dependencies])`).
 
 ```js
 // quotes-repository.js
@@ -129,8 +127,8 @@ Then, import and decorate:
 // server.js
 import { createQuotesRepository } from "./quotes-repository.js";
 
-// Declare dependency on "db" so Fastify enforces registration order.
-// Will throw [FST_ERR_DEC_MISSING_DEPENDENCY] if `db` is not available.
+// Declare dependency on "db" so Fastify enforces 
+// decoration in the right order.
 app.decorate(
   "quotesRepository",
   createQuotesRepository(app),
@@ -140,13 +138,13 @@ app.decorate(
 
 ## Using the Repository in Routes
 
-Update existing routes to call `this.quotesRepository.*`. 
-Keep **regular function syntax** so `this` is the `FastifyInstance`.
+Update existing routes to call `this.quotesRepository.`. 
+Avoid arrow functions for decorators/handlers where `this` must be Fastify.
 
 ```js
 // server.js
 app.get("/quotes", async function (request, reply) {
-  // IMPORTANT: Avoid arrow functions for decorators/handlers where `this` must be Fastify.
+  
   const limit = Number(request.query.limit ?? 10);
   return this.quotesRepository.list(Number.isNaN(limit) ? undefined : limit);
 });

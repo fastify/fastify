@@ -294,6 +294,12 @@ try {
 }
 ```
 
+### Quick mapping reminder
+
+* `body`: request body (POST, PUT, PATCH)
+* `querystring` / `query`: URL query parameters
+* `params`: route parameters
+* `headers`: HTTP request headers
 
 ## Testing schemas
 
@@ -434,13 +440,6 @@ Instead of stripping the `secret` field, Fastify now sends:
   }
 }
 ```
-
-### Quick mapping reminder
-
-* `body`: request body (POST, PUT, PATCH)
-* `querystring` / `query`: URL query parameters
-* `params`: route parameters
-* `headers`: HTTP request headers
 
 ### Internals involved
 

@@ -74,9 +74,9 @@ test('getParser', async t => {
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
-    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 0)
   })
 
   await t.test('should return matching parser with caching /2', t => {
@@ -109,6 +109,15 @@ test('getParser', async t => {
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html;charset=utf-8').fn, first)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].cache.size, 2)
+  })
+
+  await t.test('should return matching parser for leading spaces', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+    const ctp = fastify[keys.kContentTypeParser]
+    const baseParser = ctp.getParser('application/json')
+    t.assert.strictEqual(ctp.getParser('  application/json')?.fn, baseParser.fn)
   })
 
   await t.test('should prefer content type parser with string value', t => {

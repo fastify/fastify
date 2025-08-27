@@ -23,6 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { FastifyRouterOptions } from '../fastify'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -603,5 +604,6 @@ export interface FastifyInstance<
     requestIdLogLabel?: string,
     http2SessionTimeout?: number,
     useSemicolonDelimiter?: boolean,
+    routerOptions?: FastifyRouterOptions<RawServer>
   }>
 }

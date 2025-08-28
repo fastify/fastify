@@ -1492,6 +1492,17 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(invalid5.status, 400)
   t.assert.strictEqual((await invalid5.json()).code, 'FST_ERR_VALIDATION')
 
+  const invalid6 = await fetch(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'ApPlIcAtIoN/JsOn\t foo;'
+    },
+    body: JSON.stringify({ invalid: 'string' })
+  })
+  t.assert.strictEqual(invalid6.status, 400)
+  t.assert.strictEqual((await invalid6.json()).code, 'FST_ERR_VALIDATION')
+
   const invalid7 = await fetch(address, {
     method: 'POST',
     url: '/',

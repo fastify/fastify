@@ -42,7 +42,7 @@ expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
-    expectType<FastifyError>(error)
+    expectType<Error>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )

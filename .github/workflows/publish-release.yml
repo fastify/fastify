@@ -13,6 +13,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   release-npm:
     runs-on: ubuntu-latest
@@ -42,6 +45,9 @@ jobs:
         run: |
           new_version=$(npm version ${{ inputs.version }} --no-git-tag-version | tail -n 1)
           echo "version=$new_version" >> $GITHUB_OUTPUT
+          # Update VERSION constant in fastify.js
+          version_number=${new_version#*v}
+          sed -i "s/const VERSION = '[^']*'/const VERSION = '$version_number'/" fastify.js
 
       - name: Commit version bump
         run: |

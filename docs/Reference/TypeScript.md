@@ -147,7 +147,7 @@ route-level `request` object.
      reply.code(200).send('uh-oh');
      // it even works for wildcards
      reply.code(404).send({ error: 'Not found' });
-     return `logged in!`
+     return { success: true }
    })
    ```
 
@@ -173,7 +173,7 @@ route-level `request` object.
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
-     return `logged in!`
+     return { success: true }
    })
    ```
 7. Build and run and query with the `username` query string option set to

@@ -91,6 +91,22 @@ declare namespace fastify {
 
   type ValidatorCompilerOptions = Parameters<BuildCompilerFromPool>[1]
 
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = {
+    allowUnsafeRegex?: boolean,
+    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
+    caseSensitive?: boolean,
+    constraints?: {
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
+    },
+    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
+    ignoreDuplicateSlashes?: boolean,
+    ignoreTrailingSlash?: boolean,
+    maxParamLength?: number,
+    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+    querystringParser?: (str: string) => { [key: string]: unknown },
+    useSemicolonDelimiter?: boolean,
+  }
+
   /**
    * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
    */
@@ -158,6 +174,7 @@ declare namespace fastify {
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
     childLoggerFactory?: FastifyChildLoggerFactory,
     allowErrorHandlerOverride?: boolean
+    routerOptions?: FastifyRouterOptions<RawServer>,
   }
 
   /**

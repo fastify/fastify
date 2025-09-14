@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 85
+const expectedErrors = 86
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -186,6 +186,16 @@ test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_EMPTY_JSON_BODY')
   t.assert.strictEqual(error.message, "Body cannot be empty when content-type is set to 'application/json'")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_CTP_INVALID_JSON_BODY', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTP_INVALID_JSON_BODY()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_JSON_BODY')
+  t.assert.strictEqual(error.message, "Body is not valid JSON but content-type is set to 'application/json'")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
 })
@@ -925,6 +935,45 @@ test('Ensure that non-existing errors are not in Errors.md documented', t => {
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g
   const matches = errorsMd.matchAll(matchRE)
+  const exportedKeys = Object.keys(errors)
+
+  for (const match of matches) {
+    t.assert.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
+  }
+})
+
+test('Ensure that all errors are in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
+  const errorTypes = [...matches].map(match => match[1])
+  const exportedKeys = Object.keys(errors)
+
+  for (const key of exportedKeys) {
+    if (errors[key].name === 'FastifyError') {
+      t.assert.ok(errorTypes.includes(key), key)
+    }
+  }
+})
+
+test('Ensure that non-existing errors are not in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
   const exportedKeys = Object.keys(errors)
 
   for (const match of matches) {

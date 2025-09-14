@@ -147,7 +147,7 @@ route-level `request` object.
      reply.code(200).send('uh-oh');
      // it even works for wildcards
      reply.code(404).send({ error: 'Not found' });
-     return `logged in!`
+     return { success: true }
    })
    ```
 
@@ -173,7 +173,7 @@ route-level `request` object.
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
-     return `logged in!`
+     return { success: true }
    })
    ```
 7. Build and run and query with the `username` query string option set to
@@ -1519,9 +1519,7 @@ specific header in case of error.
 It is not intended for changing the error, and calling reply.send will throw an
 exception.
 
-This hook will be executed only after the customErrorHandler has been executed,
-and only if the customErrorHandler sends an error back to the user (Note that
-the default customErrorHandler always sends the error back to the user).
+This hook will be executed before the customErrorHandler.
 
 Notice: unlike the other hooks, pass an error to the done function is not
 supported.

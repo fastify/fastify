@@ -428,4 +428,6 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-> ℹ️ Note: For TypeScript users, see the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced typing examples using `setDecorator<T>`.
+> ℹ️ Note: For TypeScript users, see the
+> [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced
+> typing examples using `setDecorator<T>`.

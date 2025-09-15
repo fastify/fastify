@@ -44,11 +44,11 @@ reported vulnerabilities:
 ⚠ The Fastify project does not support any reporting outside the process mentioned
 in this document.
 
-### Escalation
+### Secondary Contact
 
-If you do not receive an acknowledgement of your report within 6 business days, or if you cannot find a private security contact for the project, you may escalate to the OpenJS Foundation CNA at `security@lists.openjsf.org`.
+If you do not receive an acknowledgement of your report within 6 business days, or if you cannot find a private security contact for the project, you may contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for assistance.
 
-If the project acknowledges your report but does not provide any further response or engagement within 14 days, escalation is also appropriate.
+The CNA can help ensure your report is properly acknowledged, assist with coordinating disclosure timelines, and assign CVEs when necessary. This is a support mechanism to ensure security reports are handled appropriately across all OpenJS Foundation projects.
 
 ## Handling vulnerability reports
 

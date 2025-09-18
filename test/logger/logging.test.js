@@ -420,4 +420,36 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     // no more readable data
     t.assert.strictEqual(stream.readableLength, 0)
   })
+  await t.test('should not log the error if request logging is disabled', async (t) => {
+    t.plan(4)
+
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream,
+        level: 'info'
+      },
+      disableRequestLogging: true
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/error', function (req, reply) {
+      t.assert.ok(req.log)
+      reply.send(new Error('a generic error'))
+    })
+
+    await fastify.ready()
+    await fastify.listen({ port: 0, host: localhost })
+
+    await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
+
+    {
+      const [line] = await once(stream, 'data')
+      t.assert.ok(typeof line.msg === 'string')
+      t.assert.ok(line.msg.startsWith('Server listening at'), 'message is set')
+    }
+
+    // no more readable data
+    t.assert.strictEqual(stream.readableLength, 0)
+  })
 })

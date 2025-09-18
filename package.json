@@ -165,7 +165,6 @@
     }
   ],
   "devDependencies": {
-    "@fastify/pre-commit": "^2.1.0",
     "@jsumners/line-reporter": "^1.0.1",
     "@sinclair/typebox": "^0.34.13",
     "@sinonjs/fake-timers": "^11.2.2",

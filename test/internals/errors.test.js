@@ -380,6 +380,15 @@ test('FST_ERR_LOG_LOGGER_AND_LOGGER_INSTANCE_PROVIDED', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_LOG_INVALID_LOGGER_LEVEL', t => {
+  t.plan(4)
+  const error = new errors.FST_ERR_LOG_INVALID_LOGGER_LEVEL()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_LOG_INVALID_LOGGER_LEVEL')
+  t.assert.strictEqual(error.message, 'Must be one of trace, debug, info, warn, error, fatal or one of customLevels.')
+  t.assert.strictEqual(error.statusCode, 500)
+})
+
 test('FST_ERR_REP_INVALID_PAYLOAD_TYPE', t => {
   t.plan(5)
   const error = new errors.FST_ERR_REP_INVALID_PAYLOAD_TYPE()

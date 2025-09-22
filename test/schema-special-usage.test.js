@@ -11,6 +11,78 @@ const ajvErrors = require('ajv-errors')
 const proxyquire = require('proxyquire')
 const { waitForCb } = require('./toolkit')
 
+test('Ajv onCreate callback parameter', (t, testDone) => {
+  t.plan(1)
+  const fastify = Fastify({
+    ajv: {
+      onCreate: (ajv) => {
+        t.assert.ok(ajv instanceof AJV)
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {},
+    handler (req, reply) { reply.send({}) }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  },
+  (err) => {
+    t.assert.ifError(err)
+    testDone()
+  })
+})
+
+test('Ajv onCreate callback parameter can customize validator instance', (t, testDone) => {
+  t.plan(6)
+  const fastify = Fastify({
+    ajv: {
+      onCreate: (ajv) => {
+        ajv.addFormat('customFormat', /myOwnPattern/)
+      }
+    }
+  })
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string',
+            format: 'customFormat'
+          }
+        }
+      }
+    },
+    handler (req, reply) { reply.send({ ok: 1 }) }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 'not my format' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.json().message, 'body/foo must match format "customFormat"')
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { foo: 'myOwnPattern' }
+    }, (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 200)
+      t.assert.strictEqual(res.json().ok, 1)
+      testDone()
+    })
+  })
+})
+
 test('Ajv plugins array parameter', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify({

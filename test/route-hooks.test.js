@@ -2,7 +2,6 @@
 
 const { Readable } = require('node:stream')
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('../')
 
 process.removeAllListeners('warning')
@@ -582,8 +581,8 @@ test('onRequest option should be called before preParsing', (t, testDone) => {
   })
 })
 
-test('onTimeout on route', (t, testDone) => {
-  t.plan(4)
+test('onTimeout on route', async (t) => {
+  t.plan(3)
   const fastify = Fastify({ connectionTimeout: 500 })
 
   fastify.get('/timeout', {
@@ -594,19 +593,16 @@ test('onTimeout on route', (t, testDone) => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const address = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}/timeout`
-    }, (err, response, body) => {
-      t.assert.ok(err instanceof Error)
-      t.assert.strictEqual(err.message, 'socket hang up')
-      testDone()
-    })
-  })
+  try {
+    await fetch(`${address}/timeout`)
+    t.assert.fail('Should have thrown an error')
+  } catch (err) {
+    t.assert.ok(err instanceof Error)
+    t.assert.strictEqual(err.message, 'fetch failed')
+  }
 })
 
 test('onError on route', (t, testDone) => {

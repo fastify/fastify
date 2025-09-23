@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('MKCALENDAR', { hasBody: true })
 
@@ -78,93 +77,67 @@ test('can be created - mkcalendar', (t) => {
 })
 
 test('mkcalendar test', async t => {
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => {
     fastify.close()
   })
 
-  await t.test('request - mkcalendar', (t, done) => {
-    t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/`,
-        method: 'MKCALENDAR'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+  await t.test('request - mkcalendar', async t => {
+    t.plan(2)
+    const result = await fetch(`${fastifyServer}/`, {
+      method: 'MKCALENDAR'
+    })
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
-  await t.test('request with other path - mkcalendar', (t, done) => {
-    t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        method: 'MKCALENDAR'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+  await t.test('request with other path - mkcalendar', async t => {
+    t.plan(2)
+    const result = await fetch(`${fastifyServer}/test`, {
+      method: 'MKCALENDAR'
+    })
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  await t.test('request with body - mkcalendar', (t, done) => {
+  await t.test('request with body - mkcalendar', async t => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        headers: { 'content-type': 'text/plain' },
-        body: bodySample,
-        method: 'MKCALENDAR'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`${fastifyServer}/test`, {
+      method: 'MKCALENDAR',
+      headers: { 'content-type': 'text/plain' },
+      body: bodySample
+    })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
-  await t.test('request with body and no content type (415 error) - mkcalendar', (t, done) => {
+  await t.test('request with body and no content type (415 error) - mkcalendar', async t => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        body: bodySample,
-        method: 'MKCALENDAR'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 415)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`${fastifyServer}/test`, {
+      method: 'MKCALENDAR',
+      body: bodySample,
+      headers: { 'content-type': undefined }
+    })
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 415)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 
-  await t.test('request without body - mkcalendar', (t, done) => {
+  await t.test('request without body - mkcalendar', async t => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        method: 'MKCALENDAR'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`${fastifyServer}/test`, {
+      method: 'MKCALENDAR'
+    })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
   })
 })

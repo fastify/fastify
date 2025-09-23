@@ -110,6 +110,18 @@ Within HackerOne, this is handled through a "public disclosure request".
 Reference: [HackerOne:
 Disclosure](https://docs.hackerone.com/hackers/disclosure.html)
 
+### Secondary Contact
+
+If you do not receive an acknowledgment of your report within 6 business days,
+or if you cannot find a private security contact for the project, you may
+contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for
+assistance.
+
+The CNA can help ensure your report is properly acknowledged, assist with
+coordinating disclosure timelines, and assign CVEs when necessary. This is a
+support mechanism to ensure security reports are handled appropriately across
+all OpenJS Foundation projects.
+
 ## The Fastify Security team
 
 The core team is responsible for the management of the security program and

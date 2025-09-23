@@ -170,6 +170,12 @@ When set to `true`, upon [`close`](#close) the server will iterate the current
 persistent connections and [destroy their
 sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
 
+When used with HTTP/2 server, it will also close all active HTTP/2 sessions.
+
+> ℹ️ Note:
+> Since Node.js v24 active sessions are closed by default
+
+
 > ⚠ Warning:
 > Connections are not inspected to determine if requests have
 > been completed.
@@ -966,7 +972,7 @@ Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which suppor
 separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
 This decision originated from [delvedor/find-my-way#76]
 (https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
-backwards compatiblilty for the need to split on `;`. To enable support for splitting
+backwards compatibility for the need to split on `;`. To enable support for splitting
 on `;` set `useSemicolonDelimiter` to `true`.
 
 ```js

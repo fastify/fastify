@@ -72,6 +72,27 @@ expectAssignable<FastifyInstance>(server.post('/test', {
   }
 }, async req => req.body))
 
+expectAssignable<FastifyInstance>(server.post('/test', {
+  validatorCompiler: ({ schema }) => {
+    return data => {
+      if (!data || data.constructor !== Object) {
+        return {
+          error: [
+            {
+              keyword: 'type',
+              instancePath: '',
+              schemaPath: '#/type',
+              params: { type: 'object' },
+              message: 'value is not an object'
+            }
+          ]
+        }
+      }
+      return { value: data }
+    }
+  }
+}, async req => req.body))
+
 expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
   function ({ schema }) {
     return new Ajv().compile(schema)

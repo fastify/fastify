@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.6.0",
+  "version": "5.6.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",

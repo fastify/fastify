@@ -16,7 +16,7 @@ module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
 /* c8 ignore stop */
 `
 
-    const file = path.join(__dirname, '..', 'lib', 'configValidator.js')
+    const file = path.join(__dirname, '..', 'lib', 'config-validator.js')
     fs.writeFileSync(file, moduleCode)
     console.log(`Saved ${file} file successfully`)
   }

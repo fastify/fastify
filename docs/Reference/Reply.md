@@ -369,7 +369,7 @@ charset must be set explicitly.
 <a id="getserializationfunction"></a>
 
 By calling this function using a provided `schema` or `httpStatus`,
-and the optional `contentType`, it will return a `serialzation` function
+and the optional `contentType`, it will return a `serialization` function
 that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 

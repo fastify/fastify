@@ -35,8 +35,8 @@ test('should mark reply as sent before pumping the payload stream into response 
   t.plan(2)
   t.after(() => fastify.close())
 
-  const handleRequest = proxyquire('../lib/handleRequest', {
-    './wrapThenable': (thenable, reply) => {
+  const handleRequest = proxyquire('../lib/handle-request', {
+    './wrap-thenable': (thenable, reply) => {
       thenable.then(function (payload) {
         t.assert.strictEqual(reply.sent, true)
       })
@@ -44,7 +44,7 @@ test('should mark reply as sent before pumping the payload stream into response 
   })
 
   const route = proxyquire('../lib/route', {
-    './handleRequest': handleRequest
+    './handle-request': handleRequest
   })
 
   const Fastify = proxyquire('..', {

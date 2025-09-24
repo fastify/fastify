@@ -2,9 +2,9 @@
 
 const { test } = require('node:test')
 
-const pluginUtilsPublic = require('../../lib/pluginUtils.js')
+const pluginUtilsPublic = require('../../lib/plugin-utils.js')
 const symbols = require('../../lib/symbols.js')
-const pluginUtils = require('../../lib/pluginUtils')[symbols.kTestInternals]
+const pluginUtils = require('../../lib/plugin-utils')[symbols.kTestInternals]
 
 test("shouldSkipOverride should check the 'skip-override' symbol", t => {
   t.plan(2)

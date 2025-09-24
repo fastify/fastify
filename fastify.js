@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.6.0'
+const VERSION = '5.6.1'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -40,16 +40,16 @@ const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
-const ContentTypeParser = require('./lib/contentTypeParser')
+const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
-const pluginUtils = require('./lib/pluginUtils')
-const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
+const pluginUtils = require('./lib/plugin-utils.js')
+const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
-const build404 = require('./lib/fourOhFour')
-const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-const override = require('./lib/pluginOverride')
+const build404 = require('./lib/four-oh-four')
+const getSecuredInitialConfig = require('./lib/initial-config-validation.js')
+const override = require('./lib/plugin-override')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
@@ -194,6 +194,7 @@ function fastify (options) {
 
   const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
   const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
+  const serverHasCloseHttp2Sessions = typeof server.closeHttp2Sessions === 'function'
 
   let forceCloseConnections = options.forceCloseConnections
   if (forceCloseConnections === 'idle' && !serverHasCloseIdleConnections) {
@@ -489,6 +490,10 @@ function fastify (options) {
               fastify[kKeepAliveConnections].delete(conn)
             }
           }
+        }
+
+        if (serverHasCloseHttp2Sessions) {
+          instance.server.closeHttp2Sessions()
         }
 
         // No new TCP connections are accepted.

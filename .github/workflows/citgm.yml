@@ -55,7 +55,6 @@ jobs:
           - '@fastify/cookie'
           - '@fastify/cors'
           - '@fastify/csrf-protection'
-          - '@fastify/diagnostics-channel'
           # - '@fastify/elasticsearch'
           - '@fastify/env'
           - '@fastify/etag'

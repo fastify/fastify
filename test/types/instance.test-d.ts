@@ -261,17 +261,6 @@ expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: s
   }
 }))
 
-expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
-  handler: () => {},
-  errorHandler<FastifyError>: (error, request, reply) => {
-    expectAssignable<FastifyError>(error)
-    expectAssignable<FastifyRequest>(request)
-    expectAssignable<{ contextKey: string }>(request.routeOptions.config)
-    expectAssignable<FastifyReply>(reply)
-    expectAssignable<void>(server.errorHandler(error, request, reply))
-  }
-}))
-
 expectType<FastifyInstance>(fastify().get('/', {
   handler: () => {},
   childLoggerFactory: (logger, bindings, opts, req) => {

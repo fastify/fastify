@@ -464,7 +464,7 @@ export interface FastifyInstance<
   /**
    * Fastify default error handler
    */
-  errorHandler<TError = unknown>: (error: TError, request: FastifyRequest, reply: FastifyReply) => void;
+  errorHandler: <TError = unknown>(error: TError, request: FastifyRequest, reply: FastifyReply) => void;
 
   /**
    * Set a function that will be invoked whenever an exception is thrown during the request lifecycle.

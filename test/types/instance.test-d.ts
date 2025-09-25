@@ -42,7 +42,7 @@ expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
-    expectType<Error>(error)
+    expectType<unknown>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )
@@ -253,6 +253,17 @@ expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as R
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
+    expectAssignable<unknown>(error)
+    expectAssignable<FastifyRequest>(request)
+    expectAssignable<{ contextKey: string }>(request.routeOptions.config)
+    expectAssignable<FastifyReply>(reply)
+    expectAssignable<void>(server.errorHandler(error, request, reply))
+  }
+}))
+
+expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
+  handler: () => {},
+  errorHandler<FastifyError>: (error, request, reply) => {
     expectAssignable<FastifyError>(error)
     expectAssignable<FastifyRequest>(request)
     expectAssignable<{ contextKey: string }>(request.routeOptions.config)

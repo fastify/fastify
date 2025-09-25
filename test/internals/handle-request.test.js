@@ -1,8 +1,8 @@
 'use strict'
 
 const { test } = require('node:test')
-const handleRequest = require('../../lib/handleRequest')
-const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
+const handleRequest = require('../../lib/handle-request')
+const internals = require('../../lib/handle-request')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const { kRouteContext } = require('../../lib/symbols')

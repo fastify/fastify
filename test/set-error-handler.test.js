@@ -24,7 +24,7 @@ test('setErrorHandler can be set independently in parent and child scopes', asyn
   })
 })
 
-test('setErrorHandler can be overriden if allowErrorHandlerOverride is set to true', async t => {
+test('setErrorHandler can be overridden if allowErrorHandlerOverride is set to true', async t => {
   t.plan(2)
 
   const fastify = Fastify()

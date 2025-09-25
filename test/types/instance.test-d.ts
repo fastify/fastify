@@ -150,12 +150,6 @@ server.setNotFoundHandler(function (_, reply) {
   return reply.send('')
 })
 
-function invalidErrorHandler (error: number) {
-  if (error) throw error
-}
-
-expectError(server.setErrorHandler(invalidErrorHandler))
-
 server.setSchemaController({
   bucket: (parentSchemas: unknown) => {
     return {

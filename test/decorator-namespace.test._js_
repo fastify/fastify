@@ -20,7 +20,7 @@ test('plugin namespace', async t => {
       // ! the plugin does not know about the namespace
       reply.send({ utility: app.utility() })
     })
-  }, { namepace: 'foo' })
+  }, { namespace: 'foo' })
 
   // ! but outside the plugin the decorator would be app.foo.utility()
   t.assert.ok(app.foo.utility)

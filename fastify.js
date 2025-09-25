@@ -85,18 +85,24 @@ const initChannel = diagnostics.channel('fastify.initialization')
  * @param {import('./fastify.js').FastifyServerOptions} options
  */
 function fastify (serverOptions) {
-  const config = buildServerConfig(serverOptions, defaultRoute, onBadUrl)
+  const {
+    options,
+    genReqId,
+    disableRequestLogging,
+    hasLogger,
+    initialConfig
+  } = processOptions(serverOptions, defaultRoute, onBadUrl)
 
   // Default router
   const router = buildRouting({
-    config: config.routerOptions
+    config: options.routerOptions
   })
 
   // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = build404(config)
+  const fourOhFour = build404(options)
 
   // HTTP server and its handler
-  const httpHandler = wrapRouting(router, config)
+  const httpHandler = wrapRouting(router, options)
 
   const {
     server,
@@ -105,10 +111,10 @@ function fastify (serverOptions) {
     serverHasCloseAllConnections,
     serverHasCloseHttp2Sessions,
     keepAliveConnections
-  } = createServer(config.normalizedServerOptions, httpHandler)
+  } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
-  const schemaController = SchemaController.buildSchemaController(null, config.schemaController)
+  const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
   // Public API
   const fastify = {
@@ -139,10 +145,10 @@ function fastify (serverOptions) {
         'POST'
       ])
     },
-    [kOptions]: config.normalizedServerOptions,
+    [kOptions]: options,
     [kChildren]: [],
     [kServerBindings]: [],
-    [kBodyLimit]: config.bodyLimit,
+    [kBodyLimit]: options.bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kLogSerializers]: null,
@@ -154,17 +160,17 @@ function fastify (serverOptions) {
     [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
-      config.bodyLimit,
-      (config.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (config.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+      options.bodyLimit,
+      (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
+      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
     ),
     [kReply]: Reply.buildReply(Reply),
-    [kRequest]: Request.buildRequest(Request, config.trustProxy),
+    [kRequest]: Request.buildRequest(Request, options.trustProxy),
     [kFourOhFour]: fourOhFour,
     [pluginUtils.kRegisteredPlugins]: [],
     [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
-    [kGenReqId]: config.genReqId,
+    [kGenReqId]: genReqId,
     // routing method
     routing: httpHandler,
     // routes shorthand methods
@@ -208,7 +214,7 @@ function fastify (serverOptions) {
       return router.findRoute(options)
     },
     // expose logger instance
-    log: config.logger,
+    log: options.logger,
     // type provider
     withTypeProvider,
     // hooks
@@ -269,7 +275,7 @@ function fastify (serverOptions) {
     // child logger
     setChildLoggerFactory,
     // Set fastify initial configuration options read-only object
-    initialConfig: config.initialConfig,
+    initialConfig,
     // constraint strategies
     addConstraintStrategy: router.addConstraintStrategy.bind(router),
     hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
@@ -338,9 +344,9 @@ function fastify (serverOptions) {
     }
   })
 
-  if (config.schemaErrorFormatter) {
-    validateSchemaErrorFormatter(config.schemaErrorFormatter)
-    fastify[kSchemaErrorFormatter] = config.schemaErrorFormatter.bind(fastify)
+  if (options.schemaErrorFormatter) {
+    validateSchemaErrorFormatter(options.schemaErrorFormatter)
+    fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
   }
 
   // Install and configure Avvio
@@ -351,7 +357,7 @@ function fastify (serverOptions) {
   // - onClose
   // - close
 
-  const avvioPluginTimeout = Number(config.pluginTimeout)
+  const avvioPluginTimeout = Number(options.pluginTimeout)
   const avvio = Avvio(fastify, {
     autostart: false,
     timeout: isNaN(avvioPluginTimeout) === false ? avvioPluginTimeout : defaultInitOptions.pluginTimeout,
@@ -401,7 +407,7 @@ function fastify (serverOptions) {
         // We must call close on the server even if we are not listening
         // otherwise memory will be leaked.
         // https://github.com/nodejs/node/issues/48604
-        if (!config.serverFactory || fastify[kState].listening) {
+        if (!options.serverFactory || fastify[kState].listening) {
           instance.server.close(function (err) {
             /* c8 ignore next 6 */
             if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
@@ -427,17 +433,17 @@ function fastify (serverOptions) {
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
 
-  router.setup(config, {
+  router.setup(options, {
     avvio,
     fourOhFour,
-    hasLogger: config.hasLogger,
+    hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
     keepAliveConnections
   })
 
   // Delay configuring clientError handler so that it can access fastify state.
-  server.on('clientError', config.clientErrorHandler.bind(fastify))
+  server.on('clientError', options.clientErrorHandler.bind(fastify))
 
   if (initChannel.hasSubscribers) {
     initChannel.publish({ fastify })
@@ -630,18 +636,18 @@ function fastify (serverOptions) {
   }
 
   function onBadUrl (path, req, res) {
-    if (config.frameworkErrors) {
+    if (options.frameworkErrors) {
       const id = getGenReqId(onBadUrlContext.server, req)
-      const childLogger = createChildLogger(onBadUrlContext, config.logger, req, id)
+      const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (config.disableRequestLogging === false) {
+      if (disableRequestLogging === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
-      return config.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+      return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
     const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
@@ -655,18 +661,18 @@ function fastify (serverOptions) {
     if (isAsync === false) return undefined
     return function onAsyncConstraintError (err) {
       if (err) {
-        if (config.frameworkErrors) {
+        if (options.frameworkErrors) {
           const id = getGenReqId(onBadUrlContext.server, req)
-          const childLogger = createChildLogger(onBadUrlContext, config.logger, req, id)
+          const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (config.disableRequestLogging === false) {
+          if (disableRequestLogging === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
-          return config.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
+          return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
         res.writeHead(500, {
@@ -729,7 +735,7 @@ function fastify (serverOptions) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
-    if (!config.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
     } else if (this[kErrorHandlerAlreadySet]) {
       FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
@@ -803,7 +809,7 @@ function fastify (serverOptions) {
   }
 }
 
-function buildServerConfig (options, defaultRoute, onBadUrl) {
+function processOptions (options, defaultRoute, onBadUrl) {
   // Options validations
   if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
@@ -831,7 +837,7 @@ function buildServerConfig (options, defaultRoute, onBadUrl) {
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
-  const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
+  options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
 
   const ajvOptions = Object.assign({
@@ -880,19 +886,14 @@ function buildServerConfig (options, defaultRoute, onBadUrl) {
     useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
   })
 
-  const normalizedServerOptions = options
-
   return {
-    ...options,
-    normalizedServerOptions,
-    requestIdHeader,
+    options,
     genReqId,
-    requestIdLogLabel,
-    bodyLimit,
     disableRequestLogging,
-    ajvOptions,
     hasLogger,
-    initialConfig
+    initialConfig,
+    requestIdHeader,
+    requestIdLogLabel
   }
 }
 

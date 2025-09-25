@@ -5,6 +5,28 @@ on:
     types: [labeled]
   
   workflow_dispatch:
+    inputs:
+      node-version:
+        description: 'Node version'
+        required: true
+        type: choice
+        options:
+          - '20'
+          - '22'
+          - '24'
+          - 'lts/*'
+          - 'nightly'
+          - 'current'
+        default: '24'
+      os:
+        description: 'Operating System'
+        required: false
+        type: choice
+        default: 'ubuntu-latest'
+        options:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+          - 'macos-latest'
 
 permissions:
   contents: read
@@ -78,16 +100,14 @@ jobs:
           # - '@fastify/vite'
           - '@fastify/websocket'
           - '@fastify/zipkin'
-        node-version: ['20']
-        os: [ubuntu-latest]
     uses: './.github/workflows/citgm-package.yml'
     with:
-      os: ${{ matrix.os }}
+      os: ${{ inputs.os }}
       package: ${{ matrix.package }}
-      node-version: ${{ matrix.node-version }}
+      node-version: ${{ inputs.node-version }}
 
   remove-label:
-    if: ${{ always() && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'citgm-core-plugins') }}
+    if: ${{ always() && github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'citgm-core-plugins' }}
     needs:
       - core-plugins
     continue-on-error: true

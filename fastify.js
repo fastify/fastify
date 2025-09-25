@@ -891,9 +891,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
     genReqId,
     disableRequestLogging,
     hasLogger,
-    initialConfig,
-    requestIdHeader,
-    requestIdLogLabel
+    initialConfig
   }
 }
 

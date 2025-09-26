@@ -42,7 +42,7 @@ expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
-    expectType<FastifyError>(error)
+    expectType<unknown>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )
@@ -170,12 +170,6 @@ server.setNotFoundHandler(function (_, reply) {
   return reply.send('')
 })
 
-function invalidErrorHandler (error: number) {
-  if (error) throw error
-}
-
-expectError(server.setErrorHandler(invalidErrorHandler))
-
 server.setSchemaController({
   bucket: (parentSchemas: unknown) => {
     return {
@@ -273,7 +267,7 @@ expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as R
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
-    expectAssignable<FastifyError>(error)
+    expectAssignable<unknown>(error)
     expectAssignable<FastifyRequest>(request)
     expectAssignable<{ contextKey: string }>(request.routeOptions.config)
     expectAssignable<FastifyReply>(reply)

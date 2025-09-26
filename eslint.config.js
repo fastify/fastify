@@ -4,7 +4,7 @@ const neostandard = require('neostandard')
 module.exports = [
   ...neostandard({
     ignores: [
-      'lib/configValidator.js',
+      'lib/config-validator.js',
       'lib/error-serializer.js',
       'test/same-shape.test.js',
       'test/types/import.js'

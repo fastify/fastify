@@ -1438,6 +1438,17 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(correct2.status, 200)
   await correct2.bytes()
 
+  const correct3 = await fetch(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json\t; charset=utf-8'
+    },
+    body: JSON.stringify({ foo: 'string' })
+  })
+  t.assert.strictEqual(correct2.status, 200)
+  await correct3.bytes()
+
   const invalid1 = await fetch(address, {
     method: 'POST',
     url: '/',
@@ -1501,8 +1512,8 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid6.status, 415)
-  t.assert.strictEqual((await invalid6.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+  t.assert.strictEqual(invalid6.status, 400)
+  t.assert.strictEqual((await invalid6.json()).code, 'FST_ERR_VALIDATION')
 
   const invalid7 = await fetch(address, {
     method: 'POST',

@@ -3,6 +3,8 @@ name: CITGM
 on:
   pull_request:
     types: [labeled]
+  
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,7 +12,7 @@ permissions:
 jobs:
   core-plugins:
     name: CITGM
-    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'citgm-core-plugins' }}
     permissions:
       contents: read
     strategy:
@@ -85,7 +87,7 @@ jobs:
       node-version: ${{ matrix.node-version }}
 
   remove-label:
-    if: ${{ github.event.label.name == 'citgm-core-plugins' }}
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'citgm-core-plugins') }}
     needs:
       - core-plugins
     continue-on-error: true
@@ -104,5 +106,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: "echo Successfully removed label"
+        if: ${{ success() }}
       - run: "echo Could not remove label"
         if: ${{ failure() }}

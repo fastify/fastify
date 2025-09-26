@@ -11,9 +11,9 @@
 
 [![CI](https://github.com/fastify/fastify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
 [![Package Manager
-CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
+CI](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web
-SIte](https://github.com/fastify/fastify/workflows/website/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/website.yml)
+site](https://github.com/fastify/fastify/actions/workflows/website.yml/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
 
@@ -165,6 +165,7 @@ fastify.listen({ port: 3000 }, (err, address) => {
 
 Do you want to know more? Head to the <a
 href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
+If you learn best by reading code, explore the official [demo](https://github.com/fastify/demo).
 
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default
@@ -305,6 +306,8 @@ listed in alphabetical order.
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino),
   <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__Jean Michelet__](https://github.com/jean-michelet),
+  <https://www.npmjs.com/~jean-michelet>
 * [__KaKa Ng__](https://github.com/climba03003),
   <https://www.npmjs.com/~climba03003>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),

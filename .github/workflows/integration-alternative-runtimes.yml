@@ -14,6 +14,9 @@ on:
       - 'docs/**'
       - '*.md'
 
+permissions:
+  contents: read
+
 jobs:
   install-production:
     runs-on: ${{ matrix.os }}
@@ -35,20 +38,20 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         if: ${{ matrix.runtime == 'nsolid' }}
         with:
           node-version: ${{ matrix.node-version }}
           nsolid-version: ${{ matrix.nsolid-version }}
 
       - name: Install Pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
         with:
           version: ${{ matrix.pnpm-version }}
 
       - name: Install Production
         run: |
-          pnpm install --prod
+          pnpm install --ignore-scripts --prod
 
       - name: Run server
         run: |

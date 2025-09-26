@@ -13,12 +13,14 @@ on:
        - "**/*.md"
 
 permissions:
-  contents: read # to fetch code (actions/checkout)
+  contents: read
 
 jobs:
   build:
     name: Lint Markdown
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout Code
@@ -36,7 +38,7 @@ jobs:
         run: npm install --ignore-scripts
 
       - name: Add Matcher
-        uses: xt0rted/markdownlint-problem-matcher@1a5fabfb577370cfdf5af944d418e4be3ea06f27
+        uses: xt0rted/markdownlint-problem-matcher@1a5fabfb577370cfdf5af944d418e4be3ea06f27 # v3.0.0
 
       - name: Run Linter
         run: ./node_modules/.bin/markdownlint-cli2

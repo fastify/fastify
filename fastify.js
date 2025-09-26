@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.2.1'
+const VERSION = '5.6.1'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -31,7 +31,8 @@ const {
   kErrorHandler,
   kKeepAliveConnections,
   kChildLoggerFactory,
-  kGenReqId
+  kGenReqId,
+  kErrorHandlerAlreadySet
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -39,22 +40,23 @@ const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
-const ContentTypeParser = require('./lib/contentTypeParser')
+const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
-const pluginUtils = require('./lib/pluginUtils')
-const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
-const { buildRouting, validateBodyLimitOption } = require('./lib/route')
-const build404 = require('./lib/fourOhFour')
-const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-const override = require('./lib/pluginOverride')
+const pluginUtils = require('./lib/plugin-utils.js')
+const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
+const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
+const build404 = require('./lib/four-oh-four')
+const getSecuredInitialConfig = require('./lib/initial-config-validation.js')
+const override = require('./lib/plugin-override')
 const noopSet = require('./lib/noop-set')
 const {
   appendStackTrace,
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
+const PonyPromise = require('./lib/promise')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -72,10 +74,12 @@ const {
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_ALREADY_SET,
   FST_ERR_ROUTE_METHOD_INVALID
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+const { FSTWRN004 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -104,8 +108,14 @@ function fastify (options) {
     options = Object.assign({}, options)
   }
 
-  if (options.querystringParser && typeof options.querystringParser !== 'function') {
-    throw new FST_ERR_QSP_NOT_FN(typeof options.querystringParser)
+  if (
+    (options.querystringParser && typeof options.querystringParser !== 'function') ||
+    (
+      options.routerOptions?.querystringParser &&
+      typeof options.routerOptions.querystringParser !== 'function'
+    )
+  ) {
+    throw new FST_ERR_QSP_NOT_FN(typeof (options.querystringParser ?? options.routerOptions.querystringParser))
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
@@ -149,27 +159,27 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
+  options.routerOptions = buildRouterOptions(options, {
+    defaultRoute,
+    onBadUrl,
+    ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
+    ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
+    maxParamLength: defaultInitOptions.maxParamLength,
+    allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
+    buildPrettyMeta: defaultBuildPrettyMeta,
+    useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
+  })
+
   // Default router
   const router = buildRouting({
-    config: {
-      defaultRoute,
-      onBadUrl,
-      constraints: options.constraints,
-      ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
-      ignoreDuplicateSlashes: options.ignoreDuplicateSlashes || defaultInitOptions.ignoreDuplicateSlashes,
-      maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive,
-      allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
-      buildPrettyMeta: defaultBuildPrettyMeta,
-      querystringParser: options.querystringParser,
-      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
-    }
+    config: options.routerOptions
   })
 
   // 404 router, used for handling encapsulated 404 handlers
@@ -184,6 +194,7 @@ function fastify (options) {
 
   const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
   const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
+  const serverHasCloseHttp2Sessions = typeof server.closeHttp2Sessions === 'function'
 
   let forceCloseConnections = options.forceCloseConnections
   if (forceCloseConnections === 'idle' && !serverHasCloseIdleConnections) {
@@ -207,7 +218,8 @@ function fastify (options) {
       started: false,
       ready: false,
       booting: false,
-      readyPromise: null
+      aborted: false,
+      readyResolver: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kSupportedHTTPMethods]: {
@@ -237,6 +249,7 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
+    [kErrorHandlerAlreadySet]: false,
     [kChildLoggerFactory]: defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -343,6 +356,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
+    getDecorator: decorator.getInstanceDecorator,
     addHttpMethod,
     // fake http injection
     inject,
@@ -478,6 +492,10 @@ function fastify (options) {
           }
         }
 
+        if (serverHasCloseHttp2Sessions) {
+          instance.server.closeHttp2Sessions()
+        }
+
         // No new TCP connections are accepted.
         // We must call close on the server even if we are not listening
         // otherwise memory will be leaked.
@@ -581,17 +599,14 @@ function fastify (options) {
   }
 
   function ready (cb) {
-    if (this[kState].readyPromise !== null) {
+    if (this[kState].readyResolver !== null) {
       if (cb != null) {
-        this[kState].readyPromise.then(() => cb(null, fastify), cb)
+        this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
         return
       }
 
-      return this[kState].readyPromise
+      return this[kState].readyResolver.promise
     }
-
-    let resolveReady
-    let rejectReady
 
     // run the hooks after returning the promise
     process.nextTick(runHooks)
@@ -600,15 +615,12 @@ function fastify (options) {
     // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
     // as well as a flow control mechanism to chain cbs and further
     // promises
-    this[kState].readyPromise = new Promise(function (resolve, reject) {
-      resolveReady = resolve
-      rejectReady = reject
-    })
+    this[kState].readyResolver = PonyPromise.withResolvers()
 
     if (!cb) {
-      return this[kState].readyPromise
+      return this[kState].readyResolver.promise
     } else {
-      this[kState].readyPromise.then(() => cb(null, fastify), cb)
+      this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
     }
 
     function runHooks () {
@@ -633,13 +645,13 @@ function fastify (options) {
         : err
 
       if (err) {
-        return rejectReady(err)
+        return fastify[kState].readyResolver.reject(err)
       }
 
-      resolveReady(fastify)
+      fastify[kState].readyResolver.resolve(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true
-      fastify[kState].promise = null
+      fastify[kState].readyResolver = null
     }
   }
 
@@ -680,8 +692,12 @@ function fastify (options) {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
-        _addHook.call(this, name, fn)
-        done(err)
+        try {
+          _addHook.call(this, name, fn)
+          done(err)
+        } catch (err) {
+          done(err)
+        }
       })
     }
     return this
@@ -853,6 +869,13 @@ function fastify (options) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
+    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+      throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
+    } else if (this[kErrorHandlerAlreadySet]) {
+      FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
+    }
+
+    this[kErrorHandlerAlreadySet] = true
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }

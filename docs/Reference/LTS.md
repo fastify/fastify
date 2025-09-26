@@ -1,8 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Long Term Support
-
-`<a id="lts"></a>`
+<a id="lts"></a>
 
 Fastify's Long Term Support (LTS) is provided according to the schedule laid out
 in this document:
@@ -38,10 +37,13 @@ A "month" is defined as 30 consecutive days.
 > As a consequence of providing long-term support for major releases, there are
 > occasions where we need to release breaking changes as a _minor_ version
 > release. Such changes will _always_ be noted in the [release
->
+> notes](https://github.com/fastify/fastify/releases).
+> 
 > To avoid automatically receiving breaking security updates it is possible to
 > use the tilde (`~`) range qualifier. For example, to get patches for the 3.15
 > release, and avoid automatically updating to the 3.16 release, specify the
+> dependency as `"fastify": "~3.15.x"`. This will leave your application
+> vulnerable, so please use it with caution.
 
 ### Security Support Beyond LTS
 
@@ -50,8 +52,7 @@ OpenJS Ecosystem Sustainability Program for versions of Fastify that are EOL.
 For more information, see their [Never Ending Support][hd-link] service.
 
 ### Schedule
-
-`<a id="lts-schedule"></a>`
+<a id="lts-schedule"></a>
 
 | Version | Release Date | End Of LTS Date | Node.js            | Nsolid(Node)   |
 | :------ | :----------- | :-------------- | :----------------- | :------------- |
@@ -62,8 +63,7 @@ For more information, see their [Never Ending Support][hd-link] service.
 | 5.0.0   | 2024-09-17   | TBD             | 20, 22             | v5(20)         |
 
 ### CI tested operating systems
-
-`<a id="supported-os"></a>`
+<a id="supported-os"></a>
 
 Fastify uses GitHub Actions for CI testing, please refer to [GitHub&#39;s
 documentation regarding workflow

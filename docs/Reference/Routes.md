@@ -59,8 +59,9 @@ fastify.route(options)
   one.
 * `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) called
   as soon as a request is received, it could also be an array of functions.
-* `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called
-  before parsing the request, it could also be an array of functions.
+* `preParsing(request, reply, payload, done)`: a
+  [function](./Hooks.md#preparsing) called before parsing the request, it could
+  also be an array of functions.
 * `preValidation(request, reply, done)`: a [function](./Hooks.md#prevalidation)
   called after the shared `preValidation` hooks, useful if you need to perform
   authentication at route level for example, it could also be an array of
@@ -137,7 +138,7 @@ fastify.route(options)
 
 * `reply` is defined in [Reply](./Reply.md).
 
-> 🛈 Note: The documentation for `onRequest`, `preParsing`, `preValidation`,
+> ℹ️ Note: The documentation for `onRequest`, `preParsing`, `preValidation`,
 > `preHandler`, `preSerialization`, `onSend`, and `onResponse` is detailed in
 > [Hooks](./Hooks.md). To send a response before the request is handled by the
 > `handler`, see [Respond to a request from
@@ -233,7 +234,7 @@ const opts = {
 fastify.get('/', opts)
 ```
 
-> 🛈 Note: Specifying the handler in both `options` and as the third parameter to
+> ℹ️ Note: Specifying the handler in both `options` and as the third parameter to
 > the shortcut method throws a duplicate `handler` error.
 
 ### Url building
@@ -402,7 +403,7 @@ This approach supports both `callback-style` and `async-await` with minimal
 trade-off. However, it is recommended to use only one style for consistent
 error handling within your application.
 
-> 🛈 Note: Every async function returns a promise by itself.
+> ℹ️ Note: Every async function returns a promise by itself.
 
 ### Route Prefixing
 <a id="route-prefixing"></a>
@@ -635,8 +636,7 @@ has a version set, and will prefer a versioned route to a non-versioned route
 for the same path. Advanced version ranges and pre-releases currently are not
 supported.
 
-*Be aware that using this feature will cause a degradation of the overall
-performances of the router.*
+> **Note:** using this feature can degrade the router’s performance.
 
 ```js
 fastify.route({
@@ -781,7 +781,7 @@ const secret = {
 > const Fastify = require('fastify')
 >
 > const fastify = Fastify({
->   frameworkErrors: function (err, res, res) {
+>   frameworkErrors: function (err, req, res) {
 >     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")

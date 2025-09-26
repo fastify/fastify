@@ -1,7 +1,7 @@
 'use strict'
 
 const { test, describe } = require('node:test')
-const Fastify = require('../fastify')
+const Fastify = require('..')
 
 const fastify = Fastify()
 
@@ -10,9 +10,7 @@ describe('hasRoute', async t => {
     t.plan(3)
 
     t.assert.strictEqual(fastify.hasRoute({ }), false)
-
     t.assert.strictEqual(fastify.hasRoute({ method: 'GET' }), false)
-
     t.assert.strictEqual(fastify.hasRoute({ constraints: [] }), false)
   })
 

@@ -8,12 +8,14 @@ on:
       - "**/Ecosystem.md"
 
 permissions:
-  contents: read # to fetch code (actions/checkout)
+  contents: read
 
 jobs:
   build:
     name: Lint Ecosystem Order
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout Code

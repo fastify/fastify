@@ -46,8 +46,8 @@ export interface FastifyReply<
   log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
-  code<Code extends ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, ResolveReplyTypeWithRouteGeneric<RouteGeneric['Reply'], Code, SchemaCompiler, TypeProvider>>;
-  status<Code extends ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, ResolveReplyTypeWithRouteGeneric<RouteGeneric['Reply'], Code, SchemaCompiler, TypeProvider>>;
+  code<Code extends keyof SchemaCompiler['response'] extends never ? ReplyKeysToCodes<keyof RouteGeneric['Reply']> : keyof SchemaCompiler['response'] extends ReplyKeysToCodes<keyof RouteGeneric['Reply']> ? keyof SchemaCompiler['response'] : ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, ResolveReplyTypeWithRouteGeneric<RouteGeneric['Reply'], Code, SchemaCompiler, TypeProvider>>;
+  status<Code extends keyof SchemaCompiler['response'] extends never ? ReplyKeysToCodes<keyof RouteGeneric['Reply']> : keyof SchemaCompiler['response'] extends ReplyKeysToCodes<keyof RouteGeneric['Reply']> ? keyof SchemaCompiler['response'] : ReplyKeysToCodes<keyof RouteGeneric['Reply']>>(statusCode: Code): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, ResolveReplyTypeWithRouteGeneric<RouteGeneric['Reply'], Code, SchemaCompiler, TypeProvider>>;
   statusCode: number;
   sent: boolean;
   send(payload?: ReplyType): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
@@ -77,4 +77,5 @@ export interface FastifyReply<
   ) => FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   hasTrailer(key: string): boolean;
   removeTrailer(key: string): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
+  getDecorator<T>(name: string | symbol): T;
 }

@@ -29,6 +29,7 @@
     - [FST_ERR_CTP_INVALID_MEDIA_TYPE](#fst_err_ctp_invalid_media_type)
     - [FST_ERR_CTP_INVALID_CONTENT_LENGTH](#fst_err_ctp_invalid_content_length)
     - [FST_ERR_CTP_EMPTY_JSON_BODY](#fst_err_ctp_empty_json_body)
+    - [FST_ERR_CTP_INVALID_JSON_BODY](#fst_err_ctp_invalid_json_body)
     - [FST_ERR_CTP_INSTANCE_ALREADY_STARTED](#fst_err_ctp_instance_already_started)
     - [FST_ERR_INSTANCE_ALREADY_LISTENING](#fst_err_instance_already_listening)
     - [FST_ERR_DEC_ALREADY_PRESENT](#fst_err_dec_already_present)
@@ -36,6 +37,7 @@
     - [FST_ERR_DEC_MISSING_DEPENDENCY](#fst_err_dec_missing_dependency)
     - [FST_ERR_DEC_AFTER_START](#fst_err_dec_after_start)
     - [FST_ERR_DEC_REFERENCE_TYPE](#fst_err_dec_reference_type)
+    - [FST_ERR_DEC_UNDECLARED](#fst_err_dec_undeclared)
     - [FST_ERR_HOOK_INVALID_TYPE](#fst_err_hook_invalid_type)
     - [FST_ERR_HOOK_INVALID_HANDLER](#fst_err_hook_invalid_handler)
     - [FST_ERR_HOOK_INVALID_ASYNC_HANDLER](#fst_err_hook_invalid_async_handler)
@@ -68,7 +70,6 @@
     - [FST_ERR_SCH_VALIDATION_BUILD](#fst_err_sch_validation_build)
     - [FST_ERR_SCH_SERIALIZATION_BUILD](#fst_err_sch_serialization_build)
     - [FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX](#fst_err_sch_response_schema_not_nested_2xx)
-    - [FST_ERR_HTTP2_INVALID_VERSION](#fst_err_http2_invalid_version)
     - [FST_ERR_INIT_OPTS_INVALID](#fst_err_init_opts_invalid)
     - [FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE](#fst_err_force_close_connections_idle_not_available)
     - [FST_ERR_DUPLICATED_ROUTE](#fst_err_duplicated_route)
@@ -97,6 +98,7 @@
     - [FST_ERR_VALIDATION](#fst_err_validation)
     - [FST_ERR_LISTEN_OPTIONS_INVALID](#fst_err_listen_options_invalid)
     - [FST_ERR_ERROR_HANDLER_NOT_FN](#fst_err_error_handler_not_fn)
+    - [FST_ERR_ERROR_HANDLER_ALREADY_SET](#fst_err_error_handler_already_set)
 
 ### Error Handling In Node.js
 <a id="error-handling"></a>
@@ -298,7 +300,8 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_ctp_body_too_large">FST_ERR_CTP_BODY_TOO_LARGE</a> | The request body is larger than the provided limit. | Increase the limit in the Fastify server instance setting: [bodyLimit](./Server.md#bodylimit) | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_invalid_media_type">FST_ERR_CTP_INVALID_MEDIA_TYPE</a> | The received media type is not supported (i.e. there is no suitable `Content-Type` parser for it). | Use a different content type. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_ctp_invalid_content_length">FST_ERR_CTP_INVALID_CONTENT_LENGTH</a> | Request body size did not match <code>Content-Length</code>. | Check the request body size and the <code>Content-Length</code> header. | [#1168](https://github.com/fastify/fastify/pull/1168) |
-| <a id="fst_err_ctp_empty_json_body">FST_ERR_CTP_EMPTY_JSON_BODY</a> | Body cannot be empty when content-type is set to <code>application/json</code>. | Check the request body. | [#1253](https://github.com/fastify/fastify/pull/1253) |
+| <a id="fst_err_ctp_empty_json_body">FST_ERR_CTP_EMPTY_JSON_BODY</a> | Body is not valid JSON but content-type is set to <code>application/json</code>. | Check if the request body is valid JSON. | [#5925](https://github.com/fastify/fastify/pull/5925) |
+| <a id="fst_err_ctp_invalid_json_body">FST_ERR_CTP_INVALID_JSON_BODY</a> | Body cannot be empty when content-type is set to <code>application/json</code>. | Check the request body. | [#1253](https://github.com/fastify/fastify/pull/1253) |
 | <a id="fst_err_ctp_instance_already_started">FST_ERR_CTP_INSTANCE_ALREADY_STARTED</a> | Fastify is already started. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_instance_already_listening">FST_ERR_INSTANCE_ALREADY_LISTENING</a> | Fastify instance is already listening. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_dec_already_present">FST_ERR_DEC_ALREADY_PRESENT</a> | A decorator with the same name is already registered. | Use a different decorator name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
@@ -306,6 +309,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_dec_missing_dependency">FST_ERR_DEC_MISSING_DEPENDENCY</a> | The decorator cannot be registered due to a missing dependency. | Register the missing dependency. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_after_start">FST_ERR_DEC_AFTER_START</a> | The decorator cannot be added after start. | Add the decorator before starting the server. | [#2128](https://github.com/fastify/fastify/pull/2128) |
 | <a id="fst_err_dec_reference_type">FST_ERR_DEC_REFERENCE_TYPE</a> | The decorator cannot be a reference type. | Define the decorator with a getter/setter interface or an empty decorator with a hook. | [#5462](https://github.com/fastify/fastify/pull/5462) |
+| <a id="fst_err_dec_undeclared">FST_ERR_DEC_UNDECLARED</a> | An attempt was made to access a decorator that has not been declared. | Declare the decorator before using it. | [#](https://github.com/fastify/fastify/pull/)
 | <a id="fst_err_hook_invalid_type">FST_ERR_HOOK_INVALID_TYPE</a> | The hook name must be a string. | Use a string for the hook name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_handler">FST_ERR_HOOK_INVALID_HANDLER</a> | The hook callback must be a function. | Use a function for the hook callback. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_async_handler">FST_ERR_HOOK_INVALID_ASYNC_HANDLER</a> | Async function has too many arguments. Async hooks should not use the `done` argument. | Remove the `done` argument from the async hook. | [#4367](https://github.com/fastify/fastify/pull/4367) |
@@ -338,7 +342,6 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_sch_validation_build">FST_ERR_SCH_VALIDATION_BUILD</a> | The JSON schema provided for validation to a route is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_serialization_build">FST_ERR_SCH_SERIALIZATION_BUILD</a> | The JSON schema provided for serialization of a route response is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_response_schema_not_nested_2xx">FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX</a> | Response schemas should be nested under a valid status code (2XX). | Use a valid status code. | [#4554](https://github.com/fastify/fastify/pull/4554) |
-| <a id="fst_err_http2_invalid_version">FST_ERR_HTTP2_INVALID_VERSION</a> | HTTP2 is available only from node >= 8.8.1. | Use a higher version of node. | [#1346](https://github.com/fastify/fastify/pull/1346) |
 | <a id="fst_err_init_opts_invalid">FST_ERR_INIT_OPTS_INVALID</a> | Invalid initialization options. | Use valid initialization options. | [#1471](https://github.com/fastify/fastify/pull/1471) |
 | <a id="fst_err_force_close_connections_idle_not_available">FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE</a> | Cannot set forceCloseConnections to `idle` as your HTTP server does not support `closeIdleConnections` method. | Use a different value for `forceCloseConnections`. | [#3925](https://github.com/fastify/fastify/pull/3925) |
 | <a id="fst_err_duplicated_route">FST_ERR_DUPLICATED_ROUTE</a> | The HTTP method already has a registered controller for that URL. | Use a different URL or register the controller for another HTTP method. | [#2954](https://github.com/fastify/fastify/pull/2954) |
@@ -366,5 +369,4 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_plugin_invalid_async_handler">FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER</a> | The plugin being registered mixes async and callback styles. | - | [#5141](https://github.com/fastify/fastify/pull/5141) |
 | <a id="fst_err_validation">FST_ERR_VALIDATION</a> | The Request failed the payload validation. | Check the request payload. | [#4824](https://github.com/fastify/fastify/pull/4824) |
 | <a id="fst_err_listen_options_invalid">FST_ERR_LISTEN_OPTIONS_INVALID</a> | Invalid listen options. | Check the listen options. | [#4886](https://github.com/fastify/fastify/pull/4886) |
-| <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) |
-
+| <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) | <a id="fst_err_error_handler_already_set">FST_ERR_ERROR_HANDLER_ALREADY_SET</a> | Error Handler already set in this scope. Set `allowErrorHandlerOverride: true` to allow overriding. | By default, `setErrorHandler` can only be called once per encapsulation context. | [#6097](https://github.com/fastify/fastify/pull/6098) |

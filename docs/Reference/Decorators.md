@@ -187,9 +187,9 @@ incoming request in the [`'onRequest'` hook](./Hooks.md#onrequest).
 const fp = require('fastify-plugin')
 
 async function myPlugin (app) {
-  app.decorateRequest('foo')
+  app.decorateReply('foo')
   app.addHook('onRequest', async (req, reply) => {
-    req.foo = { bar: 42 }
+    reply.foo = { bar: 42 }
   })
 }
 
@@ -365,3 +365,69 @@ Will define the `foo` property on the Fastify instance:
 ```js
 console.log(fastify.foo) // 'a getter'
 ```
+
+#### `getDecorator(name)`
+<a id="get-decorator"></a>
+
+Used to retrieve an existing decorator from the Fastify instance, `Request`, or `Reply`.
+If the decorator is not defined, an `FST_ERR_DEC_UNDECLARED` error is thrown.
+
+```js
+// Get a decorator from the Fastify instance
+const utility = fastify.getDecorator('utility')
+
+// Get a decorator from the request object
+const user = request.getDecorator('user')
+
+// Get a decorator from the reply object
+const helper = reply.getDecorator('helper')
+```
+
+The `getDecorator` method is useful for dependency validation - it can be used to
+check for required decorators at registration time. If any are missing, it fails
+at boot, ensuring dependencies are available during the request lifecycle.
+
+```js
+fastify.register(async function (fastify) {
+  // Verify the decorator exists before using it
+  const usersRepository = fastify.getDecorator('usersRepository')
+
+  fastify.get('/users', async function (request, reply) {
+    return usersRepository.findAll()
+  })
+})
+```
+
+> ℹ️ Note: For TypeScript users, `getDecorator` supports generic type parameters.
+> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
+> advanced typing examples.
+
+#### `setDecorator(name, value)`
+<a id="set-decorator"></a>
+
+Used to safely update the value of a `Request` decorator.
+If the decorator does not exist, a `FST_ERR_DEC_UNDECLARED` error is thrown.
+
+```js
+fastify.decorateRequest('user', null)
+
+fastify.addHook('preHandler', async (req, reply) => {
+  // Safely set the decorator value
+  req.setDecorator('user', 'Bob Dylan')
+})
+```
+
+The `setDecorator` method provides runtime safety by ensuring the decorator exists
+before setting its value, preventing errors from typos in decorator names.
+
+```js
+fastify.decorateRequest('account', null)
+fastify.addHook('preHandler', async (req, reply) => {
+  // This will throw FST_ERR_DEC_UNDECLARED due to typo in decorator name
+  req.setDecorator('acount', { id: 123 })
+})
+```
+
+> ℹ️ Note: For TypeScript users, see the
+> [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced
+> typing examples using `setDecorator<T>`.

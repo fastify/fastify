@@ -285,7 +285,7 @@ server {
 ## Kubernetes
 <a id="kubernetes"></a>
 
-The `readinessProbe` uses [(by
+The `readinessProbe` uses ([by
 default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes))
 the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe
 will not be able to reach the application in this case. To make it work,

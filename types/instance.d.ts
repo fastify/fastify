@@ -23,6 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { FastifyRouterOptions } from '../fastify'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -151,6 +152,8 @@ export interface FastifyInstance<
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+
+  getDecorator<T>(name: string | symbol): T;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
@@ -461,12 +464,12 @@ export interface FastifyInstance<
   /**
    * Fastify default error handler
    */
-  errorHandler: (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+  errorHandler: <TError = unknown>(error: TError, request: FastifyRequest, reply: FastifyReply) => void;
 
   /**
-   * Set a function that will be called whenever an error happens
+   * Set a function that will be invoked whenever an exception is thrown during the request lifecycle.
    */
-  setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
+  setErrorHandler<TError = unknown, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
     handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, TypeProvider>) => any | Promise<any>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
@@ -601,5 +604,6 @@ export interface FastifyInstance<
     requestIdLogLabel?: string,
     http2SessionTimeout?: number,
     useSemicolonDelimiter?: boolean,
+    routerOptions?: FastifyRouterOptions<RawServer>
   }>
 }

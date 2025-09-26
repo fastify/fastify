@@ -7,11 +7,19 @@ on:
         description: 'Package to test'
         required: true
         type: string
+        
       node-version:
         description: 'Node version to test'
         required: true
-        type: string
-        default: '20'
+        type: choice
+        options:
+          - '20'
+          - '22'
+          - '24'
+          - 'lts/*'
+          - 'nightly'
+          - 'current'
+        default: '24'
       os:
         description: 'Operating System'
         required: false
@@ -63,7 +71,7 @@ jobs:
 
         - name: Install Dependencies for Fastify
           run: |
-            npm install --ignore-scripts
+            npm install --production --ignore-scripts
         - name: Npm Link Fastify
           run: |
             npm link

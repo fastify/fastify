@@ -195,15 +195,15 @@ expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogge
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsAsync))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithType))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync))
-// @ts-expect-error
 expectAssignable<ServerWithTypeProviderAndLogger>(
+  // @ts-expect-error
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger)
 )
 expectAssignable<ServerWithTypeProviderAndLogger>(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger, testOptions)
 )
-// @ts-expect-error
 expectAssignable<ServerWithTypeProviderAndLogger>(
+  // @ts-expect-error
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync)
 )
 expectAssignable<ServerWithTypeProviderAndLogger>(

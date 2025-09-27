@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.5.0",
+  "version": "5.6.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -21,7 +21,7 @@
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run unit && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
-    "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/configValidator.js",
+    "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/config-validator.js",
     "test:typescript": "tsc test/types/import.ts --target es2022 --moduleResolution node16 --module node16 --noEmit && tsd",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
     "unit": "borp",
@@ -165,7 +165,6 @@
     }
   ],
   "devDependencies": {
-    "@fastify/pre-commit": "^2.1.0",
     "@jsumners/line-reporter": "^1.0.1",
     "@sinclair/typebox": "^0.34.13",
     "@sinonjs/fake-timers": "^11.2.2",

@@ -17,6 +17,7 @@ on:
           - 'lts/*'
           - 'nightly'
           - 'current'
+          - 'latest'
         default: '24'
       os:
         description: 'Operating System'
@@ -101,9 +102,9 @@ jobs:
           - '@fastify/zipkin'
     uses: './.github/workflows/citgm-package.yml'
     with:
-      os: ${{ inputs.os }}
+      os: ${{ github.event_name == 'workflow_dispatch' && inputs.os || 'ubuntu-latest' }}
       package: ${{ matrix.package }}
-      node-version: ${{ inputs.node-version }}
+      node-version: ${{ github.event_name == 'workflow_dispatch' && inputs.node-version || '24' }}
 
   remove-label:
     if: ${{ always() && github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'citgm-core-plugins' }}

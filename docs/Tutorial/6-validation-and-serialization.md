@@ -4,7 +4,7 @@ Right now, our routes just accept whatever the client sends and return
 whatever we produce. That works, but it’s risky and inefficient. 
 Let’s tighten things up with validation and serialization.
 
-To address this, we need two add two steps:
+To address this, we need to add two steps:
 
 * **Validate** inputs before our logic runs - so we reject bad data early and 
 avoid chasing runtime errors.

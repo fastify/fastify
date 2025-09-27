@@ -21,8 +21,15 @@ const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (ins
   expectType<TestOptions>(opts)
 }
 
-const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
-const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { }
+const testPluginOptsWithType = (
+  instance: FastifyInstance,
+  opts: FastifyPluginOptions,
+  done: (error?: FastifyError) => void
+) => { }
+const testPluginOptsWithTypeAsync = async (
+  instance: FastifyInstance,
+  opts: FastifyPluginOptions
+) => { }
 
 expectError(fastify().register(testPluginOpts, {})) // error because missing required options from generic declaration
 expectError(fastify().register(testPluginOptsAsync, {})) // error because missing required options from generic declaration
@@ -43,16 +50,27 @@ expectAssignable<FastifyInstance>(fastify().register(testPluginCallback, {}))
 const testPluginAsync: FastifyPluginAsync = async function (instance, opts) { }
 expectAssignable<FastifyInstance>(fastify().register(testPluginAsync, {}))
 
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts): Promise<void> { return Promise.resolve() }))
+expectAssignable<FastifyInstance>(
+  fastify().register(function (instance, opts): Promise<void> { return Promise.resolve() })
+)
 expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, () => { }))
 expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' }))
 
 expectError(fastify().register(function (instance, opts, done) { }, { ...testOptions, logLevel: '' })) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
-expectError<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & Promise<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
-expectAssignable<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
+expectError<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  Promise<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(httpsServer)
+expectAssignable<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(httpsServer)
+expectType<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(httpsServer)
 
 // Chainable
 httpsServer

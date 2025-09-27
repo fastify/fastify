@@ -25,8 +25,8 @@ We’ll start by exploring Fastify’s core features:
 Once the fundamentals are clear, we’ll introduce how to:
 
 - Leverage the plugin system to modularize the application
-- Use encapsulation to reduce overhead and scoped utilities 
-to leak into the global context
+- Use encapsulation to isolate plugins and prevent scoped 
+  utilities from leaking into the global context.
 - Share utilities globally
 
 ### Plugin Ecosystem and Integration

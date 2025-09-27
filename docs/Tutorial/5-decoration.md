@@ -26,9 +26,8 @@ Let's first create our in-memory document database that manages multiple
 collections. 
 Each collection keeps its own `id` counter and `Map` of documents.
 
-Because our server file is starting to grow and take on too many 
-responsibilities, we're gonna start to decouple different concerns 
-into separate files.
+Because our server file is starting to grow and take on too many
+responsibilities, we should start to separate concerns into different files.
 
 So let's create our db in a `db.js` file:
 

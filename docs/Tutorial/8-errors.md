@@ -2,7 +2,7 @@
 
 Currently, we rely entirely on Fastify’s defaults when things go wrong.
 
-This is convenient for development, but in production we usually want more control:
+This is convenient for development, but in production we need more control:
 * Customize **500 errors** without leaking stack traces to the client.
 * Provide user-friendly messages for **validation errors**.
 * Centralize error logging and monitoring.
@@ -15,7 +15,7 @@ Fastify provides dedicated APIs for this:
 
 ## Implementation
 
-We’ll add our error handlers in a new file called `handle-errors.js`.
+We’ll centralize error handling in a new file, `handle-errors.js`.
 
 ```js
 // handle-errors.js
@@ -82,7 +82,7 @@ configureErrorHandlers(app);
 
 ## Error Scenario
 
-To confirm everything works, let’s add a route that always fails:
+To confirm our setup works, let’s add a route that deliberately fails:
 
 ```js
 app.get("/throw", async function () {

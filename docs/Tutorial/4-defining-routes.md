@@ -4,10 +4,13 @@ In this chapter, you'll learn how to define routes in Fastify.
 We'll set up essential endpoints for our *Quote Vault* API, enabling users
 to store, retrieve, update, and delete memorable quotes.
 
-We'll explore Fastify’s routing methods and briefly discuss the underlying
-mechanisms that manage routing internally.
+## find-my-way
 
-### Defining Routes
+Under the hood, Fastify uses [find-my-way](https://github.com/delvedor/find-my-way),
+a very fast, framework-independent HTTP router that relies on a highly efficient
+[**Radix Tree**](https://en.wikipedia.org/wiki/Radix_tree)
+
+## Defining Routes
 
 Fastify provides multiple ways to define routes:
 
@@ -52,7 +55,7 @@ app.post("/quotes", async (request, reply) => {
 });
 ```
 
-Let's discuss a few important things here.
+Let’s review a few important details from these examples.
 
 1. **Accessing Request Data**
 
@@ -96,7 +99,7 @@ Let's discuss a few important things here.
 
    In this tutorial, we'll return the value whenever possible.
 
-#### Let's create all our routes now
+### Let's create all our routes now
 
 ```js
 /**
@@ -130,7 +133,7 @@ app.get("/quotes/:id", async (request, reply) => {
  * Responds with 201 Created and the new quote.
  */
 app.post("/quotes", async (request, reply) => {
-  const quote = { id: dbId++, text: request.body.text };
+  const quote = { id: id++, text: request.body.text };
   quotes.push(quote);
   reply.code(201);
   return quote;
@@ -176,7 +179,7 @@ app.delete("/quotes/:id", async (request, reply) => {
 });
 ```
 
-### Testing Routes
+## Testing Routes
 
 You can test your routes using `curl` commands:
 

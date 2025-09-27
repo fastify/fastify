@@ -1,4 +1,3 @@
-
 # Hooks
 
 So far, our application has been configured very simply.
@@ -102,7 +101,7 @@ If you send a reply in a hook, the rest of the hooks and the route handler are s
 // Stop request if no Authorization header
 app.addHook('onRequest', async (request, reply) => {
   if (!request.headers['authorization']) {
-    reply.code(401).send({ message: 'Missing Authorization' });
+    return reply.code(401).send({ message: 'Missing Authorization' });
   }
 });
 ```
@@ -142,6 +141,8 @@ export function createDb() {
     // existing methods...
 
     close() {
+      // Here it’s only a flag, but a real DB would
+      // close connections and free resources.
       started = false;
     }
   };

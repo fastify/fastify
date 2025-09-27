@@ -1,8 +1,8 @@
 ## Create a Fastify Server
 
-In this chapter, we'll guide you through setting up a basic Fastify server. 
-We'll briefly introduce essential concepts and internal mechanisms of Fastify 
-to deepen your understanding of the framework.
+n this chapter, we’ll start with the basics of setting up a Fastify server.
+This will give you a foundation before we dive into features like routes, hooks,
+and plugins.
 
 ### Initialize the Project
 
@@ -20,13 +20,12 @@ npm init -y
 npm install fastify
 ```
 
-In order to use ESM modules, your package.json file should contain `“type”: “module”`.
+To use ESM modules, add `“type”: “module”` to your package.json.
 
 ### The `fastify` Factory
 
 Fastify provides a factory function to create a server instance. 
-This function configures the behavior of your server through an options 
-parameter. 
+This function accepts an options object to configure your server.
 For detailed information about available options, refer to the 
 [documentation](https://fastify.dev/docs/latest/Reference/Server/#factory).
 

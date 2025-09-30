@@ -2,7 +2,6 @@
 
 const VERSION = '5.6.1'
 
-const Avvio = require('avvio')
 const http = require('node:http')
 const diagnostics = require('node:diagnostics_channel')
 let lightMyRequest
@@ -42,14 +41,13 @@ const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, supportedHooks, addHook } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
-const pluginUtils = require('./lib/plugin-utils.js')
+const pluginUtils = require('./lib/plugins.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
 const build404 = require('./lib/four-oh-four')
 const getSecuredInitialConfig = require('./lib/initial-config-validation.js')
-const override = require('./lib/plugin-override')
 const {
   appendStackTrace,
   AVVIO_ERRORS_MAP,
@@ -218,7 +216,10 @@ function fastify (serverOptions) {
     // type provider
     withTypeProvider,
     // hooks
-    addHook,
+    addHook: function _addHook (name, fn) {
+      throwIfAlreadyStarted('Cannot call "addHook"!')
+      return addHook.call(this, name, fn)
+    },
     // schemas
     addSchema,
     getSchema: schemaController.getSchema.bind(schemaController),
@@ -349,6 +350,12 @@ function fastify (serverOptions) {
     fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
   }
 
+  // Create bad URL context
+  const onBadUrlContext = new Context({
+    server: fastify,
+    config: {}
+  })
+
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
   // - register
@@ -356,78 +363,18 @@ function fastify (serverOptions) {
   // - ready
   // - onClose
   // - close
-
-  const avvioPluginTimeout = Number(options.pluginTimeout)
-  const avvio = Avvio(fastify, {
-    autostart: false,
-    timeout: isNaN(avvioPluginTimeout) === false ? avvioPluginTimeout : defaultInitOptions.pluginTimeout,
-    expose: {
-      use: 'register'
-    }
+  const avvio = pluginUtils.setupAvvio({
+    fastify,
+    options,
+    forceCloseConnections,
+    serverHasCloseAllConnections,
+    serverHasCloseHttp2Sessions,
+    defaultInitOptions,
+    router
   })
-  // Override to allow the plugin encapsulation
-  avvio.override = override
-  avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
   fastify.ready = ready // overwrite the avvio ready function
   fastify.printPlugins = avvio.prettyPrint.bind(avvio)
-
-  // cache the closing value, since we are checking it in an hot path
-  avvio.once('preReady', () => {
-    fastify.onClose((instance, done) => {
-      fastify[kState].closing = true
-      router.closeRoutes()
-
-      hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
-        if (fastify[kState].listening) {
-          /* istanbul ignore next: Cannot test this without Node.js core support */
-          if (forceCloseConnections === 'idle') {
-            // Not needed in Node 19
-            instance.server.closeIdleConnections()
-            /* istanbul ignore next: Cannot test this without Node.js core support */
-          } else if (serverHasCloseAllConnections && forceCloseConnections) {
-            instance.server.closeAllConnections()
-          } else if (forceCloseConnections === true) {
-            for (const conn of fastify[kKeepAliveConnections]) {
-              // We must invoke the destroy method instead of merely unreffing
-              // the sockets. If we only unref, then the callback passed to
-              // `fastify.close` will never be invoked; nor will any of the
-              // registered `onClose` hooks.
-              conn.destroy()
-              fastify[kKeepAliveConnections].delete(conn)
-            }
-          }
-        }
-
-        if (serverHasCloseHttp2Sessions) {
-          instance.server.closeHttp2Sessions()
-        }
-
-        // No new TCP connections are accepted.
-        // We must call close on the server even if we are not listening
-        // otherwise memory will be leaked.
-        // https://github.com/nodejs/node/issues/48604
-        if (!options.serverFactory || fastify[kState].listening) {
-          instance.server.close(function (err) {
-            /* c8 ignore next 6 */
-            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
-              done(null)
-            } else {
-              done()
-            }
-          })
-        } else {
-          process.nextTick(done, null)
-        }
-      })
-    })
-  })
-
-  // Create bad URL context
-  const onBadUrlContext = new Context({
-    server: fastify,
-    config: {}
-  })
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()
@@ -564,54 +511,6 @@ function fastify (serverOptions) {
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
   function withTypeProvider () {
     return this
-  }
-
-  // wrapper that we expose to the user for hooks handling
-  function addHook (name, fn) {
-    throwIfAlreadyStarted('Cannot call "addHook"!')
-
-    if (fn == null) {
-      throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
-    }
-
-    if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    } else if (name === 'onReady' || name === 'onListen') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    } else if (name === 'onRequestAbort') {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 1) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    } else {
-      if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
-        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
-      }
-    }
-
-    if (name === 'onClose') {
-      this.onClose(fn.bind(this))
-    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
-      this[kHooks].add(name, fn)
-    } else {
-      this.after((err, done) => {
-        try {
-          _addHook.call(this, name, fn)
-          done(err)
-        } catch (err) {
-          done(err)
-        }
-      })
-    }
-    return this
-
-    function _addHook (name, fn) {
-      this[kHooks].add(name, fn)
-      this[kChildren].forEach(child => _addHook.call(child, name, fn))
-    }
   }
 
   // wrapper that we expose to the user for schemas handling

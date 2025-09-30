@@ -4,7 +4,6 @@ const VERSION = '5.6.1'
 
 const http = require('node:http')
 const diagnostics = require('node:diagnostics_channel')
-let lightMyRequest
 
 const {
   kAvvioBoot,
@@ -54,6 +53,7 @@ const {
   ...errorCodes
 } = require('./lib/errors')
 const PonyPromise = require('./lib/promise')
+const createInject = require('./lib/inject.js')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -66,7 +66,6 @@ const {
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
   FST_ERR_INSTANCE_ALREADY_LISTENING,
-  FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
@@ -267,7 +266,7 @@ function fastify (serverOptions) {
     getDecorator: decorator.getInstanceDecorator,
     addHttpMethod,
     // fake http injection
-    inject,
+    inject: createInject(httpHandler),
     // pretty print of the registered routes
     printRoutes,
     // custom error handling
@@ -407,48 +406,6 @@ function fastify (serverOptions) {
 
   function throwIfAlreadyStarted (msg) {
     if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
-  }
-
-  // HTTP injection handling
-  // If the server is not ready yet, this
-  // utility will automatically force it.
-  function inject (opts, cb) {
-    // lightMyRequest is dynamically loaded as it seems very expensive
-    // because of Ajv
-    if (lightMyRequest === undefined) {
-      lightMyRequest = require('light-my-request')
-    }
-
-    if (fastify[kState].started) {
-      if (fastify[kState].closing) {
-        // Force to return an error
-        const error = new FST_ERR_REOPENED_CLOSE_SERVER()
-        if (cb) {
-          cb(error)
-          return
-        } else {
-          return Promise.reject(error)
-        }
-      }
-      return lightMyRequest(httpHandler, opts, cb)
-    }
-
-    if (cb) {
-      this.ready(err => {
-        if (err) cb(err, null)
-        else lightMyRequest(httpHandler, opts, cb)
-      })
-    } else {
-      return lightMyRequest((req, res) => {
-        this.ready(function (err) {
-          if (err) {
-            res.emit('error', err)
-            return
-          }
-          httpHandler(req, res)
-        })
-      }, opts)
-    }
   }
 
   function ready (cb) {

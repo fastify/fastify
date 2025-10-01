@@ -165,6 +165,9 @@ section.
   A simple way to add a crud in your fastify project.
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
+  - [`attaryz/fastify-devtools`](https://github.com/attaryz/fastify-devtools)
+    Development tools plugin for Fastify with live request dashboard, replay
+    capabilities, and metrics tracking.
 - [`@blastorg/fastify-aws-dynamodb-cache`](https://github.com/blastorg/fastify-aws-dynamodb-cache)
   A plugin to help with caching API responses using AWS DynamoDB.
 - [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)
@@ -743,8 +746,6 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`attaryz/fastify-devtools`](https://github.com/attaryz/fastify-devtools)
-  Development tools plugin for Fastify with live request dashboard, replay capabilities, and metrics tracking.
 
 
 #### [Community Tools](#community-tools)
@@ -764,3 +765,4 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
+  

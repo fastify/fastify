@@ -157,7 +157,7 @@ function fastify (serverOptions) {
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
     [kErrorHandlerAlreadySet]: false,
-    [kChildLoggerFactory]: defaultChildLoggerFactory,
+    [kChildLoggerFactory]: options.childLoggerFactory || defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       options.bodyLimit,

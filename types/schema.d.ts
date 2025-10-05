@@ -13,6 +13,7 @@ export interface FastifySchema {
   params?: unknown;
   headers?: unknown;
   response?: unknown;
+  hide?: boolean;
 }
 
 export interface FastifyRouteSchemaDef<T> {

@@ -1442,6 +1442,8 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
+> ⚠ Warning:
+> `addHttpMethod` overrides existing methods.
 
 #### addSchema
 <a id="add-schema"></a>

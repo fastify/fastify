@@ -116,6 +116,27 @@ function fastify (serverOptions) {
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
+  // run application-level hooks (used by decorate utilities)
+  function runHook (name, instance, ...args) {
+    try {
+      const hooks = this[kHooks][name]
+      if (!Array.isArray(hooks) || hooks.length === 0) return
+      console.log('[fastify debug] runHook', name, 'hooks=', hooks.length)
+      for (let i = 0; i < hooks.length; i++) {
+        try {
+          const res = hooks[i].call(this, instance, ...args)
+          if (res && typeof res.then === 'function') {
+            res.catch(err => this.log && this.log.error(err))
+          }
+        } catch (err) {
+          this.log && this.log.error(err)
+        }
+      }
+    } catch (err) {
+      this.log && this.log.error(err)
+    }
+  }
+
   // Public API
   const fastify = {
     // Fastify internals
@@ -258,6 +279,7 @@ function fastify (serverOptions) {
     },
     // extend fastify objects
     decorate: decorator.add,
+    runHook,
     hasDecorator: decorator.exist,
     decorateReply: decorator.decorateReply,
     decorateRequest: decorator.decorateRequest,
@@ -613,6 +635,24 @@ function fastify (serverOptions) {
       this[kChildren].forEach(child => _addHook.call(child, name, fn))
     }
   }
+
+  // // run application-level hooks (used by decorate utilities)
+  // function runHook (name, instance, ...args) {
+  //   try {
+  //     const hooks = this[kHooks][name]
+  //     if (!Array.isArray(hooks) || hooks.length === 0) return
+  //     for (let i = 0; i < hooks.length; i++) {
+  //       const fn = hooks[i]
+  //       const res = fn.call(this, instance, ...args)
+  //       if (res && typeof res.then === 'function') {
+  //         // avoid awaiting here to keep behavior similar to other hook runners
+  //         res.catch(err => this.log && this.log.error(err))
+  //       }
+  //     }
+  //   } catch (err) {
+  //     this.log && this.log.error(err)
+  //   }
+  // }
 
   // wrapper that we expose to the user for schemas handling
   function addSchema (schema) {

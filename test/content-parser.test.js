@@ -48,7 +48,7 @@ test('hasContentTypeParser', async t => {
 
 test('getParser', async t => {
   await t.test('should return matching parser', t => {
-    t.plan(6)
+    t.plan(7)
 
     const fastify = Fastify()
 
@@ -61,6 +61,7 @@ test('getParser', async t => {
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html; charset=utf-8').fn, third)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html ; charset=utf-8').fn, third)
+    t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html\t; charset=utf-8').fn, third)
     t.assert.strictEqual(fastify[keys.kContentTypeParser].getParser('text/htmlINVALID')?.fn, undefined)
   })
 

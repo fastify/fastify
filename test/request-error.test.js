@@ -4,6 +4,9 @@ const { connect } = require('node:net')
 const { test } = require('node:test')
 const Fastify = require('..')
 const { kRequest } = require('../lib/symbols.js')
+const split = require('split2')
+const { Readable } = require('node:stream')
+const { getServerUrl } = require('./helper')
 
 test('default 400 on request error', (t, done) => {
   t.plan(4)
@@ -464,4 +467,117 @@ test('test request.routeOptions.version', async t => {
   })
   t.assert.ok(result2.ok)
   t.assert.strictEqual(result2.status, 200)
+})
+
+test('customErrorHandler should throw for json err and stream response', async (t) => {
+  t.plan(5)
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+      }
+    })
+    process.nextTick(() => stream.destroy(new Error('stream error')))
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.assert.strictEqual(err.message, 'stream error')
+    reply.code(400)
+    reply.send({ error: err.message })
+  })
+
+  logStream.once('data', line => {
+    t.assert.strictEqual(line.msg, 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.')
+    t.assert.strictEqual(line.level, 50)
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const response = await fetch(getServerUrl(fastify) + '/')
+
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(await response.json(), { statusCode: 500, code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE', error: 'Internal Server Error', message: "Attempted to send payload of invalid type 'object'. Expected a string or Buffer." })
+})
+
+test('customErrorHandler should not throw for json err and stream response with content-type defined', async (t) => {
+  t.plan(4)
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+      }
+    })
+    process.nextTick(() => stream.destroy(new Error('stream error')))
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.assert.strictEqual(err.message, 'stream error')
+    reply
+      .code(400)
+      .type('application/json')
+      .send({ error: err.message })
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const response = await fetch(getServerUrl(fastify) + '/')
+
+  t.assert.strictEqual(response.status, 400)
+  t.assert.strictEqual(response.headers.get('content-type'), 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(await response.json(), { error: 'stream error' })
+})
+
+test('customErrorHandler should not call handler for in-stream error', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+        stream.destroy(new Error('stream error'))
+      }
+    })
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler(() => {
+    t.assert.fail('must not be called')
+  })
+  await fastify.listen({ port: 0 })
+
+  await t.assert.rejects(fetch(getServerUrl(fastify) + '/'), {
+    message: 'fetch failed'
+  })
 })

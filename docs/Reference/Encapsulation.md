@@ -141,7 +141,7 @@ fastify.decorateRequest('answer', 42)
 
 // `authenticatedContext` omitted for clarity
 
-fastify.register(async function publicContext (childServer) {
+fastify.register(function publicContext (childServer) {
   childServer.decorateRequest('foo', 'foo')
 
   childServer.route({
@@ -158,7 +158,7 @@ fastify.register(async function publicContext (childServer) {
 
   childServer.register(fastifyPlugin(grandchildContext))
 
-  async function grandchildContext (grandchildServer) {
+  function grandchildContext (grandchildServer) {
     grandchildServer.decorateRequest('bar', 'bar')
 
     grandchildServer.route({

@@ -7,8 +7,6 @@
 This document describes the contribution policy for the Fastify project and its
 plugins. Every repository in the [Fastify GitHub organization](http://www.github.com/fastify)
 is affected by this policy.
-It is intended to clarify how contributions are managed and what is
-expected of contributors.
 
 ## Who can contribute?
 

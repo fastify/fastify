@@ -78,6 +78,9 @@ other content for the Fastify project, provided that:
 1. Collaborators are allowed to close pull requests that do not comply with
    the contribution policy with a brief comment regarding the reason for
    closing.
+1. It is the prerogative of the collaborators to give a due date, if any, for
+   addressing the issues in the pull request before closing it. There is no
+   obligation to provide an extension of the due date.
 1. Collaborators can request that the contributor disclose any use of AI tools,
    irrespective of the significance of the AI usage.
 1. The contributor can discuss the reasons with the collaborators and provide
@@ -85,8 +88,8 @@ other content for the Fastify project, provided that:
    to comply with these rules.
 1. The collaborators are encouraged but not obligated to discuss their
    assessments and/or decisions with the contributor.
-1. If the discussion gets heated or is not leading to a resolution, the collaborators
-   can lock the pull request for further comments.
+1. If the discussion becomes heated, repetitive, or fails to reach a resolution,
+   the collaborators can lock the pull request for further comments.
 1. Lead maintainers can override the decisions of collaborators regarding this
    policy.
 1. Repeated violations of these rules may result in a temporary or permanent ban

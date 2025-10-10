@@ -9,11 +9,10 @@ This policy is applies to every repository in the
 
 ## Who can contribute?
 
-Any individual is invited to contribute to the Fastify project. We welcome
-contributions from anyone regardless of their experience level.
+Anyone is welcome to contribute to the Fastify project, regardless of experience
+level.
 
-See our [informal contributing guide](./docs/Guides/Contributing.md) for more
-details on contributing to this project.
+For more details, see our [informal contributing guide](./docs/Guides/Contributing.md).
 
 ### How to become a collaborator?
 

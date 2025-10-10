@@ -84,55 +84,8 @@ other content for the Fastify project, provided that:
    to comply with these rules.
 1. The collaborators are encouraged but not obligated to discuss their
    assessments and/or decisions with the contributor.
-1. If the discussion becomes heated, repetitive, or fails to reach a resolution,
-   the collaborators can lock the pull request for further comments.
-1. Lead maintainers can override the decisions of collaborators regarding this
-   policy.
 1. Repeated violations of these rules may result in a temporary or permanent ban
    from contributing to the project.
-
-### Definition – Significant Use of AI Tools
-
-Significant use of AI tools refers to situations where AI-generated content
-forms a **substantial or functional part** of the contribution — for example,
-when the AI output introduces new logic, algorithms, features, or documentation
-sections that go beyond minor edits or boilerplate.
-
-A contribution shall be considered to involve significant AI use when:
-- The AI-generated output makes up a **non-trivial portion** of the submitted
-work (e.g. more than small snippets, formatting, or trivial refactoring), **or**
-- The AI tool was used to **design, generate, or refactor logic** that affects
-the behavior or structure of the project, **or**
-- The contributor cannot **fully verify and explain** the AI-generated content
-as if it were written manually.
-
-Minor assistance — such as autocomplete suggestions, linting fixes, rewording
-sentences, or generating boilerplate code — is **not considered significant**
-and does not require explicit documentation.
-
-When in doubt, contributors are encouraged to **disclose AI usage voluntarily**
-to maintain transparency and avoid misunderstandings.
-
-### Examples of significant AI usage:
-
-Examples of how to document the use of AI tools in commit messages or pull request
-descriptions:
-- "Used ChatGPT to generate initial code for the new feature, then manually
-  reviewed and refined it."
-- "Documentation updated with the help of GitHub Copilot, ensuring accuracy and
-  clarity."
-- "Refactored code using AI suggestions from Claude.AI, followed by thorough
-  testing."
-
-### Potential comments by collaborators:
-
-Examples of comments to use when closing a pull request due to a violation of
-the AI usage policy:
-- "This PR is considered to violate the Contribution Policy regarding AI
-  Usage. Please document significant use of AI tools.  We will close this PR in
-  7 days if no updates are made."
-- "Closing this PR due to violation of the Contribution Policy regarding AI
-  Usage. Code does not comply with the project's standards."
 
 ## Fastify previous versions
 

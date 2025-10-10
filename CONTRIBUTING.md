@@ -138,7 +138,7 @@ the AI usage policy:
 - "Closing this PR due to violation of the Contribution Policy regarding AI
   Usage. Code does not comply with the project's standards."
 
-### Fastify previous versions
+## Fastify previous versions
 
 Every version of Fastify has its own branch. All Fastify related
 changes should be based on the corresponding branch.

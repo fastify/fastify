@@ -4,9 +4,8 @@
 
 ## Scope of this Policy
 
-This document describes the contribution policy for the Fastify project and its
-plugins. Every repository in the [Fastify GitHub organization](http://www.github.com/fastify)
-is affected by this policy.
+This policy is applies to every repository in the
+[Fastify GitHub organization](http://www.github.com/fastify).
 
 ## Who can contribute?
 
@@ -16,7 +15,7 @@ contributions from anyone regardless of their experience level.
 See our [informal contributing guide](./docs/Guides/Contributing.md) for more
 details on contributing to this project.
 
-### I want to become a collaborator!
+### How to become a collaborator?
 
 Individuals making significant and valuable contributions can be given
 commit-access to the project to contribute as they see fit. This project is more

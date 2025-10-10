@@ -64,7 +64,7 @@ other content for the Fastify project, provided that:
 
 1. The contributor reviews and verifies the output of the AI tool for accuracy,
    security, and compliance with the project standards, especially code style,
-   tests and code quality itself.
+   tests, and code quality itself.
 1. The contributor clearly documents the significant use of AI tools in the
    commit message or pull request description, including the name of the tool
    used and a brief description of how it was used.
@@ -78,13 +78,17 @@ other content for the Fastify project, provided that:
 1. Collaborators are allowed to close pull requests that do not comply with
    the contribution policy with a brief comment regarding the reason for
    closing.
+1. Collaborators can request that the contributor disclose any use of AI tools,
+   irrespective of the significance of the AI usage.
 1. The contributor can discuss the reasons with the collaborators and provide
    proper evidence of non-usage of AI tools or update the pull request
-   to comply with these rules .
+   to comply with these rules.
 1. The collaborators are encouraged but not obligated to discuss their
    assessments and/or decisions with the contributor.
-1. Lead maintainers can override the decisions regarding the AI usage of a
-   collaborator.
+1. If the discussion gets heated or is not leading to a resolution, the collaborators
+   can lock the pull request for further comments.
+1. Lead maintainers can override the decisions of collaborators regarding this
+   policy.
 1. Repeated violations of these rules may result in a temporary or permanent ban
    from contributing to the project.
 
@@ -112,7 +116,7 @@ to maintain transparency and avoid misunderstandings.
 
 ### Examples of significant AI usage:
 
-Examples of documenting the use of AI tools in commit messages or pull request
+Examples of how to document the use of AI tools in commit messages or pull request
 descriptions:
 - "Used ChatGPT to generate initial code for the new feature, then manually
   reviewed and refined it."
@@ -123,8 +127,8 @@ descriptions:
 
 ### Potential comments by collaborators:
 
-Examples of comments that can be used when considering closing or closing a pull
-request due to violation of the contribution policy regarding AI usage:
+Examples of comments to use when closing a pull request due to a violation of
+the AI usage policy:
 - "This PR is considered to violate the Contribution Policy regarding AI
   Usage. Please document significant use of AI tools.  We will close this PR in
   7 days if no updates are made."

@@ -137,13 +137,13 @@ work as a member of the Fastify Core team.
 ### Members
 
 * [__Matteo Collina__](https://github.com/mcollina),
-  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+  <https://x.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
-  <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+  <https://x.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__KaKa Ng__](https://github.com/climba03003)
 * [__James Sumners__](https://github.com/jsumners),
-  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+  <https://x.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ## OpenSSF CII Best Practices
 

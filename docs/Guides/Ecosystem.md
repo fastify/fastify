@@ -119,7 +119,8 @@ section.
   HTTP errors and assertions, but also more request and reply methods.
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for
   Fastify.
-- [`@fastify/sse`](https://github.com/fastify/sse) Plugin for Server-Sent Events (SSE) support in Fastify.
+- [`@fastify/sse`](https://github.com/fastify/sse) 
+Plugin for (SSE) support in Fastify.
 - [`@fastify/static`](https://github.com/fastify/fastify-static) Plugin for
   serving static files as fast as possible.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for

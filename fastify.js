@@ -40,7 +40,7 @@ const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication, supportedHooks, addHook } = require('./lib/hooks')
+const { Hooks, supportedHooks, addHook } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugins.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
@@ -52,8 +52,8 @@ const {
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
-const PonyPromise = require('./lib/promise')
-const createInject = require('./lib/inject.js')
+const createReadyFunction = require('./lib/ready.js')
+const createInjectFunction = require('./lib/inject.js')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -113,236 +113,7 @@ function fastify (serverOptions) {
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
-  // Public API
-  const fastify = {
-    // Fastify internals
-    [kState]: {
-      listening: false,
-      closing: false,
-      started: false,
-      ready: false,
-      booting: false,
-      aborted: false,
-      readyResolver: null
-    },
-    [kKeepAliveConnections]: keepAliveConnections,
-    [kSupportedHTTPMethods]: {
-      bodyless: new Set([
-        // Standard
-        'GET',
-        'HEAD',
-        'TRACE'
-      ]),
-      bodywith: new Set([
-        // Standard
-        'DELETE',
-        'OPTIONS',
-        'PATCH',
-        'PUT',
-        'POST'
-      ])
-    },
-    [kOptions]: options,
-    [kChildren]: [],
-    [kServerBindings]: [],
-    [kBodyLimit]: options.bodyLimit,
-    [kRoutePrefix]: '',
-    [kLogLevel]: '',
-    [kLogSerializers]: null,
-    [kHooks]: new Hooks(),
-    [kSchemaController]: schemaController,
-    [kSchemaErrorFormatter]: null,
-    [kErrorHandler]: buildErrorHandler(),
-    [kErrorHandlerAlreadySet]: false,
-    [kChildLoggerFactory]: options.childLoggerFactory || defaultChildLoggerFactory,
-    [kReplySerializerDefault]: null,
-    [kContentTypeParser]: new ContentTypeParser(
-      options.bodyLimit,
-      (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
-    ),
-    [kReply]: Reply.buildReply(Reply),
-    [kRequest]: Request.buildRequest(Request, options.trustProxy),
-    [kFourOhFour]: fourOhFour,
-    [pluginUtils.kRegisteredPlugins]: [],
-    [kPluginNameChain]: ['fastify'],
-    [kAvvioBoot]: null,
-    [kGenReqId]: genReqId,
-    // routing method
-    routing: httpHandler,
-    // routes shorthand methods
-    delete: function _delete (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
-    },
-    get: function _get (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'GET', url, options, handler })
-    },
-    head: function _head (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
-    },
-    trace: function _trace (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
-    },
-    patch: function _patch (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
-    },
-    post: function _post (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'POST', url, options, handler })
-    },
-    put: function _put (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'PUT', url, options, handler })
-    },
-    options: function _options (url, options, handler) {
-      return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
-    },
-    all: function _all (url, options, handler) {
-      return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
-    },
-    // extended route
-    route: function _route (options) {
-      // we need the fastify object that we are producing so we apply a lazy loading of the function,
-      // otherwise we should bind it after the declaration
-      return router.route.call(this, { options })
-    },
-    hasRoute: function _route (options) {
-      return router.hasRoute.call(this, { options })
-    },
-    findRoute: function _findRoute (options) {
-      return router.findRoute(options)
-    },
-    // expose logger instance
-    log: options.logger,
-    // type provider
-    withTypeProvider,
-    // hooks
-    addHook: function _addHook (name, fn) {
-      throwIfAlreadyStarted('Cannot call "addHook"!')
-      return addHook.call(this, name, fn)
-    },
-    // schemas
-    addSchema,
-    getSchema: schemaController.getSchema.bind(schemaController),
-    getSchemas: schemaController.getSchemas.bind(schemaController),
-    setValidatorCompiler,
-    setSerializerCompiler,
-    setSchemaController,
-    setReplySerializer,
-    setSchemaErrorFormatter,
-    // set generated request id
-    setGenReqId,
-    // custom parsers
-    addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
-    hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
-    getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
-    defaultTextParser: ContentTypeParser.defaultParsers.defaultTextParser,
-    removeContentTypeParser: ContentTypeParser.helpers.removeContentTypeParser,
-    removeAllContentTypeParsers: ContentTypeParser.helpers.removeAllContentTypeParsers,
-    // Fastify architecture methods (initialized by Avvio)
-    register: null,
-    after: null,
-    ready: null,
-    onClose: null,
-    close: null,
-    printPlugins: null,
-    hasPlugin: function (name) {
-      return this[pluginUtils.kRegisteredPlugins].includes(name) || this[kPluginNameChain].includes(name)
-    },
-    // http server
-    listen,
-    server,
-    addresses: function () {
-      /* istanbul ignore next */
-      const binded = this[kServerBindings].map(b => b.address())
-      binded.push(this.server.address())
-      return binded.filter(adr => adr)
-    },
-    // extend fastify objects
-    decorate: decorator.add,
-    hasDecorator: decorator.exist,
-    decorateReply: decorator.decorateReply,
-    decorateRequest: decorator.decorateRequest,
-    hasRequestDecorator: decorator.existRequest,
-    hasReplyDecorator: decorator.existReply,
-    getDecorator: decorator.getInstanceDecorator,
-    addHttpMethod,
-    // fake http injection
-    inject: createInject(httpHandler),
-    // pretty print of the registered routes
-    printRoutes,
-    // custom error handling
-    setNotFoundHandler,
-    setErrorHandler,
-    // child logger
-    setChildLoggerFactory,
-    // Set fastify initial configuration options read-only object
-    initialConfig,
-    // constraint strategies
-    addConstraintStrategy: router.addConstraintStrategy.bind(router),
-    hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
-  }
-
-  Object.defineProperties(fastify, {
-    listeningOrigin: {
-      get () {
-        const address = this.addresses().slice(-1).pop()
-        /* ignore if windows: unix socket is not testable on Windows platform */
-        /* c8 ignore next 3 */
-        if (typeof address === 'string') {
-          return address
-        }
-        const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
-        return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
-      }
-    },
-    pluginName: {
-      configurable: true,
-      get () {
-        if (this[kPluginNameChain].length > 1) {
-          return this[kPluginNameChain].join(' -> ')
-        }
-        return this[kPluginNameChain][0]
-      }
-    },
-    prefix: {
-      configurable: true,
-      get () { return this[kRoutePrefix] }
-    },
-    validatorCompiler: {
-      configurable: true,
-      get () { return this[kSchemaController].getValidatorCompiler() }
-    },
-    serializerCompiler: {
-      configurable: true,
-      get () { return this[kSchemaController].getSerializerCompiler() }
-    },
-    childLoggerFactory: {
-      configurable: true,
-      get () { return this[kChildLoggerFactory] }
-    },
-    version: {
-      configurable: true,
-      get () { return VERSION }
-    },
-    errorHandler: {
-      configurable: true,
-      get () {
-        return this[kErrorHandler].func
-      }
-    },
-    genReqId: {
-      configurable: true,
-      get () { return this[kGenReqId] }
-    },
-    supportedMethods: {
-      configurable: false,
-      get () {
-        return [
-          ...this[kSupportedHTTPMethods].bodyless,
-          ...this[kSupportedHTTPMethods].bodywith
-        ]
-      }
-    }
-  })
+  const fastify = createFastifyInstance()
 
   if (options.schemaErrorFormatter) {
     validateSchemaErrorFormatter(options.schemaErrorFormatter)
@@ -372,7 +143,7 @@ function fastify (serverOptions) {
     router
   })
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
-  fastify.ready = ready // overwrite the avvio ready function
+  fastify.ready = createReadyFunction(fastify) // overwrite the avvio ready function
   fastify.printPlugins = avvio.prettyPrint.bind(avvio)
 
   // Set the default 404 handler
@@ -404,65 +175,244 @@ function fastify (serverOptions) {
 
   return fastify
 
-  function throwIfAlreadyStarted (msg) {
-    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
+  // Private methods
+  function createFastifyInstance () {
+    // Public API
+    const fastify = {
+    // Fastify internals
+      [kState]: {
+        listening: false,
+        closing: false,
+        started: false,
+        ready: false,
+        booting: false,
+        aborted: false,
+        readyResolver: null
+      },
+      [kKeepAliveConnections]: keepAliveConnections,
+      [kSupportedHTTPMethods]: {
+        bodyless: new Set([
+        // Standard
+          'GET',
+          'HEAD',
+          'TRACE'
+        ]),
+        bodywith: new Set([
+        // Standard
+          'DELETE',
+          'OPTIONS',
+          'PATCH',
+          'PUT',
+          'POST'
+        ])
+      },
+      [kOptions]: options,
+      [kChildren]: [],
+      [kServerBindings]: [],
+      [kBodyLimit]: options.bodyLimit,
+      [kRoutePrefix]: '',
+      [kLogLevel]: '',
+      [kLogSerializers]: null,
+      [kHooks]: new Hooks(),
+      [kSchemaController]: schemaController,
+      [kSchemaErrorFormatter]: null,
+      [kErrorHandler]: buildErrorHandler(),
+      [kErrorHandlerAlreadySet]: false,
+      [kChildLoggerFactory]: options.childLoggerFactory || defaultChildLoggerFactory,
+      [kReplySerializerDefault]: null,
+      [kContentTypeParser]: new ContentTypeParser(
+        options.bodyLimit,
+        (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
+        (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+      ),
+      [kReply]: Reply.buildReply(Reply),
+      [kRequest]: Request.buildRequest(Request, options.trustProxy),
+      [kFourOhFour]: fourOhFour,
+      [pluginUtils.kRegisteredPlugins]: [],
+      [kPluginNameChain]: ['fastify'],
+      [kAvvioBoot]: null,
+      [kGenReqId]: genReqId,
+      // routing method
+      routing: httpHandler,
+      // routes shorthand methods
+      delete: function _delete (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
+      },
+      get: function _get (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'GET', url, options, handler })
+      },
+      head: function _head (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
+      },
+      trace: function _trace (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'TRACE', url, options, handler })
+      },
+      patch: function _patch (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
+      },
+      post: function _post (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'POST', url, options, handler })
+      },
+      put: function _put (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'PUT', url, options, handler })
+      },
+      options: function _options (url, options, handler) {
+        return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+      },
+      all: function _all (url, options, handler) {
+        return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
+      },
+      // extended route
+      route: function _route (options) {
+      // we need the fastify object that we are producing so we apply a lazy loading of the function,
+      // otherwise we should bind it after the declaration
+        return router.route.call(this, { options })
+      },
+      hasRoute: function _route (options) {
+        return router.hasRoute.call(this, { options })
+      },
+      findRoute: function _findRoute (options) {
+        return router.findRoute(options)
+      },
+      // expose logger instance
+      log: options.logger,
+      // type provider
+      withTypeProvider,
+      // hooks
+      addHook: function _addHook (name, fn) {
+        throwIfAlreadyStarted('Cannot call "addHook"!')
+        return addHook.call(this, name, fn)
+      },
+      // schemas
+      addSchema,
+      getSchema: schemaController.getSchema.bind(schemaController),
+      getSchemas: schemaController.getSchemas.bind(schemaController),
+      setValidatorCompiler,
+      setSerializerCompiler,
+      setSchemaController,
+      setReplySerializer,
+      setSchemaErrorFormatter,
+      // set generated request id
+      setGenReqId,
+      // custom parsers
+      addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
+      hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
+      getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
+      defaultTextParser: ContentTypeParser.defaultParsers.defaultTextParser,
+      removeContentTypeParser: ContentTypeParser.helpers.removeContentTypeParser,
+      removeAllContentTypeParsers: ContentTypeParser.helpers.removeAllContentTypeParsers,
+      // Fastify architecture methods (initialized by Avvio)
+      register: null,
+      after: null,
+      ready: null,
+      onClose: null,
+      close: null,
+      printPlugins: null,
+      hasPlugin: function (name) {
+        return this[pluginUtils.kRegisteredPlugins].includes(name) || this[kPluginNameChain].includes(name)
+      },
+      // http server
+      listen,
+      server,
+      addresses: function () {
+      /* istanbul ignore next */
+        const binded = this[kServerBindings].map(b => b.address())
+        binded.push(this.server.address())
+        return binded.filter(adr => adr)
+      },
+      // extend fastify objects
+      decorate: decorator.add,
+      hasDecorator: decorator.exist,
+      decorateReply: decorator.decorateReply,
+      decorateRequest: decorator.decorateRequest,
+      hasRequestDecorator: decorator.existRequest,
+      hasReplyDecorator: decorator.existReply,
+      getDecorator: decorator.getInstanceDecorator,
+      addHttpMethod,
+      // fake http injection
+      inject: createInjectFunction(httpHandler),
+      // pretty print of the registered routes
+      printRoutes,
+      // custom error handling
+      setNotFoundHandler,
+      setErrorHandler,
+      // child logger
+      setChildLoggerFactory,
+      // Set fastify initial configuration options read-only object
+      initialConfig,
+      // constraint strategies
+      addConstraintStrategy: router.addConstraintStrategy.bind(router),
+      hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
+    }
+
+    Object.defineProperties(fastify, {
+      listeningOrigin: {
+        get () {
+          const address = this.addresses().slice(-1).pop()
+          /* ignore if windows: unix socket is not testable on Windows platform */
+          /* c8 ignore next 3 */
+          if (typeof address === 'string') {
+            return address
+          }
+          const host = address.family === 'IPv6' ? `[${address.address}]` : address.address
+          return `${this[kOptions].https ? 'https' : 'http'}://${host}:${address.port}`
+        }
+      },
+      pluginName: {
+        configurable: true,
+        get () {
+          if (this[kPluginNameChain].length > 1) {
+            return this[kPluginNameChain].join(' -> ')
+          }
+          return this[kPluginNameChain][0]
+        }
+      },
+      prefix: {
+        configurable: true,
+        get () { return this[kRoutePrefix] }
+      },
+      validatorCompiler: {
+        configurable: true,
+        get () { return this[kSchemaController].getValidatorCompiler() }
+      },
+      serializerCompiler: {
+        configurable: true,
+        get () { return this[kSchemaController].getSerializerCompiler() }
+      },
+      childLoggerFactory: {
+        configurable: true,
+        get () { return this[kChildLoggerFactory] }
+      },
+      version: {
+        configurable: true,
+        get () { return VERSION }
+      },
+      errorHandler: {
+        configurable: true,
+        get () {
+          return this[kErrorHandler].func
+        }
+      },
+      genReqId: {
+        configurable: true,
+        get () { return this[kGenReqId] }
+      },
+      supportedMethods: {
+        configurable: false,
+        get () {
+          return [
+            ...this[kSupportedHTTPMethods].bodyless,
+            ...this[kSupportedHTTPMethods].bodywith
+          ]
+        }
+      }
+    })
+
+    return fastify
   }
 
-  function ready (cb) {
-    if (this[kState].readyResolver !== null) {
-      if (cb != null) {
-        this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
-        return
-      }
-
-      return this[kState].readyResolver.promise
-    }
-
-    // run the hooks after returning the promise
-    process.nextTick(runHooks)
-
-    // Create a promise no matter what
-    // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
-    // as well as a flow control mechanism to chain cbs and further
-    // promises
-    this[kState].readyResolver = PonyPromise.withResolvers()
-
-    if (!cb) {
-      return this[kState].readyResolver.promise
-    } else {
-      this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
-    }
-
-    function runHooks () {
-      // start loading
-      fastify[kAvvioBoot]((err, done) => {
-        if (err || fastify[kState].started || fastify[kState].ready || fastify[kState].booting) {
-          manageErr(err)
-        } else {
-          fastify[kState].booting = true
-          hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
-        }
-        done()
-      })
-    }
-
-    function manageErr (err) {
-      // If the error comes out of Avvio's Error codes
-      // We create a make and preserve the previous error
-      // as cause
-      err = err != null && AVVIO_ERRORS_MAP[err.code] != null
-        ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
-        : err
-
-      if (err) {
-        return fastify[kState].readyResolver.reject(err)
-      }
-
-      fastify[kState].readyResolver.resolve(fastify)
-      fastify[kState].booting = false
-      fastify[kState].ready = true
-      fastify[kState].readyResolver = null
-    }
+  function throwIfAlreadyStarted (msg) {
+    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
   }
 
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.

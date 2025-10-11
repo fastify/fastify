@@ -141,7 +141,9 @@ Let's step back for a moment and dig deeper into this: every time you use the
 mentioned above.
 
 Do note that encapsulation applies to the ancestors and siblings, but not the
-children.
+children. That is, a plugin's decorators, hooks, or routes are accessible only
+within its own scope and any plugins registered inside it, not to those
+registered before or alongside it:
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)

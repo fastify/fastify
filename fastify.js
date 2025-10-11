@@ -52,7 +52,6 @@ const {
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
-const createReadyFunction = require('./lib/ready.js')
 const createInjectFunction = require('./lib/inject.js')
 
 const { defaultInitOptions } = getSecuredInitialConfig
@@ -142,9 +141,6 @@ function fastify (serverOptions) {
     defaultInitOptions,
     router
   })
-  fastify[kAvvioBoot] = fastify.ready // the avvio ready function
-  fastify.ready = createReadyFunction(fastify) // overwrite the avvio ready function
-  fastify.printPlugins = avvio.prettyPrint.bind(avvio)
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()

@@ -88,6 +88,7 @@ jobs:
           - '@fastify/secure-session'
           - '@fastify/sensible'
           - '@fastify/session'
+          - '@fastify/sse'
           - '@fastify/static'
           - '@fastify/swagger'
           - '@fastify/swagger-ui'

@@ -140,10 +140,9 @@ Let's step back for a moment and dig deeper into this: every time you use the
 `register` API, a new context is created that avoids the negative situations
 mentioned above.
 
-Do note that encapsulation applies to the ancestors and siblings, but not the
-children. That is, a plugin's decorators, hooks, or routes are accessible only
-within its own scope and any plugins registered inside it, not to those
-registered before or alongside it:
+In Fastify, encapsulation ensures that a plugin’s decorators, hooks, and routes
+are available only within its own scope and its descendants, not to its ancestors
+or sibling plugins.
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)

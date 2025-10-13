@@ -170,6 +170,12 @@ When set to `true`, upon [`close`](#close) the server will iterate the current
 persistent connections and [destroy their
 sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
 
+When used with HTTP/2 server, it will also close all active HTTP/2 sessions.
+
+> ℹ️ Note:
+> Since Node.js v24 active sessions are closed by default
+
+
 > ⚠ Warning:
 > Connections are not inspected to determine if requests have
 > been completed.
@@ -1440,6 +1446,8 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
+> ⚠ Warning:
+> `addHttpMethod` overrides existing methods.
 
 #### addSchema
 <a id="add-schema"></a>
@@ -1691,6 +1699,9 @@ set it to 500 before calling the error handler.
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
+- Stream errors thrown during piping into the response socket, as
+  headers/response were already sent to the client. 
+  Use custom in-stream data to signal such errors.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
@@ -1720,6 +1731,33 @@ if (statusCode >= 500) {
 > Avoid calling setErrorHandler multiple times in the same scope.
 > See [`allowErrorHandlerOverride`](#allowerrorhandleroverride).
 
+##### Custom error handler for stream replies
+<a id="set-error-handler-stream-replies"></a>
+
+If `Content-Type` differs between the endpoint and error handler, explicitly
+define it in both. For example, if the endpoint returns an `application/text`
+stream and the error handler responds with `application/json`, the error handler
+must explicitly set `Content-Type`. Otherwise, it will fail serialization with
+a `500` status code. Alternatively, always respond with serialized data in the
+error handler by manually calling a serialization method (e.g.,
+`JSON.stringify`).
+
+```js
+fastify.setErrorHandler((err, req, reply) => {
+  reply
+    .code(400)
+    .type('application/json')
+    .send({ error: err.message })
+})
+```
+
+```js
+fastify.setErrorHandler((err, req, reply) => {
+  reply
+    .code(400)
+    .send(JSON.stringify({ error: err.message }))
+})
+```
 
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>

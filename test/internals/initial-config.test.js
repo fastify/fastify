@@ -7,7 +7,7 @@ const http = require('node:http')
 const pino = require('pino')
 const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
-const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
+const { deepFreezeObject } = require('../../lib/initial-config-validation').utils
 
 const { buildCertificate } = require('../build-certificate')
 

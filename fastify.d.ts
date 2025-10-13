@@ -29,7 +29,7 @@ import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
-import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
+import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
 

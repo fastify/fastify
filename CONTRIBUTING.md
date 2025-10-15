@@ -68,9 +68,6 @@ other content for the Fastify project, provided that:
    licensing or copyright restrictions.
 1. The contributor bears the burden of proof if undocumented AI use is
    suspected.
-1. The [code of conduct
-](https://github.com/fastify/.github/blob/main/CODE_OF_CONDUCT.md) applies to
-   all interactions. 
 1. Collaborators are allowed to close pull requests that do not comply with
    the contribution policy with a brief comment regarding the reason for
    closing.

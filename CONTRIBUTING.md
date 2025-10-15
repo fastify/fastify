@@ -5,7 +5,7 @@
 ## Scope of this Policy
 
 This policy applies to every repository in the
-[Fastify GitHub organization](http://www.github.com/fastify).
+[Fastify GitHub organization](https://github.com/orgs/fastify/repositories).
 
 ## Who can contribute?
 

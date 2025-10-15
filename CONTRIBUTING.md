@@ -74,9 +74,6 @@ other content for the Fastify project, provided that:
 1. Collaborators are allowed to close pull requests that do not comply with
    the contribution policy with a brief comment regarding the reason for
    closing.
-1. It is the prerogative of the collaborators to give a due date, if any, for
-   addressing the issues in the pull request before closing it. There is no
-   obligation to provide an extension of the due date.
 1. Collaborators can request that the contributor disclose any use of AI tools,
    irrespective of the significance of the AI usage.
 1. The contributor can discuss the reasons with the collaborators and provide

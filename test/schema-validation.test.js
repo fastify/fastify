@@ -270,7 +270,7 @@ test('External AJV instance', (t, testDone) => {
     schema: {
       body: schemaCRefToB,
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
+        '2xx': { $ref: 'urn:schema:response' }
       }
     }
   })
@@ -443,9 +443,9 @@ test('Triple $ref with a simple $id', (t, testDone) => {
   fastify.post('/', {
     handler (req, reply) { reply.send({ foo: 105, bar: 'foo' }) },
     schema: {
-      body: ajv.getSchema('urn:schema:request').schema,
+      body: { $ref: 'urn:schema:request' },
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
+        '2xx': { $ref: 'urn:schema:response' }
       }
     }
   })

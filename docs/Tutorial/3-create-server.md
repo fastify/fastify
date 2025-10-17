@@ -1,6 +1,6 @@
 ## Create a Fastify Server
 
-n this chapter, we’ll start with the basics of setting up a Fastify server.
+In this chapter, we’ll start with the basics of setting up a Fastify server.
 This will give you a foundation before we dive into features like routes, hooks,
 and plugins.
 

@@ -20,7 +20,7 @@ npm init -y
 npm install fastify
 ```
 
-To use ESM modules, add `“type”: “module”` to your package.json.
+To use ESM modules, add `“type”: “module”` to your `package.json`.
 
 ### The `fastify` Factory
 

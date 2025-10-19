@@ -202,7 +202,7 @@
     "yup": "^1.4.0"
   },
   "dependencies": {
-    "@fastify/ajv-compiler": "^4.0.0",
+    "@fastify/ajv-compiler": "^4.0.5",
     "@fastify/error": "^4.0.0",
     "@fastify/fast-json-stringify-compiler": "^5.0.0",
     "@fastify/proxy-addr": "^5.0.0",

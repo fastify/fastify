@@ -186,12 +186,12 @@ expectAssignable<FastifyInstance>(fastify({
     customOptions: {
       removeAdditional: 'all'
     },
-    plugins: [() => { }]
+    plugins: [(ajv: Ajv): Ajv => ajv]
   }
 }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
-    plugins: [[() => { }, ['keyword1', 'keyword2']]]
+    plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
   }
 }))
 expectAssignable(fastify({

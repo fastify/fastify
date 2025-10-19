@@ -89,8 +89,6 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
-  type ValidatorCompilerOptions = Parameters<BuildCompilerFromPool>[1]
-
   export type FastifyRouterOptions<RawServer extends RawServerBase> = {
     allowUnsafeRegex?: boolean,
     buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
@@ -155,7 +153,7 @@ declare namespace fastify {
       };
     };
     return503OnClosing?: boolean,
-    ajv?: ValidatorCompilerOptions & { plugins?: (Function | [Function, unknown])[] },
+    ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       error: FastifyError,
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,

@@ -1,4 +1,4 @@
-import { ErrorObject as AjvErrorObject } from 'ajv'
+import Ajv, { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
@@ -186,12 +186,19 @@ expectAssignable<FastifyInstance>(fastify({
     customOptions: {
       removeAdditional: 'all'
     },
-    plugins: [() => { }]
+    plugins: [(ajv: Ajv): Ajv => ajv]
   }
 }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
-    plugins: [[() => { }, ['keyword1', 'keyword2']]]
+    plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
+  }
+}))
+expectAssignable(fastify({
+  ajv: {
+    onCreate: (ajvInstance) => {
+      expectType<Ajv>(ajvInstance)
+    }
   }
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))

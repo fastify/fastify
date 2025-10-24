@@ -9,6 +9,7 @@ This document contains a set of recommendations when using Fastify.
   - [Nginx](#nginx)
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
+- [Causes of Degradation](#degradation)
 - [Running Multiple Instances](#multiple)
 
 ## Use A Reverse Proxy
@@ -351,3 +352,61 @@ It is perfectly fine to spin up several Fastify instances within the same
 Node.js process and run them concurrently, even in high load systems.
 Each Fastify instance only generates as much load as the traffic it receives,
 plus the memory used for that Fastify instance.
+
+## Causes of Degradation
+<a id="degradation"></a>
+
+Understanding common causes of performance degradation can help you identify and avoid issues in production. Here are some typical causes to be aware of:
+
+### Excessive Middleware Usage
+
+While plugins and middleware are powerful tools for extending Fastify functionality, using too many can impact performance:
+
+- Each middleware adds processing overhead to every request
+- Complex middleware chains can block the event loop
+- **Recommendation**: Measure middleware performance and remove or optimize unnecessary middleware. Use middleware conditionally when possible.
+
+### Inefficient Serializers
+
+Custom serializers that perform expensive operations can significantly degrade performance:
+
+- Serializers run on every response, so inefficiencies are magnified
+- Deep object cloning or transformation should be avoided
+- **Recommendation**: Profile your serializers. Use the built-in Fastify serializer validation options and avoid expensive operations.
+
+### Blocking Operations
+
+Node.js is single-threaded. Any blocking operation will pause all request handling:
+
+- Synchronous file I/O (use `fs.readFile` instead of `fs.readFileSync`)
+- Long-running computations on the main thread
+- Large JSON parsing without streaming
+- **Recommendation**: Use async operations exclusively. For CPU-intensive work, consider offloading to worker threads.
+
+### Memory Leaks
+
+Memory leaks reduce available memory and trigger garbage collection more frequently:
+
+- Unbounded caches without eviction policies
+- Event listeners that are never removed
+- Circular references not cleaned up
+- **Recommendation**: Monitor memory usage in production. Use memory profiling tools to identify leaks. Implement proper cleanup in plugins and middleware.
+
+### Inadequate Resource Allocation
+
+Running with insufficient CPU or memory resources forces the system to work harder:
+
+- See [Capacity Planning For Production](#capacity) for detailed vCPU recommendations
+- Insufficient memory causes frequent garbage collection pauses
+- **Recommendation**: Right-size your deployment. Start with the recommended 2 vCPU per instance and adjust based on profiling.
+
+### Unoptimized Database Queries
+
+Most performance issues in web applications stem from the database layer:
+
+- N+1 query problems
+- Missing database indexes
+- Inefficient query patterns
+- **Recommendation**: Use query analysis tools. Monitor slow queries. Implement proper connection pooling.
+
+For more details on performance optimization, refer to [Capacity Planning For Production](#capacity) and use profiling tools like [k6](https://github.com/grafana/k6) or [autocannon](https://github.com/mcollina/autocannon) to measure the impact of changes.

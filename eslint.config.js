@@ -7,13 +7,16 @@ module.exports = [
       'lib/config-validator.js',
       'lib/error-serializer.js',
       'test/same-shape.test.js',
-      'test/types/import.js'
+      'test/types/import.js',
     ],
-    ts: true
+    ts: true,
   }),
   {
     rules: {
-      'comma-dangle': ['error', 'never']
-    }
-  }
+
+      'comma-dangle': ['error', 'always-multiline'],
+
+      'max-len': ['error', { code: 100, ignoreUrls: true }],
+    },
+  },
 ]

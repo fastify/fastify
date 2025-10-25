@@ -171,18 +171,27 @@ export default plugin
 <a id="create-plugin"></a>
 
 Creating a plugin is easy. Create a function that takes three parameters: the
-`fastify` instance, an `options` object, and the `done` callback.
+`fastify` instance, an `options` object, and the `done` callback. Alternatively,
+use an `async` function and omit the `done` callback.
 
 Example:
 ```js
-module.exports = function (fastify, opts, done) {
+module.exports = function callbackPlugin (fastify, opts, done) {
   fastify.decorate('utility', function () {})
 
   fastify.get('/', handler)
 
   done()
 }
+
+// Or using async
+module.exports = async function asyncPlugin (fastify, opts) {
+  fastify.decorate('utility', function () {})
+
+  fastify.get('/', handler)
+}
 ```
+
 `register` can also be used inside another `register`:
 ```js
 module.exports = function (fastify, opts, done) {

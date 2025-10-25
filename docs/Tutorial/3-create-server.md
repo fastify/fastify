@@ -27,7 +27,7 @@ To use ESM modules, add `“type”: “module”` to your `package.json`.
 Fastify provides a factory function to create a server instance. 
 This function accepts an options object to configure your server.
 For detailed information about available options, refer to the 
-[documentation](https://fastify.dev/docs/latest/Reference/Server/#factory).
+[documentation](/docs/latest/Reference/Server/#factory).
 
 ### Setting up the Server with Graceful Shutdown
 
@@ -43,7 +43,7 @@ npm install close-with-grace
 
 Create a `server.js` file:
 
-```javascript
+```js
 import Fastify from 'fastify';
 import closeWithGrace from 'close-with-grace';
 

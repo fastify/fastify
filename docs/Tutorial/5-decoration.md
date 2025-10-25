@@ -3,8 +3,8 @@
 In this chapter, we’ll extend Fastify using **decorators** - the 
 built-in mechanism to attach features and data to:
 - the **Fastify instance**,
-- the [**Request**](https://fastify.dev/docs/latest/Reference/Request/) object,
-- the [**Reply**](https://fastify.dev/docs/latest/Reference/Reply/) object.
+- the [**Request**](/docs/latest/Reference/Request/) object,
+- the [**Reply**](/docs/latest/Reference/Reply/) object.
 
 We’ll focus on decorating the **Fastify instance** with a small 
 in-memory document database and a `quotesRepository` built on top of it.  

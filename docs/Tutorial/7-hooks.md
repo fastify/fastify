@@ -25,7 +25,7 @@ Fastify defines two groups of hooks:
 In this chapter, we’ll focus only on three:
 `onRequest`, `preHandler`, and `onClose`.
 
-For the full list and details, consult the [documentation](https://fastify.dev/docs/latest/Reference/Hooks/).
+For the full list and details, consult the [documentation](/docs/latest/Reference/Hooks/).
 
 ## Hook declaration paradigms
 
@@ -89,7 +89,7 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
-> source: [https://fastify.dev/docs/latest/Reference/Lifecycle/#lifecycle](https://fastify.dev/docs/latest/Reference/Lifecycle/#lifecycle)
+> source: [/docs/latest/Reference/Lifecycle/#lifecycle](/docs/latest/Reference/Lifecycle/#lifecycle)
 
 ## Responding early from a hook
 

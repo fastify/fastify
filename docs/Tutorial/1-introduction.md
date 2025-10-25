@@ -12,6 +12,14 @@ known for.
 
 ### Prerequisites
 
+**Node.js 24 or later** installed.
+
+You also need **curl** to test API endpoints from the command line.
+Alternatively, you can use an HTTP client such as **Postman** if you prefer a graphical
+
+A basic understanding of **JavaScript**, **Node.js**, **HTTP**, and 
+**backend development** is expected.
+
 ### Basics
 
 We’ll start by exploring Fastify’s core features:
@@ -44,15 +52,6 @@ extend the application:
 - Authentication and authorization
 - API documentation with Swagger
 - Autoloading
-
-### Prerequisites
-
-**Node.js 24 or later** installed.
-
-You also need **curl** to test API endpoints from the command line.
-Alternatively, you can use an HTTP client such as **Postman** if you prefer a graphical interface.
-
-A basic understanding of **JavaScript**, **Node.js**, **HTTP**, and **backend development** is expected.
 
 ### Testing
 

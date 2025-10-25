@@ -25,6 +25,7 @@ tend to focus on issues that directly affect them, contributions that improve
 the framework and its ecosystem are genuinely valued.
 
 ### Part of the OpenJS Foundation
-Fastify is an incubating project under the [OpenJS Foundation](https://openjsf.org/). 
+Fastify is an incubating project under the
+[OpenJS Foundation](https://openjsf.org/). 
 This affiliation provides long-term structural support and ensures the 
 project operates with transparent governance and community-first principles.

@@ -119,6 +119,8 @@ section.
   HTTP errors and assertions, but also more request and reply methods.
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for
   Fastify.
+- [`@fastify/sse`](https://github.com/fastify/sse) Plugin for Server-Sent Events
+  (SSE) support in Fastify.
 - [`@fastify/static`](https://github.com/fastify/fastify-static) Plugin for
   serving static files as fast as possible.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
@@ -165,6 +167,9 @@ section.
   A simple way to add a crud in your fastify project.
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
   Alternate Fastify and Next.js integration.
+- [`@attaryz/fastify-devtools`](https://github.com/attaryz/fastify-devtools)
+  Development tools plugin for Fastify with live request dashboard, replay
+  capabilities, and metrics tracking.
 - [`@blastorg/fastify-aws-dynamodb-cache`](https://github.com/blastorg/fastify-aws-dynamodb-cache)
   A plugin to help with caching API responses using AWS DynamoDB.
 - [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)

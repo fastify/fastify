@@ -1,123 +1,97 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const querystring = require('node:querystring')
-const sget = require('simple-get').concat
 const Fastify = require('..')
 
-test('Custom querystring parser', t => {
-  t.plan(9)
+test('Custom querystring parser', async t => {
+  t.plan(7)
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.equal(str, 'foo=bar&baz=faz')
+      t.assert.strictEqual(str, 'foo=bar&baz=faz')
       return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    t.same(req.query, {
+    t.assert.deepEqual(req.query, {
       foo: 'bar',
       baz: 'faz'
     })
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const result = await fetch(`${fastifyServer}?foo=bar&baz=faz`)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 
-    fastify.inject({
-      method: 'GET',
-      url: `${address}?foo=bar&baz=faz`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const injectResponse = await fastify.inject({
+    method: 'GET',
+    url: `${fastifyServer}?foo=bar&baz=faz`
   })
+  t.assert.strictEqual(injectResponse.statusCode, 200)
 })
 
-test('Custom querystring parser should be called also if there is nothing to parse', t => {
-  t.plan(9)
+test('Custom querystring parser should be called also if there is nothing to parse', async t => {
+  t.plan(7)
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.equal(str, '')
+      t.assert.strictEqual(str, '')
       return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    t.same(req.query, {})
+    t.assert.deepEqual(req.query, {})
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 
-    fastify.inject({
-      method: 'GET',
-      url: address
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const injectResponse = await fastify.inject({
+    method: 'GET',
+    url: fastifyServer
   })
+  t.assert.strictEqual(injectResponse.statusCode, 200)
 })
 
-test('Querystring without value', t => {
-  t.plan(9)
+test('Querystring without value', async t => {
+  t.plan(7)
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.equal(str, 'foo')
+      t.assert.strictEqual(str, 'foo')
       return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    t.same(req.query, { foo: '' })
+    t.assert.deepEqual(req.query, { foo: '' })
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}?foo`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const result = await fetch(`${fastifyServer}?foo`)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 
-    fastify.inject({
-      method: 'GET',
-      url: `${address}?foo`
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const injectResponse = await fastify.inject({
+    method: 'GET',
+    url: `${fastifyServer}?foo`
   })
+  t.assert.strictEqual(injectResponse.statusCode, 200)
 })
 
 test('Custom querystring parser should be a function', t => {
@@ -127,9 +101,27 @@ test('Custom querystring parser should be a function', t => {
     Fastify({
       querystringParser: 10
     })
+    t.assert.fail('Should throw')
+  } catch (err) {
+    t.assert.strictEqual(
+      err.message,
+      "querystringParser option should be a function, instead got 'number'"
+    )
+  }
+})
+
+test('Custom querystring parser should be a function', t => {
+  t.plan(1)
+
+  try {
+    Fastify({
+      routerOptions: {
+        querystringParser: 10
+      }
+    })
     t.fail('Should throw')
   } catch (err) {
-    t.equal(
+    t.assert.equal(
       err.message,
       "querystringParser option should be a function, instead got 'number'"
     )

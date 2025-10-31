@@ -2,17 +2,16 @@
 
 const stream = require('node:stream')
 
-const t = require('tap')
+const t = require('node:test')
 const split = require('split2')
 
 const Fastify = require('../../fastify')
 const helper = require('../helper')
 const { on } = stream
 const { request } = require('./logger-test-utils')
+const { partialDeepStrictEqual } = require('../toolkit')
 
-t.test('request', (t) => {
-  t.setTimeout(60000)
-
+t.test('request', { timeout: 60000 }, async (t) => {
   let localhost
 
   t.plan(7)
@@ -20,7 +19,7 @@ t.test('request', (t) => {
     [localhost] = await helper.getLoopbackHost()
   })
 
-  t.test('The request id header key can be customized', async (t) => {
+  await t.test('The request id header key can be customized', async (t) => {
     const lines = ['incoming request', 'some log message', 'request completed']
     t.plan(lines.length * 2 + 2)
     const REQUEST_ID = '42'
@@ -30,26 +29,26 @@ t.test('request', (t) => {
       logger: { stream, level: 'info' },
       requestIdHeader: 'my-custom-request-id'
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/', (req, reply) => {
-      t.equal(req.id, REQUEST_ID)
+      t.assert.strictEqual(req.id, REQUEST_ID)
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
 
     const response = await fastify.inject({ method: 'GET', url: '/', headers: { 'my-custom-request-id': REQUEST_ID } })
     const body = await response.json()
-    t.equal(body.id, REQUEST_ID)
+    t.assert.strictEqual(body.id, REQUEST_ID)
 
     for await (const [line] of on(stream, 'data')) {
-      t.equal(line.reqId, REQUEST_ID)
-      t.equal(line.msg, lines.shift(), 'message is set')
+      t.assert.strictEqual(line.reqId, REQUEST_ID)
+      t.assert.strictEqual(line.msg, lines.shift(), 'message is set')
       if (lines.length === 0) break
     }
   })
 
-  t.test('The request id header key can be ignored', async (t) => {
+  await t.test('The request id header key can be ignored', async (t) => {
     const lines = ['incoming request', 'some log message', 'request completed']
     t.plan(lines.length * 2 + 2)
     const REQUEST_ID = 'ignore-me'
@@ -59,33 +58,33 @@ t.test('request', (t) => {
       logger: { stream, level: 'info' },
       requestIdHeader: false
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/', (req, reply) => {
-      t.equal(req.id, 'req-1')
+      t.assert.strictEqual(req.id, 'req-1')
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
     const response = await fastify.inject({ method: 'GET', url: '/', headers: { 'request-id': REQUEST_ID } })
     const body = await response.json()
-    t.equal(body.id, 'req-1')
+    t.assert.strictEqual(body.id, 'req-1')
 
     for await (const [line] of on(stream, 'data')) {
-      t.equal(line.reqId, 'req-1')
-      t.equal(line.msg, lines.shift(), 'message is set')
+      t.assert.strictEqual(line.reqId, 'req-1')
+      t.assert.strictEqual(line.msg, lines.shift(), 'message is set')
       if (lines.length === 0) break
     }
   })
 
-  t.test('The request id header key can be customized along with a custom id generator', async (t) => {
+  await t.test('The request id header key can be customized along with a custom id generator', async (t) => {
     const REQUEST_ID = '42'
     const matches = [
-      { reqId: REQUEST_ID, msg: /incoming request/ },
-      { reqId: REQUEST_ID, msg: /some log message/ },
-      { reqId: REQUEST_ID, msg: /request completed/ },
-      { reqId: 'foo', msg: /incoming request/ },
-      { reqId: 'foo', msg: /some log message 2/ },
-      { reqId: 'foo', msg: /request completed/ }
+      { reqId: REQUEST_ID, msg: 'incoming request' },
+      { reqId: REQUEST_ID, msg: 'some log message' },
+      { reqId: REQUEST_ID, msg: 'request completed' },
+      { reqId: 'foo', msg: 'incoming request' },
+      { reqId: 'foo', msg: 'some log message 2' },
+      { reqId: 'foo', msg: 'request completed' }
     ]
     t.plan(matches.length + 4)
 
@@ -97,16 +96,16 @@ t.test('request', (t) => {
         return 'foo'
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/one', (req, reply) => {
-      t.equal(req.id, REQUEST_ID)
+      t.assert.strictEqual(req.id, REQUEST_ID)
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
 
     fastify.get('/two', (req, reply) => {
-      t.equal(req.id, 'foo')
+      t.assert.strictEqual(req.id, 'foo')
       req.log.info('some log message 2')
       reply.send({ id: req.id })
     })
@@ -114,30 +113,30 @@ t.test('request', (t) => {
     {
       const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
       const body = await response.json()
-      t.equal(body.id, REQUEST_ID)
+      t.assert.strictEqual(body.id, REQUEST_ID)
     }
 
     {
       const response = await fastify.inject({ method: 'GET', url: '/two' })
       const body = await response.json()
-      t.equal(body.id, 'foo')
+      t.assert.strictEqual(body.id, 'foo')
     }
 
     for await (const [line] of on(stream, 'data')) {
-      t.match(line, matches.shift())
+      t.assert.ok(partialDeepStrictEqual(line, matches.shift()))
       if (matches.length === 0) break
     }
   })
 
-  t.test('The request id header key can be ignored along with a custom id generator', async (t) => {
+  await t.test('The request id header key can be ignored along with a custom id generator', async (t) => {
     const REQUEST_ID = 'ignore-me'
     const matches = [
-      { reqId: 'foo', msg: /incoming request/ },
-      { reqId: 'foo', msg: /some log message/ },
-      { reqId: 'foo', msg: /request completed/ },
-      { reqId: 'foo', msg: /incoming request/ },
-      { reqId: 'foo', msg: /some log message 2/ },
-      { reqId: 'foo', msg: /request completed/ }
+      { reqId: 'foo', msg: 'incoming request' },
+      { reqId: 'foo', msg: 'some log message' },
+      { reqId: 'foo', msg: 'request completed' },
+      { reqId: 'foo', msg: 'incoming request' },
+      { reqId: 'foo', msg: 'some log message 2' },
+      { reqId: 'foo', msg: 'request completed' }
     ]
     t.plan(matches.length + 4)
 
@@ -149,16 +148,16 @@ t.test('request', (t) => {
         return 'foo'
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/one', (req, reply) => {
-      t.equal(req.id, 'foo')
+      t.assert.strictEqual(req.id, 'foo')
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
 
     fastify.get('/two', (req, reply) => {
-      t.equal(req.id, 'foo')
+      t.assert.strictEqual(req.id, 'foo')
       req.log.info('some log message 2')
       reply.send({ id: req.id })
     })
@@ -166,27 +165,27 @@ t.test('request', (t) => {
     {
       const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'request-id': REQUEST_ID } })
       const body = await response.json()
-      t.equal(body.id, 'foo')
+      t.assert.strictEqual(body.id, 'foo')
     }
 
     {
       const response = await fastify.inject({ method: 'GET', url: '/two' })
       const body = await response.json()
-      t.equal(body.id, 'foo')
+      t.assert.strictEqual(body.id, 'foo')
     }
 
     for await (const [line] of on(stream, 'data')) {
-      t.match(line, matches.shift())
+      t.assert.ok(partialDeepStrictEqual(line, matches.shift()))
       if (matches.length === 0) break
     }
   })
 
-  t.test('The request id log label can be changed', async (t) => {
+  await t.test('The request id log label can be changed', async (t) => {
     const REQUEST_ID = '42'
     const matches = [
-      { traceId: REQUEST_ID, msg: /incoming request/ },
-      { traceId: REQUEST_ID, msg: /some log message/ },
-      { traceId: REQUEST_ID, msg: /request completed/ }
+      { traceId: REQUEST_ID, msg: 'incoming request' },
+      { traceId: REQUEST_ID, msg: 'some log message' },
+      { traceId: REQUEST_ID, msg: 'request completed' }
     ]
     t.plan(matches.length + 2)
 
@@ -196,10 +195,10 @@ t.test('request', (t) => {
       requestIdHeader: 'my-custom-request-id',
       requestIdLogLabel: 'traceId'
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/one', (req, reply) => {
-      t.equal(req.id, REQUEST_ID)
+      t.assert.strictEqual(req.id, REQUEST_ID)
       req.log.info('some log message')
       reply.send({ id: req.id })
     })
@@ -207,22 +206,16 @@ t.test('request', (t) => {
     {
       const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
       const body = await response.json()
-      t.equal(body.id, REQUEST_ID)
+      t.assert.strictEqual(body.id, REQUEST_ID)
     }
 
     for await (const [line] of on(stream, 'data')) {
-      t.match(line, matches.shift())
+      t.assert.ok(partialDeepStrictEqual(line, matches.shift()))
       if (matches.length === 0) break
     }
   })
 
-  t.test('should redact the authorization header if so specified', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { req: { headers: { authorization: '[Redacted]' } }, msg: 'incoming request' },
-      { res: { statusCode: 200 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 3)
+  await t.test('should redact the authorization header if so specified', async (t) => {
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -243,15 +236,22 @@ t.test('request', (t) => {
         }
       }
     })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.get('/', function (req, reply) {
-      t.same(req.headers.authorization, 'Bearer abcde')
+      t.assert.deepStrictEqual(req.headers.authorization, 'Bearer abcde')
       reply.send({ hello: 'world' })
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { req: { headers: { authorization: '[Redacted]' } }, msg: 'incoming request' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 3)
 
     await request({
       method: 'GET',
@@ -262,17 +262,17 @@ t.test('request', (t) => {
         authorization: 'Bearer abcde'
       }
     }, function (response, body) {
-      t.equal(response.statusCode, 200)
-      t.same(body, JSON.stringify({ hello: 'world' }))
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(body, JSON.stringify({ hello: 'world' }))
     })
 
     for await (const [line] of on(stream, 'data')) {
-      t.match(line, lines.shift())
+      t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
   })
 
-  t.test('should not throw error when serializing custom req', (t) => {
+  await t.test('should not throw error when serializing custom req', (t) => {
     t.plan(1)
 
     const lines = []
@@ -283,10 +283,10 @@ t.test('request', (t) => {
       }
     })
     const fastify = Fastify({ logger: { level: 'info', stream: dest } })
-    t.teardown(fastify.close.bind(fastify))
+    t.after(() => fastify.close())
 
     fastify.log.info({ req: {} })
 
-    t.same(lines[0].req, {})
+    t.assert.deepStrictEqual(lines[0].req, {})
   })
 })

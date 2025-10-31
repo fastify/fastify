@@ -15,11 +15,11 @@ This table of contents is in alphabetical order.
   met in your application. This guide focuses on solving the problem using
   [`Hooks`](../Reference/Hooks.md), [`Decorators`](../Reference/Decorators.md),
   and [`Plugins`](../Reference/Plugins.md).
-+ [Detecting When Clients Abort](./Detecting-When-Clients-Abort.md): A 
++ [Detecting When Clients Abort](./Detecting-When-Clients-Abort.md): A
   practical guide on detecting if and when a client aborts a request.
 + [Ecosystem](./Ecosystem.md): Lists all core plugins and many known community
   plugins.
-+ [Fluent Schema](./Fluent-Schema.md): Shows how writing JSON Schema can be
++ [Fluent Schema](./Fluent-Schema.md): Shows how JSON Schema can be
   written with a fluent API and used in Fastify.
 + [Getting Started](./Getting-Started.md): Introduction tutorial for Fastify.
   This is where beginners should start.

@@ -1,6 +1,6 @@
 # Fastify Charter
 
-The Fastify project aims to build a fast and low overhead web framework for
+The Fastify project aims to build a fast and low-overhead web framework for
 Node.js.
 
 
@@ -20,7 +20,7 @@ experience with the least overhead and a plugin architecture.
 ### 1.1: In-scope
 
 + Develop a web framework for Node.js with a focus on developer experience,
-  performance and extensibility.
+  performance, and extensibility.
 + Plugin Architecture
 + Support web protocols
 + Official plugins for common user requirements
@@ -43,7 +43,7 @@ experience with the least overhead and a plugin architecture.
 
 + Support versions of Node.js at EOL (end of life) stage
 + Support serverless architecture
-+ Contributions that violates the [Code of Conduct](CODE_OF_CONDUCT.md)
++ Contributions that violate the [Code of Conduct](CODE_OF_CONDUCT.md)
 
 
 ## Section 2: Relationship with OpenJS Foundation CPC.
@@ -58,10 +58,10 @@ the Board of Directors (the "Board").
 This Fastify Charter reflects a carefully constructed balanced role for the
 Collaborators and the CPC in the governance of the OpenJS Foundation. The
 charter amendment process is for the Fastify Collaborators to propose change
-using simple majority of the full Fastify Organization, the proposed changes
+using a majority of the full Fastify Organization, the proposed changes
 being subject to review and approval by the CPC. The CPC may additionally make
 amendments to the Collaborators charter at any time, though the CPC will not
-interfere with day-to-day discussions, votes or meetings of the Fastify
+interfere with day-to-day discussions, votes, or meetings of the Fastify
 Organization.
 
 
@@ -92,7 +92,7 @@ Section Intentionally Left Blank
 Fastify's features can be discussed in GitHub issues and/or projects. Consensus
 on a discussion is reached when there is no objection by any collaborators.
 
-Whenever there is not consensus, Lead Maintainers will have final say on the
+When there is no consensus, Lead Maintainers will have the final say on the
 topic.
 
 **Voting, and/or Elections**
@@ -112,7 +112,7 @@ Section Intentionally Left Blank
   Foundation Board.
 
 + *Collaborators*: contribute code and other artifacts, have the right to commit
-  to the code base and release plugins projects. Collaborators follow the
+  to the code base, and release plugin projects. Collaborators follow the
   [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A
   Collaborator could be encumbered by other Fastify Collaborators and never by
   the CPC or OpenJS Foundation Board.

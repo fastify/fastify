@@ -5,15 +5,15 @@
 
 Testing is one of the most important parts of developing an application. Fastify
 is very flexible when it comes to testing and is compatible with most testing
-frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in
-the examples below).
+frameworks (such as [Node Test Runner](https://nodejs.org/api/test.html),
+which is used in the examples below).
 
 ## Application
 
 Let's `cd` into a fresh directory called 'testing-example' and type `npm init
 -y` in our terminal.
 
-Run `npm i fastify && npm i tap pino-pretty -D`
+Run `npm i fastify && npm i pino-pretty -D`
 
 ### Separating concerns makes testing easy
 
@@ -113,24 +113,25 @@ Now we can replace our `console.log` calls with actual tests!
 
 In your `package.json` change the "test" script to:
 
-`"test": "tap --reporter=list --watch"`
+`"test": "node --test --watch"`
 
 **app.test.js**:
 
 ```js
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const build = require('./app')
 
 test('requests the "/" route', async t => {
+  t.plan(1)
   const app = build()
 
   const response = await app.inject({
     method: 'GET',
     url: '/'
   })
-  t.equal(response.statusCode, 200, 'returns a status code of 200')
+  t.assert.strictEqual(response.statusCode, 200, 'returns a status code of 200')
 })
 ```
 
@@ -214,26 +215,26 @@ module.exports = buildFastify
 
 **test.js**
 ```js
-const tap = require('tap')
+const { test } = require('node:test')
 const buildFastify = require('./app')
 
-tap.test('GET `/` route', t => {
+test('GET `/` route', t => {
   t.plan(4)
 
   const fastify = buildFastify()
 
   // At the end of your tests it is highly recommended to call `.close()`
   // to ensure that all connections to external services get closed.
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify.inject({
     method: 'GET',
     url: '/'
   }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(response.json(), { hello: 'world' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(response.json(), { hello: 'world' })
   })
 })
 ```
@@ -248,11 +249,11 @@ Uses **app.js** from the previous example.
 
 **test-listen.js** (testing with [`undici`](https://www.npmjs.com/package/undici))
 ```js
-const tap = require('tap')
+const { test } = require('node:test')
 const { Client } = require('undici')
 const buildFastify = require('./app')
 
-tap.test('should work with undici', async t => {
+test('should work with undici', async t => {
   t.plan(2)
 
   const fastify = buildFastify()
@@ -263,63 +264,64 @@ tap.test('should work with undici', async t => {
     'http://localhost:' + fastify.server.address().port, {
       keepAliveTimeout: 10,
       keepAliveMaxTimeout: 10
-    } 
+    }
   )
 
-  t.teardown(() => {
+  t.after(() => {
     fastify.close()
     client.close()
   })
 
   const response = await client.request({ method: 'GET', path: '/' })
 
-  t.equal(await response.body.text(), '{"hello":"world"}')
-  t.equal(response.statusCode, 200)
+  t.assert.strictEqual(await response.body.text(), '{"hello":"world"}')
+  t.assert.strictEqual(response.statusCode, 200)
 })
 ```
 
-Alternatively, starting with Node.js 18, 
-[`fetch`](https://nodejs.org/docs/latest-v18.x/api/globals.html#fetch) 
+Alternatively, starting with Node.js 18,
+[`fetch`](https://nodejs.org/docs/latest-v18.x/api/globals.html#fetch)
 may be used without requiring any extra dependencies:
 
 **test-listen.js**
 ```js
-const tap = require('tap')
+const { test } = require('node:test')
 const buildFastify = require('./app')
 
-tap.test('should work with fetch', async t => {
+test('should work with fetch', async t => {
   t.plan(3)
 
   const fastify = buildFastify()
 
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   await fastify.listen()
-  
+
   const response = await fetch(
     'http://localhost:' + fastify.server.address().port
   )
 
-  t.equal(response.status, 200)
-  t.equal(
+  t.assert.strictEqual(response.status, 200)
+  t.assert.strictEqual(
     response.headers.get('content-type'),
     'application/json; charset=utf-8'
   )
-  t.has(await response.json(), { hello: 'world' })
+  const jsonResult = await response.json()
+  t.assert.strictEqual(jsonResult.hello, 'world')
 })
 ```
 
 **test-ready.js** (testing with
 [`SuperTest`](https://www.npmjs.com/package/supertest))
 ```js
-const tap = require('tap')
+const { test } = require('node:test')
 const supertest = require('supertest')
 const buildFastify = require('./app')
 
-tap.test('GET `/` route', async (t) => {
+test('GET `/` route', async (t) => {
   const fastify = buildFastify()
 
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   await fastify.ready()
 
@@ -327,22 +329,21 @@ tap.test('GET `/` route', async (t) => {
     .get('/')
     .expect(200)
     .expect('Content-Type', 'application/json; charset=utf-8')
-  t.same(response.body, { hello: 'world' })
+  t.assert.deepStrictEqual(response.body, { hello: 'world' })
 })
 ```
 
-### How to inspect tap tests
+### How to inspect node tests
 1. Isolate your test by passing the `{only: true}` option
 ```javascript
 test('should ...', {only: true}, t => ...)
 ```
-2. Run `tap` using `npx`
+2. Run `node --test`
 ```bash
-> npx tap -O -T --node-arg=--inspect-brk test/<test-file.test.js>
+> node --test --test-only --inspect-brk test/<test-file.test.js>
 ```
-- `-O` specifies to run tests with the `only` option enabled
-- `-T` specifies not to timeout (while you're debugging)
-- `--node-arg=--inspect-brk` will launch the node debugger
+- `--test-only` specifies to run tests with the `only` option enabled
+- `--inspect-brk` will launch the node debugger
 3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No
    modification should be necessary.
 
@@ -355,7 +356,7 @@ Now you should be able to step through your test file (and the rest of
 Let's `cd` into a fresh directory called 'testing-plugin-example' and type `npm init
 -y` in our terminal.
 
-Run `npm i fastify fastify-plugin && npm i tap -D`
+Run `npm i fastify fastify-plugin`
 
 **plugin/myFirstPlugin.js**:
 
@@ -376,16 +377,16 @@ A basic example of a Plugin. See [Plugin Guide](./Plugins-Guide.md)
 
 ```js
 const Fastify = require("fastify");
-const tap = require("tap");
+const { test } = require("node:test");
 const myPlugin = require("../plugin/myFirstPlugin");
 
-tap.test("Test the Plugin Route", async t => {
+test("Test the Plugin Route", async t => {
     // Create a mock fastify application to test the plugin
     const fastify = Fastify()
 
     fastify.register(myPlugin)
 
-    // Add an endpoint of your choice 
+    // Add an endpoint of your choice
     fastify.get("/", async (request, reply) => {
         return ({ message: request.helloRequest })
     })
@@ -395,7 +396,7 @@ tap.test("Test the Plugin Route", async t => {
         method: "GET",
         url: "/"
     })
-    
+
   console.log('status code: ', fastifyResponse.statusCode)
   console.log('body: ', fastifyResponse.body)
 })
@@ -412,18 +413,18 @@ Now we can replace our `console.log` calls with actual tests!
 
 In your `package.json` change the "test" script to:
 
-`"test": "tap --reporter=list --watch"`
+`"test": "node --test --watch"`
 
-Create the tap test for the endpoint.
+Create the test for the endpoint.
 
 **test/myFirstPlugin.test.js**:
 
 ```js
 const Fastify = require("fastify");
-const tap = require("tap");
+const { test } = require("node:test");
 const myPlugin = require("../plugin/myFirstPlugin");
 
-tap.test("Test the Plugin Route", async t => {
+test("Test the Plugin Route", async t => {
     // Specifies the number of test
     t.plan(2)
 
@@ -439,9 +440,9 @@ tap.test("Test the Plugin Route", async t => {
         method: "GET",
         url: "/"
     })
-    
-    t.equal(fastifyResponse.statusCode, 200)
-    t.same(JSON.parse(fastifyResponse.body), { message: "Hello World" })
+
+    t.assert.strictEqual(fastifyResponse.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(fastifyResponse.body), { message: "Hello World" })
 })
 ```
 
@@ -453,10 +454,10 @@ Test the ```.decorate()``` and ```.decorateRequest()```.
 
 ```js
 const Fastify = require("fastify");
-const tap = require("tap");
+const { test }= require("node:test");
 const myPlugin = require("../plugin/myFirstPlugin");
 
-tap.test("Test the Plugin Route", async t => {
+test("Test the Plugin Route", async t => {
     t.plan(5)
     const fastify = Fastify()
 
@@ -464,9 +465,9 @@ tap.test("Test the Plugin Route", async t => {
 
     fastify.get("/", async (request, reply) => {
         // Testing the fastify decorators
-        t.not(request.helloRequest, null) 
-        t.ok(request.helloRequest, "Hello World")
-        t.ok(fastify.helloInstance, "Hello Fastify Instance")
+        t.assert.ifError(request.helloRequest)
+        t.assert.ok(request.helloRequest, "Hello World")
+        t.assert.ok(fastify.helloInstance, "Hello Fastify Instance")
         return ({ message: request.helloRequest })
     })
 
@@ -474,7 +475,7 @@ tap.test("Test the Plugin Route", async t => {
         method: "GET",
         url: "/"
     })
-    t.equal(fastifyResponse.statusCode, 200)
-    t.same(JSON.parse(fastifyResponse.body), { message: "Hello World" })
+    t.assert.strictEqual(fastifyResponse.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(fastifyResponse.body), { message: "Hello World" })
 })
 ```

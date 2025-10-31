@@ -9,13 +9,13 @@ work after upgrading.
 ## Codemods
 ### Fastify v4 Codemods
 
-To help with the upgrade, we’ve worked with the team at 
+To help with the upgrade, we’ve worked with the team at
 [Codemod](https://github.com/codemod-com/codemod) to
-publish codemods that will automatically update your code to many of 
+publish codemods that will automatically update your code to many of
 the new APIs and patterns in Fastify v4.
 
-Run the following 
-[migration recipe](https://go.codemod.com/fastify-4-migration-recipe) to 
+Run the following
+[migration recipe](https://go.codemod.com/fastify-4-migration-recipe) to
 automatically update your code to Fastify v4:
 
 ```
@@ -30,7 +30,7 @@ This will run the following codemods:
 - [`fastify/4/await-register-calls`](https://go.codemod.com/fastify-4-await-register-calls)
 
 Each of these codemods automates the changes listed in the v4 migration guide.
-For a complete list of available Fastify codemods and further details, 
+For a complete list of available Fastify codemods and further details,
 see [Codemod Registry](https://go.codemod.com/fastify).
 
 
@@ -52,14 +52,14 @@ fastify.register(async fastify => {
     console.log(err.message) // 'kaboom'
     throw new Error('caught')
   })
-  
+
   fastify.get('/encapsulated', async () => {
     throw new Error('kaboom')
   })
 })
 
 fastify.setErrorHandler(async err => {
-  console.log(err.message) // 'caught' 
+  console.log(err.message) // 'caught'
   throw new Error('wrapped')
 })
 
@@ -67,10 +67,10 @@ const res = await fastify.inject('/encapsulated')
 console.log(res.json().message) // 'wrapped'
 ```
 
->The root error handler is Fastify’s generic error handler. 
->This error handler will use the headers and status code in the Error object, 
+>The root error handler is Fastify’s generic error handler.
+>This error handler will use the headers and status code in the Error object,
 >if they exist. **The headers and status code will not be automatically set if
->a custom error handler is provided**. 
+>a custom error handler is provided**.
 
 ### Removed `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
 
@@ -210,7 +210,7 @@ fastify.get('/posts/:id?', (request, reply) => {
 The [variadic signature](https://en.wikipedia.org/wiki/Variadic_function) of the
 `fastify.listen()` method is now deprecated.
 
-Prior to this release, the following invocations of this method were valid:
+Before this release, the following invocations of this method were valid:
 
   - `fastify.listen(8000)`
   - `fastify.listen(8000, ‘127.0.0.1’)`
@@ -242,7 +242,7 @@ As such, schemas like below will need to be changed from:
   properties: {
     api_key: { type: 'string' },
     image: { type: ['object', 'array'] }
-  } 
+  }
 }
 ```
 

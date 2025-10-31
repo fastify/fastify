@@ -1,44 +1,35 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
-const { getServerUrl, plainTextParser } = require('./helper')
+const { plainTextParser } = require('./helper')
 
 process.removeAllListeners('warning')
 
-test('cannot remove all content type parsers after binding', t => {
-  t.plan(2)
+test('cannot remove all content type parsers after binding', async (t) => {
+  t.plan(1)
 
   const fastify = Fastify()
 
-  t.teardown(fastify.close.bind(fastify))
+  t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-
-    t.throws(() => fastify.removeAllContentTypeParsers())
-  })
+  await fastify.listen({ port: 0 })
+  t.assert.throws(() => fastify.removeAllContentTypeParsers())
 })
 
-test('cannot remove content type parsers after binding', t => {
-  t.plan(2)
+test('cannot remove content type parsers after binding', async (t) => {
+  t.plan(1)
 
   const fastify = Fastify()
+  t.after(() => fastify.close())
 
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-
-    t.throws(() => fastify.removeContentTypeParser('application/json'))
-  })
+  await fastify.listen({ port: 0 })
+  t.assert.throws(() => fastify.removeContentTypeParser('application/json'))
 })
 
-test('should be able to override the default json parser after removeAllContentTypeParsers', t => {
-  t.plan(5)
+test('should be able to override the default json parser after removeAllContentTypeParsers', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -49,33 +40,30 @@ test('should be able to override the default json parser after removeAllContentT
   fastify.removeAllContentTypeParsers()
 
   fastify.addContentTypeParser('application/json', function (req, payload, done) {
-    t.ok('called')
+    t.assert.ok('called')
     jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      fastify.close()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.text(), JSON.stringify({ hello: 'world' }))
+  await fastify.close()
 })
 
-test('should be able to override the default plain text parser after removeAllContentTypeParsers', t => {
-  t.plan(5)
+test('should be able to override the default plain text parser after removeAllContentTypeParsers', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -86,33 +74,30 @@ test('should be able to override the default plain text parser after removeAllCo
   fastify.removeAllContentTypeParsers()
 
   fastify.addContentTypeParser('text/plain', function (req, payload, done) {
-    t.ok('called')
+    t.assert.ok('called')
     plainTextParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: 'hello world',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'hello world')
-      fastify.close()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: 'hello world',
+    headers: {
+      'Content-Type': 'text/plain'
+    }
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(await result.text(), 'hello world')
+  await fastify.close()
 })
 
-test('should be able to add a custom content type parser after removeAllContentTypeParsers', t => {
-  t.plan(5)
+test('should be able to add a custom content type parser after removeAllContentTypeParsers', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -121,29 +106,25 @@ test('should be able to add a custom content type parser after removeAllContentT
   })
 
   fastify.removeAllContentTypeParsers()
-
   fastify.addContentTypeParser('application/jsoff', function (req, payload, done) {
-    t.ok('called')
+    t.assert.ok('called')
     jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/jsoff'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      fastify.close()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: JSON.stringify({ hello: 'world' }),
+    headers: {
+      'Content-Type': 'application/jsoff'
+    }
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.text(), JSON.stringify({ hello: 'world' }))
+  await fastify.close()
 })

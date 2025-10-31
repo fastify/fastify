@@ -1,13 +1,11 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const fs = require('node:fs')
 const Fastify = require('../fastify')
 
-test('should respond with a stream', t => {
-  t.plan(6)
+test('should respond with a stream', async t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
@@ -15,25 +13,21 @@ test('should respond with a stream', t => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
-      t.error(err)
-      t.equal(response.headers['content-type'], undefined)
-      t.equal(response.statusCode, 200)
+  const response = await fetch(fastifyServer)
+  t.assert.ok(response.ok)
+  t.assert.strictEqual(response.headers.get('content-type'), null)
+  t.assert.strictEqual(response.status, 200)
 
-      fs.readFile(__filename, (err, expected) => {
-        t.error(err)
-        t.equal(expected.toString(), data.toString())
-      })
-    })
-  })
+  const data = await response.text()
+  const expected = await fs.promises.readFile(__filename, 'utf8')
+  t.assert.strictEqual(expected.toString(), data.toString())
 })
 
-test('should respond with a stream (error)', t => {
-  t.plan(3)
+test('should respond with a stream (error)', async t => {
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.get('/error', function (req, reply) {
@@ -41,19 +35,16 @@ test('should respond with a stream (error)', t => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-    })
-  })
+  const response = await fetch(`${fastifyServer}/error`)
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 500)
 })
 
-test('should trigger the onSend hook', t => {
-  t.plan(4)
+test('should trigger the onSend hook', async (t) => {
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -61,23 +52,21 @@ test('should trigger the onSend hook', t => {
   })
 
   fastify.addHook('onSend', (req, reply, payload, done) => {
-    t.ok(payload._readableState)
+    t.assert.ok(payload._readableState)
     reply.header('Content-Type', 'application/javascript')
     done()
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.headers['content-type'], 'application/javascript')
-    t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
-    fastify.close()
   })
+  t.assert.strictEqual(res.headers['content-type'], 'application/javascript')
+  t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+  return fastify.close()
 })
 
-test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', t => {
-  t.plan(5)
+test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', async t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -87,22 +76,19 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
   let counter = 0
   fastify.addHook('onSend', (req, reply, payload, done) => {
     if (counter === 0) {
-      t.ok(payload._readableState)
+      t.assert.ok(payload._readableState)
     } else if (counter === 1) {
       const error = JSON.parse(payload)
-      t.equal(error.statusCode, 500)
+      t.assert.strictEqual(error.statusCode, 500)
     }
     counter++
     done()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
-      t.error(err)
-      t.equal(response.statusCode, 500)
-    })
-  })
+  const response = await fetch(fastifyServer)
+  t.assert.ok(!response.ok)
+  t.assert.strictEqual(response.status, 500)
 })

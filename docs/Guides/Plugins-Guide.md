@@ -71,8 +71,8 @@ order of plugins. *How?* Glad you asked, check out
 [`avvio`](https://github.com/mcollina/avvio)! Fastify starts loading the plugin
 __after__ `.listen()`, `.inject()` or `.ready()` are called.
 
-Inside a plugin you can do whatever you want, register routes, utilities (we
-will see this in a moment) and do nested registers, just remember to call `done`
+Inside a plugin you can do whatever you want, register routes and utilities (we
+will see this in a moment), and do nested registers, just remember to call `done`
 when everything is set up!
 ```js
 module.exports = function (fastify, options, done) {
@@ -117,7 +117,7 @@ Now you can access your utility just by calling `fastify.util` whenever you need
 it - even inside your test.
 
 And here starts the magic; do you remember how just now we were talking about
-encapsulation? Well, using `register` and `decorate` in conjunction enable
+encapsulation? Well, using `register` and `decorate` in conjunction enables
 exactly that, let me show you an example to clarify this:
 ```js
 fastify.register((instance, opts, done) => {
@@ -137,7 +137,7 @@ Inside the second register call `instance.util` will throw an error because
 `util` exists only inside the first register context.
 
 Let's step back for a moment and dig deeper into this: every time you use the
-`register` API, a new context is created which avoids the negative situations
+`register` API, a new context is created that avoids the negative situations
 mentioned above.
 
 Do note that encapsulation applies to the ancestors and siblings, but not the
@@ -202,7 +202,7 @@ a utility that also needs access to the `request` and `reply` instance,
 a function that is defined using the `function` keyword is needed instead
 of an *arrow function expression*.
 
-In the same way you can do this for the `request` object:
+You can do the same for the `request` object:
 ```js
 fastify.decorate('getHeader', (req, header) => {
   return req.headers[header]
@@ -316,7 +316,7 @@ based on a [route config option](../Reference/Routes.md#routes-options):
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (request, key, value) => { request[key] = value })
-  
+
   function handler(request, reply, done) {
     instance.util(request, 'timestamp', new Date())
     done()
@@ -395,7 +395,7 @@ As we mentioned earlier, Fastify starts loading its plugins __after__
 have been declared. This means that, even though the plugin may inject variables
 to the external Fastify instance via [`decorate`](../Reference/Decorators.md),
 the decorated variables will not be accessible before calling `.listen()`,
-`.inject()` or `.ready()`.
+`.inject()`, or `.ready()`.
 
 In case you rely on a variable injected by a preceding plugin and want to pass
 that in the `options` argument of `register`, you can do so by using a function

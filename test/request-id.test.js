@@ -1,10 +1,9 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
-t.test('The request id header key can be customized', async (t) => {
+test('The request id header key can be customized', async (t) => {
   t.plan(2)
   const REQUEST_ID = '42'
 
@@ -13,16 +12,16 @@ t.test('The request id header key can be customized', async (t) => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.equal(req.id, REQUEST_ID)
+    t.assert.strictEqual(req.id, REQUEST_ID)
     reply.send({ id: req.id })
   })
 
   const response = await fastify.inject({ method: 'GET', url: '/', headers: { 'my-custom-request-id': REQUEST_ID } })
   const body = await response.json()
-  t.equal(body.id, REQUEST_ID)
+  t.assert.strictEqual(body.id, REQUEST_ID)
 })
 
-t.test('The request id header key can be customized', async (t) => {
+test('The request id header key can be customized', async (t) => {
   t.plan(2)
   const REQUEST_ID = '42'
 
@@ -31,17 +30,17 @@ t.test('The request id header key can be customized', async (t) => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.equal(req.id, REQUEST_ID)
+    t.assert.strictEqual(req.id, REQUEST_ID)
     reply.send({ id: req.id })
   })
 
   const response = await fastify.inject({ method: 'GET', url: '/', headers: { 'MY-CUSTOM-REQUEST-ID': REQUEST_ID } })
   const body = await response.json()
-  t.equal(body.id, REQUEST_ID)
+  t.assert.strictEqual(body.id, REQUEST_ID)
 })
 
-t.test('The request id header key can be customized', (t) => {
-  t.plan(4)
+test('The request id header key can be customized', async (t) => {
+  t.plan(3)
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
@@ -49,29 +48,25 @@ t.test('The request id header key can be customized', (t) => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.equal(req.id, REQUEST_ID)
+    t.assert.strictEqual(req.id, REQUEST_ID)
     reply.send({ id: req.id })
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address,
-      headers: {
-        'my-custom-request-id': REQUEST_ID
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer, {
+    headers: {
+      'my-custom-request-id': REQUEST_ID
+    }
   })
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(await result.json(), { id: REQUEST_ID })
 })
 
-t.test('The request id header key can be customized', (t) => {
-  t.plan(4)
+test('The request id header key can be customized', async (t) => {
+  t.plan(3)
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
@@ -79,29 +74,25 @@ t.test('The request id header key can be customized', (t) => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.equal(req.id, REQUEST_ID)
+    t.assert.strictEqual(req.id, REQUEST_ID)
     reply.send({ id: req.id })
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address,
-      headers: {
-        'MY-CUSTOM-REQUEST-ID': REQUEST_ID
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer, {
+    headers: {
+      'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+    }
   })
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(await result.json(), { id: REQUEST_ID })
 })
 
-t.test('The request id header key can be customized', (t) => {
-  t.plan(4)
+test('The request id header key can be customized', async (t) => {
+  t.plan(3)
   const REQUEST_ID = '42'
 
   const fastify = Fastify({
@@ -109,23 +100,19 @@ t.test('The request id header key can be customized', (t) => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.equal(req.id, REQUEST_ID)
+    t.assert.strictEqual(req.id, REQUEST_ID)
     reply.send({ id: req.id })
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: address,
-      headers: {
-        'MY-CUSTOM-REQUEST-ID': REQUEST_ID
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(body.toString(), `{"id":"${REQUEST_ID}"}`)
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer, {
+    headers: {
+      'MY-CUSTOM-REQUEST-ID': REQUEST_ID
+    }
   })
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(await result.json(), { id: REQUEST_ID })
 })

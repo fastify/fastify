@@ -1,9 +1,8 @@
 'use strict'
 
 const { createHook } = require('node:async_hooks')
-const t = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
 const remainingIds = new Set()
 
@@ -20,50 +19,34 @@ createHook({
 
 const app = Fastify({ logger: false })
 
-app.get('/', function (request, reply) {
-  reply.send({ id: 42 })
-})
-
-app.post('/', function (request, reply) {
-  reply.send({ id: 42 })
-})
-
-app.listen({ port: 0 }, function (err, address) {
-  t.error(err)
-
-  sget({
-    method: 'POST',
-    url: 'http://localhost:' + app.server.address().port,
-    body: {
-      hello: 'world'
-    },
-    json: true
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + app.server.address().port,
-      body: {
-        hello: 'world'
-      },
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + app.server.address().port,
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        app.close()
-        t.equal(remainingIds.size, 0)
-        t.end()
-      })
-    })
+test('test async hooks', async (t) => {
+  app.get('/', function (request, reply) {
+    reply.send({ id: 42 })
   })
+
+  app.post('/', function (request, reply) {
+    reply.send({ id: 42 })
+  })
+
+  t.after(() => app.close())
+
+  const fastifyServer = await app.listen({ port: 0 })
+
+  const result1 = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hello: 'world' })
+  })
+  t.assert.strictEqual(result1.status, 200)
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hello: 'world' })
+  })
+  t.assert.strictEqual(result2.status, 200)
+
+  const result3 = await fetch(fastifyServer)
+  t.assert.strictEqual(result3.status, 200)
+  t.assert.strictEqual(remainingIds.size, 0)
 })

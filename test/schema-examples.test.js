@@ -1,10 +1,10 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const localize = require('ajv-i18n')
 const Fastify = require('..')
 
-test('Example - URI $id', t => {
+test('Example - URI $id', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.addSchema({
@@ -25,10 +25,13 @@ test('Example - URI $id', t => {
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - string $id', t => {
+test('Example - string $id', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.addSchema({
@@ -47,10 +50,13 @@ test('Example - string $id', t => {
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - get schema', t => {
+test('Example - get schema', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.addSchema({
@@ -63,7 +69,8 @@ test('Example - get schema', t => {
 
   const mySchemas = fastify.getSchemas()
   const mySchema = fastify.getSchema('schemaId')
-  t.same(mySchemas.schemaId, mySchema)
+  t.assert.deepStrictEqual(mySchemas.schemaId, mySchema)
+  done()
 })
 
 test('Example - get schema encapsulated', async t => {
@@ -91,12 +98,12 @@ test('Example - get schema encapsulated', async t => {
   const r2 = await fastify.inject('/sub')
   const r3 = await fastify.inject('/deep')
 
-  t.same(Object.keys(r1.json()), ['one'])
-  t.same(Object.keys(r2.json()), ['one', 'two'])
-  t.same(Object.keys(r3.json()), ['one', 'two', 'three'])
+  t.assert.deepStrictEqual(Object.keys(r1.json()), ['one'])
+  t.assert.deepStrictEqual(Object.keys(r2.json()), ['one', 'two'])
+  t.assert.deepStrictEqual(Object.keys(r3.json()), ['one', 'two', 'three'])
 })
 
-test('Example - validation', t => {
+test('Example - validation', (t, done) => {
   t.plan(1)
   const fastify = Fastify({
     ajv: {
@@ -168,10 +175,13 @@ test('Example - validation', t => {
   }
 
   fastify.post('/the/url', { schema }, handler)
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - ajv config', t => {
+test('Example - ajv config', (t, done) => {
   t.plan(1)
 
   const fastify = Fastify({
@@ -228,10 +238,13 @@ test('Example - ajv config', t => {
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example Joi', t => {
+test('Example Joi', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const handler = () => { }
@@ -248,10 +261,13 @@ test('Example Joi', t => {
     }
   }, handler)
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example yup', t => {
+test('Example yup', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const handler = () => { }
@@ -287,10 +303,13 @@ test('Example yup', t => {
     }
   }, handler)
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - serialization', t => {
+test('Example - serialization', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const handler = () => { }
@@ -308,10 +327,13 @@ test('Example - serialization', t => {
   }
 
   fastify.post('/the/url', { schema }, handler)
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - serialization 2', t => {
+test('Example - serialization 2', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const handler = () => { }
@@ -333,10 +355,13 @@ test('Example - serialization 2', t => {
   }
 
   fastify.post('/the/url', { schema }, handler)
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - serializator', t => {
+test('Example - serializator', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -361,10 +386,13 @@ test('Example - serializator', t => {
     }
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('Example - schemas examples', t => {
+test('Example - schemas examples', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   const handler = () => { }
@@ -457,10 +485,13 @@ test('Example - schemas examples', t => {
 
   })
 
-  fastify.ready(err => t.error(err))
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    done()
+  })
 })
 
-test('should return custom error messages with ajv-errors', t => {
+test('should return custom error messages with ajv-errors', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify({
@@ -508,18 +539,19 @@ test('should return custom error messages with ajv-errors', t => {
     },
     url: '/'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'body/age bad age - should be num, body name please, body work please'
     })
-    t.equal(res.statusCode, 400)
+    t.assert.strictEqual(res.statusCode, 400)
+    done()
   })
 })
 
-test('should be able to handle formats of ajv-formats when added by plugins option', t => {
+test('should be able to handle formats of ajv-formats when added by plugins option', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify({
@@ -553,8 +585,8 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     },
     url: '/'
   }, (_err, res) => {
-    t.equal(res.body, '254381a5-888c-4b41-8116-e3b1a54980bd')
-    t.equal(res.statusCode, 200)
+    t.assert.strictEqual(res.body, '254381a5-888c-4b41-8116-e3b1a54980bd')
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -565,16 +597,17 @@ test('should be able to handle formats of ajv-formats when added by plugins opti
     },
     url: '/'
   }, (_err, res) => {
-    t.same(JSON.parse(res.payload), {
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       statusCode: 400,
       code: 'FST_ERR_VALIDATION',
       error: 'Bad Request',
       message: 'body/id must match format "uuid"'
     })
+    done()
   })
 })
 
-test('should return localized error messages with ajv-i18n', t => {
+test('should return localized error messages with ajv-i18n', (t, done) => {
   t.plan(3)
 
   const schema = {
@@ -614,14 +647,15 @@ test('should return localized error messages with ajv-i18n', t => {
     },
     url: '/'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), [{
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), [{
       instancePath: '',
       keyword: 'required',
       message: 'должно иметь обязательное поле work',
       params: { missingProperty: 'work' },
       schemaPath: '#/required'
     }])
-    t.equal(res.statusCode, 400)
+    t.assert.strictEqual(res.statusCode, 400)
+    done()
   })
 })

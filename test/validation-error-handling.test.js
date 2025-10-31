@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Joi = require('joi')
 const Fastify = require('..')
 
@@ -19,59 +19,56 @@ function echoBody (req, reply) {
   reply.code(200).send(req.body.name)
 }
 
-test('should work with valid payload', t => {
-  t.plan(3)
+test('should work with valid payload', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       name: 'michelangelo',
       work: 'sculptor, painter, architect and poet'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, 'michelangelo')
-    t.equal(res.statusCode, 200)
   })
+  t.assert.deepStrictEqual(response.payload, 'michelangelo')
+  t.assert.strictEqual(response.statusCode, 200)
 })
 
-test('should fail immediately with invalid payload', t => {
-  t.plan(3)
+test('should fail immediately with invalid payload', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: "body must have required property 'name'"
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: "body must have required property 'name'"
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('should be able to use setErrorHandler specify custom validation error', t => {
-  t.plan(3)
+test('should be able to use setErrorHandler specify custom validation error', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
   fastify.post('/', { schema }, function (req, reply) {
-    t.fail('should not be here')
+    t.assert.fail('should not be here')
     reply.code(200).send(req.body.name)
   })
 
@@ -81,25 +78,24 @@ test('should be able to use setErrorHandler specify custom validation error', t 
     }
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 422,
-      error: 'Unprocessable Entity',
-      message: 'validation failed'
-    })
-    t.equal(res.statusCode, 422)
   })
+
+  t.assert.deepStrictEqual(JSON.parse(response.payload), {
+    statusCode: 422,
+    error: 'Unprocessable Entity',
+    message: 'validation failed'
+  })
+  t.assert.strictEqual(response.statusCode, 422)
 })
 
-test('validation error has 400 statusCode set', t => {
-  t.plan(3)
+test('validation error has 400 statusCode set', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -114,23 +110,22 @@ test('validation error has 400 statusCode set', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      message: "body must have required property 'name'"
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    message: "body must have required property 'name'"
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('error inside custom error handler should have validationContext', t => {
+test('error inside custom error handler should have validationContext', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
@@ -143,26 +138,26 @@ test('error inside custom error handler should have validationContext', t => {
       }
     }
   }, function (req, reply) {
-    t.fail('should not be here')
+    t.assert.fail('should not be here')
     reply.code(200).send(req.body.name)
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.equal(error.validationContext, 'body')
+    t.assert.strictEqual(error.validationContext, 'body')
     reply.status(500).send(error)
   })
 
-  fastify.inject({
+  await fastify.inject({
     method: 'POST',
     payload: {
       name: 'michelangelo',
       work: 'artist'
     },
     url: '/'
-  }, () => {})
+  })
 })
 
-test('error inside custom error handler should have validationContext if specified by custom error handler', t => {
+test('error inside custom error handler should have validationContext if specified by custom error handler', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()
@@ -177,27 +172,27 @@ test('error inside custom error handler should have validationContext if specifi
       }
     }
   }, function (req, reply) {
-    t.fail('should not be here')
+    t.assert.fail('should not be here')
     reply.code(200).send(req.body.name)
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.equal(error.validationContext, 'customContext')
+    t.assert.strictEqual(error.validationContext, 'customContext')
     reply.status(500).send(error)
   })
 
-  fastify.inject({
+  await fastify.inject({
     method: 'POST',
     payload: {
       name: 'michelangelo',
       work: 'artist'
     },
     url: '/'
-  }, () => {})
+  })
 })
 
-test('should be able to attach validation to request', t => {
-  t.plan(3)
+test('should be able to attach validation to request', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -205,56 +200,53 @@ test('should be able to attach validation to request', t => {
     reply.code(400).send(req.validationError.validation)
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-
-    t.same(res.json(), [{
-      keyword: 'required',
-      instancePath: '',
-      schemaPath: '#/required',
-      params: { missingProperty: 'name' },
-      message: 'must have required property \'name\''
-    }])
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.json(), [{
+    keyword: 'required',
+    instancePath: '',
+    schemaPath: '#/required',
+    params: { missingProperty: 'name' },
+    message: 'must have required property \'name\''
+  }])
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('should respect when attachValidation is explicitly set to false', t => {
-  t.plan(3)
+test('should respect when attachValidation is explicitly set to false', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
   fastify.post('/', { schema, attachValidation: false }, function (req, reply) {
-    t.fail('should not be here')
+    t.assert.fail('should not be here')
     reply.code(200).send(req.validationError.validation)
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: "body must have required property 'name'"
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(JSON.parse(response.payload), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: "body must have required property 'name'"
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('Attached validation error should take precedence over setErrorHandler', t => {
-  t.plan(3)
+test('Attached validation error should take precedence over setErrorHandler', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -263,26 +255,25 @@ test('Attached validation error should take precedence over setErrorHandler', t 
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.fail('should not be here')
+    t.assert.fail('should not be here')
     if (error.validation) {
       reply.status(422).send(new Error('validation failed'))
     }
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, "Attached: Error: body must have required property 'name'")
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.payload, "Attached: Error: body must have required property 'name'")
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('should handle response validation error', t => {
+test('should handle response validation error', async (t) => {
   t.plan(2)
 
   const response = {
@@ -306,17 +297,17 @@ test('should handle response validation error', t => {
     }
   })
 
-  fastify.inject({
+  const injectResponse = await fastify.inject({
     method: 'GET',
     payload: { },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
   })
+
+  t.assert.strictEqual(injectResponse.statusCode, 500)
+  t.assert.strictEqual(injectResponse.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
 })
 
-test('should handle response validation error with promises', t => {
+test('should handle response validation error with promises', async (t) => {
   t.plan(2)
 
   const response = {
@@ -336,17 +327,17 @@ test('should handle response validation error with promises', t => {
     return Promise.resolve({ work: 'actor' })
   })
 
-  fastify.inject({
+  const injectResponse = await fastify.inject({
     method: 'GET',
     payload: { },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
   })
+
+  t.assert.strictEqual(injectResponse.statusCode, 500)
+  t.assert.strictEqual(injectResponse.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
 })
 
-test('should return a defined output message parsing AJV errors', t => {
+test('should return a defined output message parsing AJV errors', async (t) => {
   t.plan(2)
 
   const body = {
@@ -361,20 +352,20 @@ test('should return a defined output message parsing AJV errors', t => {
   const fastify = Fastify()
 
   fastify.post('/', { schema: { body } }, function (req, reply) {
-    t.fail()
+    t.assert.fail()
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: { },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body must have required property \'name\'"}')
   })
+
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.strictEqual(response.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body must have required property \'name\'"}')
 })
 
-test('should return a defined output message parsing JOI errors', t => {
+test('should return a defined output message parsing JOI errors', async (t) => {
   t.plan(2)
 
   const body = Joi.object().keys({
@@ -391,20 +382,20 @@ test('should return a defined output message parsing JOI errors', t => {
     }
   },
   function (req, reply) {
-    t.fail()
+    t.assert.fail()
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {},
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"\\"name\\" is required"}')
   })
+
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.strictEqual(response.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"\\"name\\" is required"}')
 })
 
-test('should return a defined output message parsing JOI error details', t => {
+test('should return a defined output message parsing JOI error details', async (t) => {
   t.plan(2)
 
   const body = Joi.object().keys({
@@ -424,118 +415,115 @@ test('should return a defined output message parsing JOI error details', t => {
     }
   },
   function (req, reply) {
-    t.fail()
+    t.assert.fail()
   })
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {},
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body \\"name\\" is required"}')
   })
+
+  t.assert.strictEqual(response.statusCode, 400)
+  t.assert.strictEqual(response.payload, '{"statusCode":400,"code":"FST_ERR_VALIDATION","error":"Bad Request","message":"body \\"name\\" is required"}')
 })
 
-test('the custom error formatter context must be the server instance', t => {
-  t.plan(4)
+test('the custom error formatter context must be the server instance', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify()
 
   fastify.setSchemaErrorFormatter(function (errors, dataVar) {
-    t.same(this, fastify)
+    t.assert.deepStrictEqual(this, fastify)
     return new Error('my error')
   })
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'my error'
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'my error'
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('the custom error formatter context must be the server instance in options', t => {
-  t.plan(4)
+test('the custom error formatter context must be the server instance in options', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify({
     schemaErrorFormatter: function (errors, dataVar) {
-      t.same(this, fastify)
+      t.assert.deepStrictEqual(this, fastify)
       return new Error('my error')
     }
   })
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'my error'
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'my error'
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('should call custom error formatter', t => {
-  t.plan(9)
+test('should call custom error formatter', async (t) => {
+  t.plan(8)
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
-      t.equal(errors.length, 1)
-      t.equal(errors[0].message, "must have required property 'name'")
-      t.equal(errors[0].keyword, 'required')
-      t.equal(errors[0].schemaPath, '#/required')
-      t.same(errors[0].params, {
+      t.assert.strictEqual(errors.length, 1)
+      t.assert.strictEqual(errors[0].message, "must have required property 'name'")
+      t.assert.strictEqual(errors[0].keyword, 'required')
+      t.assert.strictEqual(errors[0].schemaPath, '#/required')
+      t.assert.deepStrictEqual(errors[0].params, {
         missingProperty: 'name'
       })
-      t.equal(dataVar, 'body')
+      t.assert.strictEqual(dataVar, 'body')
       return new Error('my error')
     }
   })
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'my error'
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'my error'
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('should catch error inside formatter and return message', t => {
-  t.plan(3)
+test('should catch error inside formatter and return message', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
@@ -545,25 +533,23 @@ test('should catch error inside formatter and return message', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 500)
-    t.end()
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: 'abc'
+  })
+  t.assert.strictEqual(response.statusCode, 500)
 })
 
-test('cannot create a fastify instance with wrong type of errorFormatter', t => {
+test('cannot create a fastify instance with wrong type of errorFormatter', async (t) => {
   t.plan(3)
 
   try {
@@ -573,7 +559,7 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
       }
     })
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
+    t.assert.strictEqual(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   }
 
   try {
@@ -581,19 +567,19 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
       schemaErrorFormatter: 500
     })
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
+    t.assert.strictEqual(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   }
 
   try {
     const fastify = Fastify()
     fastify.setSchemaErrorFormatter(500)
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
+    t.assert.strictEqual(err.code, 'FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN')
   }
 })
 
-test('should register a route based schema error formatter', t => {
-  t.plan(3)
+test('should register a route based schema error formatter', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -604,27 +590,25 @@ test('should register a route based schema error formatter', t => {
     }
   }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 400)
-    t.end()
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'abc'
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('prefer route based error formatter over global one', t => {
-  t.plan(9)
+test('prefer route based error formatter over global one', async (t) => {
+  t.plan(6)
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
@@ -648,60 +632,57 @@ test('prefer route based error formatter over global one', t => {
 
   fastify.post('/test', { schema }, echoBody)
 
-  fastify.inject({
+  const response1 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: '123'
-    })
-    t.equal(res.statusCode, 400)
   })
 
-  fastify.inject({
+  t.assert.deepStrictEqual(response1.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: '123'
+  })
+  t.assert.strictEqual(response1.statusCode, 400)
+
+  const response2 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/abc'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 400)
   })
 
-  fastify.inject({
+  t.assert.deepStrictEqual(response2.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'abc'
+  })
+  t.assert.strictEqual(response2.statusCode, 400)
+
+  const response3 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/test'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc123'
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response3.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'abc123'
+  })
+  t.assert.strictEqual(response3.statusCode, 400)
 })
 
-test('adding schemaErrorFormatter', t => {
-  t.plan(3)
+test('adding schemaErrorFormatter', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -711,27 +692,25 @@ test('adding schemaErrorFormatter', t => {
 
   fastify.post('/', { schema }, echoBody)
 
-  fastify.inject({
+  const response = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'abc'
-    })
-    t.equal(res.statusCode, 400)
-    t.end()
   })
+
+  t.assert.deepStrictEqual(response.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'abc'
+  })
+  t.assert.strictEqual(response.statusCode, 400)
 })
 
-test('plugin override', t => {
-  t.plan(15)
+test('plugin override', async (t) => {
+  t.plan(10)
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
@@ -772,88 +751,83 @@ test('plugin override', t => {
     }
   }, echoBody)
 
-  fastify.inject({
+  const response1 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'A'
-    })
-    t.equal(res.statusCode, 400)
   })
 
-  fastify.inject({
+  t.assert.deepStrictEqual(response1.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'A'
+  })
+  t.assert.strictEqual(response1.statusCode, 400)
+
+  const response2 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/b'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'B'
-    })
-    t.equal(res.statusCode, 400)
   })
 
-  fastify.inject({
+  t.assert.deepStrictEqual(response2.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'B'
+  })
+  t.assert.strictEqual(response2.statusCode, 400)
+
+  const response3 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/c'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'C'
-    })
-    t.equal(res.statusCode, 400)
   })
 
-  fastify.inject({
+  t.assert.deepStrictEqual(response3.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'C'
+  })
+  t.assert.strictEqual(response3.statusCode, 400)
+
+  const response4 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/d'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'D'
-    })
-    t.equal(res.statusCode, 400)
   })
 
-  fastify.inject({
+  t.assert.deepStrictEqual(response4.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'D'
+  })
+  t.assert.strictEqual(response4.statusCode, 400)
+
+  const response5 = await fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
     url: '/stillC'
-  }, (err, res) => {
-    t.error(err)
-    t.same(res.json(), {
-      statusCode: 400,
-      code: 'FST_ERR_VALIDATION',
-      error: 'Bad Request',
-      message: 'C'
-    })
-    t.equal(res.statusCode, 400)
   })
+
+  t.assert.deepStrictEqual(response5.json(), {
+    statusCode: 400,
+    code: 'FST_ERR_VALIDATION',
+    error: 'Bad Request',
+    message: 'C'
+  })
+  t.assert.strictEqual(response5.statusCode, 400)
 })

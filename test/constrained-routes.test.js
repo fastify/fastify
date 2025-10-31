@@ -1,11 +1,10 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../fastify')
 
-test('Should register a host constrained route', t => {
-  t.plan(7)
+test('Should register a host constrained route', async t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.route({
@@ -17,40 +16,41 @@ test('Should register a host constrained route', t => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'fastify.dev'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'fastify.dev'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'example.com'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'example.com'
+      }
+    })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/'
+    })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
 })
 
-test('Should register the same route with host constraints', t => {
-  t.plan(8)
+test('Should register the same route with host constraints', async t => {
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.route({
@@ -71,44 +71,45 @@ test('Should register the same route with host constraints', t => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'fastify.dev'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'fastify.dev')
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'fastify.dev'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'fastify.dev')
+  }
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'example.com'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, 'example.com')
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'example.com'
+      }
+    })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'fancy.ca'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'example.com')
+  }
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'fancy.ca'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
 })
 
-test('Should allow registering custom constrained routes', t => {
-  t.plan(8)
+test('Should allow registering custom constrained routes', async t => {
+  t.plan(5)
 
   const constraint = {
     name: 'secret',
@@ -145,44 +146,44 @@ test('Should allow registering custom constrained routes', t => {
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'X-Secret': 'alpha'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from alpha' })
-    t.equal(res.statusCode, 200)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'alpha'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from alpha' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'X-Secret': 'beta'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from beta' })
-    t.equal(res.statusCode, 200)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'beta'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from beta' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'X-Secret': 'gamma'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'gamma'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
 })
 
-test('Should allow registering custom constrained routes outside constructor', t => {
-  t.plan(8)
+test('Should allow registering custom constrained routes outside constructor', async t => {
+  t.plan(5)
 
   const constraint = {
     name: 'secret',
@@ -220,43 +221,44 @@ test('Should allow registering custom constrained routes outside constructor', t
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'X-Secret': 'alpha'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from alpha' })
-    t.equal(res.statusCode, 200)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'alpha'
+      }
+    })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'X-Secret': 'beta'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from beta' })
-    t.equal(res.statusCode, 200)
-  })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from alpha' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'X-Secret': 'gamma'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'beta'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from beta' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'gamma'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
 })
 
-test('Custom constrained routes registered also for HEAD method generated by fastify', t => {
+test('Custom constrained routes registered also for HEAD method generated by fastify', (t, done) => {
   t.plan(3)
 
   const constraint = {
@@ -292,13 +294,14 @@ test('Custom constrained routes registered also for HEAD method generated by fas
       'X-Secret': 'mySecret'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(res.headers['content-length'], '31')
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.headers['content-length'], '31')
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
-test('Custom constrained routes registered with addConstraintStrategy apply also for HEAD method generated by fastify', t => {
+test('Custom constrained routes registered with addConstraintStrategy apply also for HEAD method generated by fastify', (t, done) => {
   t.plan(3)
 
   const constraint = {
@@ -335,13 +338,14 @@ test('Custom constrained routes registered with addConstraintStrategy apply also
       'X-Secret': 'mySecret'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(res.headers['content-length'], '31')
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.headers['content-length'], '31')
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
-test('Add a constraint strategy after fastify instance was started', t => {
+test('Add a constraint strategy after fastify instance was started', (t, done) => {
   t.plan(4)
 
   const constraint = {
@@ -371,14 +375,14 @@ test('Add a constraint strategy after fastify instance was started', t => {
     method: 'GET',
     url: '/'
   }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, 'ok')
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'ok')
+    t.assert.strictEqual(res.statusCode, 200)
 
-    t.throws(
-      () => fastify.addConstraintStrategy(constraint),
-      'Cannot add constraint strategy when fastify instance is already started!'
+    t.assert.throws(
+      () => fastify.addConstraintStrategy(constraint)
     )
+    done()
   })
 })
 
@@ -403,9 +407,9 @@ test('Add a constraint strategy should throw an error if there already exist cus
   const fastify = Fastify()
 
   fastify.addConstraintStrategy(constraint)
-  t.throws(
+  t.assert.throws(
     () => fastify.addConstraintStrategy(constraint),
-    'There already exists a custom constraint with the name secret.'
+    /^Error: There already exists a custom constraint with the name secret.$/
   )
 })
 
@@ -430,7 +434,7 @@ test('Add a constraint strategy shouldn\'t throw an error if default constraint 
   const fastify = Fastify()
   fastify.addConstraintStrategy(constraint)
 
-  t.pass()
+  t.assert.ok(true)
 })
 
 test('Add a constraint strategy should throw an error if default constraint with the same name is used', t => {
@@ -462,9 +466,9 @@ test('Add a constraint strategy should throw an error if default constraint with
     }
   })
 
-  t.throws(
+  t.assert.throws(
     () => fastify.addConstraintStrategy(constraint),
-    'There already exists a route with version constraint.'
+    /^Error: There already exists a route with version constraint.$/
   )
 })
 
@@ -473,8 +477,8 @@ test('The hasConstraintStrategy should return false for default constraints unti
 
   const fastify = Fastify()
 
-  t.equal(fastify.hasConstraintStrategy('version'), false)
-  t.equal(fastify.hasConstraintStrategy('host'), false)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('version'), false)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('host'), false)
 
   fastify.route({
     method: 'GET',
@@ -485,8 +489,8 @@ test('The hasConstraintStrategy should return false for default constraints unti
     }
   })
 
-  t.equal(fastify.hasConstraintStrategy('version'), false)
-  t.equal(fastify.hasConstraintStrategy('host'), true)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('version'), false)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('host'), true)
 
   fastify.route({
     method: 'GET',
@@ -497,8 +501,8 @@ test('The hasConstraintStrategy should return false for default constraints unti
     }
   })
 
-  t.equal(fastify.hasConstraintStrategy('version'), true)
-  t.equal(fastify.hasConstraintStrategy('host'), true)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('version'), true)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('host'), true)
 })
 
 test('The hasConstraintStrategy should return true if there already exist a custom constraint with the same name', t => {
@@ -521,13 +525,13 @@ test('The hasConstraintStrategy should return true if there already exist a cust
 
   const fastify = Fastify()
 
-  t.equal(fastify.hasConstraintStrategy('secret'), false)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('secret'), false)
   fastify.addConstraintStrategy(constraint)
-  t.equal(fastify.hasConstraintStrategy('secret'), true)
+  t.assert.strictEqual(fastify.hasConstraintStrategy('secret'), true)
 })
 
-test('Should allow registering an unconstrained route after a constrained route', t => {
-  t.plan(6)
+test('Should allow registering an unconstrained route after a constrained route', async t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.route({
@@ -547,32 +551,32 @@ test('Should allow registering an unconstrained route after a constrained route'
     }
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'fastify.dev'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from fastify.dev' })
-    t.equal(res.statusCode, 200)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'fastify.dev'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from fastify.dev' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
 
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      host: 'example.com'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from any other domain' })
-    t.equal(res.statusCode, 200)
-  })
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'example.com'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from any other domain' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
 })
 
-test('Should allow registering constrained routes in a prefixed plugin', t => {
+test('Should allow registering constrained routes in a prefixed plugin', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -595,13 +599,14 @@ test('Should allow registering constrained routes in a prefixed plugin', t => {
       host: 'fastify.dev'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { ok: true })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { ok: true })
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
-test('Should allow registering a constrained GET route after a constrained HEAD route', t => {
+test('Should allow registering a constrained GET route after a constrained HEAD route', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -631,13 +636,14 @@ test('Should allow registering a constrained GET route after a constrained HEAD 
       host: 'fastify.dev'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, 'custom HEAD response')
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'custom HEAD response')
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
-test('Should allow registering a constrained GET route after an unconstrained HEAD route', t => {
+test('Should allow registering a constrained GET route after an unconstrained HEAD route', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -667,9 +673,10 @@ test('Should allow registering a constrained GET route after an unconstrained HE
       host: 'fastify.dev'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(res.headers['content-length'], '41')
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.headers['content-length'], '41')
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
@@ -702,7 +709,7 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   await fastify.ready()
 
-  t.ok(true)
+  t.assert.ok(true)
 })
 
 test('allows separate constrained and unconstrained HEAD routes', async (t) => {
@@ -744,7 +751,7 @@ test('allows separate constrained and unconstrained HEAD routes', async (t) => {
 
   await fastify.ready()
 
-  t.ok(true)
+  t.assert.ok(true)
 })
 
 test('allow async constraints', async (t) => {
@@ -787,17 +794,17 @@ test('allow async constraints', async (t) => {
 
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
-    t.same(JSON.parse(payload), { hello: 'from alpha' })
-    t.equal(statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(payload), { hello: 'from alpha' })
+    t.assert.strictEqual(statusCode, 200)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
-    t.same(JSON.parse(payload), { hello: 'from beta' })
-    t.equal(statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(payload), { hello: 'from beta' })
+    t.assert.strictEqual(statusCode, 200)
   }
   {
     const { statusCode } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
-    t.equal(statusCode, 404)
+    t.assert.strictEqual(statusCode, 404)
   }
 })
 
@@ -841,28 +848,28 @@ test('error in async constraints', async (t) => {
 
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
-    t.equal(statusCode, 500)
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
-    t.equal(statusCode, 500)
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
-    t.equal(statusCode, 500)
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
   }
   {
     const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/' })
-    t.same(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
-    t.equal(statusCode, 500)
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
   }
 })
 
-test('Allow regex constraints in routes', t => {
-  t.plan(5)
+test('Allow regex constraints in routes', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -875,26 +882,257 @@ test('Allow regex constraints in routes', t => {
     }
   })
 
-  fastify.inject({
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'dev.fastify.dev'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from fastify dev domain' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        host: 'google.com'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
+})
+
+test('Should allow registering custom rotuerOptions constrained routes', async t => {
+  t.plan(5)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({ routerOptions: { constraints: { secret: constraint } } })
+
+  fastify.route({
     method: 'GET',
     url: '/',
-    headers: {
-      host: 'dev.fastify.dev'
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
     }
-  }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from fastify dev domain' })
-    t.equal(res.statusCode, 200)
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'beta' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from beta' })
+    }
+  })
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'alpha'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from alpha' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'beta'
+      }
+    })
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from beta' })
+    t.assert.strictEqual(res.statusCode, 200)
+  }
+
+  {
+    const res = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'X-Secret': 'gamma'
+      }
+    })
+    t.assert.strictEqual(res.statusCode, 404)
+  }
+})
+
+test('Custom rotuerOptions constrained routes registered also for HEAD method generated by fastify', (t, done) => {
+  t.plan(3)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({ routerOptions: { constraints: { secret: constraint } } })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'mySecret' },
+    handler: (req, reply) => {
+      reply.send('from mySecret - my length is 31')
+    }
   })
 
   fastify.inject({
-    method: 'GET',
+    method: 'HEAD',
     url: '/',
     headers: {
-      host: 'google.com'
+      'X-Secret': 'mySecret'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.headers['content-length'], '31')
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
+})
+
+test('allow async rotuerOptions constraints', async (t) => {
+  t.plan(5)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx, done) => {
+      done(null, req.headers['x-secret'])
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({ routerOptions: { constraints: { secret: constraint } } })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'beta' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from beta' })
+    }
+  })
+
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
+    t.assert.deepStrictEqual(JSON.parse(payload), { hello: 'from alpha' })
+    t.assert.strictEqual(statusCode, 200)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
+    t.assert.deepStrictEqual(JSON.parse(payload), { hello: 'from beta' })
+    t.assert.strictEqual(statusCode, 200)
+  }
+  {
+    const { statusCode } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
+    t.assert.strictEqual(statusCode, 404)
+  }
+})
+
+test('error in async rotuerOptions constraints', async (t) => {
+  t.plan(8)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx, done) => {
+      done(Error('kaboom'))
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({ routerOptions: { constraints: { secret: constraint } } })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'beta' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from beta' })
+    }
+  })
+
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'alpha' } })
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'beta' } })
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/', headers: { 'X-Secret': 'gamma' } })
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
+  }
+  {
+    const { statusCode, payload } = await fastify.inject({ method: 'GET', path: '/' })
+    t.assert.deepStrictEqual(JSON.parse(payload), { error: 'Internal Server Error', message: 'Unexpected error from async constraint', statusCode: 500 })
+    t.assert.strictEqual(statusCode, 500)
+  }
 })

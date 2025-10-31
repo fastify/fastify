@@ -213,7 +213,7 @@ the following:
 +++ b/index.ts
 @@ -11,7 +11,8 @@ import {
  import { FromSchema, FromSchemaDefaultOptions, FromSchemaOptions, JSONSchema } from 'json-schema-to-ts'
- 
+
  export interface JsonSchemaToTsProvider<
    Options extends FromSchemaOptions = FromSchemaDefaultOptions
  > extends FastifyTypeProvider {
@@ -374,7 +374,7 @@ use the `constraints` option instead.
 We have a more strict requirement for custom `HEAD` route when
 `exposeHeadRoutes: true`.
 
-When you provides a custom `HEAD` route, you must either explicitly 
+When you provides a custom `HEAD` route, you must either explicitly
 set `exposeHeadRoutes` to `false`
 
 ```js
@@ -498,7 +498,7 @@ and requires the route definition to be passed as it is defined in the route.
 fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 
 console.log(fastify.hasRoute({
-  method: 'GET', 
+  method: 'GET',
   url: '/example/12345.png'
 )); // true
 ```
@@ -509,7 +509,7 @@ console.log(fastify.hasRoute({
 fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 
 console.log(fastify.hasRoute({
-  method: 'GET', 
+  method: 'GET',
   url: '/example/:file(^\\d+).png'
 )); // true
 ```
@@ -573,7 +573,7 @@ or turn it into a function
 
 ```js
 // v5
-fastify.decorateRequest('myObject', () => { hello: 'world' });
+fastify.decorateRequest('myObject', () => ({ hello: 'world' }));
 ```
 
 or as a getter
@@ -581,7 +581,7 @@ or as a getter
 ```js
 // v5
 fastify.decorateRequest('myObject', {
-  getter () { 
+  getter () {
     return { hello: 'world' }
   }
 });
@@ -631,11 +631,24 @@ fastify.register(function (instance, opts, done) {
   done();
 });
 ```
+
 > **Note**: Codemod to remove the `done` callback from async plugins with:
 >
 > ```bash
 > npx codemod@latest fastify/5/remove-done-callback
 > ```
+
+### Requests now have `host`, `hostname`, and `port`, and `hostname` no longer includes the port number
+
+In Fastify v4, `req.hostname` would include both the hostname and the
+server’s port, so locally it might have the value `localhost:1234`.
+With v5, we aligned to the Node.js URL object and now include `host`, `hostname`,
+and `port` properties. `req.host` has the same value as `req.hostname` did in v4,
+while `req.hostname` includes the hostname _without_ a port if a port is present,
+and `req.port` contains just the port number.
+See [#4766](https://github.com/fastify/fastify/pull/4766)
+and [#4682](https://github.com/fastify/fastify/issues/4682) for more information.
+
 ### Removes `getDefaultRoute` and `setDefaultRoute` methods
 
 The `getDefaultRoute` and `setDefaultRoute` methods have been removed in v5.
@@ -658,7 +671,6 @@ and provides a way to trace the lifecycle of a request.
 'use strict'
 
 const diagnostics = require('node:diagnostics_channel')
-const sget = require('simple-get').concat
 const Fastify = require('fastify')
 
 diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
@@ -684,15 +696,12 @@ fastify.route({
   }
 })
 
-fastify.listen({ port: 0 }, function () {
-  sget({
-    method: 'GET',
-    url: fastify.listeningOrigin + '/7'
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(body), { hello: 'world' })
-  })
+fastify.listen({ port: 0 }, async function () {
+  const result = await fetch(fastify.listeningOrigin + '/7')
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(response.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
 })
 ```
 
@@ -821,4 +830,3 @@ contributing to those that are capable of accepting sponsorships.
 | voxpelli | [❤️ sponsor](https://github.com/sponsors/voxpelli) | fastify |
 | weixinwu |  | fastify-cli |
 | zetaraku |  | fastify-cli |
-

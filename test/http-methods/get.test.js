@@ -1,8 +1,7 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
+const { Client } = require('undici')
 const fastify = require('../../fastify')()
 
 const schema = {
@@ -96,9 +95,9 @@ test('shorthand - get', t => {
     fastify.get('/', schema, function (req, reply) {
       reply.code(200).send({ hello: 'world' })
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -108,9 +107,9 @@ test('shorthand - get (return null)', t => {
     fastify.get('/null', nullSchema, function (req, reply) {
       reply.code(200).send(null)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -120,9 +119,9 @@ test('shorthand - get params', t => {
     fastify.get('/params/:foo/:test', paramsSchema, function (req, reply) {
       reply.code(200).send(req.params)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -132,9 +131,9 @@ test('shorthand - get, querystring schema', t => {
     fastify.get('/query', querySchema, function (req, reply) {
       reply.code(200).send(req.query)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -144,9 +143,9 @@ test('shorthand - get, headers schema', t => {
     fastify.get('/headers', headersSchema, function (req, reply) {
       reply.code(200).send(req.headers)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -156,9 +155,9 @@ test('missing schema - get', t => {
     fastify.get('/missing', function (req, reply) {
       reply.code(200).send({ hello: 'world' })
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -173,9 +172,9 @@ test('custom serializer - get', t => {
     fastify.get('/custom-serializer', numberSchema, function (req, reply) {
       reply.code(200).serializer(customSerializer).send({ hello: 'world' })
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -185,9 +184,9 @@ test('empty response', t => {
     fastify.get('/empty', function (req, reply) {
       reply.code(200).send()
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -197,9 +196,9 @@ test('send a falsy boolean', t => {
     fastify.get('/boolean', function (req, reply) {
       reply.code(200).send(false)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -209,203 +208,205 @@ test('shorthand - get, set port', t => {
     fastify.get('/port', headersSchema, function (req, reply) {
       reply.code(200).send({ port: req.port })
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+test('get test', async t => {
+  t.after(() => { fastify.close() })
 
-  test('shorthand - request get', t => {
+  await fastify.listen({ port: 0 })
+
+  await t.test('shorthand - request get', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port, {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  test('shorthand - request get params schema', t => {
+  await t.test('shorthand - request get params schema', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { foo: 'world', test: 123 })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/params/world/123', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { foo: 'world', test: 123 })
   })
 
-  test('shorthand - request get params schema error', t => {
+  await t.test('shorthand - request get params schema error', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'params/test must be integer',
-        statusCode: 400
-      })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/params/world/string', {
+      method: 'GET'
+    })
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 400)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'params/test must be integer',
+      statusCode: 400
     })
   })
 
-  test('shorthand - request get headers schema', t => {
+  await t.test('shorthand - request get headers schema', async t => {
     t.plan(4)
-    sget({
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/headers', {
       method: 'GET',
       headers: {
         'x-test': '1',
         'Y-Test': '3'
-      },
-      json: true,
-      url: 'http://localhost:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body['x-test'], 1)
-      t.equal(body['y-test'], 3)
+      }
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.json()
+    t.assert.strictEqual(body['x-test'], 1)
+    t.assert.strictEqual(body['y-test'], 3)
   })
 
-  test('shorthand - request get headers schema error', t => {
+  await t.test('shorthand - request get headers schema error', async t => {
     t.plan(3)
-    sget({
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/headers', {
       method: 'GET',
       headers: {
         'x-test': 'abc'
-      },
-      url: 'http://localhost:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'headers/x-test must be number',
-        statusCode: 400
-      })
+      }
+    })
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 400)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'headers/x-test must be number',
+      statusCode: 400
     })
   })
 
-  test('shorthand - request get querystring schema', t => {
+  await t.test('shorthand - request get querystring schema', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 123 })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/query?hello=123', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 123 })
   })
 
-  test('shorthand - request get querystring schema error', t => {
+  await t.test('shorthand - request get querystring schema error', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'querystring/hello must be integer',
-        statusCode: 400
-      })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/query?hello=world', {
+      method: 'GET'
+    })
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 400)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'querystring/hello must be integer',
+      statusCode: 400
     })
   })
 
-  test('shorthand - request get missing schema', t => {
+  await t.test('shorthand - request get missing schema', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/missing', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  test('shorthand - custom serializer', t => {
+  await t.test('shorthand - custom serializer', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/custom-serializer', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  test('shorthand - empty response', t => {
+  await t.test('shorthand - empty response', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/empty'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '0')
-      t.same(body.toString(), '')
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/empty', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '0')
+    t.assert.deepStrictEqual(body.toString(), '')
   })
 
-  test('shorthand - send a falsy boolean', t => {
+  await t.test('shorthand - send a falsy boolean', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/boolean'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'false')
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/boolean', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.deepStrictEqual(body.toString(), 'false')
   })
 
-  test('shorthand - send null value', t => {
+  await t.test('shorthand - send null value', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/null'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'null')
+
+    const response = await fetch('http://localhost:' + fastify.server.address().port + '/null', {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.deepStrictEqual(body.toString(), 'null')
   })
 
-  test('shorthand - request get headers - test fall back port', t => {
-    t.plan(3)
-    sget({
+  await t.test('shorthand - request get headers - test fall back port', async t => {
+    t.plan(2)
+
+    const instance = new Client('http://localhost:' + fastify.server.address().port)
+
+    const response = await instance.request({
+      path: '/port',
       method: 'GET',
       headers: {
         host: 'example.com'
-      },
-      json: true,
-      url: 'http://localhost:' + fastify.server.address().port + '/port'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.port, null)
+      }
     })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    const body = JSON.parse(await response.body.text())
+    t.assert.strictEqual(body.port, null)
   })
 })

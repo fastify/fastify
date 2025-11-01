@@ -833,7 +833,7 @@ test('plugin override', async (t) => {
 })
 
 test('async preValidation with custom validator should trigger error handler when validator throws', async (t) => {
-  t.plan(4)
+  t.plan(8)
 
   const fastify = Fastify()
 
@@ -844,14 +844,8 @@ test('async preValidation with custom validator should trigger error handler whe
     reply.status(500).send({ error: error.message })
   })
 
-  // Add async preValidation hook
-  fastify.addHook('preValidation', async (request, reply) => {
-    // This hook makes the validation async
-    await new Promise(resolve => setImmediate(resolve))
-  })
-
   // Route with custom validator that throws
-  fastify.post('/', {
+  const routeDefinition = {
     schema: {
       body: {
         type: 'object',
@@ -865,18 +859,44 @@ test('async preValidation with custom validator should trigger error handler whe
         // This custom validator throws an error instead of returning {error}
         throw new Error('Custom validation failed')
       }
+    },
+    handler (request, reply) {
+      t.assert.fail('Handler should not be called')
+      reply.send({ success: true })
     }
-  }, function (request, reply) {
-    t.assert.fail('Handler should not be called')
-    reply.send({ success: true })
+  }
+
+  fastify.register(async function plugin (app, opts) {
+    // Add sync preValidation hook
+    app.addHook('preValidation', (request, reply, next) => { next() })
+    app.post('/sync', routeDefinition)
   })
 
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { name: 'test' }
+  fastify.register(async function plugin (app, opts) {
+    // Add async preValidation hook
+    fastify.addHook('preValidation', async (request, reply) => {
+      await new Promise(resolve => setImmediate(resolve))
+    })
+    fastify.post('/async', routeDefinition)
   })
 
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
+  {
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/sync',
+      payload: { name: 'test' }
+    })
+    t.assert.strictEqual(response.statusCode, 500)
+    t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
+  }
+
+  {
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/async',
+      payload: { name: 'test' }
+    })
+    t.assert.strictEqual(response.statusCode, 500)
+    t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
+  }
 })

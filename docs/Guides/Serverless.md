@@ -303,10 +303,10 @@ const fastifyApp = async (request, reply) => {
 
 ### Add Custom `contentTypeParser` to Fastify instance and define endpoints
 
-Firebase Function's HTTP layer (based on Express) already parses the request
-and makes a JSON payload available through the property `req.body`. It also
-provides access to the raw body, unparsed, which is useful for calculating
-request signatures to validate HTTP webhooks.
+Firebase Function's HTTP layer already parses the request and makes a JSON
+payload available through the property `payload.body` below. It also provides
+access to the raw body, unparsed, which is useful for calculating request
+signatures to validate HTTP webhooks.
 
 Add as follows to the `registerRoutes()` function:
 
@@ -337,7 +337,7 @@ remaining stuck and not processing any other requests after receiving one with
 the Content-Type `application/json`.**
 
 When using Typescript, since the type of `payload` is a native `IncomingMessage`
-that get's modified by `body-parser`, it won't be able to find the property
+that gets modified by Firebase, it won't be able to find the property
 `payload.body`.
 
 In order to suppress the error, you can use the following signature:

@@ -10,9 +10,9 @@ Fastify with them.
 
 That is up to you! Keep in mind, functions as a service should always use
 small and focused functions, but you can also run an entire web application with
-them. It is important to remember that the bigger the application the slower the
+them. It is important to remember that the bigger the application the slower t he
 initial boot will be. The best way to run Fastify applications in serverless
-environments is to use platforms like Google Cloud Run, AWS Fargate, Azure
+environments is to use platforms like Google Cloud Run, AWS Fargate, Azure 
 Container Instances, and Vercel where the server can handle multiple requests
 at the same time and make full use of Fastify's features.
 
@@ -303,8 +303,8 @@ const fastifyApp = async (request, reply) => {
 
 ### Add Custom `contentTypeParser` to Fastify instance and define endpoints
 
-Firebase Function's HTTP layer already parses the request
-and makes a JSON payload available. It also provides access
+Firebase Function's HTTP layer (based on Express) already parses the request
+and makes a JSON payload available through the property `req.body`. It also provides access
 to the raw body, unparsed, which is useful for calculating
 request signatures to validate HTTP webhooks.
 
@@ -329,6 +329,22 @@ async function registerRoutes (fastify) {
   fastify.get('/', async (request, reply) => {
     reply.send({message: 'Hello World!'})
   })
+}
+```
+
+**Failing to add this `ContentTypeParser` may lead to the Fastify process remain stuck and
+not processing any other requests after receiving one with the Content-Type `application/json`.**
+
+When using Typescript, since the type of `payload` is a native `IncomingMessage` that
+get's modified by `body-parser`, it won't be able to find the property `payload.body`.
+
+In order to suppress the error, you can use the following signature:
+
+```ts
+declare module 'http' {
+	interface IncomingMessage {
+		body?: unknown;
+	}
 }
 ```
 

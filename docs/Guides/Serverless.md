@@ -10,9 +10,9 @@ Fastify with them.
 
 That is up to you! Keep in mind, functions as a service should always use
 small and focused functions, but you can also run an entire web application with
-them. It is important to remember that the bigger the application the slower t he
+them. It is important to remember that the bigger the application the slower the
 initial boot will be. The best way to run Fastify applications in serverless
-environments is to use platforms like Google Cloud Run, AWS Fargate, Azure 
+environments is to use platforms like Google Cloud Run, AWS Fargate, Azure
 Container Instances, and Vercel where the server can handle multiple requests
 at the same time and make full use of Fastify's features.
 

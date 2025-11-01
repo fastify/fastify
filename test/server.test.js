@@ -67,18 +67,36 @@ test('listen should reject string port', async (t) => {
 })
 
 test('Test for hostname and port', async (t) => {
+  t.plan(3)
   const app = Fastify()
   t.after(() => app.close())
   app.get('/host', (req, res) => {
-    const host = 'localhost:8000'
-    t.assert.strictEqual(req.host, host)
-    t.assert.strictEqual(req.hostname, req.host.split(':')[0])
-    t.assert.strictEqual(req.port, Number(req.host.split(':')[1]))
+    t.assert.strictEqual(req.host, 'localhost:8000')
+    t.assert.strictEqual(req.hostname, 'localhost')
+    t.assert.strictEqual(req.port, 8000)
     res.send('ok')
   })
 
   await app.listen({ port: 8000 })
   await fetch('http://localhost:8000/host')
+})
+
+test('Test for IPV6 port', async (t) => {
+  t.plan(3)
+  const app = Fastify()
+  t.after(() => app.close())
+  app.get('/host', (req, res) => {
+    t.assert.strictEqual(req.host, '[::1]:3040')
+    t.assert.strictEqual(req.hostname, '[::1]')
+    t.assert.strictEqual(req.port, 3040)
+    res.send('ok')
+  })
+
+  await app.listen({
+    port: 3040,
+    host: '::1'
+  })
+  await fetch('http://[::1]:3040/host')
 })
 
 test('abort signal', async t => {

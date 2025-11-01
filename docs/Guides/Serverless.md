@@ -332,7 +332,7 @@ async function registerRoutes (fastify) {
 }
 ```
 
-**Failing to add this `ContentTypeParser` may lead to the Fastify process remain stuck and
+**Failing to add this `ContentTypeParser` may lead to the Fastify process remaining stuck and
 not processing any other requests after receiving one with the Content-Type `application/json`.**
 
 When using Typescript, since the type of `payload` is a native `IncomingMessage` that

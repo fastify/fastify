@@ -44,11 +44,11 @@ npm install close-with-grace
 Create a `server.js` file:
 
 ```js
-import Fastify from 'fastify';
+import fastify from 'fastify';
 import closeWithGrace from 'close-with-grace';
 
 // Factory function
-const app = Fastify({ 
+const app = fastify({ 
   logger: true // Activate logging
 });
 

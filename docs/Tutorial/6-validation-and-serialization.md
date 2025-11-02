@@ -277,7 +277,6 @@ app.delete(
   }
 );
 
-
 closeWithGrace(async ({ err }) => {
   if (err != null) {
     app.log.error(err);
@@ -346,7 +345,6 @@ import AjvErrors from 'ajv-errors';
 const app = fastify({
   ajv: {
     customOptions: {
-      jsonPointers: true,
       allErrors: true // ⚠ May enable CVE-2020-8192 risk
     },
     plugins: [AjvErrors]
@@ -378,7 +376,7 @@ in the response.
 
 You’re not locked into Ajv.
 Fastify can use other validators or custom Ajv configurations via
-[`setValidatorCompiler`](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#using-other-validation-libraries)
+[`setValidatorCompiler`](/docs/latest/Reference/Validation-and-Serialization/#using-other-validation-libraries)
 .
 
 Here is a trivial compiler that **always accepts data**, no matter what:

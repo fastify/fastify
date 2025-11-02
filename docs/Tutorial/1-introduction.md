@@ -29,15 +29,17 @@ We’ll start by exploring Fastify’s core features:
 - Adding validation and response serialization using JSON schemas
 - Understanding and using application and request lifecycle hooks
 - Implementing custom error handling and fallback (404) routes
+- Using the plugin system and encapsulation to structure our application
 
-### Structure and Encapsulation
+### Testing
 
-Once the fundamentals are clear, we’ll introduce how to:
+To ensure reliability and maintainability, we’ll set up a solid testing workflow:
 
-- Leverage the plugin system to modularize the application
-- Use encapsulation to isolate plugins and prevent scoped 
-  utilities from leaking into the global context.
-- Share utilities globally
+- Use the built-in **Node.js test runner**
+- Test routes and behaviors with **`fastify.inject()`**
+- Get **code coverage** using
+[`borp`](https://github.com/mcollina/borp), 
+a lightweight runner with TypeScript support and built-in coverage
 
 ### Plugin Ecosystem and Integration
 
@@ -51,19 +53,8 @@ extend the application:
 - Monitoring and observability
 - Authentication and authorization
 - API documentation with Swagger
-- Autoloading
 
-### Testing
-
-To ensure reliability and maintainability, we’ll set up a solid testing workflow:
-
-- Use the built-in **Node.js test runner**
-- Test routes and behaviors with **`fastify.inject()`**
-- Get **code coverage** using
-[`borp`](https://github.com/mcollina/borp), 
-a lightweight runner with TypeScript support and built-in coverage
-
-### Developer Experience and TypeScript
+### TypeScript and Architecture
 
 To finish, we’ll introduce Fastify’s TypeScript tools
 and best practices:

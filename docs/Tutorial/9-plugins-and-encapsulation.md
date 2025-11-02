@@ -253,7 +253,22 @@ const myFeature = fp(
 );
 ```
 
-## Awaiting a plugin
+## Booting the application
+
+Fastify uses
+[Avvio](https://github.com/fastify/avvio)
+to load plugins in a deterministic way.
+Asynchronous loading is nontrivial. Avvio builds and runs a dependency
+graph so each plugin starts in a safe, predictable order. A plugin may
+also register other plugins during its own initialization.
+
+To tell Fastify to load the current plugin tree, call
+`await fastify.ready()`. This loads every plugin that was registered up
+to that point and makes their decorators available. The methods
+`fastify.listen(...)` and `fastify.inject(...)` call `ready()` for you,
+so you usually do not need to call it manually.
+
+### Awaiting a plugin
 
 If you `await` a call to `fastify.register(...)`, Fastify loads that
 plugin immediately. At that point its decorators become available. This
@@ -301,21 +316,6 @@ console.log('app.b', app.b); // loaded
 console.log('app.a', app.a); // also loaded because plugin b is awaited
 console.log('app.c', app.c); // not loaded yet
 ```
-
-## Booting the application
-
-Fastify uses
-[Avvio](https://github.com/fastify/avvio)
-to load plugins in a deterministic way.
-Asynchronous loading is nontrivial. Avvio builds and runs a dependency
-graph so each plugin starts in a safe, predictable order. A plugin may
-also register other plugins during its own initialization.
-
-To tell Fastify to load the current plugin tree, call
-`await fastify.ready()`. This loads every plugin that was registered up
-to that point and makes their decorators available. The methods
-`fastify.listen(...)` and `fastify.inject(...)` call `ready()` for you,
-so you usually do not need to call it manually.
 
 ## Implementation for our application
 

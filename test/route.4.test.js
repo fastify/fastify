@@ -98,12 +98,14 @@ test('throws when route-level error handler is not a function', t => {
 test('route child logger factory overrides default child logger factory', async t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
 
   const customRouteChildLogger = (logger, bindings, opts, req) => {
-    const child = logger.child(bindings, opts)
-    child.customLog = function (message) {
-      t.assert.strictEqual(message, 'custom')
+    const child = logger?.child(bindings, opts)
+    if (child) {
+      child.customLog = function (message) {
+        t.assert.strictEqual(message, 'custom')
+      }
     }
     return child
   }

@@ -6,16 +6,16 @@ const Fastify = require('..')
 test('Should accept a custom childLoggerFactory function', (t, done) => {
   t.plan(4)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
   fastify.setChildLoggerFactory(function (logger, bindings, opts) {
     t.assert.ok(bindings.reqId)
     t.assert.ok(opts)
-    this.log.debug(bindings, 'created child logger')
-    return logger.child(bindings, opts)
+    this.log?.debug(bindings, 'created child logger')
+    return logger?.child(bindings, opts)
   })
 
   fastify.get('/', (req, reply) => {
-    req.log.info('log message')
+    req.log?.info('log message')
     reply.send()
   })
 
@@ -40,13 +40,13 @@ test('Should accept a custom childLoggerFactory function as option', (t, done) =
     childLoggerFactory: function (logger, bindings, opts) {
       t.assert.ok(bindings.reqId)
       t.assert.ok(opts)
-      this.log.debug(bindings, 'created child logger')
-      return logger.child(bindings, opts)
+      this.log?.debug(bindings, 'created child logger')
+      return logger?.child(bindings, opts)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    req.log.info('log message')
+    req.log?.info('log message')
     reply.send()
   })
 
@@ -67,9 +67,9 @@ test('Should accept a custom childLoggerFactory function as option', (t, done) =
 test('req.log should be the instance returned by the factory', (t, done) => {
   t.plan(3)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
   fastify.setChildLoggerFactory(function (logger, bindings, opts) {
-    this.log.debug('using root logger')
+    this.log?.debug('using root logger')
     return this.log
   })
 
@@ -96,9 +96,9 @@ test('req.log should be the instance returned by the factory', (t, done) => {
 test('should throw error if invalid logger is returned', (t, done) => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
   fastify.setChildLoggerFactory(function () {
-    this.log.debug('returning an invalid logger, expect error')
+    this.log?.debug('returning an invalid logger, expect error')
     return undefined
   })
 

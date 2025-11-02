@@ -6,7 +6,7 @@ const forge = require('node-forge')
 // from self-cert module
 function selfCert (opts) {
   const options = opts || {}
-  const log = opts.logger || require('abstract-logging')
+  const log = opts.logger
   const now = new Date()
 
   if (!options.attrs) options.attrs = {}
@@ -16,11 +16,11 @@ function selfCert (opts) {
     )
   }
 
-  log.debug('generating key pair')
+  log?.debug('generating key pair')
   const keys = forge.pki.rsa.generateKeyPair(options.bits || 2048)
-  log.debug('key pair generated')
+  log?.debug('key pair generated')
 
-  log.debug('generating self-signed certificate')
+  log?.debug('generating self-signed certificate')
   const cert = forge.pki.createCertificate()
   cert.publicKey = keys.publicKey
   cert.serialNumber = '01'
@@ -83,7 +83,7 @@ function selfCert (opts) {
   ])
 
   cert.sign(keys.privateKey)
-  log.debug('certificate generated')
+  log?.debug('certificate generated')
   return {
     privateKey: forge.pki.privateKeyToPem(keys.privateKey),
     publicKey: forge.pki.publicKeyToPem(keys.publicKey),

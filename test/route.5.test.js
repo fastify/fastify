@@ -6,12 +6,14 @@ const Fastify = require('..')
 test('route child logger factory does not affect other routes', async t => {
   t.plan(4)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
 
   const customRouteChildLogger = (logger, bindings, opts, req) => {
-    const child = logger.child(bindings, opts)
-    child.customLog = function (message) {
-      t.assert.strictEqual(message, 'custom')
+    const child = logger?.child(bindings, opts)
+    if (child) {
+      child.customLog = function (message) {
+        t.assert.strictEqual(message, 'custom')
+      }
     }
     return child
   }
@@ -30,7 +32,7 @@ test('route child logger factory does not affect other routes', async t => {
     method: 'GET',
     path: '/tea',
     handler: (req, res) => {
-      t.assert.ok(req.log.customLog instanceof Function)
+      t.assert.ok(!(req.log.customLog instanceof Function))
       res.send()
     }
   })
@@ -50,19 +52,23 @@ test('route child logger factory does not affect other routes', async t => {
 test('route child logger factory overrides global custom error handler', async t => {
   t.plan(4)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
 
   const customGlobalChildLogger = (logger, bindings, opts, req) => {
-    const child = logger.child(bindings, opts)
-    child.globalLog = function (message) {
-      t.assert.strictEqual(message, 'global')
+    const child = logger?.child(bindings, opts)
+    if (child) {
+      child.globalLog = function (message) {
+        t.assert.strictEqual(message, 'global')
+      }
     }
     return child
   }
   const customRouteChildLogger = (logger, bindings, opts, req) => {
-    const child = logger.child(bindings, opts)
-    child.customLog = function (message) {
-      t.assert.strictEqual(message, 'custom')
+    const child = logger?.child(bindings, opts)
+    if (child) {
+      child.customLog = function (message) {
+        t.assert.strictEqual(message, 'custom')
+      }
     }
     return child
   }

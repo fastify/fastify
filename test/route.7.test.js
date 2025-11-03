@@ -49,7 +49,7 @@ test("HEAD route should handle stream.on('error')", (t, done) => {
 })
 
 test('HEAD route should handle ReadableStream.cancel() error', (t, done) => {
-  t.plan(6)
+  t.plan(7)
 
   const logStream = split(JSON.parse)
   const expectedError = new Error('Cancel error!')
@@ -69,7 +69,8 @@ test('HEAD route should handle ReadableStream.cancel() error', (t, done) => {
         start (controller) {
           controller.enqueue('Hello from web stream!')
         },
-        cancel () {
+        cancel (reason) {
+          t.assert.strictEqual(reason, 'Stream cancelled by HEAD route')
           throw expectedError
         }
       })

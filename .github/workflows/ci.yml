@@ -42,7 +42,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@56339e523c0409420f6c2c9a2f4292bbb3c07dd3 # v4.8.0
+            uses: actions/dependency-review-action@40c09b7dc99638e5ddb0bfd91c1673effc064d8a # v4.8.1
 
   check-licenses:
     name: Check licenses
@@ -55,7 +55,7 @@ jobs:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -81,7 +81,7 @@ jobs:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -130,7 +130,7 @@ jobs:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -158,7 +158,7 @@ jobs:
           persist-credentials: false
 
       - name: Use Custom Node.js Version
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ github.event.inputs.nodejs-version }}
           cache: 'npm'
@@ -187,7 +187,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -216,7 +216,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'

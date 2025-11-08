@@ -875,7 +875,7 @@ test('async preValidation with custom validator should trigger error handler whe
   fastify.register(async function plugin (app, opts) {
     // Add async preValidation hook
     fastify.addHook('preValidation', async (request, reply) => {
-      await new Promise(resolve => setImmediate(resolve))
+await Promise.resolve('ok')
     })
     fastify.post('/async', routeDefinition)
   })

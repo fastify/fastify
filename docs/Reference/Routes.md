@@ -636,8 +636,7 @@ has a version set, and will prefer a versioned route to a non-versioned route
 for the same path. Advanced version ranges and pre-releases currently are not
 supported.
 
-*Be aware that using this feature will cause a degradation of the overall
-performances of the router.*
+> **Note:** using this feature can degrade the router’s performance.
 
 ```js
 fastify.route({

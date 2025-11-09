@@ -1241,7 +1241,13 @@ test('Custom validator builder override by custom validator compiler', async t =
   }
   const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
   const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
-  const fastify = Fastify({ schemaController: { compilersFactory: { buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema) } } })
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema)
+      }
+    }
+  })
 
   fastify.setValidatorCompiler((routeSchemaDef) => ajv2.compile(routeSchemaDef.schema))
 
@@ -1281,7 +1287,13 @@ test('Custom validator builder override by custom validator compiler in child in
   }
   const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
   const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
-  const fastify = Fastify({ schemaController: { compilersFactory: { buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema) } } })
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema)
+      }
+    }
+  })
 
   fastify.register((embedded, _opts, done) => {
     embedded.setValidatorCompiler((routeSchemaDef) => ajv2.compile(routeSchemaDef.schema))
@@ -1426,6 +1438,17 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(correct2.status, 200)
   await correct2.bytes()
 
+  const correct3 = await fetch(address, {
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json\t; charset=utf-8'
+    },
+    body: JSON.stringify({ foo: 'string' })
+  })
+  t.assert.strictEqual(correct2.status, 200)
+  await correct3.bytes()
+
   const invalid1 = await fetch(address, {
     method: 'POST',
     url: '/',
@@ -1489,8 +1512,8 @@ test('Schema validation will not be bypass by different content type', async t =
     },
     body: JSON.stringify({ invalid: 'string' })
   })
-  t.assert.strictEqual(invalid6.status, 415)
-  t.assert.strictEqual((await invalid6.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+  t.assert.strictEqual(invalid6.status, 400)
+  t.assert.strictEqual((await invalid6.json()).code, 'FST_ERR_VALIDATION')
 
   const invalid7 = await fetch(address, {
     method: 'POST',

@@ -2,13 +2,11 @@
 
 const { test } = require('node:test')
 const diagnostics = require('node:diagnostics_channel')
-const sget = require('simple-get').concat
 const Fastify = require('../..')
-const { getServerUrl } = require('../helper')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
-test('diagnostics channel sync events fire in expected order', (t, done) => {
+test('diagnostics channel sync events fire in expected order', async t => {
   t.plan(10)
   let callOrder = 0
   let firstEncounteredMessage
@@ -40,19 +38,12 @@ test('diagnostics channel sync events fire in expected order', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    if (err) t.assert.ifError(err)
+  t.after(() => { fastify.close() })
 
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + '/'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer + '/')
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
 })

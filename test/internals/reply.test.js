@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Request = require('../../lib/request')
@@ -19,24 +18,28 @@ const {
 const fs = require('node:fs')
 const path = require('node:path')
 
-const agent = new http.Agent({ keepAlive: false })
-
-const doGet = function (url) {
-  return new Promise((resolve, reject) => {
-    sget({ method: 'GET', url, followRedirects: false, agent }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve({ response, body })
-      }
-    })
+const doGet = async function (url) {
+  const result = await fetch(url, {
+    method: 'GET',
+    redirect: 'manual',
+    keepAlive: false
   })
+
+  return {
+    response: result,
+    body: await result.json().catch(() => undefined)
+  }
 }
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(15)
   const response = { res: 'res' }
-  const context = { config: { onSend: [] }, schema: {}, _parserOptions: {}, server: { hasConstraintStrategy: () => false, initialConfig: {} } }
+  const context = {
+    config: { onSend: [] },
+    schema: {},
+    _parserOptions: {},
+    server: { hasConstraintStrategy: () => false, initialConfig: {} }
+  }
   const request = new Request(null, null, null, null, null, context)
   const reply = new Reply(response, request)
   t.assert.strictEqual(typeof reply, 'object')
@@ -279,65 +282,44 @@ test('within an instance', async t => {
     done()
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  await t.test('custom serializer should be used', (t, done) => {
+  await t.test('custom serializer should be used', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/custom-serializer'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello=world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/custom-serializer')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello=world!')
   })
 
-  await t.test('status code and content-type should be correct', (t, done) => {
-    t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+  await t.test('status code and content-type should be correct', async t => {
+    t.plan(3)
+    const result = await fetch(fastifyServer)
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
-  await t.test('auto status code should be 200', (t, done) => {
+  await t.test('auto status code should be 200', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/auto-status-code'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/auto-status-code')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
-  await t.test('auto type should be text/plain', (t, done) => {
+  await t.test('auto type should be text/plain', async t => {
     t.plan(3)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/auto-type'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/auto-type')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
   await t.test('redirect to `/` - 1', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect', function (response) {
+    http.get(fastifyServer + '/redirect', function (response) {
       t.assert.strictEqual(response.statusCode, 302)
       done()
     })
@@ -346,43 +328,33 @@ test('within an instance', async t => {
   await t.test('redirect to `/` - 2', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code', function (response) {
+    http.get(fastifyServer + '/redirect-code', function (response) {
       t.assert.strictEqual(response.statusCode, 301)
       done()
     })
   })
 
-  await t.test('redirect to `/` - 3', (t, done) => {
+  await t.test('redirect to `/` - 3', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/redirect')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
-  await t.test('redirect to `/` - 4', (t, done) => {
+  await t.test('redirect to `/` - 4', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-code'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/redirect-code')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
   await t.test('redirect to `/` - 5', (t, done) => {
     t.plan(3)
-    const url = 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-onsend'
+    const url = fastifyServer + '/redirect-onsend'
     http.get(url, (response) => {
       t.assert.strictEqual(response.headers['x-onsend'], 'yes')
       t.assert.strictEqual(response.headers['content-length'], '0')
@@ -391,38 +363,28 @@ test('within an instance', async t => {
     })
   })
 
-  await t.test('redirect to `/` - 6', (t, done) => {
+  await t.test('redirect to `/` - 6', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/redirect-code-before-call')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
-  await t.test('redirect to `/` - 7', (t, done) => {
+  await t.test('redirect to `/` - 7', async t => {
     t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call-overwrite'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
+    const result = await fetch(fastifyServer + '/redirect-code-before-call-overwrite')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+    t.assert.deepStrictEqual(await result.text(), 'hello world!')
   })
 
   await t.test('redirect to `/` - 8', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call', function (response) {
+    http.get(fastifyServer + '/redirect-code-before-call', function (response) {
       t.assert.strictEqual(response.statusCode, 307)
       done()
     })
@@ -431,7 +393,7 @@ test('within an instance', async t => {
   await t.test('redirect to `/` - 9', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
+    http.get(fastifyServer + '/redirect-code-before-call-overwrite', function (response) {
       t.assert.strictEqual(response.statusCode, 302)
       done()
     })
@@ -440,15 +402,15 @@ test('within an instance', async t => {
   await t.test('redirect with async function to `/` - 10', (t, done) => {
     t.plan(1)
 
-    http.get('http://127.0.0.1:' + fastify.server.address().port + '/redirect-async', function (response) {
+    http.get(fastifyServer + '/redirect-async', function (response) {
       t.assert.strictEqual(response.statusCode, 302)
       done()
     })
   })
 })
 
-test('buffer without content type should send a application/octet-stream and raw buffer', (t, done) => {
-  t.plan(4)
+test('buffer without content type should send a application/octet-stream and raw buffer', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -456,20 +418,13 @@ test('buffer without content type should send a application/octet-stream and raw
     reply.send(Buffer.alloc(1024))
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'application/octet-stream')
-      t.assert.deepStrictEqual(body, Buffer.alloc(1024))
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/octet-stream')
+  t.assert.deepStrictEqual(Buffer.from(await result.arrayBuffer()), Buffer.alloc(1024))
 })
 
 test('Uint8Array without content type should send a application/octet-stream and raw buffer', (t, done) => {
@@ -515,7 +470,14 @@ test('Uint16Array without content type should send a application/octet-stream an
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.headers['content-type'], 'application/octet-stream')
-      t.assert.deepStrictEqual(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(50).fill(0xffffffff))
+      t.assert.deepStrictEqual(
+        new Uint16Array(
+          res.rawPayload.buffer,
+          res.rawPayload.byteOffset,
+          res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT
+        ),
+        new Uint16Array(50).fill(0xffffffff)
+      )
       done()
     })
   })
@@ -540,13 +502,20 @@ test('TypedArray with content type should not send application/octet-stream', (t
     }, (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(new Uint16Array(res.rawPayload.buffer, res.rawPayload.byteOffset, res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT), new Uint16Array(1024).fill(0xffffffff))
+      t.assert.deepStrictEqual(
+        new Uint16Array(
+          res.rawPayload.buffer,
+          res.rawPayload.byteOffset,
+          res.rawPayload.byteLength / Uint16Array.BYTES_PER_ELEMENT
+        ),
+        new Uint16Array(1024).fill(0xffffffff)
+      )
       done()
     })
   })
 })
-test('buffer with content type should not send application/octet-stream', (t, done) => {
-  t.plan(4)
+test('buffer with content type should not send application/octet-stream', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -555,24 +524,17 @@ test('buffer with content type should not send application/octet-stream', (t, do
     reply.send(Buffer.alloc(1024))
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body, Buffer.alloc(1024))
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+  t.assert.deepStrictEqual(Buffer.from(await result.arrayBuffer()), Buffer.alloc(1024))
 })
 
-test('stream with content type should not send application/octet-stream', (t, done) => {
-  t.plan(4)
+test('stream with content type should not send application/octet-stream', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -584,23 +546,17 @@ test('stream with content type should not send application/octet-stream', (t, do
     reply.header('Content-Type', 'text/plain').send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain')
-      t.assert.deepStrictEqual(body, buf)
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'text/plain')
+  t.assert.deepStrictEqual(Buffer.from(await result.arrayBuffer()), buf)
 })
 
-test('stream without content type should not send application/octet-stream', (t, done) => {
-  t.plan(4)
+test('stream without content type should not send application/octet-stream', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -611,23 +567,17 @@ test('stream without content type should not send application/octet-stream', (t,
     reply.send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], undefined)
-      t.assert.deepStrictEqual(body, buf)
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), null)
+  t.assert.deepStrictEqual(Buffer.from(await result.arrayBuffer()), buf)
 })
 
-test('stream using reply.raw.writeHead should return customize headers', (t, done) => {
-  t.plan(6)
+test('stream using reply.raw.writeHead should return customize headers', async t => {
+  t.plan(5)
 
   const fastify = Fastify()
   const fs = require('node:fs')
@@ -647,24 +597,18 @@ test('stream using reply.raw.writeHead should return customize headers', (t, don
     reply.send(stream)
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers.location, '/')
-      t.assert.strictEqual(response.headers['Content-Type'], undefined)
-      t.assert.deepStrictEqual(body, buf)
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('location'), '/')
+  t.assert.strictEqual(result.headers.get('content-type'), null)
+  t.assert.deepStrictEqual(Buffer.from(await result.arrayBuffer()), buf)
 })
 
-test('plain string without content type should send a text/plain', (t, done) => {
-  t.plan(4)
+test('plain string without content type should send a text/plain', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -672,24 +616,17 @@ test('plain string without content type should send a text/plain', (t, done) => 
     reply.send('hello world!')
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'text/plain; charset=utf-8')
+  t.assert.deepStrictEqual(await result.text(), 'hello world!')
 })
 
-test('plain string with content type should be sent unmodified', (t, done) => {
-  t.plan(4)
+test('plain string with content type should be sent unmodified', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -697,24 +634,17 @@ test('plain string with content type should be sent unmodified', (t, done) => {
     reply.type('text/css').send('hello world!')
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/css')
-      t.assert.deepStrictEqual(body.toString(), 'hello world!')
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'text/css')
+  t.assert.deepStrictEqual(await result.text(), 'hello world!')
 })
 
-test('plain string with content type and custom serializer should be serialized', (t, done) => {
-  t.plan(4)
+test('plain string with content type and custom serializer should be serialized', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -725,24 +655,17 @@ test('plain string with content type and custom serializer should be serialized'
       .send('hello world!')
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'text/css')
-      t.assert.deepStrictEqual(body.toString(), 'serialized')
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'text/css')
+  t.assert.deepStrictEqual(await result.text(), 'serialized')
 })
 
-test('plain string with content type application/json should NOT be serialized as json', (t, done) => {
-  t.plan(4)
+test('plain string with content type application/json should NOT be serialized as json', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -750,24 +673,17 @@ test('plain string with content type application/json should NOT be serialized a
     reply.type('application/json').send('{"key": "hello world!"}')
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepStrictEqual(body.toString(), '{"key": "hello world!"}')
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(await result.text(), '{"key": "hello world!"}')
 })
 
 test('plain string with custom json content type should NOT be serialized as json', async t => {
-  t.plan(12)
+  t.plan(18)
 
   const fastify = Fastify()
 
@@ -806,27 +722,18 @@ test('plain string with custom json content type should NOT be serialized as jso
     })
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  await Promise.all(Object.keys(customSamples).map(path => {
-    return new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://127.0.0.1:' + fastify.server.address().port + '/' + path
-      }, (err, response, body) => {
-        if (err) {
-          reject(err)
-        }
-        t.assert.strictEqual(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
-        t.assert.deepStrictEqual(body.toString(), customSamples[path].sample)
-        resolve()
-      })
-    })
+  await Promise.all(Object.keys(customSamples).map(async path => {
+    const result = await fetch(fastifyServer + '/' + path)
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), customSamples[path].mimeType + '; charset=utf-8')
+    t.assert.deepStrictEqual(await result.text(), customSamples[path].sample)
   }))
 })
 
-test('non-string with content type application/json SHOULD be serialized as json', (t, done) => {
-  t.plan(4)
+test('non-string with content type application/json SHOULD be serialized as json', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -834,24 +741,17 @@ test('non-string with content type application/json SHOULD be serialized as json
     reply.type('application/json').send({ key: 'hello world!' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ key: 'hello world!' }))
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(await result.text(), JSON.stringify({ key: 'hello world!' }))
 })
 
-test('non-string with custom json\'s content-type SHOULD be serialized as json', (t, done) => {
-  t.plan(4)
+test('non-string with custom json\'s content-type SHOULD be serialized as json', async t => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -859,24 +759,17 @@ test('non-string with custom json\'s content-type SHOULD be serialized as json',
     reply.type('application/json; version=2; ').send({ key: 'hello world!' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; version=2; charset=utf-8')
-      t.assert.deepStrictEqual(body.toString(), JSON.stringify({ key: 'hello world!' }))
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version=2; charset=utf-8')
+  t.assert.deepStrictEqual(await result.text(), JSON.stringify({ key: 'hello world!' }))
 })
 
 test('non-string with custom json content type SHOULD be serialized as json', async t => {
-  t.plan(10)
+  t.plan(15)
 
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -910,22 +803,13 @@ test('non-string with custom json content type SHOULD be serialized as json', as
     })
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  await Promise.all(Object.keys(customSamples).map(path => {
-    return new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://127.0.0.1:' + fastify.server.address().port + '/' + path
-      }, (err, response, body) => {
-        if (err) {
-          reject(err)
-        }
-        t.assert.strictEqual(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
-        t.assert.deepStrictEqual(body.toString(), JSON.stringify(customSamples[path].sample))
-        resolve()
-      })
-    })
+  await Promise.all(Object.keys(customSamples).map(async path => {
+    const result = await fetch(fastifyServer + '/' + path)
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), customSamples[path].mimeType + '; charset=utf-8')
+    t.assert.deepStrictEqual(await result.text(), JSON.stringify(customSamples[path].sample))
   }))
 })
 
@@ -963,8 +847,8 @@ test('error object with a content type that is not application/json should work'
   }
 })
 
-test('undefined payload should be sent as-is', (t, done) => {
-  t.plan(6)
+test('undefined payload should be sent as-is', async t => {
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -977,25 +861,19 @@ test('undefined payload should be sent as-is', (t, done) => {
     reply.code(204).send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `http://127.0.0.1:${fastify.server.address().port}`
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.headers['content-type'], undefined)
-      t.assert.strictEqual(response.headers['content-length'], undefined)
-      t.assert.strictEqual(body.length, 0)
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.headers.get('content-type'), null)
+  t.assert.strictEqual(result.headers.get('content-length'), null)
+  const body = await result.text()
+  t.assert.strictEqual(body.length, 0)
 })
 
 test('for HEAD method, no body should be sent but content-length should be', async t => {
-  t.plan(8)
+  t.plan(10)
 
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -1024,37 +902,23 @@ test('for HEAD method, no body should be sent but content-length should be', asy
     reply.code(200).send(null)
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  const promise1 = new Promise((resolve, reject) => {
-    sget({
-      method: 'HEAD',
-      url: `http://127.0.0.1:${fastify.server.address().port}`
-    }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      }
-      t.assert.strictEqual(response.headers['content-type'], contentType)
-      t.assert.strictEqual(response.headers['content-length'], bodySize.toString())
-      t.assert.strictEqual(body.length, 0)
-      resolve()
-    })
-  })
+  const promise1 = (async () => {
+    const result = await fetch(fastifyServer, { method: 'HEAD' })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), contentType)
+    t.assert.strictEqual(result.headers.get('content-length'), bodySize.toString())
+    t.assert.strictEqual((await result.text()).length, 0)
+  })()
 
-  const promise2 = new Promise((resolve, reject) => {
-    sget({
-      method: 'HEAD',
-      url: `http://127.0.0.1:${fastify.server.address().port}/with/null`
-    }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      }
-      t.assert.strictEqual(response.headers['content-type'], contentType)
-      t.assert.strictEqual(response.headers['content-length'], bodySize.toString())
-      t.assert.strictEqual(body.length, 0)
-      resolve()
-    })
-  })
+  const promise2 = (async () => {
+    const result = await fetch(fastifyServer + '/with/null', { method: 'HEAD' })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('content-type'), contentType)
+    t.assert.strictEqual(result.headers.get('content-length'), bodySize.toString())
+    t.assert.strictEqual((await result.text()).length, 0)
+  })()
 
   await Promise.all([promise1, promise2])
 })
@@ -1081,51 +945,35 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', async t => 
     done()
   }, { prefix: '/prefixed' })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  const promise1 = new Promise((resolve, reject) => {
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/not-found'
-    }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      }
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepStrictEqual(JSON.parse(body.toString()), {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Not Found'
-      })
-      resolve()
+  const promise1 = (async () => {
+    const result = await fetch(`${fastifyServer}/not-found`)
+    t.assert.strictEqual(result.status, 404)
+    t.assert.strictEqual(result.headers.get('content-type'), 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(await result.text()), {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Not Found'
     })
-  })
+  })()
 
-  const promise2 = new Promise((resolve, reject) => {
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/prefixed/not-found'
-    }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      }
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.assert.deepStrictEqual(JSON.parse(body.toString()), {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Not Found'
-      })
-      resolve()
+  const promise2 = (async () => {
+    const result = await fetch(`${fastifyServer}/prefixed/not-found`)
+    t.assert.strictEqual(result.status, 404)
+    t.assert.strictEqual(result.headers.get('content-type'), 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(await result.text()), {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Not Found'
     })
-  })
+  })()
 
   await Promise.all([promise1, promise2])
 })
 
-test('reply can set multiple instances of same header', (t, done) => {
-  t.plan(4)
+test('reply can set multiple instances of same header', async t => {
+  t.plan(3)
 
   const fastify = require('../../')()
 
@@ -1136,24 +984,17 @@ test('reply can set multiple instances of same header', (t, done) => {
       .send({})
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.ok(response.headers['set-cookie'])
-      t.assert.deepStrictEqual(response.headers['set-cookie'], ['one', 'two'])
-      done()
-    })
-  })
+  const result = await fetch(`${fastifyServer}/headers`)
+  t.assert.ok(result.ok)
+  t.assert.ok(result.headers.get('set-cookie'))
+  t.assert.deepStrictEqual(result.headers.getSetCookie(), ['one', 'two'])
 })
 
-test('reply.hasHeader returns correct values', (t, done) => {
-  t.plan(3)
+test('reply.hasHeader returns correct values', async t => {
+  t.plan(2)
 
   const fastify = require('../../')()
 
@@ -1164,20 +1005,14 @@ test('reply.hasHeader returns correct values', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  await fetch(`${fastifyServer}/headers`)
 })
 
-test('reply.getHeader returns correct values', (t, done) => {
-  t.plan(5)
+test('reply.getHeader returns correct values', async t => {
+  t.plan(4)
 
   const fastify = require('../../')()
 
@@ -1198,16 +1033,10 @@ test('reply.getHeader returns correct values', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  await fetch(`${fastifyServer}/headers`)
 })
 
 test('reply.getHeader returns raw header if there is not in the reply headers', (t) => {
@@ -1254,8 +1083,8 @@ test('reply.getHeaders returns correct values', (t, done) => {
   })
 })
 
-test('reply.removeHeader can remove the value', (t, done) => {
-  t.plan(4)
+test('reply.removeHeader can remove the value', async t => {
+  t.plan(3)
 
   const fastify = require('../../')()
 
@@ -1271,20 +1100,13 @@ test('reply.removeHeader can remove the value', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  await fetch(`${fastifyServer}/headers`)
 })
 
-test('reply.header can reset the value', (t, done) => {
-  t.plan(2)
+test('reply.header can reset the value', async t => {
+  t.plan(1)
 
   const fastify = require('../../')()
 
@@ -1298,21 +1120,14 @@ test('reply.header can reset the value', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  await fetch(`${fastifyServer}/headers`)
 })
 
 // https://github.com/fastify/fastify/issues/3030
-test('reply.hasHeader computes raw and fastify headers', (t, done) => {
-  t.plan(3)
+test('reply.hasHeader computes raw and fastify headers', async t => {
+  t.plan(2)
 
   const fastify = require('../../')()
 
@@ -1327,16 +1142,10 @@ test('reply.hasHeader computes raw and fastify headers', (t, done) => {
     reply.send()
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, () => {
-      done()
-    })
-  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  await fetch(`${fastifyServer}/headers`)
 })
 
 test('Reply should handle JSON content type with a charset', async t => {
@@ -1485,7 +1294,7 @@ test('.statusCode is getter and setter', (t, done) => {
 })
 
 test('reply.header setting multiple cookies as multiple Set-Cookie headers', async t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = require('../../')()
   t.after(() => fastify.close())
@@ -1499,21 +1308,12 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', asy
       .send({})
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  await new Promise((resolve, reject) => {
-    sget({
-      method: 'GET',
-      url: 'http://127.0.0.1:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      if (err) {
-        reject(err)
-      }
-      t.assert.ok(response.headers['set-cookie'])
-      t.assert.deepStrictEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
-      resolve()
-    })
-  })
+  const result = await fetch(`${fastifyServer}/headers`)
+  t.assert.ok(result.ok)
+  t.assert.ok(result.headers.get('set-cookie'))
+  t.assert.deepStrictEqual(result.headers.getSetCookie(), ['one', 'two', 'three', 'four', 'five', 'six'])
 
   const response = await fastify.inject('/headers')
   t.assert.ok(response.headers['set-cookie'])
@@ -1937,12 +1737,12 @@ test('redirect to an invalid URL should not crash the server', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
   {
-    const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=1`)
-    t.assert.strictEqual(response.statusCode, 500)
-    t.assert.deepStrictEqual(JSON.parse(body), {
+    const { response, body } = await doGet(`${fastifyServer}/redirect?useCase=1`)
+    t.assert.strictEqual(response.status, 500)
+    t.assert.deepStrictEqual(body, {
       statusCode: 500,
       code: 'ERR_INVALID_CHAR',
       error: 'Internal Server Error',
@@ -1950,15 +1750,15 @@ test('redirect to an invalid URL should not crash the server', async t => {
     })
   }
   {
-    const { response } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=2`)
-    t.assert.strictEqual(response.statusCode, 302)
-    t.assert.strictEqual(response.headers.location, '/?key=a%E2%80%99b')
+    const { response } = await doGet(`${fastifyServer}/redirect?useCase=2`)
+    t.assert.strictEqual(response.status, 302)
+    t.assert.strictEqual(response.headers.get('location'), '/?key=a%E2%80%99b')
   }
 
   {
-    const { response } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/redirect?useCase=3`)
-    t.assert.strictEqual(response.statusCode, 302)
-    t.assert.strictEqual(response.headers.location, '/?key=ab')
+    const { response } = await doGet(`${fastifyServer}/redirect?useCase=3`)
+    t.assert.strictEqual(response.status, 302)
+    t.assert.strictEqual(response.headers.get('location'), '/?key=ab')
   }
 
   await fastify.close()
@@ -1983,11 +1783,11 @@ test('invalid response headers should not crash the server', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  const { response, body } = await doGet(`${fastifyServer}/bad-headers`)
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(body, {
     statusCode: 500,
     code: 'ERR_INVALID_CHAR',
     error: 'Internal Server Error',
@@ -2012,11 +1812,11 @@ test('invalid response headers when sending back an error', async t => {
     }
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  const { response, body } = await doGet(`${fastifyServer}/bad-headers`)
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(body, {
     statusCode: 500,
     code: 'ERR_INVALID_CHAR',
     error: 'Internal Server Error',
@@ -2046,11 +1846,11 @@ test('invalid response headers and custom error handler', async t => {
     reply.status(500).send({ ops: true })
   })
 
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  const { response, body } = await doGet(`http://127.0.0.1:${fastify.server.address().port}/bad-headers`)
-  t.assert.strictEqual(response.statusCode, 500)
-  t.assert.deepStrictEqual(JSON.parse(body), {
+  const { response, body } = await doGet(`${fastifyServer}/bad-headers`)
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(body, {
     statusCode: 500,
     code: 'ERR_INVALID_CHAR',
     error: 'Internal Server Error',

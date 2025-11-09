@@ -15,6 +15,8 @@ import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
+import { ConstraintStrategy } from 'find-my-way'
+import { FindMyWayVersion } from '../../types/instance'
 
 const server = fastify()
 
@@ -40,7 +42,7 @@ expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
-    expectType<FastifyError>(error)
+    expectType<unknown>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )
@@ -125,34 +127,48 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreHandlerHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: HookHandlerDoneFunction
+) { done() }
+async function notFoundpreHandlerAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}
+function notFoundpreValidationHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: HookHandlerDoneFunction
+) { done() }
+async function notFoundpreValidationAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}
 
 server.setNotFoundHandler(notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler(
+  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  notFoundHandler
+)
 
 server.setNotFoundHandler(notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler(
+  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  notFoundAsyncHandler
+)
 
 server.setNotFoundHandler(function (_, reply) {
   return reply.send('')
 })
-
-function invalidErrorHandler (error: number) {
-  if (error) throw error
-}
-
-expectError(server.setErrorHandler(invalidErrorHandler))
 
 server.setSchemaController({
   bucket: (parentSchemas: unknown) => {
@@ -251,7 +267,7 @@ expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as R
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
-    expectAssignable<FastifyError>(error)
+    expectAssignable<unknown>(error)
     expectAssignable<FastifyRequest>(request)
     expectAssignable<{ contextKey: string }>(request.routeOptions.config)
     expectAssignable<FastifyReply>(reply)
@@ -284,7 +300,13 @@ expectAssignable<FastifyInstance>(
   })
 )
 
-function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+function childLoggerFactory (
+  this: FastifyInstance,
+  logger: FastifyBaseLogger,
+  bindings: Bindings,
+  opts: ChildLoggerOptions,
+  req: RawRequestDefaultExpression
+) {
   return logger.child(bindings, opts)
 }
 server.setChildLoggerFactory(childLoggerFactory)
@@ -309,7 +331,22 @@ type InitialConfig = Readonly<{
   requestIdHeader?: string | false,
   requestIdLogLabel?: string,
   http2SessionTimeout?: number,
-  useSemicolonDelimiter?: boolean
+  useSemicolonDelimiter?: boolean,
+  routerOptions?: {
+    allowUnsafeRegex?: boolean,
+    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
+    caseSensitive?: boolean,
+    constraints?: {
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
+    }
+    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
+    ignoreDuplicateSlashes?: boolean,
+    ignoreTrailingSlash?: boolean,
+    maxParamLength?: number,
+    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+    querystringParser?: (str: string) => { [key: string]: unknown },
+    useSemicolonDelimiter?: boolean,
+  }
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)

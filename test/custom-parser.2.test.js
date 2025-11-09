@@ -1,9 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('..')
-const { getServerUrl } = require('./helper')
 
 process.removeAllListeners('warning')
 
@@ -20,8 +18,8 @@ test('Wrong parseAs parameter', t => {
   }
 })
 
-test('Should allow defining the bodyLimit per parser', (t, done) => {
-  t.plan(3)
+test('Should allow defining the bodyLimit per parser', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -38,31 +36,27 @@ test('Should allow defining the bodyLimit per parser', (t, done) => {
     }
   )
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '1234567890',
-      headers: {
-        'Content-Type': 'x/foo'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(JSON.parse(body.toString()), {
-        statusCode: 413,
-        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-        error: 'Payload Too Large',
-        message: 'Request body is too large'
-      })
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '1234567890',
+    headers: {
+      'Content-Type': 'x/foo'
+    }
+  })
+
+  t.assert.ok(!result.ok)
+  t.assert.deepStrictEqual(await result.json(), {
+    statusCode: 413,
+    code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+    error: 'Payload Too Large',
+    message: 'Request body is too large'
   })
 })
 
-test('route bodyLimit should take precedence over a custom parser bodyLimit', (t, done) => {
-  t.plan(3)
+test('route bodyLimit should take precedence over a custom parser bodyLimit', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
   t.after(() => fastify.close())
 
@@ -79,23 +73,19 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', (t
     }
   )
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '1234567890',
-      headers: { 'Content-Type': 'x/foo' }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(JSON.parse(body.toString()), {
-        statusCode: 413,
-        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-        error: 'Payload Too Large',
-        message: 'Request body is too large'
-      })
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '1234567890',
+    headers: { 'Content-Type': 'x/foo' }
+  })
+
+  t.assert.ok(!result.ok)
+  t.assert.deepStrictEqual(await result.json(), {
+    statusCode: 413,
+    code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+    error: 'Payload Too Large',
+    message: 'Request body is too large'
   })
 })

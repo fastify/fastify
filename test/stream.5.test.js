@@ -4,11 +4,10 @@ const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 const fs = require('node:fs')
 const Readable = require('node:stream').Readable
-const sget = require('simple-get').concat
 const Fastify = require('..')
 
-test('should destroy stream when response is ended', (t, done) => {
-  t.plan(4)
+test('should destroy stream when response is ended', async (t) => {
+  t.plan(3)
   const stream = require('node:stream')
   const fastify = Fastify()
 
@@ -24,24 +23,20 @@ test('should destroy stream when response is ended', (t, done) => {
     reply.raw.end(Buffer.from('hello\n'))
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
-
-    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      done()
-    })
-  })
-})
-
-test('should mark reply as sent before pumping the payload stream into response for async route handler', (t, done) => {
-  t.plan(3)
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  const handleRequest = proxyquire('../lib/handleRequest', {
-    './wrapThenable': (thenable, reply) => {
+  const response = await fetch(`${fastifyServer}/error`)
+  t.assert.ok(response.ok)
+  t.assert.strictEqual(response.status, 200)
+})
+
+test('should mark reply as sent before pumping the payload stream into response for async route handler', async (t) => {
+  t.plan(2)
+  t.after(() => fastify.close())
+
+  const handleRequest = proxyquire('../lib/handle-request', {
+    './wrap-thenable': (thenable, reply) => {
       thenable.then(function (payload) {
         t.assert.strictEqual(reply.sent, true)
       })
@@ -49,7 +44,7 @@ test('should mark reply as sent before pumping the payload stream into response 
   })
 
   const route = proxyquire('../lib/route', {
-    './handleRequest': handleRequest
+    './handle-request': handleRequest
   })
 
   const Fastify = proxyquire('..', {
@@ -63,14 +58,11 @@ test('should mark reply as sent before pumping the payload stream into response 
     return reply.code(200).send(stream)
   })
 
-  fastify.inject({
+  const res = await fastify.inject({
     url: '/',
     method: 'GET'
-  }, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
-    done()
   })
+  t.assert.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
 })
 
 test('reply.send handles aborted requests', (t, done) => {

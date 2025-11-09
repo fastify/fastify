@@ -70,9 +70,9 @@ submitted, the data flow is as follows:
                      ★ send or return                 │                 │
                             │                         │                 │
                             │                         ▼                 │
-       reply sent ◀── JSON ─┴─ Error instance ──▶ setErrorHandler ◀─────┘
+       reply sent ◀── JSON ─┴─ Error instance ──▶ onError Hook ◀───────┘
                                                       │
-                                 reply sent ◀── JSON ─┴─ Error instance ──▶ onError Hook
+                                 reply sent ◀── JSON ─┴─ Error instance ──▶ setErrorHandler
                                                                                 │
                                                                                 └─▶ reply sent
 ```

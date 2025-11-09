@@ -546,7 +546,13 @@ This was already deprecated in v4 as `FSTDEP014`,
 so you should have already updated your code.
 
 ### `time` and `date-time` formats enforce timezone
-The updated AJV compiler updates AJV formats which now enforce the use of timezone in `time` and `date-time` format. A workaround is to use `iso-time` and `iso-date-time` formats which support an optional timezone for backwards compatibility. See fastify/ajv-compiler [#127](https://github.com/fastify/ajv-compiler/pull/127) and ajv-validator/ajv-formats [#42](https://github.com/ajv-validator/ajv-formats/pull/42)
+
+The updated AJV compiler updates `ajv-formats` which now
+enforce the use of timezone in `time` and `date-time` format.
+A workaround is to use `iso-time` and `iso-date-time` formats
+which support an optional timezone for backwards compatibility.  
+See the
+[full discussion](https://github.com/fastify/fluent-json-schema/issues/267).
 
 ## New Features
 

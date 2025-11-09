@@ -3,12 +3,11 @@
 ## Lifecycle
 <a id="lifecycle"></a>
 
-Following the schema of the internal lifecycle of Fastify.
+This schema shows the internal lifecycle of Fastify.
 
-On the right branch of every section there is the next phase of the lifecycle,
-on the left branch there is the corresponding error code that will be generated
-if the parent throws an error *(note that all the errors are automatically
-handled by Fastify)*.
+The right branch of each section shows the next phase of the lifecycle. The left
+branch shows the corresponding error code generated if the parent throws an
+error. All errors are automatically handled by Fastify.
 
 ```
 Incoming Request
@@ -42,26 +41,23 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
-At any point before or during the `User Handler`, `reply.hijack()` can be called
-to prevent Fastify from:
-- Running all the following hooks and user handler
-- Sending the response automatically
+Before or during the `User Handler`, `reply.hijack()` can be called to:
+- Prevent Fastify from running subsequent hooks and the user handler
+- Prevent Fastify from sending the response automatically
 
-NB (*): If `reply.raw` is used to send a response back to the user, `onResponse`
-hooks will still be executed
+If `reply.raw` is used to send a response, `onResponse` hooks will still
+be executed.
 
 ## Reply Lifecycle
 <a id="reply-lifecycle"></a>
 
-Whenever the user handles the request, the result may be:
+When the user handles the request, the result may be:
 
-- in async handler: it returns a payload
-- in async handler: it throws an `Error`
-- in sync handler: it sends a payload
-- in sync handler: it sends an `Error` instance
+- In an async handler: it returns a payload or throws an `Error`
+- In a sync handler: it sends a payload or an `Error` instance
 
-If the reply was hijacked, we skip all the below steps. Otherwise, when it is
-being submitted, the data flow performed is the following:
+If the reply was hijacked, all subsequent steps are skipped. Otherwise, when
+submitted, the data flow is as follows:
 
 ```
                         ★ schema validation Error
@@ -74,16 +70,15 @@ being submitted, the data flow performed is the following:
                      ★ send or return                 │                 │
                             │                         │                 │
                             │                         ▼                 │
-       reply sent ◀── JSON ─┴─ Error instance ──▶ setErrorHandler ◀─────┘
+       reply sent ◀── JSON ─┴─ Error instance ──▶ onError Hook ◀───────┘
                                                       │
-                                 reply sent ◀── JSON ─┴─ Error instance ──▶ onError Hook
+                                 reply sent ◀── JSON ─┴─ Error instance ──▶ setErrorHandler
                                                                                 │
                                                                                 └─▶ reply sent
 ```
 
-Note: `reply sent` means that the JSON payload will be serialized by:
-
-- the [reply serialized](./Server.md#setreplyserializer) if set
-- or by the [serializer compiler](./Server.md#setserializercompiler) when a JSON
-  schema has been set for the returning HTTP status code
-- or by the default `JSON.stringify` function
+`reply sent` means the JSON payload will be serialized by one of the following:
+- The [reply serializer](./Server.md#setreplyserializer) if set
+- The [serializer compiler](./Server.md#setserializercompiler) if a JSON schema
+  is set for the HTTP status code
+- The default `JSON.stringify` function

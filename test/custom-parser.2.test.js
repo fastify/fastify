@@ -1,10 +1,7 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
-const Fastify = require('../fastify')
-const { getServerUrl } = require('./helper')
+const { test } = require('node:test')
+const Fastify = require('..')
 
 process.removeAllListeners('warning')
 
@@ -14,17 +11,17 @@ test('Wrong parseAs parameter', t => {
 
   try {
     fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
-    t.fail('should throw')
+    t.assert.fail('should throw')
   } catch (err) {
-    t.equal(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
-    t.equal(err.message, "The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.")
+    t.assert.strictEqual(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
+    t.assert.strictEqual(err.message, "The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.")
   }
 })
 
-test('Should allow defining the bodyLimit per parser', t => {
-  t.plan(3)
+test('Should allow defining the bodyLimit per parser', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -34,38 +31,34 @@ test('Should allow defining the bodyLimit per parser', t => {
     'x/foo',
     { parseAs: 'string', bodyLimit: 5 },
     function (req, body, done) {
-      t.fail('should not be invoked')
+      t.assert.fail('should not be invoked')
       done()
     }
   )
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '1234567890',
-      headers: {
-        'Content-Type': 'x/foo'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictSame(JSON.parse(body.toString()), {
-        statusCode: 413,
-        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-        error: 'Payload Too Large',
-        message: 'Request body is too large'
-      })
-      fastify.close()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '1234567890',
+    headers: {
+      'Content-Type': 'x/foo'
+    }
+  })
+
+  t.assert.ok(!result.ok)
+  t.assert.deepStrictEqual(await result.json(), {
+    statusCode: 413,
+    code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+    error: 'Payload Too Large',
+    message: 'Request body is too large'
   })
 })
 
-test('route bodyLimit should take precedence over a custom parser bodyLimit', t => {
-  t.plan(3)
+test('route bodyLimit should take precedence over a custom parser bodyLimit', async (t) => {
+  t.plan(2)
   const fastify = Fastify()
-  t.teardown(() => fastify.close())
+  t.after(() => fastify.close())
 
   fastify.post('/', { bodyLimit: 5 }, (request, reply) => {
     reply.send(request.body)
@@ -75,28 +68,24 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
     'x/foo',
     { parseAs: 'string', bodyLimit: 100 },
     function (req, body, done) {
-      t.fail('should not be invoked')
+      t.assert.fail('should not be invoked')
       done()
     }
   )
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: getServerUrl(fastify),
-      body: '1234567890',
-      headers: { 'Content-Type': 'x/foo' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictSame(JSON.parse(body.toString()), {
-        statusCode: 413,
-        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-        error: 'Payload Too Large',
-        message: 'Request body is too large'
-      })
-      fastify.close()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    body: '1234567890',
+    headers: { 'Content-Type': 'x/foo' }
+  })
+
+  t.assert.ok(!result.ok)
+  t.assert.deepStrictEqual(await result.json(), {
+    statusCode: 413,
+    code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+    error: 'Payload Too Large',
+    message: 'Request body is too large'
   })
 })

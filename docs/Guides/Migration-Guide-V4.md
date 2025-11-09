@@ -210,7 +210,7 @@ fastify.get('/posts/:id?', (request, reply) => {
 The [variadic signature](https://en.wikipedia.org/wiki/Variadic_function) of the
 `fastify.listen()` method is now deprecated.
 
-Prior to this release, the following invocations of this method were valid:
+Before this release, the following invocations of this method were valid:
 
   - `fastify.listen(8000)`
   - `fastify.listen(8000, ‘127.0.0.1’)`

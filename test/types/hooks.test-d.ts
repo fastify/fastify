@@ -416,7 +416,12 @@ server.route({
     expectType<FastifyRequest>(request)
     expectType<FastifyReply>(reply)
     expectType<RequestPayload>(payload)
-    expectType<<TError extends Error = FastifyError>(err?: TError | null | undefined, res?: RequestPayload | undefined) => void>(done)
+    expectType<
+      <TError extends Error = FastifyError>(
+        err?: TError | null | undefined,
+        res?: RequestPayload | undefined
+      ) => void
+        >(done)
   },
   preValidation: (request, reply, done) => {
     expectType<FastifyRequest>(request)

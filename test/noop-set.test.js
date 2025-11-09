@@ -14,6 +14,6 @@ test('does a lot of nothing', async t => {
   t.assert.strictEqual(aSet.has(item), true)
 
   for (const i of aSet) {
-    t.assert.fail('should not have any items', i)
+    t.assert.fail('should not have any items: ' + i)
   }
 })

@@ -1,8 +1,7 @@
 'use strict'
 
 const { Readable } = require('node:stream')
-const test = require('tap').test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const Fastify = require('../')
 
 process.removeAllListeners('warning')
@@ -16,13 +15,13 @@ function endRouteHook (doneOrPayload, done, doneValue) {
 }
 
 function testExecutionHook (hook) {
-  test(`${hook}`, t => {
+  test(`${hook}`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
 
     fastify.post('/', {
       [hook]: (req, reply, doneOrPayload, done) => {
-        t.pass('hook called')
+        t.assert.ok('hook called')
         endRouteHook(doneOrPayload, done)
       }
     }, (req, reply) => {
@@ -34,13 +33,14 @@ function testExecutionHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.same(payload, { hello: 'world' })
+      t.assert.deepStrictEqual(payload, { hello: 'world' })
+      testDone()
     })
   })
 
-  test(`${hook} option should be called after ${hook} hook`, t => {
+  test(`${hook} option should be called after ${hook} hook`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
@@ -48,13 +48,13 @@ function testExecutionHook (hook) {
     })
 
     fastify.addHook(hook, (req, reply, doneOrPayload, done) => {
-      t.equal(checker.check, 1)
+      t.assert.strictEqual(checker.check, 1)
       endRouteHook(doneOrPayload, done)
     })
 
     fastify.post('/', {
       [hook]: (req, reply, doneOrPayload, done) => {
-        t.equal(checker.check, 2)
+        t.assert.strictEqual(checker.check, 2)
         endRouteHook(doneOrPayload, done)
       }
     }, (req, reply) => {
@@ -66,11 +66,12 @@ function testExecutionHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
+      testDone()
     })
   })
 
-  test(`${hook} option could accept an array of functions`, t => {
+  test(`${hook} option could accept an array of functions`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
@@ -80,11 +81,11 @@ function testExecutionHook (hook) {
     fastify.post('/', {
       [hook]: [
         (req, reply, doneOrPayload, done) => {
-          t.equal(checker.check, 1)
+          t.assert.strictEqual(checker.check, 1)
           endRouteHook(doneOrPayload, done)
         },
         (req, reply, doneOrPayload, done) => {
-          t.equal(checker.check, 2)
+          t.assert.strictEqual(checker.check, 2)
           endRouteHook(doneOrPayload, done)
         }
       ]
@@ -97,11 +98,12 @@ function testExecutionHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
+      testDone()
     })
   })
 
-  test(`${hook} option could accept an array of async functions`, t => {
+  test(`${hook} option could accept an array of async functions`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
@@ -111,10 +113,10 @@ function testExecutionHook (hook) {
     fastify.post('/', {
       [hook]: [
         async (req, reply) => {
-          t.equal(checker.check, 1)
+          t.assert.strictEqual(checker.check, 1)
         },
         async (req, reply) => {
-          t.equal(checker.check, 2)
+          t.assert.strictEqual(checker.check, 2)
         }
       ]
     }, (req, reply) => {
@@ -126,11 +128,12 @@ function testExecutionHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
+      testDone()
     })
   })
 
-  test(`${hook} option does not interfere with ${hook} hook`, t => {
+  test(`${hook} option does not interfere with ${hook} hook`, (t, testDone) => {
     t.plan(7)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
@@ -138,13 +141,13 @@ function testExecutionHook (hook) {
     })
 
     fastify.addHook(hook, (req, reply, doneOrPayload, done) => {
-      t.equal(checker.check, 1)
+      t.assert.strictEqual(checker.check, 1)
       endRouteHook(doneOrPayload, done)
     })
 
     fastify.post('/', {
       [hook]: (req, reply, doneOrPayload, done) => {
-        t.equal(checker.check, 2)
+        t.assert.strictEqual(checker.check, 2)
         endRouteHook(doneOrPayload, done)
       }
     }, handler)
@@ -159,8 +162,8 @@ function testExecutionHook (hook) {
       method: 'post',
       url: '/'
     }, (err, res) => {
-      t.error(err)
-      t.equal(checker.calledTimes, 2)
+      t.assert.ifError(err)
+      t.assert.strictEqual(checker.calledTimes, 2)
 
       checker.calledTimes = 0
 
@@ -168,15 +171,16 @@ function testExecutionHook (hook) {
         method: 'post',
         url: '/no'
       }, (err, res) => {
-        t.error(err)
-        t.equal(checker.calledTimes, 1)
+        t.assert.ifError(err)
+        t.assert.strictEqual(checker.calledTimes, 1)
+        testDone()
       })
     })
   })
 }
 
 function testBeforeHandlerHook (hook) {
-  test(`${hook} option should be unique per route`, t => {
+  test(`${hook} option should be unique per route`, (t, testDone) => {
     t.plan(4)
     const fastify = Fastify()
 
@@ -198,9 +202,9 @@ function testBeforeHandlerHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.same(payload, { hello: 'earth' })
+      t.assert.deepStrictEqual(payload, { hello: 'earth' })
     })
 
     fastify.inject({
@@ -208,13 +212,14 @@ function testBeforeHandlerHook (hook) {
       url: '/no',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.same(payload, { hello: 'world' })
+      t.assert.deepStrictEqual(payload, { hello: 'world' })
+      testDone()
     })
   })
 
-  test(`${hook} option should handle errors`, t => {
+  test(`${hook} option should handle errors`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -231,25 +236,26 @@ function testBeforeHandlerHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.equal(res.statusCode, 500)
-      t.same(payload, {
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.deepStrictEqual(payload, {
         message: 'kaboom',
         error: 'Internal Server Error',
         statusCode: 500
       })
+      testDone()
     })
   })
 
-  test(`${hook} option should handle throwing objects`, t => {
+  test(`${hook} option should handle throwing objects`, (t, testDone) => {
     t.plan(4)
     const fastify = Fastify()
 
     const myError = { myError: 'kaboom' }
 
     fastify.setErrorHandler(async (error, request, reply) => {
-      t.same(error, myError, 'the error object throws by the user')
+      t.assert.deepStrictEqual(error, myError, 'the error object throws by the user')
       return reply.code(500).send({ this: 'is', my: 'error' })
     })
 
@@ -258,20 +264,21 @@ function testBeforeHandlerHook (hook) {
         throw myError
       }
     }, (req, reply) => {
-      t.fail('the handler must not be called')
+      t.assert.fail('the handler must not be called')
     })
 
     fastify.inject({
       url: '/',
       method: 'GET'
     }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 500)
-      t.same(res.json(), { this: 'is', my: 'error' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.deepStrictEqual(res.json(), { this: 'is', my: 'error' })
+      testDone()
     })
   })
 
-  test(`${hook} option should handle throwing objects by default`, t => {
+  test(`${hook} option should handle throwing objects by default`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -281,20 +288,21 @@ function testBeforeHandlerHook (hook) {
         throw { myError: 'kaboom', message: 'i am an error' }
       }
     }, (req, reply) => {
-      t.fail('the handler must not be called')
+      t.assert.fail('the handler must not be called')
     })
 
     fastify.inject({
       url: '/',
       method: 'GET'
     }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 500)
-      t.same(res.json(), { myError: 'kaboom', message: 'i am an error' })
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.deepStrictEqual(res.json(), { myError: 'kaboom', message: 'i am an error' })
+      testDone()
     })
   })
 
-  test(`${hook} option should handle errors with custom status code`, t => {
+  test(`${hook} option should handle errors with custom status code`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -312,18 +320,19 @@ function testBeforeHandlerHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.equal(res.statusCode, 401)
-      t.same(payload, {
+      t.assert.strictEqual(res.statusCode, 401)
+      t.assert.deepStrictEqual(payload, {
         message: 'go away',
         error: 'Unauthorized',
         statusCode: 401
       })
+      testDone()
     })
   })
 
-  test(`${hook} option should keep the context`, t => {
+  test(`${hook} option should keep the context`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -331,7 +340,7 @@ function testBeforeHandlerHook (hook) {
 
     fastify.post('/', {
       [hook]: function (req, reply, doneOrPayload, done) {
-        t.equal(this.foo, 42)
+        t.assert.strictEqual(this.foo, 42)
         this.foo += 1
         endRouteHook(doneOrPayload, done)
       }
@@ -344,13 +353,14 @@ function testBeforeHandlerHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.same(payload, { foo: 43 })
+      t.assert.deepStrictEqual(payload, { foo: 43 })
+      testDone()
     })
   })
 
-  test(`${hook} option should keep the context (array)`, t => {
+  test(`${hook} option should keep the context (array)`, (t, testDone) => {
     t.plan(3)
     const fastify = Fastify()
 
@@ -358,7 +368,7 @@ function testBeforeHandlerHook (hook) {
 
     fastify.post('/', {
       [hook]: [function (req, reply, doneOrPayload, done) {
-        t.equal(this.foo, 42)
+        t.assert.strictEqual(this.foo, 42)
         this.foo += 1
         endRouteHook(doneOrPayload, done)
       }]
@@ -371,9 +381,10 @@ function testBeforeHandlerHook (hook) {
       url: '/',
       payload: { hello: 'world' }
     }, (err, res) => {
-      t.error(err)
+      t.assert.ifError(err)
       const payload = JSON.parse(res.payload)
-      t.same(payload, { foo: 43 })
+      t.assert.deepStrictEqual(payload, { foo: 43 })
+      testDone()
     })
   })
 }
@@ -390,12 +401,12 @@ testBeforeHandlerHook('onRequest')
 testBeforeHandlerHook('preValidation')
 testBeforeHandlerHook('preParsing')
 
-test('preValidation option should be called before preHandler hook', t => {
+test('preValidation option should be called before preHandler hook', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
   fastify.addHook('preHandler', (req, reply, done) => {
-    t.ok(req.called)
+    t.assert.ok(req.called)
     done()
   })
 
@@ -413,13 +424,14 @@ test('preValidation option should be called before preHandler hook', t => {
     url: '/',
     payload: { hello: 'world' }
   }, (err, res) => {
-    t.error(err)
+    t.assert.ifError(err)
     const payload = JSON.parse(res.payload)
-    t.same(payload, { hello: 'world' })
+    t.assert.deepStrictEqual(payload, { hello: 'world' })
+    testDone()
   })
 })
 
-test('preSerialization option should be able to modify the payload', t => {
+test('preSerialization option should be able to modify the payload', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -435,18 +447,19 @@ test('preSerialization option should be able to modify the payload', t => {
     method: 'GET',
     url: '/only'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'another world' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'another world' })
+    testDone()
   })
 })
 
-test('preParsing option should be called before preValidation hook', t => {
+test('preParsing option should be called before preValidation hook', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
   fastify.addHook('preValidation', (req, reply, done) => {
-    t.ok(req.called)
+    t.assert.ok(req.called)
     done()
   })
 
@@ -464,13 +477,14 @@ test('preParsing option should be called before preValidation hook', t => {
     url: '/',
     payload: { hello: 'world' }
   }, (err, res) => {
-    t.error(err)
+    t.assert.ifError(err)
     const payload = JSON.parse(res.payload)
-    t.same(payload, { hello: 'world' })
+    t.assert.deepStrictEqual(payload, { hello: 'world' })
+    testDone()
   })
 })
 
-test('preParsing option should be able to modify the payload', t => {
+test('preParsing option should be able to modify the payload', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -491,13 +505,14 @@ test('preParsing option should be able to modify the payload', t => {
     url: '/only',
     payload: { hello: 'world' }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'another world' })
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'another world' })
+    testDone()
   })
 })
 
-test('preParsing option should be able to supply statusCode', t => {
+test('preParsing option should be able to supply statusCode', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -514,10 +529,10 @@ test('preParsing option should be able to supply statusCode', t => {
       return stream
     },
     onError: async (req, res, err) => {
-      t.equal(err.statusCode, 408)
+      t.assert.strictEqual(err.statusCode, 408)
     }
   }, (req, reply) => {
-    t.fail('should not be called')
+    t.assert.fail('should not be called')
   })
 
   fastify.inject({
@@ -525,22 +540,23 @@ test('preParsing option should be able to supply statusCode', t => {
     url: '/only',
     payload: { hello: 'world' }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 408)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 408)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       statusCode: 408,
       error: 'Request Timeout',
       message: 'kaboom'
     })
+    testDone()
   })
 })
 
-test('onRequest option should be called before preParsing', t => {
+test('onRequest option should be called before preParsing', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
 
   fastify.addHook('preParsing', (req, reply, payload, done) => {
-    t.ok(req.called)
+    t.assert.ok(req.called)
     done()
   })
 
@@ -558,39 +574,38 @@ test('onRequest option should be called before preParsing', t => {
     url: '/',
     payload: { hello: 'world' }
   }, (err, res) => {
-    t.error(err)
+    t.assert.ifError(err)
     const payload = JSON.parse(res.payload)
-    t.same(payload, { hello: 'world' })
+    t.assert.deepStrictEqual(payload, { hello: 'world' })
+    testDone()
   })
 })
 
-test('onTimeout on route', t => {
-  t.plan(4)
+test('onTimeout on route', async (t) => {
+  t.plan(3)
   const fastify = Fastify({ connectionTimeout: 500 })
 
   fastify.get('/timeout', {
     handler (request, reply) { },
     onTimeout (request, reply, done) {
-      t.pass('onTimeout called')
+      t.assert.ok('onTimeout called')
       done()
     }
   })
 
-  fastify.listen({ port: 0 }, (err, address) => {
-    t.error(err)
-    t.teardown(() => fastify.close())
+  const address = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: `${address}/timeout`
-    }, (err, response, body) => {
-      t.type(err, Error)
-      t.equal(err.message, 'socket hang up')
-    })
-  })
+  try {
+    await fetch(`${address}/timeout`)
+    t.assert.fail('Should have thrown an error')
+  } catch (err) {
+    t.assert.ok(err instanceof Error)
+    t.assert.strictEqual(err.message, 'fetch failed')
+  }
 })
 
-test('onError on route', t => {
+test('onError on route', (t, testDone) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -600,7 +615,7 @@ test('onError on route', t => {
   fastify.get('/',
     {
       onError (request, reply, error, done) {
-        t.match(error, err)
+        t.assert.deepStrictEqual(error, err)
         done()
       }
     },
@@ -609,11 +624,12 @@ test('onError on route', t => {
     })
 
   fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
       statusCode: 500
     })
+    testDone()
   })
 })

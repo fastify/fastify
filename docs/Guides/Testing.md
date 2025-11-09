@@ -340,10 +340,10 @@ test('should ...', {only: true}, t => ...)
 ```
 2. Run `node --test`
 ```bash
-> node --test --test-only --node-arg=--inspect-brk test/<test-file.test.js>
+> node --test --test-only --inspect-brk test/<test-file.test.js>
 ```
 - `--test-only` specifies to run tests with the `only` option enabled
-- `--node-arg=--inspect-brk` will launch the node debugger
+- `--inspect-brk` will launch the node debugger
 3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No
    modification should be necessary.
 

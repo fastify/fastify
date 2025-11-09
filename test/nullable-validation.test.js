@@ -1,18 +1,16 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const Fastify = require('..')
 
-test('nullable string', t => {
+test('nullable string', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
   fastify.route({
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.same(req.body.hello, null)
+      t.assert.strictEqual(req.body.hello, null)
       reply.code(200).send(req.body)
     },
     schema: {
@@ -47,13 +45,14 @@ test('nullable string', t => {
       hello: null
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(res.payload.hello, null)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.json().hello, null)
+    done()
   })
 })
 
-test('object or null body', t => {
-  t.plan(5)
+test('object or null body', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -61,7 +60,7 @@ test('object or null body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.equal(req.body, undefined)
+      t.assert.strictEqual(req.body, undefined)
       reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
@@ -88,23 +87,20 @@ test('object or null body', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { isUndefinedBody: true })
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { isUndefinedBody: true })
 })
 
-test('nullable body', t => {
-  t.plan(5)
+test('nullable body', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -112,7 +108,7 @@ test('nullable body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.equal(req.body, undefined)
+      t.assert.strictEqual(req.body, undefined)
       reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
@@ -140,23 +136,20 @@ test('nullable body', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { isUndefinedBody: true })
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { isUndefinedBody: true })
 })
 
-test('Nullable body with 204', t => {
-  t.plan(5)
+test('Nullable body with 204', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -164,7 +157,7 @@ test('Nullable body with 204', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.equal(req.body, undefined)
+      t.assert.strictEqual(req.body, undefined)
       reply.code(204).send()
     },
     schema: {
@@ -181,17 +174,14 @@ test('Nullable body with 204', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 204)
-      t.equal(body.length, 0)
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 204)
+  t.assert.strictEqual((await result.text()).length, 0)
 })

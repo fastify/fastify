@@ -5,7 +5,9 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-test('should expose 83 errors', t => {
+const expectedErrors = 86
+
+test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
   const exportedKeys = Object.keys(errors)
   let counter = 0
@@ -14,11 +16,12 @@ test('should expose 83 errors', t => {
       counter++
     }
   }
-  t.assert.strictEqual(counter, 83)
+  t.assert.strictEqual(counter, expectedErrors)
 })
 
 test('ensure name and codes of Errors are identical', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
+
   const exportedKeys = Object.keys(errors)
   for (const key of exportedKeys) {
     if (errors[key].name === 'FastifyError') {
@@ -187,6 +190,16 @@ test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_CTP_INVALID_JSON_BODY', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTP_INVALID_JSON_BODY()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_JSON_BODY')
+  t.assert.strictEqual(error.message, "Body is not valid JSON but content-type is set to 'application/json'")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', t => {
   t.plan(5)
   const error = new errors.FST_ERR_CTP_INSTANCE_ALREADY_STARTED()
@@ -247,6 +260,16 @@ test('FST_ERR_DEC_REFERENCE_TYPE', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_DEC_UNDECLARED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_DEC_UNDECLARED('myDecorator', 'request')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_DEC_UNDECLARED')
+  t.assert.strictEqual(error.message, "No decorator 'myDecorator' has been declared on request.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_HOOK_INVALID_TYPE', t => {
   t.plan(5)
   const error = new errors.FST_ERR_HOOK_INVALID_TYPE()
@@ -302,7 +325,7 @@ test('FST_ERR_HOOK_TIMEOUT', t => {
   const error = new errors.FST_ERR_HOOK_TIMEOUT()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_HOOK_TIMEOUT')
-  t.assert.strictEqual(error.message, "A callback for '%s' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+  t.assert.strictEqual(error.message, "A callback for '%s' hook%s timed out. You may have forgotten to call 'done' function or to resolve a Promise")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
@@ -373,6 +396,16 @@ test('FST_ERR_REP_RESPONSE_BODY_CONSUMED', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
   t.assert.strictEqual(error.message, 'Response.body is already consumed.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_REP_READABLE_STREAM_LOCKED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_REP_READABLE_STREAM_LOCKED()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
+  t.assert.strictEqual(error.message, 'ReadableStream was locked. You should call releaseLock() method on reader before sending.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
@@ -553,16 +586,6 @@ test('FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX')
   t.assert.strictEqual(error.message, 'response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
-  t.assert.strictEqual(error.statusCode, 500)
-  t.assert.ok(error instanceof Error)
-})
-
-test('FST_ERR_HTTP2_INVALID_VERSION', t => {
-  t.plan(5)
-  const error = new errors.FST_ERR_HTTP2_INVALID_VERSION()
-  t.assert.strictEqual(error.name, 'FastifyError')
-  t.assert.strictEqual(error.code, 'FST_ERR_HTTP2_INVALID_VERSION')
-  t.assert.strictEqual(error.message, 'HTTP2 is available only from node >= 8.8.1')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
@@ -868,7 +891,8 @@ test('FST_ERR_ERROR_HANDLER_NOT_FN', t => {
 })
 
 test('Ensure that all errors are in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
+
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -880,7 +904,7 @@ test('Ensure that all errors are in Errors.md TOC', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md TOC', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = / {4}- \[([A-Z0-9_]+)\]\(#[a-z0-9_]+\)/g
@@ -893,7 +917,7 @@ test('Ensure that non-existing errors are not in Errors.md TOC', t => {
 })
 
 test('Ensure that all errors are in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const exportedKeys = Object.keys(errors)
@@ -905,11 +929,51 @@ test('Ensure that all errors are in Errors.md documented', t => {
 })
 
 test('Ensure that non-existing errors are not in Errors.md documented', t => {
-  t.plan(83)
+  t.plan(expectedErrors)
+
   const errorsMd = readFileSync(resolve(__dirname, '../../docs/Reference/Errors.md'), 'utf8')
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g
   const matches = errorsMd.matchAll(matchRE)
+  const exportedKeys = Object.keys(errors)
+
+  for (const match of matches) {
+    t.assert.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
+  }
+})
+
+test('Ensure that all errors are in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
+  const errorTypes = [...matches].map(match => match[1])
+  const exportedKeys = Object.keys(errors)
+
+  for (const key of exportedKeys) {
+    if (errors[key].name === 'FastifyError') {
+      t.assert.ok(errorTypes.includes(key), key)
+    }
+  }
+})
+
+test('Ensure that non-existing errors are not in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
   const exportedKeys = Object.keys(errors)
 
   for (const match of matches) {

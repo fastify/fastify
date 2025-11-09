@@ -1,6 +1,6 @@
 'use strict'
 
-const os = require('os')
+const os = require('node:os')
 const forge = require('node-forge')
 
 // from self-cert module
@@ -91,7 +91,7 @@ function selfCert (opts) {
   }
 }
 
-async function buildCertificate () {
+function buildCertificate () {
   // "global" is used in here because "t.context" is only supported by "t.beforeEach" and "t.afterEach"
   // For the test case which execute this code which will be using `t.before` and it can reduce the
   // number of times executing it.

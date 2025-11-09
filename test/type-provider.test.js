@@ -1,20 +1,22 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
 
-test('Should export withTypeProvider function', t => {
+test('Should export withTypeProvider function', (t, done) => {
   t.plan(1)
   try {
     Fastify().withTypeProvider()
-    t.pass()
+    t.assert.ok('pass')
+    done()
   } catch (e) {
-    t.fail()
+    t.assert.fail(e)
   }
 })
 
-test('Should return same instance', t => {
+test('Should return same instance', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
-  t.equal(fastify, fastify.withTypeProvider())
+  t.assert.strictEqual(fastify, fastify.withTypeProvider())
+  done()
 })

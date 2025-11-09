@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('..')
 const split = require('split2')
 const pino = require('pino')
@@ -43,8 +42,8 @@ const optsWithHostnameAndPort = {
     }
   }
 }
-test('async await', (t, done) => {
-  t.plan(16)
+test('async await', async t => {
+  t.plan(15)
   const fastify = Fastify()
   try {
     fastify.get('/', opts, async function awaitMyFunc (req, reply) {
@@ -75,46 +74,37 @@ test('async await', (t, done) => {
     t.assert.fail()
   }
 
-  fastify.listen({ port: 0 }, async err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-    })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no-await'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-    })
+  const result = await fetch(fastifyServer)
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/await/hostname_port'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      const parsedBody = JSON.parse(body)
-      t.assert.strictEqual(parsedBody.hostname, 'localhost')
-      t.assert.strictEqual(parseInt(parsedBody.port), fastify.server.address().port)
-      done()
-    })
-  })
+  const body = await result.text()
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+
+  const result1 = await fetch(`${fastifyServer}/no-await`)
+
+  const body1 = await result1.text()
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  t.assert.strictEqual(result1.headers.get('content-length'), '' + body1.length)
+  t.assert.deepStrictEqual(JSON.parse(body1), { hello: 'world' })
+
+  const result2 = await fetch(`http://localhost:${fastify.server.address().port}/await/hostname_port`)
+
+  const parsedBody = await result2.json()
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  t.assert.strictEqual(parsedBody.hostname, 'localhost')
+  t.assert.strictEqual(parseInt(parsedBody.port), fastify.server.address().port)
 })
 
-test('ignore the result of the promise if reply.send is called beforehand (undefined)', (t, done) => {
-  t.plan(4)
+test('ignore the result of the promise if reply.send is called beforehand (undefined)', async (t) => {
+  t.plan(3)
 
   const server = Fastify()
   const payload = { hello: 'world' }
@@ -125,22 +115,17 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
 
   t.after(() => { server.close() })
 
-  server.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
-    }, (err, res, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(payload, JSON.parse(body))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    })
-  })
+  const fastifyServer = await server.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer)
+
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(payload, await result.json())
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('ignore the result of the promise if reply.send is called beforehand (object)', (t, done) => {
-  t.plan(4)
+test('ignore the result of the promise if reply.send is called beforehand (object)', async (t) => {
+  t.plan(3)
 
   const server = Fastify()
   const payload = { hello: 'world2' }
@@ -152,18 +137,13 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
 
   t.after(() => { server.close() })
 
-  server.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
-    }, (err, res, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(payload, JSON.parse(body))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    })
-  })
+  const fastifyServer = await server.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer)
+
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(payload, await result.json())
+  t.assert.strictEqual(result.status, 200)
 })
 
 test('server logs an error if reply.send is called and a value is returned via async/await', (t, done) => {
@@ -197,8 +177,8 @@ test('server logs an error if reply.send is called and a value is returned via a
   })
 })
 
-test('ignore the result of the promise if reply.send is called beforehand (undefined)', (t, done) => {
-  t.plan(4)
+test('ignore the result of the promise if reply.send is called beforehand (undefined)', async (t) => {
+  t.plan(3)
 
   const server = Fastify()
   const payload = { hello: 'world' }
@@ -209,22 +189,17 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
 
   t.after(() => { server.close() })
 
-  server.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
-    }, (err, res, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(payload, JSON.parse(body))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    })
-  })
+  const fastifyServer = await server.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer)
+
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(payload, await result.json())
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('ignore the result of the promise if reply.send is called beforehand (object)', (t, done) => {
-  t.plan(4)
+test('ignore the result of the promise if reply.send is called beforehand (object)', async (t) => {
+  t.plan(3)
 
   const server = Fastify()
   const payload = { hello: 'world2' }
@@ -236,18 +211,13 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
 
   t.after(() => { server.close() })
 
-  server.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + server.server.address().port + '/'
-    }, (err, res, body) => {
-      t.assert.ifError(err)
-      t.assert.deepStrictEqual(payload, JSON.parse(body))
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    })
-  })
+  const fastifyServer = await server.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer)
+
+  t.assert.ok(result.ok)
+  t.assert.deepStrictEqual(payload, await result.json())
+  t.assert.strictEqual(result.status, 200)
 })
 
 test('await reply if we will be calling reply.send in the future', (t, done) => {
@@ -433,8 +403,8 @@ test('does not call reply.send() twice if 204 response equal already sent', (t, 
   })
 })
 
-test('promise was fulfilled with undefined', (t, done) => {
-  t.plan(4)
+test('promise was fulfilled with undefined', async (t) => {
+  t.plan(3)
 
   let fastify = null
   const stream = split(JSON.parse)
@@ -458,20 +428,13 @@ test('promise was fulfilled with undefined', (t, done) => {
     t.assert.fail('should not log an error')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
-    }, (err, res, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.body, undefined)
-      t.assert.strictEqual(res.statusCode, 200)
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(await result.text(), '')
+  t.assert.strictEqual(result.status, 200)
 })
 
 test('promise was fulfilled with undefined using inject', async (t) => {
@@ -496,8 +459,8 @@ test('promise was fulfilled with undefined using inject', async (t) => {
   t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', (t, done) => {
-  t.plan(4)
+test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', async (t) => {
+  t.plan(3)
 
   let fastify = null
   const stream = split(JSON.parse)
@@ -523,23 +486,16 @@ test('error is not logged because promise was fulfilled with undefined but respo
     t.assert.fail('should not log an error')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
-    }, (err, res, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(res.statusCode, 200)
-      t.assert.deepStrictEqual(
-        payload,
-        JSON.parse(body)
-      )
-      done()
-    })
-  })
+  const result = await fetch(fastifyServer)
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(
+    payload,
+    await result.json()
+  )
 })
 
 test('Thrown Error instance sets HTTP status code', (t, done) => {

@@ -1,5 +1,5 @@
 import { FastifyError } from '@fastify/error'
-import * as http from 'http'
+import * as http from 'node:http'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
 import { RequestPayload } from '../../types/hooks'
@@ -23,7 +23,16 @@ declare module '../../fastify' {
   }
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
+  interface FastifyRequest<
+    RouteGeneric,
+    RawServer,
+    RawRequest,
+    SchemaCompiler,
+    TypeProvider,
+    ContextConfig,
+    Logger,
+    RequestType
+  > {
     message: ContextConfig extends { includeMessage: true }
       ? string
       : null;

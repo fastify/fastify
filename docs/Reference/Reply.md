@@ -11,9 +11,9 @@
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
-    - [set-cookie](#set-cookie)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
+  - [.writeEarlyHints(hints, callback)](#writeearlyhintshints-callback)
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
@@ -32,8 +32,9 @@
     - [Strings](#strings)
     - [Streams](#streams)
     - [Buffers](#buffers)
-    - [ReadableStream](#send-readablestream)
-    - [Response](#send-response)
+    - [TypedArrays](#typedarrays)
+    - [ReadableStream](#readablestream)
+    - [Response](#response)
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
@@ -87,7 +88,7 @@ since the request was received by Fastify.
   already been called.
 - `.hijack()` - interrupt the normal request lifecycle.
 - `.raw` - The
-  [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse)
+  [`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
@@ -150,14 +151,14 @@ fastify.get('/', async function (req, rep) {
 Sets a response header. If the value is omitted or undefined, it is coerced to
 `''`.
 
-> Note: the header's value must be properly encoded using
+> ℹ️ Note: The header's value must be properly encoded using
 > [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 > or similar modules such as
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid characters
 > will result in a 500 `TypeError` response.
 
 For more information, see
-[`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
+[`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_response_setheader_name_value).
 
 - ### set-cookie
   <a id="set-cookie"></a>
@@ -259,11 +260,11 @@ requires heavy resources to be sent after the `data`, for example,
 `Server-Timing` and `Etag`. It can ensure the client receives the response data
 as soon as possible.
 
-*Note: The header `Transfer-Encoding: chunked` will be added once you use the
-trailer. It is a hard requirement for using trailer in Node.js.*
+> ℹ️ Note: The header `Transfer-Encoding: chunked` will be added once you use
+> the trailer. It is a hard requirement for using trailer in Node.js.
 
-*Note: Any error passed to `done` callback will be ignored. If you interested
-in the error, you can turn on `debug` level logging.*
+> ℹ️ Note: Any error passed to `done` callback will be ignored. If you interested
+> in the error, you can turn on `debug` level logging.*
 
 ```js
 reply.trailer('server-timing', function() {
@@ -278,14 +279,14 @@ const { createHash } = require('node:crypto')
 reply.trailer('content-md5', function(reply, payload, done) {
   const hash = createHash('md5')
   hash.update(payload)
-  done(null, hash.disgest('hex'))
+  done(null, hash.digest('hex'))
 })
 
 // when you prefer async-await
 reply.trailer('content-md5', async function(reply, payload) {
   const hash = createHash('md5')
   hash.update(payload)
-  return hash.disgest('hex')
+  return hash.digest('hex')
 })
 ```
 
@@ -313,7 +314,7 @@ reply.getTrailer('server-timing') // undefined
 Redirects a request to the specified URL, the status code is optional, default
 to `302` (if status code is not already set by calling `code`).
 
-> Note: the input URL must be properly encoded using
+> ℹ️ Note: The input URL must be properly encoded using
 > [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 > or similar modules such as
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
@@ -361,13 +362,14 @@ Sets the content type for the response. This is a shortcut for
 reply.type('text/html')
 ```
 If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
-`utf-8` will be used as the charset by default.
+`utf-8` will be used as the charset by default. For other content types, the
+charset must be set explicitly.
 
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>
 
 By calling this function using a provided `schema` or `httpStatus`,
-and the optional `contentType`, it will return a `serialzation` function
+and the optional `contentType`, it will return a `serialization` function
 that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
@@ -586,7 +588,7 @@ values.
 <a id="raw"></a>
 
 This is the
-[`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse)
+[`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
 from Node core. Whilst you are using the Fastify `Reply` object, the use of
 `Reply.raw` functions is at your own risk as you are skipping all the Fastify
 logic of handling the HTTP response. e.g.:
@@ -685,6 +687,9 @@ If you are sending a stream and you have not set a `'Content-Type'` header,
 
 As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
+
+See special note about error handling for streams in
+[`setErrorHandler`](./Server.md#seterrorhandler).
 
 ```js
 const fs = require('node:fs')
@@ -821,8 +826,8 @@ automatically create an error structured as the following:
 You can add custom properties to the Error object, such as `headers`, that will
 be used to enhance the HTTP response.
 
-*Note: If you are passing an error to `send` and the statusCode is less than
-400, Fastify will automatically set it at 500.*
+> ℹ️ Note: If you are passing an error to `send` and the statusCode is less than
+> 400, Fastify will automatically set it at 500.
 
 Tip: you can simplify errors by using the
 [`http-errors`](https://npm.im/http-errors) module or
@@ -869,7 +874,7 @@ fastify.get('/', {
 If you want to customize error handling, check out
 [`setErrorHandler`](./Server.md#seterrorhandler) API.
 
-*Note: you are responsible for logging when customizing the error handler*
+> ℹ️ Note: you are responsible for logging when customizing the error handler.
 
 API:
 

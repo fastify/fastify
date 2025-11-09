@@ -545,6 +545,15 @@ for more information.
 This was already deprecated in v4 as `FSTDEP014`,
 so you should have already updated your code.
 
+### `time` and `date-time` formats enforce timezone
+
+The updated AJV compiler updates `ajv-formats` which now
+enforce the use of timezone in `time` and `date-time` format.
+A workaround is to use `iso-time` and `iso-date-time` formats
+which support an optional timezone for backwards compatibility.  
+See the
+[full discussion](https://github.com/fastify/fluent-json-schema/issues/267).
+
 ## New Features
 
 ### Diagnostic Channel support

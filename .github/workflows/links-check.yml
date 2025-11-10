@@ -39,4 +39,4 @@ jobs:
         with:
           paths: "**/**.md"
           retry: true
-          skip: "https://(?:www.|)github.com/fastify/.\*/(?:commit|issues|compare)/, http://0.0.0.0, http://127.0.0.1, http://localhost"
+          skip: "https://(?:www.|)github.com/fastify/.\\*/(?:commit|issues|compare)/, http://0.0.0.0, http://127.0.0.1, http://localhost"

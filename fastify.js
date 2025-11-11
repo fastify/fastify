@@ -42,7 +42,7 @@ const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, supportedHooks, onRequestHookRunner } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
@@ -641,8 +641,21 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
+      // If logging is enabled (disableRequestLogging === false), use plugin-based logging
+      // Run onRequest hooks if any are registered (custom log management system)
+      if (disableRequestLogging === false && fastify[kHooks].onRequest.length > 0) {
+        onRequestHookRunner(
+          fastify[kHooks].onRequest,
+          request,
+          reply,
+          (err) => {
+            if (err) {
+              return options.frameworkErrors(err, request, reply)
+            }
+            return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+          }
+        )
+        return
       }
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
@@ -666,8 +679,21 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
-            childLogger.info({ req: request }, 'incoming request')
+          // If logging is enabled (disableRequestLogging === false), use plugin-based logging
+          // Run onRequest hooks if any are registered (custom log management system)
+          if (disableRequestLogging === false && fastify[kHooks].onRequest.length > 0) {
+            onRequestHookRunner(
+              fastify[kHooks].onRequest,
+              request,
+              reply,
+              (err) => {
+                if (err) {
+                  return options.frameworkErrors(err, request, reply)
+                }
+                return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
+              }
+            )
+            return
           }
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)

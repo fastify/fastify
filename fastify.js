@@ -641,8 +641,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      // If logging is enabled (disableRequestLogging === false), use plugin-based logging
-      // Run onRequest hooks if any are registered (custom log management system)
+
       if (disableRequestLogging === false && fastify[kHooks].onRequest.length > 0) {
         onRequestHookRunner(
           fastify[kHooks].onRequest,
@@ -679,8 +678,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          // If logging is enabled (disableRequestLogging === false), use plugin-based logging
-          // Run onRequest hooks if any are registered (custom log management system)
+
           if (disableRequestLogging === false && fastify[kHooks].onRequest.length > 0) {
             onRequestHookRunner(
               fastify[kHooks].onRequest,

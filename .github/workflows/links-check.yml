@@ -37,6 +37,6 @@ jobs:
       - name: External Link Checker
         uses: JustinBeckwith/linkinator-action@af984b9f30f63e796ae2ea5be5e07cb587f1bbd9 # v2.3
         with:
-          paths: "**/**.md"
+          paths: "**/*.md"
           retry: true
           skip: "https://(?:www.|)github.com/fastify/.\\*/(?:commit|issues|compare)/, http://0.0.0.0, http://127.0.0.1, http://localhost"

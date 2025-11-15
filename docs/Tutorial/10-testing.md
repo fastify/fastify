@@ -6,7 +6,8 @@ regressions. Automated tests let you run a suite of checks in seconds
 after every change.
 
 > A regression is an unintended break: something that worked correctly before
-stops working after a change elsewhere in the code. A good test suite helps catch these problems early.
+stops working after a change elsewhere in the code. A good test suite helps
+catch these problems early.
 
 ## HTTP injection and `light-my-request`
 

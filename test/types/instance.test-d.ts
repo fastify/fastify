@@ -1,4 +1,4 @@
-import { expectAssignable, expectError, expectNotDeprecated, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotAssignable, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
   FastifyBodyParser,
@@ -339,17 +339,42 @@ type InitialConfig = Readonly<{
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
     }
-    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
+    defaultRoute?: (
+      req: RawRequestDefaultExpression<RawServerDefault>,
+      res: RawReplyDefaultExpression<RawServerDefault>
+    ) => void,
     ignoreDuplicateSlashes?: boolean,
     ignoreTrailingSlash?: boolean,
     maxParamLength?: number,
-    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+    onBadUrl?: (
+      path: string,
+      req: RawRequestDefaultExpression<RawServerDefault>,
+      res: RawReplyDefaultExpression<RawServerDefault>
+    ) => void,
     querystringParser?: (str: string) => { [key: string]: unknown },
     useSemicolonDelimiter?: boolean,
   }
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)
+
+fastify({
+  routerOptions: {
+    defaultRoute: (req, res) => {
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
+    },
+    onBadUrl: (path, req, res) => {
+      expectType<string>(path)
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
+    }
+  }
+})
 
 expectType<FastifyBodyParser<string>>(server.defaultTextParser)
 

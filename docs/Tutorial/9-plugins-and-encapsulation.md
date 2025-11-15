@@ -248,7 +248,7 @@ const myFeature = fp(
       // on request and reply
     },
     // plugins that need to be registered before
-    dependencies: ['database']
+    dependencies: ['database']-
   }
 );
 ```

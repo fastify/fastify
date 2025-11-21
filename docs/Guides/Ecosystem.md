@@ -373,7 +373,7 @@ section.
 - [`fastify-feature-flags`](https://gitlab.com/m03geek/fastify-feature-flags)
   Fastify feature flags plugin with multiple providers support (e.g. env,
   [config](https://lorenwest.github.io/node-config/),
-  [unleash](https://unleash.github.io/)).
+  [unleash](https://github.com/Unleash/unleash)).
 - [`fastify-file-routes`](https://github.com/spa5k/fastify-file-routes) Get
   Next.js based file system routing into fastify.
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload)
@@ -524,10 +524,7 @@ middlewares into Fastify plugins
   Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to
   eliminate thrown errors for `/favicon.ico` requests.
-- [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply)
-  Plugin to normalize the request and reply to the Express version 4.x request
-  and response, which allows use of middleware, like swagger-stats, that was
-  originally written for Express.
+
 - [`fastify-now`](https://github.com/yonathan06/fastify-now) Structure your
   endpoints in a folder and load them dynamically with Fastify.
 - [`fastify-nuxtjs`](https://github.com/gomah/fastify-nuxtjs) Vue server-side

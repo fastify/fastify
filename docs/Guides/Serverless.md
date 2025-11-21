@@ -595,8 +595,8 @@ server-like concurrency with the autoscaling properties of traditional
 serverless functions.
 
 Get started with the
-[Fastify Node.js template on Vercel](
-https://vercel.com/templates/other/fastify-on-vercel).
+[Fastify template on Vercel](
+https://vercel.com/templates/backend/fastify-on-vercel).
 
 [Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently
 requires an explicit opt-in. Learn more about enabling Fluid compute

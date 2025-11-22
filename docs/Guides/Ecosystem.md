@@ -748,7 +748,8 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-
+- [`fastify-ses-mailer`](https://github.com/KaranHotwani/fastify-ses-mailer) - A Fastify
+  plugin for sending emails via AWS SES using AWS SDK v3.
 
 #### [Community Tools](#community-tools)
 

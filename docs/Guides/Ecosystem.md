@@ -182,13 +182,8 @@ section.
   close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
   easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
-- [`@ethicdevs/fastify-custom-session`](https://github.com/EthicDevs/fastify-custom-session)
-  A plugin lets you use session and decide only where to load/save from/to. Has
-  great TypeScript support + built-in adapters for common ORMs/databases (Firebase,
-  Prisma Client, Postgres (wip), InMemory) and you can easily make your own adapter!
-- [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
-  A plugin to easily create git server and make one/many Git repositories available
-  for clone/fetch/push through the standard `git` (over http) commands.
+
+
 - [`@exortek/fastify-mongo-sanitize`](https://github.com/ExorTek/fastify-mongo-sanitize)
   A Fastify plugin that protects against No(n)SQL injection by sanitizing data.
 - [`@exortek/remix-fastify`](https://github.com/ExorTek/remix-fastify)
@@ -373,7 +368,7 @@ section.
 - [`fastify-feature-flags`](https://gitlab.com/m03geek/fastify-feature-flags)
   Fastify feature flags plugin with multiple providers support (e.g. env,
   [config](https://lorenwest.github.io/node-config/),
-  [unleash](https://unleash.github.io/)).
+  [unleash](https://github.com/Unleash/unleash)).
 - [`fastify-file-routes`](https://github.com/spa5k/fastify-file-routes) Get
   Next.js based file system routing into fastify.
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload)
@@ -524,10 +519,7 @@ middlewares into Fastify plugins
   Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to
   eliminate thrown errors for `/favicon.ico` requests.
-- [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply)
-  Plugin to normalize the request and reply to the Express version 4.x request
-  and response, which allows use of middleware, like swagger-stats, that was
-  originally written for Express.
+
 - [`fastify-now`](https://github.com/yonathan06/fastify-now) Structure your
   endpoints in a folder and load them dynamically with Fastify.
 - [`fastify-nuxtjs`](https://github.com/gomah/fastify-nuxtjs) Vue server-side
@@ -687,7 +679,7 @@ middlewares into Fastify plugins
 - [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
   Fastify
   [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)
-  for [@effect/schema](https://github.com/effect-ts/schema).
+  for [@effect/schema](https://github.com/Effect-TS/effect).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
   Fastify
   [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)

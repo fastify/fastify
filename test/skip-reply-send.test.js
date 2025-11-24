@@ -244,12 +244,12 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       if (hookOrHandler === 'handler') {
         app.get('/', (req, reply) => {
           reply.hijack()
-          throw new Error('This wil be skipped')
+          throw new Error('This will be skipped')
         })
       } else {
         app.addHook(hookOrHandler, async (req, reply) => {
           reply.hijack()
-          throw new Error('This wil be skipped')
+          throw new Error('This will be skipped')
         })
         app.get('/', (req, reply) => t.assert.fail('Handler should not be called'))
       }

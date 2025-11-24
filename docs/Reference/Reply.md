@@ -369,7 +369,7 @@ charset must be set explicitly.
 <a id="getserializationfunction"></a>
 
 By calling this function using a provided `schema` or `httpStatus`,
-and the optional `contentType`, it will return a `serialzation` function
+and the optional `contentType`, it will return a `serialization` function
 that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
@@ -687,6 +687,9 @@ If you are sending a stream and you have not set a `'Content-Type'` header,
 
 As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
+
+See special note about error handling for streams in
+[`setErrorHandler`](./Server.md#seterrorhandler).
 
 ```js
 const fs = require('node:fs')

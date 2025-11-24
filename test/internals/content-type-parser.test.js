@@ -10,7 +10,7 @@ const Reply = require('../../lib/reply')
 test('rawBody function', t => {
   t.plan(2)
 
-  const internals = require('../../lib/contentTypeParser')[kTestInternals]
+  const internals = require('../../lib/content-type-parser')[kTestInternals]
   const body = Buffer.from('你好 世界')
   const parser = {
     asString: true,
@@ -60,7 +60,7 @@ test('rawBody function', t => {
 test('Should support Webpack and faux modules', t => {
   t.plan(2)
 
-  const internals = proxyquire('../../lib/contentTypeParser', {
+  const internals = proxyquire('../../lib/content-type-parser', {
     'toad-cache': { default: () => { } }
   })[kTestInternals]
 

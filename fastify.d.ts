@@ -29,7 +29,7 @@ import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
-import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
+import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
 
@@ -88,6 +88,22 @@ declare namespace fastify {
   }
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
+
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = {
+    allowUnsafeRegex?: boolean,
+    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
+    caseSensitive?: boolean,
+    constraints?: {
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
+    },
+    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
+    ignoreDuplicateSlashes?: boolean,
+    ignoreTrailingSlash?: boolean,
+    maxParamLength?: number,
+    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
+    querystringParser?: (str: string) => { [key: string]: unknown },
+    useSemicolonDelimiter?: boolean,
+  }
 
   /**
    * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
@@ -159,6 +175,7 @@ declare namespace fastify {
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
     childLoggerFactory?: FastifyChildLoggerFactory,
     allowErrorHandlerOverride?: boolean
+    routerOptions?: FastifyRouterOptions<RawServer>,
   }
 
   /**

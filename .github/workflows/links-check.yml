@@ -5,6 +5,7 @@ on:
     paths:
       - 'docs/**'
       - '*.md'
+      - '.github/workflows/links-check.yml'
 
 permissions:
   contents: read

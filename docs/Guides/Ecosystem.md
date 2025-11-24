@@ -751,6 +751,7 @@ middlewares into Fastify plugins
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
 
+
 #### [Community Tools](#community-tools)
 
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)

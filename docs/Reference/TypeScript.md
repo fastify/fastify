@@ -325,8 +325,10 @@ interfaces!
 
    `json2ts` is a CLI utility included in `json-schema-to-typescript`. `schemas`
    is the input path, and `types` is the output path.
+
 5. Run `npm run compile-schemas`. Two new files should have been created in the
    `types` directory.
+
 6. Update `index.ts` to have the following code:
 
 ```typescript

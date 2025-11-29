@@ -303,10 +303,10 @@ const fastifyApp = async (request, reply) => {
 
 ### Add Custom `contentTypeParser` to Fastify instance and define endpoints
 
-Firebase Function's HTTP layer already parses the request
-and makes a JSON payload available. It also provides access
-to the raw body, unparsed, which is useful for calculating
-request signatures to validate HTTP webhooks.
+Firebase Function's HTTP layer already parses the request and makes a JSON
+payload available through the property `payload.body` below. It also provides
+access to the raw body, unparsed, which is useful for calculating request
+signatures to validate HTTP webhooks.
 
 Add as follows to the `registerRoutes()` function:
 
@@ -329,6 +329,24 @@ async function registerRoutes (fastify) {
   fastify.get('/', async (request, reply) => {
     reply.send({message: 'Hello World!'})
   })
+}
+```
+
+**Failing to add this `ContentTypeParser` may lead to the Fastify process
+remaining stuck and not processing any other requests after receiving one with
+the Content-Type `application/json`.**
+
+When using Typescript, since the type of `payload` is a native `IncomingMessage`
+that gets modified by Firebase, it won't be able to find the property
+`payload.body`.
+
+In order to suppress the error, you can use the following signature:
+
+```ts
+declare module 'http' {
+	interface IncomingMessage {
+		body?: unknown;
+	}
 }
 ```
 
@@ -577,8 +595,8 @@ server-like concurrency with the autoscaling properties of traditional
 serverless functions.
 
 Get started with the
-[Fastify Node.js template on Vercel](
-https://vercel.com/templates/other/fastify-serverless-function).
+[Fastify template on Vercel](
+https://vercel.com/templates/backend/fastify-on-vercel).
 
 [Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently
 requires an explicit opt-in. Learn more about enabling Fluid compute

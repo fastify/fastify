@@ -317,7 +317,7 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
     },
   };
 
-  const fastify = require('fastify')({logger: customLogger});
+  const fastify = require('fastify')({ loggerInstance: customLogger });
   ```
 
 ### `disableRequestLogging`
@@ -1442,6 +1442,8 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
+> ⚠ Warning:
+> `addHttpMethod` overrides existing methods.
 
 #### addSchema
 <a id="add-schema"></a>

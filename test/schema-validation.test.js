@@ -1241,7 +1241,13 @@ test('Custom validator builder override by custom validator compiler', async t =
   }
   const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
   const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
-  const fastify = Fastify({ schemaController: { compilersFactory: { buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema) } } })
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema)
+      }
+    }
+  })
 
   fastify.setValidatorCompiler((routeSchemaDef) => ajv2.compile(routeSchemaDef.schema))
 
@@ -1281,7 +1287,13 @@ test('Custom validator builder override by custom validator compiler in child in
   }
   const ajv1 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_one', type: 'object', validator: () => true })
   const ajv2 = new AJV(ajvDefaults).addKeyword({ keyword: 'extended_two', type: 'object', validator: () => true })
-  const fastify = Fastify({ schemaController: { compilersFactory: { buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema) } } })
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: () => (routeSchemaDef) => ajv1.compile(routeSchemaDef.schema)
+      }
+    }
+  })
 
   fastify.register((embedded, _opts, done) => {
     embedded.setValidatorCompiler((routeSchemaDef) => ajv2.compile(routeSchemaDef.schema))

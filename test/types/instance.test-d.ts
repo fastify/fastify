@@ -4,6 +4,7 @@ import fastify, {
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
+  FastifyRouterOptions,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
@@ -15,7 +16,7 @@ import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
-import { ConstraintStrategy } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy } from 'find-my-way'
 import { FindMyWayVersion } from '../../types/instance'
 
 const server = fastify()
@@ -332,31 +333,13 @@ type InitialConfig = Readonly<{
   requestIdLogLabel?: string,
   http2SessionTimeout?: number,
   useSemicolonDelimiter?: boolean,
-  routerOptions?: {
-    allowUnsafeRegex?: boolean,
-    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
-    caseSensitive?: boolean,
-    constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
-    }
-    defaultRoute?: (
-      req: RawRequestDefaultExpression<RawServerDefault>,
-      res: RawReplyDefaultExpression<RawServerDefault>
-    ) => void,
-    ignoreDuplicateSlashes?: boolean,
-    ignoreTrailingSlash?: boolean,
-    maxParamLength?: number,
-    onBadUrl?: (
-      path: string,
-      req: RawRequestDefaultExpression<RawServerDefault>,
-      res: RawReplyDefaultExpression<RawServerDefault>
-    ) => void,
-    querystringParser?: (str: string) => { [key: string]: unknown },
-    useSemicolonDelimiter?: boolean,
-  }
+  routerOptions?: FastifyRouterOptions<RawServerDefault>
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)
+
+const routerOptionsForFindMyWay = {} as FastifyRouterOptions<RawServerDefault>
+expectAssignable<FindMyWayConfig<FindMyWayVersion<RawServerDefault>>>(routerOptionsForFindMyWay)
 
 fastify({
   routerOptions: {
@@ -587,7 +570,7 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
 const foo = server.getDecorator<string>('foo')
 expectType<string>(foo)
 
-const versionConstraintStrategy = {
+const versionConstraintStrategy: ConstraintStrategy<FindMyWayVersion<RawServerDefault>> = {
   name: 'version',
   storage: () => ({
     get: () => () => {},

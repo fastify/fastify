@@ -10,7 +10,7 @@ const factory = AjvStandaloneCompiler({
   storeFunction (routeOpts, schemaValidationCode) {
     // Prettify the schema definition to make diffs readable
     schemaValidationCode = schemaValidationCode.replace(
-      /const schema\d+ = \{.*\};/g,
+      /const schema\d+ = \{.*?\};/gs,
       (match) => {
         try {
           const prefix = match.match(/const schema\d+ = /)[0]

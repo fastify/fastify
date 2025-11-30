@@ -94,9 +94,7 @@ function fastify (serverOptions) {
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
 
   // Default router
-  const router = buildRouting({
-    config: options.routerOptions
-  })
+  const router = buildRouting(options.routerOptions)
 
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)

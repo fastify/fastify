@@ -1,7 +1,9 @@
 'use strict'
 
 const fastify = require('../fastify')({
-  logger: false
+  logger: {
+    level: 'error'
+  }
 })
 
 const schema = {

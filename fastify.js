@@ -42,7 +42,7 @@ const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication, supportedHooks, onRequestHookRunner } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
@@ -92,6 +92,10 @@ function fastify (serverOptions) {
     hasLogger,
     initialConfig
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
+
+  const createRequestLogMessage = typeof options.createRequestLogMessage === 'function'
+    ? options.createRequestLogMessage
+    : (req) => 'incoming request'
 
   // Default router
   const router = buildRouting(options.routerOptions)
@@ -641,20 +645,8 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-
-      if (disableRequestLogging === false && fastify[kHooks].onRequest.length > 0) {
-        onRequestHookRunner(
-          fastify[kHooks].onRequest,
-          request,
-          reply,
-          (err) => {
-            if (err) {
-              return options.frameworkErrors(err, request, reply)
-            }
-            return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
-          }
-        )
-        return
+      if (disableRequestLogging === false) {
+        childLogger.info({ req: request }, createRequestLogMessage(request))
       }
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
@@ -678,20 +670,8 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-
-          if (disableRequestLogging === false && fastify[kHooks].onRequest.length > 0) {
-            onRequestHookRunner(
-              fastify[kHooks].onRequest,
-              request,
-              reply,
-              (err) => {
-                if (err) {
-                  return options.frameworkErrors(err, request, reply)
-                }
-                return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
-              }
-            )
-            return
+          if (disableRequestLogging === false) {
+            childLogger.info({ req: request }, createRequestLogMessage(request))
           }
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)

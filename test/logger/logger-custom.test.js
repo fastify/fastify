@@ -7,6 +7,138 @@ const split = require('split2')
 const Fastify = require('../../fastify')
 const { on } = stream
 
+test('logger custom serializers with customAttributeKeys', { timeout: 60000 }, async (t) => {
+  t.plan(3)
+
+  await t.test('Should use custom req serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
+    t.plan(3)
+
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'info',
+        customAttributeKeys: {
+          req: 'httpRequest'
+        },
+        serializers: {
+          httpRequest: function (req) {
+            return {
+              customMethod: req.method,
+              customUrl: req.url
+            }
+          }
+        }
+      }
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.ready()
+
+    const response = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.deepEqual(response.statusCode, 200)
+
+    for await (const [line] of on(loggerStream, 'data')) {
+      if (line.msg === 'incoming request') {
+        t.assert.ok(line.httpRequest.customMethod, 'should use custom serializer with customMethod')
+        t.assert.ok(line.httpRequest.customUrl, 'should use custom serializer with customUrl')
+        break
+      }
+    }
+  })
+
+  await t.test('Should use custom res serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
+    t.plan(3)
+
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'info',
+        customAttributeKeys: {
+          res: 'httpResponse'
+        },
+        serializers: {
+          httpResponse: function (reply) {
+            return {
+              customStatusCode: reply.statusCode,
+              customField: 'custom'
+            }
+          }
+        }
+      }
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.ready()
+
+    const response = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.deepEqual(response.statusCode, 200)
+
+    for await (const [line] of on(loggerStream, 'data')) {
+      if (line.msg === 'request completed') {
+        t.assert.ok(line.httpResponse.customStatusCode, 'should use custom serializer with customStatusCode')
+        t.assert.strictEqual(line.httpResponse.customField, 'custom', 'should use custom serializer with customField')
+        break
+      }
+    }
+  })
+
+  await t.test('Should use custom err serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
+    t.plan(3)
+
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'info',
+        customAttributeKeys: {
+          err: 'httpError'
+        },
+        serializers: {
+          httpError: function (err) {
+            return {
+              customMessage: err.message,
+              customType: 'CustomError'
+            }
+          }
+        }
+      }
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/', (req, reply) => {
+      throw new Error('test error')
+    })
+
+    fastify.setErrorHandler((err, req, reply) => {
+      req.log.error({ httpError: err }, 'an error occurred')
+      reply.status(500).send({ error: 'Internal Server Error' })
+    })
+
+    await fastify.ready()
+
+    const response = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.deepEqual(response.statusCode, 500)
+
+    for await (const [line] of on(loggerStream, 'data')) {
+      if (line.msg === 'an error occurred') {
+        t.assert.strictEqual(line.httpError.customMessage, 'test error', 'should use custom serializer with customMessage')
+        t.assert.strictEqual(line.httpError.customType, 'CustomError', 'should use custom serializer with customType')
+        break
+      }
+    }
+  })
+})
+
 test('logger customAttributeKeys option', { timeout: 60000 }, async (t) => {
   t.plan(8)
 

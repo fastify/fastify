@@ -3,6 +3,23 @@
 This document describes the management of vulnerabilities for the Fastify
 project and its official plugins.
 
+## Threat Model
+
+Fastify's threat model extends the
+[Node.js threat model](https://github.com/nodejs/node/blob/main/SECURITY.md#the-nodejs-threat-model).
+
+**Trusted:** Application code (plugins, handlers, hooks, schemas), configuration,
+and the runtime environment.
+
+**Untrusted:** All network input (HTTP headers, body, query strings, URL
+parameters).
+
+### Examples of Vulnerabilities
+
+- Parsing flaws that bypass validation or security controls
+- DoS through malformed input to Fastify's core
+- Bypasses of built-in protections (prototype poisoning, schema validation)
+
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
@@ -155,11 +172,9 @@ There are three “tiers”: passing, silver, and gold.
 We meet 100% of the “passing” criteria.
 
 ### Silver
-We meet 87% of the “silver” criteria. The gaps are as follows:
+We meet 87% of the "silver" criteria. The gaps are as follows:
   - we do not have a DCO or a CLA process for contributions.
-  - we do not currently document
-    “what the user can and cannot expect in terms of security” for our project.
-  - we do not currently document ”the architecture (aka high-level design)”
+  - we do not currently document "the architecture (aka high-level design)"
     for our project.
 
 ### Gold

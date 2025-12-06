@@ -1,6 +1,6 @@
 'use strict'
 
-import('./named-exports.mjs')
+import('./named-exports.test.mjs')
   .catch(err => {
     process.nextTick(() => {
       throw err

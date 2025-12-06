@@ -206,6 +206,27 @@ app.addHook('preHandler', function (req, reply, done) {
 
 *Any logger other than Pino will ignore this option.*
 
+#### Custom Attribute Keys
+
+By default, Fastify logs use `req`, `res`, and `err` as attribute keys. These
+can be customized using the `customAttributeKeys` option:
+
+```js
+const fastify = require('fastify')({
+  logger: {
+    level: 'info',
+    customAttributeKeys: {
+      req: 'request',
+      res: 'response',
+      err: 'error'
+    }
+  }
+})
+```
+
+This will produce logs with `request`, `response`, and `error` keys instead of
+the default `req`, `res`, and `err`.
+
 ### Using Custom Loggers
 A custom logger instance can be supplied by passing it as `loggerInstance`. The
 logger must conform to the Pino interface, with methods: `info`, `error`,

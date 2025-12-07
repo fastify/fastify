@@ -504,7 +504,7 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 
 Different log levels can be set for routes in Fastify by passing the `logLevel`
 option to the plugin or route with the desired
-[value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string).
+[value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string).
 
 Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and
@@ -533,7 +533,7 @@ Fastify Logger, accessible with `fastify.log`.*
 <a id="custom-log-serializer"></a>
 
 In some contexts, logging a large object may waste resources. Define custom
-[`serializers`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
+[`serializers`](https://github.com/pinojs/pino/blob/main/docs/api.md#serializers-object)
 and attach them in the appropriate context.
 
 ```js

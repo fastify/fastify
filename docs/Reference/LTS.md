@@ -67,7 +67,7 @@ For more information, see their [Never Ending Support][hd-link] service.
 
 Fastify uses GitHub Actions for CI testing, please refer to [GitHub&#39;s
 documentation regarding workflow
-runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources)
+runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners#supported-runners-and-hardware-resources)
 for further details on what the latest virtual environment is in relation to the
 YAML workflow labels below:
 

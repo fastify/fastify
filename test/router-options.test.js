@@ -898,13 +898,12 @@ test('Should honor routerOptions.useSemicolonDelimiter over useSemicolonDelimite
 
 test('Should support extra find-my-way options', t => {
   t.plan(1)
-  // 'allowHeaderParam' is an example of an upstream option not explicitly defined in Fastify's schema
+  // allowHeaderParam: example upstream router option
   const fastify = Fastify({
     routerOptions: {
       allowHeaderParam: true
     }
   })
-
-  // Verify the option is preserved after validation (i.e., not stripped by additionalProperties: false)
+  // Ensure the option is preserved after validation
   t.assert.strictEqual(fastify.initialConfig.routerOptions.allowHeaderParam, true)
 })

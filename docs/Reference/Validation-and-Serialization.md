@@ -775,6 +775,12 @@ with the following payload:
 }
 ```
 
+> ⚠ Security Consideration: By default, validation error details from the schema
+> are included in the response payload. If your organization requires sanitizing
+> or customizing these error messages (e.g., to avoid exposing internal schema
+> details), configure a custom error handler using
+> [`setErrorHandler()`](./Server.md#seterrorhandler).
+
 To handle errors inside the route, specify the `attachValidation` option. If
 there is a validation error, the `validationError` property of the request will
 contain the `Error` object with the raw validation result as shown below:

@@ -372,7 +372,7 @@ for example.
 that the stuff I create inside will not be available outside?*
 
 Yes, I said that. However, what I didn't tell you is that you can tell Fastify
-to avoid this behavior with the
+to bypass this behavior with the
 [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
 ```js
 const fp = require('fastify-plugin')

@@ -44,7 +44,6 @@ function runBadClientCall (reqOptions, payload) {
 }
 
 test('should handle a socket error', async (t) => {
-  t.plan(4)
   const fastify = Fastify()
 
   function shouldNotHappen () {

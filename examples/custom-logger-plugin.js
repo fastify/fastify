@@ -4,14 +4,13 @@ const fastify = require('../fastify')({
   logger: true,
 
   // Enable logging to be utilized by the plugin
-  disableRequestLogging: false 
+  disableRequestLogging: false
 })
-
 
 // Function that triggers when the plugin is registered
 function customLogger (fastify, options, done) {
   fastify.addHook('onRequest', (request, reply, done) => {
-    request.log.info({ 
+    request.log.info({
       req: request,
       timestamp: new Date().toISOString(),
       method: request.method,

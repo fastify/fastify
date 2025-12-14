@@ -25,10 +25,7 @@ test('diagnostics channel error event should report correct status code', async 
     throw err
   })
 
-  const res = await fastify.inject({
-    method: 'GET',
-    url: '/'
-  })
+  const res = await fastify.inject('/')
 
   t.assert.strictEqual(res.statusCode, 503)
   t.assert.strictEqual(diagnosticsStatusCode, 503, 'diagnostics channel should report correct status code')
@@ -53,10 +50,7 @@ test('diagnostics channel error event should report 500 for errors without statu
     throw new Error('plain error without status')
   })
 
-  const res = await fastify.inject({
-    method: 'GET',
-    url: '/'
-  })
+  const res = await fastify.inject('/')
 
   t.assert.strictEqual(res.statusCode, 500)
   t.assert.strictEqual(diagnosticsStatusCode, 500, 'diagnostics channel should report 500 for plain errors')
@@ -85,10 +79,7 @@ test('diagnostics channel error event should report correct status with custom e
     throw new Error('handler error')
   })
 
-  const res = await fastify.inject({
-    method: 'GET',
-    url: '/'
-  })
+  const res = await fastify.inject('/')
 
   // Note: The diagnostics channel fires before the custom error handler runs,
   // so it reports 500 (default) rather than 503 (set by custom handler).

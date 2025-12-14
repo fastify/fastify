@@ -723,12 +723,6 @@ HTTP router. The `routerOptions` parameter allows passing
 [`find-my-way` options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
 to customize the HTTP router within Fastify.
 
-> **TypeScript**
-> Fastify derives `routerOptions` from `find-my-way`'s [`Config` type](https://github.com/delvedor/find-my-way/blob/main/index.d.ts),
-> so newly added upstream options are automatically available. We only override
-> the callback signatures (`defaultRoute`, `onBadUrl`, etc.) to emphasize that
-> they receive the raw Node.js `IncomingMessage`/`ServerResponse` objects.
-
 ### `allowUnsafeRegex`
 <a id="allow-unsafe-regex"></a>
 

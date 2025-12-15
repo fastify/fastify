@@ -13,31 +13,24 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
   t.plan(16)
 
   await t.test('logger can be silenced', (t) => {
-    t.plan(17)
+    t.plan(2)
     const fastify = Fastify({
       logger: false
     })
     t.after(() => fastify.close())
-    t.assert.ok(fastify.log)
-    t.assert.deepEqual(typeof fastify.log, 'object')
-    t.assert.deepEqual(typeof fastify.log.fatal, 'function')
-    t.assert.deepEqual(typeof fastify.log.error, 'function')
-    t.assert.deepEqual(typeof fastify.log.warn, 'function')
-    t.assert.deepEqual(typeof fastify.log.info, 'function')
-    t.assert.deepEqual(typeof fastify.log.debug, 'function')
-    t.assert.deepEqual(typeof fastify.log.trace, 'function')
-    t.assert.deepEqual(typeof fastify.log.child, 'function')
+    t.assert.strictEqual(fastify.log, null)
 
-    const childLog = fastify.log.child()
+    fastify.get('/', (req, reply) => {
+      req.log?.info('this should not throw')
+      reply.send({ hello: 'world' })
+    })
 
-    t.assert.deepEqual(typeof childLog, 'object')
-    t.assert.deepEqual(typeof childLog.fatal, 'function')
-    t.assert.deepEqual(typeof childLog.error, 'function')
-    t.assert.deepEqual(typeof childLog.warn, 'function')
-    t.assert.deepEqual(typeof childLog.info, 'function')
-    t.assert.deepEqual(typeof childLog.debug, 'function')
-    t.assert.deepEqual(typeof childLog.trace, 'function')
-    t.assert.deepEqual(typeof childLog.child, 'function')
+    return fastify.inject({
+      method: 'GET',
+      url: '/'
+    }).then(res => {
+      t.assert.strictEqual(res.statusCode, 200)
+    })
   })
 
   await t.test('Should set a custom logLevel for a plugin', async (t) => {

@@ -74,7 +74,7 @@ test('listen on invalid port without callback rejects', t => {
 
 test('listen logs the port as info', async t => {
   t.plan(1)
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
   t.after(() => fastify.close())
 
   const msgs = []

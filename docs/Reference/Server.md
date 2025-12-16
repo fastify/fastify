@@ -23,6 +23,7 @@ describes the properties available in that options object.
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerInstance)
   - [`disableRequestLogging`](#disablerequestlogging)
+  - [`customRequestLog`](#factory-custom-request-log)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
@@ -354,6 +355,28 @@ fastify.addHook('onResponse', (req, reply, done) => {
   done()
 })
 ```
+
+### `customRequestLog`
+<a id="factory-custom-request-log"></a>
+
++ Type: `(request: FastifyRequest) => string`
++ Default: `req => 'incoming request'`
+
+Customizes the log message used when Fastify logs an incoming request for certain
+framework error paths (for example, bad URLs and async constraint errors). If this
+option is not provided, Fastify logs `'incoming request'` as the message.
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  customRequestLog: (request) => {
+    return `${request.id} ${request.method} ${request.url} - incoming request`
+  }
+})
+```
+
+This function is called with the `FastifyRequest` and its return value is used as
+the log message in place of the default `'incoming request'`.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>

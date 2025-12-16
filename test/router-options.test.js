@@ -896,14 +896,20 @@ test('Should honor routerOptions.useSemicolonDelimiter over useSemicolonDelimite
   t.assert.strictEqual(res.statusCode, 200)
 })
 
-test('Should support extra find-my-way options', t => {
+test('Should support extra find-my-way options', async t => {
   t.plan(1)
-  // allowHeaderParam: example upstream router option
+  // Use a real upstream option from find-my-way
   const fastify = Fastify({
     routerOptions: {
-      allowHeaderParam: true
+      buildPrettyMeta: (route) => {
+        const cleanMeta = Object.assign({}, route.store)
+        return cleanMeta
+      }
     }
   })
+
+  await fastify.ready()
+
   // Ensure the option is preserved after validation
-  t.assert.strictEqual(fastify.initialConfig.routerOptions.allowHeaderParam, true)
+  t.assert.strictEqual(typeof fastify.initialConfig.routerOptions.buildPrettyMeta, 'function')
 })

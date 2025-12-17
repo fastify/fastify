@@ -364,7 +364,7 @@ fastify.addHook('onResponse', (req, reply, done) => {
 
 Customizes the log message used when Fastify logs an incoming request for certain
 framework error paths (for example, bad URLs and async constraint errors). If this
-option is not provided, Fastify logs `'incoming request'` as the message.
+option is not provided, Fastify logs `'incoming request'` as the default message.
 
 ```js
 const fastify = require('fastify')({
@@ -377,6 +377,8 @@ const fastify = require('fastify')({
 
 This function is called with the `FastifyRequest` and its return value is used as
 the log message in place of the default `'incoming request'`.
+
+In order to customize the log management settings, consider utilizing `examples/custom-logger-plugin.js` included in the `onRequest` hook.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>

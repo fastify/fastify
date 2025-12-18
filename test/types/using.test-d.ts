@@ -1,16 +1,16 @@
-import { expectAssignable } from 'tsd'
-import fastify, { FastifyInstance } from '../../fastify'
+import { expect } from 'tstyche'
+import fastify, { type FastifyInstance } from '../../fastify.js'
 
 async function hasSymbolDisposeWithUsing () {
   await using app = fastify()
-  expectAssignable<FastifyInstance>(app)
-  expectAssignable<FastifyInstance[typeof Symbol.asyncDispose]>(app.close)
+  expect<FastifyInstance>().type.toBeAssignableFrom(app)
+  expect<FastifyInstance[typeof Symbol.asyncDispose]>().type.toBeAssignableFrom(app.close)
 }
 
 async function hasSymbolDispose () {
   const app = fastify()
-  expectAssignable<FastifyInstance>(app)
-  expectAssignable<FastifyInstance[typeof Symbol.asyncDispose]>(app.close)
+  expect<FastifyInstance>().type.toBeAssignableFrom(app)
+  expect<FastifyInstance[typeof Symbol.asyncDispose]>().type.toBeAssignableFrom(app.close)
 }
 
 hasSymbolDisposeWithUsing()

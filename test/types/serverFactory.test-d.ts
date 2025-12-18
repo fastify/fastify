@@ -1,6 +1,6 @@
-import fastify, { FastifyServerFactory } from '../../fastify'
 import * as http from 'node:http'
-import { expectType } from 'tsd'
+import { expect } from 'tstyche'
+import fastify, { type FastifyServerFactory } from '../../fastify.js'
 
 // Custom Server
 type CustomType = void
@@ -28,10 +28,10 @@ const customServer = fastify<http.Server, CustomIncomingMessage, CustomServerRes
 
 customServer.get('/', function (request, reply) {
   if (request.raw.fakeMethod) {
-    expectType<CustomType>(request.raw.fakeMethod())
+    expect(request.raw.fakeMethod()).type.toBe<CustomType>()
   }
 
   if (reply.raw.fakeMethod) {
-    expectType<CustomType>(reply.raw.fakeMethod())
+    expect(reply.raw.fakeMethod()).type.toBe<CustomType>()
   }
 })

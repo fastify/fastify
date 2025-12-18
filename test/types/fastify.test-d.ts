@@ -1,98 +1,93 @@
-import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'node:http'
-import * as http2 from 'node:http2'
-import * as https from 'node:https'
-import { Socket } from 'node:net'
-import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
+import type * as http2 from 'node:http2'
+import type * as https from 'node:https'
+import type { Socket } from 'node:net'
+import type { ErrorObject as AjvErrorObject } from 'ajv'
+import { expect } from 'tstyche'
 import fastify, {
-  ConnectionError,
-  FastifyBaseLogger,
-  FastifyError,
-  FastifyErrorCodes,
-  FastifyInstance,
-  FastifyPlugin,
-  FastifyPluginAsync,
-  FastifyPluginCallback,
-  InjectOptions,
-  LightMyRequestCallback,
-  LightMyRequestChain,
-  LightMyRequestResponse,
-  RawRequestDefaultExpression,
-  RouteGenericInterface,
-  SafePromiseLike
-} from '../../fastify'
-import { Bindings, ChildLoggerOptions } from '../../types/logger'
+  type ConnectionError,
+  type FastifyBaseLogger,
+  type FastifyError,
+  type FastifyErrorCodes,
+  type FastifyInstance,
+  type FastifyPlugin,
+  type FastifyPluginAsync,
+  type FastifyPluginCallback,
+  type InjectOptions,
+  type LightMyRequestCallback,
+  type LightMyRequestChain,
+  type LightMyRequestResponse,
+  type RawRequestDefaultExpression,
+  type RouteGenericInterface,
+  type SafePromiseLike
+} from '../../fastify.js'
+import type { Bindings, ChildLoggerOptions } from '../../types/logger.js'
 
 // FastifyInstance
 // http server
-expectError<
+expect(fastify()).type.not.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   Promise<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify())
-expectAssignable<
+>()
+expect(fastify()).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify())
-expectType<
+>()
+expect(fastify()).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify())
-expectType<
+>()
+expect(fastify({})).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify({}))
-expectType<
+>()
+expect(fastify({ http: {} })).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify({ http: {} }))
+>()
 // https server
-expectType<
+expect(fastify({ https: {} })).type.toBe<
   FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify({ https: {} }))
-expectType<
+>()
+expect(fastify({ https: null })).type.toBe<
   FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify({ https: null }))
+>()
 // http2 server
-expectType<
+expect(fastify({ http2: true, http2SessionTimeout: 1000 })).type.toBe<
   FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> &
   SafePromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>
->(fastify({ http2: true, http2SessionTimeout: 1000 }))
-expectType<
+>()
+expect(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 })).type.toBe<
   FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> &
   SafePromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>
->(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
-expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
-expectType<
-  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
-  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(fastify({ schemaController: {} }))
-expectType<
-  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
-  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(
-  fastify({
-    schemaController: {
-      compilersFactory: {}
-    }
-  })
-)
+>()
+expect(fastify({ http2: true, https: {} }).inject()).type.toBe<LightMyRequestChain>()
+expect(fastify({ schemaController: {} })).type.toBe<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>()
+expect(fastify({ schemaController: { compilersFactory: {} } })).type.toBe<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>()
 
-expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
-expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
-expectError(
-  fastify({
-    schemaController: {
-      bucket: () => ({}) // cannot be empty
-    }
-  })
-)
+// @ts-expect-error  Type 'false' is not assignable to type 'true'
+fastify<http2.Http2Server>({ http2: false }) // http2 option must be true
+// @ts-expect-error  Type 'false' is not assignable to type 'true'
+fastify<http2.Http2SecureServer>({ http2: false }) // http2 option must be true
+fastify({
+  schemaController: {
+    // @ts-expect-error  No overload matches this call
+    bucket: () => ({}) // cannot be empty
+  }
+})
 
 // light-my-request
-expectAssignable<InjectOptions>({ query: '' })
+expect<InjectOptions>().type.toBeAssignableFrom({ query: '' })
 fastify({ http2: true, https: {} }).inject().then((resp) => {
-  expectAssignable<LightMyRequestResponse>(resp)
+  expect(resp).type.toBe<LightMyRequestResponse>()
 })
 const lightMyRequestCallback: LightMyRequestCallback = (
   err: Error | undefined,
@@ -103,34 +98,32 @@ const lightMyRequestCallback: LightMyRequestCallback = (
 fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
 
 // server options
-expectAssignable<
+expect(fastify({ http2: true })).type.toBeAssignableTo<
   FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>
->(fastify({ http2: true }))
-expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
-expectAssignable<FastifyInstance>(fastify({ ignoreDuplicateSlashes: true }))
-expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
-expectAssignable<FastifyInstance>(fastify({ forceCloseConnections: true }))
-expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
-expectAssignable<FastifyInstance>(fastify({ pluginTimeout: 1000 }))
-expectAssignable<FastifyInstance>(fastify({ bodyLimit: 100 }))
-expectAssignable<FastifyInstance>(fastify({ maxParamLength: 100 }))
-expectAssignable<FastifyInstance>(fastify({ disableRequestLogging: true }))
-expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
-expectAssignable<FastifyInstance>(fastify({ onProtoPoisoning: 'error' }))
-expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
-expectAssignable<FastifyInstance>(fastify({ serializerOpts: { rounding: 'ceil' } }))
-expectAssignable<FastifyInstance>(
-  fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } })
-)
-expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: {} } }))
-expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: {} } }))
-expectAssignable<
+>()
+expect(fastify({ ignoreTrailingSlash: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ ignoreDuplicateSlashes: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ connectionTimeout: 1000 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ forceCloseConnections: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ keepAliveTimeout: 1000 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ pluginTimeout: 1000 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ bodyLimit: 100 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ maxParamLength: 100 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ disableRequestLogging: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ requestIdLogLabel: 'request-id' })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ onProtoPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ onConstructorPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
+expect<FastifyInstance>().type.toBeAssignableFrom(fastify({ serializerOpts: { rounding: 'ceil' } }))
+expect(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ serializerOpts: { schema: {} } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ serializerOpts: { otherProp: {} } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ logger: true })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
->(fastify({ logger: true }))
-expectAssignable<
+>()
+expect(fastify({ logger: true })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
->(fastify({ logger: true }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({
+>()
+expect(fastify({
   logger: {
     level: 'info',
     genReqId: () => 'request-id',
@@ -159,7 +152,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
       }
     }
   }
-}))
+})).type.toBeAssignableTo<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>()
 const customLogger = {
   level: 'info',
   info: () => { },
@@ -170,25 +163,25 @@ const customLogger = {
   debug: () => { },
   child: () => customLogger
 }
-expectAssignable<
+expect(fastify({ logger: customLogger })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
->(fastify({ logger: customLogger }))
-expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
-expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
-expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
-expectAssignable<FastifyInstance>(fastify({ requestIdHeader: false }))
-expectAssignable<FastifyInstance>(fastify({
+>()
+expect(fastify({ serverFactory: () => http.createServer() })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ caseSensitive: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ requestIdHeader: 'request-id' })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ requestIdHeader: false })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   genReqId: (req) => {
-    expectType<RawRequestDefaultExpression>(req)
+    expect(req).type.toBe<RawRequestDefaultExpression>()
     return 'foo'
   }
-}))
-expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
-expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
-expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))
-expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: ['bar', 'fuzz'] }) }))
-expectAssignable<FastifyInstance>(fastify({ constraints: {} }))
-expectAssignable<FastifyInstance>(fastify({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ trustProxy: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ querystringParser: () => ({ foo: 'bar' }) })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ querystringParser: () => ({ foo: ['bar', 'fuzz'] }) })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ constraints: {} })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   constraints: {
     version: {
       name: 'version',
@@ -225,29 +218,29 @@ expectAssignable<FastifyInstance>(fastify({
 
     }
   }
-}))
-expectAssignable<FastifyInstance>(fastify({ return503OnClosing: true }))
-expectAssignable<FastifyInstance>(fastify({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ return503OnClosing: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   ajv: {
     customOptions: {
       removeAdditional: 'all'
     },
     plugins: [() => { }]
   }
-}))
-expectAssignable<FastifyInstance>(fastify({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   ajv: {
     plugins: [[() => { }, ['keyword1', 'keyword2']]]
   }
-}))
-expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
-expectAssignable<FastifyInstance>(fastify({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ frameworkErrors: () => { } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   rewriteUrl: function (req) {
     this.log.debug('rewrite url')
     return req.url === '/hi' ? '/hello' : req.url!
   }
-}))
-expectAssignable<FastifyInstance>(fastify({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   schemaErrorFormatter: (errors, dataVar) => {
     console.log(
       errors[0].keyword.toLowerCase(),
@@ -258,15 +251,15 @@ expectAssignable<FastifyInstance>(fastify({
     )
     return new Error()
   }
-}))
-expectAssignable<FastifyInstance>(fastify({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
   clientErrorHandler: (err, socket) => {
-    expectType<ConnectionError>(err)
-    expectType<Socket>(socket)
+    expect(err).type.toBe<ConnectionError>()
+    expect(socket).type.toBe<Socket>()
   }
-}))
+})).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(fastify({
+expect(fastify({
   childLoggerFactory: function (
     this: FastifyInstance,
     logger: FastifyBaseLogger,
@@ -274,22 +267,22 @@ expectAssignable<FastifyInstance>(fastify({
     opts: ChildLoggerOptions,
     req: RawRequestDefaultExpression
   ) {
-    expectType<FastifyBaseLogger>(logger)
-    expectType<Bindings>(bindings)
-    expectType<ChildLoggerOptions>(opts)
-    expectType<RawRequestDefaultExpression>(req)
-    expectAssignable<FastifyInstance>(this)
+    expect(logger).type.toBe<FastifyBaseLogger>()
+    expect(bindings).type.toBe<Bindings>()
+    expect(opts).type.toBe<ChildLoggerOptions>()
+    expect(req).type.toBe<RawRequestDefaultExpression>()
+    expect(this).type.toBe<FastifyInstance>()
     return logger.child(bindings, opts)
   }
-}))
+})).type.toBeAssignableTo<FastifyInstance>()
 
 // Thenable
-expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))
-fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInstance))
+expect(fastify({ return503OnClosing: true })).type.toBeAssignableTo<PromiseLike<FastifyInstance>>()
+fastify().then(fastifyInstance => expect(fastifyInstance).type.toBeAssignableTo<FastifyInstance>())
 
-expectAssignable<FastifyPluginAsync>(async () => { })
-expectAssignable<FastifyPluginCallback>(() => { })
-expectAssignable<FastifyPlugin>(() => { })
+expect<FastifyPluginAsync>().type.toBeAssignableFrom(async () => { })
+expect<FastifyPluginCallback>().type.toBeAssignableFrom(() => { })
+expect<FastifyPlugin>().type.toBeAssignableFrom(() => { })
 
 const ajvErrorObject: AjvErrorObject = {
   keyword: '',
@@ -298,7 +291,7 @@ const ajvErrorObject: AjvErrorObject = {
   params: {},
   message: ''
 }
-expectNotAssignable<AjvErrorObject>({
+expect<AjvErrorObject>().type.not.toBeAssignableFrom({
   keyword: '',
   instancePath: '',
   schemaPath: '',
@@ -306,25 +299,25 @@ expectNotAssignable<AjvErrorObject>({
   message: ''
 })
 
-expectAssignable<FastifyError['validation']>([ajvErrorObject])
-expectAssignable<FastifyError['validationContext']>('body')
-expectAssignable<FastifyError['validationContext']>('headers')
-expectAssignable<FastifyError['validationContext']>('params')
-expectAssignable<FastifyError['validationContext']>('querystring')
+expect<FastifyError['validation']>().type.toBeAssignableFrom([ajvErrorObject])
+expect<FastifyError['validationContext']>().type.toBeAssignableFrom('body')
+expect<FastifyError['validationContext']>().type.toBeAssignableFrom('headers')
+expect<FastifyError['validationContext']>().type.toBeAssignableFrom('params')
+expect<FastifyError['validationContext']>().type.toBeAssignableFrom('querystring')
 
 const routeGeneric: RouteGenericInterface = {}
-expectType<unknown>(routeGeneric.Body)
-expectType<unknown>(routeGeneric.Headers)
-expectType<unknown>(routeGeneric.Params)
-expectType<unknown>(routeGeneric.Querystring)
-expectType<unknown>(routeGeneric.Reply)
+expect(routeGeneric.Body).type.toBe<unknown>()
+expect(routeGeneric.Headers).type.toBe<unknown>()
+expect(routeGeneric.Params).type.toBe<unknown>()
+expect(routeGeneric.Querystring).type.toBe<unknown>()
+expect(routeGeneric.Reply).type.toBe<unknown>()
 
 // ErrorCodes
-expectType<FastifyErrorCodes>(fastify.errorCodes)
+expect(fastify.errorCodes).type.toBe<FastifyErrorCodes>()
 
 fastify({ allowUnsafeRegex: true })
 fastify({ allowUnsafeRegex: false })
-expectError(fastify({ allowUnsafeRegex: 'invalid' }))
+expect(fastify).type.not.toBeCallableWith({ allowUnsafeRegex: 'invalid' })
 
-expectAssignable<FastifyInstance>(fastify({ allowErrorHandlerOverride: true }))
-expectAssignable<FastifyInstance>(fastify({ allowErrorHandlerOverride: false }))
+expect<FastifyInstance>().type.toBeAssignableFrom(fastify({ allowErrorHandlerOverride: true }))
+expect<FastifyInstance>().type.toBeAssignableFrom(fastify({ allowErrorHandlerOverride: false }))

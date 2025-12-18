@@ -1,64 +1,64 @@
-import { expectAssignable, expectError, expectNotDeprecated, expectType } from 'tsd'
+import type { AddressInfo } from 'node:net'
+import type { ConstraintStrategy } from 'find-my-way'
+import { expect } from 'tstyche'
 import fastify, {
-  FastifyBaseLogger,
-  FastifyBodyParser,
-  FastifyError,
-  FastifyInstance,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerDefault,
-  RouteGenericInterface
-} from '../../fastify'
-import { HookHandlerDoneFunction } from '../../types/hooks'
-import { FastifyReply } from '../../types/reply'
-import { FastifyRequest } from '../../types/request'
-import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
-import { AddressInfo } from 'node:net'
-import { Bindings, ChildLoggerOptions } from '../../types/logger'
-import { ConstraintStrategy } from 'find-my-way'
-import { FindMyWayVersion } from '../../types/instance'
+  type FastifyBaseLogger,
+  type FastifyBodyParser,
+  type FastifyError,
+  type FastifyInstance,
+  type RawReplyDefaultExpression,
+  type RawRequestDefaultExpression,
+  type RawServerDefault,
+  type RouteGenericInterface
+} from '../../fastify.js'
+import type { HookHandlerDoneFunction } from '../../types/hooks.js'
+import type { FastifyReply } from '../../types/reply.js'
+import type { FastifyRequest } from '../../types/request.js'
+import type { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema.js'
+import type { Bindings, ChildLoggerOptions } from '../../types/logger.js'
+import type { FindMyWayVersion } from '../../types/instance.js'
 
 const server = fastify()
 
-expectAssignable<FastifyInstance>(server.addSchema({
+expect(server.addSchema({
   type: 'null'
-}))
-expectAssignable<FastifyInstance>(server.addSchema({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(server.addSchema({
   schemaId: 'id'
-}))
-expectAssignable<FastifyInstance>(server.addSchema({
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(server.addSchema({
   schemas: []
-}))
+})).type.toBeAssignableTo<FastifyInstance>()
 
-expectType<string>(server.pluginName)
+expect(server.pluginName).type.toBe<string>()
 
-expectType<Record<string, unknown>>(server.getSchemas())
-expectType<AddressInfo[]>(server.addresses())
-expectType<unknown>(server.getSchema('SchemaId'))
-expectType<string>(server.printRoutes())
-expectType<string>(server.printPlugins())
-expectType<string>(server.listeningOrigin)
-expectType<string[]>(server.supportedMethods)
+expect(server.getSchemas()).type.toBe<Record<string, unknown>>()
+expect(server.addresses()).type.toBe<AddressInfo[]>()
+expect(server.getSchema('SchemaId')).type.toBe<unknown>()
+expect(server.printRoutes()).type.toBe<string>()
+expect(server.printPlugins()).type.toBe<string>()
+expect(server.listeningOrigin).type.toBe<string>()
+expect(server.supportedMethods).type.toBe<string[]>()
 
-expectAssignable<FastifyInstance>(
+expect(
   server.setErrorHandler(function (error, request, reply) {
-    expectType<unknown>(error)
-    expectAssignable<FastifyInstance>(this)
+    expect(error).type.toBe<unknown>()
+    expect(this).type.toBeAssignableTo<FastifyInstance>()
   })
-)
+).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(
+expect(
   server.setErrorHandler<FastifyError>(function (error, request, reply) {
-    expectType<FastifyError>(error)
+    expect(error).type.toBe<FastifyError>()
   })
-)
+).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(
+expect(
   server.setGenReqId(function (req) {
-    expectType<RawRequestDefaultExpression>(req)
+    expect(req).type.toBe<RawRequestDefaultExpression>()
     return 'foo'
   })
-)
+).type.toBeAssignableTo<FastifyInstance>()
 
 function fastifySetGenReqId (req: RawRequestDefaultExpression) {
   return 'foo'
@@ -91,37 +91,37 @@ interface ReplyPayload {
 }
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
-  expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expect(error).type.toBe<CustomError>()
+  expect(reply.send).type.toBe<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
-  expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expect(error).type.toBe<CustomError>()
+  expect(reply.send).type.toBe<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
-  expectType<CustomError>(error)
+  expect(error).type.toBe<CustomError>()
   return { test: true }
 })
 // typed sync error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
-  expectType<CustomError>(error)
-  reply.send({ test: 'foo' })
-}))
+server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+  expect(error).type.toBe<CustomError>()
+  expect(reply.send).type.not.toBeCallableWith({ test: 'foo' })
+})
 // typed sync error handler return error
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
-  expectType<CustomError>(error)
+  expect(error).type.toBe<CustomError>()
   return { test: 'foo' }
 })
 // typed async error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
-  expectType<CustomError>(error)
-  reply.send({ test: 'foo' })
-}))
+server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+  expect(error).type.toBe<CustomError>()
+  expect(reply.send).type.not.toBeCallableWith({ test: 'foo' })
+})
 // typed async error handler return error
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
-  expectType<CustomError>(error)
+  expect(error).type.toBe<CustomError>()
   return { test: 'foo' }
 })
 
@@ -174,16 +174,16 @@ server.setSchemaController({
   bucket: (parentSchemas: unknown) => {
     return {
       add (schema: unknown) {
-        expectType<unknown>(schema)
-        expectType<FastifyInstance>(server.addSchema({ type: 'null' }))
+        expect(schema).type.toBe<unknown>()
+        expect(server.addSchema({ type: 'null' })).type.toBe<FastifyInstance>()
         return server.addSchema({ type: 'null' })
       },
       getSchema (schemaId: string) {
-        expectType<string>(schemaId)
+        expect(schemaId).type.toBe<string>()
         return server.getSchema('SchemaId')
       },
       getSchemas () {
-        expectType<Record<string, unknown>>(server.getSchemas())
+        expect(server.getSchemas()).type.toBe<Record<string, unknown>>()
         return server.getSchemas()
       }
     }
@@ -191,114 +191,96 @@ server.setSchemaController({
 })
 
 function invalidSchemaController (schemaControllerOptions: FastifySchemaControllerOptions) {}
-expectError(server.setSchemaController(invalidSchemaController))
+expect(server.setSchemaController).type.not.toBeCallableWith(invalidSchemaController)
 
 server.setReplySerializer(function (payload, statusCode) {
-  expectType<unknown>(payload)
-  expectType<number>(statusCode)
+  expect(payload).type.toBe<unknown>()
+  expect(statusCode).type.toBe<number>()
   return 'serialized'
 })
 
 function invalidReplySerializer (payload: number, statusCode: string) {}
-expectError(server.setReplySerializer(invalidReplySerializer))
+expect(server.setReplySerializer).type.not.toBeCallableWith(invalidReplySerializer)
 
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
-expectError(server.setReplySerializer(serializerWithInvalidReturn))
+expect(server.setReplySerializer).type.not.toBeCallableWith(serializerWithInvalidReturn)
 
 function invalidSchemaErrorFormatter (err: Error) {
   if (err) { throw err }
 }
-expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
+expect(server.setSchemaErrorFormatter).type.not.toBeCallableWith(invalidSchemaErrorFormatter)
 
-expectType<FastifyInstance>(server.addHttpMethod('SEARCH', { hasBody: true }))
+expect(server.addHttpMethod('SEARCH', { hasBody: true })).type.toBe<FastifyInstance>()
 
 // test listen opts objects
-expectAssignable<PromiseLike<string>>(server.listen())
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }))
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
-expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
+expect(server.listen()).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen({ port: 3000 })).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } })).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen({ port: 3000, host: '0.0.0.0' })).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 })).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true })).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen({ port: 3000, host: '::/0', ipv6Only: true })).type.toBeAssignableTo<PromiseLike<string>>()
 
-expectAssignable<void>(server.listen(() => {}))
-expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
-
-// test listen opts objects Typescript deprecation exclusion
-expectNotDeprecated(server.listen())
-expectNotDeprecated(server.listen({ port: 3000 }))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
-expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
-
-expectNotDeprecated(server.listen(() => {}))
-expectNotDeprecated(server.listen({ port: 3000 }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
+expect(server.listen(() => {})).type.toBe<void>()
+expect(server.listen({ port: 3000 }, () => {})).type.toBe<void>()
+expect(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {})).type.toBe<void>()
+expect(server.listen({ port: 3000, host: '0.0.0.0' }, () => {})).type.toBe<void>()
+expect(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {})).type.toBe<void>()
+expect(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {})).type.toBe<void>()
+expect(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {})).type.toBe<void>()
 
 // test after method
-expectAssignable<FastifyInstance>(server.after())
-expectAssignable<FastifyInstance>(server.after((err) => {
-  expectType<Error | null>(err)
-}))
+expect(server.after()).type.toBeAssignableTo<FastifyInstance>()
+expect(server.after((err) => {
+  expect(err).type.toBe<Error | null>()
+})).type.toBeAssignableTo<FastifyInstance>()
 
 // test ready method
-expectAssignable<FastifyInstance>(server.ready())
-expectAssignable<FastifyInstance>(server.ready((err) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<FastifyInstance>(server.ready(async (err) => {
-  expectType<Error | null>(err)
-}))
-expectAssignable<Parameters<typeof server.ready>[0]>(async (err) => {
-  expectType<Error | null>(err)
-})
+expect(server.ready()).type.toBeAssignableTo<FastifyInstance>()
+expect(server.ready((err) => {
+  expect(err).type.toBe<Error | null>()
+})).type.toBeAssignableTo<FastifyInstance>()
+expect(server.ready(async (err) => {
+  expect(err).type.toBe<Error | null>()
+})).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
+expect(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression)).type.toBe<void>()
 
-expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
+expect(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
-    expectAssignable<unknown>(error)
-    expectAssignable<FastifyRequest>(request)
-    expectAssignable<{ contextKey: string }>(request.routeOptions.config)
-    expectAssignable<FastifyReply>(reply)
-    expectAssignable<void>(server.errorHandler(error, request, reply))
+    expect(error).type.toBe<FastifyError>()
+    expect(request).type.toBeAssignableTo<FastifyRequest>()
+    expect(request.routeOptions.config).type.toBeAssignableTo<{ contextKey: string }>()
+    expect(reply).type.toBeAssignableTo<FastifyReply>()
+    expect(server.errorHandler(error, request, reply)).type.toBe<void>()
   }
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().get('/', {
+expect(fastify().get('/', {
   handler: () => {},
   childLoggerFactory: (logger, bindings, opts, req) => {
-    expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
+    expect(server.childLoggerFactory(logger, bindings, opts, req)).type.toBe<FastifyBaseLogger>()
     return server.childLoggerFactory(logger, bindings, opts, req)
   }
-}))
+})).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(
+expect(
   server.setChildLoggerFactory(function (logger, bindings, opts, req) {
-    expectType<FastifyBaseLogger>(logger)
-    expectType<Bindings>(bindings)
-    expectType<ChildLoggerOptions>(opts)
-    expectType<RawRequestDefaultExpression>(req)
-    expectAssignable<FastifyInstance>(this)
+    expect(logger).type.toBe<FastifyBaseLogger>()
+    expect(bindings).type.toBe<Bindings>()
+    expect(opts).type.toBe<ChildLoggerOptions>()
+    expect(req).type.toBe<RawRequestDefaultExpression>()
+    expect(this).type.toBe<FastifyInstance>()
     return logger.child(bindings, opts)
   })
-)
+).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(
+expect(
   server.setErrorHandler<FastifyError>(function (error, request, reply) {
-    expectType<FastifyError>(error)
+    expect(error).type.toBe<FastifyError>()
   })
-)
+).type.toBe<FastifyInstance>()
 
 function childLoggerFactory (
   this: FastifyInstance,
@@ -349,77 +331,77 @@ type InitialConfig = Readonly<{
   }
 }>
 
-expectType<InitialConfig>(fastify().initialConfig)
+expect(fastify().initialConfig).type.toBe<InitialConfig>()
 
-expectType<FastifyBodyParser<string>>(server.defaultTextParser)
+expect(server.defaultTextParser).type.toBe<FastifyBodyParser<string>>()
 
-expectType<FastifyBodyParser<string>>(server.getDefaultJsonParser('ignore', 'error'))
+expect(server.getDefaultJsonParser('ignore', 'error')).type.toBe<FastifyBodyParser<string>>()
 
-expectType<string>(server.printRoutes({ includeHooks: true, commonPrefix: false, includeMeta: true }))
+expect(server.printRoutes({ includeHooks: true, commonPrefix: false, includeMeta: true })).type.toBe<string>()
 
-expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] }))
+expect(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] })).type.toBe<string>()
 
-expectType<string>(server.printRoutes({ method: 'GET' }))
+expect(server.printRoutes({ method: 'GET' })).type.toBe<string>()
 
-expectType<string>(server.printRoutes())
+expect(server.printRoutes()).type.toBe<string>()
 
 server.decorate<(x: string) => void>('test', function (x: string): void {
-  expectType<FastifyInstance>(this)
+  expect(this).type.toBe<FastifyInstance>()
 })
 server.decorate('test', function (x: string): void {
-  expectType<FastifyInstance>(this)
+  expect(this).type.toBe<FastifyInstance>()
 })
 server.decorate<string>('test', {
   getter () {
-    expectType<FastifyInstance>(this)
+    expect(this).type.toBe<FastifyInstance>()
     return 'foo'
   }
 })
 server.decorate<string>('test', {
   getter () {
-    expectType<FastifyInstance>(this)
+    expect(this).type.toBe<FastifyInstance>()
     return 'foo'
   },
   setter (x) {
-    expectType<string>(x)
-    expectType<FastifyInstance>(this)
+    expect(x).type.toBe<string>()
+    expect(this).type.toBe<FastifyInstance>()
   }
 })
 server.decorate('test')
 server.decorate('test', null, ['foo'])
 
 server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
-  expectType<FastifyRequest>(this)
+  expect(this).type.toBe<FastifyRequest>()
 })
 server.decorateRequest('test', function (x: string, y: number): void {
-  expectType<FastifyRequest>(this)
+  expect(this).type.toBe<FastifyRequest>()
 })
 server.decorateRequest('test')
 server.decorateRequest('test', null, ['foo'])
 
 server.decorateReply<(x: string) => void>('test', function (x: string): void {
-  expectType<FastifyReply>(this)
+  expect(this).type.toBe<FastifyReply>()
 })
 server.decorateReply('test', function (x: string): void {
-  expectType<FastifyReply>(this)
+  expect(this).type.toBe<FastifyReply>()
 })
 server.decorateReply('test')
 server.decorateReply('test', null, ['foo'])
 
-expectError(server.decorate<string>('test', true))
-expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
+expect(server.decorate<string>).type.not.toBeCallableWith('test', true)
+expect(server.decorate<(myNumber: number) => number>).type.not.toBeCallableWith('test', function (myNumber: number): string {
   return ''
-}))
-expectError(server.decorate<string>('test', {
+})
+expect(server.decorate<string>).type.not.toBeCallableWith('test', {
   getter () {
     return true
   }
-}))
-expectError(server.decorate<string>('test', {
-  setter (x) {}
-}))
+})
+expect(server.decorate<string>).type.not.toBeCallableWith('test', {
+  setter () {}
+})
 
-declare module '../../fastify' {
+declare module '../../fastify.js' {
   interface FastifyInstance {
     typedTestProperty: boolean
     typedTestPropertyGetterSetter: string
@@ -450,34 +432,34 @@ server.decorate('typedTestProperty', {
     return true
   },
   setter (x) {
-    expectType<boolean>(x)
-    expectType<FastifyInstance>(this)
+    expect(x).type.toBe<boolean>()
+    expect(this).type.toBe<FastifyInstance>()
   }
 })
 server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
-expectError(server.decorate('typedTestProperty', null))
-expectError(server.decorate('typedTestProperty', 'foo'))
-expectError(server.decorate('typedTestProperty', {
+expect(server.decorate).type.not.toBeCallableWith('typedTestProperty', null)
+expect(server.decorate).type.not.toBeCallableWith('typedTestProperty', 'foo')
+expect(server.decorate).type.not.toBeCallableWith('typedTestProperty', {
   getter () {
     return 'foo'
   }
-}))
+})
 server.decorate('typedTestMethod', function (x) {
-  expectType<string>(x)
-  expectType<FastifyInstance>(this)
+  expect(x).type.toBe<string>()
+  expect(this).type.toBe<FastifyInstance>()
   return 'foo'
 })
 server.decorate('typedTestMethod', x => x)
-expectError(server.decorate('typedTestMethod', function (x: boolean) {
+expect(server.decorate).type.not.toBeCallableWith('typedTestMethod', function (x: boolean) {
   return 'foo'
-}))
-expectError(server.decorate('typedTestMethod', function (x) {
+})
+expect(server.decorate).type.not.toBeCallableWith('typedTestMethod', function () {
   return true
-}))
-expectError(server.decorate('typedTestMethod', async function (x) {
+})
+expect(server.decorate).type.not.toBeCallableWith('typedTestMethod', async function () {
   return 'foo'
-}))
+})
 
 server.decorateRequest('typedTestRequestProperty', false)
 server.decorateRequest('typedTestRequestProperty', {
@@ -490,34 +472,34 @@ server.decorateRequest('typedTestRequestProperty', {
     return true
   },
   setter (x) {
-    expectType<boolean>(x)
-    expectType<FastifyRequest>(this)
+    expect(x).type.toBe<boolean>()
+    expect(this).type.toBe<FastifyRequest>()
   }
 })
 server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
-expectError(server.decorateRequest('typedTestRequestProperty', null))
-expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
-expectError(server.decorateRequest('typedTestRequestProperty', {
+expect(server.decorateRequest).type.not.toBeCallableWith('typedTestRequestProperty', null)
+expect(server.decorateRequest).type.not.toBeCallableWith('typedTestRequestProperty', 'foo')
+expect(server.decorateRequest).type.not.toBeCallableWith('typedTestRequestProperty', {
   getter () {
     return 'foo'
   }
-}))
+})
 server.decorateRequest('typedTestRequestMethod', function (x) {
-  expectType<string>(x)
-  expectType<FastifyRequest>(this)
+  expect(x).type.toBe<string>()
+  expect(this).type.toBe<FastifyRequest>()
   return 'foo'
 })
 server.decorateRequest('typedTestRequestMethod', x => x)
-expectError(server.decorateRequest('typedTestRequestMethod', function (x: boolean) {
+expect(server.decorateRequest).type.not.toBeCallableWith('typedTestRequestMethod', function (x: boolean) {
   return 'foo'
-}))
-expectError(server.decorateRequest('typedTestRequestMethod', function (x) {
+})
+expect(server.decorateRequest).type.not.toBeCallableWith('typedTestRequestMethod', function () {
   return true
-}))
-expectError(server.decorateRequest('typedTestRequestMethod', async function (x) {
+})
+expect(server.decorateRequest).type.not.toBeCallableWith('typedTestRequestMethod', async function () {
   return 'foo'
-}))
+})
 
 server.decorateReply('typedTestReplyProperty', false)
 server.decorateReply('typedTestReplyProperty', {
@@ -530,37 +512,36 @@ server.decorateReply('typedTestReplyProperty', {
     return true
   },
   setter (x) {
-    expectType<boolean>(x)
-    expectType<FastifyReply>(this)
+    expect(x).type.toBe<boolean>()
+    expect(this).type.toBe<FastifyReply>()
   }
 })
 server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
-expectError(server.decorateReply('typedTestReplyProperty', null))
-expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
-expectError(server.decorateReply('typedTestReplyProperty', {
+expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyProperty', null)
+expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyProperty', 'foo')
+expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyProperty', {
   getter () {
     return 'foo'
   }
-}))
+})
 server.decorateReply('typedTestReplyMethod', function (x) {
-  expectType<string>(x)
-  expectType<FastifyReply>(this)
+  expect(x).type.toBe<string>()
+  expect(this).type.toBe<FastifyReply>()
   return 'foo'
 })
 server.decorateReply('typedTestReplyMethod', x => x)
-expectError(server.decorateReply('typedTestReplyMethod', function (x: boolean) {
+expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyMethod', function (x: boolean) {
   return 'foo'
-}))
-expectError(server.decorateReply('typedTestReplyMethod', function (x) {
+})
+expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyMethod', function () {
   return true
-}))
-expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
+})
+expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyMethod', async function () {
   return 'foo'
-}))
+})
 
-const foo = server.getDecorator<string>('foo')
-expectType<string>(foo)
+expect(server.getDecorator<string>('foo')).type.toBe<string>()
 
 const versionConstraintStrategy = {
   name: 'version',
@@ -573,8 +554,8 @@ const versionConstraintStrategy = {
   validate () {},
   deriveConstraint: () => 'foo'
 }
-expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
-expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))
+expect(server.addConstraintStrategy(versionConstraintStrategy)).type.toBe<void>()
+expect(server.hasConstraintStrategy(versionConstraintStrategy.name)).type.toBe<boolean>()
 
-expectType<FastifySchemaCompiler<any> | undefined>(server.validatorCompiler)
-expectType<FastifySerializerCompiler<any> | undefined>(server.serializerCompiler)
+expect(server.validatorCompiler).type.toBe<FastifySchemaCompiler<any> | undefined>()
+expect(server.serializerCompiler).type.toBe<FastifySerializerCompiler<any> | undefined>()

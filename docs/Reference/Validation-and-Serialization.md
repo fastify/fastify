@@ -1038,7 +1038,7 @@ const refToSharedSchemaDefinitions = {
 
 - [JSON Schema](https://json-schema.org/)
 - [Understanding JSON
-  Schema](https://json-schema.org/understanding-json-schema)
+  Schema](https://json-schema.org/overview/what-is-jsonschema)
 - [fast-json-stringify
   documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)

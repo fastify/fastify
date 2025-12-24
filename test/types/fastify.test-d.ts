@@ -65,12 +65,12 @@ expectType<
 >(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
 expectType<
-  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
-  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
 >(fastify({ schemaController: {} }))
 expectType<
-  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
-  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
 >(
   fastify({
     schemaController: {

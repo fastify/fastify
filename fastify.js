@@ -647,10 +647,15 @@ function fastify (serverOptions) {
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = JSON.stringify({
+      error: 'Bad Request',
+      code: 'FST_ERR_BAD_URL',
+      message: `'${path}' is not a valid url component`,
+      statusCode: 400
+    })
     res.writeHead(400, {
       'Content-Type': 'application/json',
-      'Content-Length': body.length
+      'Content-Length': Buffer.byteLength(body)
     })
     res.end(body)
   }

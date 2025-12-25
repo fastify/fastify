@@ -1845,6 +1845,26 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
       done()
     })
   })
+
+  await t.test('Bad URL with special characters should be properly JSON escaped', (t, done) => {
+    t.plan(3)
+    const fastify = Fastify()
+    fastify.get('/hello/:id', () => t.assert.fail('we should not be here'))
+    fastify.inject({
+      url: '/hello/%world%22test',
+      method: 'GET'
+    }, (err, response) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
+        error: 'Bad Request',
+        message: '\'/hello/%world%22test\' is not a valid url component',
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
+      })
+      done()
+    })
+  })
 })
 
 test('setNotFoundHandler should be chaining fastify instance', async t => {

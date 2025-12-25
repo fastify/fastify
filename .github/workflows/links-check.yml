@@ -1,4 +1,4 @@
-name: Internal Links Check
+name: Links Check
 
 on:
   pull_request:
@@ -54,7 +54,6 @@ jobs:
             --no-progress 
             --accept 200,403 
             --max-concurrency 5
-            --root-dir .
             "./**/*.md"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

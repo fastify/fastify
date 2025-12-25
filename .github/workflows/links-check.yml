@@ -47,8 +47,8 @@ jobs:
         with:
           fail: true
           args: |
-            lychee
             -vv
+            --root-dir "$(pwd)"
             --max-retries 3
             --timeout 10
             --no-progress 

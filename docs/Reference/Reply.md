@@ -981,7 +981,8 @@ For more details, see:
 ## React 18 Streaming Example
 
 React 18 introduces `renderToPipeableStream` for server-side streaming.  
-Fastify requires `reply.hijack()` to allow streaming without prematurely locking headers or status codes.
+Fastify requires `reply.hijack()` to allow streaming  
+without prematurely locking headers or status codes.
 
 ```js
 import Fastify from 'fastify'

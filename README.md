@@ -401,7 +401,7 @@ This project is kindly sponsored by:
 - [Platformatic](https://platformatic.dev)
 
 Past Sponsors:
-- [LetzDoIt](https://www.letzdoitapp.com/)
+- LetzDoIt
 
 This list includes all companies that support one or more team members
 in maintaining this project.

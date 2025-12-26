@@ -112,7 +112,7 @@ const schema = {
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
     routerOptions: {
       type: 'object',
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
         ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },

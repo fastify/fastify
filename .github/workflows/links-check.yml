@@ -54,6 +54,7 @@ jobs:
             --no-progress 
             --accept 200,403 
             --max-concurrency 5
+            --exclude "https://x\.com/.*"
             "./**/*.md"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

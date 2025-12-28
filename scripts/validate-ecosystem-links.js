@@ -11,9 +11,9 @@
  *   GITHUB_TOKEN - Optional GitHub token for higher rate limits
  */
 
-const https = require('https')
-const fs = require('fs')
-const path = require('path')
+const https = require('node:https')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const ECOSYSTEM_FILE = path.join(__dirname, '../docs/Guides/Ecosystem.md')
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN

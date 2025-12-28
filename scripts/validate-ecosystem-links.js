@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+'use strict'
 /**
  * Script to validate GitHub links in the Ecosystem.md file
  * Checks if repositories are accessible or return 404

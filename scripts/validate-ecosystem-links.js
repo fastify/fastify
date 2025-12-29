@@ -12,7 +12,6 @@
  *   GITHUB_TOKEN - Optional GitHub token for higher rate limits
  */
 
-const https = require('node:https')
 const fs = require('node:fs')
 const path = require('node:path')
 
@@ -36,52 +35,43 @@ function extractGitHubLinks (content) {
   return links
 }
 
-function checkGitHubRepo (owner, repo, retries = 3) {
-  return new Promise((resolve) => {
-    const headers = {
-      'User-Agent': 'fastify-ecosystem-validator'
-    }
+async function checkGitHubRepo (owner, repo, retries = 3) {
+  const headers = {
+    'User-Agent': 'fastify-ecosystem-validator'
+  }
 
-    if (GITHUB_TOKEN) {
-      headers['Authorization'] = `token ${GITHUB_TOKEN}`
-    }
+  if (GITHUB_TOKEN) {
+    headers.Authorization = `token ${GITHUB_TOKEN}`
+  }
 
-    const options = {
-      hostname: 'api.github.com',
-      path: `/repos/${owner}/${repo}`,
+  try {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
       method: 'HEAD',
       headers
+    })
+
+    // Retry on rate limit (403) with exponential backoff
+    if (response.status === 403 && retries > 0) {
+      const delay = (4 - retries) * 2000 // 2s, 4s, 6s
+      await new Promise(resolve => setTimeout(resolve, delay))
+      return checkGitHubRepo(owner, repo, retries - 1)
     }
 
-    const req = https.request(options, async (res) => {
-      // Retry on rate limit (403) with exponential backoff
-      if (res.statusCode === 403 && retries > 0) {
-        const delay = (4 - retries) * 2000 // 2s, 4s, 6s
-        await new Promise(_resolve => setTimeout(_resolve, delay))
-        resolve(checkGitHubRepo(owner, repo, retries - 1))
-        return
-      }
-
-      resolve({
-        owner,
-        repo,
-        status: res.statusCode,
-        exists: res.statusCode === 200
-      })
-    })
-
-    req.on('error', (err) => {
-      resolve({
-        owner,
-        repo,
-        status: 'error',
-        exists: false,
-        error: err.message
-      })
-    })
-
-    req.end()
-  })
+    return {
+      owner,
+      repo,
+      status: response.status,
+      exists: response.status === 200
+    }
+  } catch (err) {
+    return {
+      owner,
+      repo,
+      status: 'error',
+      exists: false,
+      error: err.message
+    }
+  }
 }
 
 async function validateAllLinks () {
@@ -145,13 +135,23 @@ async function validateAllLinks () {
   return { notFound, found }
 }
 
-validateAllLinks()
-  .then(({ notFound }) => {
-    if (notFound.length > 0) {
+// Export functions for testing
+module.exports = {
+  extractGitHubLinks,
+  checkGitHubRepo,
+  validateAllLinks
+}
+
+// Run if executed directly
+if (require.main === module) {
+  validateAllLinks()
+    .then(({ notFound }) => {
+      if (notFound.length > 0) {
+        process.exit(1)
+      }
+    })
+    .catch((err) => {
+      console.error(err)
       process.exit(1)
-    }
-  })
-  .catch((err) => {
-    console.error(err)
-    process.exit(1)
-  })
+    })
+}

@@ -1,10 +1,13 @@
 'use strict'
 
 const dns = require('node:dns')
+const { networkInterfaces } = require('node:os')
 const { test } = require('node:test')
 const Fastify = require('..')
 const undici = require('undici')
 const proxyquire = require('proxyquire')
+
+const isIPv6Missing = !Object.values(networkInterfaces()).flat().some(({ family }) => family === 'IPv6')
 
 test('listen should accept null port', async t => {
   const fastify = Fastify()
@@ -81,7 +84,7 @@ test('Test for hostname and port', async (t) => {
   await fetch('http://localhost:8000/host')
 })
 
-test('Test for IPV6 port', async (t) => {
+test('Test for IPV6 port', { skip: isIPv6Missing }, async (t) => {
   t.plan(3)
   const app = Fastify()
   t.after(() => app.close())

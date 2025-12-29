@@ -413,8 +413,8 @@ const fastify = require('fastify')({
 })
 ```
 
-> ⚠ Warning: enabling this allows any callers to set `reqId` to a value of their choosing.
-> No validation is performed on `requestIdHeader`.
+> ⚠ Warning: enabling this allows any callers to set `reqId` to a value
+> of their choosing. No validation is performed on `requestIdHeader`.
 
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>

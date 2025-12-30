@@ -117,14 +117,14 @@ npm i fastify
 
 // ESM
 import Fastify from 'fastify'
-
 const fastify = Fastify({
   logger: true
 })
-// CommonJs
-const fastify = require('fastify')({
-  logger: true
-})
+
+// OR CommonJs
+// const fastify = require('fastify')({
+//   logger: true
+// })
 
 // Declare a route
 fastify.get('/', (request, reply) => {

@@ -108,6 +108,17 @@ interface ReplyUndefined {
   Reply: undefined;
 }
 
+// Issue #5534 scenario: 204 No Content should allow empty send(), 201 Created should require payload
+// Note: `204: undefined` gets converted to `unknown` via UndefinedToUnknown in type-provider.d.ts,
+// meaning send() is optional but send({}) is also allowed. Use `void` instead of `undefined`
+// if you want stricter "no payload allowed" semantics.
+interface ReplyHttpCodesWithNoContent {
+  Reply: {
+    201: { id: string };
+    204: undefined;
+  }
+}
+
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   // When Reply type is specified, send() requires a payload argument
   expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
@@ -229,3 +240,15 @@ server.get<ReplyVoid>('/get-void-send-empty', async function handler (request, r
 server.get<ReplyUndefined>('/get-undefined-send-empty', async function handler (request, reply) {
   reply.send()
 })
+
+// Issue #5534 scenario: HTTP status codes with 204 No Content
+server.get<ReplyHttpCodesWithNoContent>('/get-http-codes-no-content', async function handler (request, reply) {
+  // 204 No Content - send() without payload is valid because Reply is undefined
+  reply.code(204).send()
+  // 201 Created - send() requires payload
+  reply.code(201).send({ id: '123' })
+})
+// 201 Created without payload should error
+expectError(server.get<ReplyHttpCodesWithNoContent>('/get-http-codes-201-missing-payload', async function handler (request, reply) {
+  reply.code(201).send()
+}))

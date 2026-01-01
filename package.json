@@ -171,7 +171,7 @@
     "@sinonjs/fake-timers": "^11.2.2",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@stylistic/eslint-plugin-js": "^4.1.0",
-    "@types/node": "^24.0.12",
+    "@types/node": "^25.0.3",
     "ajv": "^8.12.0",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",

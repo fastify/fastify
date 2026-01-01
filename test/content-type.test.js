@@ -109,4 +109,28 @@ describe('ContentType class', () => {
       'application/json; charset="utf-8"; foo="BaR"; baz=" 42"'
     )
   })
+
+  test('skips invalid quoted string parameters', (t) => {
+    const found = new ContentType('Application/JSON ; charset=utf-8; foo=BaR;baz=" 42')
+    t.assert.equal(found.isEmpty, false)
+    t.assert.equal(found.mediaType, 'application/json')
+    t.assert.equal(found.type, 'application')
+    t.assert.equal(found.subtype, 'json')
+    t.assert.equal(found.parameters.size, 3)
+
+    const expected = [
+      ['charset', 'utf-8'],
+      ['foo', 'BaR'],
+      ['baz', 'invalid quoted string']
+    ]
+    t.assert.deepStrictEqual(
+      Array.from(found.parameters.entries()),
+      expected
+    )
+
+    t.assert.equal(
+      found.toString(),
+      'application/json; charset="utf-8"; foo="BaR"; baz="invalid quoted string"'
+    )
+  })
 })

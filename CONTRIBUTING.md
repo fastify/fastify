@@ -107,10 +107,12 @@ the following tasks:
    in the proper order. Use your GitHub profile icon for the `picture:` field.
 5. Read the [pinned announcements](https://github.com/orgs/fastify/discussions/categories/announcements)
    to be updated with the organization’s news.
-6. The person who does the onboarding must add you to the [npm
-   org](https://www.npmjs.com/org/fastify), so that you can help maintain the
-   official plugins.
-7. Optionally, the person can be added as an Open Collective member
+6. The person who does the onboarding must open a pull request to
+   [`fastify/org-admin`](https://github.com/fastify/org-admin?tab=readme-ov-file#org-admin) 
+   so an admin can add the new member to the
+   [npm org](https://www.npmjs.com/org/fastify) and the GitHub Team,
+   so that the new joiner can help maintain the official plugins.
+8. Optionally, the person can be added as an Open Collective member
    by the lead team.
 
 ### Offboarding Collaborators
@@ -132,11 +134,14 @@ person that did the onboarding must:
 The person that did the onboarding must:
 1. If the collaborator does not reply to the ping in a reasonable time, open the
    pull requests described above.
-2. Remove the collaborator from the Fastify teams on GitHub.
-3. Remove the collaborator from the [npm
+2. Open a pull request to [`fastify/org-admin`](https://github.com/fastify/org-admin?tab=readme-ov-file#org-admin)
+   so an admin will:
+  1. Remove the collaborator from the Fastify teams on GitHub.
+  2. Remove the collaborator from the [npm
    org](https://www.npmjs.com/org/fastify).
-4. Remove the collaborator from the Azure team.
-5. Remove the collaborator from the Open Collective members.
+  3. Remove the collaborator from the Azure team.
+  4. Remove the collaborator from the Open Collective members.
+
 -----------------------------------------
 
 <a id="developers-certificate-of-origin"></a>

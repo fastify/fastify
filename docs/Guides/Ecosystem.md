@@ -241,6 +241,9 @@ section.
   request IDs into your logs.
 - [`electron-server`](https://github.com/anonrig/electron-server) A plugin for
   using Fastify without the need of consuming a port on Electron apps.
+- [`elements-fastify`](https://github.com/rohitsoni007/elements-fastify) Fastify
+  Plugin for Stoplight Elements API Documentation using
+  openapi swagger json yml.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
 - [`fastify-204`](https://github.com/Shiva127/fastify-204) Fastify plugin that
@@ -638,6 +641,8 @@ middlewares into Fastify plugins
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session)
   A session plugin with support for arbitrary backing caches via
   `fastify-caching`.
+- [`fastify-ses-mailer`](https://github.com/KaranHotwani/fastify-ses-mailer) A
+  Fastify plugin for sending emails via AWS SES using AWS SDK v3.
 - [`fastify-shared-schema`](https://github.com/Adibla/fastify-shared-schema) Plugin
   for sharing schemas between different routes.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik

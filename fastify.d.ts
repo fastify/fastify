@@ -3,7 +3,7 @@ import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
 
-import { Options as AjvOptions, ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
 import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
 import { Config as FindMyWayConfig, ConstraintStrategy, HTTPVersion } from 'find-my-way'
@@ -151,10 +151,7 @@ declare namespace fastify {
       };
     };
     return503OnClosing?: boolean,
-    ajv?: {
-      customOptions?: AjvOptions,
-      plugins?: (Function | [Function, unknown])[]
-    },
+    ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       error: FastifyError,
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,

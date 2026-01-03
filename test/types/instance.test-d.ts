@@ -93,12 +93,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {

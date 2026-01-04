@@ -413,6 +413,10 @@ const fastify = require('fastify')({
 })
 ```
 
+> ⚠ Warning: enabling this allows any callers to set `reqId` to a
+> value of their choosing.
+> No validation is performed on `requestIdHeader`.
+
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
 
@@ -565,7 +569,11 @@ const fastify = require('fastify')({
       [require('ajv-keywords'), 'instanceof']
       // Usage: [plugin, pluginOptions] - Plugin with options
       // Usage: plugin - Plugin without options
-    ]
+    ],
+    onCreate: (ajv) => {
+      // Modify the ajv instance as you need.
+      ajv.addFormat('myFormat', (data) => typeof data === 'string')
+    }
   }
 })
 ```
@@ -839,6 +847,12 @@ const fastify = require('fastify')({
 })
 ```
 
+> **Note**
+> The `req` and `res` objects passed to `defaultRoute` are the raw Node.js
+> `IncomingMessage` and `ServerResponse` instances. They do **not** expose the
+> Fastify-specific methods available on `FastifyRequest`/`FastifyReply` (for
+> example, `res.send`).
+
 ### `ignoreDuplicateSlashes`
 <a id="factory-ignore-duplicate-slashes"></a>
 
@@ -929,6 +943,9 @@ const fastify = require('fastify')({
   }
 })
 ```
+
+As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
+objects and do not provide Fastify's decorated helpers.
 
 ### `querystringParser`
 <a id="querystringparser"></a>

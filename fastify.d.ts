@@ -3,10 +3,10 @@ import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
 
-import { Options as AjvOptions, ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
 import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
-import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
@@ -77,6 +77,7 @@ declare namespace fastify {
   }
 
   type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+  type FindMyWayConfigForServer<RawServer extends RawServerBase> = FindMyWayConfig<FindMyWayVersion<RawServer>>
 
   export interface ConnectionError extends Error {
     code: string,
@@ -89,20 +90,17 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
-  export type FastifyRouterOptions<RawServer extends RawServerBase> = {
-    allowUnsafeRegex?: boolean,
-    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
-    caseSensitive?: boolean,
-    constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
-    },
-    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
-    ignoreDuplicateSlashes?: boolean,
-    ignoreTrailingSlash?: boolean,
-    maxParamLength?: number,
-    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
-    querystringParser?: (str: string) => { [key: string]: unknown },
-    useSemicolonDelimiter?: boolean,
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'querystringParser'> & {
+    defaultRoute?: (
+      req: RawRequestDefaultExpression<RawServer>,
+      res: RawReplyDefaultExpression<RawServer>
+    ) => void,
+    onBadUrl?: (
+      path: string,
+      req: RawRequestDefaultExpression<RawServer>,
+      res: RawReplyDefaultExpression<RawServer>
+    ) => void,
+    querystringParser?: (str: string) => { [key: string]: unknown }
   }
 
   /**
@@ -153,10 +151,7 @@ declare namespace fastify {
       };
     };
     return503OnClosing?: boolean,
-    ajv?: {
-      customOptions?: AjvOptions,
-      plugins?: (Function | [Function, unknown])[]
-    },
+    ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       error: FastifyError,
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,

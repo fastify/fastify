@@ -1,9 +1,10 @@
-import { expectAssignable, expectError, expectNotDeprecated, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotAssignable, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
+  FastifyRouterOptions,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
@@ -15,7 +16,7 @@ import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
-import { ConstraintStrategy } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy } from 'find-my-way'
 import { FindMyWayVersion } from '../../types/instance'
 
 const server = fastify()
@@ -92,12 +93,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
@@ -332,24 +333,31 @@ type InitialConfig = Readonly<{
   requestIdLogLabel?: string,
   http2SessionTimeout?: number,
   useSemicolonDelimiter?: boolean,
-  routerOptions?: {
-    allowUnsafeRegex?: boolean,
-    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
-    caseSensitive?: boolean,
-    constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
-    }
-    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
-    ignoreDuplicateSlashes?: boolean,
-    ignoreTrailingSlash?: boolean,
-    maxParamLength?: number,
-    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
-    querystringParser?: (str: string) => { [key: string]: unknown },
-    useSemicolonDelimiter?: boolean,
-  }
+  routerOptions?: FastifyRouterOptions<RawServerDefault>
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)
+
+const routerOptionsForFindMyWay = {} as FastifyRouterOptions<RawServerDefault>
+expectAssignable<FindMyWayConfig<FindMyWayVersion<RawServerDefault>>>(routerOptionsForFindMyWay)
+
+fastify({
+  routerOptions: {
+    defaultRoute: (req, res) => {
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
+    },
+    onBadUrl: (path, req, res) => {
+      expectType<string>(path)
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
+    }
+  }
+})
 
 expectType<FastifyBodyParser<string>>(server.defaultTextParser)
 
@@ -562,7 +570,7 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
 const foo = server.getDecorator<string>('foo')
 expectType<string>(foo)
 
-const versionConstraintStrategy = {
+const versionConstraintStrategy: ConstraintStrategy<FindMyWayVersion<RawServerDefault>> = {
   name: 'version',
   storage: () => ({
     get: () => () => {},

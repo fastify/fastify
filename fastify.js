@@ -82,7 +82,7 @@ const { FSTWRN004 } = require('./lib/warnings.js')
 const initChannel = diagnostics.channel('fastify.initialization')
 
 /**
- * @param {import('./fastify.js').FastifyServerOptions} options
+ * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
 function fastify (serverOptions) {
   const {

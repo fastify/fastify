@@ -641,7 +641,8 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+      if (resolvedDisableRequestLogging === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -671,7 +672,8 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+          if (resolvedDisableRequestLogging === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 

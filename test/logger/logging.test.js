@@ -270,10 +270,10 @@ t.test('logging', (t) => {
     t.equal(stream.readableLength, 0)
   })
 
-  t.test('should log incoming request and outgoing response based on resolver', { runOnly: true }, async (t) => {
+  t.test('should log incoming request and outgoing response based on resolver', async (t) => {
     const lines = [
       'incoming request',
-      'request completed',
+      'request completed'
     ]
     t.plan(lines.length)
 
@@ -284,7 +284,7 @@ t.test('logging', (t) => {
       disableRequestLogging: (request) => {
         return request.url !== '/not-logged'
       },
-      loggerInstance,
+      loggerInstance
     })
     t.teardown(fastify.close.bind(fastify))
 

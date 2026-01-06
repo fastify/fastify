@@ -121,6 +121,7 @@ declare namespace fastify {
     bodyLimit?: number,
     maxParamLength?: number,
     disableRequestLogging?: boolean,
+    customRequestLog?: (request: FastifyRequest) => string,
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,

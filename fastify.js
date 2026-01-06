@@ -93,6 +93,11 @@ function fastify (serverOptions) {
     initialConfig
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
 
+  // Implement customizable log message
+  const customRequestLog = typeof options.customRequestLog === 'function'
+    ? options.customRequestLog
+    : (req) => 'incoming request'
+
   // Default router
   const router = buildRouting(options.routerOptions)
 
@@ -642,7 +647,7 @@ function fastify (serverOptions) {
       const reply = new Reply(res, request, childLogger)
 
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
+        childLogger.info({ req: request }, customRequestLog(request))
       }
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
@@ -672,7 +677,7 @@ function fastify (serverOptions) {
           const reply = new Reply(res, request, childLogger)
 
           if (disableRequestLogging === false) {
-            childLogger.info({ req: request }, 'incoming request')
+            childLogger.info({ req: request }, customRequestLog(request))
           }
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)

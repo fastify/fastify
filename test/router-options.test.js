@@ -448,7 +448,7 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
 })
 
 test('Should honor disableRequestLogging function in frameworkErrors wrapper - FST_ERR_BAD_URL', (t, done) => {
-  t.plan(3)
+  t.plan(4)
 
   let logCallCount = 0
   const logStream = split(JSON.parse)
@@ -508,7 +508,7 @@ test('Should honor disableRequestLogging function in frameworkErrors wrapper - F
 })
 
 test('Should honor disableRequestLogging function in frameworkErrors wrapper - FST_ERR_ASYNC_CONSTRAINT', (t, done) => {
-  t.plan(3)
+  t.plan(4)
 
   let logCallCount = 0
 

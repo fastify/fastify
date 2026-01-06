@@ -20,6 +20,29 @@ parameters).
 - DoS through malformed input to Fastify's core
 - Bypasses of built-in protections (prototype poisoning, schema validation)
 
+### Examples of Non-Vulnerabilities
+
+The following are **not** considered vulnerabilities in Fastify:
+
+- **Application code vulnerabilities**: XSS, SQL injection, or other flaws in
+user-written route handlers, hooks, or plugins
+- **Malicious application code**: Issues caused by intentionally malicious
+plugins or handlers (application code is trusted)
+- **Validation schema issues**: Weak or incorrect schemas provided by developers
+(schemas are trusted)
+- **ReDoS in user patterns**: Regular expression DoS in user-provided regex
+patterns for routes or validation
+- **Missing security features**: Lack of rate limiting, authentication, or
+authorization (these are application-level concerns)
+- **Configuration mistakes**: Security issues arising from developer
+misconfiguration (configuration is trusted)
+- **Third-party dependencies**: Vulnerabilities in npm packages used by the
+application (not Fastify core dependencies)
+- **Resource exhaustion from handlers**: DoS caused by expensive operations in
+user route handlers
+- **Information disclosure by design**: Exposing error details or stack traces
+explicitly enabled via configuration options
+
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to

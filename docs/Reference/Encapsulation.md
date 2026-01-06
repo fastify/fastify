@@ -28,7 +28,8 @@ registered within its _grandchild context_.
 Given that everything in Fastify is a [plugin](./Plugins.md) except for the
 _root context_, every "context" and "plugin" in this example is a plugin
 that can consist of decorators, hooks, plugins, and routes. As plugins, they
-must still signal completion either by returning a Promise (e.g., using `async` functions)
+must still signal completion either by 
+returning a Promise (e.g., using `async` functions)
 or by calling the `done` function if using the callback style.
 
 To put this

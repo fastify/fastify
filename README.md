@@ -260,7 +260,8 @@ application. You should __always__ benchmark if performance matters to you.
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
 
-Version 3 of Fastify and lower are EOL and will not receive any security or bug fixes.
+Version 3 of Fastify and lower are EOL and will not receive any security
+or bug fixes.
 
 Fastify's partner, HeroDevs, provides commercial security fixes for all
 unsupported versions at [https://herodevs.com/support/fastify-nes][hd-link].
@@ -401,7 +402,7 @@ This project is kindly sponsored by:
 - [Platformatic](https://platformatic.dev)
 
 Past Sponsors:
-- [LetzDoIt](https://www.letzdoitapp.com/)
+- LetzDoIt
 
 This list includes all companies that support one or more team members
 in maintaining this project.

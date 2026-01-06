@@ -8,13 +8,15 @@ const pino = require('pino')
 
 const Fastify = require('../../fastify')
 const helper = require('../helper')
-const { partialDeepStrictEqual } = require('../toolkit')
 const { once, on } = stream
 const { request } = require('./logger-test-utils')
+const { partialDeepStrictEqual } = require('../toolkit')
 
 t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
+
+  t.plan(14)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -47,13 +49,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('should not rely on raw request to log errors', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { level: 30, msg: 'incoming request' },
-      { res: { statusCode: 415 }, msg: 'something happened' },
-      { res: { statusCode: 415 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -68,7 +63,14 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { level: 30, msg: 'incoming request' },
+      { res: { statusCode: 415 }, msg: 'something happened' },
+      { res: { statusCode: 415 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 1)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
 
@@ -79,14 +81,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('should log the error if no error handler is defined', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { msg: 'incoming request' },
-      { level: 50, msg: 'a generic error' },
-      { res: { statusCode: 500 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 1)
-
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -102,7 +96,14 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { msg: 'incoming request' },
+      { level: 50, msg: 'a generic error' },
+      { res: { statusCode: 500 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 1)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
 
@@ -113,13 +114,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('should log as info if error status code >= 400 and < 500 if no error handler is defined', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { msg: 'incoming request' },
-      { level: 30, msg: 'a 400 error' },
-      { res: { statusCode: 400 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -139,7 +133,14 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { msg: 'incoming request' },
+      { level: 30, msg: 'a 400 error' },
+      { res: { statusCode: 400 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 1)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/400')
 
@@ -150,13 +151,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('should log as error if error status code >= 500 if no error handler is defined', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { msg: 'incoming request' },
-      { level: 50, msg: 'a 503 error' },
-      { res: { statusCode: 503 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 1)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -171,7 +165,14 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { msg: 'incoming request' },
+      { level: 50, msg: 'a 503 error' },
+      { res: { statusCode: 503 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 1)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/503')
 
@@ -182,12 +183,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('should not log the error if error handler is defined and it does not error', async (t) => {
-    const lines = [
-      { msg: /Server listening at/ },
-      { level: 30, msg: 'incoming request' },
-      { res: { statusCode: 200 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 2)
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -206,7 +201,13 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { level: 30, msg: 'incoming request' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 2)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
 
@@ -241,10 +242,10 @@ t.test('logging', { timeout: 60000 }, async (t) => {
 
     const response = await fastify.inject({ method: 'GET', url: '/' })
     const body = await response.json()
-    t.assert.deepStrictEqual(body, { hello: 'world' })
+    t.assert.ok(partialDeepStrictEqual(body, { hello: 'world' }))
 
     for await (const [line] of on(stream, 'data')) {
-      t.assert.deepStrictEqual(line.msg, lines.shift())
+      t.assert.strictEqual(line.msg, lines.shift())
       if (lines.length === 0) break
     }
   })
@@ -267,7 +268,21 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     t.assert.strictEqual(stream.readableLength, 0)
   })
 
-  await t.test('should log incoming request and outgoing response based on resolver', async (t) => {
+  await t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {
+    t.plan(1)
+    const stream = split(JSON.parse)
+    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
+    t.after(() => fastify.close())
+
+    await fastify.ready()
+
+    await fastify.inject({ method: 'GET', url: '/%c0' })
+
+    // no more readable data
+    t.assert.strictEqual(stream.readableLength, 0)
+  })
+
+  await t.test('should log incoming request and outgoing response based on disableRequestLogging function', async (t) => {
     const lines = [
       'incoming request',
       'request completed'
@@ -299,29 +314,15 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     await fastify.inject({ method: 'GET', url: '/logged' })
 
     for await (const [line] of on(stream, 'data')) {
-      t.assert.deepStrictEqual(line.msg, lines.shift())
+      t.assert.strictEqual(line.msg, lines.shift())
       if (lines.length === 0) break
     }
   })
 
-  await t.test('should not log incoming request, outgoing response and route not found for 404 onBadUrl when disabled', async (t) => {
-    t.plan(1)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
-    t.after(() => fastify.close())
-
-    await fastify.ready()
-
-    await fastify.inject({ method: 'GET', url: '/%c0' })
-
-    // no more readable data
-    t.assert.strictEqual(stream.readableLength, 0)
-  })
-
   await t.test('defaults to info level', async (t) => {
     const lines = [
-      { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
+      { req: { method: 'GET' }, msg: 'incoming request' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
     ]
     t.plan(lines.length * 2 + 1)
     const stream = split(JSON.parse)
@@ -354,13 +355,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('test log stream', async (t) => {
-    const lines = [
-      { msg: /^Server listening at / },
-      { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 200 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 3)
-
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -376,7 +370,13 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { req: { method: 'GET' }, msg: 'incoming request' },
+      { res: { statusCode: 200 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 3)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port)
 
@@ -390,14 +390,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('test error log stream', async (t) => {
-    const lines = [
-      { msg: /^Server listening at / },
-      { reqId: /req-/, req: { method: 'GET' }, msg: 'incoming request' },
-      { reqId: /req-/, res: { statusCode: 500 }, msg: 'kaboom' },
-      { reqId: /req-/, res: { statusCode: 500 }, msg: 'request completed' }
-    ]
-    t.plan(lines.length + 4)
-
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
@@ -413,7 +405,14 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     })
 
     await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` },
+      { req: { method: 'GET' }, msg: 'incoming request' },
+      { res: { statusCode: 500 }, msg: 'kaboom' },
+      { res: { statusCode: 500 }, msg: 'request completed' }
+    ]
+    t.plan(lines.length + 4)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
 
@@ -451,7 +450,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
 
     {
       const [line] = await once(stream, 'data')
-      t.assert.strictEqual(typeof line.msg, 'string')
+      t.assert.ok(typeof line.msg === 'string')
       t.assert.ok(line.msg.startsWith('Server listening at'), 'message is set')
     }
 

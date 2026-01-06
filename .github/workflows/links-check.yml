@@ -5,6 +5,7 @@ on:
     paths:
       - 'docs/**'
       - '*.md'
+      - '.github/workflows/links-check.yml'
 
 permissions:
   contents: read
@@ -33,3 +34,9 @@ jobs:
           args: --offline --verbose --no-progress './**/*.md'
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: External Link Checker
+        uses: JustinBeckwith/linkinator-action@af984b9f30f63e796ae2ea5be5e07cb587f1bbd9 # v2.3
+        with:
+          paths: "**/*.md"
+          retry: true

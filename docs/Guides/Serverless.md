@@ -601,4 +601,4 @@ https://vercel.com/templates/backend/fastify-on-vercel).
 [Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently
 requires an explicit opt-in. Learn more about enabling Fluid compute
 [here](
-https://vercel.com/docs/functions/fluid-compute#how-to-enable-fluid-compute).
+https://vercel.com/docs/fluid-compute#enabling-fluid-compute).

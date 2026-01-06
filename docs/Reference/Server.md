@@ -331,16 +331,16 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
-This option can also be a function that receives the raw Node.js request object
+This option can also be a function that receives the Fastify request object
 and returns a boolean. This allows for conditional request logging based on the
-request properties (e.g., URL, headers).
+request properties (e.g., URL, headers, decorations).
 
 ```js
 const fastify = require('fastify')({
   logger: true,
-  disableRequestLogging: (req) => {
+  disableRequestLogging: (request) => {
     // Disable logging for health check endpoints
-    return req.url === '/health' || req.url === '/ready'
+    return request.url === '/health' || request.url === '/ready'
   }
 })
 ```

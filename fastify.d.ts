@@ -120,7 +120,7 @@ declare namespace fastify {
     pluginTimeout?: number,
     bodyLimit?: number,
     maxParamLength?: number,
-    disableRequestLogging?: boolean | ((req: RawRequest) => boolean),
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,

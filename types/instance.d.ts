@@ -595,7 +595,7 @@ export interface FastifyInstance<
     https?: boolean | Readonly<{ allowHTTP1: boolean }>,
     ignoreTrailingSlash?: boolean,
     ignoreDuplicateSlashes?: boolean,
-    disableRequestLogging?: boolean | ((req: RawServer extends http.Server ? http.IncomingMessage : RawServer extends https.Server ? http.IncomingMessage : RawServer extends http2.Http2Server ? http2.Http2ServerRequest : RawServer extends http2.Http2SecureServer ? http2.Http2ServerRequest : never) => boolean),
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     maxParamLength?: number,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,

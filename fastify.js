@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.0.0'
+const VERSION = '5.6.2'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -31,7 +31,8 @@ const {
   kErrorHandler,
   kKeepAliveConnections,
   kChildLoggerFactory,
-  kGenReqId
+  kGenReqId,
+  kErrorHandlerAlreadySet
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -39,29 +40,28 @@ const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
-const ContentTypeParser = require('./lib/contentTypeParser')
+const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createLogger, createChildLogger, defaultChildLoggerFactory } = require('./lib/logger')
-const pluginUtils = require('./lib/pluginUtils')
-const { getGenReqId, reqIdGenFactory } = require('./lib/reqIdGenFactory')
-const { buildRouting, validateBodyLimitOption } = require('./lib/route')
-const build404 = require('./lib/fourOhFour')
-const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-const override = require('./lib/pluginOverride')
-const noopSet = require('./lib/noop-set')
+const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
+const pluginUtils = require('./lib/plugin-utils.js')
+const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
+const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
+const build404 = require('./lib/four-oh-four')
+const getSecuredInitialConfig = require('./lib/initial-config-validation.js')
+const override = require('./lib/plugin-override')
 const {
   appendStackTrace,
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
+const PonyPromise = require('./lib/promise')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
-  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
   FST_ERR_OPTIONS_NOT_OBJ,
   FST_ERR_QSP_NOT_FN,
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
@@ -72,104 +72,29 @@ const {
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
+  FST_ERR_ERROR_HANDLER_ALREADY_SET,
   FST_ERR_ROUTE_METHOD_INVALID
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
+const { FSTWRN004 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
-function defaultBuildPrettyMeta (route) {
-  // return a shallow copy of route's sanitized context
-
-  const cleanKeys = {}
-  const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
-
-  allowedProps.concat(supportedHooks).forEach(k => {
-    cleanKeys[k] = route.store[k]
-  })
-
-  return Object.assign({}, cleanKeys)
-}
-
 /**
- * @param {import('./fastify.js').FastifyServerOptions} options
+ * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
-function fastify (options) {
-  // Options validations
-  if (options && typeof options !== 'object') {
-    throw new FST_ERR_OPTIONS_NOT_OBJ()
-  } else {
-    // Shallow copy options object to prevent mutations outside of this function
-    options = Object.assign({}, options)
-  }
-
-  if (options.querystringParser && typeof options.querystringParser !== 'function') {
-    throw new FST_ERR_QSP_NOT_FN(typeof options.querystringParser)
-  }
-
-  if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
-    throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
-  }
-
-  validateBodyLimitOption(options.bodyLimit)
-
-  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
-  const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
-  const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
-  const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  const disableRequestLogging = options.disableRequestLogging || false
-
-  const ajvOptions = Object.assign({
-    customOptions: {},
-    plugins: []
-  }, options.ajv)
-  const frameworkErrors = options.frameworkErrors
-
-  // Ajv options
-  if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
-    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
-  }
-  if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
-    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
-  }
-
-  // Instance Fastify components
-  const { logger, hasLogger } = createLogger(options)
-
-  // Update the options with the fixed values
-  options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
-  options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
-  options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
-  options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
-  options.logger = logger
-  options.requestIdHeader = requestIdHeader
-  options.requestIdLogLabel = requestIdLogLabel
-  options.disableRequestLogging = disableRequestLogging
-  options.ajv = ajvOptions
-  options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-
-  const initialConfig = getSecuredInitialConfig(options)
-
-  // exposeHeadRoutes have its default set from the validator
-  options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
+function fastify (serverOptions) {
+  const {
+    options,
+    genReqId,
+    disableRequestLogging,
+    hasLogger,
+    initialConfig
+  } = processOptions(serverOptions, defaultRoute, onBadUrl)
 
   // Default router
-  const router = buildRouting({
-    config: {
-      defaultRoute,
-      onBadUrl,
-      constraints: options.constraints,
-      ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
-      ignoreDuplicateSlashes: options.ignoreDuplicateSlashes || defaultInitOptions.ignoreDuplicateSlashes,
-      maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive,
-      allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
-      buildPrettyMeta: defaultBuildPrettyMeta,
-      querystringParser: options.querystringParser,
-      useSemicolonDelimiter: options.useSemicolonDelimiter ?? defaultInitOptions.useSemicolonDelimiter
-    }
-  })
+  const router = buildRouting(options.routerOptions)
 
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)
@@ -177,22 +102,14 @@ function fastify (options) {
   // HTTP server and its handler
   const httpHandler = wrapRouting(router, options)
 
-  // we need to set this before calling createServer
-  options.http2SessionTimeout = initialConfig.http2SessionTimeout
-  const { server, listen } = createServer(options, httpHandler)
-
-  const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
-  const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
-
-  let forceCloseConnections = options.forceCloseConnections
-  if (forceCloseConnections === 'idle' && !serverHasCloseIdleConnections) {
-    throw new FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE()
-  } else if (typeof forceCloseConnections !== 'boolean') {
-    /* istanbul ignore next: only one branch can be valid in a given Node.js version */
-    forceCloseConnections = serverHasCloseIdleConnections ? 'idle' : false
-  }
-
-  const keepAliveConnections = !serverHasCloseAllConnections && forceCloseConnections === true ? new Set() : noopSet()
+  const {
+    server,
+    listen,
+    forceCloseConnections,
+    serverHasCloseAllConnections,
+    serverHasCloseHttp2Sessions,
+    keepAliveConnections
+  } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
@@ -206,7 +123,8 @@ function fastify (options) {
       started: false,
       ready: false,
       booting: false,
-      readyPromise: null
+      aborted: false,
+      readyResolver: null
     },
     [kKeepAliveConnections]: keepAliveConnections,
     [kSupportedHTTPMethods]: {
@@ -228,7 +146,7 @@ function fastify (options) {
     [kOptions]: options,
     [kChildren]: [],
     [kServerBindings]: [],
-    [kBodyLimit]: bodyLimit,
+    [kBodyLimit]: options.bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kLogSerializers]: null,
@@ -236,10 +154,11 @@ function fastify (options) {
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: buildErrorHandler(),
-    [kChildLoggerFactory]: defaultChildLoggerFactory,
+    [kErrorHandlerAlreadySet]: false,
+    [kChildLoggerFactory]: options.childLoggerFactory || defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
-      bodyLimit,
+      options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
       (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
     ),
@@ -293,7 +212,7 @@ function fastify (options) {
       return router.findRoute(options)
     },
     // expose logger instance
-    log: logger,
+    log: options.logger,
     // type provider
     withTypeProvider,
     // hooks
@@ -342,6 +261,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
+    getDecorator: decorator.getInstanceDecorator,
     addHttpMethod,
     // fake http injection
     inject,
@@ -477,6 +397,10 @@ function fastify (options) {
           }
         }
 
+        if (serverHasCloseHttp2Sessions) {
+          instance.server.closeHttp2Sessions()
+        }
+
         // No new TCP connections are accepted.
         // We must call close on the server even if we are not listening
         // otherwise memory will be leaked.
@@ -510,7 +434,6 @@ function fastify (options) {
   router.setup(options, {
     avvio,
     fourOhFour,
-    logger,
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
@@ -580,17 +503,14 @@ function fastify (options) {
   }
 
   function ready (cb) {
-    if (this[kState].readyPromise !== null) {
+    if (this[kState].readyResolver !== null) {
       if (cb != null) {
-        this[kState].readyPromise.then(() => cb(null, fastify), cb)
+        this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
         return
       }
 
-      return this[kState].readyPromise
+      return this[kState].readyResolver.promise
     }
-
-    let resolveReady
-    let rejectReady
 
     // run the hooks after returning the promise
     process.nextTick(runHooks)
@@ -599,15 +519,12 @@ function fastify (options) {
     // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
     // as well as a flow control mechanism to chain cbs and further
     // promises
-    this[kState].readyPromise = new Promise(function (resolve, reject) {
-      resolveReady = resolve
-      rejectReady = reject
-    })
+    this[kState].readyResolver = PonyPromise.withResolvers()
 
     if (!cb) {
-      return this[kState].readyPromise
+      return this[kState].readyResolver.promise
     } else {
-      this[kState].readyPromise.then(() => cb(null, fastify), cb)
+      this[kState].readyResolver.promise.then(() => cb(null, fastify), cb)
     }
 
     function runHooks () {
@@ -632,13 +549,13 @@ function fastify (options) {
         : err
 
       if (err) {
-        return rejectReady(err)
+        return fastify[kState].readyResolver.reject(err)
       }
 
-      resolveReady(fastify)
+      fastify[kState].readyResolver.resolve(fastify)
       fastify[kState].booting = false
       fastify[kState].ready = true
-      fastify[kState].promise = null
+      fastify[kState].readyResolver = null
     }
   }
 
@@ -679,8 +596,12 @@ function fastify (options) {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
-        _addHook.call(this, name, fn)
-        done(err)
+        try {
+          _addHook.call(this, name, fn)
+          done(err)
+        } catch (err) {
+          done(err)
+        }
       })
     }
     return this
@@ -699,46 +620,6 @@ function fastify (options) {
     return this
   }
 
-  function defaultClientErrorHandler (err, socket) {
-    // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
-    // https://nodejs.org/api/http.html#http_event_clienterror
-    if (err.code === 'ECONNRESET' || socket.destroyed) {
-      return
-    }
-
-    let body, errorCode, errorStatus, errorLabel
-
-    if (err.code === 'ERR_HTTP_REQUEST_TIMEOUT') {
-      errorCode = '408'
-      errorStatus = http.STATUS_CODES[errorCode]
-      body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
-      errorLabel = 'timeout'
-    } else if (err.code === 'HPE_HEADER_OVERFLOW') {
-      errorCode = '431'
-      errorStatus = http.STATUS_CODES[errorCode]
-      body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
-      errorLabel = 'header_overflow'
-    } else {
-      errorCode = '400'
-      errorStatus = http.STATUS_CODES[errorCode]
-      body = `{"error":"${errorStatus}","message":"Client Error","statusCode":400}`
-      errorLabel = 'error'
-    }
-
-    // Most devs do not know what to do with this error.
-    // In the vast majority of cases, it's a network error and/or some
-    // config issue on the load balancer side.
-    this.log.trace({ err }, `client ${errorLabel}`)
-    // Copying standard node behavior
-    // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
-
-    // If the socket is not writable, there is no reason to try to send data.
-    if (socket.writable) {
-      socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
-    }
-    socket.destroy(err)
-  }
-
   // If the router does not match any route, every request will land here
   // req and res are Node.js core objects
   function defaultRoute (req, res) {
@@ -753,9 +634,9 @@ function fastify (options) {
   }
 
   function onBadUrl (path, req, res) {
-    if (frameworkErrors) {
+    if (options.frameworkErrors) {
       const id = getGenReqId(onBadUrlContext.server, req)
-      const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
+      const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
 
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
@@ -764,12 +645,17 @@ function fastify (options) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
-      return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+      return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = JSON.stringify({
+      error: 'Bad Request',
+      code: 'FST_ERR_BAD_URL',
+      message: `'${path}' is not a valid url component`,
+      statusCode: 400
+    })
     res.writeHead(400, {
       'Content-Type': 'application/json',
-      'Content-Length': body.length
+      'Content-Length': Buffer.byteLength(body)
     })
     res.end(body)
   }
@@ -778,9 +664,9 @@ function fastify (options) {
     if (isAsync === false) return undefined
     return function onAsyncConstraintError (err) {
       if (err) {
-        if (frameworkErrors) {
+        if (options.frameworkErrors) {
           const id = getGenReqId(onBadUrlContext.server, req)
-          const childLogger = createChildLogger(onBadUrlContext, logger, req, id)
+          const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
 
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
@@ -789,7 +675,7 @@ function fastify (options) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
-          return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
+          return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
         const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
         res.writeHead(500, {
@@ -830,7 +716,10 @@ function fastify (options) {
   function setSchemaController (schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController"!')
     const old = this[kSchemaController]
-    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(
+      old,
+      Object.assign({}, old.opts, schemaControllerOpts)
+    )
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
@@ -852,6 +741,13 @@ function fastify (options) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
+    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+      throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
+    } else if (this[kErrorHandlerAlreadySet]) {
+      FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
+    }
+
+    this[kErrorHandlerAlreadySet] = true
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }
@@ -865,7 +761,9 @@ function fastify (options) {
 
   function printRoutes (opts = {}) {
     // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
-    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    opts.includeMeta = opts.includeHooks
+      ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks
+      : opts.includeMeta
     return router.printRoutes(opts)
   }
 
@@ -919,6 +817,145 @@ function fastify (options) {
   }
 }
 
+function processOptions (options, defaultRoute, onBadUrl) {
+  // Options validations
+  if (options && typeof options !== 'object') {
+    throw new FST_ERR_OPTIONS_NOT_OBJ()
+  } else {
+    // Shallow copy options object to prevent mutations outside of this function
+    options = Object.assign({}, options)
+  }
+
+  if (
+    (options.querystringParser && typeof options.querystringParser !== 'function') ||
+    (
+      options.routerOptions?.querystringParser &&
+      typeof options.routerOptions.querystringParser !== 'function'
+    )
+  ) {
+    throw new FST_ERR_QSP_NOT_FN(typeof (options.querystringParser ?? options.routerOptions.querystringParser))
+  }
+
+  if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
+    throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
+  }
+
+  validateBodyLimitOption(options.bodyLimit)
+
+  const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
+  const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
+  const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
+  options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
+  const disableRequestLogging = options.disableRequestLogging || false
+
+  const ajvOptions = Object.assign({
+    customOptions: {},
+    plugins: []
+  }, options.ajv)
+
+  if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
+    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
+  }
+  if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
+    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
+  }
+
+  const { logger, hasLogger } = createLogger(options)
+
+  // Update the options with the fixed values
+  options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
+  options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
+  options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
+  options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
+  options.logger = logger
+  options.requestIdHeader = requestIdHeader
+  options.requestIdLogLabel = requestIdLogLabel
+  options.disableRequestLogging = disableRequestLogging
+  options.ajv = ajvOptions
+  options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
+
+  const initialConfig = getSecuredInitialConfig(options)
+
+  // exposeHeadRoutes have its default set from the validator
+  options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
+
+  // we need to set this before calling createServer
+  options.http2SessionTimeout = initialConfig.http2SessionTimeout
+
+  options.routerOptions = buildRouterOptions(options, {
+    defaultRoute,
+    onBadUrl,
+    ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
+    ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
+    maxParamLength: defaultInitOptions.maxParamLength,
+    allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
+    buildPrettyMeta: defaultBuildPrettyMeta,
+    useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
+  })
+
+  return {
+    options,
+    genReqId,
+    disableRequestLogging,
+    hasLogger,
+    initialConfig
+  }
+}
+
+function defaultBuildPrettyMeta (route) {
+  // return a shallow copy of route's sanitized context
+
+  const cleanKeys = {}
+  const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
+
+  allowedProps.concat(supportedHooks).forEach(k => {
+    cleanKeys[k] = route.store[k]
+  })
+
+  return Object.assign({}, cleanKeys)
+}
+
+function defaultClientErrorHandler (err, socket) {
+  // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
+  // https://nodejs.org/api/http.html#http_event_clienterror
+  if (err.code === 'ECONNRESET' || socket.destroyed) {
+    return
+  }
+
+  let body, errorCode, errorStatus, errorLabel
+
+  if (err.code === 'ERR_HTTP_REQUEST_TIMEOUT') {
+    errorCode = '408'
+    errorStatus = http.STATUS_CODES[errorCode]
+    body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
+    errorLabel = 'timeout'
+  } else if (err.code === 'HPE_HEADER_OVERFLOW') {
+    errorCode = '431'
+    errorStatus = http.STATUS_CODES[errorCode]
+    body = `{"error":"${errorStatus}","message":"Exceeded maximum allowed HTTP header size","statusCode":431}`
+    errorLabel = 'header_overflow'
+  } else {
+    errorCode = '400'
+    errorStatus = http.STATUS_CODES[errorCode]
+    body = `{"error":"${errorStatus}","message":"Client Error","statusCode":400}`
+    errorLabel = 'error'
+  }
+
+  // Most devs do not know what to do with this error.
+  // In the vast majority of cases, it's a network error and/or some
+  // config issue on the load balancer side.
+  this.log.trace({ err }, `client ${errorLabel}`)
+  // Copying standard node behavior
+  // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
+
+  // If the socket is not writable, there is no reason to try to send data.
+  if (socket.writable) {
+    socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+  }
+  socket.destroy(err)
+}
+
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
     throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN(typeof schemaErrorFormatter)
@@ -929,7 +966,7 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
 
 /**
  * These export configurations enable JS and TS developers
- * to consumer fastify in whatever way best suits their needs.
+ * to consume fastify in whatever way best suits their needs.
  * Some examples of supported import syntax includes:
  * - `const fastify = require('fastify')`
  * - `const { fastify } = require('fastify')`

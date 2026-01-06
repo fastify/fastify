@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
 
 // Because of how error handlers wrap things, following the control flow can be tricky
@@ -13,7 +13,7 @@ test('encapsulates an asynchronous error handler', async t => {
   fastify.register(async function (fastify) {
     fastify.setErrorHandler(async function a (err) {
       // 3. the inner error handler catches the error, and throws a new error
-      t.equal(err.message, 'from_endpoint')
+      t.assert.strictEqual(err.message, 'from_endpoint')
       throw new Error('from_inner')
     })
     fastify.get('/encapsulated', async () => {
@@ -24,7 +24,7 @@ test('encapsulates an asynchronous error handler', async t => {
 
   fastify.setErrorHandler(async function b (err) {
     // 4. the outer error handler catches the error thrown by the inner error handler
-    t.equal(err.message, 'from_inner')
+    t.assert.strictEqual(err.message, 'from_inner')
     // 5. the outer error handler throws a new error
     throw new Error('from_outer')
   })
@@ -32,7 +32,7 @@ test('encapsulates an asynchronous error handler', async t => {
   // 1. the endpoint is called
   const res = await fastify.inject('/encapsulated')
   // 6. the default error handler returns the error from the outer error handler
-  t.equal(res.json().message, 'from_outer')
+  t.assert.strictEqual(res.json().message, 'from_outer')
 })
 
 // See discussion in https://github.com/fastify/fastify/pull/5222#discussion_r1432573655
@@ -43,7 +43,7 @@ test('encapsulates a synchronous error handler', async t => {
   fastify.register(async function (fastify) {
     fastify.setErrorHandler(function a (err) {
       // 3. the inner error handler catches the error, and throws a new error
-      t.equal(err.message, 'from_endpoint')
+      t.assert.strictEqual(err.message, 'from_endpoint')
       throw new Error('from_inner')
     })
     fastify.get('/encapsulated', async () => {
@@ -54,7 +54,7 @@ test('encapsulates a synchronous error handler', async t => {
 
   fastify.setErrorHandler(async function b (err) {
     // 4. the outer error handler catches the error thrown by the inner error handler
-    t.equal(err.message, 'from_inner')
+    t.assert.strictEqual(err.message, 'from_inner')
     // 5. the outer error handler throws a new error
     throw new Error('from_outer')
   })
@@ -62,7 +62,7 @@ test('encapsulates a synchronous error handler', async t => {
   // 1. the endpoint is called
   const res = await fastify.inject('/encapsulated')
   // 6. the default error handler returns the error from the outer error handler
-  t.equal(res.json().message, 'from_outer')
+  t.assert.strictEqual(res.json().message, 'from_outer')
 })
 
 test('onError hook nested', async t => {
@@ -72,7 +72,7 @@ test('onError hook nested', async t => {
   fastify.register(async function (fastify) {
     fastify.setErrorHandler(async function a (err) {
       // 4. the inner error handler catches the error, and throws a new error
-      t.equal(err.message, 'from_endpoint')
+      t.assert.strictEqual(err.message, 'from_endpoint')
       throw new Error('from_inner')
     })
     fastify.get('/encapsulated', async () => {
@@ -83,20 +83,20 @@ test('onError hook nested', async t => {
 
   fastify.setErrorHandler(async function b (err) {
     // 5. the outer error handler catches the error thrown by the inner error handler
-    t.equal(err.message, 'from_inner')
+    t.assert.strictEqual(err.message, 'from_inner')
     // 6. the outer error handler throws a new error
     throw new Error('from_outer')
   })
 
   fastify.addHook('onError', async function (request, reply, err) {
     // 3. the hook receives the error
-    t.equal(err.message, 'from_endpoint')
+    t.assert.strictEqual(err.message, 'from_endpoint')
   })
 
   // 1. the endpoint is called
   const res = await fastify.inject('/encapsulated')
   // 7. the default error handler returns the error from the outer error handler
-  t.equal(res.json().message, 'from_outer')
+  t.assert.strictEqual(res.json().message, 'from_outer')
 })
 
 // See https://github.com/fastify/fastify/issues/5220
@@ -107,7 +107,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
   fastify.register(async function (fastify) {
     fastify.setErrorHandler(function a (err) {
       // 3. the inner error handler catches the error, and throws a new error
-      t.equal(err.message, 'from_hook')
+      t.assert.strictEqual(err.message, 'from_hook')
       throw new Error('from_inner')
     })
     fastify.addHook('onRequest', async () => {
@@ -119,7 +119,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
 
   fastify.setErrorHandler(function b (err) {
     // 4. the outer error handler catches the error thrown by the inner error handler
-    t.equal(err.message, 'from_inner')
+    t.assert.strictEqual(err.message, 'from_inner')
     // 5. the outer error handler throws a new error
     throw new Error('from_outer')
   })
@@ -127,7 +127,7 @@ test('encapuslates an error handler, for errors thrown in hooks', async t => {
   // 1. the endpoint is called
   const res = await fastify.inject('/encapsulated')
   // 6. the default error handler returns the error from the outer error handler
-  t.equal(res.json().message, 'from_outer')
+  t.assert.strictEqual(res.json().message, 'from_outer')
 })
 
 // See https://github.com/fastify/fastify/issues/5220
@@ -153,7 +153,7 @@ test('encapuslates many synchronous error handlers that rethrow errors', async t
     } else if (depth === 0) {
       fastify.setErrorHandler(function a (err) {
         // 3. innermost error handler catches the error, and throws a new error
-        t.equal(err.message, 'from_route')
+        t.assert.strictEqual(err.message, 'from_route')
         throw new Error(`from_handler_${depth}`)
       })
       fastify.get('/encapsulated', async () => {
@@ -163,7 +163,7 @@ test('encapuslates many synchronous error handlers that rethrow errors', async t
     } else {
       fastify.setErrorHandler(function d (err) {
         // 4 to {DEPTH+4}. error handlers each catch errors, and then throws a new error
-        t.equal(err.message, `from_handler_${depth - 1}`)
+        t.assert.strictEqual(err.message, `from_handler_${depth - 1}`)
         throw new Error(`from_handler_${depth}`)
       })
 
@@ -179,7 +179,7 @@ test('encapuslates many synchronous error handlers that rethrow errors', async t
   // 1. the endpoint is called
   const res = await fastify.inject('/encapsulated')
   // {DEPTH+5}. the default error handler returns the error from the outermost error handler
-  t.equal(res.json().message, `from_handler_${DEPTH}`)
+  t.assert.strictEqual(res.json().message, `from_handler_${DEPTH}`)
 })
 
 // See https://github.com/fastify/fastify/issues/5220
@@ -207,7 +207,7 @@ test('encapuslates many asynchronous error handlers that rethrow errors', async 
     } else if (depth === 0) {
       fastify.setErrorHandler(async function a (err) {
         // 3. innermost error handler catches the error, and throws a new error
-        t.equal(err.message, 'from_route')
+        t.assert.strictEqual(err.message, 'from_route')
         throw new Error(`from_handler_${depth}`)
       })
       fastify.get('/encapsulated', async () => {
@@ -217,7 +217,7 @@ test('encapuslates many asynchronous error handlers that rethrow errors', async 
     } else {
       fastify.setErrorHandler(async function m (err) {
         // 4 to {DEPTH+4}. error handlers each catch errors, and then throws a new error
-        t.equal(err.message, `from_handler_${depth - 1}`)
+        t.assert.strictEqual(err.message, `from_handler_${depth - 1}`)
         throw new Error(`from_handler_${depth}`)
       })
 
@@ -233,5 +233,5 @@ test('encapuslates many asynchronous error handlers that rethrow errors', async 
   // 1. the endpoint is called
   const res = await fastify.inject('/encapsulated')
   // {DEPTH+5}. the default error handler returns the error from the outermost error handler
-  t.equal(res.json().message, `from_handler_${DEPTH}`)
+  t.assert.strictEqual(res.json().message, `from_handler_${DEPTH}`)
 })

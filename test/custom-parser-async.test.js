@@ -1,14 +1,12 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const Fastify = require('../fastify')
 
 process.removeAllListeners('warning')
 
-test('contentTypeParser should add a custom async parser', t => {
-  t.plan(3)
+test('contentTypeParser should add a custom async parser', async t => {
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -24,43 +22,38 @@ test('contentTypeParser should add a custom async parser', t => {
     return res
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
+  t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    t.teardown(() => fastify.close())
+  await t.test('in POST', async t => {
+    t.plan(3)
 
-    t.test('in POST', t => {
-      t.plan(3)
-
-      sget({
-        method: 'POST',
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/jsoff'
-        }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      })
+    const result = await fetch(fastifyServer, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      },
+      body: '{"hello":"world"}'
     })
 
-    t.test('in OPTIONS', t => {
-      t.plan(3)
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
+  })
 
-      sget({
-        method: 'OPTIONS',
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: '{"hello":"world"}',
-        headers: {
-          'Content-Type': 'application/jsoff'
-        }
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
-      })
+  await t.test('in OPTIONS', async t => {
+    t.plan(3)
+
+    const result = await fetch(fastifyServer, {
+      method: 'OPTIONS',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      },
+      body: '{"hello":"world"}'
     })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
   })
 })

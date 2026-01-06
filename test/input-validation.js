@@ -1,9 +1,9 @@
 'use strict'
 
-const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const Joi = require('joi')
 const yup = require('yup')
+const assert = require('node:assert')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -127,209 +127,208 @@ module.exports.payloadMethod = function (method, t) {
 
         done()
       })
-      t.pass()
+      t.assert.ok(true)
     } catch (e) {
-      t.fail()
+      t.assert.fail()
     }
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    if (err) {
-      t.error(err)
-    }
+    assert.ifError(err)
 
-    t.teardown(() => { fastify.close() })
+    t.after(() => { fastify.close() })
 
-    test(`${upMethod} - correctly replies`, t => {
+    test(`${upMethod} - correctly replies`, async (t) => {
       if (upMethod === 'HEAD') {
         t.plan(2)
-        sget({
-          method: upMethod,
-          url: 'http://localhost:' + fastify.server.address().port
-        }, (err, response) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
+        const result = await fetch('http://localhost:' + fastify.server.address().port, {
+          method: upMethod
         })
+        t.assert.ok(result.ok)
+        t.assert.strictEqual(result.status, 200)
       } else {
         t.plan(3)
-        sget({
+
+        const result = await fetch('http://localhost:' + fastify.server.address().port, {
           method: upMethod,
-          url: 'http://localhost:' + fastify.server.address().port,
-          body: {
-            hello: 42
-          },
-          json: true
-        }, (err, response, body) => {
-          t.error(err)
-          t.equal(response.statusCode, 200)
-          t.same(body, { hello: 42 })
+          body: JSON.stringify({ hello: 42 }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
+
+        t.assert.ok(result.ok)
+        t.assert.strictEqual(result.status, 200)
+        t.assert.deepStrictEqual(await result.json(), { hello: 42 })
       }
     })
 
-    test(`${upMethod} - 400 on bad parameters`, t => {
+    test(`${upMethod} - 400 on bad parameters`, async (t) => {
       t.plan(3)
-      sget({
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port, {
         method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: {
-          hello: 'world'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: 'body/hello must be integer',
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION'
-        })
+        body: JSON.stringify({ hello: 'world' }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(!result.ok)
+      t.assert.strictEqual(result.status, 400)
+      t.assert.deepStrictEqual(await result.json(), {
+        error: 'Bad Request',
+        message: 'body/hello must be integer',
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
 
-    test(`${upMethod} - input-validation coerce`, t => {
+    test(`${upMethod} - input-validation coerce`, async (t) => {
       t.plan(3)
-      sget({
+
+      const restult = await fetch('http://localhost:' + fastify.server.address().port, {
         method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port,
-        body: {
-          hello: '42'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        body: JSON.stringify({ hello: '42' }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(restult.ok)
+      t.assert.strictEqual(restult.status, 200)
+      t.assert.deepStrictEqual(await restult.json(), { hello: 42 })
+    })
+
+    test(`${upMethod} - input-validation custom schema compiler`, async (t) => {
+      t.plan(3)
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/custom', {
+        method: upMethod,
+        body: JSON.stringify({ hello: '42', world: 55 }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(result.ok)
+      t.assert.strictEqual(result.status, 200)
+      t.assert.deepStrictEqual(await result.json(), { hello: 42 })
+    })
+
+    test(`${upMethod} - input-validation joi schema compiler ok`, async (t) => {
+      t.plan(3)
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/joi', {
+        method: upMethod,
+        body: JSON.stringify({ hello: '42' }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(result.ok)
+      t.assert.strictEqual(result.status, 200)
+      t.assert.deepStrictEqual(await result.json(), { hello: '42' })
+    })
+
+    test(`${upMethod} - input-validation joi schema compiler ko`, async (t) => {
+      t.plan(3)
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/joi', {
+        method: upMethod,
+        body: JSON.stringify({ hello: 44 }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(!result.ok)
+      t.assert.strictEqual(result.status, 400)
+      t.assert.deepStrictEqual(await result.json(), {
+        error: 'Bad Request',
+        message: '"hello" must be a string',
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
 
-    test(`${upMethod} - input-validation custom schema compiler`, t => {
+    test(`${upMethod} - input-validation yup schema compiler ok`, async (t) => {
       t.plan(3)
-      sget({
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/yup', {
         method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/custom',
-        body: {
-          hello: '42',
-          world: 55
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        body: JSON.stringify({ hello: '42' }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(result.ok)
+      t.assert.strictEqual(result.status, 200)
+      t.assert.deepStrictEqual(await result.json(), { hello: '42' })
+    })
+
+    test(`${upMethod} - input-validation yup schema compiler ko`, async (t) => {
+      t.plan(3)
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/yup', {
+        method: upMethod,
+        body: JSON.stringify({ hello: 44 }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(!result.ok)
+      t.assert.strictEqual(result.status, 400)
+      t.assert.deepStrictEqual(await result.json(), {
+        error: 'Bad Request',
+        message: 'body hello must be a `string` type, but the final value was: `44`.',
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
 
-    test(`${upMethod} - input-validation joi schema compiler ok`, t => {
+    test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, async (t) => {
       t.plan(3)
-      sget({
+
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/plugin', {
         method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/joi',
-        body: {
-          hello: '42'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        body: JSON.stringify({}),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      t.assert.ok(!result.ok)
+      t.assert.strictEqual(result.status, 400)
+      t.assert.deepStrictEqual(await result.json(), {
+        error: 'Bad Request',
+        message: 'From custom schema compiler!',
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
 
-    test(`${upMethod} - input-validation joi schema compiler ko`, t => {
+    test(`${upMethod} - input-validation custom schema compiler encapsulated`, async (t) => {
       t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/joi',
-        body: {
-          hello: 44
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: '"hello" must be a string',
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
-    })
 
-    test(`${upMethod} - input-validation yup schema compiler ok`, t => {
-      t.plan(3)
-      sget({
+      const result = await fetch('http://localhost:' + fastify.server.address().port + '/plugin/custom', {
         method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/yup',
-        body: {
-          hello: '42'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(body, { hello: 42 })
+        body: JSON.stringify({}),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
-    })
 
-    test(`${upMethod} - input-validation yup schema compiler ko`, t => {
-      t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/yup',
-        body: {
-          hello: 44
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.match(body, {
-          error: 'Bad Request',
-          message: /body hello must be a `string` type, but the final value was: `44`./,
-          statusCode: 400,
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
-    })
-
-    test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, t => {
-      t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/plugin',
-        body: { },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: 'From custom schema compiler!',
-          statusCode: '400',
-          code: 'FST_ERR_VALIDATION'
-        })
-      })
-    })
-
-    test(`${upMethod} - input-validation custom schema compiler encapsulated`, t => {
-      t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
-        body: { },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 400)
-        t.same(body, {
-          error: 'Bad Request',
-          message: 'Always fail!',
-          statusCode: '400',
-          code: 'FST_ERR_VALIDATION'
-        })
+      t.assert.ok(!result.ok)
+      t.assert.strictEqual(result.status, 400)
+      t.assert.deepStrictEqual(await result.json(), {
+        error: 'Bad Request',
+        message: 'Always fail!',
+        statusCode: 400,
+        code: 'FST_ERR_VALIDATION'
       })
     })
   })

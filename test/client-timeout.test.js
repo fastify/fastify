@@ -1,13 +1,13 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const fastify = require('..')({ requestTimeout: 5, http: { connectionsCheckingInterval: 1000 } })
 const { connect } = require('node:net')
 
-test('requestTimeout should return 408', t => {
+test('requestTimeout should return 408', (t, done) => {
   t.plan(1)
 
-  t.teardown(() => {
+  t.after(() => {
     fastify.close()
   })
 
@@ -28,11 +28,11 @@ test('requestTimeout should return 408', t => {
 
     socket.on('data', c => (data = Buffer.concat([data, c])))
     socket.on('end', () => {
-      t.equal(
+      t.assert.strictEqual(
         data.toString('utf-8'),
         'HTTP/1.1 408 Request Timeout\r\nContent-Length: 71\r\nContent-Type: application/json\r\n\r\n{"error":"Request Timeout","message":"Client Timeout","statusCode":408}'
       )
-      t.end()
+      done()
     })
   })
 })

@@ -147,7 +147,7 @@ route-level `request` object.
      reply.code(200).send('uh-oh');
      // it even works for wildcards
      reply.code(404).send({ error: 'Not found' });
-     return `logged in!`
+     return { success: true }
    })
    ```
 
@@ -173,7 +173,7 @@ route-level `request` object.
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
-     return `logged in!`
+     return { success: true }
    })
    ```
 7. Build and run and query with the `username` query string option set to
@@ -182,7 +182,7 @@ route-level `request` object.
    admin"}`
 
 🎉 Good work, now you can define interfaces for each route and have strictly
-typed request and reply instances. Other parts of the Fastify type system rely 
+typed request and reply instances. Other parts of the Fastify type system rely
 on generic properties. Make sure to reference the detailed type system
 documentation below to learn more about what is available.
 
@@ -632,7 +632,7 @@ newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
 out
-[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/master/index.d.ts).
+[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any
 TypeScript project!
@@ -659,23 +659,6 @@ However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.
-- In case you've the `@typescript-eslint/no-floating-promises` enabled,
-please double-check that your ESLint configuration includes a `allowForKnownSafePromises`
-property as described on the [`typescript-eslint no-floating-promises allowForKnownSafePromises
-documentation`](https://typescript-eslint.io/rules/no-floating-promises/#allowforknownsafepromises):
-```
-{
-  "rules": {
-    "@typescript-eslint/no-floating-promises": ["error", {
-      "allowForKnownSafePromises": [
-        { "from": "package", "name": "FastifyInstance", "package": "fastify" },
-        { "from": "package", "name": "FastifyReply", "package": "fastify" },
-        { "from": "package", "name": "SafePromiseLike", "package": "fastify" },
-      ]
-    }]
-  }
-}
-```
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
@@ -702,6 +685,142 @@ Or even explicit config on tsconfig
 {
   "types": ["plugin"] // we force TypeScript to import the types
 }
+```
+
+#### `getDecorator<T>`
+
+Fastify's `getDecorator<T>` method retrieves decorators with enhanced type safety.
+
+The `getDecorator<T>` method supports generic type parameters for enhanced type safety:
+
+```typescript
+// Type-safe decorator retrieval
+const usersRepository = fastify.getDecorator<IUsersRepository>('usersRepository')
+const session = request.getDecorator<ISession>('session')
+const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+```
+
+**Alternative to Module Augmentation**
+
+Decorators are typically typed via module augmentation:
+
+```typescript
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersRepository: IUsersRepository
+  }
+  interface FastifyRequest {
+    session: ISession
+  }
+  interface FastifyReply {
+    sendSuccess: SendSuccessFn
+  }
+}
+```
+
+This approach modifies the Fastify instance globally, which may lead to conflicts
+and inconsistent behavior in multi-server setups or with plugin encapsulation.
+
+Using `getDecorator<T>` allows limiting types scope:
+
+```typescript
+serverOne.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<PostgreUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateRequest('session', null)
+  fastify.addHook('onRequest', async (req, reply) => {
+    req.setDecorator('session', { user: 'Jean' })
+  })
+
+  fastify.get('/me', (request, reply) => {
+    const session = request.getDecorator<ISession>('session')
+    reply.send(session)
+  })
+})
+
+serverTwo.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<SqlLiteUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateReply('sendSuccess', function (data) {
+    return this.send({ success: true })
+  })
+
+  fastify.get('/success', async (request, reply) => {
+    const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+    await sendSuccess()
+  })
+})
+```
+
+**Bound Functions Inference**
+
+To save time, it is common to infer function types instead of writing them manually:
+
+```typescript
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+export type SendSuccess = typeof sendSuccess
+```
+
+However, `getDecorator` returns functions with the `this` context already **bound**,
+meaning the `this` parameter disappears from the function signature.
+
+To correctly type it, use the `OmitThisParameter` utility:
+
+```typescript
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+type BoundSendSuccess = OmitThisParameter<typeof sendSuccess>
+
+fastify.decorateReply('sendSuccess', sendSuccess)
+fastify.get('/success', async (request, reply) => {
+  const sendSuccess = reply.getDecorator<BoundSendSuccess>('sendSuccess')
+  await sendSuccess()
+})
+```
+
+#### `setDecorator<T>`
+
+Fastify's `setDecorator<T>` method provides enhanced type safety for updating request
+decorators.
+
+The `setDecorator<T>` method provides enhanced type safety for updating request
+decorators:
+
+```typescript
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  // Type-safe decorator setting
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
+```
+
+**Type Safety Benefits**
+
+If the `FastifyRequest` interface does not declare the decorator, type assertions
+are typically needed:
+
+```typescript
+fastify.addHook('preHandler', async (req, reply) => {
+  (req as typeof req & { user: string }).user = 'Bob Dylan'
+})
+```
+
+The `setDecorator<T>` method eliminates the need for explicit type assertions
+while providing type safety:
+
+```typescript
+fastify.addHook('preHandler', async (req, reply) => {
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
 ```
 
 ## Code Completion In Vanilla JavaScript
@@ -873,11 +992,11 @@ a more detailed http server walkthrough.
 
 1. Create the following imports from `@types/node` and `fastify`
    ```typescript
-   import fs from 'fs'
-   import path from 'path'
+   import fs from 'node:fs'
+   import path from 'node:path'
    import fastify from 'fastify'
    ```
-2. Perform the following steps before setting up a Fastify HTTPS server 
+2. Perform the following steps before setting up a Fastify HTTPS server
 to create the `key.pem` and `cert.pem` files:
 ```sh
 openssl genrsa -out key.pem
@@ -935,7 +1054,7 @@ specified at server instantiation, the custom type becomes available on all
 further instances of the custom type.
 ```typescript
 import fastify from 'fastify'
-import http from 'http'
+import http from 'node:http'
 
 interface customRequest extends http.IncomingMessage {
   mySpecialProp: string
@@ -1123,8 +1242,8 @@ returns `http.IncomingMessage`, otherwise, it returns
 `http2.Http2ServerRequest`.
 
 ```typescript
-import http from 'http'
-import http2 from 'http2'
+import http from 'node:http'
+import http2 from 'node:http2'
 import { RawRequestDefaultExpression } from 'fastify'
 
 RawRequestDefaultExpression<http.Server> // -> http.IncomingMessage
@@ -1183,8 +1302,8 @@ returns `http.ServerResponse`, otherwise, it returns
 `http2.Http2ServerResponse`.
 
 ```typescript
-import http from 'http'
-import http2 from 'http2'
+import http from 'node:http'
+import http2 from 'node:http2'
 import { RawReplyDefaultExpression } from 'fastify'
 
 RawReplyDefaultExpression<http.Server> // -> http.ServerResponse
@@ -1536,9 +1655,7 @@ specific header in case of error.
 It is not intended for changing the error, and calling reply.send will throw an
 exception.
 
-This hook will be executed only after the customErrorHandler has been executed,
-and only if the customErrorHandler sends an error back to the user (Note that
-the default customErrorHandler always sends the error back to the user).
+This hook will be executed before the customErrorHandler.
 
 Notice: unlike the other hooks, pass an error to the done function is not
 supported.

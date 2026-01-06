@@ -55,7 +55,7 @@ fastify.post('/the/url', { schema }, handler)
 
 ### Reuse
 
-With `fluent-json-schema` you can manipulate your schemas more easily and
+With `fluent-json-schema`, you can manipulate your schemas more easily and
 programmatically and then reuse them thanks to the `addSchema()` method. You can
 refer to the schema in two different manners that are detailed in the
 [Validation and
@@ -122,5 +122,5 @@ const schema = { body: bodyJsonSchema }
 fastify.post('/the/url', { schema }, handler)
 ```
 
-NB You can mix up the `$ref-way` and the `replace-way` when using
-`fastify.addSchema`.
+> ℹ️ Note: You can mix up the `$ref-way` and the `replace-way`
+> when using `fastify.addSchema`.

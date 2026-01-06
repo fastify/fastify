@@ -6,12 +6,14 @@ on:
       - labeled
 
 permissions:
-  pull-requests: write
-  contents: write
+  contents: read
 
 jobs:
   backport:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: >
       github.event.pull_request.merged
       && (
@@ -24,6 +26,6 @@ jobs:
     name: Backport
     steps:
       - name: Backport
-        uses: tibdex/backport@v2
+        uses: tibdex/backport@9565281eda0731b1d20c4025c43339fb0a23812e # v2.0.4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

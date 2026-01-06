@@ -131,7 +131,8 @@ server.addHook('onRoute', function (opts) {
   expectType<RouteOptions & { routePath: string; path: string; prefix: string }>(opts)
 })
 
-server.addHook('onRegister', (instance, opts) => {
+server.addHook('onRegister', function (instance, opts) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyInstance>(instance)
   expectType<RegisterOptions & FastifyPluginOptions>(opts)
 })
@@ -415,7 +416,12 @@ server.route({
     expectType<FastifyRequest>(request)
     expectType<FastifyReply>(reply)
     expectType<RequestPayload>(payload)
-    expectType<<TError extends Error = FastifyError>(err?: TError | null | undefined, res?: RequestPayload | undefined) => void>(done)
+    expectType<
+      <TError extends Error = FastifyError>(
+        err?: TError | null | undefined,
+        res?: RequestPayload | undefined
+      ) => void
+        >(done)
   },
   preValidation: (request, reply, done) => {
     expectType<FastifyRequest>(request)

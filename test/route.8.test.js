@@ -1,13 +1,10 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
-const Fastify = require('../fastify')
+const { test } = require('node:test')
+const Fastify = require('..')
 const {
   FST_ERR_INVALID_URL
 } = require('../lib/errors')
-const { getServerUrl } = require('./helper')
 
 test('Request and Reply share the route options', async t => {
   t.plan(3)
@@ -24,9 +21,9 @@ test('Request and Reply share the route options', async t => {
     url: '/',
     config,
     handler: (req, reply) => {
-      t.same(req.routeOptions, reply.routeOptions)
-      t.same(req.routeOptions.config, reply.routeOptions.config)
-      t.match(req.routeOptions.config, config, 'there are url and method additional properties')
+      t.assert.deepStrictEqual(req.routeOptions, reply.routeOptions)
+      t.assert.deepStrictEqual(req.routeOptions.config, reply.routeOptions.config)
+      t.assert.match(req.routeOptions.config, config, 'there are url and method additional properties')
 
       reply.send({ hello: 'world' })
     }
@@ -62,11 +59,11 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   await fastify.ready()
 
-  t.ok(true)
+  t.assert.ok(true)
 })
 
-test('route with non-english characters', t => {
-  t.plan(4)
+test('route with non-english characters', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify()
 
@@ -74,19 +71,14 @@ test('route with non-english characters', t => {
     reply.send('here /föö')
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: getServerUrl(fastify) + encodeURI('/föö')
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'here /föö')
-    })
-  })
+  const response = await fetch(fastifyServer + encodeURI('/föö'))
+  t.assert.ok(response.ok)
+  t.assert.strictEqual(response.status, 200)
+  const body = await response.text()
+  t.assert.strictEqual(body, 'here /föö')
 })
 
 test('invalid url attribute - non string URL', t => {
@@ -96,7 +88,7 @@ test('invalid url attribute - non string URL', t => {
   try {
     fastify.get(/^\/(donations|skills|blogs)/, () => { })
   } catch (error) {
-    t.equal(error.code, FST_ERR_INVALID_URL().code)
+    t.assert.strictEqual(error.code, FST_ERR_INVALID_URL().code)
   }
 })
 
@@ -117,7 +109,7 @@ test('exposeHeadRoute should not reuse the same route option', async t => {
   })
 
   fastify.addHook('onRoute', function (routeOption) {
-    t.equal(routeOption.onRequest.length, 1)
+    t.assert.strictEqual(routeOption.onRequest.length, 1)
   })
 
   fastify.route({
@@ -140,7 +132,7 @@ test('using fastify.all when a catchall is defined does not degrade performance'
     fastify.all(`/${i}`, async (_, reply) => reply.json({ ok: true }))
   }
 
-  t.pass()
+  t.assert.ok("fastify.all doesn't degrade performance")
 })
 
 test('Adding manually HEAD route after GET with the same path throws Fastify duplicated route instance error', t => {
@@ -164,8 +156,70 @@ test('Adding manually HEAD route after GET with the same path throws Fastify dup
         reply.send({ hello: 'world' })
       }
     })
-    t.fail('Should throw fastify duplicated route declaration')
+    t.assert.fail('Should throw fastify duplicated route declaration')
   } catch (error) {
-    t.equal(error.code, 'FST_ERR_DUPLICATED_ROUTE')
+    t.assert.strictEqual(error.code, 'FST_ERR_DUPLICATED_ROUTE')
   }
+})
+
+test('Will pass onSend hook to HEAD method if exposeHeadRoutes is true /1', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  await fastify.register((scope, opts, next) => {
+    scope.route({
+      method: 'GET',
+      path: '/route',
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      },
+      onSend: (req, reply, payload, done) => {
+        reply.header('x-content-type', 'application/fastify')
+        done(null, payload)
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  const result = await fastify.inject({
+    url: '/prefix/route',
+    method: 'HEAD'
+  })
+
+  t.assert.strictEqual(result.headers['x-content-type'], 'application/fastify')
+})
+
+test('Will pass onSend hook to HEAD method if exposeHeadRoutes is true /2', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  await fastify.register((scope, opts, next) => {
+    scope.route({
+      method: 'get',
+      path: '/route',
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      },
+      onSend: (req, reply, payload, done) => {
+        reply.header('x-content-type', 'application/fastify')
+        done(null, payload)
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  const result = await fastify.inject({
+    url: '/prefix/route',
+    method: 'HEAD'
+  })
+
+  t.assert.strictEqual(result.headers['x-content-type'], 'application/fastify')
 })

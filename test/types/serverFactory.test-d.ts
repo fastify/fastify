@@ -1,5 +1,5 @@
 import fastify, { FastifyServerFactory } from '../../fastify'
-import * as http from 'http'
+import * as http from 'node:http'
 import { expectType } from 'tsd'
 
 // Custom Server

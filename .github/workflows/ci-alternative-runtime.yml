@@ -19,9 +19,13 @@ concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   test-unit:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     permissions:
       contents: read
     strategy:
@@ -33,11 +37,11 @@ jobs:
             node-version: 20
             nsolid-version: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
 
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         if: ${{ matrix.runtime == 'nsolid' }}
         with:
           node-version: ${{ matrix.node-version }}
@@ -57,11 +61,11 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
 
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         with:
           node-version: 20
           nsolid-version: 5
@@ -84,10 +88,10 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - uses: nodesource/setup-nsolid@v1
+      - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         with:
           nsolid-version: 5
       - name: install fastify

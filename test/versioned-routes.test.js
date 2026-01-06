@@ -1,9 +1,8 @@
 'use strict'
 
-const { test, before } = require('tap')
+const { test, before } = require('node:test')
 const helper = require('./helper')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 const http = require('node:http')
 const split = require('split2')
 const append = require('vary').append
@@ -15,7 +14,7 @@ before(async function () {
   [localhost] = await helper.getLoopbackHost()
 })
 
-test('Should register a versioned route', t => {
+test('Should register a versioned route (inject)', (t, done) => {
   t.plan(11)
   const fastify = Fastify()
 
@@ -35,9 +34,9 @@ test('Should register a versioned route', t => {
       'Accept-Version': '1.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -47,9 +46,9 @@ test('Should register a versioned route', t => {
       'Accept-Version': '1.2.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -59,9 +58,9 @@ test('Should register a versioned route', t => {
       'Accept-Version': '1.2.0'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -71,12 +70,13 @@ test('Should register a versioned route', t => {
       'Accept-Version': '1.2.1'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('Should register a versioned route via route constraints', t => {
+test('Should register a versioned route via route constraints', (t, done) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -96,9 +96,9 @@ test('Should register a versioned route via route constraints', t => {
       'Accept-Version': '1.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -108,13 +108,14 @@ test('Should register a versioned route via route constraints', t => {
       'Accept-Version': '1.2.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
-test('Should register the same route with different versions', t => {
+test('Should register the same route with different versions', (t, done) => {
   t.plan(8)
   const fastify = Fastify()
 
@@ -143,9 +144,9 @@ test('Should register the same route with different versions', t => {
       'Accept-Version': '1.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, '1.3.0')
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, '1.3.0')
   })
 
   fastify.inject({
@@ -155,9 +156,9 @@ test('Should register the same route with different versions', t => {
       'Accept-Version': '1.2.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.equal(res.payload, '1.2.0')
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, '1.2.0')
   })
 
   fastify.inject({
@@ -167,12 +168,13 @@ test('Should register the same route with different versions', t => {
       'Accept-Version': '2.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('The versioned route should take precedence', t => {
+test('The versioned route should take precedence', (t, done) => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -200,13 +202,14 @@ test('The versioned route should take precedence', t => {
       'Accept-Version': '1.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
   })
 })
 
-test('Versioned route but not version header should return a 404', t => {
+test('Versioned route but not version header should return a 404', (t, done) => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -223,13 +226,14 @@ test('Versioned route but not version header should return a 404', t => {
     method: 'GET',
     url: '/'
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('Should register a versioned route', t => {
-  t.plan(6)
+test('Should register a versioned route (server)', async t => {
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.route({
@@ -241,36 +245,30 @@ test('Should register a versioned route', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': '1.x'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': '2.x'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+  const result1 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': '1.x'
+    }
   })
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.json()
+  t.assert.deepStrictEqual(body1, { hello: 'world' })
+
+  const result2 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': '2.x'
+    }
+  })
+
+  t.assert.ok(!result2.ok)
+  t.assert.strictEqual(result2.status, 404)
 })
 
-test('Shorthand route declaration', t => {
+test('Shorthand route declaration', (t, done) => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -285,9 +283,9 @@ test('Shorthand route declaration', t => {
       'Accept-Version': '1.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -297,27 +295,28 @@ test('Shorthand route declaration', t => {
       'Accept-Version': '1.2.1'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('The not found handler should not erase the Accept-Version header', t => {
+test('The not found handler should not erase the Accept-Version header', (t, done) => {
   t.plan(13)
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (req, reply, done) {
-    t.same(req.headers['accept-version'], '2.x')
+    t.assert.deepStrictEqual(req.headers['accept-version'], '2.x')
     done()
   })
 
   fastify.addHook('preValidation', function (req, reply, done) {
-    t.same(req.headers['accept-version'], '2.x')
+    t.assert.deepStrictEqual(req.headers['accept-version'], '2.x')
     done()
   })
 
   fastify.addHook('preHandler', function (req, reply, done) {
-    t.same(req.headers['accept-version'], '2.x')
+    t.assert.deepStrictEqual(req.headers['accept-version'], '2.x')
     done()
   })
 
@@ -331,14 +330,14 @@ test('The not found handler should not erase the Accept-Version header', t => {
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
-    t.same(req.headers['accept-version'], '2.x')
+    t.assert.deepStrictEqual(req.headers['accept-version'], '2.x')
     // we check if the symbol is exposed on key or not
     for (const key in req.headers) {
-      t.same(typeof key, 'string')
+      t.assert.deepStrictEqual(typeof key, 'string')
     }
 
     for (const key of Object.keys(req.headers)) {
-      t.same(typeof key, 'string')
+      t.assert.deepStrictEqual(typeof key, 'string')
     }
 
     reply.code(404).send('not found handler')
@@ -351,13 +350,14 @@ test('The not found handler should not erase the Accept-Version header', t => {
       'Accept-Version': '2.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(res.payload, 'not found handler')
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(res.payload, 'not found handler')
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('Bad accept version (inject)', t => {
+test('Bad accept version (inject)', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -377,8 +377,8 @@ test('Bad accept version (inject)', t => {
       'Accept-Version': 'a.b.c'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
   })
 
   fastify.inject({
@@ -388,13 +388,14 @@ test('Bad accept version (inject)', t => {
       'Accept-Version': 12
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('Bad accept version (server)', t => {
-  t.plan(5)
+test('Bad accept version (server)', async t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.route({
@@ -406,35 +407,27 @@ test('Bad accept version (server)', t => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': 'a.b.c'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': 12
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-    })
+  const result1 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': 'a.b.c'
+    }
   })
+  t.assert.ok(!result1.ok)
+  t.assert.strictEqual(result1.status, 404)
+
+  const result2 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': '12'
+    }
+  })
+  t.assert.ok(!result2.ok)
+  t.assert.strictEqual(result2.status, 404)
 })
 
-test('test log stream', t => {
+test('test log stream', (t, done) => {
   t.plan(3)
   const stream = split(JSON.parse)
   const fastify = Fastify({
@@ -449,8 +442,8 @@ test('test log stream', t => {
   })
 
   fastify.listen({ port: 0, host: localhost }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => { fastify.close() })
 
     http.get({
       host: fastify.server.address().hostname,
@@ -464,16 +457,17 @@ test('test log stream', t => {
 
     stream.once('data', listenAtLogLine => {
       stream.once('data', line => {
-        t.equal(line.req.version, '1.x')
+        t.assert.strictEqual(line.req.version, '1.x')
         stream.once('data', line => {
-          t.equal(line.req.version, '1.x')
+          t.assert.strictEqual(line.req.version, '1.x')
+          done()
         })
       })
     })
   })
 })
 
-test('Should register a versioned route with custom versioning strategy', t => {
+test('Should register a versioned route with custom versioning strategy', (t, done) => {
   t.plan(8)
 
   const customVersioning = {
@@ -523,9 +517,9 @@ test('Should register a versioned route with custom versioning strategy', t => {
       Accept: 'application/vnd.example.api+json;version=2'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from route v2' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from route v2' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -535,9 +529,9 @@ test('Should register a versioned route with custom versioning strategy', t => {
       Accept: 'application/vnd.example.api+json;version=3'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'from route v3' })
-    t.equal(res.statusCode, 200)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from route v3' })
+    t.assert.strictEqual(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -547,12 +541,13 @@ test('Should register a versioned route with custom versioning strategy', t => {
       Accept: 'application/vnd.example.api+json;version=4'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    done()
   })
 })
 
-test('Vary header check (for documentation example)', t => {
+test('Vary header check (for documentation example)', (t, done) => {
   t.plan(8)
   const fastify = Fastify()
   fastify.addHook('onSend', async (req, reply) => {
@@ -589,19 +584,20 @@ test('Vary header check (for documentation example)', t => {
       'Accept-Version': '1.x'
     }
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.vary, 'Accept-Version')
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.vary, 'Accept-Version')
   })
 
   fastify.inject({
     method: 'GET',
     url: '/'
   }, (err, res) => {
-    t.error(err)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers.vary, undefined)
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.vary, undefined)
+    done()
   })
 })

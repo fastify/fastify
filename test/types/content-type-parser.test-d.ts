@@ -1,6 +1,6 @@
 import fastify, { FastifyBodyParser } from '../../fastify'
 import { expectError, expectType } from 'tsd'
-import { IncomingMessage } from 'http'
+import { IncomingMessage } from 'node:http'
 import { FastifyRequest } from '../../types/request'
 
 expectType<void>(fastify().addContentTypeParser('contentType', function (request, payload, done) {

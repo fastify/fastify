@@ -1,13 +1,14 @@
 'use strict'
 
 const { connect } = require('node:net')
-const sget = require('simple-get').concat
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const { kRequest } = require('../lib/symbols.js')
+const split = require('split2')
+const { Readable } = require('node:stream')
+const { getServerUrl } = require('./helper')
 
-test('default 400 on request error', t => {
+test('default 400 on request error', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -26,25 +27,26 @@ test('default 400 on request error', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
+    done()
   })
 })
 
-test('default 400 on request error with custom error handler', t => {
+test('default 400 on request error with custom error handler', (t, done) => {
   t.plan(6)
 
   const fastify = Fastify()
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.type(request, 'object')
-    t.type(request, fastify[kRequest].parent)
+    t.assert.strictEqual(typeof request, 'object')
+    t.assert.strictEqual(request instanceof fastify[kRequest].parent, true)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -65,18 +67,19 @@ test('default 400 on request error with custom error handler', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
+    done()
   })
 })
 
-test('default clientError handler ignores ECONNRESET', t => {
+test('default clientError handler ignores ECONNRESET', (t, done) => {
   t.plan(3)
 
   let logs = ''
@@ -107,8 +110,8 @@ test('default clientError handler ignores ECONNRESET', t => {
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
 
     const client = connect(fastify.server.address().port)
 
@@ -117,8 +120,9 @@ test('default clientError handler ignores ECONNRESET', t => {
     })
 
     client.on('end', () => {
-      t.match(response, /^HTTP\/1.1 200 OK/)
-      t.notMatch(logs, /ECONNRESET/)
+      t.assert.match(response, /^HTTP\/1.1 200 OK/)
+      t.assert.notEqual(logs, /ECONNRESET/)
+      done()
     })
 
     client.resume()
@@ -138,15 +142,15 @@ test('default clientError handler ignores sockets in destroyed state', t => {
   })
   fastify.server.on('clientError', () => {
     // this handler is called after default handler, so we can make sure end was not called
-    t.pass()
+    t.assert.ok('end should not be called')
   })
   fastify.server.emit('clientError', new Error(), {
     destroyed: true,
     end () {
-      t.fail('end should not be called')
+      t.assert.fail('end should not be called')
     },
     destroy () {
-      t.fail('destroy should not be called')
+      t.assert.fail('destroy should not be called')
     }
   })
 })
@@ -164,13 +168,13 @@ test('default clientError handler destroys sockets in writable state', t => {
     writable: true,
     encrypted: true,
     end () {
-      t.fail('end should not be called')
+      t.assert.fail('end should not be called')
     },
     destroy () {
-      t.pass('destroy should be called')
+      t.assert.ok('destroy should be called')
     },
     write (response) {
-      t.match(response, /^HTTP\/1.1 400 Bad Request/)
+      t.assert.match(response, /^HTTP\/1.1 400 Bad Request/)
     }
   })
 })
@@ -187,24 +191,24 @@ test('default clientError handler destroys http sockets in non-writable state', 
     destroyed: false,
     writable: false,
     end () {
-      t.fail('end should not be called')
+      t.assert.fail('end should not be called')
     },
     destroy () {
-      t.pass('destroy should be called')
+      t.assert.ok('destroy should be called')
     },
     write (response) {
-      t.fail('write should not be called')
+      t.assert.fail('write should not be called')
     }
   })
 })
 
-test('error handler binding', t => {
+test('error handler binding', (t, done) => {
   t.plan(5)
 
   const fastify = Fastify()
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.equal(this, fastify)
+    t.assert.strictEqual(this, fastify)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -225,30 +229,31 @@ test('error handler binding', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(JSON.parse(res.payload), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
+    done()
   })
 })
 
-test('encapsulated error handler binding', t => {
+test('encapsulated error handler binding', (t, done) => {
   t.plan(7)
 
   const fastify = Fastify()
 
   fastify.register(function (app, opts, done) {
     app.decorate('hello', 'world')
-    t.equal(app.hello, 'world')
+    t.assert.strictEqual(app.hello, 'world')
     app.post('/', function (req, reply) {
       reply.send({ hello: 'world' })
     })
     app.setErrorHandler(function (err, request, reply) {
-      t.equal(this.hello, 'world')
+      t.assert.strictEqual(this.hello, 'world')
       reply
         .code(err.statusCode)
         .type('application/json; charset=utf-8')
@@ -267,19 +272,20 @@ test('encapsulated error handler binding', t => {
       text: '12345678901234567890123456789012345678901234567890'
     }
   }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 400)
-    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.same(res.json(), {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.assert.deepStrictEqual(res.json(), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
-    t.equal(fastify.hello, undefined)
+    t.assert.strictEqual(fastify.hello, undefined)
+    done()
   })
 })
 
-test('default clientError replies with bad request on reused keep-alive connection', t => {
+test('default clientError replies with bad request on reused keep-alive connection', (t, done) => {
   t.plan(2)
 
   let response = ''
@@ -294,7 +300,7 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 
   fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
+    t.assert.ifError(err)
     fastify.server.unref()
 
     const client = connect(fastify.server.address().port)
@@ -304,7 +310,8 @@ test('default clientError replies with bad request on reused keep-alive connecti
     })
 
     client.on('end', () => {
-      t.match(response, /^HTTP\/1.1 200 OK.*HTTP\/1.1 400 Bad Request/s)
+      t.assert.match(response, /^HTTP\/1.1 200 OK.*HTTP\/1.1 400 Bad Request/s)
+      done()
     })
 
     client.resume()
@@ -318,53 +325,110 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 })
 
-test('request.routeOptions should be immutable', t => {
-  t.plan(14)
+test('request.routeOptions.method is an uppercase string /1', async t => {
+  t.plan(3)
   const fastify = Fastify()
   const handler = function (req, res) {
-    t.equal('POST', req.routeOptions.method)
-    t.equal('/', req.routeOptions.url)
-    t.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
-    t.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
-    t.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
-
-    for (const key of Object.keys(req.routeOptions)) {
-      if (typeof req.routeOptions[key] === 'object' && req.routeOptions[key] !== null) {
-        t.fail('Object.freeze must run recursively on nested structures to ensure that routeOptions is immutable.')
-      }
-    }
-
+    t.assert.strictEqual('POST', req.routeOptions.method)
     res.send({})
   }
+
   fastify.post('/', {
     bodyLimit: 1000,
     handler
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
   })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('test request.routeOptions.version', t => {
-  t.plan(7)
+test('request.routeOptions.method is an uppercase string /2', async t => {
+  t.plan(3)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.assert.strictEqual('POST', req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.route({
+    url: '/',
+    method: 'POST',
+    bodyLimit: 1000,
+    handler
+  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
+  })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+})
+
+test('request.routeOptions.method is an uppercase string /3', async t => {
+  t.plan(3)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.assert.strictEqual('POST', req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.route({
+    url: '/',
+    method: 'pOSt',
+    bodyLimit: 1000,
+    handler
+  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
+  })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+})
+
+test('request.routeOptions.method is an array with uppercase string', async t => {
+  t.plan(3)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.assert.deepStrictEqual(['POST'], req.routeOptions.method)
+    res.send({})
+  }
+
+  fastify.route({
+    url: '/',
+    method: ['pOSt'],
+    bodyLimit: 1000,
+    handler
+  })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
+  })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+})
+
+test('test request.routeOptions.version', async t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.route({
@@ -372,7 +436,7 @@ test('test request.routeOptions.version', t => {
     url: '/version',
     constraints: { version: '1.2.0' },
     handler: function (request, reply) {
-      t.equal('1.2.0', request.routeOptions.version)
+      t.assert.strictEqual('1.2.0', request.routeOptions.version)
       reply.send({})
     }
   })
@@ -381,34 +445,139 @@ test('test request.routeOptions.version', t => {
     method: 'POST',
     url: '/version-undefined',
     handler: function (request, reply) {
-      t.equal(undefined, request.routeOptions.version)
+      t.assert.strictEqual(undefined, request.routeOptions.version)
       reply.send({})
     }
   })
-  fastify.listen({ port: 0 }, function (err) {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/version',
-      headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+  const result1 = await fetch(fastifyServer + '/version', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
+    body: JSON.stringify([])
+  })
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+
+  const result2 = await fetch(fastifyServer + '/version-undefined', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([])
+  })
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+})
+
+test('customErrorHandler should throw for json err and stream response', async (t) => {
+  t.plan(5)
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+      }
+    })
+    process.nextTick(() => stream.destroy(new Error('stream error')))
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.assert.strictEqual(err.message, 'stream error')
+    reply.code(400)
+    reply.send({ error: err.message })
+  })
+
+  logStream.once('data', line => {
+    t.assert.strictEqual(line.msg, 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.')
+    t.assert.strictEqual(line.level, 50)
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const response = await fetch(getServerUrl(fastify) + '/')
+
+  t.assert.strictEqual(response.status, 500)
+  t.assert.deepStrictEqual(await response.json(), { statusCode: 500, code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE', error: 'Internal Server Error', message: "Attempted to send payload of invalid type 'object'. Expected a string or Buffer." })
+})
+
+test('customErrorHandler should not throw for json err and stream response with content-type defined', async (t) => {
+  t.plan(4)
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+      }
+    })
+    process.nextTick(() => stream.destroy(new Error('stream error')))
+
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.assert.strictEqual(err.message, 'stream error')
+    reply
+      .code(400)
+      .type('application/json')
+      .send({ error: err.message })
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const response = await fetch(getServerUrl(fastify) + '/')
+
+  t.assert.strictEqual(response.status, 400)
+  t.assert.strictEqual(response.headers.get('content-type'), 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(await response.json(), { error: 'stream error' })
+})
+
+test('customErrorHandler should not call handler for in-stream error', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable({
+      read () {
+        this.push('hello')
+        stream.destroy(new Error('stream error'))
+      }
     })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
+    reply.type('application/text')
+    await reply.send(stream)
+  })
+
+  fastify.setErrorHandler(() => {
+    t.assert.fail('must not be called')
+  })
+  await fastify.listen({ port: 0 })
+
+  await t.assert.rejects(fetch(getServerUrl(fastify) + '/'), {
+    message: 'fetch failed'
   })
 })

@@ -17,25 +17,19 @@ describes the properties available in that options object.
   - [`forceCloseConnections`](#forcecloseconnections)
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
-  - [`ignoreTrailingSlash`](#ignoretrailingslash)
-  - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
-  - [`maxParamLength`](#maxparamlength)
   - [`bodyLimit`](#bodylimit)
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
+  - [`loggerInstance`](#loggerInstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
-  - [`caseSensitive`](#casesensitive)
-  - [`allowUnsafeRegex`](#allowunsaferegex)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
   - [`genReqId`](#genreqid)
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
-  - [`querystringParser`](#querystringparser)
   - [`exposeHeadRoutes`](#exposeheadroutes)
-  - [`constraints`](#constraints)
   - [`return503OnClosing`](#return503onclosing)
   - [`ajv`](#ajv)
   - [`serializerOpts`](#serializeropts)
@@ -43,14 +37,25 @@ describes the properties available in that options object.
   - [`frameworkErrors`](#frameworkerrors)
   - [`clientErrorHandler`](#clienterrorhandler)
   - [`rewriteUrl`](#rewriteurl)
-  - [`useSemicolonDelimiter`](#usesemicolondelimiter)
+  - [`allowErrorHandlerOverride`](#allowerrorhandleroverride)
+  - [RouterOptions](#routeroptions)
+    - [`allowUnsafeRegex`](#allowunsaferegex)
+    - [`buildPrettyMeta`](#buildprettymeta)
+    - [`caseSensitive`](#casesensitive)
+    - [`constraints`](#constraints)
+    - [`defaultRoute`](#defaultroute)
+    - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
+    - [`ignoreTrailingSlash`](#ignoretrailingslash)
+    - [`maxParamLength`](#maxparamlength)
+    - [`onBadUrl`](#onbadurl)
+    - [`querystringParser`](#querystringparser)
+    - [`useSemicolonDelimiter`](#usesemicolondelimiter)
 - [Instance](#instance)
   - [Server Methods](#server-methods)
     - [server](#server)
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
-  - [`listenTextResolver`](#listentextresolver)
     - [addresses](#addresses)
     - [routing](#routing)
     - [route](#route)
@@ -63,7 +68,7 @@ describes the properties available in that options object.
     - [prefix](#prefix)
     - [pluginName](#pluginname)
     - [hasPlugin](#hasplugin)
-  - [listeningOrigin](#listeningorigin)
+    - [listeningOrigin](#listeningorigin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -105,7 +110,7 @@ describes the properties available in that options object.
 
 An object used to configure the server's listening socket. The options
 are the same as the Node.js core [`createServer`
-method](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_http_createserver_options_requestlistener).
+method](https://nodejs.org/docs/latest-v20.x/api/http.html#httpcreateserveroptions-requestlistener).
 
 This option is ignored if options [`http2`](#factory-http2) or
 [`https`](#factory-https) are set.
@@ -116,7 +121,7 @@ This option is ignored if options [`http2`](#factory-http2) or
 + Default: `false`
 
 If `true` Node.js core's
-[HTTP/2](https://nodejs.org/dist/latest-v14.x/docs/api/http2.html) module is
+[HTTP/2](https://nodejs.org/dist/latest-v20.x/docs/api/http2.html) module is
 used for binding the socket.
 
 ### `https`
@@ -126,7 +131,7 @@ used for binding the socket.
 
 An object used to configure the server's listening socket for TLS. The options
 are the same as the Node.js core [`createServer`
-method](https://nodejs.org/dist/latest-v14.x/docs/api/https.html#https_https_createserver_options_requestlistener).
+method](https://nodejs.org/dist/latest-v20.x/docs/api/https.html#https_https_createserver_options_requestlistener).
 When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the [`http2`](#factory-http2) option is set.
@@ -152,7 +157,7 @@ Defines the server keep-alive timeout in milliseconds. See documentation for
 [`server.keepAliveTimeout`
 property](https://nodejs.org/api/http.html#http_server_keepalivetimeout) to
 understand the effect of this option. This option only applies when HTTP/1 is in
-use. 
+use.
 
 When `serverFactory` option is specified this option is ignored.
 
@@ -165,7 +170,13 @@ When set to `true`, upon [`close`](#close) the server will iterate the current
 persistent connections and [destroy their
 sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
 
-> **Warning**
+When used with HTTP/2 server, it will also close all active HTTP/2 sessions.
+
+> ℹ️ Note:
+> Since Node.js v24 active sessions are closed by default
+
+
+> ⚠ Warning:
 > Connections are not inspected to determine if requests have
 > been completed.
 
@@ -192,7 +203,7 @@ to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
 
-> **Note**
+> ℹ️ Note:
 >  At the time of writing, only node >= v16.10.0 supports this option.
 
 ### `requestTimeout`
@@ -203,83 +214,15 @@ ignored.
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
 property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_requesttimeout)
-to understand the effect of this option. 
+to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
 It must be set to a non-zero value (e.g. 120 seconds) to protect against potential
 Denial-of-Service attacks in case the server is deployed without a reverse proxy
 in front.
 
-> **Note**
+> ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
-
-### `ignoreTrailingSlash`
-<a id="factory-ignore-slash"></a>
-
-+ Default: `false`
-
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. By default, Fastify will take into account the trailing slashes.
-Paths like `/foo` and `/foo/` are treated as different paths. If you want to
-change this, set this flag to `true`. That way, both `/foo` and `/foo/` will
-point to the same route. This option applies to *all* route registrations for
-the resulting server instance.
-
-```js
-const fastify = require('fastify')({
-  ignoreTrailingSlash: true
-})
-
-// registers both "/foo" and "/foo/"
-fastify.get('/foo/', function (req, reply) {
-  reply.send('foo')
-})
-
-// registers both "/bar" and "/bar/"
-fastify.get('/bar', function (req, reply) {
-  reply.send('bar')
-})
-```
-
-### `ignoreDuplicateSlashes`
-<a id="factory-ignore-duplicate-slashes"></a>
-
-+ Default: `false`
-
-Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. You can use `ignoreDuplicateSlashes` option to remove duplicate slashes
-from the path. It removes duplicate slashes in the route path and the request
-URL. This option applies to *all* route registrations for the resulting server
-instance.
-
-When `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set
-to `true` Fastify will remove duplicate slashes, and then trailing slashes,
-meaning `//a//b//c//` will be converted to `/a/b/c`.
-
-```js
-const fastify = require('fastify')({
-  ignoreDuplicateSlashes: true
-})
-
-// registers "/foo/bar/"
-fastify.get('///foo//bar//', function (req, reply) {
-  reply.send('foo')
-})
-```
-
-### `maxParamLength`
-<a id="factory-max-param-length"></a>
-
-+ Default: `100`
-
-You can set a custom length for parameters in parametric (standard, regex, and
-multi) routes by using `maxParamLength` option; the default value is 100
-characters. If the maximum length limit is reached, the not found route will
-be invoked.
-
-This can be useful especially if you have a regex-based route, protecting you
-against [ReDoS
-attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
 
 ### `bodyLimit`
 <a id="factory-body-limit"></a>
@@ -329,9 +272,6 @@ The possible values this property may have are:
 + Default: `false`. The logger is disabled. All logging methods will point to a
   null logger [abstract-logging](https://npm.im/abstract-logging) instance.
 
-+ `pinoInstance`: a previously instantiated instance of Pino. The internal
-  logger will point to this instance.
-
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
   This will be passed directly to the Pino constructor. If the following
@@ -351,9 +291,15 @@ The possible values this property may have are:
         ```
       Any user-supplied serializer will override the default serializer of the
       corresponding property.
-+ `loggerInstance`: a custom logger instance. The logger must conform to the
-  Pino interface by having the following methods: `info`, `error`, `debug`,
-  `fatal`, `warn`, `trace`, `child`. For example:
+
+### `loggerInstance`
+<a id="factory-logger-instance"></a>
+
++ Default: `null`
+
+A custom logger instance. The logger must be a Pino instance or conform to the
+Pino interface by having the following methods: `info`, `error`, `debug`,
+`fatal`, `warn`, `trace`, `child`. For example:
   ```js
   const pino = require('pino')();
 
@@ -371,7 +317,7 @@ The possible values this property may have are:
     },
   };
 
-  const fastify = require('fastify')({logger: customLogger});
+  const fastify = require('fastify')({ loggerInstance: customLogger });
   ```
 
 ### `disableRequestLogging`
@@ -387,12 +333,12 @@ attaching custom `onRequest` and `onResponse` hooks.
 
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
-- the error and info logs written by the `defaultErrorHandler` 
+- the error and info logs written by the `defaultErrorHandler`
 on error management
-- the info log written by the `fourOhFour` handler when a 
+- the info log written by the `fourOhFour` handler when a
 non existent route is requested
 
-Other log messages emitted by Fastify will stay enabled, 
+Other log messages emitted by Fastify will stay enabled,
 like deprecation warnings and messages
 emitted when requests are received while the server is closing.
 
@@ -442,44 +388,6 @@ custom server you must be sure to have the same API exposed. If not, you can
 enhance the server instance inside the `serverFactory` function before the
 `return` statement.
 
-### `caseSensitive`
-<a id="factory-case-sensitive"></a>
-
-+ Default: `true`
-
-When `true` routes are registered as case-sensitive. That is, `/foo`
-is not equal to `/Foo`.
-When `false` then routes are case-insensitive.
-
-Please note that setting this option to `false` goes against
-[RFC3986](https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1).
-
-By setting `caseSensitive` to `false`, all paths will be matched as lowercase,
-but the route parameters or wildcards will maintain their original letter
-casing. 
-This option does not affect query strings, please refer to
-[`querystringParser`](#querystringparser) to change their handling.
-
-```js
-fastify.get('/user/:username', (request, reply) => {
-  // Given the URL: /USER/NodeJS
-  console.log(request.params.username) // -> 'NodeJS'
-})
-```
-
-### `allowUnsafeRegex`
-<a id="factory-allow-unsafe-regex"></a>
-
-+ Default `false`
-
-Disabled by default, so routes only allow safe regular expressions. To use
-unsafe expressions, set `allowUnsafeRegex` to `true`.
-
-```js
-fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
-  // Throws an error without allowUnsafeRegex = true
-})
-```
 
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
@@ -493,7 +401,7 @@ Setting `requestIdHeader` to `true` will set the `requestIdHeader` to
 Setting `requestIdHeader` to a non-empty string will use
 the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
-Setting `requestIdHeader` to an empty String (`""`) will set the 
+Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
 
 + Default: `false`
@@ -504,6 +412,10 @@ const fastify = require('fastify')({
   //requestIdHeader: false, // -> always use genReqId
 })
 ```
+
+> ⚠ Warning: enabling this allows any callers to set `reqId` to a
+> value of their choosing.
+> No validation is performed on `requestIdHeader`.
 
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
@@ -525,7 +437,7 @@ Especially in distributed systems, you may want to override the default ID
 generation behavior as shown below. For generating `UUID`s you may want to check
 out [hyperid](https://github.com/mcollina/hyperid).
 
-> **Note**
+> ℹ️ Note:
 > `genReqId` will be not called if the header set in
 > <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
 > 'request-id').
@@ -563,7 +475,7 @@ const fastify = Fastify({ trustProxy: true })
 ```
 
 For more examples, refer to the
-[`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
+[`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
 
 You may access the `ip`, `ips`, `host` and `protocol` values on the
 [`request`](./Request.md) object.
@@ -577,7 +489,7 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
-> **Note**
+> ℹ️ Note:
 > If a request contains multiple `x-forwarded-host` or `x-forwarded-proto`
 > headers, it is only the last one that is used to derive `request.hostname`
 > and `request.protocol`.
@@ -595,8 +507,9 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core
-`querystring` module.
+The default query string parser that Fastify uses is a more performant fork 
+of Node.js's core `querystring` module called 
+[`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
 [`qs`](https://www.npmjs.com/package/qs).
@@ -615,7 +528,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('node:querystring')
+const querystring = require('fast-querystring')
 const fastify = require('fastify')({
   querystringParser: str => querystring.parse(str.toLowerCase())
 })
@@ -629,37 +542,6 @@ const fastify = require('fastify')({
 Automatically creates a sibling `HEAD` route for each `GET` route defined. If
 you want a custom `HEAD` handler without disabling this option, make sure to
 define it before the `GET` route.
-
-### `constraints`
-<a id="constraints"></a>
-
-Fastify's built-in route constraints are provided by `find-my-way`, which
-allows constraining routes by `version` or `host`. You can add new constraint
-strategies, or override the built-in strategies, by providing a `constraints`
-object with strategies for `find-my-way`. You can find more information on
-constraint strategies in the
-[find-my-way](https://github.com/delvedor/find-my-way) documentation.
-
-```js
-const customVersionStrategy = {
-  storage: function () {
-    const versions = {}
-    return {
-      get: (version) => { return versions[version] || null },
-      set: (version, store) => { versions[version] = store }
-    }
-  },
-  deriveVersion: (req, ctx) => {
-    return req.headers['accept']
-  }
-}
-
-const fastify = require('fastify')({
-  constraints: {
-    version: customVersionStrategy
-  }
-})
-```
 
 ### `return503OnClosing`
 <a id="factory-return-503-on-closing"></a>
@@ -687,7 +569,11 @@ const fastify = require('fastify')({
       [require('ajv-keywords'), 'instanceof']
       // Usage: [plugin, pluginOptions] - Plugin with options
       // Usage: plugin - Plugin without options
-    ]
+    ],
+    onCreate: (ajv) => {
+      // Modify the ajv instance as you need.
+      ajv.addFormat('myFormat', (data) => typeof data === 'string')
+    }
   }
 })
 ```
@@ -731,7 +617,7 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-> **Note**
+> ℹ️ Note:
 > Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at present.
 
 ```js
@@ -784,7 +670,7 @@ function defaultClientErrorHandler (err, socket) {
 }
 ```
 
-> **Note**
+> ℹ️ Note:
 > `clientErrorHandler` operates with raw sockets. The handler is expected to
 > return a properly formed HTTP response that includes a status line, HTTP headers
 > and a message body. Before attempting to write the socket, the handler should
@@ -827,7 +713,7 @@ is an instance-wide configuration.
 // @param {object} req The raw Node.js HTTP request, not the `FastifyRequest` object.
 // @this Fastify The root Fastify instance (not an encapsulated instance).
 // @returns {string} The path that the request should be mapped to.
-function rewriteUrl (req) { 
+function rewriteUrl (req) {
   if (req.url === '/hi') {
     this.log.debug({ originalUrl: req.url, url: '/hello' }, 'rewrite url');
     return '/hello'
@@ -835,6 +721,263 @@ function rewriteUrl (req) {
     return req.url;
   }
 }
+```
+
+## RouterOptions
+<a id="routeroptions"></a>
+
+Fastify uses [`find-my-way`](https://github.com/delvedor/find-my-way) for its
+HTTP router. The `routerOptions` parameter allows passing 
+[`find-my-way` options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
+to customize the HTTP router within Fastify.
+
+### `allowUnsafeRegex`
+<a id="allow-unsafe-regex"></a>
+
++ Default `false`
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which is,
+disabled by default, so routes only allow safe regular expressions. To use
+unsafe expressions, set `allowUnsafeRegex` to `true`.
+
+```js
+fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
+  // Throws an error without allowUnsafeRegex = true
+})
+```
+
+
+### `buildPrettyMeta`
+<a id="build-pretty-meta"></a>
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which
+supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta` 
+function to sanitize a route's store object to use with the `prettyPrint` 
+functions. This function should accept a single object and return an object.
+
+```js
+fastify.get('/user/:username', (request, reply) => {
+  routerOptions: {
+    buildPrettyMeta: route => {
+      const cleanMeta = Object.assign({}, route.store)
+
+      // remove private properties
+      Object.keys(cleanMeta).forEach(k => {
+        if (typeof k === 'symbol') delete cleanMeta[k]
+      })
+
+      return cleanMeta // this will show up in the pretty print output!
+    })
+  }
+})
+```
+
+### `caseSensitive`
+<a id="case-sensitive"></a>
+
++ Default: `true`
+
+When `true` routes are registered as case-sensitive. That is, `/foo`
+is not equal to `/Foo`.
+When `false` then routes are case-insensitive.
+
+Please note that setting this option to `false` goes against
+[RFC3986](https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1).
+
+By setting `caseSensitive` to `false`, all paths will be matched as lowercase,
+but the route parameters or wildcards will maintain their original letter
+casing.
+This option does not affect query strings, please refer to
+[`querystringParser`](#querystringparser) to change their handling.
+
+```js
+fastify.get('/user/:username', (request, reply) => {
+  // Given the URL: /USER/NodeJS
+  console.log(request.params.username) // -> 'NodeJS'
+})
+```
+
+### `constraints`
+<a id="constraints"></a>
+
+Fastify's built-in route constraints are provided by `find-my-way`, which
+allows constraining routes by `version` or `host`. You can add new constraint
+strategies, or override the built-in strategies, by providing a `constraints`
+object with strategies for `find-my-way`. You can find more information on
+constraint strategies in the
+[find-my-way](https://github.com/delvedor/find-my-way) documentation.
+
+```js
+const customVersionStrategy = {
+  storage: function () {
+    const versions = {}
+    return {
+      get: (version) => { return versions[version] || null },
+      set: (version, store) => { versions[version] = store }
+    }
+  },
+  deriveVersion: (req, ctx) => {
+    return req.headers['accept']
+  }
+}
+
+const fastify = require('fastify')({
+  routerOptions: {
+    constraints: {
+      version: customVersionStrategy
+    }
+  }
+})
+```
+
+### `defaultRoute`
+<a id="on-bad-url"></a>
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+can pass a default route with the option defaultRoute.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    defaultRoute: (req, res) => {
+      res.statusCode = 404
+      res.end()
+    }
+  }
+})
+```
+
+> **Note**
+> The `req` and `res` objects passed to `defaultRoute` are the raw Node.js
+> `IncomingMessage` and `ServerResponse` instances. They do **not** expose the
+> Fastify-specific methods available on `FastifyRequest`/`FastifyReply` (for
+> example, `res.send`).
+
+### `ignoreDuplicateSlashes`
+<a id="factory-ignore-duplicate-slashes"></a>
+
++ Default: `false`
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
+routing. You can use `ignoreDuplicateSlashes` option to remove duplicate slashes
+from the path. It removes duplicate slashes in the route path and the request
+URL. This option applies to *all* route registrations for the resulting server
+instance.
+
+When `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set
+to `true` Fastify will remove duplicate slashes, and then trailing slashes,
+meaning `//a//b//c//` will be converted to `/a/b/c`.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    ignoreDuplicateSlashes: true
+  }
+})
+
+// registers "/foo/bar/"
+fastify.get('///foo//bar//', function (req, reply) {
+  reply.send('foo')
+})
+```
+
+### `ignoreTrailingSlash`
+<a id="ignore-slash"></a>
+
++ Default: `false`
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
+routing. By default, Fastify will take into account the trailing slashes.
+Paths like `/foo` and `/foo/` are treated as different paths. If you want to
+change this, set this flag to `true`. That way, both `/foo` and `/foo/` will
+point to the same route. This option applies to *all* route registrations for
+the resulting server instance.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    ignoreTrailingSlash: true
+  }
+})
+
+// registers both "/foo" and "/foo/"
+fastify.get('/foo/', function (req, reply) {
+  reply.send('foo')
+})
+
+// registers both "/bar" and "/bar/"
+fastify.get('/bar', function (req, reply) {
+  reply.send('bar')
+})
+```
+
+### `maxParamLength`
+<a id="max-param-length"></a>
+
++ Default: `100`
+
+You can set a custom length for parameters in parametric (standard, regex, and
+multi) routes by using `maxParamLength` option; the default value is 100
+characters. If the maximum length limit is reached, the not found route will
+be invoked.
+
+This can be useful especially if you have a regex-based route, protecting you
+against [ReDoS
+attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+
+
+### `onBadUrl`
+<a id="on-bad-url"></a>
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+the use case of a badly formatted url (eg: /hello/%world), by default find-my-way
+will invoke the defaultRoute, unless you specify the onBadUrl option.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    onBadUrl: (path, req, res) => {
+      res.statusCode = 400
+      res.end(`Bad path: ${path}`)
+    }
+  }
+})
+```
+
+As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
+objects and do not provide Fastify's decorated helpers.
+
+### `querystringParser`
+<a id="querystringparser"></a>
+
+The default query string parser that Fastify uses is the Node.js's core
+`querystring` module.
+
+You can use this option to use a custom parser, such as
+[`qs`](https://www.npmjs.com/package/qs).
+
+If you only want the keys (and not the values) to be case insensitive we
+recommend using a custom parser to convert only the keys to lowercase.
+
+```js
+const qs = require('qs')
+const fastify = require('fastify')({
+  routerOptions: {
+    querystringParser: str => qs.parse(str)
+  }
+})
+```
+
+You can also use Fastify's default parser but change some handling behavior,
+like the example below for case insensitive keys and values:
+
+```js
+const querystring = require('node:querystring')
+const fastify = require('fastify')({
+  routerOptions: {
+    querystringParser: str => querystring.parse(str.toLowerCase())
+  }
+})
 ```
 
 ### `useSemicolonDelimiter`
@@ -846,12 +989,14 @@ Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which suppor
 separating the path and query string with a `;` character (code 59), e.g. `/dev;foo=bar`.
 This decision originated from [delvedor/find-my-way#76]
 (https://github.com/delvedor/find-my-way/issues/76). Thus, this option will support
-backwards compatiblilty for the need to split on `;`. To enable support for splitting
+backwards compatibility for the need to split on `;`. To enable support for splitting
 on `;` set `useSemicolonDelimiter` to `true`.
 
 ```js
 const fastify = require('fastify')({
-  useSemicolonDelimiter: true
+  routerOptions: {
+    useSemicolonDelimiter: true
+  }
 })
 
 fastify.get('/dev', async (request, reply) => {
@@ -861,6 +1006,29 @@ fastify.get('/dev', async (request, reply) => {
 })
 ```
 
+### `allowErrorHandlerOverride`
+<a id="allow-error-handler-override"></a>
+
+* **Default:** `true`
+
+> ⚠ **Warning:** This option will be set to `false` by default 
+> in the next major release.
+
+When set to `false`, it prevents `setErrorHandler` from being called 
+multiple times within the same scope, ensuring that the previous error 
+handler is not unintentionally overridden.
+
+#### Example of incorrect usage:
+
+```js
+app.setErrorHandler(function freeSomeResources () {
+  // Never executed, memory leaks
+})
+
+app.setErrorHandler(function anotherErrorHandler () {
+  // Overrides the previous handler
+})
+```
 
 ## Instance
 
@@ -873,7 +1041,7 @@ fastify.get('/dev', async (request, reply) => {
 [server](https://nodejs.org/api/http.html#http_class_http_server) object as
 returned by the [**`Fastify factory function`**](#factory).
 
-> **Warning**
+> ⚠ Warning:
 > If utilized improperly, certain Fastify features could be disrupted.
 > It is recommended to only use it for attaching listeners.
 
@@ -948,28 +1116,25 @@ Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
 `callback` parameters extend the [Node.js
 core](https://nodejs.org/api/net.html#serverlistenoptions-callback) options
-object. Thus, all core options are available with the following additional 
+object. Thus, all core options are available with the following additional
 Fastify specific options:
 
-### `listenTextResolver`
-<a id="listen-text-resolver"></a>
+* listenTextResolver: Set an optional resolver for the text to log after server
+has been successfully started. It is possible to override the default
+`Server listening at [address]` log entry using this option.
 
-Set an optional resolver for the text to log after server has been successfully
-started.
-It is possible to override the default `Server listening at [address]` log 
-entry using this option.
-
-```js
-server.listen({ 
-  port: 9080, 
-  listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` } 
-})
-```
+    ```js
+    server.listen({
+      port: 9080,
+      listenTextResolver: (address) => { return `Prometheus metrics server is listening at ${address}` }
+    })
+    ```
 
 By default, the server will listen on the address(es) resolved by `localhost`
 when no specific host is provided. If listening on any available interface is
 desired, then specifying `0.0.0.0` for the address will listen on all IPv4
-addresses. The following table details the possible values for `host` when
+addresses. The address argument provided above will then return the first such
+IPv4 address. The following table details the possible values for `host` when
 targeting `localhost`, and what the result of those values for `host` will be.
 
  Host          | IPv4 | IPv6
@@ -1090,7 +1255,7 @@ Method to add routes to the server, it also has shorthand functions, check
 <a id="hasRoute"></a>
 
 Method to check if a route is already registered to the internal router. It
-expects an object as the payload. `url` and `method` are mandatory fields. It 
+expects an object as the payload. `url` and `method` are mandatory fields. It
 is possible to also specify `constraints`. The method returns `true` if the
 route is registered or `false` if not.
 
@@ -1110,8 +1275,8 @@ if (routeExists === false) {
 <a id="findRoute"></a>
 
 Method to retrieve a route already registered to the internal router. It
-expects an object as the payload. `url` and `method` are mandatory fields. It 
-is possible to also specify `constraints`. 
+expects an object as the payload. `url` and `method` are mandatory fields. It
+is possible to also specify `constraints`.
 The method returns a route object or `null` if the route cannot be found.
 
 ```js
@@ -1215,7 +1380,7 @@ different ways to define a name (in order).
 Newlines are replaced by ` -- `. This will help to identify the root cause when
 you deal with many plugins.
 
-> **Warning**
+> ⚠ Warning:
 > If you have to deal with nested plugins, the name differs with the usage of
 > the [fastify-plugin](https://github.com/fastify/fastify-plugin) because
 > no new scope is created and therefore we have no place to attach contextual
@@ -1241,7 +1406,7 @@ fastify.ready(() => {
 })
 ```
 
-### listeningOrigin
+#### listeningOrigin
 <a id="listeningOrigin"></a>
 
 The current origin the server is listening to.
@@ -1294,6 +1459,8 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
+> ⚠ Warning:
+> `addHttpMethod` overrides existing methods.
 
 #### addSchema
 <a id="add-schema"></a>
@@ -1351,7 +1518,7 @@ Set the schema error formatter for all routes. See
 Set the schema serializer compiler for all routes. See
 [#schema-serializer](./Validation-and-Serialization.md#schema-serializer).
 
-> **Note** 
+> ℹ️ Note:
 > [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 #### validatorCompiler
@@ -1484,7 +1651,7 @@ lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
 You can also register [`preValidation`](./Hooks.md#route-hooks) and
 [`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
 
-> **Note**
+> ℹ️ Note:
 > The `preValidation` hook registered using this method will run for a
 > route that Fastify does not recognize and **not** when a route handler manually
 > calls [`reply.callNotFound`](./Reply.md#call-not-found). In which case, only
@@ -1520,10 +1687,10 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
-> **Note**
+> ℹ️ Note:
 > Some config properties from the request object will be
 > undefined inside the custom not found handler. E.g.:
-> `request.routerPath`, `routerMethod` and `context.config`.
+> `request.routeOptions.url`, `routeOptions.method` and `routeOptions.config`.
 > This method design goal is to allow calling the common not found route.
 > To return a per-route customized 404 response, you can do it in
 > the response itself.
@@ -1532,18 +1699,22 @@ plugins.
 <a id="set-error-handler"></a>
 
 `fastify.setErrorHandler(handler(error, request, reply))`: Set a function that
-will be called whenever an error happens. The handler is bound to the Fastify
-instance and is fully encapsulated, so different plugins can set different error
-handlers. *async-await* is supported as well.
+will be invoked whenever an exception is thrown during the request lifecycle.
+The handler is bound to the Fastify instance and is fully encapsulated, so
+different plugins can set different error handlers. *async-await* is
+supported as well.
 
 If the error `statusCode` is less than 400, Fastify will automatically
 set it to 500 before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
-- errors thrown in an `onResponse` hook because the response has already been
+- exceptions thrown in an `onResponse` hook because the response has already been
   sent to the client. Use the `onSend` hook instead.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
+- Stream errors thrown during piping into the response socket, as
+  headers/response were already sent to the client. 
+  Use custom in-stream data to signal such errors.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
@@ -1559,7 +1730,7 @@ is set. It can be accessed using `fastify.errorHandler` and it logs the error
 with respect to its `statusCode`.
 
 ```js
-var statusCode = error.statusCode
+const statusCode = error.statusCode
 if (statusCode >= 500) {
   log.error(error)
 } else if (statusCode >= 400) {
@@ -1568,6 +1739,39 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+
+> ⚠ Warning:
+> Avoid calling setErrorHandler multiple times in the same scope.
+> See [`allowErrorHandlerOverride`](#allowerrorhandleroverride).
+
+##### Custom error handler for stream replies
+<a id="set-error-handler-stream-replies"></a>
+
+If `Content-Type` differs between the endpoint and error handler, explicitly
+define it in both. For example, if the endpoint returns an `application/text`
+stream and the error handler responds with `application/json`, the error handler
+must explicitly set `Content-Type`. Otherwise, it will fail serialization with
+a `500` status code. Alternatively, always respond with serialized data in the
+error handler by manually calling a serialization method (e.g.,
+`JSON.stringify`).
+
+```js
+fastify.setErrorHandler((err, req, reply) => {
+  reply
+    .code(400)
+    .type('application/json')
+    .send({ error: err.message })
+})
+```
+
+```js
+fastify.setErrorHandler((err, req, reply) => {
+  reply
+    .code(400)
+    .send(JSON.stringify({ error: err.message }))
+})
+```
+
 #### setChildLoggerFactory
 <a id="set-child-logger-factory"></a>
 
@@ -1953,20 +2157,28 @@ The properties that can currently be exposed are:
 - keepAliveTimeout
 - bodyLimit
 - caseSensitive
-- allowUnsafeRegex
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)
-- ignoreTrailingSlash
 - disableRequestLogging
-- maxParamLength
 - onProtoPoisoning
 - onConstructorPoisoning
 - pluginTimeout
 - requestIdHeader
 - requestIdLogLabel
 - http2SessionTimeout
-- useSemicolonDelimiter 
+- routerOptions
+  - allowUnsafeRegex
+  - buildPrettyMeta
+  - caseSensitive
+  - constraints
+  - defaultRoute
+  - ignoreDuplicateSlashes
+  - ignoreTrailingSlash
+  - maxParamLength
+  - onBadUrl
+  - querystringParser
+  - useSemicolonDelimiter
 
 ```js
 const { readFileSync } = require('node:fs')
@@ -1979,9 +2191,11 @@ const fastify = Fastify({
     cert: readFileSync('./fastify.cert')
   },
   logger: { level: 'trace'},
-  ignoreTrailingSlash: true,
-  maxParamLength: 200,
-  caseSensitive: true,
+  routerOptions: {
+    ignoreTrailingSlash: true,
+    maxParamLength: 200,
+    caseSensitive: true,
+  },
   trustProxy: '127.0.0.1,192.168.1.1/24',
 })
 
@@ -1989,10 +2203,12 @@ console.log(fastify.initialConfig)
 /*
 will log :
 {
-  caseSensitive: true,
   https: { allowHTTP1: true },
-  ignoreTrailingSlash: true,
-  maxParamLength: 200
+  routerOptions: {
+    caseSensitive: true,
+    ignoreTrailingSlash: true,
+    maxParamLength: 200
+  }
 }
 */
 
@@ -2002,10 +2218,12 @@ fastify.register(async (instance, opts) => {
     /*
     will return :
     {
-      caseSensitive: true,
       https: { allowHTTP1: true },
-      ignoreTrailingSlash: true,
-      maxParamLength: 200
+      routerOptions: {
+        caseSensitive: true,
+        ignoreTrailingSlash: true,
+        maxParamLength: 200
+      }
     }
     */
   })

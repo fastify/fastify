@@ -860,6 +860,8 @@ function processOptions (options, defaultRoute, onBadUrl) {
     throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
   }
 
+  const customAttributeKeys = options.logger?.customAttributeKeys
+
   const { logger, hasLogger } = createLogger(options)
 
   // Update the options with the fixed values
@@ -868,6 +870,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
+  options.loggerCustomAttributeKeys = customAttributeKeys
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging

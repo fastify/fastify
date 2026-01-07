@@ -7,12 +7,14 @@ const fp = require('fastify-plugin')
 test('encapsulates an child logger factory', async t => {
   t.plan(4)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
   fastify.register(async function (fastify) {
     fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
-      const child = logger.child(bindings, opts)
-      child.customLog = function (message) {
-        t.assert.strictEqual(message, 'custom')
+      const child = logger?.child(bindings, opts)
+      if (child) {
+        child.customLog = function (message) {
+          t.assert.strictEqual(message, 'custom')
+        }
       }
       return child
     })
@@ -22,9 +24,11 @@ test('encapsulates an child logger factory', async t => {
   })
 
   fastify.setChildLoggerFactory(function globalFactory (logger, bindings, opts) {
-    const child = logger.child(bindings, opts)
-    child.globalLog = function (message) {
-      t.assert.strictEqual(message, 'global')
+    const child = logger?.child(bindings, opts)
+    if (child) {
+      child.globalLog = function (message) {
+        t.assert.strictEqual(message, 'global')
+      }
     }
     return child
   })
@@ -42,13 +46,15 @@ test('encapsulates an child logger factory', async t => {
 test('child logger factory set on root scope when using fastify-plugin', async t => {
   t.plan(4)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
   fastify.register(fp(async function (fastify) {
     // Using fastify-plugin, the factory should be set on the root scope
     fastify.setChildLoggerFactory(function pluginFactory (logger, bindings, opts) {
-      const child = logger.child(bindings, opts)
-      child.customLog = function (message) {
-        t.assert.strictEqual(message, 'custom')
+      const child = logger?.child(bindings, opts)
+      if (child) {
+        child.customLog = function (message) {
+          t.assert.strictEqual(message, 'custom')
+        }
       }
       return child
     })

@@ -642,7 +642,7 @@ function fastify (serverOptions) {
       const reply = new Reply(res, request, childLogger)
 
       if (disableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
+        childLogger?.info({ req: request }, 'incoming request')
       }
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
@@ -672,7 +672,7 @@ function fastify (serverOptions) {
           const reply = new Reply(res, request, childLogger)
 
           if (disableRequestLogging === false) {
-            childLogger.info({ req: request }, 'incoming request')
+            childLogger?.info({ req: request }, 'incoming request')
           }
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
@@ -945,7 +945,7 @@ function defaultClientErrorHandler (err, socket) {
   // Most devs do not know what to do with this error.
   // In the vast majority of cases, it's a network error and/or some
   // config issue on the load balancer side.
-  this.log.trace({ err }, `client ${errorLabel}`)
+  this.log?.trace({ err }, `client ${errorLabel}`)
   // Copying standard node behavior
   // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 

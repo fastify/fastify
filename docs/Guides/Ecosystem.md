@@ -745,7 +745,7 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-
+- [`fastify-http-exceptions`](https://github.com/bhouston/fastify-http-exceptions) A small, opinionated Fastify plugin and core library for typed HTTP status exceptions.
 
 #### [Community Tools](#community-tools)
 

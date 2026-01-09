@@ -1820,8 +1820,8 @@ different plugins can set different logger factories.
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
-for additional Fastify instances. It will receive the _raw_ incoming request as a
-parameter. The provided function should not throw an Error in any case.
+for additional Fastify instances. It will receive the _raw_ incoming request as
+a parameter. The provided function should not throw an Error in any case.
 
 Especially in distributed systems, you may want to override the default ID
 generation behavior to handle custom ways of generating different IDs in

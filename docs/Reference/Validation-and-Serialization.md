@@ -329,6 +329,21 @@ server.setValidatorCompiler(req => {
 })
 ```
 
+When type coercion is enabled, using `anyOf` with nullable primitive
+types can produce unexpected results. In the example below, values
+such as `0` may be coerced to `null` because Ajv evaluates `anyOf`
+schemas in order and applies type coercion during schema matching.
+
+```json
+{
+  "anyOf": [
+    { "type": "null" },
+    { "type": "number" }
+  ]
+}
+```
+
+
 For more information, see [Ajv Coercion](https://ajv.js.org/coercion.html).
 
 #### Ajv Plugins

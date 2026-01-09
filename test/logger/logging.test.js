@@ -16,7 +16,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(13)
+  t.plan(14)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -280,6 +280,43 @@ t.test('logging', { timeout: 60000 }, async (t) => {
 
     // no more readable data
     t.assert.strictEqual(stream.readableLength, 0)
+  })
+
+  await t.test('should log incoming request and outgoing response based on disableRequestLogging function', async (t) => {
+    const lines = [
+      'incoming request',
+      'request completed'
+    ]
+    t.plan(lines.length)
+
+    const stream = split(JSON.parse)
+    const loggerInstance = pino(stream)
+
+    const fastify = Fastify({
+      disableRequestLogging: (request) => {
+        return request.url !== '/not-logged'
+      },
+      loggerInstance
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/logged', (req, reply) => {
+      return reply.code(200).send({})
+    })
+
+    fastify.get('/not-logged', (req, reply) => {
+      return reply.code(200).send({})
+    })
+
+    await fastify.ready()
+
+    await fastify.inject({ method: 'GET', url: '/not-logged' })
+    await fastify.inject({ method: 'GET', url: '/logged' })
+
+    for await (const [line] of on(stream, 'data')) {
+      t.assert.strictEqual(line.msg, lines.shift())
+      if (lines.length === 0) break
+    }
   })
 
   await t.test('defaults to info level', async (t) => {

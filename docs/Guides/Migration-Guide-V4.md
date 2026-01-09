@@ -109,7 +109,8 @@ argument from your router handler.
 ### `exposeHeadRoutes` true by default
 
 Starting with v4, every `GET` route will create a sibling `HEAD` route.
-You can revert this behavior by setting `exposeHeadRoutes: false` in the server options.
+You can revert this behavior by setting `exposeHeadRoutes: false` in the server
+options.
 
 ### Synchronous route definitions ([#2954](https://github.com/fastify/fastify/pull/2954))
 

@@ -566,8 +566,8 @@ middlewares into Fastify plugins
   custom permission checks.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
   thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
-- [`fastify-polyglot`](https://github.com/beliven-it/fastify-polyglot) A plugin to
-  handle i18n using
+- [`fastify-polyglot`](https://github.com/beliven-it/fastify-polyglot) A plugin
+  to handle i18n using
   [node-polyglot](https://www.npmjs.com/package/node-polyglot).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
   Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in

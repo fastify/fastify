@@ -339,6 +339,38 @@ function fastify (serverOptions) {
           ...this[kSupportedHTTPMethods].bodywith
         ]
       }
+    },
+    web: {
+      configurable: true,
+      get () {
+        const instance = this
+        return {
+          delete (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'DELETE', url, options, handler })
+          },
+          get (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'GET', url, options, handler })
+          },
+          head (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'HEAD', url, options, handler })
+          },
+          trace (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'TRACE', url, options, handler })
+          },
+          patch (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'PATCH', url, options, handler })
+          },
+          post (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'POST', url, options, handler })
+          },
+          put (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'PUT', url, options, handler })
+          },
+          options (url, options, handler) {
+            return router.prepareWebRoute.call(instance, { method: 'OPTIONS', url, options, handler })
+          }
+        }
+      }
     }
   })
 

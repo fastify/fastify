@@ -501,4 +501,335 @@ describe('web routes', () => {
     t.assert.ok(thisInPlugin !== null)
     t.assert.strictEqual(thisInPlugin, pluginInstance)
   })
+
+  test('web routes run onSend hook', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+    let hookCalled = false
+
+    fastify.addHook('onSend', async () => {
+      hookCalled = true
+    })
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.ok(hookCalled)
+  })
+
+  test('web routes run route-level onSend hook', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+    let hookCalled = false
+
+    fastify.web.get('/test', {
+      onSend: async () => {
+        hookCalled = true
+      }
+    }, async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.ok(hookCalled)
+  })
+
+  test('onRequest hook error is handled', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    fastify.addHook('onRequest', async () => {
+      throw new Error('onRequest error')
+    })
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 500)
+  })
+
+  test('onSend hook error is handled', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    fastify.addHook('onSend', async () => {
+      throw new Error('onSend error')
+    })
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 500)
+  })
+
+  test('web Response with multiple Set-Cookie headers', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+
+    fastify.web.get('/cookies', async () => {
+      const headers = new Headers()
+      headers.append('Set-Cookie', 'a=1')
+      headers.append('Set-Cookie', 'b=2')
+      return new Response('ok', { status: 200, headers })
+    })
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/cookies'
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.headers['set-cookie'], ['a=1', 'b=2'])
+  })
+
+  test('web routes with logSerializers option', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify({
+      logger: {
+        level: 'info',
+        stream: { write () {} }
+      }
+    })
+
+    fastify.web.get('/test', {
+      logSerializers: {
+        custom: () => 'custom'
+      }
+    }, async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+  })
+
+  test('web routes with array headers', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test',
+      headers: {
+        'x-multi': ['a', 'b']
+      }
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.body, 'ok')
+  })
+
+  test('duplicate web route throws error', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    t.assert.throws(() => {
+      fastify.web.get('/test', async () => new Response('ok'))
+    }, /Method 'GET' already declared/)
+  })
+
+  test('onRequest hook can stop request', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+
+    fastify.addHook('onRequest', async (request, reply) => {
+      reply.code(401)
+      return reply.send({ error: 'Unauthorized' })
+    })
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 401)
+    t.assert.ok(response.body.includes('Unauthorized'))
+  })
+
+  test('web routes with keep-alive connection header', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test',
+      headers: {
+        connection: 'keep-alive'
+      }
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.body, 'ok')
+  })
+
+  test('web routes with accept-version constraint', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+
+    fastify.web.get('/test', {
+      constraints: { version: '1.0.0' }
+    }, async () => new Response('v1'))
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test',
+      headers: {
+        'accept-version': '1.0.0'
+      }
+    })
+
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.body, 'v1')
+  })
+
+  test('web routes with onError hook', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+    let errorHookCalled = false
+
+    fastify.addHook('onError', async () => {
+      errorHookCalled = true
+    })
+
+    fastify.web.get('/test', async () => {
+      throw new Error('test error')
+    })
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 500)
+    t.assert.ok(errorHookCalled)
+  })
+
+  test('web routes with route-level onError hook', async (t) => {
+    t.plan(2)
+    const fastify = new Fastify()
+    let errorHookCalled = false
+
+    fastify.web.get('/test', {
+      onError: async () => {
+        errorHookCalled = true
+      }
+    }, async () => {
+      throw new Error('test error')
+    })
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/test'
+    })
+
+    t.assert.strictEqual(response.statusCode, 500)
+    t.assert.ok(errorHookCalled)
+  })
+
+  test('web routes missing handler throws', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    t.assert.throws(() => {
+      fastify.web.get('/test')
+    }, /Missing handler function/)
+  })
+
+  test('web routes non-function handler throws', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    t.assert.throws(() => {
+      fastify.web.get('/test', {}, 'not a function')
+    }, /Error Handler for .* route, if defined, must be a function/)
+  })
+
+  test('web routes options with handler function throws duplicated handler', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    t.assert.throws(() => {
+      fastify.web.get('/test', { handler: async () => new Response('ok') }, async () => new Response('ok2'))
+    }, /Duplicate handler/)
+  })
+
+  test('web routes options with handler non-function throws', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    t.assert.throws(() => {
+      fastify.web.get('/test', { handler: 'not a function' }, async () => new Response('ok'))
+    }, /Error Handler for/)
+  })
+
+  test('web routes with real keep-alive connection', async (t) => {
+    const { once } = require('node:events')
+    const http = require('node:http')
+    t.plan(2)
+    const fastify = new Fastify()
+
+    fastify.web.get('/test', async () => new Response('ok'))
+
+    await fastify.listen({ port: 0 })
+    const port = fastify.server.address().port
+
+    // Use an agent with keepAlive enabled
+    const agent = new http.Agent({ keepAlive: true })
+    const req = http.get(`http://localhost:${port}/test`, { agent })
+    const [res] = await once(req, 'response')
+
+    let body = ''
+    res.on('data', chunk => { body += chunk })
+    await once(res, 'end')
+
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(body, 'ok')
+
+    agent.destroy()
+    await fastify.close()
+  })
+
+  test('web routes invalid URL throws', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    t.assert.throws(() => {
+      fastify.web.get(123, async () => new Response('ok'))
+    }, /URL must be a string/)
+  })
+
+  test('web routes options not object throws', async (t) => {
+    t.plan(1)
+    const fastify = new Fastify()
+
+    t.assert.throws(() => {
+      fastify.web.get('/test', 'not an object', async () => new Response('ok'))
+    }, /Options for .* must be an object/)
+  })
 })

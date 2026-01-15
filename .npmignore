@@ -13,6 +13,9 @@ EXPENSE_POLICY.md
 .clinic
 .gitpod.yml
 
+# AI files
+.claude/
+
 # test certification
 test/https/fastify.cert
 test/https/fastify.key

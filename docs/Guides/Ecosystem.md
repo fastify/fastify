@@ -745,7 +745,7 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-
+- [`fastify-file-router`](https://github.com/bhouston/fastify-file-router) A fully typesafe TanStack Start / Next.JS-style filesystem-based router with both JSONSchema and Zod schema support.
 
 #### [Community Tools](#community-tools)
 

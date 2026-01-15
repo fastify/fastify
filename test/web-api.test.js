@@ -5,6 +5,7 @@ const Fastify = require('../fastify')
 const fs = require('node:fs')
 const { Readable } = require('node:stream')
 const { fetch: undiciFetch } = require('undici')
+const http = require('node:http')
 
 test('should response with a ReadableStream', async (t) => {
   t.plan(2)
@@ -374,7 +375,6 @@ test('WebStream error after headers sent should destroy response', (t, done) => 
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
 
-    const http = require('node:http')
     let finished = false
     http.get(`http://localhost:${fastify.server.address().port}`, (res) => {
       res.on('close', () => {
@@ -415,7 +415,6 @@ test('WebStream should cancel reader when response is destroyed', (t, done) => {
   fastify.listen({ port: 0 }, err => {
     t.assert.ifError(err)
 
-    const http = require('node:http')
     const req = http.get(`http://localhost:${fastify.server.address().port}`, (res) => {
       res.once('data', () => {
         req.destroy()
@@ -437,7 +436,7 @@ test('WebStream should warn when headers already sent', async (t) => {
     fatal: () => { },
     error: () => { },
     warn: (msg) => {
-      if (typeof msg === 'string' && msg.includes('writeHead')) {
+      if (typeof msg === 'string' && msg.includes('use res.writeHead in stream mode')) {
         warnCalled = true
       }
     },

@@ -432,6 +432,8 @@ section.
   on HTTP and HTTPS.
 - [`fastify-https-always`](https://github.com/mattbishop/fastify-https-always)
   Lightweight, proxy-aware redirect plugin from HTTP to HTTPS.
+- [`fastify-http-exceptions`](https://github.com/bhouston/fastify-http-exceptions)
+  Typed HTTP status exceptions which are automatically converted into Fastify responses.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
 - [`fastify-i18n`](https://github.com/Vanilla-IceCream/fastify-i18n)
@@ -745,7 +747,6 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`fastify-http-exceptions`](https://github.com/bhouston/fastify-http-exceptions) A small, opinionated Fastify plugin and core library for typed HTTP status exceptions.
 
 #### [Community Tools](#community-tools)
 

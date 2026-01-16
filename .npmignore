@@ -13,6 +13,7 @@ EXPENSE_POLICY.md
 .clinic
 .gitpod.yml
 .vscode/
+*.log
 
 # AI files
 .claude/

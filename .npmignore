@@ -12,6 +12,7 @@ CONTRIBUTING.md
 EXPENSE_POLICY.md
 .clinic
 .gitpod.yml
+.vscode/
 
 # AI files
 .claude/

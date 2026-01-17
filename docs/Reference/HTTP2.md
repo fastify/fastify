@@ -2,13 +2,11 @@
 
 ## HTTP2
 
-_Fastify_ offers **experimental support** for HTTP2 starting from Node 8 LTS,
-which includes HTTP2 without a flag; HTTP2 is supported over either HTTPS or
-plaintext.
+_Fastify_ supports HTTP2 over HTTPS (h2) or plaintext (h2c).
 
 Currently, none of the HTTP2-specific APIs are available through _Fastify_, but
-Node's `req` and `res` can be accessed through our `Request` and `Reply`
-interface. PRs are welcome.
+Node's `req` and `res` can be accessed through the `Request` and `Reply`
+interfaces. PRs are welcome.
 
 ### Secure (HTTPS)
 
@@ -17,8 +15,8 @@ HTTP2 is supported in all modern browsers __only over a secure connection__:
 ```js
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('fastify')({
   http2: true,
   https: {
@@ -34,7 +32,8 @@ fastify.get('/', function (request, reply) {
 fastify.listen({ port: 3000 })
 ```
 
-ALPN negotiation allows support for both HTTPS and HTTP/2 over the same socket.
+[ALPN negotiation](https://datatracker.ietf.org/doc/html/rfc7301) allows
+support for both HTTPS and HTTP/2 over the same socket.
 Node core `req` and `res` objects can be either
 [HTTP/1](https://nodejs.org/api/http.html) or
 [HTTP/2](https://nodejs.org/api/http2.html). _Fastify_ supports this out of the
@@ -43,8 +42,8 @@ box:
 ```js
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const fastify = require('fastify')({
   http2: true,
   https: {
@@ -62,7 +61,7 @@ fastify.get('/', function (request, reply) {
 fastify.listen({ port: 3000 })
 ```
 
-You can test your new server with:
+Test the new server with:
 
 ```
 $ npx h2url https://localhost:3000
@@ -70,8 +69,8 @@ $ npx h2url https://localhost:3000
 
 ### Plain or insecure
 
-If you are building microservices, you can connect to HTTP2 in plain text,
-however, this is not supported by browsers.
+For microservices, HTTP2 can connect in plain text, but this is not
+supported by browsers.
 
 ```js
 'use strict'
@@ -87,7 +86,7 @@ fastify.get('/', function (request, reply) {
 fastify.listen({ port: 3000 })
 ```
 
-You can test your new server with:
+Test the new server with:
 
 ```
 $ npx h2url http://localhost:3000

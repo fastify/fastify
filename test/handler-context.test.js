@@ -1,19 +1,9 @@
 'use strict'
+const { test } = require('node:test')
+const { kRouteContext } = require('../lib/symbols')
+const fastify = require('..')
 
-const http = require('http')
-const test = require('tap').test
-const fastify = require('../')
-
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
-
-test('handlers receive correct `this` context', (t) => {
+test('handlers receive correct `this` context', async (t) => {
   t.plan(4)
 
   // simulate plugin that uses fastify-plugin
@@ -27,37 +17,29 @@ test('handlers receive correct `this` context', (t) => {
   instance.register(plugin)
 
   instance.get('/', function (req, reply) {
-    t.ok(this.foo)
-    t.equal(this.foo, 'foo')
+    t.assert.ok(this.foo)
+    t.assert.strictEqual(this.foo, 'foo')
     reply.send()
   })
 
-  instance.listen({ port: 0 }, (err) => {
-    instance.server.unref()
-    if (err) t.threw(err)
-    t.ok(instance.foo)
-    t.equal(instance.foo, 'foo')
+  await instance.inject('/')
 
-    http.get(getUrl(instance), () => {}).on('error', t.threw)
-  })
+  t.assert.ok(instance.foo)
+  t.assert.strictEqual(instance.foo, 'foo')
 })
 
-test('handlers have access to the internal context', (t) => {
+test('handlers have access to the internal context', async (t) => {
   t.plan(5)
 
   const instance = fastify()
   instance.get('/', { config: { foo: 'bar' } }, function (req, reply) {
-    t.ok(reply.context)
-    t.ok(reply.context.config)
-    t.type(reply.context.config, Object)
-    t.ok(reply.context.config.foo)
-    t.equal(reply.context.config.foo, 'bar')
+    t.assert.ok(reply[kRouteContext])
+    t.assert.ok(reply[kRouteContext].config)
+    t.assert.ok(typeof reply[kRouteContext].config, Object)
+    t.assert.ok(reply[kRouteContext].config.foo)
+    t.assert.strictEqual(reply[kRouteContext].config.foo, 'bar')
     reply.send()
   })
 
-  instance.listen({ port: 0 }, (err) => {
-    instance.server.unref()
-    if (err) t.threw(err)
-    http.get(getUrl(instance), () => {}).on('error', t.threw)
-  })
+  await instance.inject('/')
 })

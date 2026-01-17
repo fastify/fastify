@@ -48,8 +48,8 @@ server (fewer resources allocated to a bound-to-fail task) and for the client
 That will be achieved by wrapping into a custom plugin two main features:
 
 1. the mechanism for authenticating with the provider
-[decorating](../Referece/Decorators.md) the `fastify` object with the
-authentication key (`magicKey` from here onwards)
+[decorating](../Reference/Decorators.md) the `fastify` object with the
+authentication key (`magicKey` from here onward)
 1. the mechanism for denying requests that would, otherwise, fail
 
 ### Hands-on
@@ -77,8 +77,8 @@ server.get('/ping', function (request, reply) {
 })
 
 server.post('/webhook', function (request, reply) {
-  // It's good practice to validate webhook requests really come from
-  // whoever you expect. This is skipped in this sample for the sake
+  // It's good practice to validate webhook requests come from
+  // who you expect. This is skipped in this sample for the sake
   // of simplicity
 
   const { magicKey } = request.body
@@ -103,7 +103,7 @@ server.get('/v1*', async function (request, reply) {
   }
 })
 
-server.decorate('magicKey', null)
+server.decorate('magicKey')
 
 server.listen({ port: '1234' }, () => {
   provider.thirdPartyMagicKeyGenerator(USUAL_WAIT_TIME_MS)
@@ -135,7 +135,7 @@ follows:
 
 ```js
 const { fetch } = require('undici')
-const { setTimeout } = require('timers/promises')
+const { setTimeout } = require('node:timers/promises')
 
 const MAGIC_KEY = '12345'
 
@@ -249,7 +249,7 @@ server.listen({ port: '1234' })
 
 ```js
 const { fetch } = require('undici')
-const { setTimeout } = require('timers/promises')
+const { setTimeout } = require('node:timers/promises')
 
 const MAGIC_KEY = '12345'
 
@@ -303,7 +303,7 @@ async function setup(fastify) {
   fastify.server.on('listening', doMagic)
 
   // Set up the placeholder for the magicKey
-  fastify.decorate('magicKey', null)
+  fastify.decorate('magicKey')
 
   // Our magic -- important to make sure errors are handled. Beware of async
   // functions outside `try/catch` blocks
@@ -406,7 +406,7 @@ https://nodejs.org/api/net.html#event-listening). We use that to reach out to
 our provider as soon as possible, with the `doMagic` function.
 
 ```js
-  fastify.decorate('magicKey', null)
+  fastify.decorate('magicKey')
 ```
 
 The `magicKey` decoration is also part of the plugin now. We initialize it with
@@ -448,10 +448,10 @@ have the possibility of giving the customer meaningful information, like how
 long they should wait before retrying the request. Going even further, by
 issuing a [`503` status
 code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503) we're
-signaling to our infrastructure components (namely load balancers) we're still
-not ready to take incoming requests and they should redirect traffic to other
-instances, if available, besides in how long we estimate that will be solved.
-All of that in a few simple lines!
+signaling to our infrastructure components (namely load balancers) that we're
+still not ready to take incoming requests and they should redirect traffic to
+other instances, if available. Additionally, we are providing a `Retry-After`
+header with the time in milliseconds the client should wait before retrying.
 
 It's noteworthy that we didn't use the `fastify-plugin` wrapper in the `delay`
 factory. That's because we wanted the `onRequest` hook to only be set within
@@ -524,14 +524,17 @@ Retry-After: 5000
 }
 ```
 
-Then we attempt a new request (`req-2`), which was a `GET /ping`. As expected,
+Then we attempted a new request (`req-2`), which was a `GET /ping`. As expected,
 since that was not one of the requests we asked our plugin to filter, it
-succeeded. That could also be used as means of informing an interested party
-whether or not we were ready to serve requests (although `/ping` is more
-commonly associated with *liveness* checks and that would be the responsibility
-of a *readiness* check -- the curious reader can get more info on these terms
-[here](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes))
-with the `ready` field. Below is the response for that request:
+succeeded. That could also be used as a means of informing an interested party
+whether or not we were ready to serve requests with the `ready` field. Although
+`/ping` is more commonly associated with *liveness* checks and that would be
+the responsibility of a *readiness* check. The curious reader can get more info
+on these terms in the article
+["Kubernetes best practices: Setting up health checks with readiness and liveness probes"](
+https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes).
+
+Below is the response to that request:
 
 ```sh
 HTTP/1.1 200 OK
@@ -547,7 +550,7 @@ Keep-Alive: timeout=5
 }
 ```
 
-After that there were more interesting log messages:
+After that, there were more interesting log messages:
 
 <!-- markdownlint-disable -->
 ```sh

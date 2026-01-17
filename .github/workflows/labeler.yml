@@ -3,12 +3,12 @@ on: pull_request_target
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   label:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v4
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+    - uses: actions/labeler@v6

@@ -4,28 +4,23 @@
 > but otherwise remains the same. The original HTML can be retrieved from the
 > above permission link.
 
-## A Tale of (prototype) Poisoning
+## History behind prototype poisoning
 <a id="pp"></a>
 
-This story is a behind-the-scenes look at the process and drama created by a
-particularity interesting web security issue. It is also a perfect illustration
-of the efforts required to maintain popular pieces of open source software and
-the limitations of existing communication channels.
+Based on the article by Eran Hammer,the issue is created by a web security bug.
+It is also a perfect illustration of the efforts required to maintain
+open-source software and the limitations of existing communication channels.
 
-But first, if you use a JavaScript framework to process incoming JSON data, take
-a moment to read up on [Prototype
-Poisoning](https://medium.com/intrinsic/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96)
-in general, and the specific [technical
-details](https://github.com/hapijs/hapi/issues/3916) of this issue. I'll explain
-it all in a bit, but since this could be a critical issue, you might want to
-verify your own code first. While this story is focused on a specific framework,
-any solution that uses `JSON.parse()` to process external data is potentially at
-risk.
+But first, if we use a JavaScript framework to process incoming JSON data, take
+a moment to read up on [Prototype Poisoning](https://medium.com/intrinsic/javascript-prototype-poisoning-vulnerabilities-in-the-wild-7bc15347c96)
+in general, and the specific
+[technical details](https://github.com/hapijs/hapi/issues/3916) of this issue.
+This could be a critical issue so, we might need to verify your own code first.
+It focuses on specific framework however, any solution that uses `JSON.parse()`
+to process external data is potentially at risk.
 
 ### BOOM
 <a id="pp-boom"></a>
-
-Our story begins with a bang.
 
 The engineering team at Lob (long time generous supporters of my work!) reported
 a critical security vulnerability they identified in our data validation
@@ -34,21 +29,22 @@ details and a proposed solution.
 
 The main purpose of a data validation library is to ensure the output fully
 complies with the rules defined. If it doesn't, validation fails. If it passes,
-your can blindly trust that the data you are working with is safe. In fact, most
+we can blindly trust that the data you are working with is safe. In fact, most
 developers treat validated input as completely safe from a system integrity
-perspective. This is crucial.
+perspective which is crucial!
 
-In our case, the Lob team provided an example where some data was able to sneak
+In our case, the Lob team provided an example where some data was able to escape
 by the validation logic and pass through undetected. This is the worst possible
 defect a validation library can have.
 
 ### Prototype in a nutshell
 <a id="pp-nutshell"></a>
 
-To understand this story, you need to understand how JavaScript works a bit.
+To understand this, we need to understand how JavaScript works a bit.
 Every object in JavaScript can have a prototype. It is a set of methods and
-properties it "inherits" from another object. I put inherits in quotes because
-JavaScript isn't really an object oriented language.
+properties it "inherits" from another object. I have put inherits in quotes
+because JavaScript isn't really an object-oriented language. It is a prototype-
+based object-oriented language.
 
 A long time ago, for a bunch of irrelevant reasons, someone decided that it
 would be a good idea to use the special property name `__proto__` to access (and
@@ -68,22 +64,21 @@ To demonstrate:
 { b: 5 }
 ```
 
-As you can see, the object doesn't have a `c` property, but its prototype does.
+The object doesn't have a `c` property, but its prototype does.
 When validating the object, the validation library ignores the prototype and
 only validates the object's own properties. This allows `c` to sneak in via the
 prototype.
 
-Another important part of this story is the way `JSON.parse()` — a utility
-provided by the language to convert JSON formatted text into objects  —  handles
-this magic `__proto__` property name.
+Another important part is the way `JSON.parse()` — a utility
+provided by the language to convert JSON formatted text into
+objects  —  handles this magic `__proto__` property name.
 
 ```
-> const text = '{ "b": 5, "__proto__": { "c": 6 } }';
+> const text = '{"b": 5, "__proto__": { "c": 6 }}';
 > const a = JSON.parse(text);
 > a;
-{ b: 5, __proto__: { c: 6 } }
+{b: 5, __proto__: { c: 6 }}
 ```
-
 Notice how `a` has a `__proto__` property. This is not a prototype reference. It
 is a simple object property key, just like `b`. As we've seen from the first
 example, we can't actually create this key through assignment as that invokes
@@ -111,17 +106,17 @@ level properties of `a` into the provided empty `{}` object), the magic
 
 Surprise!
 
-Put together, if you get some external text input, parse it with `JSON.parse()`
-then perform some simple manipulation of that object (say, shallow clone and add
-an `id` ), and then pass it to our validation library, anything passed through
-via `__proto__` would sneak in undetected.
+If you get some external text input and parse it with `JSON.parse()`
+then perform some simple manipulation of that object (e.g shallow clone and add
+an `id` ), and pass it to our validation library, it would sneak in undetected
+via `__proto__`.
 
 ### Oh joi!
 <a id="pp-oh-joi"></a>
 
 The first question is, of course, why does the validation module **joi** ignore
 the prototype and let potentially harmful data through? We asked ourselves the
-same question and our instant thought was "it was an oversight". A bug. A really
+same question and our instant thought was "it was an oversight". A bug - a really
 big mistake. The joi module should not have allowed this to happen. But…
 
 While joi is used primarily for validating web input data, it also has a
@@ -166,7 +161,6 @@ will share with the world how to exploit this vulnerability while also making it
 more time consuming for systems to upgrade (breaking changes never get applied
 automatically by build tools).
 
-Lose — Lose.
 
 ### A detour
 <a id="pp-detour"></a>
@@ -386,6 +380,4 @@ plan](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-
 coming in March. You can read more about it
 [here](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898).
 
-Of all the time consuming things, security is at the very top. I hope this story
-successfully conveyed not just the technical details, but also the human drama and
-what it takes to keep the web secure.
+

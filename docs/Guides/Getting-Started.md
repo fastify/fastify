@@ -14,11 +14,12 @@ Let's start!
 <a id="install"></a>
 
 Install with npm:
-```
+```sh
 npm i fastify
 ```
+
 Install with yarn:
-```
+```sh
 yarn add fastify
 ```
 
@@ -31,6 +32,7 @@ Let's write our first server:
 
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -54,11 +56,20 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
+> If you are using ECMAScript Modules (ESM) in your project, be sure to
+> include "type": "module" in your package.json.
+>```js
+>{
+>  "type": "module"
+>}
+>```
+
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.
 
 ```js
 // ESM
 import Fastify from 'fastify'
+
 const fastify = Fastify({
   logger: true
 })
@@ -95,7 +106,7 @@ of your code.
 Fastify offers an easy platform that helps to solve all of the problems outlined
 above, and more!
 
-> ## Note
+> **Note**
 > The above examples, and subsequent examples in this document, default to
 > listening *only* on the localhost `127.0.0.1` interface. To listen on all
 > available IPv4 interfaces the example should be modified to listen on
@@ -117,6 +128,9 @@ above, and more!
 >
 > When deploying to a Docker (or another type of) container using `0.0.0.0` or
 > `::` would be the easiest method for exposing the application.
+>
+> Note that when using `0.0.0.0`, the address provided in the callback argument
+> above will be the first address the wildcard refers to.
 
 ### Your first plugin
 <a id="first-plugin"></a>
@@ -132,7 +146,7 @@ declaration](../Reference/Routes.md) docs).
 ```js
 // ESM
 import Fastify from 'fastify'
-import firstRoute from './our-first-route'
+import firstRoute from './our-first-route.js'
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
  */
@@ -171,13 +185,14 @@ fastify.listen({ port: 3000 }, function (err, address) {
 })
 ```
 
+
 ```js
 // our-first-route.js
 
 /**
  * Encapsulates the routes
  * @param {FastifyInstance} fastify  Encapsulated Fastify Instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
@@ -185,6 +200,10 @@ async function routes (fastify, options) {
   })
 }
 
+//ESM
+export default routes;
+
+// CommonJs
 module.exports = routes
 ```
 In this example, we used the `register` API, which is the core of the Fastify
@@ -208,7 +227,7 @@ Let's rewrite the above example with a database connection.
 
 First, install `fastify-plugin` and `@fastify/mongodb`:
 
-```
+```sh
 npm i fastify-plugin @fastify/mongodb
 ```
 
@@ -216,8 +235,8 @@ npm i fastify-plugin @fastify/mongodb
 ```js
 // ESM
 import Fastify from 'fastify'
-import dbConnector from './our-db-connector'
-import firstRoute from './our-first-route'
+import dbConnector from './our-db-connector.js'
+import firstRoute from './our-first-route.js'
 
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
@@ -277,7 +296,7 @@ async function dbConnector (fastify, options) {
 
 // Wrapping a plugin function with fastify-plugin exposes the decorators
 // and hooks, declared inside the plugin to the parent scope.
-module.exports = fastifyPlugin(dbConnector)
+export default fastifyPlugin(dbConnector)
 
 ```
 
@@ -292,7 +311,7 @@ const fastifyPlugin = require('fastify-plugin')
 /**
  * Connects to a MongoDB database
  * @param {FastifyInstance} fastify Encapsulated Fastify Instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function dbConnector (fastify, options) {
   fastify.register(require('@fastify/mongodb'), {
@@ -311,7 +330,7 @@ module.exports = fastifyPlugin(dbConnector)
 /**
  * A plugin that provide encapsulated routes
  * @param {FastifyInstance} fastify encapsulated fastify instance
- * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ * @param {Object} options plugin options, refer to https://fastify.dev/docs/latest/Reference/Plugins/#plugin-options
  */
 async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')
@@ -401,7 +420,7 @@ In this way, you will always have access to all of the properties declared in
 the current scope.
 
 As discussed previously, Fastify offers a solid encapsulation model, to help you
-build your application as single and independent services. If you want to
+build your application as independent services. If you want to
 register a plugin only for a subset of routes, you just have to replicate the
 above structure.
 ```
@@ -433,8 +452,6 @@ Data validation is extremely important and a core concept of the framework.
 
 To validate incoming requests, Fastify uses [JSON
 Schema](https://json-schema.org/).
-
-(JTD schemas are loosely supported, but `jsonShorthand` must be disabled first)
 
 Let's look at an example demonstrating validation for routes:
 ```js
@@ -545,12 +562,13 @@ Read the [testing](./Testing.md) documentation to learn more!
 ### Run your server from CLI
 <a id="cli"></a>
 
-Fastify also has CLI integration thanks to
-[fastify-cli](https://github.com/fastify/fastify-cli).
+Fastify also has CLI integration via
+[fastify-cli](https://github.com/fastify/fastify-cli),
+a separate tool for scaffolding and managing Fastify projects.
 
 First, install `fastify-cli`:
 
-```
+```sh
 npm i fastify-cli
 ```
 

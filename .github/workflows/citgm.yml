@@ -1,0 +1,132 @@
+name: CITGM
+
+on:
+  pull_request:
+    types: [labeled]
+  
+  workflow_dispatch:
+    inputs:
+      node-version:
+        description: 'Node version'
+        required: true
+        type: choice
+        options:
+          - '20'
+          - '22'
+          - '24'
+          - 'lts/*'
+          - 'nightly'
+          - 'current'
+          - 'latest'
+        default: '24'
+      os:
+        description: 'Operating System'
+        required: false
+        type: choice
+        default: 'ubuntu-latest'
+        options:
+          - 'ubuntu-latest'
+          - 'windows-latest'
+          - 'macos-latest'
+
+permissions:
+  contents: read
+
+jobs:
+  core-plugins:
+    name: CITGM
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'citgm-core-plugins' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - '@fastify/accepts'
+          - '@fastify/accepts-serializer'
+          - '@fastify/auth'
+          - '@fastify/autoload'
+          - '@fastify/awilix'
+          - '@fastify/aws-lambda'
+          - '@fastify/basic-auth'
+          - '@fastify/bearer-auth'
+          - '@fastify/caching'
+          - '@fastify/circuit-breaker'
+          - '@fastify/compress'
+          - '@fastify/cookie'
+          - '@fastify/cors'
+          - '@fastify/csrf-protection'
+          # - '@fastify/elasticsearch'
+          - '@fastify/env'
+          - '@fastify/etag'
+          - '@fastify/express'
+          - '@fastify/flash'
+          - '@fastify/formbody'
+          - '@fastify/funky'
+          - '@fastify/helmet'
+          - '@fastify/hotwire'
+          - '@fastify/http-proxy'
+          - '@fastify/jwt'
+          # - '@fastify/kafka'
+          - '@fastify/leveldb'
+          - '@fastify/middie'
+          # - '@fastify/mongodb'
+          - '@fastify/multipart'
+          # - '@fastify/mysql'
+          - '@fastify/nextjs'
+          - '@fastify/oauth2'
+          - '@fastify/one-line-logger'
+          - '@fastify/passport'
+          # - '@fastify/postgres'
+          # - '@fastify/rate-limit'
+          # - '@fastify/redis'
+          - '@fastify/reply-from'
+          - '@fastify/request-context'
+          - '@fastify/response-validation'
+          - '@fastify/routes'
+          - '@fastify/schedule'
+          - '@fastify/secure-session'
+          - '@fastify/sensible'
+          - '@fastify/session'
+          - '@fastify/sse'
+          - '@fastify/static'
+          - '@fastify/swagger'
+          - '@fastify/swagger-ui'
+          - '@fastify/throttle'
+          - '@fastify/type-provider-json-schema-to-ts'
+          - '@fastify/type-provider-typebox'
+          - '@fastify/under-pressure'
+          - '@fastify/url-data'
+          - '@fastify/view'
+          # - '@fastify/vite'
+          - '@fastify/websocket'
+          - '@fastify/zipkin'
+    uses: './.github/workflows/citgm-package.yml'
+    with:
+      os: ${{ github.event_name == 'workflow_dispatch' && inputs.os || 'ubuntu-latest' }}
+      package: ${{ matrix.package }}
+      node-version: ${{ github.event_name == 'workflow_dispatch' && inputs.node-version || '24' }}
+
+  remove-label:
+    if: ${{ always() && github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'citgm-core-plugins' }}
+    needs:
+      - core-plugins
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Remove citgm-core-plugins label
+        uses: octokit/request-action@v2.x
+        id: remove-label
+        with:
+          route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}
+          repo: ${{ github.repository }}
+          issue_number: ${{ github.event.pull_request.number }}
+          name: citgm-core-plugins
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: "echo Successfully removed label"
+        if: ${{ success() }}
+      - run: "echo Could not remove label"
+        if: ${{ failure() }}

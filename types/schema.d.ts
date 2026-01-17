@@ -1,5 +1,6 @@
-import { ValidatorCompiler } from '@fastify/ajv-compiler'
-import { FastifyInstance, FastifyServerOptions } from '../fastify'
+import { ValidatorFactory } from '@fastify/ajv-compiler'
+import { SerializerFactory } from '@fastify/fast-json-stringify-compiler'
+import { FastifyInstance, SafePromiseLike } from '../fastify'
 /**
  * Schemas in Fastify follow the JSON-Schema standard. For this reason
  * we have opted to not ship strict schema based types. Instead we provide
@@ -20,15 +21,19 @@ export interface FastifyRouteSchemaDef<T> {
   url: string;
   httpPart?: string;
   httpStatus?: string;
+  contentType?: string;
 }
 
 export interface FastifySchemaValidationError {
-  message?: string;
+  keyword: string;
   instancePath: string;
+  schemaPath: string;
+  params: Record<string, unknown>;
+  message?: string;
 }
 
 export interface FastifyValidationResult {
-  (data: any): boolean | PromiseLike<any> | { error?: Error, value?: any }
+  (data: any): boolean | SafePromiseLike<any> | { error?: Error | FastifySchemaValidationError[], value?: any }
   errors?: FastifySchemaValidationError[] | null;
 }
 
@@ -39,14 +44,18 @@ export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) =
 
 export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string
 
-export interface FastifySchemaControllerOptions{
+export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {
-    addSchema(schema: unknown): FastifyInstance;
+    add(schema: unknown): FastifyInstance;
     getSchema(schemaId: string): unknown;
     getSchemas(): Record<string, unknown>;
   };
   compilersFactory?: {
-    buildValidator?: ValidatorCompiler;
-    buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions['serializerOpts']) => FastifySerializerCompiler<unknown>;
+    buildValidator?: ValidatorFactory;
+    buildSerializer?: SerializerFactory;
   };
 }
+
+export type SchemaErrorDataVar = 'body' | 'headers' | 'params' | 'querystring'
+
+export type SchemaErrorFormatter = (errors: FastifySchemaValidationError[], dataVar: SchemaErrorDataVar) => Error

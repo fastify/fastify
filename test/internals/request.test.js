@@ -1,8 +1,14 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 
 const Request = require('../../lib/request')
+const Context = require('../../lib/context')
+const {
+  kReply,
+  kRequest,
+  kOptions
+} = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
 
@@ -16,31 +22,112 @@ test('Regular request', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
   req.connection = req.socket
-  const request = new Request('id', 'params', req, 'query', 'log')
-  t.type(request, Request)
-  t.equal(request.id, 'id')
-  t.equal(request.params, 'params')
-  t.equal(request.raw, req)
-  t.equal(request.query, 'query')
-  t.equal(request.headers, headers)
-  t.equal(request.log, 'log')
-  t.equal(request.ip, 'ip')
-  t.equal(request.ips, undefined)
-  t.equal(request.hostname, 'hostname')
-  t.equal(request.body, undefined)
-  t.equal(request.method, 'GET')
-  t.equal(request.url, '/')
-  t.equal(request.socket, req.socket)
-  t.equal(request.protocol, 'http')
+  const request = new Request('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof Request)
+  t.assert.ok(request.validateInput instanceof Function)
+  t.assert.ok(request.getValidationFunction instanceof Function)
+  t.assert.ok(request.compileValidationSchema instanceof Function)
+  t.assert.strictEqual(request.id, 'id')
+  t.assert.strictEqual(request.params, 'params')
+  t.assert.strictEqual(request.raw, req)
+  t.assert.strictEqual(request.query, 'query')
+  t.assert.strictEqual(request.headers, headers)
+  t.assert.strictEqual(request.log, 'log')
+  t.assert.strictEqual(request.ip, 'ip')
+  t.assert.strictEqual(request.ips, undefined)
+  t.assert.strictEqual(request.host, 'hostname')
+  t.assert.strictEqual(request.body, undefined)
+  t.assert.strictEqual(request.method, 'GET')
+  t.assert.strictEqual(request.url, '/')
+  t.assert.strictEqual(request.originalUrl, '/')
+  t.assert.strictEqual(request.socket, req.socket)
+  t.assert.strictEqual(request.protocol, 'http')
+  // Aim to not bad property keys (including Symbols)
+  t.assert.ok(!('undefined' in request))
+})
 
-  // This will be removed, it's deprecated
-  t.equal(request.connection, req.connection)
-  t.end()
+test('Request with undefined config', t => {
+  const headers = {
+    host: 'hostname'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: 'ip' },
+    headers
+  }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
+  req.connection = req.socket
+  const request = new Request('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request, Request)
+  t.assert.ok(request.validateInput, Function)
+  t.assert.ok(request.getValidationFunction, Function)
+  t.assert.ok(request.compileValidationSchema, Function)
+  t.assert.strictEqual(request.id, 'id')
+  t.assert.strictEqual(request.params, 'params')
+  t.assert.strictEqual(request.raw, req)
+  t.assert.strictEqual(request.query, 'query')
+  t.assert.strictEqual(request.headers, headers)
+  t.assert.strictEqual(request.log, 'log')
+  t.assert.strictEqual(request.ip, 'ip')
+  t.assert.strictEqual(request.ips, undefined)
+  t.assert.strictEqual(request.hostname, 'hostname')
+  t.assert.strictEqual(request.body, undefined)
+  t.assert.strictEqual(request.method, 'GET')
+  t.assert.strictEqual(request.url, '/')
+  t.assert.strictEqual(request.originalUrl, '/')
+  t.assert.strictEqual(request.socket, req.socket)
+  t.assert.strictEqual(request.protocol, 'http')
+
+  // Aim to not bad property keys (including Symbols)
+  t.assert.ok(!('undefined' in request))
 })
 
 test('Regular request - hostname from authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     ':authority': 'authority'
   }
@@ -50,14 +137,39 @@ test('Regular request - hostname from authority', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
 
-  const request = new Request('id', 'params', req, 'query', 'log')
-  t.type(request, Request)
-  t.equal(request.hostname, 'authority')
+  const request = new Request('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof Request)
+  t.assert.strictEqual(request.host, 'authority')
+  t.assert.strictEqual(request.port, null)
 })
 
 test('Regular request - host header has precedence over authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     host: 'hostname',
     ':authority': 'authority'
@@ -68,13 +180,38 @@ test('Regular request - host header has precedence over authority', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
-  const request = new Request('id', 'params', req, 'query', 'log')
-  t.type(request, Request)
-  t.equal(request.hostname, 'hostname')
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
+  const request = new Request('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof Request)
+  t.assert.strictEqual(request.host, 'hostname')
+  t.assert.strictEqual(request.port, null)
 })
 
 test('Request with trust proxy', t => {
-  t.plan(15)
+  t.plan(18)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -85,24 +222,50 @@ test('Request with trust proxy', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      }
+    }
+  })
 
   const TpRequest = Request.buildRequest(Request, true)
-  const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.type(request, TpRequest)
-  t.equal(request.id, 'id')
-  t.equal(request.params, 'params')
-  t.same(request.raw, req)
-  t.equal(request.query, 'query')
-  t.equal(request.headers, headers)
-  t.equal(request.log, 'log')
-  t.equal(request.ip, '2.2.2.2')
-  t.same(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
-  t.equal(request.hostname, 'example.com')
-  t.equal(request.body, undefined)
-  t.equal(request.method, 'GET')
-  t.equal(request.url, '/')
-  t.equal(request.socket, req.socket)
-  t.equal(request.protocol, 'http')
+  const request = new TpRequest('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.id, 'id')
+  t.assert.strictEqual(request.params, 'params')
+  t.assert.deepStrictEqual(request.raw, req)
+  t.assert.strictEqual(request.query, 'query')
+  t.assert.strictEqual(request.headers, headers)
+  t.assert.strictEqual(request.log, 'log')
+  t.assert.strictEqual(request.ip, '2.2.2.2')
+  t.assert.deepStrictEqual(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
+  t.assert.strictEqual(request.host, 'example.com')
+  t.assert.strictEqual(request.body, undefined)
+  t.assert.strictEqual(request.method, 'GET')
+  t.assert.strictEqual(request.url, '/')
+  t.assert.strictEqual(request.socket, req.socket)
+  t.assert.strictEqual(request.protocol, 'http')
+  t.assert.ok(request.validateInput instanceof Function)
+  t.assert.ok(request.getValidationFunction instanceof Function)
+  t.assert.ok(request.compileValidationSchema instanceof Function)
 })
 
 test('Request with trust proxy, encrypted', t => {
@@ -120,8 +283,8 @@ test('Request with trust proxy, encrypted', t => {
 
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.type(request, TpRequest)
-  t.equal(request.protocol, 'https')
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.protocol, 'https')
 })
 
 test('Request with trust proxy - no x-forwarded-host header', t => {
@@ -136,11 +299,35 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
 
   const TpRequest = Request.buildRequest(Request, true)
-  const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.type(request, TpRequest)
-  t.equal(request.hostname, 'hostname')
+  const request = new TpRequest('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.host, 'hostname')
 })
 
 test('Request with trust proxy - no x-forwarded-host header and fallback to authority', t => {
@@ -155,11 +342,35 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
 
   const TpRequest = Request.buildRequest(Request, true)
-  const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.type(request, TpRequest)
-  t.equal(request.hostname, 'authority')
+  const request = new TpRequest('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.host, 'authority')
 })
 
 test('Request with trust proxy - x-forwarded-host header has precedence over host', t => {
@@ -178,8 +389,8 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
 
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.type(request, TpRequest)
-  t.equal(request.hostname, 'example.com')
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.host, 'example.com')
 })
 
 test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
@@ -197,9 +408,9 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
 
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.type(request, TpRequest)
-  t.equal(request.hostname, 'example.com')
-  t.equal(request.protocol, 'https')
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.host, 'example.com')
+  t.assert.strictEqual(request.protocol, 'https')
 })
 
 test('Request with trust proxy - plain', t => {
@@ -217,11 +428,11 @@ test('Request with trust proxy - plain', t => {
 
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.same(request.protocol, 'http')
+  t.assert.deepStrictEqual(request.protocol, 'http')
 })
 
 test('Request with undefined socket', t => {
-  t.plan(15)
+  t.plan(18)
   const headers = {
     host: 'hostname'
   }
@@ -231,22 +442,49 @@ test('Request with undefined socket', t => {
     socket: undefined,
     headers
   }
-  const request = new Request('id', 'params', req, 'query', 'log')
-  t.type(request, Request)
-  t.equal(request.id, 'id')
-  t.equal(request.params, 'params')
-  t.same(request.raw, req)
-  t.equal(request.query, 'query')
-  t.equal(request.headers, headers)
-  t.equal(request.log, 'log')
-  t.equal(request.ip, undefined)
-  t.equal(request.ips, undefined)
-  t.equal(request.hostname, 'hostname')
-  t.same(request.body, null)
-  t.equal(request.method, 'GET')
-  t.equal(request.url, '/')
-  t.equal(request.protocol, undefined)
-  t.same(request.socket, req.socket)
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request,
+      [kOptions]: {
+        requestIdLogLabel: 'reqId'
+      },
+      server: {}
+    }
+  })
+  const request = new Request('id', 'params', req, 'query', 'log', context)
+  t.assert.ok(request instanceof Request)
+  t.assert.strictEqual(request.id, 'id')
+  t.assert.strictEqual(request.params, 'params')
+  t.assert.deepStrictEqual(request.raw, req)
+  t.assert.strictEqual(request.query, 'query')
+  t.assert.strictEqual(request.headers, headers)
+  t.assert.strictEqual(request.log, 'log')
+  t.assert.strictEqual(request.ip, undefined)
+  t.assert.strictEqual(request.ips, undefined)
+  t.assert.strictEqual(request.host, 'hostname')
+  t.assert.deepStrictEqual(request.body, undefined)
+  t.assert.strictEqual(request.method, 'GET')
+  t.assert.strictEqual(request.url, '/')
+  t.assert.strictEqual(request.protocol, undefined)
+  t.assert.deepStrictEqual(request.socket, req.socket)
+  t.assert.ok(request.validateInput instanceof Function)
+  t.assert.ok(request.getValidationFunction instanceof Function)
+  t.assert.ok(request.compileValidationSchema instanceof Function)
 })
 
 test('Request with trust proxy and undefined socket', t => {
@@ -264,5 +502,5 @@ test('Request with trust proxy and undefined socket', t => {
 
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.same(request.protocol, undefined)
+  t.assert.deepStrictEqual(request.protocol, undefined)
 })

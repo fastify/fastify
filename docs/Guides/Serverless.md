@@ -1,20 +1,20 @@
 <h1 align="center">Serverless</h1>
 
 Run serverless applications and REST APIs using your existing Fastify
-application. By default, Fastify will not work on your serverless platform of
-choice, you will need to make some small changes to fix this. This document
-contains a small guide for the most popular serverless providers and how to use
+application. You may need to make code changes to work on your
+serverless platform of choice. This document contains a small guide
+for the most popular serverless providers and how to use
 Fastify with them.
 
 #### Should you use Fastify in a serverless platform?
 
-That is up to you! Keep in mind that functions as a service should always use
+That is up to you! Keep in mind, functions as a service should always use
 small and focused functions, but you can also run an entire web application with
 them. It is important to remember that the bigger the application the slower the
 initial boot will be. The best way to run Fastify applications in serverless
-environments is to use platforms like Google Cloud Run, AWS Fargate, and Azure
-Container Instances, where the server can handle multiple requests at the same
-time and make full use of Fastify's features.
+environments is to use platforms like Google Cloud Run, AWS Fargate, Azure
+Container Instances, and Vercel where the server can handle multiple requests
+at the same time and make full use of Fastify's features.
 
 One of the best features of using Fastify in serverless applications is the ease
 of development. In your local environment, you will always run the Fastify
@@ -24,23 +24,33 @@ snippet of code.
 
 ### Contents
 
-- [AWS Lambda](#aws-lambda)
+- [AWS](#aws)
+- [Genezio](#genezio)
 - [Google Cloud Functions](#google-cloud-functions)
+- [Google Firebase Functions](#google-firebase-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
 
-## AWS Lambda
+## AWS
+
+To integrate with AWS, you have two choices of library:
+
+- Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify)
+  which only adds API Gateway support but has heavy optimizations for fastify.
+- Using [@h4ad/serverless-adapter](https://github.com/H4ad/serverless-adapter)
+  which is a little slower as it creates an HTTP request for each AWS event but
+  has support for more AWS services such as: AWS SQS, AWS SNS and others.
+
+So you can decide which option is best for you, but you can test both libraries.
+
+### Using @fastify/aws-lambda
 
 The sample provided allows you to easily build serverless web
 applications/services and RESTful APIs using Fastify on top of AWS Lambda and
 Amazon API Gateway.
 
-*Note: Using
-[@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) is just one
-possible way.*
-
-### app.js
+#### app.js
 
 ```js
 const fastify = require('fastify');
@@ -71,7 +81,7 @@ When you execute your Fastify application like always, i.e. `node app.js` *(the
 detection for this could be `require.main === module`)*, you can normally listen
 to your port, so you can still run your Fastify function locally.
 
-### lambda.js
+#### lambda.js
 
 ```js
 const awsLambdaFastify = require('@fastify/aws-lambda')
@@ -99,13 +109,12 @@ signature to be used as a lambda `handler` function. This way all the incoming
 events (API Gateway requests) are passed to the `proxy` function of
 [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify).
 
-### Example
+#### Example
 
 An example deployable with
 [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be
 found
 [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
-
 
 ### Considerations
 
@@ -113,6 +122,19 @@ found
   [streams](../Reference/Reply.md#streams).
 - API Gateway has a timeout of 29 seconds, so it is important to provide a reply
   during this time.
+
+#### Beyond API Gateway
+
+If you need to integrate with more AWS services, take a look at
+[@h4ad/serverless-adapter](https://viniciusl.com.br/serverless-adapter/docs/main/frameworks/fastify)
+on Fastify to find out how to integrate.
+
+## Genezio
+
+[Genezio](https://genezio.com/) is a platform designed to simplify the deployment
+of serverless applications to the cloud.
+
+[Genezio has a dedicated guide for deploying a Fastify application.](https://genezio.com/docs/frameworks/fastify/)
 
 ## Google Cloud Functions
 
@@ -189,7 +211,7 @@ const fastifyFunction = async (request, reply) => {
   fastify.server.emit('request', request, reply)
 }
 
-export.fastifyFunction = fastifyFunction;
+exports.fastifyFunction = fastifyFunction;
 ```
 
 ### Local test
@@ -215,13 +237,12 @@ npx @google-cloud/functions-framework --target=fastifyFunction
 Or add this command to your `package.json` scripts:
 ```json
 "scripts": {
-...
-"dev": "npx @google-cloud/functions-framework --target=fastifyFunction"
-...
+  ...
+  "dev": "npx @google-cloud/functions-framework --target=fastifyFunction"
+  ...
 }
 ```
 and run it with `npm run dev`.
-
 
 ### Deploy
 ```bash
@@ -246,6 +267,132 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 - [Google Cloud Functions - Node.js Quickstart
   ](https://cloud.google.com/functions/docs/quickstart-nodejs)
 
+## Google Firebase Functions
+
+Follow this guide if you want to use Fastify as the HTTP framework for
+Firebase Functions instead of the vanilla JavaScript router provided with
+`onRequest(async (req, res) => {}`.
+
+### The onRequest() handler
+
+We use the `onRequest` function to wrap our Fastify application instance.
+
+As such, we'll begin with importing it to the code:
+
+```js
+const { onRequest } = require("firebase-functions/v2/https")
+```
+
+### Creation of Fastify instance
+
+Create the Fastify instance and encapsulate the returned application instance
+in a function that will register routes, await the server's processing of
+plugins, hooks, and other settings. As follows:
+
+```js
+const fastify = require("fastify")({
+  logger: true,
+})
+
+const fastifyApp = async (request, reply) => {
+  await registerRoutes(fastify)
+  await fastify.ready()
+  fastify.server.emit("request", request, reply)
+}
+```
+
+### Add Custom `contentTypeParser` to Fastify instance and define endpoints
+
+Firebase Function's HTTP layer already parses the request and makes a JSON
+payload available through the property `payload.body` below. It also provides
+access to the raw body, unparsed, which is useful for calculating request
+signatures to validate HTTP webhooks.
+
+Add as follows to the `registerRoutes()` function:
+
+```js
+async function registerRoutes (fastify) {
+  fastify.addContentTypeParser("application/json", {}, (req, payload, done) => {
+    // useful to include the request's raw body on the `req` object that will
+    // later be available in your other routes so you can calculate the HMAC
+    // if needed
+    req.rawBody = payload.rawBody
+
+    // payload.body is already the parsed JSON so we just fire the done callback
+    // with it
+    done(null, payload.body)
+  })
+
+  // define your endpoints here...
+  fastify.post("/some-route-here", async (request, reply) => {})
+
+  fastify.get('/', async (request, reply) => {
+    reply.send({message: 'Hello World!'})
+  })
+}
+```
+
+**Failing to add this `ContentTypeParser` may lead to the Fastify process
+remaining stuck and not processing any other requests after receiving one with
+the Content-Type `application/json`.**
+
+When using Typescript, since the type of `payload` is a native `IncomingMessage`
+that gets modified by Firebase, it won't be able to find the property
+`payload.body`.
+
+In order to suppress the error, you can use the following signature:
+
+```ts
+declare module 'http' {
+	interface IncomingMessage {
+		body?: unknown;
+	}
+}
+```
+
+### Export the function using Firebase onRequest
+
+Final step is to export the Fastify app instance to Firebase's own
+`onRequest()` function so it can pass the request and reply objects to it:
+
+```js
+exports.app = onRequest(fastifyApp)
+```
+
+### Local test
+
+Install the Firebase tools functions so you can use the CLI:
+
+```bash
+npm i -g firebase-tools
+```
+
+Then you can run your function locally with:
+
+```bash
+firebase emulators:start --only functions
+```
+
+### Deploy
+
+Deploy your Firebase Functions with:
+
+```bash
+firebase deploy --only functions
+```
+
+#### Read logs
+
+Use the Firebase tools CLI:
+
+```bash
+firebase functions:log
+```
+
+### References
+- [Fastify on Firebase Functions](https://github.com/lirantal/lemon-squeezy-firebase-webhook-fastify/blob/main/package.json)
+- [An article about HTTP webhooks on Firebase Functions and Fastify: A Practical Case Study with Lemon Squeezy](https://lirantal.com/blog/http-webhooks-firebase-functions-fastify-practical-case-study-lemon-squeezy)
+
 ## Google Cloud Run
 
 Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless
@@ -260,7 +407,7 @@ familiar with gcloud or just follow their
 
 ### Adjust Fastify server
 
-In order for Fastify to properly listen for requests within the container, be
+For Fastify to properly listen for requests within the container, be
 sure to set the correct port and address:
 
 ```js
@@ -331,7 +478,7 @@ CMD [ "npm", "start" ]
 To keep build artifacts out of your container (which keeps it small and improves
 build times) add a `.dockerignore` file like the one below:
 
-```.dockerignore
+```dockerignore
 Dockerfile
 README.md
 node_modules
@@ -358,12 +505,11 @@ gcloud beta run deploy --image gcr.io/PROJECT-ID/APP-NAME --platform managed
 
 Your app will be accessible from the URL GCP provides.
 
-
 ## netlify-lambda
 
 First, please perform all preparation steps related to **AWS Lambda**.
 
-Create a folder called `functions`,  then create `server.js` (and your endpoint
+Create a folder called `functions`, then create `server.js` (and your endpoint
 path will be `server.js`) inside the `functions` folder.
 
 ### functions/server.js
@@ -432,54 +578,27 @@ Add this command to your `package.json` *scripts*
 
 ```json
 "scripts": {
-...
-"build:functions": "netlify-lambda build functions --config ./webpack.config.netlify.js"
-...
+  ...
+  "build:functions": "netlify-lambda build functions --config ./webpack.config.netlify.js"
+  ...
 }
 ```
 
-Then it should work fine
-
+Then it should work fine.
 
 ## Vercel
 
-[Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
-applications. To use it now, it is as simple as configuring your `vercel.json`
-file like the following:
+[Vercel](https://vercel.com) fully supports deploying Fastify applications.
+Additionally, with Vercel's
+[Fluid compute](https://vercel.com/docs/functions/fluid-compute), you can combine
+server-like concurrency with the autoscaling properties of traditional
+serverless functions.
 
-```json
-{
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/api/serverless.js"
-        }
-    ]
-}
-```
+Get started with the
+[Fastify template on Vercel](
+https://vercel.com/templates/backend/fastify-on-vercel).
 
-Then, write `api/serverless.js` like so:
-
-```js
-"use strict";
-
-// Read the .env file.
-import * as dotenv from "dotenv";
-dotenv.config();
-
-// Require the framework
-import Fastify from "fastify";
-
-// Instantiate Fastify with some config
-const app = Fastify({
-  logger: true,
-});
-
-// Register your application as a normal plugin.
-app.register(import("../src/app"));
-
-export default async (req, res) => {
-    await app.ready();
-    app.server.emit('request', req, res);
-}
-```
+[Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently
+requires an explicit opt-in. Learn more about enabling Fluid compute
+[here](
+https://vercel.com/docs/functions/fluid-compute#how-to-enable-fluid-compute).

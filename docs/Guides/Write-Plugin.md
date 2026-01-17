@@ -1,4 +1,4 @@
-<h1 align="center">Fastify</h1>
+<h1 style="text-align: center;">Fastify</h1>
 
 # How to write a good plugin
 First, thank you for deciding to write a plugin for Fastify. Fastify is a
@@ -14,7 +14,7 @@ suggestion"](https://github.com/fastify/fastify/issues?q=is%3Aissue+is%3Aopen+la
 in our issue tracker!*
 
 ## Code
-Fastify uses different techniques to optimize its code, many of them are
+Fastify uses different techniques to optimize its code, many of which are
 documented in our Guides. We highly recommend you read [the hitchhiker's guide
 to plugins](./Plugins-Guide.md) to discover all the APIs you can use to build
 your plugin and learn how to use them.
@@ -53,16 +53,17 @@ Always put an example file in your repository. Examples are very helpful for
 users and give a very fast way to test your plugin. Your users will be grateful.
 
 ## Test
-It is extremely important that a plugin is thoroughly tested to verify that is
-working properly.
+A plugin **must** be thoroughly tested to verify that is working properly.
 
 A plugin without tests will not be accepted to the ecosystem list. A lack of
 tests does not inspire trust nor guarantee that the code will continue to work
 among different versions of its dependencies.
 
-We do not enforce any testing library. We use [`tap`](https://www.node-tap.org/)
+We do not enforce any testing library. We use [`node:test`](https://nodejs.org/api/test.html)
 since it offers out-of-the-box parallel testing and code coverage, but it is up
 to you to choose your library of preference.
+We highly recommend you read the [Plugin Testing](./Testing.md#plugins) to
+learn about how to test your plugins.
 
 ## Code Linter
 It is not mandatory, but we highly recommend you use a code linter in your
@@ -80,7 +81,7 @@ to show that the plugin works as intended. Both
 Actions](https://github.com/features/actions) are free for open source projects
 and easy to set up.
 
-In addition, you can enable services like [Dependabot](https://dependabot.com/),
+In addition, you can enable services like [Dependabot](https://github.com/dependabot),
 which will help you keep your dependencies up to date and discover if a new
 release of Fastify has some issues with your plugin.
 

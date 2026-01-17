@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const Fastify = require('..')
 const {
   FST_ERR_DEC_ALREADY_PRESENT
@@ -10,7 +10,7 @@ test('Should be able to override the default use API', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.decorate('use', () => true)
-  t.equal(fastify.use(), true)
+  t.assert.strictEqual(fastify.use(), true)
 })
 
 test('Cannot decorate use twice', t => {
@@ -20,17 +20,16 @@ test('Cannot decorate use twice', t => {
   try {
     fastify.decorate('use', () => true)
   } catch (err) {
-    t.ok(err instanceof FST_ERR_DEC_ALREADY_PRESENT)
+    t.assert.ok(err instanceof FST_ERR_DEC_ALREADY_PRESENT)
   }
 })
 
 test('Encapsulation works', t => {
-  t.plan(1)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorate('use', () => true)
-    t.equal(instance.use(), true)
+    t.assert.strictEqual(instance.use(), true)
     done()
   })
 

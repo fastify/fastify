@@ -1,15 +1,15 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
+const { request } = require('undici')
 const Fastify = require('../..')
 
 const { buildCertificate } = require('../build-certificate')
-t.before(buildCertificate)
+const { Agent } = require('undici')
+test.before(buildCertificate)
 
-test('https', (t) => {
-  t.plan(4)
+test('https', async (t) => {
+  t.plan(3)
 
   let fastify
   try {
@@ -19,9 +19,9 @@ test('https', (t) => {
         cert: global.context.cert
       }
     })
-    t.pass('Key/cert successfully loaded')
+    t.assert.ok('Key/cert successfully loaded')
   } catch (e) {
-    t.fail('Key/cert loading failed', e)
+    t.assert.fail('Key/cert loading failed')
   }
 
   fastify.get('/', function (req, reply) {
@@ -32,45 +32,105 @@ test('https', (t) => {
     reply.code(200).send({ proto: req.protocol })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  await fastify.listen({ port: 0 })
 
-    t.test('https get request', t => {
-      t.plan(4)
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.equal(response.headers['content-length'], '' + body.length)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+  t.after(() => { fastify.close() })
 
-    t.test('https get request without trust proxy - protocol', t => {
-      t.plan(4)
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port + '/proto',
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        t.error(err)
-        t.same(JSON.parse(body), { proto: 'https' })
-      })
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port + '/proto',
-        rejectUnauthorized: false,
-        headers: {
-          'x-forwarded-proto': 'lorem'
+  await t.test('https get request', async t => {
+    t.plan(4)
+    const result = await fetch('https://localhost:' + fastify.server.address().port, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
         }
-      }, (err, response, body) => {
-        t.error(err)
-        t.same(JSON.parse(body), { proto: 'https' })
       })
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
+  })
+
+  await t.test('https get request without trust proxy - protocol', async t => {
+    t.plan(3)
+    const result1 = await fetch(`${'https://localhost:' + fastify.server.address().port}/proto`, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
+    })
+    t.assert.ok(result1.ok)
+    t.assert.deepStrictEqual(await result1.json(), { proto: 'https' })
+
+    const result2 = await fetch(`${'https://localhost:' + fastify.server.address().port}/proto`, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      }),
+      headers: {
+        'x-forwarded-proto': 'lorem'
+      }
+    })
+    t.assert.deepStrictEqual(await result2.json(), { proto: 'https' })
+  })
+})
+
+test('https - headers', async (t) => {
+  t.plan(3)
+  let fastify
+  try {
+    fastify = Fastify({
+      https: {
+        key: global.context.key,
+        cert: global.context.cert
+      }
+    })
+    t.assert.ok('Key/cert successfully loaded')
+  } catch (e) {
+    t.assert.fail('Key/cert loading failed')
+  }
+
+  fastify.get('/', function (req, reply) {
+    reply.code(200).send({ hello: 'world', hostname: req.hostname, port: req.port })
+  })
+
+  t.after(async () => { await fastify.close() })
+
+  await fastify.listen({ port: 0 })
+
+  await t.test('https get request', async t => {
+    t.plan(3)
+    const result = await fetch('https://localhost:' + fastify.server.address().port, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
+    })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.json(), { hostname: 'localhost', port: fastify.server.address().port, hello: 'world' })
+  })
+
+  await t.test('https get request - test port fall back', async t => {
+    t.plan(2)
+
+    const result = await request('https://localhost:' + fastify.server.address().port, {
+      method: 'GET',
+      headers: {
+        host: 'example.com'
+      },
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      })
+    })
+
+    t.assert.strictEqual(result.statusCode, 200)
+    t.assert.deepStrictEqual(await result.body.json(), { hello: 'world', hostname: 'example.com', port: null })
   })
 })

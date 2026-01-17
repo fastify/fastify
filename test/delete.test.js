@@ -1,8 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const fastify = require('..')()
 
 const schema = {
@@ -85,15 +83,17 @@ const bodySchema = {
   }
 }
 
-test('shorthand - delete', t => {
+test('shorthand - delete', (t, done) => {
   t.plan(1)
   try {
     fastify.delete('/', schema, function (req, reply) {
       reply.code(200).send({ hello: 'world' })
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
+  } finally {
+    done()
   }
 })
 
@@ -103,9 +103,9 @@ test('shorthand - delete params', t => {
     fastify.delete('/params/:foo/:test', paramsSchema, function (req, reply) {
       reply.code(200).send(req.params)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -115,9 +115,9 @@ test('shorthand - delete, querystring schema', t => {
     fastify.delete('/query', querySchema, function (req, reply) {
       reply.send(req.query)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -127,9 +127,9 @@ test('shorthand - get, headers schema', t => {
     fastify.delete('/headers', headersSchema, function (req, reply) {
       reply.code(200).send(req.headers)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -139,9 +139,9 @@ test('missing schema - delete', t => {
     fastify.delete('/missing', function (req, reply) {
       reply.code(200).send({ hello: 'world' })
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -151,158 +151,184 @@ test('body - delete', t => {
     fastify.delete('/body', bodySchema, function (req, reply) {
       reply.send(req.body)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+test('delete tests', async t => {
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-  test('shorthand - request delete', t => {
+  await t.test('shorthand - request delete', async t => {
     t.plan(4)
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+
+    const response = await fetch(fastifyServer, {
+      method: 'DELETE'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  test('shorthand - request delete params schema', t => {
+  await t.test('shorthand - request delete params schema', async t => {
     t.plan(4)
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { foo: 'world', test: 123 })
+
+    const response = await fetch(fastifyServer + '/params/world/123', {
+      method: 'DELETE'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { foo: 'world', test: 123 })
   })
 
-  test('shorthand - request delete params schema error', t => {
+  await t.test('shorthand - request delete params schema error', async t => {
     t.plan(3)
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        message: 'params/test must be integer',
-        statusCode: 400
-      })
+
+    const response = await fetch(fastifyServer + '/params/world/string', {
+      method: 'DELETE'
+    })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 400)
+    t.assert.deepStrictEqual(await response.json(), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'params/test must be integer',
+      statusCode: 400
     })
   })
 
-  test('shorthand - request delete headers schema', t => {
+  await t.test('shorthand - request delete headers schema', async t => {
     t.plan(4)
-    sget({
+
+    const response = await fetch(fastifyServer + '/headers', {
       method: 'DELETE',
       headers: {
-        'x-test': 1
-      },
-      url: 'http://localhost:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.equal(JSON.parse(body)['x-test'], 1)
+        'x-test': '1'
+      }
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.strictEqual(JSON.parse(body)['x-test'], 1)
   })
 
-  test('shorthand - request delete headers schema error', t => {
+  await t.test('shorthand - request delete headers schema error', async t => {
     t.plan(3)
-    sget({
+
+    const response = await fetch(fastifyServer + '/headers', {
       method: 'DELETE',
       headers: {
         'x-test': 'abc'
-      },
-      url: 'http://localhost:' + fastify.server.address().port + '/headers'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        message: 'headers/x-test must be number',
-        statusCode: 400
-      })
+      }
+    })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 400)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'headers/x-test must be number',
+      statusCode: 400
     })
   })
 
-  test('shorthand - request delete querystring schema', t => {
+  await t.test('shorthand - request delete querystring schema', async t => {
     t.plan(4)
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 123 })
+
+    const response = await fetch(fastifyServer + '/query?hello=123', {
+      method: 'DELETE'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 123 })
   })
 
-  test('shorthand - request delete querystring schema error', t => {
+  await t.test('shorthand - request delete querystring schema error', async t => {
     t.plan(3)
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
-      t.same(JSON.parse(body), {
-        error: 'Bad Request',
-        message: 'querystring/hello must be integer',
-        statusCode: 400
-      })
+
+    const response = await fetch(fastifyServer + '/query?hello=world', {
+      method: 'DELETE'
+    })
+
+    t.assert.ok(!response.ok)
+    t.assert.strictEqual(response.status, 400)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), {
+      error: 'Bad Request',
+      code: 'FST_ERR_VALIDATION',
+      message: 'querystring/hello must be integer',
+      statusCode: 400
     })
   })
 
-  test('shorthand - request delete missing schema', t => {
+  await t.test('shorthand - request delete missing schema', async t => {
     t.plan(4)
-    sget({
-      method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-length'], '' + body.length)
-      t.same(JSON.parse(body), { hello: 'world' })
+
+    const response = await fetch(fastifyServer + '/missing', {
+      method: 'DELETE'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.strictEqual(response.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  test('shorthand - delete with body', t => {
+  await t.test('shorthand - delete with body', async t => {
     t.plan(3)
-    sget({
+
+    const response = await fetch(fastifyServer + '/body', {
       method: 'DELETE',
-      url: 'http://localhost:' + fastify.server.address().port + '/body',
-      body: {
-        hello: 'world'
-      },
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body, { hello: 'world' })
+      body: JSON.stringify({ hello: 'world' }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.json()
+    t.assert.deepStrictEqual(body, { hello: 'world' })
+  })
+})
+
+test('shorthand - delete with application/json Content-Type header and null body', (t, done) => {
+  t.plan(4)
+  const fastify = require('..')()
+  fastify.delete('/', {}, (req, reply) => {
+    t.assert.strictEqual(req.body, null)
+    reply.send(req.body)
+  })
+  fastify.inject({
+    method: 'DELETE',
+    url: '/',
+    headers: { 'Content-Type': 'application/json' },
+    body: 'null'
+  }, (err, response) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.payload.toString(), 'null')
+    done()
   })
 })
 
 // https://github.com/fastify/fastify/issues/936
-test('shorthand - delete with application/json Content-Type header and without body', t => {
+// Skip this test because this is an invalid request
+test('shorthand - delete with application/json Content-Type header and without body', { skip: 'https://github.com/fastify/fastify/pull/5419' }, t => {
   t.plan(4)
   const fastify = require('..')()
   fastify.delete('/', {}, (req, reply) => {
-    t.equal(req.body, undefined)
+    t.assert.strictEqual(req.body, undefined)
     reply.send(req.body)
   })
   fastify.inject({
@@ -311,8 +337,8 @@ test('shorthand - delete with application/json Content-Type header and without b
     headers: { 'Content-Type': 'application/json' },
     body: null
   }, (err, response) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(response.payload.toString(), '')
+    t.assert.ifError(err)
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.payload.toString(), '')
   })
 })

@@ -1,0 +1,21 @@
+name: Test compare
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    if: contains(github.event.pull_request.labels.*.name, 'test-compare')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Test compare
+        uses: nearform-actions/github-action-test-compare@d50bc37a05e736bb40db0eebc8fdad3e33ece136 # v1.0.26
+        with:
+          label: test-compare
+          testCommand: 'npm run test:ci'

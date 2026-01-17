@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 
 const Fastify = require('../../fastify')
@@ -15,12 +15,12 @@ test('start listening', async t => {
   const { server, listen } = createServer({}, handler)
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
   server.close()
-  t.pass('server started')
+  t.assert.ok(true, 'server started')
 })
 
 test('DNS errors does not stop the main server on localhost - promise interface', async t => {
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(new Error('DNS error'))
       }
@@ -29,13 +29,13 @@ test('DNS errors does not stop the main server on localhost - promise interface'
   const { server, listen } = createServer({}, handler)
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
   server.close()
-  t.pass('server started')
+  t.assert.ok(true, 'server started')
 })
 
-test('DNS errors does not stop the main server on localhost - callback interface', t => {
+test('DNS errors does not stop the main server on localhost - callback interface', (t, done) => {
   t.plan(2)
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(new Error('DNS error'))
       }
@@ -43,16 +43,17 @@ test('DNS errors does not stop the main server on localhost - callback interface
   })
   const { server, listen } = createServer({}, handler)
   listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
-    t.error(err)
+    t.assert.ifError(err)
     server.close()
-    t.pass('server started')
+    t.assert.ok(true, 'server started')
+    done()
   })
 })
 
-test('DNS returns empty binding', t => {
+test('DNS returns empty binding', (t, done) => {
   t.plan(2)
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(null, [])
       }
@@ -60,16 +61,17 @@ test('DNS returns empty binding', t => {
   })
   const { server, listen } = createServer({}, handler)
   listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
-    t.error(err)
+    t.assert.ifError(err)
     server.close()
-    t.pass('server started')
+    t.assert.ok(true, 'server started')
+    done()
   })
 })
 
-test('DNS returns more than two binding', t => {
+test('DNS returns more than two binding', (t, done) => {
   t.plan(2)
   const { createServer } = proxyquire('../../lib/server', {
-    dns: {
+    'node:dns': {
       lookup: (hostname, options, cb) => {
         cb(null, [
           { address: '::1', family: 6 },
@@ -81,8 +83,9 @@ test('DNS returns more than two binding', t => {
   })
   const { server, listen } = createServer({}, handler)
   listen.call(Fastify(), { port: 0, host: 'localhost' }, (err) => {
-    t.error(err)
+    t.assert.ifError(err)
     server.close()
-    t.pass('server started')
+    t.assert.ok(true, 'server started')
+    done()
   })
 })

@@ -1,15 +1,14 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
 const { buildCertificate } = require('../build-certificate')
-t.before(buildCertificate)
+test.before(buildCertificate)
 
-test('secure', (t) => {
+test('secure', async (t) => {
   t.plan(4)
 
   let fastify
@@ -21,9 +20,9 @@ test('secure', (t) => {
         cert: global.context.cert
       }
     })
-    t.pass('Key/cert successfully loaded')
+    t.assert.ok(true, 'Key/cert successfully loaded')
   } catch (e) {
-    t.fail('Key/cert loading failed', e)
+    t.assert.fail('Key/cert loading failed')
   }
 
   fastify.get('/', function (req, reply) {
@@ -32,28 +31,37 @@ test('secure', (t) => {
   fastify.get('/proto', function (req, reply) {
     reply.code(200).send({ proto: req.protocol })
   })
+  fastify.get('/hostname_port', function (req, reply) {
+    reply.code(200).send({ hostname: req.hostname, port: req.port })
+  })
 
-  fastify.listen({ port: 0 }, err => {
-    t.error(err)
-    t.teardown(() => { fastify.close() })
+  t.after(() => { fastify.close() })
+  await fastify.listen({ port: 0 })
 
-    t.test('https get request', async (t) => {
-      t.plan(3)
+  await t.test('https get request', async (t) => {
+    t.plan(3)
 
-      const url = `https://localhost:${fastify.server.address().port}`
-      const res = await h2url.concat({ url })
+    const url = `https://localhost:${fastify.server.address().port}`
+    const res = await h2url.concat({ url })
 
-      t.equal(res.headers[':status'], 200)
-      t.equal(res.headers['content-length'], '' + JSON.stringify(msg).length)
-      t.same(JSON.parse(res.body), msg)
-    })
+    t.assert.strictEqual(res.headers[':status'], 200)
+    t.assert.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
+    t.assert.deepStrictEqual(JSON.parse(res.body), msg)
+  })
 
-    t.test('https get request without trust proxy - protocol', async (t) => {
-      t.plan(2)
+  await t.test('https get request without trust proxy - protocol', async (t) => {
+    t.plan(2)
 
-      const url = `https://localhost:${fastify.server.address().port}/proto`
-      t.same(JSON.parse((await h2url.concat({ url })).body), { proto: 'https' })
-      t.same(JSON.parse((await h2url.concat({ url, headers: { 'X-Forwarded-Proto': 'lorem' } })).body), { proto: 'https' })
-    })
+    const url = `https://localhost:${fastify.server.address().port}/proto`
+    t.assert.deepStrictEqual(JSON.parse((await h2url.concat({ url })).body), { proto: 'https' })
+    t.assert.deepStrictEqual(JSON.parse((await h2url.concat({ url, headers: { 'X-Forwarded-Proto': 'lorem' } })).body), { proto: 'https' })
+  })
+  await t.test('https get request - test hostname and port', async (t) => {
+    t.plan(2)
+
+    const url = `https://localhost:${fastify.server.address().port}/hostname_port`
+    const parsedbody = JSON.parse((await h2url.concat({ url })).body)
+    t.assert.strictEqual(parsedbody.hostname, 'localhost')
+    t.assert.strictEqual(parsedbody.port, fastify.server.address().port)
   })
 })

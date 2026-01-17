@@ -1,4 +1,6 @@
-const path = require('path')
+'use strict'
+
+const path = require('node:path')
 
 module.exports = {
   entry: { success: './src/index.js', failPlugin: './src/fail-plugin-version.js' },

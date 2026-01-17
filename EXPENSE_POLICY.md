@@ -30,7 +30,7 @@ Reimbursement is applicable for expenses already paid, such as:
 - Gadgets
 - Hosting
 
-**Before making any purchases**, initiate a [new discussion](https://github.com/fastify/fastify/discussions)
+**Before making any purchases**, initiate a [new discussion](https://github.com/orgs/fastify/discussions)
 in the `fastify` organization with the following information:
 
 - What is needed
@@ -78,7 +78,7 @@ This issue has a bounty of [$AMOUNT](LINK TO THE BOUNTY COMMENT).
 _Read more about [the bounty program](./EXPENSE_POLICY.md)_
 ```
 
-For discussions on bounties or determining amounts, open a [new discussion](https://github.com/fastify/fastify/discussions/new?category=general).
+For discussions on bounties or determining amounts, open a [new discussion](https://github.com/orgs/fastify/discussions/new?category=bounty).
 
 ### Outstanding contributions
 

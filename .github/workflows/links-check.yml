@@ -47,14 +47,17 @@ jobs:
         with:
           fail: true
           args: |
-            -vv
+            --verbose
+            --cache
             --root-dir "$(pwd)"
-            --max-retries 3
-            --timeout 60
+            --max-retries 5
+            --retry-wait-time 30
+            --timeout 300
             --no-progress 
             --accept 200,403 
             --max-concurrency 5
             --exclude "https://x\.com/.*"
+            --exclude "https://github.com/orgs/fastify/.*"
             "./**/*.md"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

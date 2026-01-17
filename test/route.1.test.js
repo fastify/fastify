@@ -1,8 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const Fastify = require('..')
 const {
   FST_ERR_INSTANCE_ALREADY_LISTENING,
@@ -10,15 +8,14 @@ const {
 } = require('../lib/errors')
 const { getServerUrl } = require('./helper')
 
-test('route', t => {
+test('route', async t => {
   t.plan(10)
-  const test = t.test
 
-  test('route - get', t => {
+  await t.test('route - get', async (t) => {
     t.plan(4)
 
     const fastify = Fastify()
-    t.doesNotThrow(() =>
+    t.assert.doesNotThrow(() =>
       fastify.route({
         method: 'GET',
         url: '/',
@@ -40,25 +37,20 @@ test('route', t => {
       })
     )
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
+
+    const response = await fetch(getServerUrl(fastify) + '/')
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    t.assert.deepStrictEqual(await response.json(), { hello: 'world' })
   })
 
-  test('missing schema - route', t => {
+  await t.test('missing schema - route', async (t) => {
     t.plan(4)
 
     const fastify = Fastify()
-    t.doesNotThrow(() =>
+    t.assert.doesNotThrow(() =>
       fastify.route({
         method: 'GET',
         url: '/missing',
@@ -68,32 +60,27 @@ test('route', t => {
       })
     )
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/missing'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
+
+    const response = await fetch(getServerUrl(fastify) + '/missing')
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    t.assert.deepStrictEqual(await response.json(), { hello: 'world' })
   })
 
-  test('invalid handler attribute - route', t => {
+  await t.test('invalid handler attribute - route', t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.throws(() => fastify.get('/', { handler: 'not a function' }, () => { }))
+    t.assert.throws(() => fastify.get('/', { handler: 'not a function' }, () => { }))
   })
 
-  test('Add Multiple methods per route all uppercase', t => {
+  await t.test('Add Multiple methods per route all uppercase', async (t) => {
     t.plan(7)
 
     const fastify = Fastify()
-    t.doesNotThrow(() =>
+    t.assert.doesNotThrow(() =>
       fastify.route({
         method: ['GET', 'DELETE'],
         url: '/multiple',
@@ -102,34 +89,25 @@ test('route', t => {
         }
       }))
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+    const getResponse = await fetch(getServerUrl(fastify) + '/multiple')
+    t.assert.ok(getResponse.ok)
+    t.assert.strictEqual(getResponse.status, 200)
+    t.assert.deepStrictEqual(await getResponse.json(), { hello: 'world' })
+
+    const deleteResponse = await fetch(getServerUrl(fastify) + '/multiple', { method: 'DELETE' })
+    t.assert.ok(deleteResponse.ok)
+    t.assert.strictEqual(deleteResponse.status, 200)
+    t.assert.deepStrictEqual(await deleteResponse.json(), { hello: 'world' })
   })
 
-  test('Add Multiple methods per route all lowercase', t => {
+  await t.test('Add Multiple methods per route all lowercase', async (t) => {
     t.plan(7)
 
     const fastify = Fastify()
-    t.doesNotThrow(() =>
+    t.assert.doesNotThrow(() =>
       fastify.route({
         method: ['get', 'delete'],
         url: '/multiple',
@@ -138,34 +116,25 @@ test('route', t => {
         }
       }))
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+    const getResponse = await fetch(getServerUrl(fastify) + '/multiple')
+    t.assert.ok(getResponse.ok)
+    t.assert.strictEqual(getResponse.status, 200)
+    t.assert.deepStrictEqual(await getResponse.json(), { hello: 'world' })
+
+    const deleteResponse = await fetch(getServerUrl(fastify) + '/multiple', { method: 'DELETE' })
+    t.assert.ok(deleteResponse.ok)
+    t.assert.strictEqual(deleteResponse.status, 200)
+    t.assert.deepStrictEqual(await deleteResponse.json(), { hello: 'world' })
   })
 
-  test('Add Multiple methods per route mixed uppercase and lowercase', t => {
+  await t.test('Add Multiple methods per route mixed uppercase and lowercase', async (t) => {
     t.plan(7)
 
     const fastify = Fastify()
-    t.doesNotThrow(() =>
+    t.assert.doesNotThrow(() =>
       fastify.route({
         method: ['GET', 'delete'],
         url: '/multiple',
@@ -174,34 +143,25 @@ test('route', t => {
         }
       }))
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'GET',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+    const getResponse = await fetch(getServerUrl(fastify) + '/multiple')
+    t.assert.ok(getResponse.ok)
+    t.assert.strictEqual(getResponse.status, 200)
+    t.assert.deepStrictEqual(await getResponse.json(), { hello: 'world' })
+
+    const deleteResponse = await fetch(getServerUrl(fastify) + '/multiple', { method: 'DELETE' })
+    t.assert.ok(deleteResponse.ok)
+    t.assert.strictEqual(deleteResponse.status, 200)
+    t.assert.deepStrictEqual(await deleteResponse.json(), { hello: 'world' })
   })
 
-  test('Add invalid Multiple methods per route', t => {
+  t.test('Add invalid Multiple methods per route', t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.throws(() =>
+    t.assert.throws(() =>
       fastify.route({
         method: ['GET', 1],
         url: '/invalid-method',
@@ -211,11 +171,11 @@ test('route', t => {
       }), new FST_ERR_ROUTE_METHOD_INVALID())
   })
 
-  test('Add method', t => {
+  await t.test('Add method', t => {
     t.plan(1)
 
     const fastify = Fastify()
-    t.throws(() =>
+    t.assert.throws(() =>
       fastify.route({
         method: 1,
         url: '/invalid-method',
@@ -225,11 +185,11 @@ test('route', t => {
       }), new FST_ERR_ROUTE_METHOD_INVALID())
   })
 
-  test('Add additional multiple methods to existing route', t => {
+  await t.test('Add additional multiple methods to existing route', async (t) => {
     t.plan(7)
 
     const fastify = Fastify()
-    t.doesNotThrow(() => {
+    t.assert.doesNotThrow(() => {
       fastify.get('/add-multiple', function (req, reply) {
         reply.send({ hello: 'Bob!' })
       })
@@ -242,50 +202,39 @@ test('route', t => {
       })
     })
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
-      sget({
-        method: 'PUT',
-        url: getServerUrl(fastify) + '/add-multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
 
-      sget({
-        method: 'DELETE',
-        url: getServerUrl(fastify) + '/add-multiple'
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-      })
-    })
+    const putResponse = await fetch(getServerUrl(fastify) + '/add-multiple', { method: 'PUT' })
+    t.assert.ok(putResponse.ok)
+    t.assert.strictEqual(putResponse.status, 200)
+    t.assert.deepStrictEqual(await putResponse.json(), { hello: 'world' })
+
+    const deleteResponse = await fetch(getServerUrl(fastify) + '/add-multiple', { method: 'DELETE' })
+    t.assert.ok(deleteResponse.ok)
+    t.assert.strictEqual(deleteResponse.status, 200)
+    t.assert.deepStrictEqual(await deleteResponse.json(), { hello: 'world' })
   })
 
-  test('cannot add another route after binding', t => {
+  await t.test('cannot add another route after binding', async (t) => {
     t.plan(1)
 
     const fastify = Fastify()
 
-    fastify.listen({ port: 0 }, function (err) {
-      if (err) t.error(err)
-      t.teardown(() => { fastify.close() })
+    await fastify.listen({ port: 0 })
+    t.after(() => { fastify.close() })
 
-      t.throws(() => fastify.route({
-        method: 'GET',
-        url: '/another-get-route',
-        handler: function (req, reply) {
-          reply.send({ hello: 'world' })
-        }
-      }), new FST_ERR_INSTANCE_ALREADY_LISTENING('Cannot add route!'))
-    })
+    t.assert.throws(() => fastify.route({
+      method: 'GET',
+      url: '/another-get-route',
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    }), new FST_ERR_INSTANCE_ALREADY_LISTENING('Cannot add route!'))
   })
 })
 
-test('invalid schema - route', t => {
+test('invalid schema - route', (t, done) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -300,10 +249,11 @@ test('invalid schema - route', t => {
     }
   })
   fastify.after(err => {
-    t.notOk(err, 'the error is throw on preReady')
+    t.assert.ok(!err, 'the error is throw on preReady')
   })
   fastify.ready(err => {
-    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.match(err.message, /Failed building the validation schema for GET: \/invalid/)
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.assert.match(err.message, /Failed building the validation schema for GET: \/invalid/)
+    done()
   })
 })

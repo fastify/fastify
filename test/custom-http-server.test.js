@@ -1,10 +1,8 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const http = require('node:http')
 const dns = require('node:dns').promises
-const sget = require('simple-get').concat
 const Fastify = require('..')
 const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 
@@ -12,11 +10,11 @@ async function setup () {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
   test('Should support a custom http server', { skip: localAddresses.length < 1 }, async t => {
-    t.plan(4)
+    t.plan(5)
 
     const fastify = Fastify({
       serverFactory: (handler, opts) => {
-        t.ok(opts.serverFactory, 'it is called once for localhost')
+        t.assert.ok(opts.serverFactory, 'it is called once for localhost')
 
         const server = http.createServer((req, res) => {
           req.custom = true
@@ -27,35 +25,27 @@ async function setup () {
       }
     })
 
-    t.teardown(fastify.close.bind(fastify))
-
+    t.after(() => fastify.close())
     fastify.get('/', (req, reply) => {
-      t.ok(req.raw.custom)
+      t.assert.ok(req.raw.custom)
       reply.send({ hello: 'world' })
     })
 
     await fastify.listen({ port: 0 })
 
-    await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
-        }
-        t.equal(response.statusCode, 200)
-        t.same(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
+    const response = await fetch('http://localhost:' + fastify.server.address().port, {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
   test('Should not allow forceCloseConnection=idle if the server does not support closeIdleConnections', t => {
     t.plan(1)
 
-    t.throws(
+    t.assert.throws(
       () => {
         Fastify({
           forceCloseConnections: 'idle',
@@ -75,13 +65,11 @@ async function setup () {
 
   test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
     const server = http.createServer(() => { })
-    t.teardown(() => new Promise(resolve => server.close(resolve)))
-    const app = await Fastify({
+    t.after(() => new Promise(resolve => server.close(resolve)))
+    const app = Fastify({
       serverFactory: () => server
     })
-    t.resolves(async () => {
-      await app.listen({ port: 0 })
-    })
+    await t.assert.doesNotReject(async () => { await app.listen({ port: 0 }) })
   })
 
   test('Should not call close on the server if it has not created it', async t => {
@@ -107,12 +95,12 @@ async function setup () {
     })
 
     const address = server.address()
-    t.equal(server.listening, true)
+    t.assert.strictEqual(server.listening, true)
     await fastify.close()
 
-    t.equal(server.listening, true)
-    t.same(server.address(), address)
-    t.same(fastify.addresses(), [address])
+    t.assert.strictEqual(server.listening, true)
+    t.assert.deepStrictEqual(server.address(), address)
+    t.assert.deepStrictEqual(fastify.addresses(), [address])
 
     await new Promise((resolve, reject) => {
       server.close((err) => {
@@ -122,8 +110,8 @@ async function setup () {
         resolve()
       })
     })
-    t.equal(server.listening, false)
-    t.same(server.address(), null)
+    t.assert.strictEqual(server.listening, false)
+    t.assert.deepStrictEqual(server.address(), null)
   })
 }
 

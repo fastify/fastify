@@ -1,8 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const fastify = require('../../fastify')()
 
 const schema = {
@@ -50,9 +48,9 @@ test('shorthand - head', t => {
     fastify.head('/', schema, function (req, reply) {
       reply.code(200).send(null)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -68,9 +66,9 @@ test('shorthand - custom head', t => {
       reply.code(200).send(null)
     })
 
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -86,9 +84,9 @@ test('shorthand - custom head with constraints', t => {
       reply.code(200).send(null)
     })
 
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -103,9 +101,9 @@ test('shorthand - should not reset a head route', t => {
       reply.code(200).send(null)
     })
 
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -121,10 +119,9 @@ test('shorthand - should set get and head route in the same api call', t => {
       }
     })
 
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    console.log(e)
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -134,9 +131,9 @@ test('shorthand - head params', t => {
     fastify.head('/params/:foo/:test', paramsSchema, function (req, reply) {
       reply.send(null)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -146,10 +143,9 @@ test('shorthand - head, querystring schema', t => {
     fastify.head('/query', querySchema, function (req, reply) {
       reply.code(200).send(null)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    console.log(e)
-    t.fail()
+    t.assert.fail()
   }
 })
 
@@ -159,130 +155,109 @@ test('missing schema - head', t => {
     fastify.head('/missing', function (req, reply) {
       reply.code(200).send(null)
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    console.log(e)
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+test('head test', async t => {
+  t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-  test('shorthand - request head', t => {
+  await t.test('shorthand - request head', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    const result = await fetch(fastifyServer, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - request head params schema', t => {
+  await t.test('shorthand - request head params schema', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    const result = await fetch(`${fastifyServer}/params/world/123`, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - request head params schema error', t => {
+  await t.test('shorthand - request head params schema error', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
+    const result = await fetch(`${fastifyServer}/params/world/string`, {
+      method: 'HEAD'
     })
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 400)
   })
 
-  test('shorthand - request head querystring schema', t => {
+  await t.test('shorthand - request head querystring schema', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    const result = await fetch(`${fastifyServer}/query?hello=123`, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - request head querystring schema error', t => {
+  await t.test('shorthand - request head querystring schema error', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 400)
+    const result = await fetch(`${fastifyServer}/query?hello=world`, {
+      method: 'HEAD'
     })
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 400)
   })
 
-  test('shorthand - request head missing schema', t => {
+  await t.test('shorthand - request head missing schema', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/missing'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    const result = await fetch(`${fastifyServer}/missing`, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - request head custom head', t => {
+  await t.test('shorthand - request head custom head', async t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
+    const result = await fetch(`${fastifyServer}/proxy/test`, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('x-foo'), 'bar')
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - request head custom head with constraints', t => {
+  await t.test('shorthand - request head custom head with constraints', async t => {
     t.plan(3)
-    sget({
+    const result = await fetch(`${fastifyServer}/proxy/test`, {
       method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/proxy/test',
       headers: {
         version: '1.0.0'
       }
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('x-foo'), 'bar')
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - should not reset a head route', t => {
+  await t.test('shorthand - should not reset a head route', async t => {
     t.plan(2)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query1'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
+    const result = await fetch(`${fastifyServer}/query1`, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
   })
 
-  test('shorthand - should set get and head route in the same api call', t => {
+  await t.test('shorthand - should set get and head route in the same api call', async t => {
     t.plan(3)
-    sget({
-      method: 'HEAD',
-      url: 'http://localhost:' + fastify.server.address().port + '/query4'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.headers['x-foo'], 'bar')
-      t.equal(response.statusCode, 200)
+    const result = await fetch(`${fastifyServer}/query4`, {
+      method: 'HEAD'
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.headers.get('x-foo'), 'bar')
+    t.assert.strictEqual(result.status, 200)
   })
 })

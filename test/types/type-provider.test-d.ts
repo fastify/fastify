@@ -8,7 +8,7 @@ import fastify, {
   SafePromiseLike
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders } from 'node:http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
 
@@ -479,9 +479,9 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expectType<(payload?: string) => typeof res>(res.code(200).send)
-    expectType<(payload?: number) => typeof res>(res.code(400).send)
-    expectType<(payload?: { error: string }) => typeof res>(res.code(500).send)
+    expectType<((...args: [payload: string]) => typeof res)>(res.code(200).send)
+    expectType<((...args: [payload: number]) => typeof res)>(res.code(400).send)
+    expectType<((...args: [payload: { error: string }]) => typeof res)>(res.code(500).send)
     expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
@@ -711,9 +711,9 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expectType<(payload?: string) => typeof res>(res.code(200).send)
-    expectType<(payload?: number) => typeof res>(res.code(400).send)
-    expectType<(payload?: { [x: string]: unknown; error?: string }) => typeof res>(res.code(500).send)
+    expectType<((...args: [payload: string]) => typeof res)>(res.code(200).send)
+    expectType<((...args: [payload: number]) => typeof res)>(res.code(400).send)
+    expectType<((...args: [payload: { [x: string]: unknown; error?: string }]) => typeof res)>(res.code(500).send)
     expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
@@ -1004,6 +1004,101 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{ Reply: 
       } as const
     }
   },
+  async (_, res) => {
+    return true
+  }
+))
+
+// -------------------------------------------------------------------
+// Reply Status Code (Different Status Codes)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    res.code(200)
+    res.code(500)
+    expectError(() => res.code(201))
+    expectError(() => res.code(400))
+  }
+))
+
+// -------------------------------------------------------------------
+// RouteGeneric Reply Type Return (Different Status Codes)
+// -------------------------------------------------------------------
+
+expectAssignable(server.get<{
+  Reply: {
+    200: string | { msg: string }
+    400: number
+    '5xx': { error: string }
+  }
+}>(
+  '/',
+  async (_, res) => {
+    const option = 1 as 1 | 2 | 3 | 4
+    switch (option) {
+      case 1: return 'hello'
+      case 2: return { msg: 'hello' }
+      case 3: return 400
+      case 4: return { error: 'error' }
+    }
+  }
+))
+
+// -------------------------------------------------------------------
+// RouteGeneric Status Code (Different Status Codes)
+// -------------------------------------------------------------------
+
+expectAssignable(server.get<{
+  Reply: {
+    200: string | { msg: string }
+    400: number
+    '5xx': { error: string }
+  }
+}>(
+  '/',
+  async (_, res) => {
+    res.code(200)
+    res.code(400)
+    res.code(500)
+    res.code(502)
+    expectError(() => res.code(201))
+    expectError(() => res.code(300))
+    expectError(() => res.code(404))
+    return 'hello'
+  }
+))
+
+// -------------------------------------------------------------------
+// RouteGeneric Reply Type Return: Non Assignable (Different Status Codes)
+// -------------------------------------------------------------------
+
+expectError(server.get<{
+  Reply: {
+    200: string | { msg: string }
+    400: number
+    '5xx': { error: string }
+  }
+}>(
+  '/',
   async (_, res) => {
     return true
   }

@@ -4,9 +4,8 @@ on:
   push:
     branches:
      - main
-     - master
      - next
-     - 'v*'
+     - '*.x'
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -14,11 +13,20 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
+  workflow_dispatch:
+    inputs:
+      nodejs-version:
+        description: 'Node.js version to use (e.g., 24.0.0-rc.1)'
+        required: true
+        type: string
 
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
-  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  group: "${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   dependency-review:
@@ -29,12 +37,12 @@ jobs:
         contents: read
       steps:
           - name: Check out repo
-            uses: actions/checkout@v4
+            uses: actions/checkout@v6
             with:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@v4
+            uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4.8.2
 
   check-licenses:
     name: Check licenses
@@ -42,12 +50,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -68,12 +76,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -113,18 +121,46 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: [20, 22, 24]
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install
+        run: |
+          npm install --ignore-scripts
+
+      - name: Run tests
+        run: |
+          npm run unit
+
+  # Useful for testing Release Candidates of Node.js
+  test-unit-custom:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Use Custom Node.js Version
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ github.event.inputs.nodejs-version }}
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true
@@ -147,11 +183,11 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -176,11 +212,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -191,13 +227,13 @@ jobs:
           npm install --ignore-scripts
       - name: install webpack stack
         run: |
-          cd test/bundler/webpack && npm install
+          cd test/bundler/webpack && npm install --ignore-scripts
       - name: Test webpack bundle
         run: |
           cd test/bundler/webpack && npm run test
       - name: install esbuild stack
         run: |
-          cd test/bundler/esbuild && npm install
+          cd test/bundler/esbuild && npm install --ignore-scripts
       - name: Test esbuild bundle
         run: |
           cd test/bundler/esbuild && npm run test
@@ -205,6 +241,7 @@ jobs:
   automerge:
     if: >
         github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
         github.event.pull_request.user.login == 'dependabot[bot]'
     needs:
       - test-typescript

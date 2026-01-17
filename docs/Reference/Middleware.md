@@ -22,36 +22,36 @@ fastify.use(require('ienoopen')())
 fastify.use(require('x-xss-protection')())
 ```
 
-You can also use [`@fastify/middie`](https://github.com/fastify/middie), which provides
-support for simple Express-style middleware but with improved performance:
+[`@fastify/middie`](https://github.com/fastify/middie) can also be used,
+which provides support for simple Express-style middleware with improved
+performance:
 
 ```js
 await fastify.register(require('@fastify/middie'))
 fastify.use(require('cors')())
 ```
 
-Remember that middleware can be encapsulated; this means that you can decide
-where your middleware should run by using `register` as explained in the
-[plugins guide](../Guides/Plugins-Guide.md).
+Middleware can be encapsulated, allowing control over where it runs using
+`register` as explained in the [plugins guide](../Guides/Plugins-Guide.md).
 
-Fastify middleware does not expose the `send` method or other methods specific to
-the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps
+Fastify middleware does not expose the `send` method or other methods specific
+to the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps
 the incoming `req` and `res` Node instances using the
 [Request](./Request.md#request) and [Reply](./Reply.md#reply) objects
-internally, but this is done after the middleware phase. If you need to create
-middleware, you have to use the Node `req` and `res` instances. Otherwise, you
-can use the `preHandler` hook that already has the
-[Request](./Request.md#request) and [Reply](./Reply.md#reply) Fastify instances.
-For more information, see [Hooks](./Hooks.md#hooks).
+internally, but this is done after the middleware phase. To create middleware,
+use the Node `req` and `res` instances. Alternatively, use the `preHandler` hook
+that already has the Fastify [Request](./Request.md#request) and
+[Reply](./Reply.md#reply) instances. For more information, see
+[Hooks](./Hooks.md#hooks).
 
 #### Restrict middleware execution to certain paths
 <a id="restrict-usage"></a>
 
-If you need to only run middleware under certain paths, just pass the path as
-the first parameter to `use` and you are done!
+To run middleware under certain paths, pass the path as the first parameter to
+`use`.
 
-*Note that this does not support routes with parameters, (e.g.
-`/user/:id/comments`) and wildcards are not supported in multiple paths.*
+> ℹ️ Note: This does not support routes with parameters
+> (e.g. `/user/:id/comments`) and wildcards are not supported in multiple paths.
 
 ```js
 const path = require('node:path')
@@ -69,8 +69,8 @@ fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 
 ### Alternatives
 
-Fastify offers some alternatives to the most commonly used middleware, such as
-[`@fastify/helmet`](https://github.com/fastify/fastify-helmet) in case of
+Fastify offers alternatives to commonly used middleware, such as
+[`@fastify/helmet`](https://github.com/fastify/fastify-helmet) for
 [`helmet`](https://github.com/helmetjs/helmet),
 [`@fastify/cors`](https://github.com/fastify/fastify-cors) for
 [`cors`](https://github.com/expressjs/cors), and

@@ -2,11 +2,11 @@
 
 ## HTTP2
 
-_Fastify_ supports HTTP2 over either HTTPS (h2) or plaintext (h2c).
+_Fastify_ supports HTTP2 over HTTPS (h2) or plaintext (h2c).
 
 Currently, none of the HTTP2-specific APIs are available through _Fastify_, but
-Node's `req` and `res` can be accessed through our `Request` and `Reply`
-interface. PRs are welcome.
+Node's `req` and `res` can be accessed through the `Request` and `Reply`
+interfaces. PRs are welcome.
 
 ### Secure (HTTPS)
 
@@ -61,7 +61,7 @@ fastify.get('/', function (request, reply) {
 fastify.listen({ port: 3000 })
 ```
 
-You can test your new server with:
+Test the new server with:
 
 ```
 $ npx h2url https://localhost:3000
@@ -69,8 +69,8 @@ $ npx h2url https://localhost:3000
 
 ### Plain or insecure
 
-If you are building microservices, you can connect to HTTP2 in plain text,
-however, this is not supported by browsers.
+For microservices, HTTP2 can connect in plain text, but this is not
+supported by browsers.
 
 ```js
 'use strict'
@@ -86,7 +86,7 @@ fastify.get('/', function (request, reply) {
 fastify.listen({ port: 3000 })
 ```
 
-You can test your new server with:
+Test the new server with:
 
 ```
 $ npx h2url http://localhost:3000

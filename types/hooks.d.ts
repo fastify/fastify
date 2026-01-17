@@ -1,4 +1,4 @@
-import { Readable } from 'stream'
+import { Readable } from 'node:stream'
 import { FastifyInstance } from './instance'
 import { RouteOptions, RouteGenericInterface } from './route'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
@@ -498,7 +498,7 @@ export type onTimeoutMetaHookHandler<
 /**
  * This hook is useful if you need to do some custom error logging or add some specific header in case of error.
  * It is not intended for changing the error, and calling reply.send will throw an exception.
- * This hook will be executed only after the customErrorHandler has been executed, and only if the customErrorHandler sends an error back to the user (Note that the default customErrorHandler always sends the error back to the user).
+ * This hook will be executed before the customErrorHandler.
  * Notice: unlike the other hooks, pass an error to the done function is not supported.
  */
 export interface onErrorHookHandler<
@@ -710,10 +710,10 @@ export interface onRegisterHookHandler<
   Options extends FastifyPluginOptions = FastifyPluginOptions
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-    opts: RegisterOptions & Options,
-    done: HookHandlerDoneFunction
-  ): Promise<unknown> | void; // documentation is missing the `done` method
+    opts: RegisterOptions & Options
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -782,6 +782,7 @@ export interface onCloseHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): void;
@@ -795,6 +796,7 @@ export interface onCloseAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }

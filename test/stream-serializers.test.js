@@ -1,18 +1,19 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 const Reply = require('../lib/reply')
 
-test('should serialize reply when response stream is ended', t => {
-  t.plan(3)
+test('should serialize reply when response stream is ended', (t, done) => {
+  t.plan(5)
+
   const stream = require('node:stream')
   const fastify = Fastify({
     logger: {
       serializers: {
         res (reply) {
-          t.type(reply, Reply)
+          t.assert.strictEqual(reply instanceof Reply, true)
+          t.assert.ok('passed')
           return reply
         }
       }
@@ -27,11 +28,13 @@ test('should serialize reply when response stream is ended', t => {
     reply.raw.end(Buffer.from('hello\n'))
   })
 
+  t.after(() => fastify.close())
+
   fastify.inject({
     url: '/error',
     method: 'GET'
   }, (err) => {
-    t.error(err)
-    fastify.close()
+    t.assert.ifError(err)
+    done()
   })
 })

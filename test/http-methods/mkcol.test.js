@@ -1,8 +1,6 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
-const sget = require('simple-get').concat
+const { test } = require('node:test')
 const fastify = require('../../')()
 fastify.addHttpMethod('MKCOL')
 
@@ -16,24 +14,22 @@ test('can be created - mkcol', t => {
         reply.code(201).send()
       }
     })
-    t.pass()
+    t.assert.ok(true)
   } catch (e) {
-    t.fail()
+    t.assert.fail()
   }
 })
 
-fastify.listen({ port: 0 }, err => {
-  t.error(err)
-  t.teardown(() => { fastify.close() })
+test('mkcol test', async t => {
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-  test('request - mkcol', t => {
+  await t.test('request - mkcol', async t => {
     t.plan(2)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/`,
+    const result = await fetch(`${fastifyServer}/test/`, {
       method: 'MKCOL'
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 201)
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 201)
   })
 })

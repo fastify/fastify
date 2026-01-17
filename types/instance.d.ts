@@ -1,8 +1,8 @@
 import { FastifyError } from '@fastify/error'
 import { ConstraintStrategy, FindResult, HTTPVersion } from 'find-my-way'
-import * as http from 'http'
+import * as http from 'node:http'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
-import { AddressInfo } from 'net'
+import { AddressInfo } from 'node:net'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
@@ -23,6 +23,7 @@ import {
   SafePromiseLike
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { FastifyRouterOptions } from '../fastify'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -151,6 +152,8 @@ export interface FastifyInstance<
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
   decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>;
+
+  getDecorator<T>(name: string | symbol): T;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
@@ -461,12 +464,12 @@ export interface FastifyInstance<
   /**
    * Fastify default error handler
    */
-  errorHandler: (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+  errorHandler: <TError = unknown>(error: TError, request: FastifyRequest, reply: FastifyReply) => void;
 
   /**
-   * Set a function that will be called whenever an error happens
+   * Set a function that will be invoked whenever an exception is thrown during the request lifecycle.
    */
-  setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
+  setErrorHandler<TError = unknown, RouteGeneric extends RouteGenericInterface = RouteGenericInterface, SchemaCompiler extends FastifySchema = FastifySchema, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
     handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, TypeProvider>) => any | Promise<any>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
@@ -549,6 +552,17 @@ export interface FastifyInstance<
    */
   removeAllContentTypeParsers: removeAllContentTypeParsers
   /**
+   * Returns an array of strings containing the list of supported HTTP methods
+   */
+  supportedMethods: string[]
+  /**
+   * Add a non-standard HTTP method
+   *
+   * Methods defined by default include `GET`, `HEAD`, `TRACE`, `DELETE`,
+   * `OPTIONS`, `PATCH`, `PUT` and `POST`
+   */
+  addHttpMethod(method: string, methodOptions?: { hasBody: boolean }): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  /**
    * Fastify default JSON parser
    */
   getDefaultJsonParser: getDefaultJsonParser;
@@ -581,7 +595,7 @@ export interface FastifyInstance<
     https?: boolean | Readonly<{ allowHTTP1: boolean }>,
     ignoreTrailingSlash?: boolean,
     ignoreDuplicateSlashes?: boolean,
-    disableRequestLogging?: boolean,
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     maxParamLength?: number,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
@@ -590,5 +604,6 @@ export interface FastifyInstance<
     requestIdLogLabel?: string,
     http2SessionTimeout?: number,
     useSemicolonDelimiter?: boolean,
+    routerOptions?: FastifyRouterOptions<RawServer>
   }>
 }

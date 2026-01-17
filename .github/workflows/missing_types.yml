@@ -5,12 +5,14 @@ on:
     types: [closed]
 
 permissions:
-  issues: write
-  pull-requests: read
+  contents: read
 
 jobs:
   create_issue:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
     if: |
       github.event.pull_request.merged &&
       contains(github.event.pull_request.labels.*.name, 'missing-types')

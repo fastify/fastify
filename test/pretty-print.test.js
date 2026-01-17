@@ -1,10 +1,9 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('node:test')
 const Fastify = require('..')
 
-test('pretty print - static routes', t => {
+test('pretty print - static routes', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -22,12 +21,13 @@ test('pretty print - static routes', t => {
     └── hello/world (GET)
 `
 
-    t.equal(typeof tree, 'string')
-    t.equal(tree, expected)
+    t.assert.strictEqual(typeof tree, 'string')
+    t.assert.strictEqual(tree, expected)
+    done()
   })
 })
 
-test('pretty print - internal tree - static routes', t => {
+test('pretty print - internal tree - static routes', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -47,8 +47,8 @@ test('pretty print - internal tree - static routes', t => {
     └── hello/world (GET)
 `
 
-    t.equal(typeof getTree, 'string')
-    t.equal(getTree, expectedGetTree)
+    t.assert.strictEqual(typeof getTree, 'string')
+    t.assert.strictEqual(getTree, expectedGetTree)
 
     const putTree = fastify.printRoutes({ method: 'PUT' })
     const expectedPutTree = `\
@@ -57,12 +57,13 @@ test('pretty print - internal tree - static routes', t => {
         └── /foo (PUT)
 `
 
-    t.equal(typeof putTree, 'string')
-    t.equal(putTree, expectedPutTree)
+    t.assert.strictEqual(typeof putTree, 'string')
+    t.assert.strictEqual(putTree, expectedPutTree)
+    done()
   })
 })
 
-test('pretty print - parametric routes', t => {
+test('pretty print - parametric routes', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -82,12 +83,13 @@ test('pretty print - parametric routes', t => {
         └── :world (GET)
 `
 
-    t.equal(typeof tree, 'string')
-    t.equal(tree, expected)
+    t.assert.strictEqual(typeof tree, 'string')
+    t.assert.strictEqual(tree, expected)
+    done()
   })
 })
 
-test('pretty print - internal tree - parametric routes', t => {
+test('pretty print - internal tree - parametric routes', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -109,8 +111,8 @@ test('pretty print - internal tree - parametric routes', t => {
         └── :world (GET)
 `
 
-    t.equal(typeof getTree, 'string')
-    t.equal(getTree, expectedGetTree)
+    t.assert.strictEqual(typeof getTree, 'string')
+    t.assert.strictEqual(getTree, expectedGetTree)
 
     const putTree = fastify.printRoutes({ method: 'PUT' })
     const expectedPutTree = `\
@@ -120,12 +122,13 @@ test('pretty print - internal tree - parametric routes', t => {
             └── :hello (PUT)
 `
 
-    t.equal(typeof putTree, 'string')
-    t.equal(putTree, expectedPutTree)
+    t.assert.strictEqual(typeof putTree, 'string')
+    t.assert.strictEqual(putTree, expectedPutTree)
+    done()
   })
 })
 
-test('pretty print - mixed parametric routes', t => {
+test('pretty print - mixed parametric routes', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -145,12 +148,13 @@ test('pretty print - mixed parametric routes', t => {
                 └── /world (GET)
 `
 
-    t.equal(typeof tree, 'string')
-    t.equal(tree, expected)
+    t.assert.strictEqual(typeof tree, 'string')
+    t.assert.strictEqual(tree, expected)
+    done()
   })
 })
 
-test('pretty print - wildcard routes', t => {
+test('pretty print - wildcard routes', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -170,12 +174,13 @@ test('pretty print - wildcard routes', t => {
         └── * (GET)
 `
 
-    t.equal(typeof tree, 'string')
-    t.equal(tree, expected)
+    t.assert.strictEqual(typeof tree, 'string')
+    t.assert.strictEqual(tree, expected)
+    done()
   })
 })
 
-test('pretty print - internal tree - wildcard routes', t => {
+test('pretty print - internal tree - wildcard routes', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -197,8 +202,8 @@ test('pretty print - internal tree - wildcard routes', t => {
         └── * (GET)
 `
 
-    t.equal(typeof getTree, 'string')
-    t.equal(getTree, expectedGetTree)
+    t.assert.strictEqual(typeof getTree, 'string')
+    t.assert.strictEqual(getTree, expectedGetTree)
 
     const putTree = fastify.printRoutes({ method: 'PUT' })
     const expectedPutTree = `\
@@ -208,23 +213,25 @@ test('pretty print - internal tree - wildcard routes', t => {
     └── * (PUT)
 `
 
-    t.equal(typeof putTree, 'string')
-    t.equal(putTree, expectedPutTree)
+    t.assert.strictEqual(typeof putTree, 'string')
+    t.assert.strictEqual(putTree, expectedPutTree)
+    done()
   })
 })
 
-test('pretty print - empty plugins', t => {
+test('pretty print - empty plugins', (t, done) => {
   t.plan(2)
 
   const fastify = Fastify()
   fastify.ready(() => {
     const tree = fastify.printPlugins()
-    t.equal(typeof tree, 'string')
-    t.match(tree, /root \d+ ms\n└── bound _after \d+ ms/m)
+    t.assert.strictEqual(typeof tree, 'string')
+    t.assert.match(tree, /root \d+ ms\n└── bound _after \d+ ms/m)
+    done()
   })
 })
 
-test('pretty print - nested plugins', t => {
+test('pretty print - nested plugins', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -234,14 +241,15 @@ test('pretty print - nested plugins', t => {
   })
   fastify.ready(() => {
     const tree = fastify.printPlugins()
-    t.equal(typeof tree, 'string')
-    t.match(tree, 'foo')
-    t.match(tree, 'bar')
-    t.match(tree, 'baz')
+    t.assert.strictEqual(typeof tree, 'string')
+    t.assert.match(tree, /foo/)
+    t.assert.match(tree, /bar/)
+    t.assert.match(tree, /baz/)
+    done()
   })
 })
 
-test('pretty print - commonPrefix', t => {
+test('pretty print - commonPrefix', (t, done) => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -263,14 +271,15 @@ test('pretty print - commonPrefix', t => {
 ├── /hello (GET, HEAD, PUT)
 └── /helicopter (GET, HEAD)
 `
-    t.equal(typeof radixTree, 'string')
-    t.equal(typeof flatTree, 'string')
-    t.equal(radixTree, radixExpected)
-    t.equal(flatTree, flatExpected)
+    t.assert.strictEqual(typeof radixTree, 'string')
+    t.assert.strictEqual(typeof flatTree, 'string')
+    t.assert.strictEqual(radixTree, radixExpected)
+    t.assert.strictEqual(flatTree, flatExpected)
+    done()
   })
 })
 
-test('pretty print - includeMeta, includeHooks', t => {
+test('pretty print - includeMeta, includeHooks', (t, done) => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -346,11 +355,12 @@ test('pretty print - includeMeta, includeHooks', t => {
     • (onRequest) ["anonymous()"]
     • (onSend) ["headRouteOnSendHandler()"]
 `
-    t.equal(typeof radixTree, 'string')
-    t.equal(typeof flatTree, 'string')
-    t.equal(typeof hooksOnlyExpected, 'string')
-    t.equal(radixTree, radixExpected)
-    t.equal(flatTree, flatExpected)
-    t.equal(hooksOnly, hooksOnlyExpected)
+    t.assert.strictEqual(typeof radixTree, 'string')
+    t.assert.strictEqual(typeof flatTree, 'string')
+    t.assert.strictEqual(typeof hooksOnlyExpected, 'string')
+    t.assert.strictEqual(radixTree, radixExpected)
+    t.assert.strictEqual(flatTree, flatExpected)
+    t.assert.strictEqual(hooksOnly, hooksOnlyExpected)
+    done()
   })
 })

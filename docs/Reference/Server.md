@@ -331,6 +331,20 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
+This option can also be a function that receives the Fastify request object
+and returns a boolean. This allows for conditional request logging based on the
+request properties (e.g., URL, headers, decorations).
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  disableRequestLogging: (request) => {
+    // Disable logging for health check endpoints
+    return request.url === '/health' || request.url === '/ready'
+  }
+})
+```
+
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
 - the error and info logs written by the `defaultErrorHandler`
@@ -412,6 +426,10 @@ const fastify = require('fastify')({
   //requestIdHeader: false, // -> always use genReqId
 })
 ```
+
+> ⚠ Warning: enabling this allows any callers to set `reqId` to a
+> value of their choosing.
+> No validation is performed on `requestIdHeader`.
 
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
@@ -565,7 +583,11 @@ const fastify = require('fastify')({
       [require('ajv-keywords'), 'instanceof']
       // Usage: [plugin, pluginOptions] - Plugin with options
       // Usage: plugin - Plugin without options
-    ]
+    ],
+    onCreate: (ajv) => {
+      // Modify the ajv instance as you need.
+      ajv.addFormat('myFormat', (data) => typeof data === 'string')
+    }
   }
 })
 ```
@@ -839,6 +861,12 @@ const fastify = require('fastify')({
 })
 ```
 
+> **Note**
+> The `req` and `res` objects passed to `defaultRoute` are the raw Node.js
+> `IncomingMessage` and `ServerResponse` instances. They do **not** expose the
+> Fastify-specific methods available on `FastifyRequest`/`FastifyReply` (for
+> example, `res.send`).
+
 ### `ignoreDuplicateSlashes`
 <a id="factory-ignore-duplicate-slashes"></a>
 
@@ -929,6 +957,9 @@ const fastify = require('fastify')({
   }
 })
 ```
+
+As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
+objects and do not provide Fastify's decorated helpers.
 
 ### `querystringParser`
 <a id="querystringparser"></a>
@@ -1789,8 +1820,8 @@ different plugins can set different logger factories.
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
-for additional Fastify instances. It will receive the _raw_ incoming request as a
-parameter. The provided function should not throw an Error in any case.
+for additional Fastify instances. It will receive the _raw_ incoming request as
+a parameter. The provided function should not throw an Error in any case.
 
 Especially in distributed systems, you may want to override the default ID
 generation behavior to handle custom ways of generating different IDs in

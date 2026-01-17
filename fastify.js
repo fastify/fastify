@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.6.2'
+const VERSION = '5.7.1'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -82,7 +82,7 @@ const { FSTWRN004 } = require('./lib/warnings.js')
 const initChannel = diagnostics.channel('fastify.initialization')
 
 /**
- * @param {import('./fastify.js').FastifyServerOptions} options
+ * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
 function fastify (serverOptions) {
   const {
@@ -641,7 +641,8 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+      if (resolvedDisableRequestLogging === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
@@ -671,7 +672,8 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+          if (resolvedDisableRequestLogging === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 

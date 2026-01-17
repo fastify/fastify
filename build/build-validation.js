@@ -98,7 +98,6 @@ const schema = {
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
     disableRequestLogging: {
-      type: 'boolean',
       default: false
     },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
@@ -112,7 +111,7 @@ const schema = {
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
     routerOptions: {
       type: 'object',
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
         ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },

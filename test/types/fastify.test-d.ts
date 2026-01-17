@@ -1,4 +1,4 @@
-import { ErrorObject as AjvErrorObject } from 'ajv'
+import Ajv, { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
@@ -115,6 +115,7 @@ expectAssignable<FastifyInstance>(fastify({ pluginTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ bodyLimit: 100 }))
 expectAssignable<FastifyInstance>(fastify({ maxParamLength: 100 }))
 expectAssignable<FastifyInstance>(fastify({ disableRequestLogging: true }))
+expectAssignable<FastifyInstance>(fastify({ disableRequestLogging: (req) => req.url?.includes('/health') ?? false }))
 expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ onProtoPoisoning: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
@@ -232,12 +233,32 @@ expectAssignable<FastifyInstance>(fastify({
     customOptions: {
       removeAdditional: 'all'
     },
-    plugins: [() => { }]
+    plugins: [(ajv: Ajv): Ajv => ajv]
   }
 }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
-    plugins: [[() => { }, ['keyword1', 'keyword2']]]
+    plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
+  }
+}))
+expectError(fastify({
+  ajv: {
+    customOptions: {
+      removeAdditional: 'all'
+    },
+    plugins: [
+      () => {
+        // error, plugins always return the Ajv instance fluently
+      }
+    ]
+  }
+}))
+expectAssignable<FastifyInstance>(fastify({
+  ajv: {
+    onCreate: (ajvInstance) => {
+      expectType<Ajv>(ajvInstance)
+      return ajvInstance
+    }
   }
 }))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))

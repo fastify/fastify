@@ -9,7 +9,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 
 ## Tier 4
 
-_Be the first!_
+- [SerpApi](https://serpapi.com/?utm_source=fastify)
 
 ## Tier 3
 

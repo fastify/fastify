@@ -691,8 +691,8 @@ Or even explicit config on tsconfig
 
 Fastify's `getDecorator<T>` method retrieves decorators with enhanced type safety.
 
-The `getDecorator<T>` method supports generic type parameters for
-enhanced type safety:
+The `getDecorator<T>` method supports generic type parameters for enhanced type
+safety:
 
 ```typescript
 // Type-safe decorator retrieval

@@ -71,8 +71,8 @@ since the request was received by Fastify.
   JSON serializer or using the custom serializer (if one is set) and returns the
   serialized payload.
 - `.getSerializationFunction(schema | httpStatus, [contentType])` - Returns the
-  serialization function for the specified schema or http status, 
-  if any of either are set.
+  serialization function for the specified schema or http status, if any of
+  either are set.
 - `.compileSerializationSchema(schema, [httpStatus], [contentType])` - Compiles
   the specified schema and returns a serialization function using the default
   (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded

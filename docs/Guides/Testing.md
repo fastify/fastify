@@ -353,7 +353,7 @@ Now you should be able to step through your test file (and the rest of
 
 
 ## Plugins
-Let's `cd` into a fresh directory called 'testing-plugin-example' and type 
+Let's `cd` into a fresh directory called 'testing-plugin-example' and type
 `npm init -y` in our terminal.
 
 Run `npm i fastify fastify-plugin`

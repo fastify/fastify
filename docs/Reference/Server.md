@@ -331,6 +331,20 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
+This option can also be a function that receives the Fastify request object
+and returns a boolean. This allows for conditional request logging based on the
+request properties (e.g., URL, headers, decorations).
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  disableRequestLogging: (request) => {
+    // Disable logging for health check endpoints
+    return request.url === '/health' || request.url === '/ready'
+  }
+})
+```
+
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
 - the error and info logs written by the `defaultErrorHandler`
@@ -1806,8 +1820,8 @@ different plugins can set different logger factories.
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
-for additional Fastify instances. It will receive the _raw_ incoming request 
-as a parameter. The provided function should not throw an Error in any case.
+for additional Fastify instances. It will receive the _raw_ incoming request as
+a parameter. The provided function should not throw an Error in any case.
 
 Especially in distributed systems, you may want to override the default ID
 generation behavior to handle custom ways of generating different IDs in

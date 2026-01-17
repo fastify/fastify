@@ -9,14 +9,17 @@
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP022](#FSTDEP022)
+  - [Fastify Experimental Codes](#fastify-experimental-codes)
+    - [FSTEXP001](#FSTEXP001)
 
 ## Warnings
 
 ### Warnings In Fastify
 
 Fastify uses Node.js's [warning event](https://nodejs.org/api/process.html#event-warning)
-API to notify users of deprecated features and coding mistakes. Fastify's
-warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes. When
+API to notify users of deprecated features, coding mistakes, and experimental
+features. Fastify's warnings are recognizable by the `FSTWRN`, `FSTDEP`, and
+`FSTEXP` prefixes. When
 encountering such a warning, it is highly recommended to determine the cause
 using the [`--trace-warnings`](https://nodejs.org/api/cli.html#--trace-warnings)
 and [`--trace-deprecation`](https://nodejs.org/api/cli.html#--trace-deprecation)
@@ -56,3 +59,13 @@ Deprecation codes are supported by the Node.js CLI options:
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated router options on top option properties. | Use `options.routerOptions`. | [#5985](https://github.com/fastify/fastify/pull/5985)
+
+
+### Fastify Experimental Codes
+
+Experimental codes indicate features that are not yet stable and may change
+or be removed in future versions without following semver.
+
+| Code | Description | How to solve | Discussion |
+| ---- | ----------- | ------------ | ---------- |
+| <a id="FSTEXP001">FSTEXP001</a> | Web Standard API routes (`fastify.web.*`) are experimental and subject to change without notice. | This is informational. The API may change in future releases. | -

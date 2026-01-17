@@ -24,6 +24,7 @@ import {
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 import { FastifyRouterOptions } from '../fastify'
+import { FastifyWebNamespace } from './web'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -203,6 +204,13 @@ export interface FastifyInstance<
   report: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
   search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
+
+  /**
+   * Web Standard API routes namespace.
+   * Routes registered via this namespace use Web Standard Request/Response objects
+   * instead of FastifyRequest/FastifyReply.
+   */
+  web: FastifyWebNamespace<RawServer, RawRequest, RawReply, TypeProvider, Logger>;
 
   hasRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

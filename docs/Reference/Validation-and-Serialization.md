@@ -254,7 +254,7 @@ Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
 
-> **Warning**
+> [!IMPORTANT]
 > When using `coerceTypes: 'array'` (which is the default in Fastify), empty strings in query parameters (e.g. `?param=`) may be coerced to `null` if the schema allows nullable types (e.g. `type: ['integer', 'null']`). This behavior is specific to this AJV configuration and can lead to unexpected `null` values in your handlers compared to the default AJV setup.
 
 The Ajv default configuration in Fastify supports coercing array parameters in

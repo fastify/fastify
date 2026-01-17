@@ -255,7 +255,7 @@ the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
 
 > [!IMPORTANT]
-> When using `coerceTypes: 'array'` (which is the default in Fastify), empty strings in query parameters (e.g. `?param=`) may be coerced to `null` if the schema allows nullable types (e.g. `type: ['integer', 'null']`). This behavior is specific to this AJV configuration and can lead to unexpected `null` values in your handlers compared to the default AJV setup.
+> Fastify uses a custom [AJV configuration](https://github.com/fastify/ajv-compiler?tab=readme-ov-file#ajv-configuration) such as `coerceTypes: 'array'`. Evaluate its behavior and if it fits your needs.
 
 The Ajv default configuration in Fastify supports coercing array parameters in
 `querystring`. Example:

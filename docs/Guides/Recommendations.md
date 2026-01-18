@@ -10,6 +10,7 @@ This document contains a set of recommendations when using Fastify.
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
 - [Running Multiple Instances](#multiple)
+- [Performance Considerations](#performance)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
@@ -351,3 +352,41 @@ It is perfectly fine to spin up several Fastify instances within the same
 Node.js process and run them concurrently, even in high load systems.
 Each Fastify instance only generates as much load as the traffic it receives,
 plus the memory used for that Fastify instance.
+
+## Performance Considerations
+<a id="performance"></a>
+
+Fastify is designed for maximum performance, but certain patterns and features
+can impact it. This section consolidates common causes of performance
+degradation:
+
+### Route Configuration
+
+- **Regular expression routes**: Using regex in route parameters
+  (e.g., `/:file(^\\d+).png`) is expensive. Prefer simple parameters when
+  possible. See [Routes](../Reference/Routes.md#routes).
+
+- **Multiple route parameters**: Having routes with many parameters
+  (e.g., `/near/:lat-:lng/radius/:r`) can negatively affect performance.
+  Consider a single parameter approach for hot paths.
+  See [Routes](../Reference/Routes.md#routes).
+
+- **Version constraints**: Using `Accept-Version` header matching can degrade
+  router performance. See [Routes](../Reference/Routes.md#version-constraints).
+
+- **Asynchronous custom constraints**: Custom constraints that fetch data
+  from external sources (like databases) should be a last resort.
+  See [Routes](../Reference/Routes.md#asynchronous-custom-constraints).
+
+### Serialization
+
+- **JSON serialization without schema**: Native JSON serialization is slow.
+  Define response schemas to speed up serialization by 2-3x.
+  See [Getting Started](./Getting-Started.md#serialize-data) and
+  [Validation and Serialization](../Reference/Validation-and-Serialization.md).
+
+### Serverless
+
+- **Application size**: In serverless environments, larger applications result
+  in slower cold starts. Keep dependencies minimal.
+  See [Serverless](./Serverless.md).

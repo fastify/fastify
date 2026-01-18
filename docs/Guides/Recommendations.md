@@ -385,8 +385,3 @@ degradation:
   See [Getting Started](./Getting-Started.md#serialize-data) and
   [Validation and Serialization](../Reference/Validation-and-Serialization.md).
 
-### Serverless
-
-- **Application size**: In serverless environments, larger applications result
-  in slower cold starts. Keep dependencies minimal.
-  See [Serverless](./Serverless.md).

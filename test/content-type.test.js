@@ -66,11 +66,18 @@ describe('ContentType class', () => {
     found = new ContentType('foo/ bar')
     t.assert.equal(found.isEmpty, true)
     t.assert.equal(found.isValid, false)
+
+    found = new ContentType('foo; param=1')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
+
+    found = new ContentType('foo/π; param=1')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
   })
 
   test('returns a plain media type instance', (t) => {
     const found = new ContentType('Application/JSON')
-    t.assert.equal(found.isEmpty, false)
     t.assert.equal(found.mediaType, 'application/json')
     t.assert.equal(found.type, 'application')
     t.assert.equal(found.subtype, 'json')

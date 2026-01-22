@@ -5,7 +5,7 @@ const Fastify = require('..')
 const fp = require('fastify-plugin')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
-const { kSchemaController } = require('../lib/symbols.js')
+const { kSchemaController, kSchemaFromStore } = require('../lib/symbols.js')
 const { FSTWRN001 } = require('../lib/warnings')
 const { waitForCb } = require('./toolkit')
 
@@ -61,7 +61,7 @@ test('The schemas should be accessible via getSchemas', t => {
 })
 
 test('The schema should be accessible by id via getSchema', (t, testDone) => {
-  t.plan(5)
+  t.plan(9)
   const fastify = Fastify()
 
   const schemas = [
@@ -70,14 +70,21 @@ test('The schema should be accessible by id via getSchema', (t, testDone) => {
     { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
   ]
   schemas.forEach(schema => { fastify.addSchema(schema) })
-  t.assert.deepStrictEqual(fastify.getSchema('abc'), schemas[1])
-  t.assert.deepStrictEqual(fastify.getSchema('id'), schemas[0])
+  const schemaAbc = fastify.getSchema('abc')
+  t.assert.strictEqual(schemaAbc.$id, schemas[1].$id)
+  t.assert.strictEqual(schemaAbc.my, schemas[1].my)
+  t.assert.strictEqual(schemaAbc[kSchemaFromStore], true)
+  const schemaId = fastify.getSchema('id')
+  t.assert.strictEqual(schemaId.$id, schemas[0].$id)
+  t.assert.strictEqual(schemaId.my, schemas[0].my)
   t.assert.deepStrictEqual(fastify.getSchema('foo'), undefined)
 
   fastify.register((instance, opts, done) => {
     const pluginSchema = { $id: 'cde', my: 'schema' }
     instance.addSchema(pluginSchema)
-    t.assert.deepStrictEqual(instance.getSchema('cde'), pluginSchema)
+    const retrieved = instance.getSchema('cde')
+    t.assert.strictEqual(retrieved.$id, pluginSchema.$id)
+    t.assert.strictEqual(retrieved.my, pluginSchema.my)
     done()
   })
 
@@ -88,7 +95,7 @@ test('The schema should be accessible by id via getSchema', (t, testDone) => {
 })
 
 test('addSchema should skip processing when schema comes from getSchema', (t, testDone) => {
-  t.plan(2)
+  t.plan(4)
   const fastify = Fastify()
 
   const schema = { $id: 'test-schema', type: 'object', properties: { foo: { type: 'string' } } }
@@ -97,7 +104,10 @@ test('addSchema should skip processing when schema comes from getSchema', (t, te
   const retrievedSchema = fastify.getSchema('test-schema')
   fastify.addSchema(retrievedSchema)
 
-  t.assert.deepStrictEqual(fastify.getSchema('test-schema'), schema)
+  const result = fastify.getSchema('test-schema')
+  t.assert.strictEqual(result.$id, schema.$id)
+  t.assert.strictEqual(result.type, schema.type)
+  t.assert.strictEqual(result[kSchemaFromStore], true)
   fastify.ready(err => {
     t.assert.ifError(err)
     testDone()
@@ -105,7 +115,7 @@ test('addSchema should skip processing when schema comes from getSchema', (t, te
 })
 
 test('addSchema should skip cloning for schemas retrieved via getSchema', t => {
-  t.plan(1)
+  t.plan(3)
   const fastify = Fastify()
 
   const schema = { $id: 'perf-test', type: 'object' }
@@ -116,7 +126,10 @@ test('addSchema should skip cloning for schemas retrieved via getSchema', t => {
   fastify.addSchema(retrieved)
   fastify.addSchema(retrieved)
 
-  t.assert.deepStrictEqual(fastify.getSchema('perf-test'), schema)
+  const result = fastify.getSchema('perf-test')
+  t.assert.strictEqual(result.$id, schema.$id)
+  t.assert.strictEqual(result.type, schema.type)
+  t.assert.strictEqual(result[kSchemaFromStore], true)
 })
 
 test('Get validatorCompiler after setValidatorCompiler', (t, testDone) => {
@@ -304,7 +317,7 @@ test('Should throw of the schema does not exists in output', (t, testDone) => {
 })
 
 test('Should not change the input schemas', (t, testDone) => {
-  t.plan(4)
+  t.plan(6)
 
   const theSchema = {
     $id: 'helloSchema',
@@ -345,7 +358,10 @@ test('Should not change the input schemas', (t, testDone) => {
     t.assert.ifError(err)
     t.assert.deepStrictEqual(res.json(), { name: 'Foo' })
     t.assert.ok(theSchema.$id, 'the $id is not removed')
-    t.assert.deepStrictEqual(fastify.getSchema('helloSchema'), theSchema)
+    const retrieved = fastify.getSchema('helloSchema')
+    t.assert.strictEqual(retrieved.$id, theSchema.$id)
+    t.assert.strictEqual(retrieved.type, theSchema.type)
+    t.assert.deepStrictEqual(retrieved.definitions, theSchema.definitions)
     testDone()
   })
 })

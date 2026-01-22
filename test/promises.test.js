@@ -64,7 +64,7 @@ fastify.get('/return-reply', opts, function (req, reply) {
 fastify.listen({ port: 0 }, (err, fastifyServer) => {
   assert.ifError(err)
 
-  test('shorthand - sget return promise es6 get', async t => {
+  test('shorthand - fetch return promise es6 get', async t => {
     t.plan(4)
 
     const result = await fetch(`${fastifyServer}/return`)
@@ -75,7 +75,7 @@ fastify.listen({ port: 0 }, (err, fastifyServer) => {
     t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
-  test('shorthand - sget promise es6 get return error', async t => {
+  test('shorthand - fetch promise es6 get return error', async t => {
     t.plan(2)
 
     const result = await fetch(`${fastifyServer}/return-error`)
@@ -83,7 +83,7 @@ fastify.listen({ port: 0 }, (err, fastifyServer) => {
     t.assert.strictEqual(result.status, 500)
   })
 
-  test('sget promise double send', async t => {
+  test('fetch promise double send', async t => {
     t.plan(3)
 
     const result = await fetch(`${fastifyServer}/double`)

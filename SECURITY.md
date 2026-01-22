@@ -3,6 +3,46 @@
 This document describes the management of vulnerabilities for the Fastify
 project and its official plugins.
 
+## Threat Model
+
+Fastify's threat model extends the
+[Node.js threat model](https://github.com/nodejs/node/blob/main/SECURITY.md#the-nodejs-threat-model).
+
+**Trusted:** Application code (plugins, handlers, hooks, schemas), configuration,
+and the runtime environment.
+
+**Untrusted:** All network input (HTTP headers, body, query strings, URL
+parameters).
+
+### Examples of Vulnerabilities
+
+- Parsing flaws that bypass validation or security controls
+- DoS through malformed input to Fastify's core
+- Bypasses of built-in protections (prototype poisoning, schema validation)
+
+### Examples of Non-Vulnerabilities
+
+The following are **not** considered vulnerabilities in Fastify:
+
+- **Application code vulnerabilities**: XSS, SQL injection, or other flaws in
+user-written route handlers, hooks, or plugins
+- **Malicious application code**: Issues caused by intentionally malicious
+plugins or handlers (application code is trusted)
+- **Validation schema issues**: Weak or incorrect schemas provided by developers
+(schemas are trusted)
+- **ReDoS in user patterns**: Regular expression DoS in user-provided regex
+patterns for routes or validation
+- **Missing security features**: Lack of rate limiting, authentication, or
+authorization (these are application-level concerns)
+- **Configuration mistakes**: Security issues arising from developer
+misconfiguration (configuration is trusted)
+- **Third-party dependencies**: Vulnerabilities in npm packages used by the
+application (not Fastify core dependencies)
+- **Resource exhaustion from handlers**: DoS caused by expensive operations in
+user route handlers
+- **Information disclosure by design**: Exposing error details or stack traces
+explicitly enabled via configuration options
+
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
@@ -110,6 +150,18 @@ Within HackerOne, this is handled through a "public disclosure request".
 Reference: [HackerOne:
 Disclosure](https://docs.hackerone.com/hackers/disclosure.html)
 
+### Secondary Contact
+
+If you do not receive an acknowledgment of your report within 6 business days,
+or if you cannot find a private security contact for the project, you may
+contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for
+assistance.
+
+The CNA can help ensure your report is properly acknowledged, assist with
+coordinating disclosure timelines, and assign CVEs when necessary. This is a
+support mechanism to ensure security reports are handled appropriately across
+all OpenJS Foundation projects.
+
 ## The Fastify Security team
 
 The core team is responsible for the management of the security program and
@@ -125,13 +177,13 @@ work as a member of the Fastify Core team.
 ### Members
 
 * [__Matteo Collina__](https://github.com/mcollina),
-  <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+  <https://x.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor),
-  <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+  <https://x.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__KaKa Ng__](https://github.com/climba03003)
 * [__James Sumners__](https://github.com/jsumners),
-  <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+  <https://x.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ## OpenSSF CII Best Practices
 
@@ -143,11 +195,9 @@ There are three “tiers”: passing, silver, and gold.
 We meet 100% of the “passing” criteria.
 
 ### Silver
-We meet 87% of the “silver” criteria. The gaps are as follows:
+We meet 87% of the "silver" criteria. The gaps are as follows:
   - we do not have a DCO or a CLA process for contributions.
-  - we do not currently document
-    “what the user can and cannot expect in terms of security” for our project.
-  - we do not currently document ”the architecture (aka high-level design)”
+  - we do not currently document "the architecture (aka high-level design)"
     for our project.
 
 ### Gold

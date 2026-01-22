@@ -636,8 +636,7 @@ has a version set, and will prefer a versioned route to a non-versioned route
 for the same path. Advanced version ranges and pre-releases currently are not
 supported.
 
-*Be aware that using this feature will cause a degradation of the overall
-performances of the router.*
+> **Note:** using this feature can degrade the router’s performance.
 
 ```js
 fastify.route({
@@ -782,7 +781,7 @@ const secret = {
 > const Fastify = require('fastify')
 >
 > const fastify = Fastify({
->   frameworkErrors: function (err, res, res) {
+>   frameworkErrors: function (err, req, res) {
 >     if (err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
 >       res.code(400)
 >       return res.send("Invalid header provided")

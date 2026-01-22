@@ -38,7 +38,7 @@ There are a few basic ground rules for contributors:
 
 ### Fastify previous versions
 
-Every Fastify's version is on its own branch. All Fastify related
+Every version of Fastify has its own branch. All Fastify related
 changes should be based on the corresponding branch.
 
 We have a [Long Term Support](./docs/Reference/LTS.md) policy that defines
@@ -58,8 +58,8 @@ not bump version numbers in pull requests.
 
 ## Plugins
 
-The contributors to the Fastify's plugins must attend the same rules of the
-Fastify repository with a few adjustments:
+Contributors to Fastify plugins must follow the same rules as the main Fastify repository,
+ with a few adjustments:
 
 1. Any member can publish a release.
 1. The plugin version must follow the [semver](https://semver.org/)
@@ -67,7 +67,7 @@ Fastify repository with a few adjustments:
 1. The Node.js compatibility must match with Fastify's main branch.
 1. The new release must have the changelog information stored in the GitHub
      release. For this we suggest adopting a tool like
-     [`releasify`](https://github.com/fastify/releasify) to archive this.
+     [`releasify`](https://github.com/fastify/releasify) to achieve this.
 1. PR opened by bots (like Dependabot) can be merged if the CI is green and the
    Node.js versions supported are the same as the plugin.
 
@@ -97,7 +97,7 @@ the following tasks:
    [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) that adds
    your name, username, and email to the team you have chosen in the
    [README.md](./README.md) and [package.json](./package.json) *(if you are part
-   of the core team)* files. The members lists are sorted alphabetically by last
+   of the core team)* files. The member lists are sorted alphabetically by last
    name; make sure to add your name in the proper order.
 4. Open a pull request to
    [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) adding
@@ -107,15 +107,17 @@ the following tasks:
    in the proper order. Use your GitHub profile icon for the `picture:` field.
 5. Read the [pinned announcements](https://github.com/orgs/fastify/discussions/categories/announcements)
    to be updated with the organization’s news.
-6. The person that does the onboarding must add you to the [npm
-   org](https://www.npmjs.com/org/fastify), so that you can help maintain the
-   official plugins.
-7. Optionally, the person can be added as an Open Collective member
+6. The person who does the onboarding must open a pull request to
+   [`fastify/org-admin`](https://github.com/fastify/org-admin?tab=readme-ov-file#org-admin) 
+   so an admin can add the new member to the
+   [npm org](https://www.npmjs.com/org/fastify) and the GitHub Team,
+   so that the new joiner can help maintain the official plugins.
+8. Optionally, the person can be added as an Open Collective member
    by the lead team.
 
 ### Offboarding Collaborators
 
-We are thankful to you and we are really glad to have worked with you. We'll be
+We are thankful to you and we are really glad to have worked with you. We'd be
 really happy to see you here again if you want to come back, but for now the
 person that did the onboarding must:
 1. Ask the collaborator if they want to stay or not.
@@ -132,11 +134,14 @@ person that did the onboarding must:
 The person that did the onboarding must:
 1. If the collaborator does not reply to the ping in a reasonable time, open the
    pull requests described above.
-2. Remove the collaborator from the Fastify teams on GitHub.
-3. Remove the collaborator from the [npm
+2. Open a pull request to [`fastify/org-admin`](https://github.com/fastify/org-admin?tab=readme-ov-file#org-admin)
+   so an admin will:
+  1. Remove the collaborator from the Fastify teams on GitHub.
+  2. Remove the collaborator from the [npm
    org](https://www.npmjs.com/org/fastify).
-4. Remove the collaborator from the Azure team.
-5. Remove the collaborator from the Open Collective members.
+  3. Remove the collaborator from the Azure team.
+  4. Remove the collaborator from the Open Collective members.
+
 -----------------------------------------
 
 <a id="developers-certificate-of-origin"></a>

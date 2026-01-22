@@ -3,10 +3,10 @@ import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
 
-import { Options as AjvOptions, ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
 import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
-import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
@@ -29,7 +29,7 @@ import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
-import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
+import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
 
@@ -77,6 +77,7 @@ declare namespace fastify {
   }
 
   type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+  type FindMyWayConfigForServer<RawServer extends RawServerBase> = FindMyWayConfig<FindMyWayVersion<RawServer>>
 
   export interface ConnectionError extends Error {
     code: string,
@@ -88,6 +89,19 @@ declare namespace fastify {
   }
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
+
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'querystringParser'> & {
+    defaultRoute?: (
+      req: RawRequestDefaultExpression<RawServer>,
+      res: RawReplyDefaultExpression<RawServer>
+    ) => void,
+    onBadUrl?: (
+      path: string,
+      req: RawRequestDefaultExpression<RawServer>,
+      res: RawReplyDefaultExpression<RawServer>
+    ) => void,
+    querystringParser?: (str: string) => { [key: string]: unknown }
+  }
 
   /**
    * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
@@ -106,7 +120,7 @@ declare namespace fastify {
     pluginTimeout?: number,
     bodyLimit?: number,
     maxParamLength?: number,
-    disableRequestLogging?: boolean,
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
@@ -137,10 +151,7 @@ declare namespace fastify {
       };
     };
     return503OnClosing?: boolean,
-    ajv?: {
-      customOptions?: AjvOptions,
-      plugins?: (Function | [Function, unknown])[]
-    },
+    ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       error: FastifyError,
       req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,
@@ -159,6 +170,7 @@ declare namespace fastify {
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
     childLoggerFactory?: FastifyChildLoggerFactory,
     allowErrorHandlerOverride?: boolean
+    routerOptions?: FastifyRouterOptions<RawServer>,
   }
 
   /**

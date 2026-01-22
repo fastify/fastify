@@ -122,5 +122,5 @@ const schema = { body: bodyJsonSchema }
 fastify.post('/the/url', { schema }, handler)
 ```
 
-NB You can mix up the `$ref-way` and the `replace-way` when using
-`fastify.addSchema`.
+> ℹ️ Note: You can mix up the `$ref-way` and the `replace-way`
+> when using `fastify.addSchema`.

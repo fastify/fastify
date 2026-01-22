@@ -1,9 +1,10 @@
-import { expectAssignable, expectError, expectNotDeprecated, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotAssignable, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
+  FastifyRouterOptions,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
@@ -15,6 +16,8 @@ import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 import { AddressInfo } from 'node:net'
 import { Bindings, ChildLoggerOptions } from '../../types/logger'
+import { Config as FindMyWayConfig, ConstraintStrategy } from 'find-my-way'
+import { FindMyWayVersion } from '../../types/instance'
 
 const server = fastify()
 
@@ -40,7 +43,7 @@ expectType<string[]>(server.supportedMethods)
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
-    expectType<FastifyError>(error)
+    expectType<unknown>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )
@@ -90,12 +93,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
@@ -125,34 +128,48 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreHandlerHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: HookHandlerDoneFunction
+) { done() }
+async function notFoundpreHandlerAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}
+function notFoundpreValidationHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  done: HookHandlerDoneFunction
+) { done() }
+async function notFoundpreValidationAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply
+) {}
 
 server.setNotFoundHandler(notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler(
+  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  notFoundHandler
+)
 
 server.setNotFoundHandler(notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
-server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler(
+  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  notFoundAsyncHandler
+)
 
 server.setNotFoundHandler(function (_, reply) {
   return reply.send('')
 })
-
-function invalidErrorHandler (error: number) {
-  if (error) throw error
-}
-
-expectError(server.setErrorHandler(invalidErrorHandler))
 
 server.setSchemaController({
   bucket: (parentSchemas: unknown) => {
@@ -251,7 +268,7 @@ expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as R
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
   handler: () => {},
   errorHandler: (error, request, reply) => {
-    expectAssignable<FastifyError>(error)
+    expectAssignable<unknown>(error)
     expectAssignable<FastifyRequest>(request)
     expectAssignable<{ contextKey: string }>(request.routeOptions.config)
     expectAssignable<FastifyReply>(reply)
@@ -284,7 +301,13 @@ expectAssignable<FastifyInstance>(
   })
 )
 
-function childLoggerFactory (this: FastifyInstance, logger: FastifyBaseLogger, bindings: Bindings, opts: ChildLoggerOptions, req: RawRequestDefaultExpression) {
+function childLoggerFactory (
+  this: FastifyInstance,
+  logger: FastifyBaseLogger,
+  bindings: Bindings,
+  opts: ChildLoggerOptions,
+  req: RawRequestDefaultExpression
+) {
   return logger.child(bindings, opts)
 }
 server.setChildLoggerFactory(childLoggerFactory)
@@ -301,7 +324,7 @@ type InitialConfig = Readonly<{
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,
   ignoreTrailingSlash?: boolean,
   ignoreDuplicateSlashes?: boolean,
-  disableRequestLogging?: boolean,
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
   maxParamLength?: number,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
@@ -309,10 +332,32 @@ type InitialConfig = Readonly<{
   requestIdHeader?: string | false,
   requestIdLogLabel?: string,
   http2SessionTimeout?: number,
-  useSemicolonDelimiter?: boolean
+  useSemicolonDelimiter?: boolean,
+  routerOptions?: FastifyRouterOptions<RawServerDefault>
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)
+
+const routerOptionsForFindMyWay = {} as FastifyRouterOptions<RawServerDefault>
+expectAssignable<FindMyWayConfig<FindMyWayVersion<RawServerDefault>>>(routerOptionsForFindMyWay)
+
+fastify({
+  routerOptions: {
+    defaultRoute: (req, res) => {
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
+    },
+    onBadUrl: (path, req, res) => {
+      expectType<string>(path)
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
+    }
+  }
+})
 
 expectType<FastifyBodyParser<string>>(server.defaultTextParser)
 
@@ -525,7 +570,7 @@ expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
 const foo = server.getDecorator<string>('foo')
 expectType<string>(foo)
 
-const versionConstraintStrategy = {
+const versionConstraintStrategy: ConstraintStrategy<FindMyWayVersion<RawServerDefault>> = {
   name: 'version',
   storage: () => ({
     get: () => () => {},

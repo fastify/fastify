@@ -16,7 +16,7 @@ module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
 /* c8 ignore stop */
 `
 
-    const file = path.join(__dirname, '..', 'lib', 'configValidator.js')
+    const file = path.join(__dirname, '..', 'lib', 'config-validator.js')
     fs.writeFileSync(file, moduleCode)
     console.log(`Saved ${file} file successfully`)
   }
@@ -43,7 +43,14 @@ const defaultInitOptions = {
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
   useSemicolonDelimiter: false,
-  allowErrorHandlerOverride: true // TODO: set to false in v6
+  allowErrorHandlerOverride: true, // TODO: set to false in v6
+  routerOptions: {
+    ignoreTrailingSlash: false,
+    ignoreDuplicateSlashes: false,
+    maxParamLength: 100,
+    allowUnsafeRegex: false,
+    useSemicolonDelimiter: false
+  }
 }
 
 const schema = {
@@ -91,7 +98,6 @@ const schema = {
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
     disableRequestLogging: {
-      type: 'boolean',
       default: false
     },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
@@ -103,6 +109,17 @@ const schema = {
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
+    routerOptions: {
+      type: 'object',
+      additionalProperties: true,
+      properties: {
+        ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
+        ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },
+        maxParamLength: { type: 'integer', default: defaultInitOptions.routerOptions.maxParamLength },
+        allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.routerOptions.allowUnsafeRegex },
+        useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.routerOptions.useSemicolonDelimiter }
+      }
+    },
     constraints: {
       type: 'object',
       additionalProperties: {

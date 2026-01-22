@@ -9,7 +9,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 
 ## Tier 4
 
-_Be the first!_
+- [SerpApi](https://serpapi.com/?utm_source=fastify)
 
 ## Tier 3
 
@@ -17,6 +17,7 @@ _Be the first!_
 - [Val Town, Inc.](https://opencollective.com/valtown)
 - [Handsontable - JavaScript Data Grid](https://handsontable.com/docs/react-data-grid/?utm_source=Fastify_GH&utm_medium=sponsorship&utm_campaign=library_sponsorship_2024)
 - [Lokalise - A Localization and Translation Software Tool](https://lokalise.com/?utm_source=Fastify_GH&utm_medium=sponsorship)
+- [TestMu AI](https://www.testmu.ai/)
 
 ## Tier 2
 

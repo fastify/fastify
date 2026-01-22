@@ -6,7 +6,7 @@ require('../../lib/hooks').onSendHookRunner = function Stub () {}
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const symbols = require('../../lib/symbols.js')
-const { preHandlerCallback } = require('../../lib/handleRequest')[Symbol.for('internals')]
+const { preHandlerCallback } = require('../../lib/handle-request')[Symbol.for('internals')]
 
 test('diagnostics channel handles an error before calling context handler', t => {
   t.plan(3)

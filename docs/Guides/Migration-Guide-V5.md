@@ -545,6 +545,15 @@ for more information.
 This was already deprecated in v4 as `FSTDEP014`,
 so you should have already updated your code.
 
+### `time` and `date-time` formats enforce timezone
+
+The updated AJV compiler updates `ajv-formats` which now
+enforce the use of timezone in `time` and `date-time` format.
+A workaround is to use `iso-time` and `iso-date-time` formats
+which support an optional timezone for backwards compatibility.  
+See the
+[full discussion](https://github.com/fastify/fluent-json-schema/issues/267).
+
 ## New Features
 
 ### Diagnostic Channel support
@@ -557,7 +566,6 @@ and provides a way to trace the lifecycle of a request.
 'use strict'
 
 const diagnostics = require('node:diagnostics_channel')
-const sget = require('simple-get').concat
 const Fastify = require('fastify')
 
 diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
@@ -583,15 +591,12 @@ fastify.route({
   }
 })
 
-fastify.listen({ port: 0 }, function () {
-  sget({
-    method: 'GET',
-    url: fastify.listeningOrigin + '/7'
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(body), { hello: 'world' })
-  })
+fastify.listen({ port: 0 }, async function () {
+  const result = await fetch(fastify.listeningOrigin + '/7')
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(response.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
 })
 ```
 

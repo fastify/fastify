@@ -429,6 +429,8 @@ section.
   context to take place per API call within the Fastify lifecycle of calls.
 - [`fastify-http-errors-enhanced`](https://github.com/ShogunPanda/fastify-http-errors-enhanced)
   An error handling plugin for Fastify that uses enhanced HTTP errors.
+- [`fastify-http-exceptions`](https://github.com/bhouston/fastify-http-exceptions)
+  Typed HTTP status exceptions which are automatically converted into Fastify responses.
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect
   HTTP requests to HTTPS, both using the same port number, or different response
   on HTTP and HTTPS.

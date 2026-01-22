@@ -87,6 +87,38 @@ test('The schema should be accessible by id via getSchema', (t, testDone) => {
   })
 })
 
+test('addSchema should skip processing when schema comes from getSchema', (t, testDone) => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const schema = { $id: 'test-schema', type: 'object', properties: { foo: { type: 'string' } } }
+  fastify.addSchema(schema)
+
+  const retrievedSchema = fastify.getSchema('test-schema')
+  fastify.addSchema(retrievedSchema)
+
+  t.assert.deepStrictEqual(fastify.getSchema('test-schema'), schema)
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
+})
+
+test('addSchema should skip cloning for schemas retrieved via getSchema', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const schema = { $id: 'perf-test', type: 'object' }
+  fastify.addSchema(schema)
+
+  const retrieved = fastify.getSchema('perf-test')
+  fastify.addSchema(retrieved)
+  fastify.addSchema(retrieved)
+  fastify.addSchema(retrieved)
+
+  t.assert.deepStrictEqual(fastify.getSchema('perf-test'), schema)
+})
+
 test('Get validatorCompiler after setValidatorCompiler', (t, testDone) => {
   t.plan(2)
   const myCompiler = () => { }

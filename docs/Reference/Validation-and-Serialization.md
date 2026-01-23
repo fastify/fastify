@@ -678,9 +678,12 @@ const schema = {
       content: {
         'application/json': {
           schema: {
-            name: { type: 'string' },
-            image: { type: 'string' },
-            address: { type: 'string' }
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              image: { type: 'string' },
+              address: { type: 'string' }
+            }
           }
         },
         'application/vnd.v1+json': {
@@ -695,8 +698,11 @@ const schema = {
       content: {
         'application/vnd.v2+json': {
           schema: {
-            fullName: { type: 'string' },
-            phone: { type: 'string' }
+            type: 'object',
+            properties: {
+              fullName: { type: 'string' },
+              phone: { type: 'string' }
+            }
           }
         }
       }
@@ -706,7 +712,10 @@ const schema = {
         // */* is match-all content-type
         '*/*': {
           schema: {
-            desc: { type: 'string' }
+            type: 'object',
+            properties: {
+              desc: { type: 'string' }
+            }
           }
         }
       }

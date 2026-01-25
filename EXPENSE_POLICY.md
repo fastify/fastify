@@ -30,7 +30,7 @@ Reimbursement is applicable for expenses already paid, such as:
 - Gadgets
 - Hosting
 
-**Before making any purchases**, initiate a [new discussion](https://github.com/fastify/fastify/discussions)
+**Before making any purchases**, initiate a [new discussion](https://github.com/orgs/fastify/discussions)
 in the `fastify` organization with the following information:
 
 - What is needed

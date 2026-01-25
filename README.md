@@ -419,5 +419,3 @@ dependencies:
 
 [hd-link]: https://www.herodevs.com/support/fastify-nes?utm_source=fastify&utm_medium=link&utm_campaign=github_readme
 [lts-link]: https://fastify.dev/docs/latest/Reference/LTS/
-
-<!-- Trigger link checker workflow -->

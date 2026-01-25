@@ -1,4 +1,4 @@
-#  Introduction
+# Introduction
 
 This tutorial is designed to give a clear and practical understanding 
 of how to build applications with Fastify.
@@ -10,17 +10,19 @@ applying authentication, role-based access control, and other security
 best practices - all while benefiting from the performance Fastify is 
 known for.
 
-### Prerequisites
 
-**Node.js 24 or later** installed.
+## Prerequisites
 
-You also need **curl** to test API endpoints from the command line.
-Alternatively, you can use an HTTP client such as **Postman** if you prefer a graphical
+To follow along with this tutorial, these prerequisites are recommended:
 
-A basic understanding of **JavaScript**, **Node.js**, **HTTP**, and 
-**backend development** is expected.
+- Basic understanding of **JavaScript**, **Node.js**, **HTTP**
+- **Node.js 24 or later** installed
+- An HTTP client such as **curl** or **Postman** to test the API
+- Familiarity with a package manager such as **npm**
+- Basic bash/shell skills for running commands
 
-### Basics
+
+## What will we cover
 
 We’ll start by exploring Fastify’s core features:
 
@@ -31,20 +33,20 @@ We’ll start by exploring Fastify’s core features:
 - Implementing custom error handling and fallback (404) routes
 - Using the plugin system and encapsulation to structure our application
 
+
 ### Testing
 
 To ensure reliability and maintainability, we’ll set up a solid testing workflow:
 
 - Use the built-in **Node.js test runner**
 - Test routes and behaviors with **`fastify.inject()`**
-- Get **code coverage** using
-[`borp`](https://github.com/mcollina/borp), 
-a lightweight runner with TypeScript support and built-in coverage
+- Get **code coverage** using [`borp`](https://github.com/mcollina/borp), 
+  a lightweight runner with TypeScript support and built-in coverage
+
 
 ### Plugin Ecosystem and Integration
 
-We’ll integrate some Core Fastify plugins to 
-extend the application:
+We’ll integrate some Core Fastify plugins to  extend the application:
 
 - Configuration
 - Database integration
@@ -54,6 +56,7 @@ extend the application:
 - Authentication and authorization
 - API documentation with Swagger
 
+
 ### TypeScript and Architecture
 
 To finish, we’ll introduce Fastify’s TypeScript tools
@@ -62,3 +65,9 @@ and best practices:
 - `@fastify/type-provider-typebox` for type-safe schemas
 - Module augmentation to type decorators 
 - Alternative to module augmentation with `getDecorator`
+
+By the end of this tutorial, you’ll have a solid understanding of how to
+build, test, and maintain a Fastify application, along with practical
+experience in implementing common backend features.
+
+Let’s get started! 🚀

@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - 'docs/**'
-      - '*.md'
+      - '**/*.md'
       - '.github/workflows/links-check.yml'
 
 permissions:

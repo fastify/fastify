@@ -107,6 +107,10 @@ value is used; otherwise, a new incremental ID is generated. See Fastify Factory
 [`requestIdHeader`](./Server.md#factory-request-id-header) and Fastify Factory
 [`genReqId`](./Server.md#genreqid) for customization options.
 
+> ⚠ Warning: enabling `requestIdHeader` allows any callers to set `reqId` to a
+> value of their choosing.
+> No validation is performed on `requestIdHeader`.
+
 #### Serializers
 The default logger uses standard serializers for objects with `req`, `res`, and
 `err` properties. The `req` object is the Fastify [`Request`](./Request.md)

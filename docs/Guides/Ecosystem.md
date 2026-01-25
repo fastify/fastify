@@ -241,6 +241,9 @@ section.
   request IDs into your logs.
 - [`electron-server`](https://github.com/anonrig/electron-server) A plugin for
   using Fastify without the need of consuming a port on Electron apps.
+- [`elements-fastify`](https://github.com/rohitsoni007/elements-fastify) Fastify
+  Plugin for Stoplight Elements API Documentation using
+  openapi swagger json yml.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
 - [`fastify-204`](https://github.com/Shiva127/fastify-204) Fastify plugin that
@@ -424,6 +427,8 @@ section.
   context to take place per API call within the Fastify lifecycle of calls.
 - [`fastify-http-errors-enhanced`](https://github.com/ShogunPanda/fastify-http-errors-enhanced)
   An error handling plugin for Fastify that uses enhanced HTTP errors.
+- [`fastify-http-exceptions`](https://github.com/bhouston/fastify-http-exceptions)
+  Typed HTTP status exceptions which are automatically converted into Fastify responses.
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect
   HTTP requests to HTTPS, both using the same port number, or different response
   on HTTP and HTTPS.
@@ -563,8 +568,8 @@ middlewares into Fastify plugins
   custom permission checks.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
   thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
-- [`fastify-polyglot`](https://github.com/beliven-it/fastify-polyglot) A plugin to
-  handle i18n using
+- [`fastify-polyglot`](https://github.com/beliven-it/fastify-polyglot) A plugin
+  to handle i18n using
   [node-polyglot](https://www.npmjs.com/package/node-polyglot).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
   Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in
@@ -638,6 +643,8 @@ middlewares into Fastify plugins
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session)
   A session plugin with support for arbitrary backing caches via
   `fastify-caching`.
+- [`fastify-ses-mailer`](https://github.com/KaranHotwani/fastify-ses-mailer) A
+  Fastify plugin for sending emails via AWS SES using AWS SDK v3.
 - [`fastify-shared-schema`](https://github.com/Adibla/fastify-shared-schema) Plugin
   for sharing schemas between different routes.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
@@ -740,7 +747,6 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-
 
 #### [Community Tools](#community-tools)
 

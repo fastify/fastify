@@ -40,3 +40,5 @@ jobs:
         with:
           paths: "*.md **/*.md"
           retry: true
+          redirects: error
+          linksToSkip: "https://github.com/orgs/fastify/.*"

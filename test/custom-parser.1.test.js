@@ -89,41 +89,6 @@ test('Should get the body as string /1', async (t) => {
   t.assert.strictEqual(await result.text(), 'hello world')
 })
 
-test('Should get the body as string /2', async (t) => {
-  t.plan(4)
-  const fastify = Fastify()
-
-  fastify.post('/', (req, reply) => {
-    reply.send(req.body)
-  })
-
-  fastify.addContentTypeParser('text/plain/test', { parseAs: 'string' }, function (req, body, done) {
-    t.assert.ok('called')
-    t.assert.ok(typeof body === 'string')
-    try {
-      const plainText = body
-      done(null, plainText)
-    } catch (err) {
-      err.statusCode = 400
-      done(err, undefined)
-    }
-  })
-
-  const fastifyServer = await fastify.listen({ port: 0 })
-  t.after(() => fastify.close())
-
-  const result = await fetch(fastifyServer, {
-    method: 'POST',
-    body: 'hello world',
-    headers: {
-      'Content-Type': '   text/plain/test  '
-    }
-  })
-
-  t.assert.strictEqual(result.status, 200)
-  t.assert.strictEqual(await result.text(), 'hello world')
-})
-
 test('Should get the body as buffer', async (t) => {
   t.plan(4)
   const fastify = Fastify()

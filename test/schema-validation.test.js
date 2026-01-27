@@ -1537,11 +1537,9 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(invalid8.status, 400)
   t.assert.strictEqual((await invalid8.json()).code, 'FST_ERR_VALIDATION')
 })
-
-test('coercion of empty string to null with nullable types (PR #6452)', async t => {
-  t.plan(2)
+test('coercion of empty string to null with nullable types', async t => {
+  const assert = require('node:assert')
   const fastify = Fastify()
-  
   fastify.get('/', {
     schema: {
       querystring: {
@@ -1552,7 +1550,6 @@ test('coercion of empty string to null with nullable types (PR #6452)', async t 
       }
     }
   }, async (req, reply) => {
-    t.equal(req.query.param, null, 'empty string coerced to null')
     return { param: req.query.param }
   })
 
@@ -1560,6 +1557,5 @@ test('coercion of empty string to null with nullable types (PR #6452)', async t 
     method: 'GET',
     url: '/?param='
   })
-
-  t.equal(res.statusCode, 200)
+  assert.strictEqual(JSON.parse(res.payload).param, null)
 })

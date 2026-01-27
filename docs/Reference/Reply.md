@@ -671,9 +671,20 @@ fastify.get('/json', options, function (request, reply) {
 If you pass a string to `send` without a `Content-Type`, it will be sent as
 `text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a
 string to `send`, it will be serialized with the custom serializer if one is
-set, otherwise, it will be sent unmodified (unless the `Content-Type` header is
-set to `application/json; charset=utf-8`, in which case it will be
-JSON-serialized like an object — see the section above).
+set, otherwise, it will be sent unmodified.
+
+> **Note:** Even when the `Content-Type` header is set to `application/json`,
+> strings are sent unmodified by default. To serialize a string as JSON, you
+> must set a custom serializer:
+
+```js
+fastify.get('/json-string', async function (request, reply) {
+  reply
+    .type('application/json; charset=utf-8')
+    .serializer(JSON.stringify)
+    .send('Hello') // Returns "Hello" (JSON-encoded string)
+})
+```
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send('plain string')

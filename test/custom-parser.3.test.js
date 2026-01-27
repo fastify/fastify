@@ -189,7 +189,7 @@ test('catch all content type parser should not interfere with content type parse
 
   const assertions = [
     { body: '{"myKey":"myValue"}', contentType: 'application/json', expected: JSON.stringify({ myKey: 'myValue' }) },
-    { body: 'body', contentType: 'very-weird-content-type', expected: 'body' },
+    { body: 'body', contentType: 'very-weird-content-type/foo', expected: 'body' },
     { body: 'my text', contentType: 'text/html', expected: 'my texthtml' }
   ]
 

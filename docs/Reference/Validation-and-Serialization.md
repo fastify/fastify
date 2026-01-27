@@ -254,6 +254,9 @@ Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
 
+> [!IMPORTANT]
+> Fastify uses a custom [AJV configuration](https://github.com/fastify/ajv-compiler?tab=readme-ov-file#ajv-configuration) such as `coerceTypes: 'array'`. Evaluate its behavior and if it fits your needs.
+
 The Ajv default configuration in Fastify supports coercing array parameters in
 `querystring`. Example:
 

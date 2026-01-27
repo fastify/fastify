@@ -51,7 +51,14 @@ in a blank http Fastify server.
   }
   ```
 
-3. Initialize a TypeScript configuration file:
+3. Change the `"type"` section of the `package.json` to `module`, otherwise Node.js will be unhappy about ECMAScript import syntax:
+  ```json
+  {
+      "type": "module"
+  }
+  ```
+
+4. Initialize a TypeScript configuration file:
   ```bash
   npx tsc --init
   ```
@@ -61,8 +68,8 @@ in a blank http Fastify server.
 *Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
 [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
 
-4. Create an `index.ts` file - this will contain the server code
-5. Add the following code block to your file:
+5. Create an `index.ts` file - this will contain the server code
+6. Add the following code block to your file:
    ```typescript
    import fastify from 'fastify'
 
@@ -80,12 +87,12 @@ in a blank http Fastify server.
      console.log(`Server listening at ${address}`)
    })
    ```
-6. Run `npm run build` - this will compile `index.ts` into `index.js` which can
+7. Run `npm run build` - this will compile `index.ts` into `index.js` which can
    be executed using Node.js. If you run into any errors please open an issue in
    [fastify/help](https://github.com/fastify/help/)
-7. Run `npm run start` to run the Fastify server
-8. You should see `Server listening at http://127.0.0.1:8080` in your console
-9. Try out your server using `curl localhost:8080/ping`, it should return `pong`
+8. Run `npm run start` to run the Fastify server
+9. You should see `Server listening at http://127.0.0.1:8080` in your console
+10. Try out your server using `curl localhost:8080/ping`, it should return `pong`
    🏓
 
 🎉 You now have a working Typescript Fastify server! This example demonstrates

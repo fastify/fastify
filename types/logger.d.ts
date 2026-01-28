@@ -28,7 +28,7 @@ export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | '
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
-// TODO delete FastifyBaseLogger in the next major release. It seems that it is enough to have only FastifyBaseLogger.
+// TODO delete FastifyLoggerInstance in the next major release. It seems that it is enough to have only FastifyBaseLogger.
 /**
  * @deprecated Use FastifyBaseLogger instead
  */

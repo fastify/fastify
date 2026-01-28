@@ -5,6 +5,7 @@ const Fastify = require('../fastify')
 const fs = require('node:fs')
 const { Readable } = require('node:stream')
 const { fetch: undiciFetch } = require('undici')
+const http = require('node:http')
 
 test('should response with a ReadableStream', async (t) => {
   t.plan(2)
@@ -329,4 +330,139 @@ test('allow to pipe with undici.fetch', async (t) => {
 
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { ok: true })
+})
+
+test('WebStream error before headers sent should trigger error handler', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    const stream = new ReadableStream({
+      start (controller) {
+        controller.error(new Error('stream error'))
+      }
+    })
+    reply.send(stream)
+  })
+
+  const response = await fastify.inject({ method: 'GET', path: '/' })
+
+  t.assert.strictEqual(response.statusCode, 500)
+  t.assert.strictEqual(response.json().message, 'stream error')
+})
+
+test('WebStream error after headers sent should destroy response', (t, done) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', function (request, reply) {
+    const stream = new ReadableStream({
+      start (controller) {
+        controller.enqueue('hello')
+      },
+      pull (controller) {
+        setTimeout(() => {
+          controller.error(new Error('stream error'))
+        }, 10)
+      }
+    })
+    reply.header('content-type', 'text/plain').send(stream)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.assert.ifError(err)
+
+    let finished = false
+    http.get(`http://localhost:${fastify.server.address().port}`, (res) => {
+      res.on('close', () => {
+        if (!finished) {
+          finished = true
+          t.assert.ok('response closed')
+          done()
+        }
+      })
+      res.resume()
+    })
+  })
+})
+
+test('WebStream should cancel reader when response is destroyed', (t, done) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  let readerCancelled = false
+
+  fastify.get('/', function (request, reply) {
+    const stream = new ReadableStream({
+      start (controller) {
+        controller.enqueue('hello')
+      },
+      pull (controller) {
+        return new Promise(() => {})
+      },
+      cancel () {
+        readerCancelled = true
+      }
+    })
+    reply.header('content-type', 'text/plain').send(stream)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.assert.ifError(err)
+
+    const req = http.get(`http://localhost:${fastify.server.address().port}`, (res) => {
+      res.once('data', () => {
+        req.destroy()
+        setTimeout(() => {
+          t.assert.strictEqual(readerCancelled, true)
+          done()
+        }, 50)
+      })
+    })
+  })
+})
+
+test('WebStream should warn when headers already sent', async (t) => {
+  t.plan(2)
+
+  let warnCalled = false
+  const spyLogger = {
+    level: 'warn',
+    fatal: () => { },
+    error: () => { },
+    warn: (msg) => {
+      if (typeof msg === 'string' && msg.includes('use res.writeHead in stream mode')) {
+        warnCalled = true
+      }
+    },
+    info: () => { },
+    debug: () => { },
+    trace: () => { },
+    child: () => spyLogger
+  }
+
+  const fastify = Fastify({ loggerInstance: spyLogger })
+  t.after(() => fastify.close())
+
+  fastify.get('/', function (request, reply) {
+    reply.raw.writeHead(200, { 'content-type': 'text/plain' })
+    const stream = new ReadableStream({
+      start (controller) {
+        controller.enqueue('hello')
+        controller.close()
+      }
+    })
+    reply.send(stream)
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const response = await fetch(`http://localhost:${fastify.server.address().port}/`)
+  t.assert.strictEqual(response.status, 200)
+  t.assert.strictEqual(warnCalled, true)
 })

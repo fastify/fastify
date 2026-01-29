@@ -79,3 +79,8 @@ export interface FastifyReply<
   removeTrailer(key: string): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   getDecorator<T>(name: string | symbol): T;
 }
+
+export type ReplyType<TReply extends FastifyReply> =
+  TReply extends FastifyReply<any, any, any, any, any, any, any, infer InferredReplyType>
+    ? InferredReplyType
+    : never

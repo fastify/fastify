@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import fastify, { FastifyContextConfig, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
+import fastify, { FastifyContextConfig, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, ReplyType, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
@@ -123,6 +123,9 @@ const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   // When Reply type is specified, send() requires a payload argument
   expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
   expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.code(100).send)
+
+  const inferredReplyType: ReplyType<typeof reply> = { test: true }
+  expectType<ReplyPayload['Reply']>(inferredReplyType)
 }
 
 const server = fastify()

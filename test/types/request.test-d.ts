@@ -15,7 +15,7 @@ import fastify, {
   SafePromiseLike
 } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
-import { FastifyLoggerInstance } from '../../types/logger'
+import { FastifyBaseLogger } from '../../types/logger'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest, RequestRouteOptions } from '../../types/request'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
@@ -56,7 +56,7 @@ type CustomRequest = FastifyRequest<{
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 type ExpectedGetValidationFunction = (input: { [key: string]: unknown }) => boolean
 
-interface CustomLoggerInterface extends FastifyLoggerInstance {
+interface CustomLoggerInterface extends FastifyBaseLogger {
   foo: FastifyLogFn; // custom severity logger method
 }
 
@@ -85,7 +85,7 @@ const getHandler: RouteHandler = function (request, _reply) {
 
   expectType<RequestQuerystringDefault>(request.query)
   expectType<string>(request.id)
-  expectType<FastifyLoggerInstance>(request.log)
+  expectType<FastifyBaseLogger>(request.log)
   expectType<RawRequestDefaultExpression['socket']>(request.socket)
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
   expectType<FastifyInstance>(request.server)

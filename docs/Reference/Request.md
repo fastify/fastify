@@ -25,6 +25,11 @@ Request is a core Fastify object containing the following fields:
   enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
   exists. The host header may return an empty string if `requireHostHeader` is
   `false`, not provided with HTTP/1.0, or removed by schema validation.
+  ⚠️ Security: this value comes from client-controlled headers; only trust it
+  when you control proxy behavior and have validated or allowlisted hosts.
+  No additional validation is performed beyond RFC parsing (see
+  [RFC 9110, section 7.2](https://www.rfc-editor.org/rfc/rfc9110#section-7.2) and
+  [RFC 3986, section 3.2.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2.2)).
 - `hostname` - The hostname derived from the `host` property of the incoming request.
 - `port` - The port from the `host` property, which may refer to the port the
   server is listening on.

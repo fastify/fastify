@@ -134,7 +134,7 @@ on Fastify to find out how to integrate.
 [Genezio](https://genezio.com/) is a platform designed to simplify the deployment
 of serverless applications to the cloud.
 
-[Genezio has a dedicated guide for deploying a Fastify application.](https://genezio.com/docs/frameworks/fastify/)
+[Genezio has a dedicated guide for deploying a Fastify application.](https://github.com/Genez-io/fastify-getting-started)
 
 ## Google Cloud Functions
 

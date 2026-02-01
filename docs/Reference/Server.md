@@ -534,7 +534,9 @@ recommend using a custom parser to convert only the keys to lowercase.
 ```js
 const qs = require('qs')
 const fastify = require('fastify')({
-  querystringParser: str => qs.parse(str)
+  routerOptions: {
+    querystringParser: str => qs.parse(str)
+  }
 })
 ```
 
@@ -544,7 +546,9 @@ like the example below for case insensitive keys and values:
 ```js
 const querystring = require('fast-querystring')
 const fastify = require('fastify')({
-  querystringParser: str => querystring.parse(str.toLowerCase())
+  routerOptions: {
+    querystringParser: str => querystring.parse(str.toLowerCase())
+  }
 })
 ```
 

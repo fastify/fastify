@@ -14,20 +14,18 @@ To help with the upgrade, we’ve worked with the team at
 publish codemods that will automatically update your code to many of
 the new APIs and patterns in Fastify v4.
 
-Run the following
-[migration recipe](https://go.codemod.com/fastify-4-migration-recipe) to
-automatically update your code to Fastify v4:
 
-```
+```bash
 npx codemod@latest fastify/4/migration-recipe
 ```
 
 This will run the following codemods:
 
-- [`fastify/4/remove-app-use`](https://go.codemod.com/fastify-4-remove-app-use)
-- [`fastify/4/reply-raw-access`](https://go.codemod.com/fastify-4-reply-raw-access)
-- [`fastify/4/wrap-routes-plugin`](https://go.codemod.com/fastify-4-wrap-routes-plugin)
-- [`fastify/4/await-register-calls`](https://go.codemod.com/fastify-4-await-register-calls)
+- [`fastify/4/remove-app-use`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/remove-app-use)
+
+- [`fastify/4/reply-raw-access`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/reply-raw-access)
+- [`fastify/4/wrap-routes-plugin`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/wrap-routes-plugin)
+- [`fastify/4/await-register-calls`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/await-register-calls)
 
 Each of these codemods automates the changes listed in the v4 migration guide.
 For a complete list of available Fastify codemods and further details,

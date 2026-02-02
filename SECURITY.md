@@ -46,10 +46,11 @@ explicitly enabled via configuration options
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
-complete a vulnerability report via the dedicated pages:
+complete a vulnerability report via the GitHub Security page:
 
-1. [HackerOne](https://hackerone.com/fastify)
-2. [GitHub Security Advisory](https://github.com/fastify/fastify/security/advisories/new)
+https://github.com/fastify/fastify/security/advisories/new
+
+Note: Our [HackerOne](https://hackerone.com/fastify) program is now closed.
 
 ### Strict measures when reporting vulnerabilities
 

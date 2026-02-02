@@ -6,6 +6,7 @@ const fs = require('node:fs')
 const { Readable } = require('node:stream')
 const { fetch: undiciFetch } = require('undici')
 const http = require('node:http')
+const { setTimeout: sleep } = require('node:timers/promises')
 
 test('should response with a ReadableStream', async (t) => {
   t.plan(2)
@@ -425,6 +426,78 @@ test('WebStream should cancel reader when response is destroyed', (t, done) => {
       })
     })
   })
+})
+
+test('WebStream should respect backpressure', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  let drainEmittedAt = 0
+  let secondWriteAt = 0
+  let resolveSecondWrite
+  const secondWrite = new Promise((resolve) => {
+    resolveSecondWrite = resolve
+  })
+
+  fastify.get('/', function (request, reply) {
+    const raw = reply.raw
+    const originalWrite = raw.write.bind(raw)
+    const bufferedChunks = []
+    let wroteFirstChunk = false
+
+    raw.once('drain', () => {
+      for (const bufferedChunk of bufferedChunks) {
+        originalWrite(bufferedChunk)
+      }
+    })
+
+    raw.write = function (chunk, encoding, cb) {
+      if (!wroteFirstChunk) {
+        wroteFirstChunk = true
+        bufferedChunks.push(Buffer.from(chunk))
+        sleep(100).then(() => {
+          drainEmittedAt = Date.now()
+          raw.emit('drain')
+        })
+        if (typeof cb === 'function') {
+          cb()
+        }
+        return false
+      }
+      if (!secondWriteAt) {
+        secondWriteAt = Date.now()
+        resolveSecondWrite()
+      }
+      return originalWrite(chunk, encoding, cb)
+    }
+
+    const stream = new ReadableStream({
+      start (controller) {
+        controller.enqueue(Buffer.from('chunk-1'))
+      },
+      pull (controller) {
+        controller.enqueue(Buffer.from('chunk-2'))
+        controller.close()
+      }
+    })
+
+    reply.header('content-type', 'text/plain').send(stream)
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const response = await undiciFetch(`http://localhost:${fastify.server.address().port}/`)
+  const bodyPromise = response.text()
+
+  await secondWrite
+  await sleep(120)
+  const body = await bodyPromise
+
+  t.assert.strictEqual(response.status, 200)
+  t.assert.strictEqual(body, 'chunk-1chunk-2')
+  t.assert.ok(secondWriteAt >= drainEmittedAt)
 })
 
 test('WebStream should warn when headers already sent', async (t) => {

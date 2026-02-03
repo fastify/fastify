@@ -18,18 +18,15 @@ the new APIs and patterns in Fastify v4.
 ```bash
 npx codemod@latest fastify/4/migration-recipe
 ```
+This applies the following codemods:
 
-This will run the following codemods:
+fastify/4/remove-app-use
+fastify/4/reply-raw-access
+fastify/4/wrap-routes-plugin
+fastify/4/await-register-calls
 
-- [`fastify/4/remove-app-use`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/remove-app-use)
-
-- [`fastify/4/reply-raw-access`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/reply-raw-access)
-- [`fastify/4/wrap-routes-plugin`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/wrap-routes-plugin)
-- [`fastify/4/await-register-calls`](https://github.com/codemod-com/fastify-codemods/tree/main/transforms/await-register-calls)
-
-Each of these codemods automates the changes listed in the v4 migration guide.
-For a complete list of available Fastify codemods and further details,
-see [Codemod Registry](https://go.codemod.com/fastify).
+For information on the migration recipe, see
+https://app.codemod.com/registry/fastify/4/migration-recipe
 
 
 ## Breaking Changes

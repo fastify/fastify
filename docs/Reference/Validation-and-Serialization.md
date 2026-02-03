@@ -177,6 +177,11 @@ const bodyJsonSchema = {
       items: { type: 'integer' }
     },
     nullableKey: { type: ['number', 'null'] }, // or { type: 'number', nullable: true }
+    /*
+      Note: using anyOf or oneOf for nullable types may lead to unexpected
+      coercion results (e.g. 0 being coerced to null) when coerceTypes is enabled.
+      It is recommended to use the array type form or the nullable keyword.
+    */
     multipleTypesKey: { type: ['boolean', 'number'] },
     multipleRestrictedTypesKey: {
       oneOf: [

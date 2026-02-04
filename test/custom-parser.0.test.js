@@ -354,7 +354,7 @@ test('catch all content type parser', async (t) => {
     method: 'POST',
     body: 'hello',
     headers: {
-      'Content-Type': 'very-weird-content-type'
+      'Content-Type': 'very-weird-content-type/foo'
     }
   })
 
@@ -363,7 +363,7 @@ test('catch all content type parser', async (t) => {
   t.assert.strictEqual(await result2.text(), 'hello')
 })
 
-test('catch all content type parser should not interfere with other conte type parsers', async (t) => {
+test('catch all content type parser should not interfere with other content type parsers', async (t) => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -404,7 +404,7 @@ test('catch all content type parser should not interfere with other conte type p
     method: 'POST',
     body: 'hello',
     headers: {
-      'Content-Type': 'very-weird-content-type'
+      'Content-Type': 'very-weird-content-type/foo'
     }
   })
 

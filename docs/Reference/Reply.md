@@ -267,8 +267,8 @@ as soon as possible.
 > the trailer. It is a hard requirement for using trailer in Node.js.
 
 > ℹ️ Note:
-> Any error passed to `done` callback will be ignored. If you interested
-> in the error, you can turn on `debug` level logging.*
+> Any error passed to `done` callback will be ignored. If you are interested
+> in the error, you can turn on `debug` level logging.
 
 ```js
 reply.trailer('server-timing', function() {

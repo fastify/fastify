@@ -211,6 +211,9 @@ section.
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
+- [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
+  A Fastify plugin for rendering Svelte components with support for SSR
+  (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
@@ -747,9 +750,6 @@ middlewares into Fastify plugins
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
-  A Fastify plugin for rendering Svelte components with support for SSR
-  (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
 
 #### [Community Tools](#community-tools)
 

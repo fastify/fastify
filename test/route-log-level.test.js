@@ -2,7 +2,6 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const { FST_ERR_ROUTE_INVALID_LOG_LEVEL } = require('../lib/errors')
 
 test('route logLevel validation', async t => {
   t.plan(5)

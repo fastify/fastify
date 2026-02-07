@@ -204,10 +204,54 @@ jobs:
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
+  test-pino-compat:
+    name: Test pino compatibility
+    needs:
+      - lint
+      - coverage-nix
+      - coverage-win
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        pino-version: ['^9', '^10']
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install dependencies
+        run: |
+          npm install --ignore-scripts
+
+      - name: Install pino ${{ matrix.pino-version }}
+        run: |
+          npm install --ignore-scripts --no-save pino@${{ matrix.pino-version }}
+
+      - name: Run unit tests
+        run: |
+          npm run unit
+
+      - name: Run typescript tests
+        run: |
+          npm run test:typescript
+        env:
+          NODE_OPTIONS: no-network-family-autoselection
+
   package:
     needs:
       - test-typescript
       - test-unit
+      - test-pino-compat
     runs-on: ubuntu-latest
     permissions:
       contents: read

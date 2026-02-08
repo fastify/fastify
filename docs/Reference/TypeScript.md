@@ -58,8 +58,9 @@ in a blank http Fastify server.
   or use one of the [recommended
   ones](https://github.com/tsconfig/bases#node-14-tsconfigjson).
 
-*Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
-[FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
+> ℹ️ Note:
+> Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
+> [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.
 
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
@@ -1621,8 +1622,9 @@ previous hook was `preValidation`, the next hook will be `preSerialization`.
 `preSerialization` is the fifth hook to be executed in the request lifecycle.
 The previous hook was `preHandler`, the next hook will be `onSend`.
 
-Note: the hook is NOT called if the payload is a string, a Buffer, a stream or
-null.
+> ℹ️ Note:
+> The hook is NOT called if the payload is a string, a Buffer,
+> a stream, or null.
 
 ##### fastify.onSendHookHandler< OnSendPayload, [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: OnSendPayload, done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
 
@@ -1632,8 +1634,9 @@ You can change the payload with the `onSend` hook. It is the sixth hook to be
 executed in the request lifecycle. The previous hook was `preSerialization`, the
 next hook will be `onResponse`.
 
-Note: If you change the payload, you may only change it to a string, a Buffer, a
-stream, or null.
+> ℹ️ Note:
+>  If you change the payload, you may only change it to a string, 
+> a Buffer, a stream, or null.
 
 ##### fastify.onResponseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
@@ -1679,7 +1682,8 @@ created. The hook will be executed before the registered code.
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context.
 
-Note: This hook will not be called if a plugin is wrapped inside fastify-plugin.
+> ℹ️ Note:
+> This hook will not be called if a plugin is wrapped inside fastify-plugin.
 
 ##### fastify.onCloseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 

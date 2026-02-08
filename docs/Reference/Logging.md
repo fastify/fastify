@@ -107,7 +107,8 @@ value is used; otherwise, a new incremental ID is generated. See Fastify Factory
 [`requestIdHeader`](./Server.md#factory-request-id-header) and Fastify Factory
 [`genReqId`](./Server.md#genreqid) for customization options.
 
-> ⚠ Warning: enabling `requestIdHeader` allows any callers to set `reqId` to a
+> ⚠ Warning:
+> Enabling `requestIdHeader` allows any callers to set `reqId` to a
 > value of their choosing.
 > No validation is performed on `requestIdHeader`.
 
@@ -161,7 +162,8 @@ const fastify = require('fastify')({
 });
 ```
 
-> ℹ️ Note: In some cases, the [`Reply`](./Reply.md) object passed to the `res`
+> ℹ️ Note:
+> In some cases, the [`Reply`](./Reply.md) object passed to the `res`
 > serializer cannot be fully constructed. When writing a custom `res`
 > serializer, check for the existence of any properties on `reply` aside from
 > `statusCode`, which is always present. For example, verify the existence of
@@ -188,9 +190,10 @@ const fastify = require('fastify')({
 });
 ```
 
-> ℹ️ Note: The body cannot be serialized inside a `req` method because the
-request is serialized when the child logger is created. At that time, the body
-is not yet parsed.
+> ℹ️ Note:
+> The body cannot be serialized inside a `req` method because the
+> request is serialized when the child logger is created. At that time, the body
+> is not yet parsed.
 
 See the following approach to log `req.body`:
 
@@ -203,7 +206,8 @@ app.addHook('preHandler', function (req, reply, done) {
 })
 ```
 
-> ℹ️ Note: Ensure serializers never throw errors, as this can cause the Node
+> ℹ️ Note:
+> Ensure serializers never throw errors, as this can cause the Node
 > process to exit. See the
 > [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers) for more
 > information.

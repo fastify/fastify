@@ -444,7 +444,9 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-> ℹ️ Note: When using a custom validator instance, add schemas to the validator
+
+> ℹ️ Note:
+> When using a custom validator instance, add schemas to the validator
 > instead of Fastify. Fastify's `addSchema` method will not recognize the custom
 > validator.
 

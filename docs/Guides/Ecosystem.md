@@ -9,7 +9,7 @@ section.
 #### [Core](#core)
 
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
-  [accepts](https://www.npmjs.com/package/accepts) in your request object.
+  [accepts](https://github.com/jshttp/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to the `Accept` header.
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
@@ -276,8 +276,8 @@ section.
   Postgres plugin with auto SQL injection attack prevention.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
-  [fastify-jwt](https://npm.im/fastify-jwt) and
-  [jsonwebtoken](https://npm.im/jsonwebtoken).
+  [fastify-jwt](https://github.com/fastify/fastify-jwt) and
+  [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 - [`fastify-autocrud`](https://github.com/paranoiasystem/fastify-autocrud)
   Plugin to auto-generate CRUD routes as fast as possible.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
@@ -306,7 +306,7 @@ section.
 - [`fastify-bree`](https://github.com/climba03003/fastify-bree) Fastify plugin
   to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
-  to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
+  to add support for [Bugsnag](https://docs.bugsnag.com/) error reporting.
 - [`fastify-cacheman`](https://gitlab.com/aalfiann/fastify-cacheman)
   Small and efficient cache provider for Node.js with In-memory, File, Redis
    and MongoDB engines for Fastify
@@ -570,7 +570,7 @@ middlewares into Fastify plugins
   thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-polyglot`](https://github.com/beliven-it/fastify-polyglot) A plugin
   to handle i18n using
-  [node-polyglot](https://www.npmjs.com/package/node-polyglot).
+  [node-polyglot](https://github.com/airbnb/polyglot.js).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
   Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in
   a Fastify project.

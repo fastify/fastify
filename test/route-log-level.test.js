@@ -1,19 +1,17 @@
 'use strict'
 
-const { test } = require('node:test')
+const { test, describe } = require('node:test')
 const Fastify = require('..')
 
-test('route logLevel validation', async t => {
-  t.plan(5)
-
-  await t.test('should throw error for invalid logLevel at registration time', async (t) => {
+describe('route logLevel validation', () => {
+  test('should throw error for invalid logLevel at registration time', (t, done) => {
     t.plan(3)
 
     const fastify = Fastify({ logger: true })
 
     t.assert.throws(
       () => {
-        fastify.get('/', { logLevel: 'invalid' }, async () => 'hello')
+        fastify.get('/', { logLevel: 'invalid' }, () => 'hello')
       },
       (err) => {
         t.assert.strictEqual(err.code, 'FST_ERR_ROUTE_INVALID_LOG_LEVEL')
@@ -21,9 +19,11 @@ test('route logLevel validation', async t => {
         return true
       }
     )
+
+    done()
   })
 
-  await t.test('should accept valid log levels', async (t) => {
+  test('should accept valid log levels', (t, done) => {
     t.plan(7)
 
     const validLevels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent']
@@ -31,28 +31,32 @@ test('route logLevel validation', async t => {
     for (const level of validLevels) {
       const fastify = Fastify({ logger: true })
       t.assert.doesNotThrow(() => {
-        fastify.get(`/${level}`, { logLevel: level }, async () => 'ok')
+        fastify.get(`/${level}`, { logLevel: level }, () => 'ok')
       })
     }
+
+    done()
   })
 
-  await t.test('should reject case-sensitive invalid levels', async (t) => {
+  test('should reject case-sensitive invalid levels', (t, done) => {
     t.plan(2)
 
     const fastify = Fastify({ logger: true })
 
     t.assert.throws(
       () => {
-        fastify.get('/', { logLevel: 'INFO' }, async () => 'hello')
+        fastify.get('/', { logLevel: 'INFO' }, () => 'hello')
       },
       (err) => {
         t.assert.strictEqual(err.code, 'FST_ERR_ROUTE_INVALID_LOG_LEVEL')
         return true
       }
     )
+
+    done()
   })
 
-  await t.test('should not throw when logger is disabled', async (t) => {
+  test('should not throw when logger is disabled', (t, done) => {
     t.plan(1)
 
     const fastify = Fastify({ logger: false })
@@ -60,18 +64,22 @@ test('route logLevel validation', async t => {
     t.assert.doesNotThrow(() => {
       // When logger is disabled, we don't validate logLevel
       // because there's no logger to validate against
-      fastify.get('/', { logLevel: 'invalid' }, async () => 'hello')
+      fastify.get('/', { logLevel: 'invalid' }, () => 'hello')
     })
+
+    done()
   })
 
-  await t.test('should not throw for empty string logLevel (means use default)', async (t) => {
+  test('should not throw for empty string logLevel (means use default)', (t, done) => {
     t.plan(1)
 
     const fastify = Fastify({ logger: true })
 
     t.assert.doesNotThrow(() => {
       // Empty string means 'use default level', which is valid
-      fastify.get('/', { logLevel: '' }, async () => 'hello')
+      fastify.get('/', { logLevel: '' }, () => 'hello')
     })
+
+    done()
   })
 })

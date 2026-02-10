@@ -10,50 +10,17 @@ test('validator compiler should correctly update with falsy values (0, "", false
 
   fastify.setValidatorCompiler(() => {
     return (data) => {
-      // Return the data as value, even if it is falsy
+      // Simulate coercion from a truthy object to a falsy primitive
+      if (data && data.coerceTo === 'zero') return { value: 0 }
+      if (data && data.coerceTo === 'empty') return { value: '' }
+      if (data && data.coerceTo === 'false') return { value: false }
       return { value: data }
     }
   })
 
-  fastify.post('/test', {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          val: { type: 'number' }
-        }
-      }
-    }
-  }, (request, reply) => {
-    reply.send({ val: request.body.val })
-  })
-
-  // Test with ""
-  fastify.post('/test-string', {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          val: { type: 'string' }
-        }
-      }
-    }
-  }, (request, reply) => {
-    reply.send({ val: request.body.val })
-  })
-
-  // Test with false
-  fastify.post('/test-boolean', {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          val: { type: 'boolean' }
-        }
-      }
-    }
-  }, (request, reply) => {
-    reply.send({ val: request.body.val })
+  // We need a schema for the validator compiler to be used
+  fastify.post('/test', { schema: { body: { type: 'object' } } }, (request, reply) => {
+    reply.send({ val: request.body })
   })
 
   // Test with 0
@@ -61,27 +28,29 @@ test('validator compiler should correctly update with falsy values (0, "", false
     const res = await fastify.inject({
       method: 'POST',
       url: '/test',
-      payload: { val: 0 }
+      payload: { coerceTo: 'zero' }
     })
     t.assert.strictEqual(res.statusCode, 200)
     t.assert.strictEqual(JSON.parse(res.payload).val, 0)
   }
 
+  // Test with ""
   {
     const res = await fastify.inject({
       method: 'POST',
-      url: '/test-string',
-      payload: { val: '' }
+      url: '/test',
+      payload: { coerceTo: 'empty' }
     })
     t.assert.strictEqual(res.statusCode, 200)
     t.assert.strictEqual(JSON.parse(res.payload).val, '')
   }
 
+  // Test with false
   {
     const res = await fastify.inject({
       method: 'POST',
-      url: '/test-boolean',
-      payload: { val: false }
+      url: '/test',
+      payload: { coerceTo: 'false' }
     })
     t.assert.strictEqual(res.statusCode, 200)
     t.assert.strictEqual(JSON.parse(res.payload).val, false)

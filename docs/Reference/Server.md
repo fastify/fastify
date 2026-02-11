@@ -427,7 +427,8 @@ const fastify = require('fastify')({
 })
 ```
 
-> ⚠ Warning: enabling this allows any callers to set `reqId` to a
+> ⚠ Warning:
+> Enabling this allows any callers to set `reqId` to a
 > value of their choosing.
 > No validation is performed on `requestIdHeader`.
 
@@ -865,7 +866,7 @@ const fastify = require('fastify')({
 })
 ```
 
-> **Note**
+> ℹ️ Note:
 > The `req` and `res` objects passed to `defaultRoute` are the raw Node.js
 > `IncomingMessage` and `ServerResponse` instances. They do **not** expose the
 > Fastify-specific methods available on `FastifyRequest`/`FastifyReply` (for
@@ -1029,7 +1030,8 @@ fastify.get('/dev', async (request, reply) => {
 
 * **Default:** `true`
 
-> ⚠ **Warning:** This option will be set to `false` by default 
+> ⚠ Warning:
+> This option will be set to `false` by default 
 > in the next major release.
 
 When set to `false`, it prevents `setErrorHandler` from being called 

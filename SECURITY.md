@@ -61,7 +61,7 @@ reported vulnerabilities:
 * Avoid creating new "informative" reports. Only create new
   reports on a vulnerability if you are absolutely sure this should be
   tagged as an actual vulnerability. Third-party vendors and individuals are
-  tracking any new vulnerabilities reported in GitHub and will flag
+  tracking any new vulnerabilities reported on GitHub and will flag
   them as such for their customers (think about snyk, npm audit, ...).
 * Security reports should never be created and triaged by the same person. If
   you are creating a report for a vulnerability that you found, or on

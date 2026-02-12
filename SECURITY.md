@@ -46,11 +46,11 @@ explicitly enabled via configuration options
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
-complete a vulnerability report via the GitHub Security page:
+complete a vulnerability report via the
+[GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
 
-https://github.com/fastify/fastify/security/advisories/new
-
-Note: Our [HackerOne](https://hackerone.com/fastify) program is now closed.
+> ℹ️ Note:
+> Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
 
 ### Strict measures when reporting vulnerabilities
 
@@ -61,7 +61,7 @@ reported vulnerabilities:
 * Avoid creating new "informative" reports. Only create new
   reports on a vulnerability if you are absolutely sure this should be
   tagged as an actual vulnerability. Third-party vendors and individuals are
-  tracking any new vulnerabilities reported in HackerOne or GitHub and will flag
+  tracking any new vulnerabilities reported in GitHub and will flag
   them as such for their customers (think about snyk, npm audit, ...).
 * Security reports should never be created and triaged by the same person. If
   you are creating a report for a vulnerability that you found, or on
@@ -106,9 +106,6 @@ Triaging should include updating issue fields:
 * Asset - set/create the module affected by the report
 * Severity - TBD, currently left empty
 
-Reference: [HackerOne: Submitting
-Reports](https://docs.hackerone.com/hackers/submitting-reports.html)
-
 ### Correction follow-up
 
 **Delay:** 90 days
@@ -136,8 +133,7 @@ The report's vulnerable versions upper limit should be set to:
 Within 90 days after the triage date, the vulnerability must be made public.
 
 **Severity**: Vulnerability severity is assessed using [CVSS
-v.3](https://www.first.org/cvss/user-guide). More information can be found on
-[HackerOne documentation](https://docs.hackerone.com/hackers/severity.html)
+v.3](https://www.first.org/cvss/user-guide).
 
 If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
@@ -145,11 +141,6 @@ reported the vulnerability.
 
 At this point, a CVE should be requested through the selected platform through
 the UI, which should include the Report ID and a summary.
-
-Within HackerOne, this is handled through a "public disclosure request".
-
-Reference: [HackerOne:
-Disclosure](https://docs.hackerone.com/hackers/disclosure.html)
 
 ### Secondary Contact
 

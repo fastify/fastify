@@ -139,8 +139,8 @@ If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability.
 
-At this point, a CVE should be requested through the selected platform through
-the UI, which should include the Report ID and a summary.
+At this point, a CVE should be requested via GitHub Security Advisories using
+the web UI, and the request should include the Report ID and a summary.
 
 ### Secondary Contact
 

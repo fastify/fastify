@@ -1,4 +1,4 @@
-name: Internal Links Check
+name: Links Check
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  linkChecker:
+  internalLinkChecker:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,7 +22,7 @@ jobs:
 
       # It will be possible to check only for the links in the changed files
       # See: https://github.com/lycheeverse/lychee-action/issues/17
-      - name: Link Checker
+      - name: Internal Link Checker
         id: lychee
         uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # v2.7.0
         with:
@@ -31,5 +31,33 @@ jobs:
           # to ensure consistency.
           # See: https://github.com/lycheeverse/lychee-action/issues/17#issuecomment-1162586751
           args: --offline --verbose --no-progress './**/*.md'
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  
+  externalLinkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: External link checker
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: true
+          args: |
+            --verbose
+            --cache
+            --root-dir "$(pwd)"
+            --max-retries 5
+            --retry-wait-time 30
+            --timeout 300
+            --no-progress 
+            --accept 200,403 
+            --max-concurrency 5
+            --exclude "https://x\.com/.*"
+            --exclude "https://github.com/orgs/fastify/.*"
+            "./**/*.md"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

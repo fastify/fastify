@@ -1172,7 +1172,7 @@ addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callbac
 
 Be careful when deciding to listen on all interfaces; it comes with inherent
 [security
-risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 The default is to listen on `port: 0` (which picks the first available open
 port) and `host: 'localhost'`:

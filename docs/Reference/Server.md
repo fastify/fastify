@@ -1393,7 +1393,7 @@ different ways to define a name (in order).
    Example: `pluginFn[Symbol.for('fastify.display-name')] = "Custom Name"`
 3. If you `module.exports` a plugin the filename is used.
 4. If you use a regular [function
-   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions)
+   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#defining_functions)
    the function name is used.
 
 *Fallback*: The first two lines of your plugin will represent the plugin name.

@@ -217,7 +217,7 @@ providers.
 
 #### TypeBox
 
-A useful library for building types and a schema at once is [TypeBox](https://www.npmjs.com/package/@sinclair/typebox).
+A useful library for building types and a schema at once is [TypeBox](https://www.npmjs.com/package/typebox).
 With TypeBox you define your schema within your code and use them directly as
 types or schemas as you need them.
 
@@ -227,14 +227,14 @@ can do it as follows:
 1. Install `typebox` in your project.
 
     ```bash
-    npm i @sinclair/typebox
+    npm i typebox
     ```
 
 2. Define the schema you need with `Type` and create the respective type  with
    `Static`.
 
     ```typescript
-    import { Static, Type } from '@sinclair/typebox'
+    import { Static, Type } from 'typebox'
 
     export const User = Type.Object({
       name: Type.String(),

@@ -658,8 +658,8 @@ unfortunate limitation of using TypeScript and is unavoidable as of right now.
 
 However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in
-  [ESLint](https://eslint.org/docs/latest/rules/no-unused-vars) and any imported plugin
-  are actually being loaded.
+  [ESLint](https://eslint.org/docs/latest/rules/no-unused-vars) and any imported
+  plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.

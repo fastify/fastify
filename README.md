@@ -253,8 +253,8 @@ application. You should __always__ benchmark if performance matters to you.
   plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad
   set of real working examples.
-- [Discord](https://discord.com/invite/fastify) - Join our discord server and chat with
-  the maintainers.
+- [Discord](https://discord.com/invite/fastify) - Join our discord server and
+  chat with the maintainers.
 
 ## Support
 Please visit [Fastify help](https://github.com/fastify/help) to view prior

@@ -270,7 +270,8 @@ This property is used to configure the internal logger instance.
 The possible values this property may have are:
 
 + Default: `false`. The logger is disabled. All logging methods will point to a
-  null logger [abstract-logging](https://www.npmjs.com/package/abstract-logging) instance.
+  null logger [abstract-logging](https://www.npmjs.com/package/abstract-logging)
+  instance.
 
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).

@@ -665,7 +665,7 @@ fastify.inject({
 
 > ⚠ Warning:
 > Set a
-> [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary)
+> [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Vary)
 > header in responses with the value used for versioning
 > (e.g., `'Accept-Version'`) to prevent cache poisoning attacks.
 > This can also be configured in a Proxy/CDN.

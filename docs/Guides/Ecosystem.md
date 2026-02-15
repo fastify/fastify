@@ -146,7 +146,7 @@ section.
 - [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`@fastify/vite`](https://github.com/fastify/fastify-vite) Integration with
-  [Vite](https://vitejs.dev/), allows for serving SPA/MPA/SSR Vite applications.
+  [Vite](https://vite.dev/), allows for serving SPA/MPA/SSR Vite applications.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`@fastify/zipkin`](https://github.com/fastify/fastify-zipkin) Plugin
@@ -276,8 +276,8 @@ section.
   Postgres plugin with auto SQL injection attack prevention.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
-  [fastify-jwt](https://npm.im/fastify-jwt) and
-  [jsonwebtoken](https://npm.im/jsonwebtoken).
+  [fastify-jwt](https://www.npmjs.com/package/fastify-jwt) and
+  [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken).
 - [`fastify-autocrud`](https://github.com/paranoiasystem/fastify-autocrud)
   Plugin to auto-generate CRUD routes as fast as possible.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
@@ -386,7 +386,7 @@ section.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)
   Handy plugin to provide multipart support and fastify-swagger integration.
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace)
-  [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference)
+  [Google Cloud Trace API](https://docs.cloud.google.com/trace/docs/reference)
   Connector for Fastify.
 - [`fastify-get-head`](https://github.com/MetCoder95/fastify-get-head) Small
   plugin to set a new HEAD route handler for each GET route previously
@@ -702,7 +702,7 @@ middlewares into Fastify plugins
   multiple subdomains to the same IP address, while running different servers on
   the same machine).
 - [`fastify-vite`](https://github.com/galvez/fastify-vite)
-  [Vite](https://vitejs.dev/) plugin for Fastify with SSR data support.
+  [Vite](https://vite.dev/) plugin for Fastify with SSR data support.
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue)
   [Nuxt.js](https://nuxtjs.org) plugin for Fastify. Control the routes nuxt
   should use.

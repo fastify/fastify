@@ -8,14 +8,14 @@ Fastify compiles the schema into a highly performant function.
 Validation is only attempted if the content type is `application/json`.
 
 All examples use the
-[JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
+[JSON Schema Draft 7](https://json-schema.org/specification-links)
 specification.
 
 > ⚠ Warning:
 > Treat schema definitions as application code. Validation and serialization
 > features use `new Function()`, which is unsafe with user-provided schemas. See
-> [Ajv](https://npm.im/ajv) and
-> [fast-json-stringify](https://npm.im/fast-json-stringify) for details.
+> [Ajv](https://www.npmjs.com/package/ajv) and
+> [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for details.
 >
 > Whilst Fastify supports the
 > [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html),
@@ -46,7 +46,7 @@ The `addSchema` API allows adding multiple schemas to the Fastify instance for
 reuse throughout the application. This API is encapsulated.
 
 Shared schemas can be reused with the JSON Schema
-[**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8)
+[**`$ref`**](https://datatracker.ietf.org/doc/html/draft-handrews-json-schema-01)
 keyword. Here is an overview of how references work:
 
 + `myField: { $ref: '#foo' }` searches for `$id: '#foo'` in the current schema

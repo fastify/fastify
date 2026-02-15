@@ -232,7 +232,7 @@ itself), it is much harder getting it fixed.
 
 The first question people ask once a security issue is found is if there is
 going to be a CVE published. A CVE — Common Vulnerabilities and Exposures — is a
-[database](https://cve.mitre.org/) of known security issues. It is a critical
+[database](https://www.cve.org/) of known security issues. It is a critical
 component of web security. The benefit of publishing a CVE is that it
 immediately triggers alarms and informs and often breaks automated builds until
 the issue is resolved.

@@ -146,6 +146,8 @@ export interface RouteShorthandMethod<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 }
 
+export type RoutePath = { url: string } | { path: string }
+
 /**
  * Fastify route method options.
  */
@@ -161,7 +163,7 @@ export type RouteOptions<
 > = RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger> & {
   method: HTTPMethods | HTTPMethods[];
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>;
-} & ({ url: string } | { path: string })
+} & RoutePath
 
 export type RouteHandler<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

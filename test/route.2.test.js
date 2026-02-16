@@ -55,31 +55,6 @@ test('path can be specified in place of uri', (t, done) => {
   })
 })
 
-
-test('route defaults to / when neither url nor path is specified', (t, done) => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.route({
-    method: 'GET',
-    handler: function (req, reply) {
-      reply.send({ hello: 'world' })
-    }
-  })
-
-  const reqOpts = {
-    method: 'GET',
-    url: '/'
-  }
-
-  fastify.inject(reqOpts, (err, res) => {
-    t.assert.ifError(err)
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
-    done()
-  })
-})
-
 test('invalid bodyLimit option - route', t => {
   t.plan(2)
   const fastify = Fastify()

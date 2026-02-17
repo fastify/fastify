@@ -78,8 +78,8 @@ If you need to use middleware, use
 continue to be maintained.
 However, it is strongly recommended that you migrate to Fastify's [hooks](../Reference/Hooks.md).
 
-> **Note**: Codemod remove `app.use()` with:
->
+> ℹ️ Note:
+> Codemod remove `app.use()` with:
 > ```bash
 > npx codemod@latest fastify/4/remove-app-use
 > ```
@@ -89,8 +89,8 @@ However, it is strongly recommended that you migrate to Fastify's [hooks](../Ref
 If you previously used the `reply.res` attribute to access the underlying Request
 object you will now need to use `reply.raw`.
 
-> **Note**: Codemod `reply.res` to `reply.raw` with:
->
+> ℹ️ Note:
+> Codemod `reply.res` to `reply.raw` with:
 > ```bash
 > npx codemod@latest fastify/4/reply-raw-access
 > ```
@@ -141,8 +141,9 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
-> **Note**: Codemod synchronous route definitions with:
->
+
+> ℹ️ Note:
+> Codemod synchronous route definitions with:
 > ```bash
 > npx codemod@latest fastify/4/wrap-routes-plugin
 > ```
@@ -171,8 +172,8 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
   });
   ```
 
-> **Note**: Codemod 'await register(...)' with:
->
+> ℹ️ Note:
+> Codemod 'await register(...)' with:
 > ```bash
 > npx codemod@latest fastify/4/await-register-calls
 > ```

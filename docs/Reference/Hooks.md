@@ -34,7 +34,8 @@ are Request/Reply hooks and application hooks:
 - [Using Hooks to Inject Custom Properties](#using-hooks-to-inject-custom-properties)
 - [Diagnostics Channel Hooks](#diagnostics-channel-hooks)
 
-> ℹ️ Note: The `done` callback is not available when using `async`/`await` or
+> ℹ️ Note:
+> The `done` callback is not available when using `async`/`await` or
 > returning a `Promise`. If you do invoke a `done` callback in this situation
 > unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
@@ -68,7 +69,8 @@ fastify.addHook('onRequest', async (request, reply) => {
 })
 ```
 
-> ℹ️ Note: In the [onRequest](#onrequest) hook, `request.body` will always be
+> ℹ️ Note:
+> In the [onRequest](#onrequest) hook, `request.body` will always be
 > `undefined`, because the body parsing happens before the
 > [preValidation](#prevalidation) hook.
 
@@ -98,16 +100,19 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 })
 ```
 
-> ℹ️ Note: In the [preParsing](#preparsing) hook, `request.body` will always be
+> ℹ️ Note:
+> In the [preParsing](#preparsing) hook, `request.body` will always be
 > `undefined`, because the body parsing happens before the
 > [preValidation](#prevalidation) hook.
 
-> ℹ️ Note: You should also add a `receivedEncodedLength` property to the
+> ℹ️ Note:
+> You should also add a `receivedEncodedLength` property to the
 > returned stream. This property is used to correctly match the request payload
 > with the `Content-Length` header value. Ideally, this property should be updated
 > on each received chunk.
 
-> ℹ️ Note: The size of the returned stream is checked to not exceed the limit
+> ℹ️ Note:
+> The size of the returned stream is checked to not exceed the limit
 > set in [`bodyLimit`](./Server.md#bodylimit) option.
 
 ### preValidation
@@ -166,7 +171,8 @@ fastify.addHook('preSerialization', async (request, reply, payload) => {
 })
 ```
 
-> ℹ️ Note: The hook is NOT called if the payload is a `string`, a `Buffer`, a
+> ℹ️ Note:
+> The hook is NOT called if the payload is a `string`, a `Buffer`, a
 > `stream`, or `null`.
 
 ### onError
@@ -192,7 +198,8 @@ an exception.
 This hook will be executed before
 the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler).
 
-> ℹ️ Note: Unlike the other hooks, passing an error to the `done` function is not
+> ℹ️ Note:
+> Unlike the other hooks, passing an error to the `done` function is not
 > supported.
 
 ### onSend
@@ -229,7 +236,8 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > to `0`, whereas the `Content-Length` header will not be set if the payload is
 > `null`.
 
-> ℹ️ Note: If you change the payload, you may only change it to a `string`, a
+> ℹ️ Note:
+> If you change the payload, you may only change it to a `string`, a
 > `Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
@@ -252,7 +260,8 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
-> ℹ️ Note: Setting `disableRequestLogging` to `true` will disable any error log
+> ℹ️ Note:
+> Setting `disableRequestLogging` to `true` will disable any error log
 > inside the `onResponse` hook. In this case use `try - catch` to log errors.
 
 ### onTimeout
@@ -294,7 +303,8 @@ The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been processed. Therefore, you will not be able to send
 data to the client.
 
-> ℹ️ Note: Client abort detection is not completely reliable.
+> ℹ️ Note:
+> Client abort detection is not completely reliable.
 > See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)
 
 ### Manage Errors from a hook
@@ -448,8 +458,9 @@ fastify.addHook('onListen', async function () {
 })
 ```
 
-> ℹ️ Note: This hook will not run when the server is started using
-> fastify.inject()` or `fastify.ready()`.
+> ℹ️ Note:
+> This hook will not run when the server is started using
+> `fastify.inject()` or `fastify.ready()`.
 
 ### onClose
 <a id="on-close"></a>
@@ -572,7 +583,8 @@ This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context, thus
 this hook is encapsulated.
 
-> ℹ️ Note: This hook will not be called if a plugin is wrapped inside
+> ℹ️ Note:
+> This hook will not be called if a plugin is wrapped inside
 > [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
@@ -770,7 +782,8 @@ fastify.route({
 })
 ```
 
-> ℹ️ Note: Both options also accept an array of functions.
+> ℹ️ Note:
+> Both options also accept an array of functions.
 
 ## Using Hooks to Inject Custom Properties
 <a id="using-hooks-to-inject-custom-properties"></a>
@@ -857,7 +870,8 @@ channel.subscribe(function ({ fastify }) {
 })
 ```
 
-> ℹ️ Note: The TracingChannel class API is currently experimental and may undergo
+> ℹ️ Note:
+> The TracingChannel class API is currently experimental and may undergo
 > breaking changes even in semver-patch releases of Node.js.
 
 Five other events are published on a per-request basis following the

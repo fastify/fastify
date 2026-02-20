@@ -1,9 +1,9 @@
-import { FastifyPlugin } from '../../fastify'
+import { FastifyPluginAsync } from '../../fastify'
 
 export interface DummyPluginOptions {
   foo?: number
 }
 
-declare const DummyPlugin: FastifyPlugin<DummyPluginOptions>
+declare const DummyPlugin: FastifyPluginAsync<DummyPluginOptions>
 
 export default DummyPlugin

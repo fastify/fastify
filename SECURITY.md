@@ -46,16 +46,16 @@ explicitly enabled via configuration options
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
-complete a vulnerability report via the GitHub Security page:
-
-https://github.com/fastify/fastify/security/advisories/new
+complete a vulnerability report via the
+[GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
 
 Do not assign or request a CVE directly.
 CVE assignment is handled by the Fastify Security Team.
 Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
 A CVE will be assigned as part of our responsible disclosure process.
 
-Note: Our [HackerOne](https://hackerone.com/fastify) program is now closed.
+> ℹ️ Note:
+> Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
 
 ### Strict measures when reporting vulnerabilities
 
@@ -66,7 +66,7 @@ reported vulnerabilities:
 * Avoid creating new "informative" reports. Only create new
   reports on a vulnerability if you are absolutely sure this should be
   tagged as an actual vulnerability. Third-party vendors and individuals are
-  tracking any new vulnerabilities reported in HackerOne or GitHub and will flag
+  tracking any new vulnerabilities reported on GitHub and will flag
   them as such for their customers (think about snyk, npm audit, ...).
 * Security reports should never be created and triaged by the same person. If
   you are creating a report for a vulnerability that you found, or on
@@ -111,9 +111,6 @@ Triaging should include updating issue fields:
 * Asset - set/create the module affected by the report
 * Severity - TBD, currently left empty
 
-Reference: [HackerOne: Submitting
-Reports](https://docs.hackerone.com/hackers/submitting-reports.html)
-
 ### Correction follow-up
 
 **Delay:** 90 days
@@ -141,7 +138,7 @@ The report's vulnerable versions upper limit should be set to:
 Within 90 days after the triage date, the vulnerability must be made public.
 
 **Severity**: Vulnerability severity is assessed using [CVSS
-v.3](https://www.first.org/cvss/user-guide). 
+v.3](https://www.first.org/cvss/user-guide).
 
 If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who

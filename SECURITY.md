@@ -49,6 +49,11 @@ Individuals who find potential vulnerabilities in Fastify are invited to
 complete a vulnerability report via the
 [GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
 
+Do not assign or request a CVE directly.
+CVE assignment is handled by the Fastify Security Team.
+Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
+A CVE will be assigned as part of our responsible disclosure process.
+
 > ℹ️ Note:
 > Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
 
@@ -139,15 +144,12 @@ If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability.
 
-At this point, a CVE should be requested via GitHub Security Advisories using
-the web UI, and the request should include the Report ID and a summary.
-
 ### Secondary Contact
 
 If you do not receive an acknowledgment of your report within 6 business days,
 or if you cannot find a private security contact for the project, you may
-contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for
-assistance.
+contact the OpenJS Foundation CNA at <https://cna.openjsf.org/> (or
+`security@lists.openjsf.org`) for assistance.
 
 The CNA can help ensure your report is properly acknowledged, assist with
 coordinating disclosure timelines, and assign CVEs when necessary. This is a

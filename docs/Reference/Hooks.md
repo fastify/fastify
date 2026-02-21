@@ -465,10 +465,12 @@ fastify.addHook('onListen', async function () {
 ### onClose
 <a id="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server, after all in-flight
-HTTP requests have been completed.
-It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
-to close an open connection to a database.
+Triggered when `fastify.close()` is invoked to stop the server. By the time
+`onClose` hooks execute, the HTTP server has already stopped listening, all
+in-flight HTTP requests have been completed, and connections have been drained.
+This makes `onClose` the safe place for [plugins](./Plugins.md) to tear down
+resources such as database connections or file handles — no new requests will
+use them.
 
 The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
@@ -486,13 +488,42 @@ fastify.addHook('onClose', async (instance) => {
 })
 ```
 
+#### Execution order
+
+When multiple `onClose` hooks are registered across plugins, child-plugin hooks
+execute before parent-plugin hooks. This means a database plugin's `onClose`
+hook will run before the root-level `onClose` hooks:
+
+```js
+fastify.register(function dbPlugin (instance, opts, done) {
+  instance.addHook('onClose', async (instance) => {
+    // Runs first — close the database pool
+    await instance.db.close()
+  })
+  done()
+})
+
+fastify.addHook('onClose', async (instance) => {
+  // Runs second — after child plugins have cleaned up
+})
+```
+
+See [`close`](./Server.md#close) for the full shutdown lifecycle.
+
 ### preClose
 <a id="pre-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server, before all in-flight
-HTTP requests have been completed.
-It is useful when [plugins](./Plugins.md) have set up some state attached
-to the HTTP server that would prevent the server to close.
+Triggered when `fastify.close()` is invoked to stop the server, before
+the HTTP server stops listening and before in-flight HTTP requests have been
+completed. At this point the server has been flagged as closing (new requests
+receive a `503` response when
+[`return503OnClosing`](./Server.md#factory-return-503-on-closing) is `true`),
+but existing requests are still being processed.
+
+It is useful when [plugins](./Plugins.md) have set up state attached to the HTTP
+server that would prevent the server from closing, such as open WebSocket
+connections or Server-Sent Events streams that must be explicitly terminated for
+`server.close()` to complete.
 _It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.
 
@@ -507,6 +538,18 @@ fastify.addHook('preClose', (done) => {
 fastify.addHook('preClose', async () => {
   // Some async code
   await removeSomeServerState()
+})
+```
+
+For example, closing WebSocket connections during shutdown:
+
+```js
+fastify.addHook('preClose', async () => {
+  // Close all WebSocket connections so that server.close() can complete.
+  // Without this, open connections would keep the server alive.
+  for (const ws of activeWebSockets) {
+    ws.close(1001, 'Server shutting down')
+  }
 })
 ```
 

@@ -567,8 +567,14 @@ define it before the `GET` route.
 
 + Default: `true`
 
-Returns 503 after calling `close` server method. If `false`, the server routes
-the incoming request as usual.
+When `true`, any request arriving after [`close`](#close) has been called will
+receive a `503 Service Unavailable` response with `Connection: close` header
+(HTTP/1.1). This lets load balancers detect that the server is shutting down and
+stop routing traffic to it.
+
+When `false`, requests arriving during the closing phase are routed and
+processed normally. They will still receive a `Connection: close` header so that
+clients do not attempt to reuse the connection.
 
 ### `ajv`
 <a id="factory-ajv"></a>
@@ -1332,6 +1338,53 @@ fastify.close().then(() => {
   console.log('an error happened', err)
 })
 ```
+
+##### Shutdown lifecycle
+
+When `fastify.close()` is called, the following steps happen in order:
+
+1. The server is flagged as **closing**. New incoming requests receive a
+   `Connection: close` header (HTTP/1.1) and are handled according to
+   [`return503OnClosing`](#factory-return-503-on-closing).
+2. [`preClose`](./Hooks.md#pre-close) hooks execute. The server is still
+   processing in-flight requests at this point.
+3. **Connection draining** based on the
+   [`forceCloseConnections`](#forcecloseconnections) option:
+   - `"idle"` — idle keep-alive connections are closed; in-flight requests
+     continue.
+   - `true` — all persistent connections are destroyed immediately.
+   - `false` — no forced closure; idle connections remain open until they time
+     out naturally (see [`keepAliveTimeout`](#keepalivetimeout)).
+4. The HTTP server **stops accepting** new TCP connections
+   (`server.close()`). Node.js waits for all in-flight requests to complete
+   before invoking the callback.
+5. [`onClose`](./Hooks.md#on-close) hooks execute. All in-flight requests have
+   completed and the server is no longer listening.
+6. The `close` callback (or the returned Promise) resolves.
+
+```
+fastify.close() called
+  │
+  ├─▶ closing = true (new requests receive 503)
+  │
+  ├─▶ preClose hooks
+  │     (in-flight requests still active)
+  │
+  ├─▶ Connection draining (forceCloseConnections)
+  │
+  ├─▶ server.close()
+  │     (waits for in-flight requests to complete)
+  │
+  ├─▶ onClose hooks
+  │     (server stopped, all requests done)
+  │
+  └─▶ close callback / Promise resolves
+```
+
+> ℹ️ Note:
+> Upgraded connections (such as WebSocket) are not tracked by the HTTP
+> server and will prevent `server.close()` from completing. Close them
+> explicitly in a [`preClose`](./Hooks.md#pre-close) hook.
 
 #### decorate*
 <a id="decorate"></a>

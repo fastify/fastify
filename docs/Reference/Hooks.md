@@ -469,7 +469,7 @@ Triggered when `fastify.close()` is invoked to stop the server. By the time
 `onClose` hooks execute, the HTTP server has already stopped listening, all
 in-flight HTTP requests have been completed, and connections have been drained.
 This makes `onClose` the safe place for [plugins](./Plugins.md) to release
-resources such as database connection pools and stop queue consumers.
+resources such as database connection pools, as you can be sure that no new requests will arrive.
 
 The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.

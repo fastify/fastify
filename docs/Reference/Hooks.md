@@ -512,12 +512,11 @@ See [`close`](./Server.md#close) for the full shutdown lifecycle.
 ### preClose
 <a id="pre-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server, before
-the HTTP server stops listening and before in-flight HTTP requests have been
-completed. At this point the server has been flagged as closing (new requests
-receive a `503` response when
+Triggered when `fastify.close()` is invoked to stop the server. At this
+point the server is already rejecting new requests with `503` (when
 [`return503OnClosing`](./Server.md#factory-return-503-on-closing) is `true`),
-but existing requests are still being processed.
+but the HTTP server has not yet stopped listening and in-flight requests are
+still being processed.
 
 It is useful when [plugins](./Plugins.md) have set up state attached to the HTTP
 server that would prevent the server from closing, such as open WebSocket

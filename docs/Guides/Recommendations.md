@@ -298,7 +298,9 @@ These patterns can increase latency or reduce throughput in production:
   performance-sensitive paths. See [Middleware](../Reference/Middleware.md).
 - Define response schemas to speed up JSON serialization. See
   [Getting Started - Serialize your data](./Getting-Started.md#serialize-data).
-- Keep Ajv `allErrors` disabled unless you have a strict reason to enable it.
+- Keep Ajv `allErrors` disabled by default. Enable it only when detailed
+  validation feedback is needed (for example, form-heavy APIs), and avoid it
+  on latency-sensitive endpoints.
   This reduces overhead and avoids known risk patterns documented by Ajv/Fastify.
   See [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
   and [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).

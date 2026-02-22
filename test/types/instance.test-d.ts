@@ -320,7 +320,9 @@ type InitialConfig = Readonly<{
 
 expect(fastify().initialConfig).type.toBe<InitialConfig>()
 
-expect<FastifyRouterOptions<RawServerDefault>>().type.toBeAssignableTo<FindMyWayConfig<FindMyWayVersion<RawServerDefault>>>()
+expect<FastifyRouterOptions<RawServerDefault>>().type.toBeAssignableTo<
+  FindMyWayConfig<FindMyWayVersion<RawServerDefault>>
+>()
 
 fastify({
   routerOptions: {

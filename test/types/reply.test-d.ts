@@ -22,7 +22,9 @@ type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RouteGeneri
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.raw).type.toBe<RawReplyDefaultExpression>()
   expect(reply.log).type.toBe<FastifyBaseLogger>()
-  expect(reply.request).type.toBe<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>()
+  expect(reply.request).type.toBe<
+    FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>
+  >()
   expect(reply.code).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
   expect(reply.status).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
   expect(reply.code(100 as number).send).type.toBe<(payload?: unknown) => FastifyReply>()
@@ -32,7 +34,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.writeEarlyHints).type.toBe<
     (hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void
   >()
-  expect(reply.send).type.toBe<((payload?: unknown) => FastifyReply)>()
+  expect(reply.send).type.toBe<(payload?: unknown) => FastifyReply>()
   expect(reply.header).type.toBeAssignableTo<(key: string, value: any) => FastifyReply>()
   expect(reply.headers).type.toBeAssignableTo<(values: { [key: string]: any }) => FastifyReply>()
   expect(reply.getHeader).type.toBeAssignableTo<(key: string) => number | string | string[] | undefined>()
@@ -58,18 +60,20 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.removeTrailer).type.toBe<(key: string) => FastifyReply>()
   expect(reply.server).type.toBe<FastifyInstance>()
   expect(reply.getSerializationFunction).type.toBeAssignableTo<
-    ((httpStatus: string) => DefaultSerializationFunction | undefined)
+    (httpStatus: string) => DefaultSerializationFunction | undefined
   >()
   expect(reply.getSerializationFunction).type.toBeAssignableTo<
-    ((schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined)
+    (schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined
   >()
   expect(reply.compileSerializationSchema).type.toBeAssignableTo<
-    ((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)
+    (schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction
   >()
   expect(reply.serializeInput).type.toBeAssignableTo<
-    ((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)
+    (input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown
   >()
-  expect(reply.serializeInput).type.toBeAssignableTo<((input: { [key: string]: unknown }, httpStatus: string) => unknown)>()
+  expect(reply.serializeInput).type.toBeAssignableTo<
+    (input: { [key: string]: unknown }, httpStatus: string) => unknown
+  >()
   expect(reply.routeOptions.config).type.toBe<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>()
   expect(reply.getDecorator<string>('foo')).type.toBe<string>()
 }
@@ -130,8 +134,8 @@ interface ReplyHttpCodesWithNoContent {
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   // When Reply type is specified, send() requires a payload argument
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
-  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<(...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>>()
+  expect(reply.code(100).send).type.toBe<(...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>>()
 }
 
 const server = fastify()

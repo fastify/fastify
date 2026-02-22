@@ -132,11 +132,19 @@ expect(serverWithTypeProvider.register(testPluginOptsAsync)).type.toBeAssignable
 expect(serverWithTypeProvider.register(testPluginOptsWithType)).type.toBeAssignableTo<ServerWithTypeProvider>()
 expect(serverWithTypeProvider.register(testPluginOptsWithTypeAsync)).type.toBeAssignableTo<ServerWithTypeProvider>()
 expect(serverWithTypeProvider.register).type.not.toBeCallableWith(testPluginWithTypeProvider)
-expect(serverWithTypeProvider.register(testPluginWithTypeProvider, testOptions)).type.toBeAssignableTo<ServerWithTypeProvider>()
+expect(serverWithTypeProvider.register(testPluginWithTypeProvider, testOptions)).type.toBeAssignableTo<
+  ServerWithTypeProvider
+>()
 expect(serverWithTypeProvider.register).type.not.toBeCallableWith(testPluginWithTypeProviderAsync)
-expect(serverWithTypeProvider.register(testPluginWithTypeProviderAsync, testOptions)).type.toBeAssignableTo<ServerWithTypeProvider>()
-expect(serverWithTypeProvider.register(testPluginWithTypeProviderWithType)).type.toBeAssignableTo<ServerWithTypeProvider>()
-expect(serverWithTypeProvider.register(testPluginWithTypeProviderWithTypeAsync)).type.toBeAssignableTo<ServerWithTypeProvider>()
+expect(serverWithTypeProvider.register(testPluginWithTypeProviderAsync, testOptions)).type.toBeAssignableTo<
+  ServerWithTypeProvider
+>()
+expect(serverWithTypeProvider.register(testPluginWithTypeProviderWithType)).type.toBeAssignableTo<
+  ServerWithTypeProvider
+>()
+expect(serverWithTypeProvider.register(testPluginWithTypeProviderWithTypeAsync)).type.toBeAssignableTo<
+  ServerWithTypeProvider
+>()
 expect(serverWithTypeProvider.register((instance) => {
   expect(instance).type.toBeAssignableTo<FastifyInstance>()
 })).type.toBeAssignableTo<ServerWithTypeProvider>()
@@ -193,21 +201,29 @@ const testPluginWithTypeProviderAndLoggerWithTypeAsync = async (
   instance: ServerWithTypeProviderAndLogger,
   opts: FastifyPluginOptions
 ) => { }
-expect(serverWithTypeProviderAndLogger.register(testPluginCallback)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(serverWithTypeProviderAndLogger.register(testPluginAsync)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(serverWithTypeProviderAndLogger.register(testPluginOpts)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(serverWithTypeProviderAndLogger.register(testPluginOptsAsync)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(serverWithTypeProviderAndLogger.register(testPluginOptsWithType)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(
-  serverWithTypeProviderAndLogger.register
-).type.not.toBeCallableWith(testPluginWithTypeProviderAndLogger)
+expect(serverWithTypeProviderAndLogger.register(testPluginCallback)).type.toBeAssignableTo<
+  ServerWithTypeProviderAndLogger
+>()
+expect(serverWithTypeProviderAndLogger.register(testPluginAsync)).type.toBeAssignableTo<
+  ServerWithTypeProviderAndLogger
+>()
+expect(serverWithTypeProviderAndLogger.register(testPluginOpts)).type.toBeAssignableTo<
+  ServerWithTypeProviderAndLogger
+>()
+expect(serverWithTypeProviderAndLogger.register(testPluginOptsAsync)).type.toBeAssignableTo<
+  ServerWithTypeProviderAndLogger
+>()
+expect(serverWithTypeProviderAndLogger.register(testPluginOptsWithType)).type.toBeAssignableTo<
+  ServerWithTypeProviderAndLogger
+>()
+expect(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync)).type.toBeAssignableTo<
+  ServerWithTypeProviderAndLogger
+>()
+expect(serverWithTypeProviderAndLogger.register).type.not.toBeCallableWith(testPluginWithTypeProviderAndLogger)
 expect(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger, testOptions)
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
-expect(
-  serverWithTypeProviderAndLogger.register
-).type.not.toBeCallableWith(testPluginWithTypeProviderAndLoggerAsync)
+expect(serverWithTypeProviderAndLogger.register).type.not.toBeCallableWith(testPluginWithTypeProviderAndLoggerAsync)
 expect(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync, testOptions)
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()

@@ -89,12 +89,18 @@ const getHandler: RouteHandler = function (request, _reply) {
   expect(request.socket).type.toBe<RawRequestDefaultExpression['socket']>()
   expect(request.validationError).type.toBe<Error & { validation: any; validationContext: string } | undefined>()
   expect(request.server).type.toBe<FastifyInstance>()
-  expect(request.getValidationFunction).type.toBeAssignableTo<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction>()
-  expect(request.getValidationFunction).type.toBeAssignableTo<(schema: { [key: string]: unknown }) => ExpectedGetValidationFunction>()
+  expect(request.getValidationFunction).type.toBeAssignableTo<
+    (httpPart: HTTPRequestPart) => ExpectedGetValidationFunction
+  >()
+  expect(request.getValidationFunction).type.toBeAssignableTo<
+    (schema: { [key: string]: unknown }) => ExpectedGetValidationFunction
+  >()
   expect(request.validateInput).type.toBeAssignableTo<
     (input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean
   >()
-  expect(request.validateInput).type.toBeAssignableTo<(input: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean>()
+  expect(request.validateInput).type.toBeAssignableTo<
+    (input: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean
+  >()
   expect(request.getDecorator<string>('foo')).type.toBe<string>()
   expect(request.setDecorator('foo', 'hello')).type.toBe<void>()
   expect(request.setDecorator<string>('foo', 'hello')).type.toBe<void>()

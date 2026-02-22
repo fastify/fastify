@@ -50,9 +50,13 @@ expect(fastify().register(testPluginCallback, {})).type.toBeAssignableTo<Fastify
 const testPluginAsync: FastifyPluginAsync = async function (instance, opts) { }
 expect(fastify().register(testPluginAsync, {})).type.toBeAssignableTo<FastifyInstance>()
 
-expect(fastify().register(function (instance, opts): Promise<void> { return Promise.resolve() })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(function (instance, opts): Promise<void> { return Promise.resolve() })).type.toBeAssignableTo<
+  FastifyInstance
+>()
 expect(fastify().register(async function (instance, opts) { }, () => { })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' })).type.toBeAssignableTo<
+  FastifyInstance
+>()
 
 // @ts-expect-error  'logLevel' does not exist in type
 fastify().register(function (instance, opts, done) { }, { ...testOptions, logLevel: '' }) // must use a valid logLevel

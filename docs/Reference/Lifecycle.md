@@ -82,3 +82,13 @@ submitted, the data flow is as follows:
 - The [serializer compiler](./Server.md#setserializercompiler) if a JSON schema
   is set for the HTTP status code
 - The default `JSON.stringify` function
+
+## Shutdown Lifecycle
+<a id="shutdown-lifecycle"></a>
+
+When [`fastify.close()`](./Server.md#close) is called, the server goes through a
+graceful shutdown sequence involving
+[`preClose`](./Hooks.md#pre-close) hooks, connection draining, and
+[`onClose`](./Hooks.md#on-close) hooks. See the
+[`close`](./Server.md#close) method documentation for the full step-by-step
+lifecycle.

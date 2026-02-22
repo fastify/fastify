@@ -42,13 +42,13 @@ test('route-level handlerTimeout rejects invalid values', async t => {
 
 // --- Zero-overhead baseline ---
 
-test('when handlerTimeout is 0 (default), request.signal is undefined', async t => {
+test('when handlerTimeout is 0 (default), accessing request.signal throws', async t => {
   t.plan(2)
   const fastify = Fastify()
 
   fastify.get('/', async (request) => {
-    t.assert.strictEqual(request.signal, undefined)
-    return 'ok'
+    t.assert.throws(() => request.signal, { code: 'FST_ERR_MISSING_HANDLER_TIMEOUT' })
+    return { ok: true }
   })
 
   const res = await fastify.inject({ method: 'GET', url: '/' })

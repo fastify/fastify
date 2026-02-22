@@ -41,9 +41,11 @@ Request is a core Fastify object containing the following fields:
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
 - `signal` - An `AbortSignal` that aborts when the handler timeout
-  fires or the client disconnects. Available only when `handlerTimeout` is
-  configured (returns `undefined` otherwise). Pass it to `fetch()`, database
-  queries, or any API accepting a `signal` option for cooperative cancellation.
+  fires or the client disconnects. Only available when
+  [`handlerTimeout`](./Server.md#factory-handler-timeout) is configured;
+  accessing it without `handlerTimeout` throws
+  `FST_ERR_MISSING_HANDLER_TIMEOUT`. Pass it to `fetch()`, database queries,
+  or any API accepting a `signal` option for cooperative cancellation.
 - `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
   internal object. Do not use or modify it directly. It is useful to access one
   special key:

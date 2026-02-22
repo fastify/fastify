@@ -297,10 +297,11 @@ These patterns can increase latency or reduce throughput in production:
   middleware adapters work, but native integrations are typically better for
   performance-sensitive paths. See [Middleware](../Reference/Middleware.md).
 - Define response schemas to speed up JSON serialization. See
-  [Getting Started - Response](./Getting-Started.md#response).
+  [Getting Started - Serialize your data](./Getting-Started.md#serialize-data).
 - Keep Ajv `allErrors` disabled unless you have a strict reason to enable it.
   This reduces overhead and avoids known risk patterns documented by Ajv/Fastify.
-  See [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator).
+  See [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
+  and [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
 
 ## Kubernetes
 <a id="kubernetes"></a>

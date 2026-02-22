@@ -6,6 +6,7 @@ import fastify, {
   type FastifyBodyParser,
   type FastifyError,
   type FastifyInstance,
+  type FastifyListenOptions,
   type FastifyRouterOptions,
   type RawReplyDefaultExpression,
   type RawRequestDefaultExpression,
@@ -214,7 +215,10 @@ expect(server.setSchemaErrorFormatter).type.not.toBeCallableWith(invalidSchemaEr
 expect(server.addHttpMethod('SEARCH', { hasBody: true })).type.toBe<FastifyInstance>()
 
 // test listen opts objects
+const options: FastifyListenOptions = {}
+
 expect(server.listen()).type.toBeAssignableTo<PromiseLike<string>>()
+expect(server.listen(options)).type.toBeAssignableTo<PromiseLike<string>>()
 expect(server.listen({ port: 3000 })).type.toBeAssignableTo<PromiseLike<string>>()
 expect(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } })).type.toBeAssignableTo<PromiseLike<string>>()
 expect(server.listen({ port: 3000, host: '0.0.0.0' })).type.toBeAssignableTo<PromiseLike<string>>()
@@ -223,6 +227,7 @@ expect(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true
 expect(server.listen({ port: 3000, host: '::/0', ipv6Only: true })).type.toBeAssignableTo<PromiseLike<string>>()
 
 expect(server.listen(() => {})).type.toBe<void>()
+expect(server.listen(options, () => {})).type.toBe<void>()
 expect(server.listen({ port: 3000 }, () => {})).type.toBe<void>()
 expect(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {})).type.toBe<void>()
 expect(server.listen({ port: 3000, host: '0.0.0.0' }, () => {})).type.toBe<void>()

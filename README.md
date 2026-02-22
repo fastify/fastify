@@ -199,7 +199,7 @@ If you learn best by reading code, explore the official [demo](https://github.co
 
 __Machine:__ EX41S-SSD, Intel Core i7, 4Ghz, 64GB RAM, 4C/8T, SSD.
 
-__Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the
+__Method__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the
 second average
 
 | Framework          | Version                    | Router?      |  Requests/sec |
@@ -260,7 +260,8 @@ application. You should __always__ benchmark if performance matters to you.
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
 support issues and to ask new support questions.
 
-Version 3 of Fastify and lower are EOL and will not receive any security or bug fixes.
+Version 3 of Fastify and lower are EOL and will not receive any security or bug
+fixes.
 
 Fastify's partner, HeroDevs, provides commercial security fixes for all
 unsupported versions at [https://herodevs.com/support/fastify-nes][hd-link].

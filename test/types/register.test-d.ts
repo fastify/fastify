@@ -4,7 +4,7 @@ import { expect } from 'tstyche'
 import fastify, {
   type FastifyInstance,
   type FastifyError,
-  type FastifyLoggerInstance,
+  type FastifyBaseLogger,
   type FastifyPluginAsync,
   type FastifyPluginCallback,
   type FastifyPluginOptions,
@@ -103,7 +103,7 @@ type ServerWithTypeProvider = FastifyInstance<
   Server,
   IncomingMessage,
   ServerResponse,
-  FastifyLoggerInstance,
+  FastifyBaseLogger,
   TestTypeProvider
 >
 const testPluginWithTypeProvider: FastifyPluginCallback<

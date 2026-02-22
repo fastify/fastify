@@ -1,11 +1,12 @@
 import type { AddressInfo } from 'node:net'
-import type { ConstraintStrategy } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy } from 'find-my-way'
 import { expect } from 'tstyche'
 import fastify, {
   type FastifyBaseLogger,
   type FastifyBodyParser,
   type FastifyError,
   type FastifyInstance,
+  type FastifyRouterOptions,
   type RawReplyDefaultExpression,
   type RawRequestDefaultExpression,
   type RawServerDefault,
@@ -92,12 +93,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expect(error).type.toBe<CustomError>()
-  expect(reply.send).type.toBe<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expect(error).type.toBe<CustomError>()
-  expect(reply.send).type.toBe<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
@@ -305,7 +306,7 @@ type InitialConfig = Readonly<{
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,
   ignoreTrailingSlash?: boolean,
   ignoreDuplicateSlashes?: boolean,
-  disableRequestLogging?: boolean,
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
   maxParamLength?: number,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
@@ -314,24 +315,30 @@ type InitialConfig = Readonly<{
   requestIdLogLabel?: string,
   http2SessionTimeout?: number,
   useSemicolonDelimiter?: boolean,
-  routerOptions?: {
-    allowUnsafeRegex?: boolean,
-    buildPrettyMeta?: (route: { [k: string]: unknown, store: { [k: string]: unknown } }) => object,
-    caseSensitive?: boolean,
-    constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServerDefault>, unknown>
-    }
-    defaultRoute?: (req: FastifyRequest, res: FastifyReply) => void,
-    ignoreDuplicateSlashes?: boolean,
-    ignoreTrailingSlash?: boolean,
-    maxParamLength?: number,
-    onBadUrl?: (path: string, req: FastifyRequest, res: FastifyReply) => void,
-    querystringParser?: (str: string) => { [key: string]: unknown },
-    useSemicolonDelimiter?: boolean,
-  }
+  routerOptions?: FastifyRouterOptions<RawServerDefault>
 }>
 
 expect(fastify().initialConfig).type.toBe<InitialConfig>()
+
+expect<FastifyRouterOptions<RawServerDefault>>().type.toBeAssignableTo<FindMyWayConfig<FindMyWayVersion<RawServerDefault>>>()
+
+fastify({
+  routerOptions: {
+    defaultRoute: (req, res) => {
+      expect(req).type.toBe<RawRequestDefaultExpression<RawServerDefault>>()
+      expect(res).type.toBe<RawReplyDefaultExpression<RawServerDefault>>()
+      expect(res).type.not.toBeAssignableFrom<FastifyReply>()
+      res.end('foo')
+    },
+    onBadUrl: (path, req, res) => {
+      expect(path).type.toBe<string>()
+      expect(req).type.toBe<RawRequestDefaultExpression<RawServerDefault>>()
+      expect(res).type.toBe<RawReplyDefaultExpression<RawServerDefault>>()
+      expect(res).type.not.toBeAssignableFrom<FastifyReply>()
+      res.end('foo')
+    }
+  }
+})
 
 expect(server.defaultTextParser).type.toBe<FastifyBodyParser<string>>()
 
@@ -543,7 +550,7 @@ expect(server.decorateReply).type.not.toBeCallableWith('typedTestReplyMethod', a
 
 expect(server.getDecorator<string>('foo')).type.toBe<string>()
 
-const versionConstraintStrategy = {
+const versionConstraintStrategy: ConstraintStrategy<FindMyWayVersion<RawServerDefault>> = {
   name: 'version',
   storage: () => ({
     get: () => () => {},

@@ -53,6 +53,12 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
   return reply.send()
 }
 
+const asyncPreHandler = async (request: FastifyRequest) => {
+  expect(request).type.toBe<FastifyRequest>()
+}
+
+fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
+
 fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: true } },

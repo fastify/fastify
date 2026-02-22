@@ -331,6 +331,20 @@ been sent. By setting this option to `true`, these log messages will be
 disabled. This allows for more flexible request start and end logging by
 attaching custom `onRequest` and `onResponse` hooks.
 
+This option can also be a function that receives the Fastify request object
+and returns a boolean. This allows for conditional request logging based on the
+request properties (e.g., URL, headers, decorations).
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  disableRequestLogging: (request) => {
+    // Disable logging for health check endpoints
+    return request.url === '/health' || request.url === '/ready'
+  }
+})
+```
+
 The other log entries that will be disabled are:
 - an error log written by the default `onResponse` hook on reply callback errors
 - the error and info logs written by the `defaultErrorHandler`
@@ -412,6 +426,11 @@ const fastify = require('fastify')({
   //requestIdHeader: false, // -> always use genReqId
 })
 ```
+
+> ⚠ Warning:
+> Enabling this allows any callers to set `reqId` to a
+> value of their choosing.
+> No validation is performed on `requestIdHeader`.
 
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
@@ -516,7 +535,9 @@ recommend using a custom parser to convert only the keys to lowercase.
 ```js
 const qs = require('qs')
 const fastify = require('fastify')({
-  querystringParser: str => qs.parse(str)
+  routerOptions: {
+    querystringParser: str => qs.parse(str)
+  }
 })
 ```
 
@@ -526,7 +547,9 @@ like the example below for case insensitive keys and values:
 ```js
 const querystring = require('fast-querystring')
 const fastify = require('fastify')({
-  querystringParser: str => querystring.parse(str.toLowerCase())
+  routerOptions: {
+    querystringParser: str => querystring.parse(str.toLowerCase())
+  }
 })
 ```
 
@@ -544,8 +567,14 @@ define it before the `GET` route.
 
 + Default: `true`
 
-Returns 503 after calling `close` server method. If `false`, the server routes
-the incoming request as usual.
+When `true`, any request arriving after [`close`](#close) has been called will
+receive a `503 Service Unavailable` response with `Connection: close` header
+(HTTP/1.1). This lets load balancers detect that the server is shutting down and
+stop routing traffic to it.
+
+When `false`, requests arriving during the closing phase are routed and
+processed normally. They will still receive a `Connection: close` header so that
+clients do not attempt to reuse the connection.
 
 ### `ajv`
 <a id="factory-ajv"></a>
@@ -565,7 +594,11 @@ const fastify = require('fastify')({
       [require('ajv-keywords'), 'instanceof']
       // Usage: [plugin, pluginOptions] - Plugin with options
       // Usage: plugin - Plugin without options
-    ]
+    ],
+    onCreate: (ajv) => {
+      // Modify the ajv instance as you need.
+      ajv.addFormat('myFormat', (data) => typeof data === 'string')
+    }
   }
 })
 ```
@@ -839,6 +872,12 @@ const fastify = require('fastify')({
 })
 ```
 
+> ℹ️ Note:
+> The `req` and `res` objects passed to `defaultRoute` are the raw Node.js
+> `IncomingMessage` and `ServerResponse` instances. They do **not** expose the
+> Fastify-specific methods available on `FastifyRequest`/`FastifyReply` (for
+> example, `res.send`).
+
 ### `ignoreDuplicateSlashes`
 <a id="factory-ignore-duplicate-slashes"></a>
 
@@ -930,6 +969,9 @@ const fastify = require('fastify')({
 })
 ```
 
+As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
+objects and do not provide Fastify's decorated helpers.
+
 ### `querystringParser`
 <a id="querystringparser"></a>
 
@@ -994,7 +1036,8 @@ fastify.get('/dev', async (request, reply) => {
 
 * **Default:** `true`
 
-> ⚠ **Warning:** This option will be set to `false` by default 
+> ⚠ Warning:
+> This option will be set to `false` by default 
 > in the next major release.
 
 When set to `false`, it prevents `setErrorHandler` from being called 
@@ -1296,6 +1339,53 @@ fastify.close().then(() => {
 })
 ```
 
+##### Shutdown lifecycle
+
+When `fastify.close()` is called, the following steps happen in order:
+
+1. The server is flagged as **closing**. New incoming requests receive a
+   `Connection: close` header (HTTP/1.1) and are handled according to
+   [`return503OnClosing`](#factory-return-503-on-closing).
+2. [`preClose`](./Hooks.md#pre-close) hooks execute. The server is still
+   processing in-flight requests at this point.
+3. **Connection draining** based on the
+   [`forceCloseConnections`](#forcecloseconnections) option:
+   - `"idle"` — idle keep-alive connections are closed; in-flight requests
+     continue.
+   - `true` — all persistent connections are destroyed immediately.
+   - `false` — no forced closure; idle connections remain open until they time
+     out naturally (see [`keepAliveTimeout`](#keepalivetimeout)).
+4. The HTTP server **stops accepting** new TCP connections
+   (`server.close()`). Node.js waits for all in-flight requests to complete
+   before invoking the callback.
+5. [`onClose`](./Hooks.md#on-close) hooks execute. All in-flight requests have
+   completed and the server is no longer listening.
+6. The `close` callback (or the returned Promise) resolves.
+
+```
+fastify.close() called
+  │
+  ├─▶ closing = true (new requests receive 503)
+  │
+  ├─▶ preClose hooks
+  │     (in-flight requests still active)
+  │
+  ├─▶ Connection draining (forceCloseConnections)
+  │
+  ├─▶ server.close()
+  │     (waits for in-flight requests to complete)
+  │
+  ├─▶ onClose hooks
+  │     (server stopped, all requests done)
+  │
+  └─▶ close callback / Promise resolves
+```
+
+> ℹ️ Note:
+> Upgraded connections (such as WebSocket) are not tracked by the HTTP
+> server and will prevent `server.close()` from completing. Close them
+> explicitly in a [`preClose`](./Hooks.md#pre-close) hook.
+
 #### decorate*
 <a id="decorate"></a>
 
@@ -1356,7 +1446,7 @@ different ways to define a name (in order).
    Example: `pluginFn[Symbol.for('fastify.display-name')] = "Custom Name"`
 3. If you `module.exports` a plugin the filename is used.
 4. If you use a regular [function
-   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions)
+   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#defining_functions)
    the function name is used.
 
 *Fallback*: The first two lines of your plugin will represent the plugin name.
@@ -1789,8 +1879,8 @@ different plugins can set different logger factories.
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
-for additional Fastify instances. It will receive the _raw_ incoming request as a
-parameter. The provided function should not throw an Error in any case.
+for additional Fastify instances. It will receive the _raw_ incoming request as
+a parameter. The provided function should not throw an Error in any case.
 
 Especially in distributed systems, you may want to override the default ID
 generation behavior to handle custom ways of generating different IDs in

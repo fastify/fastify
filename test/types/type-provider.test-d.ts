@@ -1,7 +1,7 @@
 import type { IncomingHttpHeaders } from 'node:http'
-import { Type, type TSchema, type Static } from '@sinclair/typebox'
 import type { FromSchema, JSONSchema } from 'json-schema-to-ts'
 import { expect } from 'tstyche'
+import { Type, type TSchema, type Static } from 'typebox'
 import fastify, {
   type FastifyTypeProvider,
   type HookHandlerDoneFunction,
@@ -479,9 +479,9 @@ server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expect(res.code(200).send).type.toBe<(payload?: string) => typeof res>()
-    expect(res.code(400).send).type.toBe<(payload?: number) => typeof res>()
-    expect(res.code(500).send).type.toBe<(payload?: { error: string }) => typeof res>()
+    expect(res.code(200).send).type.toBe<((...args: [payload: string]) => typeof res)>()
+    expect(res.code(400).send).type.toBe<((...args: [payload: number]) => typeof res)>()
+    expect(res.code(500).send).type.toBe<((...args: [payload: { error: string }]) => typeof res)>()
   }
 )
 
@@ -710,9 +710,9 @@ server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expect(res.code(200).send).type.toBe<(payload?: string) => typeof res>()
-    expect(res.code(400).send).type.toBe<(payload?: number) => typeof res>()
-    expect(res.code(500).send).type.toBe<(payload?: { [x: string]: unknown; error?: string }) => typeof res>()
+    expect(res.code(200).send).type.toBe<((...args: [payload: string]) => typeof res)>()
+    expect(res.code(400).send).type.toBe<((...args: [payload: number]) => typeof res)>()
+    expect(res.code(500).send).type.toBe<((...args: [payload: { [x: string]: unknown; error?: string }]) => typeof res)>()
   }
 )
 

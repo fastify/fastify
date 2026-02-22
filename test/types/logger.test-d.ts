@@ -5,7 +5,6 @@ import { expect } from 'tstyche'
 import fastify, {
   type FastifyLogFn,
   type FastifyBaseLogger,
-  type FastifyLoggerInstance,
   type FastifyRequest,
   type FastifyReply,
   type LogLevel
@@ -18,22 +17,22 @@ class Foo {}
 
 ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {
   expect(
-    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]
+    fastify<Server, IncomingMessage, ServerResponse, FastifyBaseLogger>().log[logLevel as LogLevel]
   ).type.toBe<FastifyLogFn>()
   expect(
-    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]('')
+    fastify<Server, IncomingMessage, ServerResponse, FastifyBaseLogger>().log[logLevel as LogLevel]('')
   ).type.toBe<void>()
   expect(
-    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({})
+    fastify<Server, IncomingMessage, ServerResponse, FastifyBaseLogger>().log[logLevel as LogLevel]({})
   ).type.toBe<void>()
   expect(
-    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({ foo: 'bar' })
+    fastify<Server, IncomingMessage, ServerResponse, FastifyBaseLogger>().log[logLevel as LogLevel]({ foo: 'bar' })
   ).type.toBe<void>()
   expect(
-    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Error())
+    fastify<Server, IncomingMessage, ServerResponse, FastifyBaseLogger>().log[logLevel as LogLevel](new Error())
   ).type.toBe<void>()
   expect(
-    fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo())
+    fastify<Server, IncomingMessage, ServerResponse, FastifyBaseLogger>().log[logLevel as LogLevel](new Foo())
   ).type.toBe<void>()
 })
 
@@ -263,11 +262,11 @@ expect(passPinoOption.log).type.toBe<FastifyBaseLogger>()
 
 const childParent = fastify().log
 // we test different option variant here
-expect(childParent.child({}, { level: 'info' })).type.toBe<FastifyLoggerInstance>()
-expect(childParent.child({}, { level: 'silent' })).type.toBe<FastifyLoggerInstance>()
-expect(childParent.child({}, { redact: ['pass', 'pin'] })).type.toBe<FastifyLoggerInstance>()
-expect(childParent.child({}, { serializers: { key: () => {} } })).type.toBe<FastifyLoggerInstance>()
-expect(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } })).type.toBe<FastifyLoggerInstance>()
+expect(childParent.child({}, { level: 'info' })).type.toBe<FastifyBaseLogger>()
+expect(childParent.child({}, { level: 'silent' })).type.toBe<FastifyBaseLogger>()
+expect(childParent.child({}, { redact: ['pass', 'pin'] })).type.toBe<FastifyBaseLogger>()
+expect(childParent.child({}, { serializers: { key: () => {} } })).type.toBe<FastifyBaseLogger>()
+expect(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } })).type.toBe<FastifyBaseLogger>()
 
 // no option pass
 expect(childParent.child).type.not.toBeCallableWith()

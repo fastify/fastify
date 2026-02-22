@@ -439,7 +439,9 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-> ℹ️ Note: When using a custom validator instance, add schemas to the validator
+
+> ℹ️ Note:
+> When using a custom validator instance, add schemas to the validator
 > instead of Fastify. Fastify's `addSchema` method will not recognize the custom
 > validator.
 
@@ -675,9 +677,12 @@ const schema = {
       content: {
         'application/json': {
           schema: {
-            name: { type: 'string' },
-            image: { type: 'string' },
-            address: { type: 'string' }
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              image: { type: 'string' },
+              address: { type: 'string' }
+            }
           }
         },
         'application/vnd.v1+json': {
@@ -692,8 +697,11 @@ const schema = {
       content: {
         'application/vnd.v2+json': {
           schema: {
-            fullName: { type: 'string' },
-            phone: { type: 'string' }
+            type: 'object',
+            properties: {
+              fullName: { type: 'string' },
+              phone: { type: 'string' }
+            }
           }
         }
       }
@@ -703,7 +711,10 @@ const schema = {
         // */* is match-all content-type
         '*/*': {
           schema: {
-            desc: { type: 'string' }
+            type: 'object',
+            properties: {
+              desc: { type: 'string' }
+            }
           }
         }
       }
@@ -1038,7 +1049,7 @@ const refToSharedSchemaDefinitions = {
 
 - [JSON Schema](https://json-schema.org/)
 - [Understanding JSON
-  Schema](https://json-schema.org/understanding-json-schema)
+  Schema](https://json-schema.org/understanding-json-schema/about)
 - [fast-json-stringify
   documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)

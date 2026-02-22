@@ -1,8 +1,8 @@
+import Ajv, { type ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'node:http'
 import type * as http2 from 'node:http2'
 import type * as https from 'node:https'
 import type { Socket } from 'node:net'
-import type { ErrorObject as AjvErrorObject } from 'ajv'
 import { expect } from 'tstyche'
 import fastify, {
   type ConnectionError,
@@ -110,16 +110,14 @@ expect(fastify({ pluginTimeout: 1000 })).type.toBeAssignableTo<FastifyInstance>(
 expect(fastify({ bodyLimit: 100 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ maxParamLength: 100 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ disableRequestLogging: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ disableRequestLogging: (req) => req.url?.includes('/health') ?? false })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ requestIdLogLabel: 'request-id' })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ onProtoPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ onConstructorPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
-expect<FastifyInstance>().type.toBeAssignableFrom(fastify({ serializerOpts: { rounding: 'ceil' } }))
+expect(fastify({ serializerOpts: { rounding: 'ceil' } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ serializerOpts: { schema: {} } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ serializerOpts: { otherProp: {} } })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ logger: true })).type.toBeAssignableTo<
-  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
->()
 expect(fastify({ logger: true })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
 >()
@@ -225,12 +223,31 @@ expect(fastify({
     customOptions: {
       removeAdditional: 'all'
     },
-    plugins: [() => { }]
+    plugins: [(ajv: Ajv): Ajv => ajv]
   }
 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
   ajv: {
-    plugins: [[() => { }, ['keyword1', 'keyword2']]]
+    plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
+  }
+})).type.toBeAssignableTo<FastifyInstance>()
+fastify({
+  ajv: {
+    customOptions: {
+      removeAdditional: 'all'
+    },
+    plugins: [
+      // @ts-expect-error  Type 'void' is not assignable to type 'Ajv'.
+      () => { }
+    ]
+  }
+})
+expect(fastify({
+  ajv: {
+    onCreate: (ajvInstance) => {
+      expect(ajvInstance).type.toBe<Ajv>()
+      return ajvInstance
+    }
   }
 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ frameworkErrors: () => { } })).type.toBeAssignableTo<FastifyInstance>()

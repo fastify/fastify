@@ -11,7 +11,7 @@ import fastify, {
   type RouteHandlerMethod
 } from '../../fastify.js'
 import type { FastifyInstance } from '../../types/instance.js'
-import type { FastifyLoggerInstance } from '../../types/logger.js'
+import type { FastifyBaseLogger } from '../../types/logger.js'
 import type { ResolveReplyTypeWithRouteGeneric } from '../../types/reply.js'
 import type { FastifyRouteConfig, RouteGenericInterface } from '../../types/route.js'
 import type { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils.js'
@@ -21,7 +21,7 @@ type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RouteGeneri
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.raw).type.toBe<RawReplyDefaultExpression>()
-  expect(reply.log).type.toBe<FastifyLoggerInstance>()
+  expect(reply.log).type.toBe<FastifyBaseLogger>()
   expect(reply.request).type.toBe<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>()
   expect(reply.code).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
   expect(reply.status).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
@@ -47,7 +47,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.serialize).type.toBe<(payload: any) => string | ArrayBuffer | Buffer>()
   expect(reply.then).type.toBe<(fulfilled: () => void, rejected: (err: Error) => void) => void>()
   expect(reply.trailer).type.toBe<
-    (
+      (
       key: string,
       fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) |
       ((reply: FastifyReply, payload: string | Buffer | null,
@@ -109,9 +109,29 @@ interface InvalidReplyHttpCodes {
   }
 }
 
+interface ReplyVoid {
+  Reply: void;
+}
+
+interface ReplyUndefined {
+  Reply: undefined;
+}
+
+// Issue #5534 scenario: 204 No Content should allow empty send(), 201 Created should require payload
+// Note: `204: undefined` gets converted to `unknown` via UndefinedToUnknown in type-provider.d.ts,
+// meaning send() is optional but send({}) is also allowed. Use `void` instead of `undefined`
+// if you want stricter "no payload allowed" semantics.
+interface ReplyHttpCodesWithNoContent {
+  Reply: {
+    201: { id: string };
+    204: undefined;
+  }
+}
+
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
-  expect(reply.send).type.toBe<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
-  expect(reply.code(100).send).type.toBe<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  // When Reply type is specified, send() requires a payload argument
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 }
 
 const server = fastify()
@@ -119,6 +139,11 @@ server.get('/get', getHandler)
 server.get('/typed', typedHandler)
 server.get<ReplyPayload>('/get-generic-send', async function handler (request, reply) {
   reply.send({ test: true })
+})
+// When Reply type is specified, send() requires a payload - calling without arguments should error
+server.get<ReplyPayload>('/get-generic-send-missing-payload', async function handler (request, reply) {
+  // @ts-expect-error!
+  reply.send()
 })
 server.get<ReplyPayload>('/get-generic-return', async function handler (request, reply) {
   return { test: false }
@@ -168,30 +193,30 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send', async function handle
   reply.code(101).send(123)
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-1', async function handler (request, reply) {
-// @ts-expect-error!
+  // @ts-expect-error!
   reply.code(200).send('def')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-2', async function handler (request, reply) {
-// @ts-expect-error!
+  // @ts-expect-error!
   reply.code(201).send(0)
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
-// @ts-expect-error!
+  // @ts-expect-error!
   reply.code(300).send({ foo: 123 })
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', async function handler (request, reply) {
-// @ts-expect-error!
+  // @ts-expect-error!
   reply.code(100).send('asdasd')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
-// @ts-expect-error!
+  // @ts-expect-error!
   reply.code(401).send({ foo: 123 })
 })
 server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler (request, reply) {
   reply.code(200).send([''])
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
-// @ts-expect-error!
+  // @ts-expect-error!
   reply.code(200).send('')
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
@@ -222,3 +247,31 @@ const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   reply.headers({ 'x-fastify-test': 'test' })
   reply.removeHeader('x-fastify-test')
 }
+
+// Test: send() without arguments is valid when no Reply type is specified (default unknown)
+server.get('/get-no-type-send-empty', async function handler (request, reply) {
+  reply.send()
+})
+
+// Test: send() without arguments is valid when Reply type is void
+server.get<ReplyVoid>('/get-void-send-empty', async function handler (request, reply) {
+  reply.send()
+})
+
+// Test: send() without arguments is valid when Reply type is undefined
+server.get<ReplyUndefined>('/get-undefined-send-empty', async function handler (request, reply) {
+  reply.send()
+})
+
+// Issue #5534 scenario: HTTP status codes with 204 No Content
+server.get<ReplyHttpCodesWithNoContent>('/get-http-codes-no-content', async function handler (request, reply) {
+  // 204 No Content - send() without payload is valid because Reply is undefined
+  reply.code(204).send()
+  // 201 Created - send() requires payload
+  reply.code(201).send({ id: '123' })
+})
+// 201 Created without payload should error
+server.get<ReplyHttpCodesWithNoContent>('/get-http-codes-201-missing-payload', async function handler (request, reply) {
+  // @ts-expect-error  Expected 1 arguments
+  reply.code(201).send()
+})

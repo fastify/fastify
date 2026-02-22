@@ -1,25 +1,25 @@
 import { expect } from 'tstyche'
 import fastify, {
-  type ContextConfigDefault,
-  type FastifyContextConfig,
-  type FastifyLogFn,
-  type FastifySchema,
-  type FastifyTypeProviderDefault,
-  type RawReplyDefaultExpression,
-  type RawRequestDefaultExpression,
-  type RawServerDefault,
-  type RequestBodyDefault,
-  type RequestGenericInterface,
-  type RouteHandler,
-  type RouteHandlerMethod,
-  type SafePromiseLike
+  ContextConfigDefault,
+  FastifyContextConfig,
+  FastifyLogFn,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerDefault,
+  RequestBodyDefault,
+  RequestGenericInterface,
+  RouteHandler,
+  RouteHandlerMethod,
+  SafePromiseLike
 } from '../../fastify.js'
-import type { FastifyInstance } from '../../types/instance.js'
-import type { FastifyLoggerInstance } from '../../types/logger.js'
-import type { FastifyReply } from '../../types/reply.js'
-import type { FastifyRequest, RequestRouteOptions } from '../../types/request.js'
-import type { FastifyRouteConfig, RouteGenericInterface } from '../../types/route.js'
-import type { RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from '../../types/utils.js'
+import { FastifyInstance } from '../../types/instance.js'
+import { FastifyBaseLogger } from '../../types/logger.js'
+import { FastifyReply } from '../../types/reply.js'
+import { FastifyRequest, RequestRouteOptions } from '../../types/request.js'
+import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route.js'
+import { RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from '../../types/utils.js'
 
 interface RequestBody {
   content: string;
@@ -56,7 +56,7 @@ type CustomRequest = FastifyRequest<{
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 type ExpectedGetValidationFunction = (input: { [key: string]: unknown }) => boolean
 
-interface CustomLoggerInterface extends FastifyLoggerInstance {
+interface CustomLoggerInterface extends FastifyBaseLogger {
   foo: FastifyLogFn; // custom severity logger method
 }
 
@@ -85,7 +85,7 @@ const getHandler: RouteHandler = function (request, _reply) {
 
   expect(request.query).type.toBe<RequestQuerystringDefault>()
   expect(request.id).type.toBe<string>()
-  expect(request.log).type.toBe<FastifyLoggerInstance>()
+  expect(request.log).type.toBe<FastifyBaseLogger>()
   expect(request.socket).type.toBe<RawRequestDefaultExpression['socket']>()
   expect(request.validationError).type.toBe<Error & { validation: any; validationContext: string } | undefined>()
   expect(request.server).type.toBe<FastifyInstance>()

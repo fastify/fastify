@@ -20,13 +20,42 @@ parameters).
 - DoS through malformed input to Fastify's core
 - Bypasses of built-in protections (prototype poisoning, schema validation)
 
+### Examples of Non-Vulnerabilities
+
+The following are **not** considered vulnerabilities in Fastify:
+
+- **Application code vulnerabilities**: XSS, SQL injection, or other flaws in
+user-written route handlers, hooks, or plugins
+- **Malicious application code**: Issues caused by intentionally malicious
+plugins or handlers (application code is trusted)
+- **Validation schema issues**: Weak or incorrect schemas provided by developers
+(schemas are trusted)
+- **ReDoS in user patterns**: Regular expression DoS in user-provided regex
+patterns for routes or validation
+- **Missing security features**: Lack of rate limiting, authentication, or
+authorization (these are application-level concerns)
+- **Configuration mistakes**: Security issues arising from developer
+misconfiguration (configuration is trusted)
+- **Third-party dependencies**: Vulnerabilities in npm packages used by the
+application (not Fastify core dependencies)
+- **Resource exhaustion from handlers**: DoS caused by expensive operations in
+user route handlers
+- **Information disclosure by design**: Exposing error details or stack traces
+explicitly enabled via configuration options
+
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
-complete a vulnerability report via the dedicated pages:
+complete a vulnerability report via the
+[GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
 
-1. [HackerOne](https://hackerone.com/fastify)
-2. [GitHub Security Advisory](https://github.com/fastify/fastify/security/advisories/new)
+Do not assign or request a CVE directly.
+CVE assignment is handled by the Fastify Security Team.
+Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
+A CVE will be assigned as part of our responsible disclosure process.
+
+> ℹ️ Note:
+> Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
 
 ### Strict measures when reporting vulnerabilities
 
@@ -37,7 +66,7 @@ reported vulnerabilities:
 * Avoid creating new "informative" reports. Only create new
   reports on a vulnerability if you are absolutely sure this should be
   tagged as an actual vulnerability. Third-party vendors and individuals are
-  tracking any new vulnerabilities reported in HackerOne or GitHub and will flag
+  tracking any new vulnerabilities reported on GitHub and will flag
   them as such for their customers (think about snyk, npm audit, ...).
 * Security reports should never be created and triaged by the same person. If
   you are creating a report for a vulnerability that you found, or on
@@ -82,9 +111,6 @@ Triaging should include updating issue fields:
 * Asset - set/create the module affected by the report
 * Severity - TBD, currently left empty
 
-Reference: [HackerOne: Submitting
-Reports](https://docs.hackerone.com/hackers/submitting-reports.html)
-
 ### Correction follow-up
 
 **Delay:** 90 days
@@ -112,27 +138,18 @@ The report's vulnerable versions upper limit should be set to:
 Within 90 days after the triage date, the vulnerability must be made public.
 
 **Severity**: Vulnerability severity is assessed using [CVSS
-v.3](https://www.first.org/cvss/user-guide). More information can be found on
-[HackerOne documentation](https://docs.hackerone.com/hackers/severity.html)
+v.3](https://www.first.org/cvss/user-guide).
 
 If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability.
 
-At this point, a CVE should be requested through the selected platform through
-the UI, which should include the Report ID and a summary.
-
-Within HackerOne, this is handled through a "public disclosure request".
-
-Reference: [HackerOne:
-Disclosure](https://docs.hackerone.com/hackers/disclosure.html)
-
 ### Secondary Contact
 
 If you do not receive an acknowledgment of your report within 6 business days,
 or if you cannot find a private security contact for the project, you may
-contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for
-assistance.
+contact the OpenJS Foundation CNA at <https://cna.openjsf.org/> (or
+`security@lists.openjsf.org`) for assistance.
 
 The CNA can help ensure your report is properly acknowledged, assist with
 coordinating disclosure timelines, and assign CVEs when necessary. This is a

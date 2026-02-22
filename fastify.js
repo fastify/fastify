@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.6.2'
+const VERSION = '5.7.4'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -82,7 +82,7 @@ const { FSTWRN004 } = require('./lib/warnings.js')
 const initChannel = diagnostics.channel('fastify.initialization')
 
 /**
- * @param {import('./fastify.js').FastifyServerOptions} options
+ * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
 function fastify (serverOptions) {
   const {
@@ -641,16 +641,22 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+      if (resolvedDisableRequestLogging === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = JSON.stringify({
+      error: 'Bad Request',
+      code: 'FST_ERR_BAD_URL',
+      message: `'${path}' is not a valid url component`,
+      statusCode: 400
+    })
     res.writeHead(400, {
       'Content-Type': 'application/json',
-      'Content-Length': body.length
+      'Content-Length': Buffer.byteLength(body)
     })
     res.end(body)
   }
@@ -666,7 +672,8 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+          if (resolvedDisableRequestLogging === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 

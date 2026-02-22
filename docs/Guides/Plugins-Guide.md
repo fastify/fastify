@@ -204,12 +204,12 @@ of an *arrow function expression*.
 
 You can do the same for the `request` object:
 ```js
-fastify.decorate('getHeader', (req, header) => {
-  return req.headers[header]
+fastify.decorate('getBoolHeader', (req, name) => {
+  return req.headers[name] ?? false // We return `false` if header is missing
 })
 
 fastify.addHook('preHandler', (request, reply, done) => {
-  request.isHappy = fastify.getHeader(request.raw, 'happy')
+  request.isHappy = fastify.getBoolHeader(request, 'happy')
   done()
 })
 
@@ -219,14 +219,14 @@ fastify.get('/happiness', (request, reply) => {
 ```
 Again, it works, but it can be much better!
 ```js
-fastify.decorateRequest('setHeader', function (header) {
-  this.isHappy = this.headers[header]
+fastify.decorateRequest('setBoolHeader', function (name) {
+  this.isHappy = this.headers[name] ?? false
 })
 
 fastify.decorateRequest('isHappy', false) // This will be added to the Request object prototype, yay speed!
 
 fastify.addHook('preHandler', (request, reply, done) => {
-  request.setHeader('happy')
+  request.setBoolHeader('happy')
   done()
 })
 
@@ -337,11 +337,11 @@ fastify.register((instance, opts, done) => {
     }
   })
 
-  fastify.get('/plugin1', {config: {useUtil: true}}, (request, reply) => {
+  instance.get('/plugin1', {config: {useUtil: true}}, (request, reply) => {
     reply.send(request)
   })
 
-  fastify.get('/plugin2', (request, reply) => {
+  instance.get('/plugin2', (request, reply) => {
     reply.send(request)
   })
 

@@ -508,6 +508,9 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 Different log levels can be set for routes in Fastify by passing the `logLevel`
 option to the plugin or route with the desired
 [value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string).
+If a route `logLevel` is invalid, Fastify throws
+[`FST_ERR_ROUTE_LOG_LEVEL_INVALID`](./Errors.md#fst_err_route_log_level_invalid)
+during route registration.
 
 Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and

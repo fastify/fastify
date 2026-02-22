@@ -41,8 +41,8 @@ expect(fastify().register(function (instance, opts, done) { })).type.toBeAssigna
 expect(fastify().register(function (instance, opts, done) { }, () => { })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify().register(function (instance, opts, done) { }, { logLevel: 'info', prefix: 'foobar' })).type.toBeAssignableTo<FastifyInstance>()
 
-expect(fastify().register(import('./dummy-plugin.js'))).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify().register(import('./dummy-plugin.js'), { foo: 1 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(import('./dummy-plugin.mjs'))).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(import('./dummy-plugin.mjs'), { foo: 1 })).type.toBeAssignableTo<FastifyInstance>()
 
 const testPluginCallback: FastifyPluginCallback = function (instance, opts, done) { }
 expect(fastify().register(testPluginCallback, {})).type.toBeAssignableTo<FastifyInstance>()

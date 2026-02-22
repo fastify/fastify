@@ -1,13 +1,9 @@
 {
+  "extends": "fastify-tsconfig",
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["es2015"],
-    "module": "commonjs",
     "noEmit": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "exactOptionalPropertyTypes": true,
-    "types": ["node"],
-  },
-  "include": ["**/*"]
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "types": ["node"]
+  }
 }

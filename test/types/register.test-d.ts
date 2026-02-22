@@ -200,16 +200,14 @@ expect(serverWithTypeProviderAndLogger.register(testPluginOptsAsync)).type.toBeA
 expect(serverWithTypeProviderAndLogger.register(testPluginOptsWithType)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync)).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(
-  // @ts-expect-error!
-  serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger)
-).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
+  serverWithTypeProviderAndLogger.register
+).type.not.toBeCallableWith(testPluginWithTypeProviderAndLogger)
 expect(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger, testOptions)
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(
-  // @ts-expect-error!
-  serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync)
-).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
+  serverWithTypeProviderAndLogger.register
+).type.not.toBeCallableWith(testPluginWithTypeProviderAndLoggerAsync)
 expect(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync, testOptions)
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()

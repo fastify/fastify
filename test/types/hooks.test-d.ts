@@ -537,29 +537,29 @@ server.addHook('preClose', async function () {
   expect(this).type.toBe<FastifyInstance>()
 })
 
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onClose', async function (instance, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onError', async function (request, reply, error, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onReady', async function (done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onListen', async function (done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onRequest', async function (request, reply, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onRequestAbort', async function (request, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onResponse', async function (request, reply, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onSend', async function (request, reply, payload, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('onTimeout', async function (request, reply, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('preClose', async function (done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('preHandler', async function (request, reply, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('preSerialization', async function (request, reply, payload, done) {})
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call.
 server.addHook('preValidation', async function (request, reply, done) {})

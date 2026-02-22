@@ -142,17 +142,17 @@ server.get<ReplyPayload>('/get-generic-send', async function handler (request, r
 })
 // When Reply type is specified, send() requires a payload - calling without arguments should error
 server.get<ReplyPayload>('/get-generic-send-missing-payload', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Expected 1 argument
   reply.send()
 })
 server.get<ReplyPayload>('/get-generic-return', async function handler (request, reply) {
   return { test: false }
 })
 server.get<ReplyPayload>('/get-generic-send-error', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  'foo' does not exist in type '{ test: boolean; }'
   reply.send({ foo: 'bar' })
 })
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call
 server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
   return { foo: 'bar' }
 })
@@ -171,18 +171,18 @@ server.get<ReplyUnion>('/get-generic-union-return', async function handler (requ
   }
 })
 server.get<ReplyUnion>('/get-generic-union-send-error-1', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  'successes' does not exist in type '{ success: boolean; } | { error: string; }'
   reply.send({ successes: true })
 })
 server.get<ReplyUnion>('/get-generic-union-send-error-2', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Type 'number' is not assignable to type 'string'
   reply.send({ error: 500 })
 })
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call
 server.get<ReplyUnion>('/get-generic-union-return-error-1', async function handler (request, reply) {
   return { successes: true }
 })
-// @ts-expect-error!
+// @ts-expect-error  No overload matches this call
 server.get<ReplyUnion>('/get-generic-union-return-error-2', async function handler (request, reply) {
   return { error: 500 }
 })
@@ -193,30 +193,30 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send', async function handle
   reply.code(101).send(123)
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-1', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Argument of type '"def"' is not assignable to parameter of type '"abc"'
   reply.code(200).send('def')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-2', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Argument of type 'number' is not assignable to parameter of type 'boolean'
   reply.code(201).send(0)
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Type 'number' is not assignable to type 'string'
   reply.code(300).send({ foo: 123 })
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type 'number'
   reply.code(100).send('asdasd')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
-  // @ts-expect-error!
-  reply.code(401).send({ foo: 123 })
+  // @ts-expect-error  Argument of type '401' is not assignable
+  reply.code(401)
 })
 server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler (request, reply) {
   reply.code(200).send([''])
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
-  // @ts-expect-error!
+  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type '{ '1xx': number; 200: string; 999: boolean; }'
   reply.code(200).send('')
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {

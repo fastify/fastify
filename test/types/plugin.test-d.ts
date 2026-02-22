@@ -54,8 +54,8 @@ expect(fastify().register(function (instance, opts): Promise<void> { return Prom
 expect(fastify().register(async function (instance, opts) { }, () => { })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' })).type.toBeAssignableTo<FastifyInstance>()
 
-// @ts-expect-error!
-expect(fastify().register).type.not.toBeCallableWith(function (instance, opts, done) { }, { ...testOptions, logLevel: '' }) // must use a valid logLevel
+// @ts-expect-error  'logLevel' does not exist in type
+fastify().register(function (instance, opts, done) { }, { ...testOptions, logLevel: '' }) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
 expect(httpsServer).type.not.toBeAssignableTo<

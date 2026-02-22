@@ -32,7 +32,8 @@ const {
   kKeepAliveConnections,
   kChildLoggerFactory,
   kGenReqId,
-  kErrorHandlerAlreadySet
+  kErrorHandlerAlreadySet,
+  kHandlerTimeout
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -147,6 +148,7 @@ function fastify (serverOptions) {
     [kChildren]: [],
     [kServerBindings]: [],
     [kBodyLimit]: options.bodyLimit,
+    [kHandlerTimeout]: options.handlerTimeout,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kLogSerializers]: null,
@@ -869,6 +871,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
+  options.handlerTimeout = options.handlerTimeout || defaultInitOptions.handlerTimeout
   options.logger = logger
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel

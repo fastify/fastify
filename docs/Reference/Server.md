@@ -224,6 +224,25 @@ in front.
 > ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
 
+### `handlerTimeout`
+<a id="factory-handler-timeout"></a>
+
++ Default: `0` (no timeout)
+
+Defines the maximum number of milliseconds allowed for processing a request
+through the entire route lifecycle (from routing through onRequest, parsing,
+validation, handler execution, and serialization). If the response is not sent
+within this time, a `503 Service Unavailable` error is returned and
+`request.signal` is aborted.
+
+Unlike `connectionTimeout` and `requestTimeout` (which operate at the socket
+level), `handlerTimeout` is an application-level timeout that works correctly
+with HTTP keep-alive connections. It can be overridden per-route via
+[route options](./Routes.md).
+
+When `reply.hijack()` is called, the timeout timer is cleared — the handler
+takes full responsibility for the response lifecycle.
+
 ### `bodyLimit`
 <a id="factory-body-limit"></a>
 
@@ -2228,6 +2247,7 @@ initial options passed down by the user to the Fastify instance.
 The properties that can currently be exposed are:
 - connectionTimeout
 - keepAliveTimeout
+- handlerTimeout
 - bodyLimit
 - caseSensitive
 - http2

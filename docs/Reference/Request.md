@@ -40,12 +40,17 @@ Request is a core Fastify object containing the following fields:
   case of internal re-routing.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
+- `signal` - An `AbortSignal` that aborts when the handler timeout
+  fires or the client disconnects. Available only when `handlerTimeout` is
+  configured (returns `undefined` otherwise). Pass it to `fetch()`, database
+  queries, or any API accepting a `signal` option for cooperative cancellation.
 - `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
   internal object. Do not use or modify it directly. It is useful to access one
   special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
+  - `handlerTimeout` - The handler timeout configured for this route.
   - `config` - The [`config`](./Routes.md#routes-config) object for this route.
   - `method` - The HTTP method for the route.
   - `url` - The path of the URL to match this route.

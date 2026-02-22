@@ -46,6 +46,9 @@ Request is a core Fastify object containing the following fields:
   accessing it without `handlerTimeout` throws
   `FST_ERR_MISSING_HANDLER_TIMEOUT`. Pass it to `fetch()`, database queries,
   or any API accepting a `signal` option for cooperative cancellation.
+  On timeout, `signal.reason` is the `FST_ERR_HANDLER_TIMEOUT` error; on
+  client disconnect it is a generic `AbortError`. Check `signal.reason.code`
+  to distinguish the two cases.
 - `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
   internal object. Do not use or modify it directly. It is useful to access one
   special key:

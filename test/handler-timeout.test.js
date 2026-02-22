@@ -123,21 +123,22 @@ test('request.signal is an AbortSignal when handlerTimeout > 0', async t => {
   await fastify.inject({ method: 'GET', url: '/' })
 })
 
-test('request.signal aborts when timeout fires', async t => {
-  t.plan(1)
+test('request.signal aborts when timeout fires with reason', async t => {
+  t.plan(2)
   const fastify = Fastify()
 
-  let signalAborted = false
+  let signalReason = null
   fastify.get('/', { handlerTimeout: 50 }, async (request) => {
     request.signal.addEventListener('abort', () => {
-      signalAborted = true
+      signalReason = request.signal.reason
     })
     await new Promise(resolve => setTimeout(resolve, 500))
     return 'too late'
   })
 
   await fastify.inject({ method: 'GET', url: '/' })
-  t.assert.strictEqual(signalAborted, true)
+  t.assert.ok(signalReason !== null)
+  t.assert.strictEqual(signalReason.code, 'FST_ERR_HANDLER_TIMEOUT')
 })
 
 // --- Streaming response ---

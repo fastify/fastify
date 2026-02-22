@@ -4,6 +4,7 @@ const { test } = require('node:test')
 const net = require('node:net')
 const Fastify = require('..')
 const { Readable } = require('node:stream')
+const { kTimeoutTimer, kOnAbort } = require('../lib/symbols')
 
 // --- Option validation ---
 
@@ -223,8 +224,8 @@ test('timer is cleaned up after fast response (no leak)', async t => {
   const res = await fastify.inject({ method: 'GET', url: '/' })
   t.assert.strictEqual(res.statusCode, 200)
   // Timer and listener should be cleaned up
-  t.assert.strictEqual(capturedRequest._timeoutTimer, null)
-  t.assert.strictEqual(capturedRequest._onAbort, null)
+  t.assert.strictEqual(capturedRequest[kTimeoutTimer], null)
+  t.assert.strictEqual(capturedRequest[kOnAbort], null)
 })
 
 // --- routeOptions exposure ---
@@ -294,7 +295,7 @@ test('client disconnect aborts request.signal', async t => {
 // --- Race: handler completes just as timeout fires ---
 
 test('no double-send when handler completes near timeout boundary', async t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.get('/', { handlerTimeout: 50 }, async (request, reply) => {
@@ -307,31 +308,19 @@ test('no double-send when handler completes near timeout boundary', async t => {
   const res = await fastify.inject({ method: 'GET', url: '/' })
   // Should get either 200 or 503 depending on race, but never crash
   t.assert.ok(res.statusCode === 200 || res.statusCode === 503)
+  // Verify response is valid JSON regardless of which won the race
+  t.assert.ok(JSON.parse(res.payload))
 })
 
-// --- Server default inherited by routes without explicit timeout ---
+// --- Server default inherited by routes ---
 
 test('routes inherit server-level handlerTimeout', async t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify({ handlerTimeout: 50 })
 
-  fastify.get('/', async () => {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    return 'too late'
-  })
-
-  const res = await fastify.inject({ method: 'GET', url: '/' })
-  t.assert.strictEqual(res.statusCode, 503)
-  t.assert.strictEqual(JSON.parse(res.payload).code, 'FST_ERR_HANDLER_TIMEOUT')
-})
-
-// --- No logger and no onResponse hook (edge case for setupResponseListeners) ---
-
-test('handlerTimeout works even without logger and onResponse hooks', async t => {
-  t.plan(2)
-  const fastify = Fastify({ logger: false })
-
-  fastify.get('/', { handlerTimeout: 50 }, async () => {
+  fastify.get('/', async (request) => {
+    // Verify the signal is present (inherited from server default)
+    t.assert.ok(request.signal instanceof AbortSignal)
     await new Promise(resolve => setTimeout(resolve, 500))
     return 'too late'
   })

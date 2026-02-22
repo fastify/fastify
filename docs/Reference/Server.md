@@ -238,10 +238,23 @@ within this time, a `503 Service Unavailable` error is returned and
 Unlike `connectionTimeout` and `requestTimeout` (which operate at the socket
 level), `handlerTimeout` is an application-level timeout that works correctly
 with HTTP keep-alive connections. It can be overridden per-route via
-[route options](./Routes.md).
+[route options](./Routes.md#routes-options).
 
 When `reply.hijack()` is called, the timeout timer is cleared — the handler
 takes full responsibility for the response lifecycle.
+
+```js
+const fastify = require('fastify')({
+  handlerTimeout: 10000 // 10s default for all routes
+})
+
+// Override per-route
+fastify.get('/slow-report', { handlerTimeout: 120000 }, async (request) => {
+  // Use request.signal for cooperative cancellation
+  const data = await db.query(longQuery, { signal: request.signal })
+  return data
+})
+```
 
 ### `bodyLimit`
 <a id="factory-body-limit"></a>

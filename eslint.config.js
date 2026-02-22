@@ -27,7 +27,7 @@ module.exports = [
     }
   },
   {
-    files: ['**/*.d.ts'],
+    files: ['**/*.d.ts', 'test/types/*.ts'],
     rules: {
       'max-len': 'off'
     }

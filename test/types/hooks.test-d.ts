@@ -1,4 +1,3 @@
-import * as http from 'node:http'
 import type { FastifyError } from '@fastify/error'
 import { expect } from 'tstyche'
 import fastify, {

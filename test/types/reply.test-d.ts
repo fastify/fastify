@@ -48,11 +48,11 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.then).type.toBe<(fulfilled: () => void, rejected: (err: Error) => void) => void>()
   expect(reply.trailer).type.toBe<
       (
-      key: string,
-      fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) |
+        key: string,
+        fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) |
       ((reply: FastifyReply, payload: string | Buffer | null,
         done: (err: Error | null, value?: string) => void) => void)
-    ) => FastifyReply
+      ) => FastifyReply
   >()
   expect(reply.hasTrailer).type.toBe<(key: string) => boolean>()
   expect(reply.removeTrailer).type.toBe<(key: string) => FastifyReply>()

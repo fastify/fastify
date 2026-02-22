@@ -336,5 +336,5 @@ fastify({ allowUnsafeRegex: true })
 fastify({ allowUnsafeRegex: false })
 expect(fastify).type.not.toBeCallableWith({ allowUnsafeRegex: 'invalid' })
 
-expect<FastifyInstance>().type.toBeAssignableFrom(fastify({ allowErrorHandlerOverride: true }))
-expect<FastifyInstance>().type.toBeAssignableFrom(fastify({ allowErrorHandlerOverride: false }))
+expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

@@ -22,13 +22,13 @@ updates:
       dependencies:
         dependency-type: "production"
         update-types:
-        - "minor"
-        - "patch"
+          - "minor"
+          - "patch"
       # Production dependencies with breaking changes
       dependencies-major:
         dependency-type: "production"
         update-types:
-        - "major"
+          - "major"
       # ESLint related dependencies
       dev-dependencies-eslint:
         patterns:
@@ -39,7 +39,7 @@ updates:
       dev-dependencies-typescript:
         patterns:
           - "@types/*"
-          - "tsd"
+          - "tstyche"
           - "typescript"
       # Ajv related dependencies
       dev-dependencies-ajv:

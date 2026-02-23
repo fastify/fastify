@@ -1,9 +1,9 @@
-import fastify, { FastifyInstance, FastifyPluginOptions, SafePromiseLike } from '../../fastify'
-import * as http from 'node:http'
-import * as https from 'node:https'
-import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyPluginCallback, FastifyPluginAsync } from '../../types/plugin'
-import { FastifyError } from '@fastify/error'
+import type * as http from 'node:http'
+import type * as https from 'node:https'
+import type { FastifyError } from '@fastify/error'
+import { expect } from 'tstyche'
+import fastify, { type FastifyInstance, type FastifyPluginOptions, type SafePromiseLike } from '../../fastify.js'
+import type { FastifyPluginCallback, FastifyPluginAsync } from '../../types/plugin.js'
 
 // FastifyPlugin & FastifyRegister
 interface TestOptions extends FastifyPluginOptions {
@@ -15,10 +15,10 @@ const testOptions: TestOptions = {
   option2: false
 }
 const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) {
-  expectType<TestOptions>(opts)
+  expect(opts).type.toBe<TestOptions>()
 }
 const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) {
-  expectType<TestOptions>(opts)
+  expect(opts).type.toBe<TestOptions>()
 }
 
 const testPluginOptsWithType = (
@@ -31,46 +31,49 @@ const testPluginOptsWithTypeAsync = async (
   opts: FastifyPluginOptions
 ) => { }
 
-expectError(fastify().register(testPluginOpts, {})) // error because missing required options from generic declaration
-expectError(fastify().register(testPluginOptsAsync, {})) // error because missing required options from generic declaration
+expect(fastify().register).type.not.toBeCallableWith(testPluginOpts, {}) // error because missing required options from generic declaration
+expect(fastify().register).type.not.toBeCallableWith(testPluginOptsAsync, {}) // error because missing required options from generic declaration
 
-expectAssignable<FastifyInstance>(fastify().register(testPluginOpts, { option1: '', option2: true }))
-expectAssignable<FastifyInstance>(fastify().register(testPluginOptsAsync, { option1: '', option2: true }))
+expect(fastify().register(testPluginOpts, { option1: '', option2: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(testPluginOptsAsync, { option1: '', option2: true })).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, done) { }))
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, done) { }, () => { }))
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, done) { }, { logLevel: 'info', prefix: 'foobar' }))
+expect(fastify().register(function (instance, opts, done) { })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(function (instance, opts, done) { }, () => { })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(function (instance, opts, done) { }, { logLevel: 'info', prefix: 'foobar' })).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(fastify().register(import('./dummy-plugin')))
-expectAssignable<FastifyInstance>(fastify().register(import('./dummy-plugin'), { foo: 1 }))
+expect(fastify().register(import('./dummy-plugin.mjs'))).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(import('./dummy-plugin.mjs'), { foo: 1 })).type.toBeAssignableTo<FastifyInstance>()
 
 const testPluginCallback: FastifyPluginCallback = function (instance, opts, done) { }
-expectAssignable<FastifyInstance>(fastify().register(testPluginCallback, {}))
+expect(fastify().register(testPluginCallback, {})).type.toBeAssignableTo<FastifyInstance>()
 
 const testPluginAsync: FastifyPluginAsync = async function (instance, opts) { }
-expectAssignable<FastifyInstance>(fastify().register(testPluginAsync, {}))
+expect(fastify().register(testPluginAsync, {})).type.toBeAssignableTo<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(
-  fastify().register(function (instance, opts): Promise<void> { return Promise.resolve() })
-)
-expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, () => { }))
-expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' }))
+expect(fastify().register(function (instance, opts): Promise<void> { return Promise.resolve() })).type.toBeAssignableTo<
+  FastifyInstance
+>()
+expect(fastify().register(async function (instance, opts) { }, () => { })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' })).type.toBeAssignableTo<
+  FastifyInstance
+>()
 
-expectError(fastify().register(function (instance, opts, done) { }, { ...testOptions, logLevel: '' })) // must use a valid logLevel
+// @ts-expect-error  'logLevel' does not exist in type
+fastify().register(function (instance, opts, done) { }, { ...testOptions, logLevel: '' }) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
-expectError<
+expect(httpsServer).type.not.toBeAssignableTo<
   FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
   Promise<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(httpsServer)
-expectAssignable<
+>()
+expect(httpsServer).type.toBeAssignableTo<
   FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
   PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(httpsServer)
-expectType<
+>()
+expect(httpsServer).type.toBe<
   FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
->(httpsServer)
+>()
 
 // Chainable
 httpsServer
@@ -80,14 +83,14 @@ httpsServer
   .close(() => { })
 
 // Thenable
-expectAssignable<PromiseLike<undefined>>(httpsServer.after())
-expectAssignable<PromiseLike<undefined>>(httpsServer.close())
-expectAssignable<PromiseLike<undefined>>(httpsServer.ready())
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts, testOptions))
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType))
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync))
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: '/test' }))
+expect(httpsServer.after()).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.close()).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.ready()).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.register(testPluginOpts, testOptions)).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.register(testPluginOptsWithType)).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.register(testPluginOptsWithTypeAsync)).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.register(testPluginOptsWithType, { prefix: '/test' })).type.toBeAssignableTo<PromiseLike<undefined>>()
+expect(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: '/test' })).type.toBeAssignableTo<PromiseLike<undefined>>()
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 async function testAsync (): Promise<void> {

@@ -55,7 +55,7 @@ jobs:
         run: |
           npm run unit
 
-  test-typescript:
+  test-types:
     runs-on: 'ubuntu-latest'
     permissions:
       contents: read
@@ -74,15 +74,15 @@ jobs:
         run: |
           npm install --ignore-scripts
 
-      - name: Run typescript tests
+      - name: Run types tests
         run: |
-          npm run test:typescript
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
   package:
     needs:
-      - test-typescript
+      - test-types
       - test-unit
     runs-on: ubuntu-latest
     permissions:

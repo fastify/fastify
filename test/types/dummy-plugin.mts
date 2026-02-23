@@ -1,4 +1,4 @@
-import { FastifyPluginAsync } from '../../fastify'
+import type { FastifyPluginAsync } from '../../fastify.js'
 
 export interface DummyPluginOptions {
   foo?: number

@@ -1,18 +1,18 @@
-import fastify from '../../fastify'
-import { expectType } from 'tsd'
+import { expect } from 'tstyche'
+import fastify from '../../fastify.js'
 
 type TestType = void
 
-declare module '../../fastify' {
+declare module '../../fastify.js' {
   interface FastifyRequest {
-    testProp: TestType;
+    testProp: TestType
   }
   interface FastifyReply {
-    testProp: TestType;
+    testProp: TestType
   }
 }
 
 fastify().get('/', (req, res) => {
-  expectType<TestType>(req.testProp)
-  expectType<TestType>(res.testProp)
+  expect(req.testProp).type.toBe<TestType>()
+  expect(res.testProp).type.toBe<TestType>()
 })

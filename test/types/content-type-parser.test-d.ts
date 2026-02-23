@@ -1,72 +1,72 @@
-import fastify, { FastifyBodyParser } from '../../fastify'
-import { expectError, expectType } from 'tsd'
-import { IncomingMessage } from 'node:http'
-import { FastifyRequest } from '../../types/request'
+import type { IncomingMessage } from 'node:http'
+import { expect } from 'tstyche'
+import fastify, { type FastifyBodyParser } from '../../fastify.js'
+import type { FastifyRequest } from '../../types/request.js'
 
-expectType<void>(fastify().addContentTypeParser('contentType', function (request, payload, done) {
-  expectType<FastifyRequest>(request)
-  expectType<IncomingMessage>(payload)
+expect(fastify().addContentTypeParser('contentType', function (request, payload, done) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(payload).type.toBe<IncomingMessage>()
   done(null)
-}))
+})).type.toBe<void>()
 
 // Body limit options
 
-expectType<void>(fastify().addContentTypeParser('contentType', { bodyLimit: 99 }, function (request, payload, done) {
-  expectType<FastifyRequest>(request)
-  expectType<IncomingMessage>(payload)
+expect(fastify().addContentTypeParser('contentType', { bodyLimit: 99 }, function (request, payload, done) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(payload).type.toBe<IncomingMessage>()
   done(null)
-}))
+})).type.toBe<void>()
 
 // Array for contentType
 
-expectType<void>(fastify().addContentTypeParser(['contentType'], function (request, payload, done) {
-  expectType<FastifyRequest>(request)
-  expectType<IncomingMessage>(payload)
+expect(fastify().addContentTypeParser(['contentType'], function (request, payload, done) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(payload).type.toBe<IncomingMessage>()
   done(null)
-}))
+})).type.toBe<void>()
 
 // Body Parser - the generic after addContentTypeParser enforces the type of the `body` parameter as well as the value of the `parseAs` property
 
-expectType<void>(fastify().addContentTypeParser<string>('bodyContentType', { parseAs: 'string' }, function (request, body, done) {
-  expectType<FastifyRequest>(request)
-  expectType<string>(body)
+expect(fastify().addContentTypeParser<string>('bodyContentType', { parseAs: 'string' }, function (request, body, done) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(body).type.toBe<string>()
   done(null)
-}))
+})).type.toBe<void>()
 
-expectType<void>(fastify().addContentTypeParser<Buffer>('bodyContentType', { parseAs: 'buffer' }, function (request, body, done) {
-  expectType<FastifyRequest>(request)
-  expectType<Buffer>(body)
+expect(fastify().addContentTypeParser<Buffer>('bodyContentType', { parseAs: 'buffer' }, function (request, body, done) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(body).type.toBe<Buffer>()
   done(null)
-}))
+})).type.toBe<void>()
 
-expectType<void>(fastify().addContentTypeParser('contentType', async function (request: FastifyRequest, payload: IncomingMessage) {
-  expectType<FastifyRequest>(request)
-  expectType<IncomingMessage>(payload)
+expect(fastify().addContentTypeParser('contentType', async function (request: FastifyRequest, payload: IncomingMessage) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(payload).type.toBe<IncomingMessage>()
   return null
-}))
+})).type.toBe<void>()
 
-expectType<void>(fastify().addContentTypeParser<string>('bodyContentType', { parseAs: 'string' }, async function (request: FastifyRequest, body: string) {
-  expectType<FastifyRequest>(request)
-  expectType<string>(body)
+expect(fastify().addContentTypeParser<string>('bodyContentType', { parseAs: 'string' }, async function (request: FastifyRequest, body: string) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(body).type.toBe<string>()
   return null
-}))
+})).type.toBe<void>()
 
-expectType<void>(fastify().addContentTypeParser<Buffer>('bodyContentType', { parseAs: 'buffer' }, async function (request: FastifyRequest, body: Buffer) {
-  expectType<FastifyRequest>(request)
-  expectType<Buffer>(body)
+expect(fastify().addContentTypeParser<Buffer>('bodyContentType', { parseAs: 'buffer' }, async function (request: FastifyRequest, body: Buffer) {
+  expect(request).type.toBe<FastifyRequest>()
+  expect(body).type.toBe<Buffer>()
   return null
-}))
+})).type.toBe<void>()
 
-expectType<FastifyBodyParser<string>>(fastify().getDefaultJsonParser('error', 'ignore'))
+expect(fastify().getDefaultJsonParser('error', 'ignore')).type.toBe<FastifyBodyParser<string>>()
 
-expectError(fastify().getDefaultJsonParser('error', 'skip'))
+expect(fastify().getDefaultJsonParser).type.not.toBeCallableWith('error', 'skip')
 
-expectError(fastify().getDefaultJsonParser('nothing', 'ignore'))
+expect(fastify().getDefaultJsonParser).type.not.toBeCallableWith('nothing', 'ignore')
 
-expectType<void>(fastify().removeAllContentTypeParsers())
-expectError(fastify().removeAllContentTypeParsers('contentType'))
+expect(fastify().removeAllContentTypeParsers()).type.toBe<void>()
+expect(fastify().removeAllContentTypeParsers).type.not.toBeCallableWith('contentType')
 
-expectType<void>(fastify().removeContentTypeParser('contentType'))
-expectType<void>(fastify().removeContentTypeParser(/contentType+.*/))
-expectType<void>(fastify().removeContentTypeParser(['contentType', /contentType+.*/]))
-expectError(fastify().removeContentTypeParser({}))
+expect(fastify().removeContentTypeParser('contentType')).type.toBe<void>()
+expect(fastify().removeContentTypeParser(/contentType+.*/)).type.toBe<void>()
+expect(fastify().removeContentTypeParser(['contentType', /contentType+.*/])).type.toBe<void>()
+expect(fastify().removeContentTypeParser).type.not.toBeCallableWith({})

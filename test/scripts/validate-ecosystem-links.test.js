@@ -178,6 +178,23 @@ describe('checkGitHubRepo', () => {
     assert.strictEqual(result.status, 404)
   })
 
+  it('returns invalid status for malformed owner or repository names', async () => {
+    const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
+    let called = false
+
+    global.fetch = async () => {
+      called = true
+      return { status: 200 }
+    }
+
+    const result = await checkGitHubRepo('owner/evil', 'repo', 1)
+
+    assert.strictEqual(called, false)
+    assert.strictEqual(result.exists, false)
+    assert.strictEqual(result.status, 'invalid')
+    assert.strictEqual(result.error, 'Invalid GitHub repository identifier')
+  })
+
   it('retries on rate limit responses', async () => {
     const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
     let attempts = 0

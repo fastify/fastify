@@ -16,7 +16,16 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const ECOSYSTEM_FILE = path.join(__dirname, '../docs/Guides/Ecosystem.md')
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+const GITHUB_OWNER_REGEX = /^[a-z\d](?:[a-z\d-]{0,38})$/i
+const GITHUB_REPO_REGEX = /^[a-z\d._-]+$/i
+
+function getGitHubToken () {
+  return process.env.GITHUB_TOKEN
+}
+
+function isValidGitHubReference (owner, repo) {
+  return GITHUB_OWNER_REGEX.test(owner) && GITHUB_REPO_REGEX.test(repo)
+}
 
 function extractGitHubLinks (content) {
   const regex = /\[([^\]]+)\]\((https:\/\/github\.com\/([^/]+)\/([^/)]+)[^)]*)\)/g
@@ -36,16 +45,27 @@ function extractGitHubLinks (content) {
 }
 
 async function checkGitHubRepo (owner, repo, retries = 3) {
+  if (!isValidGitHubReference(owner, repo)) {
+    return {
+      owner,
+      repo,
+      status: 'invalid',
+      exists: false,
+      error: 'Invalid GitHub repository identifier'
+    }
+  }
+
   const headers = {
     'User-Agent': 'fastify-ecosystem-validator'
   }
 
-  if (GITHUB_TOKEN) {
-    headers.Authorization = `token ${GITHUB_TOKEN}`
+  const githubToken = getGitHubToken()
+  if (githubToken) {
+    headers.Authorization = `token ${githubToken}`
   }
 
   try {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+    const response = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`, {
       method: 'HEAD',
       headers
     })

@@ -427,7 +427,8 @@ const fastify = require('fastify')({
 })
 ```
 
-> ⚠ Warning: enabling this allows any callers to set `reqId` to a
+> ⚠ Warning:
+> Enabling this allows any callers to set `reqId` to a
 > value of their choosing.
 > No validation is performed on `requestIdHeader`.
 
@@ -534,7 +535,9 @@ recommend using a custom parser to convert only the keys to lowercase.
 ```js
 const qs = require('qs')
 const fastify = require('fastify')({
-  querystringParser: str => qs.parse(str)
+  routerOptions: {
+    querystringParser: str => qs.parse(str)
+  }
 })
 ```
 
@@ -544,7 +547,9 @@ like the example below for case insensitive keys and values:
 ```js
 const querystring = require('fast-querystring')
 const fastify = require('fastify')({
-  querystringParser: str => querystring.parse(str.toLowerCase())
+  routerOptions: {
+    querystringParser: str => querystring.parse(str.toLowerCase())
+  }
 })
 ```
 
@@ -861,7 +866,7 @@ const fastify = require('fastify')({
 })
 ```
 
-> **Note**
+> ℹ️ Note:
 > The `req` and `res` objects passed to `defaultRoute` are the raw Node.js
 > `IncomingMessage` and `ServerResponse` instances. They do **not** expose the
 > Fastify-specific methods available on `FastifyRequest`/`FastifyReply` (for
@@ -1025,7 +1030,8 @@ fastify.get('/dev', async (request, reply) => {
 
 * **Default:** `true`
 
-> ⚠ **Warning:** This option will be set to `false` by default 
+> ⚠ Warning:
+> This option will be set to `false` by default 
 > in the next major release.
 
 When set to `false`, it prevents `setErrorHandler` from being called 
@@ -1387,7 +1393,7 @@ different ways to define a name (in order).
    Example: `pluginFn[Symbol.for('fastify.display-name')] = "Custom Name"`
 3. If you `module.exports` a plugin the filename is used.
 4. If you use a regular [function
-   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions)
+   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#defining_functions)
    the function name is used.
 
 *Fallback*: The first two lines of your plugin will represent the plugin name.

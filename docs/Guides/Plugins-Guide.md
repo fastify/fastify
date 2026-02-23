@@ -337,11 +337,11 @@ fastify.register((instance, opts, done) => {
     }
   })
 
-  fastify.get('/plugin1', {config: {useUtil: true}}, (request, reply) => {
+  instance.get('/plugin1', {config: {useUtil: true}}, (request, reply) => {
     reply.send(request)
   })
 
-  fastify.get('/plugin2', (request, reply) => {
+  instance.get('/plugin2', (request, reply) => {
     reply.send(request)
   })
 

@@ -143,6 +143,7 @@ module.exports = {
 }
 
 // Run if executed directly
+/* c8 ignore start */
 if (require.main === module) {
   validateAllLinks()
     .then(({ notFound }) => {
@@ -155,3 +156,4 @@ if (require.main === module) {
       process.exit(1)
     })
 }
+/* c8 ignore stop */

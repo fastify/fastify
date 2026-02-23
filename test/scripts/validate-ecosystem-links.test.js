@@ -2,10 +2,18 @@
 
 const { describe, it, beforeEach, afterEach } = require('node:test')
 const assert = require('node:assert')
+const fs = require('node:fs')
 const { MockAgent, setGlobalDispatcher, getGlobalDispatcher } = require('undici')
-const { extractGitHubLinks, checkGitHubRepo } = require('../../scripts/validate-ecosystem-links')
+
+function loadValidateEcosystemLinksModule () {
+  const modulePath = require.resolve('../../scripts/validate-ecosystem-links')
+  delete require.cache[modulePath]
+  return require(modulePath)
+}
 
 describe('extractGitHubLinks', () => {
+  const { extractGitHubLinks } = loadValidateEcosystemLinksModule()
+
   it('extracts simple GitHub repository links', () => {
     const content = `
 # Ecosystem
@@ -117,22 +125,31 @@ Some description [inline link](https://github.com/a/b).
 })
 
 describe('checkGitHubRepo', () => {
-  let mockAgent
   let originalDispatcher
+  let mockAgent
+  let originalFetch
+  let originalSetTimeout
 
   beforeEach(() => {
+    delete process.env.GITHUB_TOKEN
     originalDispatcher = getGlobalDispatcher()
     mockAgent = new MockAgent()
     mockAgent.disableNetConnect()
     setGlobalDispatcher(mockAgent)
+    originalFetch = global.fetch
+    originalSetTimeout = global.setTimeout
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    global.fetch = originalFetch
+    global.setTimeout = originalSetTimeout
     setGlobalDispatcher(originalDispatcher)
-    mockAgent.close()
+    await mockAgent.close()
+    delete process.env.GITHUB_TOKEN
   })
 
   it('returns exists: true for status 200', async () => {
+    const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
     const mockPool = mockAgent.get('https://api.github.com')
     mockPool.intercept({
       path: '/repos/fastify/fastify',
@@ -148,6 +165,7 @@ describe('checkGitHubRepo', () => {
   })
 
   it('returns exists: false for status 404', async () => {
+    const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
     const mockPool = mockAgent.get('https://api.github.com')
     mockPool.intercept({
       path: '/repos/nonexistent/repo',
@@ -160,20 +178,49 @@ describe('checkGitHubRepo', () => {
     assert.strictEqual(result.status, 404)
   })
 
-  it('proves mock is used by returning 404 for existing repo', async () => {
-    const mockPool = mockAgent.get('https://api.github.com')
-    mockPool.intercept({
-      path: '/repos/fastify/fastify',
-      method: 'HEAD'
-    }).reply(404)
+  it('retries on rate limit responses', async () => {
+    const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
+    let attempts = 0
 
-    const result = await checkGitHubRepo('fastify', 'fastify')
+    global.setTimeout = (fn) => {
+      fn()
+      return 0
+    }
 
-    assert.strictEqual(result.exists, false)
-    assert.strictEqual(result.status, 404)
+    global.fetch = async () => {
+      attempts++
+      return {
+        status: attempts === 1 ? 403 : 200
+      }
+    }
+
+    const result = await checkGitHubRepo('owner', 'repo', 1)
+
+    assert.strictEqual(attempts, 2)
+    assert.strictEqual(result.exists, true)
+    assert.strictEqual(result.status, 200)
+  })
+
+  it('adds authorization header when GITHUB_TOKEN is set', async () => {
+    process.env.GITHUB_TOKEN = 'my-token'
+    const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
+    let authorization
+
+    global.fetch = async (url, options) => {
+      authorization = options.headers.Authorization
+      return {
+        status: 200
+      }
+    }
+
+    const result = await checkGitHubRepo('owner', 'repo')
+
+    assert.strictEqual(authorization, 'token my-token')
+    assert.strictEqual(result.exists, true)
   })
 
   it('handles network errors', async () => {
+    const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
     const mockPool = mockAgent.get('https://api.github.com')
     mockPool.intercept({
       path: '/repos/owner/repo',
@@ -185,5 +232,91 @@ describe('checkGitHubRepo', () => {
     assert.strictEqual(result.exists, false)
     assert.strictEqual(result.status, 'error')
     assert.ok(result.error.length > 0)
+  })
+})
+
+describe('validateAllLinks', () => {
+  let originalReadFileSync
+  let originalFetch
+  let originalSetTimeout
+  let originalConsoleLog
+  let originalStdoutWrite
+
+  beforeEach(() => {
+    originalReadFileSync = fs.readFileSync
+    originalFetch = global.fetch
+    originalSetTimeout = global.setTimeout
+    originalConsoleLog = console.log
+    originalStdoutWrite = process.stdout.write
+
+    console.log = () => {}
+    process.stdout.write = () => true
+
+    global.setTimeout = (fn) => {
+      fn()
+      return 0
+    }
+  })
+
+  afterEach(() => {
+    fs.readFileSync = originalReadFileSync
+    global.fetch = originalFetch
+    global.setTimeout = originalSetTimeout
+    console.log = originalConsoleLog
+    process.stdout.write = originalStdoutWrite
+  })
+
+  it('validates links, deduplicates repositories and groups inaccessible links', async () => {
+    const { validateAllLinks } = loadValidateEcosystemLinksModule()
+
+    fs.readFileSync = () => `
+- [repo one](https://github.com/owner/repo)
+- [repo one duplicate](https://github.com/owner/repo)
+- [repo two](https://github.com/another/project)
+`
+
+    let requests = 0
+    global.fetch = async (url) => {
+      requests++
+      const pathname = new URL(url).pathname
+
+      if (pathname === '/repos/owner/repo') {
+        return { status: 404 }
+      }
+
+      if (pathname === '/repos/another/project') {
+        return { status: 200 }
+      }
+
+      throw new Error(`Unexpected url: ${url}`)
+    }
+
+    const result = await validateAllLinks()
+
+    assert.strictEqual(requests, 2)
+    assert.strictEqual(result.notFound.length, 1)
+    assert.strictEqual(result.found.length, 1)
+    assert.strictEqual(result.notFound[0].owner, 'owner')
+    assert.strictEqual(result.notFound[0].repo, 'repo')
+    assert.strictEqual(result.found[0].owner, 'another')
+    assert.strictEqual(result.found[0].repo, 'project')
+  })
+
+  it('returns empty result when no GitHub links are present', async () => {
+    const { validateAllLinks } = loadValidateEcosystemLinksModule()
+
+    fs.readFileSync = () => '# Ecosystem\nNo links here.'
+
+    let requests = 0
+    global.fetch = async () => {
+      requests++
+      return { status: 200 }
+    }
+
+    const result = await validateAllLinks()
+
+    assert.strictEqual(requests, 0)
+    assert.strictEqual(result.notFound.length, 0)
+    assert.strictEqual(result.found.length, 0)
   })
 })

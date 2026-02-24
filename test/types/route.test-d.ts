@@ -559,3 +559,9 @@ expectType<FastifyInstance>(fastify().route({
   method: ['GET', 'POST'],
   handler: routeHandler
 }))
+
+// route with neither url nor path (defaults to '/' at runtime)
+expectType<FastifyInstance>(fastify().route({
+  method: 'GET',
+  handler: routeHandler
+}))

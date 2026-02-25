@@ -1895,7 +1895,7 @@ const fastify = require('fastify')({
 })
 
 fastify.register((instance, opts, done) => {
-  instance.setgenreqid((req) => {
+  instance.setGenReqId((req) => {
     // custom request ID for `/webhooks`
     return 'webhooks-id'
   })

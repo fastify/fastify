@@ -3,7 +3,7 @@ import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
-import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   ConnectionError,
   FastifyBaseLogger,
@@ -25,7 +25,7 @@ import { Bindings, ChildLoggerOptions } from '../../types/logger'
 
 // FastifyInstance
 // http server
-expectError<
+expectNotAssignable<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   Promise<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
 >(fastify())
@@ -79,15 +79,16 @@ expectType<
   })
 )
 
-expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
-expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
-expectError(
-  fastify({
-    schemaController: {
-      bucket: () => ({}) // cannot be empty
-    }
-  })
-)
+// @ts-expect-error  Type 'false' is not assignable to type 'true'.
+fastify<http2.Http2Server>({ http2: false })
+// @ts-expect-error  Type 'false' is not assignable to type 'true'.
+fastify<http2.Http2SecureServer>({ http2: false })
+fastify({
+  schemaController: {
+    // @ts-expect-error  No overload matches this call.
+    bucket: () => ({})
+  }
+})
 
 // light-my-request
 expectAssignable<InjectOptions>({ query: '' })
@@ -241,18 +242,17 @@ expectAssignable<FastifyInstance>(fastify({
     plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
   }
 }))
-expectError(fastify({
+fastify({
   ajv: {
     customOptions: {
       removeAdditional: 'all'
     },
     plugins: [
-      () => {
-        // error, plugins always return the Ajv instance fluently
-      }
+      // @ts-expect-error  Type 'void' is not assignable to type 'Ajv'.
+      () => { }
     ]
   }
-}))
+})
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
     onCreate: (ajvInstance) => {
@@ -345,7 +345,8 @@ expectType<FastifyErrorCodes>(fastify.errorCodes)
 
 fastify({ allowUnsafeRegex: true })
 fastify({ allowUnsafeRegex: false })
-expectError(fastify({ allowUnsafeRegex: 'invalid' }))
+// @ts-expect-error  Type 'string' is not assignable to type 'boolean | undefined'.
+fastify({ allowUnsafeRegex: 'invalid' })
 
 expectAssignable<FastifyInstance>(fastify({ allowErrorHandlerOverride: true }))
 expectAssignable<FastifyInstance>(fastify({ allowErrorHandlerOverride: false }))

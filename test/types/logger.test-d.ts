@@ -1,4 +1,4 @@
-import { expectAssignable, expectDeprecated, expectError, expectNotAssignable, expectType } from 'tsd'
+import { expectAssignable, expectDeprecated, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   FastifyLogFn,
   LogLevel,
@@ -271,7 +271,10 @@ expectType<FastifyBaseLogger>(childParent.child({}, { redact: ['pass', 'pin'] })
 expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => {} } }))
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
 
-// no option pass
-expectError(childParent.child())
-// wrong option
-expectError(childParent.child({}, { nonExist: true }))
+// @ts-expect-error  Expected 1-2 arguments
+childParent.child()
+
+childParent.child({}, {
+  // @ts-expect-error  'nonExist' does not exist in type 'ChildLoggerOptions<never>'.
+  nonExist: true
+})

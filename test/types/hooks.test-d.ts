@@ -14,7 +14,6 @@ import fastify, {
   RegisterOptions,
   RouteOptions,
   // preClose hook types should be exported correctly https://github.com/fastify/fastify/pull/5335
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   preCloseAsyncHookHandler,
   preCloseHookHandler
 } from '../../fastify'
@@ -77,7 +76,8 @@ server.addHook<TestPayloadType>('preSerialization', function (request, reply, pa
   expectType<void>(done(new Error()))
   expectType<void>(done(null, 'foobar'))
   expectType<void>(done())
-  expectError<void>(done(new Error(), 'foobar'))
+  // @ts-expect-error  Argument of type 'Error' is not assignable to parameter of type 'null'.
+  done(new Error(), 'foobar')
 })
 
 server.addHook<TestPayloadType>('onSend', function (request, reply, payload, done) {
@@ -88,7 +88,8 @@ server.addHook<TestPayloadType>('onSend', function (request, reply, payload, don
   expectType<void>(done(new Error()))
   expectType<void>(done(null, 'foobar'))
   expectType<void>(done())
-  expectError<void>(done(new Error(), 'foobar'))
+  // @ts-expect-error  Argument of type 'Error' is not assignable to parameter of type 'null'.
+  done(new Error(), 'foobar')
 })
 
 server.addHook('onResponse', function (request, reply, done) {
@@ -535,16 +536,29 @@ server.addHook('preClose', async function () {
   expectType<FastifyInstance>(this)
 })
 
-expectError(server.addHook('onClose', async function (instance, done) {}))
-expectError(server.addHook('onError', async function (request, reply, error, done) {}))
-expectError(server.addHook('onReady', async function (done) {}))
-expectError(server.addHook('onListen', async function (done) {}))
-expectError(server.addHook('onRequest', async function (request, reply, done) {}))
-expectError(server.addHook('onRequestAbort', async function (request, done) {}))
-expectError(server.addHook('onResponse', async function (request, reply, done) {}))
-expectError(server.addHook('onSend', async function (request, reply, payload, done) {}))
-expectError(server.addHook('onTimeout', async function (request, reply, done) {}))
-expectError(server.addHook('preClose', async function (done) {}))
-expectError(server.addHook('preHandler', async function (request, reply, done) {}))
-expectError(server.addHook('preSerialization', async function (request, reply, payload, done) {}))
-expectError(server.addHook('preValidation', async function (request, reply, done) {}))
+// @ts-expect-error  No overload matches this call.
+server.addHook('onClose', async function (instance, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onError', async function (request, reply, error, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onReady', async function (done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onListen', async function (done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onRequest', async function (request, reply, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onRequestAbort', async function (request, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onResponse', async function (request, reply, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onSend', async function (request, reply, payload, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('onTimeout', async function (request, reply, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('preClose', async function (done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('preHandler', async function (request, reply, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('preSerialization', async function (request, reply, payload, done) {})
+// @ts-expect-error  No overload matches this call.
+server.addHook('preValidation', async function (request, reply, done) {})

@@ -1875,7 +1875,7 @@ const fastify = require('fastify')({
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
 
-#### setGenReqId
+#### setgenreqid
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id

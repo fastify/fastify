@@ -57,6 +57,39 @@ test('when handlerTimeout is 0 (default), request.signal is lazily created', asy
   t.assert.strictEqual(res.statusCode, 200)
 })
 
+test('client disconnect aborts lazily created signal (no handlerTimeout)', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  let signalAborted = false
+
+  fastify.get('/', async (request) => {
+    await new Promise((resolve) => {
+      request.signal.addEventListener('abort', () => {
+        signalAborted = true
+        resolve()
+      })
+    })
+    return 'should not reach'
+  })
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const address = fastify.server.address()
+  await new Promise((resolve) => {
+    const client = net.connect(address.port, () => {
+      client.write('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
+      setTimeout(() => {
+        client.destroy()
+        setTimeout(resolve, 100)
+      }, 50)
+    })
+  })
+
+  t.assert.strictEqual(signalAborted, true)
+})
+
 // --- Basic timeout behavior ---
 
 test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT', async t => {

@@ -280,5 +280,10 @@ expectError(childParent.child({}, { nonExist: true }))
 // Regression test for https://github.com/fastify/fastify/issues/4960
 // FastifyInstance with a pino.Logger should be assignable to FastifyInstance
 // with the default FastifyBaseLogger in TypeScript strict mode.
-const pinoInstanceApp = fastify({ logger: P() })
+const pinoInstanceApp = fastify<
+  Server,
+  IncomingMessage,
+  ServerResponse,
+  P.Logger
+>({ logger: P() })
 expectAssignable<FastifyInstanceType>(pinoInstanceApp)

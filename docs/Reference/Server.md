@@ -72,7 +72,7 @@ describes the properties available in that options object.
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
-    - [addHttpMethod](#addhttpmethod)
+    - [addHttpMethod](#addHttpMethod)
     - [addSchema](#addschema)
     - [getSchemas](#getschemas)
     - [getSchema](#getschema)

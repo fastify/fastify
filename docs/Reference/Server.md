@@ -1903,7 +1903,7 @@ fastify.register((instance, opts, done) => {
 }, { prefix: '/webhooks' })
 
 fastify.register((instance, opts, done) => {
-  instance.setgenreqid((req) => {
+  instance.setGenReqId((req) => {
     // custom request ID for `/observability`
     return 'observability-id'
   })

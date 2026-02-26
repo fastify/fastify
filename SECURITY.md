@@ -6,13 +6,17 @@ project and its official plugins.
 ## Threat Model
 
 Fastify's threat model extends the
-[Node.js threat model](https://github.com/nodejs/node/blob/main/SECURITY.md#the-nodejs-threat-model).
+[Node.js security policy](https://github.com/nodejs/node/blob/main/SECURITY.md).
 
 **Trusted:** Application code (plugins, handlers, hooks, schemas), configuration,
 and the runtime environment.
 
 **Untrusted:** All network input (HTTP headers, body, query strings, URL
 parameters).
+
+Fastify assumes Node.js is running with `insecureHTTPParser: false` (the
+secure default). Deployments that enable `insecureHTTPParser: true` are
+outside Fastify's threat model.
 
 ### Examples of Vulnerabilities
 
@@ -36,6 +40,9 @@ patterns for routes or validation
 authorization (these are application-level concerns)
 - **Configuration mistakes**: Security issues arising from developer
 misconfiguration (configuration is trusted)
+- **`insecureHTTPParser: true` deployments**: Reports that rely on enabling
+Node.js `insecureHTTPParser` are out of scope; Fastify assumes this flag is
+`false`
 - **Third-party dependencies**: Vulnerabilities in npm packages used by the
 application (not Fastify core dependencies)
 - **Resource exhaustion from handlers**: DoS caused by expensive operations in

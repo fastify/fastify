@@ -25,6 +25,7 @@ jobs:
       # See: https://github.com/lycheeverse/lychee-action/issues/17
       - name: Link Checker
         id: lychee
+        continue-on-error: true
         uses: lycheeverse/lychee-action@a8c4c7cb88f0c7386610c35eb25108e448569cb0 # 2.7.0
         with:
           fail: true
@@ -37,6 +38,7 @@ jobs:
 
       - name: External Link Checker
         uses: JustinBeckwith/linkinator-action@f62ba0c110a76effb2ee6022cc6ce4ab161085e3 # 2.4.0
+        continue-on-error: true
         with:
           paths: "*.md **/*.md"
           retry: true

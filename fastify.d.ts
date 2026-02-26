@@ -3,9 +3,8 @@ import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
 
-import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
-import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
 import { Config as FindMyWayConfig, ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
@@ -28,7 +27,7 @@ import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './type
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
-import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
+import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySchemaControllerOptions, FastifySerializerCompiler, FastifySerializerOptions, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
@@ -127,7 +126,7 @@ declare namespace fastify {
     onConstructorPoisoning?: ConstructorAction,
     logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions,
     loggerInstance?: Logger
-    serializerOpts?: FJSOptions | Record<string, unknown>,
+    serializerOpts?: FastifySerializerOptions,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
@@ -140,17 +139,7 @@ declare namespace fastify {
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
     },
-    schemaController?: {
-      bucket?: (parentSchemas?: unknown) => {
-        add(schema: unknown): FastifyInstance;
-        getSchema(schemaId: string): unknown;
-        getSchemas(): Record<string, unknown>;
-      };
-      compilersFactory?: {
-        buildValidator?: ValidatorFactory;
-        buildSerializer?: SerializerFactory;
-      };
-    };
+    schemaController?: FastifySchemaControllerOptions;
     return503OnClosing?: boolean,
     ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(

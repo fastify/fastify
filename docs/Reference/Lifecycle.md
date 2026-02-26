@@ -41,6 +41,11 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
+When `handlerTimeout` is configured, a timer starts after routing. If the
+response is not sent within the allowed time, `request.signal` is aborted and
+a 503 error is sent. The timer is cleared when the response finishes or when
+`reply.hijack()` is called. See [`handlerTimeout`](./Server.md#factory-handler-timeout).
+
 Before or during the `User Handler`, `reply.hijack()` can be called to:
 - Prevent Fastify from running subsequent hooks and the user handler
 - Prevent Fastify from sending the response automatically

@@ -21,7 +21,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
-  - [``loggerInstance``](#loggerinstance)
+  - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)

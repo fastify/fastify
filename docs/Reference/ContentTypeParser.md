@@ -23,7 +23,7 @@ Note that for `GET` and `HEAD` requests, the payload is never parsed. For
 [catch-all](#catch-all) parser is not executed, and the payload is simply not
 parsed.
 
-> **Warning:**
+> ⚠ Warning:
 > When using regular expressions to detect `Content-Type`, it is important to
 > ensure proper detection. For example, to match `application/*`, use
 > `/^application\/([\w-]+);?/` to match the

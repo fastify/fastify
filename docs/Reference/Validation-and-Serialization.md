@@ -250,7 +250,8 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
-> **Warning:** Schema selection in the `content` map uses an exact match on the
+> ⚠ Warning:
+> Schema selection in the `content` map uses an exact match on the
 > request's [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > (e.g., `application/json`). If you register a content-type parser with a
 > regular expression (e.g., `/^application\/.*json$/`), the parser will match

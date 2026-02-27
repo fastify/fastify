@@ -224,6 +224,71 @@ in front.
 > ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
 
+### `handlerTimeout`
+<a id="factory-handler-timeout"></a>
+
++ Default: `0` (no timeout)
+
+Defines the maximum number of milliseconds allowed for processing a request
+through the entire route lifecycle (from routing through onRequest, parsing,
+validation, handler execution, and serialization). If the response is not sent
+within this time, a `503 Service Unavailable` error is returned and
+`request.signal` is aborted.
+
+Unlike `connectionTimeout` and `requestTimeout` (which operate at the socket
+level), `handlerTimeout` is an application-level timeout that works correctly
+with HTTP keep-alive connections. It can be overridden per-route via
+[route options](./Routes.md#routes-options). When set at both levels, the
+route-level value takes precedence. Routes without an explicit `handlerTimeout`
+inherit the server default. Once a server-level timeout is set, individual
+routes cannot opt out of it — they can only override it with a different
+positive integer.
+
+The timeout is **cooperative**: when it fires, Fastify sends the 503 error
+response, but the handler's async work continues to run. Use
+[`request.signal`](./Request.md) to detect cancellation and stop ongoing work
+(database queries, HTTP requests, etc.). APIs that accept a `signal` option
+(`fetch()`, database drivers, `stream.pipeline()`) will cancel automatically.
+
+The timeout error (`FST_ERR_HANDLER_TIMEOUT`) is sent through the route's
+[error handler](./Routes.md#routes-options), which can be customized per-route
+to change the status code or response body.
+
+When `reply.hijack()` is called, the timeout timer is cleared — the handler
+takes full responsibility for the response lifecycle.
+
+> ℹ️ Note:
+> `handlerTimeout` does not apply to 404 handlers or custom not-found handlers
+> set via `setNotFoundHandler()`, as they bypass the route handler lifecycle.
+
+```js
+const fastify = require('fastify')({
+  handlerTimeout: 10000 // 10s default for all routes
+})
+
+// Override per-route
+fastify.get('/slow-report', { handlerTimeout: 120000 }, async (request) => {
+  // Use request.signal for cooperative cancellation
+  const data = await db.query(longQuery, { signal: request.signal })
+  return data
+})
+
+// Customize the timeout response
+fastify.get('/custom-timeout', {
+  handlerTimeout: 5000,
+  errorHandler: (error, request, reply) => {
+    if (error.code === 'FST_ERR_HANDLER_TIMEOUT') {
+      reply.code(504).send({ error: 'Gateway Timeout' })
+    } else {
+      reply.send(error)
+    }
+  }
+}, async (request) => {
+  const result = await externalService.call({ signal: request.signal })
+  return result
+})
+```
+
 ### `bodyLimit`
 <a id="factory-body-limit"></a>
 
@@ -567,8 +632,14 @@ define it before the `GET` route.
 
 + Default: `true`
 
-Returns 503 after calling `close` server method. If `false`, the server routes
-the incoming request as usual.
+When `true`, any request arriving after [`close`](#close) has been called will
+receive a `503 Service Unavailable` response with `Connection: close` header
+(HTTP/1.1). This lets load balancers detect that the server is shutting down and
+stop routing traffic to it.
+
+When `false`, requests arriving during the closing phase are routed and
+processed normally. They will still receive a `Connection: close` header so that
+clients do not attempt to reuse the connection.
 
 ### `ajv`
 <a id="factory-ajv"></a>
@@ -1333,6 +1404,53 @@ fastify.close().then(() => {
 })
 ```
 
+##### Shutdown lifecycle
+
+When `fastify.close()` is called, the following steps happen in order:
+
+1. The server is flagged as **closing**. New incoming requests receive a
+   `Connection: close` header (HTTP/1.1) and are handled according to
+   [`return503OnClosing`](#factory-return-503-on-closing).
+2. [`preClose`](./Hooks.md#pre-close) hooks execute. The server is still
+   processing in-flight requests at this point.
+3. **Connection draining** based on the
+   [`forceCloseConnections`](#forcecloseconnections) option:
+   - `"idle"` — idle keep-alive connections are closed; in-flight requests
+     continue.
+   - `true` — all persistent connections are destroyed immediately.
+   - `false` — no forced closure; idle connections remain open until they time
+     out naturally (see [`keepAliveTimeout`](#keepalivetimeout)).
+4. The HTTP server **stops accepting** new TCP connections
+   (`server.close()`). Node.js waits for all in-flight requests to complete
+   before invoking the callback.
+5. [`onClose`](./Hooks.md#on-close) hooks execute. All in-flight requests have
+   completed and the server is no longer listening.
+6. The `close` callback (or the returned Promise) resolves.
+
+```
+fastify.close() called
+  │
+  ├─▶ closing = true (new requests receive 503)
+  │
+  ├─▶ preClose hooks
+  │     (in-flight requests still active)
+  │
+  ├─▶ Connection draining (forceCloseConnections)
+  │
+  ├─▶ server.close()
+  │     (waits for in-flight requests to complete)
+  │
+  ├─▶ onClose hooks
+  │     (server stopped, all requests done)
+  │
+  └─▶ close callback / Promise resolves
+```
+
+> ℹ️ Note:
+> Upgraded connections (such as WebSocket) are not tracked by the HTTP
+> server and will prevent `server.close()` from completing. Close them
+> explicitly in a [`preClose`](./Hooks.md#pre-close) hook.
+
 #### decorate*
 <a id="decorate"></a>
 
@@ -1393,7 +1511,7 @@ different ways to define a name (in order).
    Example: `pluginFn[Symbol.for('fastify.display-name')] = "Custom Name"`
 3. If you `module.exports` a plugin the filename is used.
 4. If you use a regular [function
-   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions)
+   declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#defining_functions)
    the function name is used.
 
 *Fallback*: The first two lines of your plugin will represent the plugin name.
@@ -2175,6 +2293,7 @@ initial options passed down by the user to the Fastify instance.
 The properties that can currently be exposed are:
 - connectionTimeout
 - keepAliveTimeout
+- handlerTimeout
 - bodyLimit
 - caseSensitive
 - http2

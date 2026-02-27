@@ -115,6 +115,11 @@ fastify.route(options)
   larger than this number of bytes. Must be an integer. You may also set this
   option globally when first creating the Fastify instance with
   `fastify(options)`. Defaults to `1048576` (1 MiB).
+* `handlerTimeout`: maximum number of milliseconds for the route's full
+  lifecycle. Overrides the server-level
+  [`handlerTimeout`](./Server.md#factory-handler-timeout). Must be a positive
+  integer. When the timeout fires, `request.signal` is aborted and a 503 error
+  is sent through the error handler (which can be customized per-route).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
@@ -507,7 +512,7 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 
 Different log levels can be set for routes in Fastify by passing the `logLevel`
 option to the plugin or route with the desired
-[value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string).
+[value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string).
 
 Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and
@@ -536,7 +541,7 @@ Fastify Logger, accessible with `fastify.log`.*
 <a id="custom-log-serializer"></a>
 
 In some contexts, logging a large object may waste resources. Define custom
-[`serializers`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
+[`serializers`](https://github.com/pinojs/pino/blob/main/docs/api.md#serializers-object)
 and attach them in the appropriate context.
 
 ```js

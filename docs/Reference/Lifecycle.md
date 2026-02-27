@@ -41,6 +41,11 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
+When `handlerTimeout` is configured, a timer starts after routing. If the
+response is not sent within the allowed time, `request.signal` is aborted and
+a 503 error is sent. The timer is cleared when the response finishes or when
+`reply.hijack()` is called. See [`handlerTimeout`](./Server.md#factory-handler-timeout).
+
 Before or during the `User Handler`, `reply.hijack()` can be called to:
 - Prevent Fastify from running subsequent hooks and the user handler
 - Prevent Fastify from sending the response automatically
@@ -82,3 +87,13 @@ submitted, the data flow is as follows:
 - The [serializer compiler](./Server.md#setserializercompiler) if a JSON schema
   is set for the HTTP status code
 - The default `JSON.stringify` function
+
+## Shutdown Lifecycle
+<a id="shutdown-lifecycle"></a>
+
+When [`fastify.close()`](./Server.md#close) is called, the server goes through a
+graceful shutdown sequence involving
+[`preClose`](./Hooks.md#pre-close) hooks, connection draining, and
+[`onClose`](./Hooks.md#on-close) hooks. See the
+[`close`](./Server.md#close) method documentation for the full step-by-step
+lifecycle.

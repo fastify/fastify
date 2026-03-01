@@ -4,7 +4,7 @@ import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
 import { RequestPayload } from '../../types/hooks'
 import { FindMyWayFindResult } from '../../types/instance'
-import { HTTPMethods, RawServerDefault } from '../../types/utils'
+import { ContextConfigDefault, HTTPMethods, RawServerDefault } from '../../types/utils'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -509,7 +509,7 @@ expectType<boolean>(fastify().hasRoute({
   }
 }))
 
-expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>(
+expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'> & { config?: ContextConfigDefault } | null>(
   fastify().findRoute({
     url: '/',
     method: 'get'
@@ -517,10 +517,13 @@ expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>(
 )
 
 // we should not expose store
-expectError(fastify().findRoute({
+const foundRoute = fastify().findRoute({
   url: '/',
   method: 'get'
-}).store)
+})
+if (foundRoute) {
+  expectError(foundRoute.store)
+}
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',

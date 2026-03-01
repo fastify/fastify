@@ -150,3 +150,29 @@ test('findRoute should not expose store', t => {
   })
   t.assert.strictEqual(route.store, undefined)
 })
+
+test('findRoute should return cloned config', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/artists/:artistId', {
+    config: { customOption: 'value' },
+    handler: (req, reply) => reply.send('ok')
+  })
+
+  const route = fastify.findRoute({
+    method: 'GET',
+    url: '/artists/123'
+  })
+
+  t.assert.ok(route.config)
+  t.assert.strictEqual(route.config.customOption, 'value')
+
+  // Verify it's a clone (modifying doesn't affect original)
+  route.config.customOption = 'modified'
+  const route2 = fastify.findRoute({
+    method: 'GET',
+    url: '/artists/456'
+  })
+  t.assert.strictEqual(route2.config.customOption, 'value')
+})

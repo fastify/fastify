@@ -284,7 +284,8 @@ service (if the `connectionTimeout` property is set on the Fastify instance).
 The `onTimeout` hook is executed when a request is timed out and the HTTP socket
 has been hung up. Therefore, you will not be able to send data to the client.
 
-> Note: The `onTimeout` hook is triggered by socket-level timeouts set via
+> ℹ️ Note:
+> The `onTimeout` hook is triggered by socket-level timeouts set via
 > `connectionTimeout`. For application-level per-route timeouts, see the
 > [`handlerTimeout`](./Server.md#factory-handler-timeout) option which uses
 > `request.signal` for cooperative cancellation.

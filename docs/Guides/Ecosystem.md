@@ -79,7 +79,7 @@ section.
   connection plugin.
 - [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
   server-side rendering support for Fastify with
-  [Next](https://github.com/zeit/next.js/).
+  [Next](https://github.com/vercel/next.js/).
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Formats
@@ -172,7 +172,7 @@ section.
   capabilities, and metrics tracking.
 - [`@blastorg/fastify-aws-dynamodb-cache`](https://github.com/blastorg/fastify-aws-dynamodb-cache)
   A plugin to help with caching API responses using AWS DynamoDB.
-- [`@clerk/fastify`](https://github.com/clerkinc/javascript/tree/main/packages/fastify)
+- [`@clerk/fastify`](https://github.com/clerk/javascript/tree/main/packages/fastify)
   Add authentication and user management to your Fastify application with Clerk.
 - [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly
   typed routes with a runtime validation using JSON schema generated from types.
@@ -188,10 +188,6 @@ section.
   A Fastify plugin that protects against No(n)SQL injection by sanitizing data.
 - [`@exortek/remix-fastify`](https://github.com/ExorTek/remix-fastify)
   Fastify plugin for Remix.
-- [`@fastify-userland/request-id`](https://github.com/fastify-userland/request-id)
-  Fastify Request ID Plugin
-- [`@fastify-userland/typeorm-query-runner`](https://github.com/fastify-userland/typeorm-query-runner)
-  Fastify typeorm QueryRunner plugin
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.js library to make your
   Fastify API graceful.
@@ -232,7 +228,7 @@ section.
 - [`apitally`](https://github.com/apitally/apitally-js) Fastify plugin to
   integrate with [Apitally](https://apitally.io/fastify), an API analytics,
   logging and monitoring tool.
-- [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
+- [`arecibo`](https://github.com/ducktors/arecibo) Fastify ping responder for
   Kubernetes Liveness and Readiness Probes.
 - [`aws-xray-sdk-fastify`](https://github.com/aws/aws-xray-sdk-node/tree/master/sdk_contrib/fastify)
   A Fastify plugin to log requests and subsegments through AWSXray.
@@ -255,7 +251,7 @@ section.
   405 responses for routes that have a handler but not for the request's method.
 - [`fastify-amqp`](https://github.com/RafaelGSS/fastify-amqp) Fastify AMQP
   connection plugin, to use with RabbitMQ or another connector. Just a wrapper
-  to [`amqplib`](https://github.com/squaremo/amqp.node).
+  to [`amqplib`](https://github.com/amqp-node/amqplib).
 - [`fastify-amqp-async`](https://github.com/kffl/fastify-amqp-async) Fastify
   AMQP plugin with a Promise-based API provided by
   [`amqplib-as-promised`](https://github.com/twawszczak/amqplib-as-promised).
@@ -265,7 +261,7 @@ section.
   for Fastify
 - [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Fastify
   plugin to authenticate HTTP requests based on API key and signature
-- [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
+- [`fastify-appwrite`](https://github.com/maniecodes/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
 - [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin
   to access Fastify instance, logger, request and reply from Node.js [Async
@@ -278,8 +274,6 @@ section.
   Auth0 verification plugin for Fastify, internally uses
   [fastify-jwt](https://npm.im/fastify-jwt) and
   [jsonwebtoken](https://npm.im/jsonwebtoken).
-- [`fastify-autocrud`](https://github.com/paranoiasystem/fastify-autocrud)
-  Plugin to auto-generate CRUD routes as fast as possible.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
   Plugin to scan and load routes based on filesystem path from a custom
   directory.
@@ -374,15 +368,6 @@ section.
   [unleash](https://github.com/Unleash/unleash)).
 - [`fastify-file-routes`](https://github.com/spa5k/fastify-file-routes) Get
   Next.js based file system routing into fastify.
-- [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload)
-  Fastify plugin for uploading files.
-- [`fastify-firebase`](https://github.com/now-ims/fastify-firebase) Fastify
-  plugin for [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup)
-  to Fastify so you can easily use Firebase Auth, Firestore, Cloud Storage,
-  Cloud Messaging, and more.
-- [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth)
-  Firebase Authentication for Fastify supporting all of the methods relating to
-  the authentication API.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)
   Handy plugin to provide multipart support and fastify-swagger integration.
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace)
@@ -420,8 +405,6 @@ section.
   [node-hl7-client](https://github.com/Bugs5382/node-hl7-client) and
   [node-hl7-server](https://github.com/Bugs5382/node-hl7-server) as the
   underlining technology to do this.
-- [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin
-  to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context)
   Fastify plugin for "simulating" a thread of execution to allow for true HTTP
   context to take place per API call within the Fastify lifecycle of calls.
@@ -456,10 +439,6 @@ section.
   that adds support for KafkaJS - a modern Apache Kafka client library.
 - [`fastify-keycloak-adapter`](https://github.com/yubinTW/fastify-keycloak-adapter)
   A keycloak adapter for a Fastify app.
-- [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify
-  plugin for supporting KnexJS Query Builder.
-- [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)
-  Fastify Mock KnexJS for testing support.
 - [`fastify-koa`](https://github.com/rozzilla/fastify-koa) Convert Koa
 middlewares into Fastify plugins
 - [`fastify-kubernetes`](https://github.com/greguz/fastify-kubernetes) Fastify
@@ -481,8 +460,6 @@ middlewares into Fastify plugins
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
   scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and
   [lured](https://github.com/enobufs/lured).
-  A plugin to implement [Lyra](https://github.com/LyraSearch/lyra) search engine
-  on Fastify.
 - [`fastify-mailer`](https://github.com/coopflow/fastify-mailer) Plugin to
   initialize and encapsulate [Nodemailer](https://nodemailer.com)'s transporters
   instances in Fastify.
@@ -495,8 +472,6 @@ middlewares into Fastify plugins
   exporting [Prometheus](https://prometheus.io) metrics.
 - [`fastify-minify`](https://github.com/Jelenkee/fastify-minify) Plugin for
   minification and transformation of responses.
-- [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory)
-  Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-mongodb-sanitizer`](https://github.com/KlemenKozelj/fastify-mongodb-sanitizer)
   Fastify plugin that sanitizes client input to prevent
   potential MongoDB query injection attacks.
@@ -516,8 +491,6 @@ middlewares into Fastify plugins
   for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-multilingual`](https://github.com/gbrugger/fastify-multilingual) Unobtrusively
   decorates fastify request with Polyglot.js for i18n.
-- [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share
-  [NATS](https://nats.io) client across Fastify.
 - [`fastify-next-auth`](https://github.com/wobsoriano/fastify-next-auth)
   NextAuth.js plugin for Fastify.
 - [`fastify-no-additional-properties`](https://github.com/greguz/fastify-no-additional-properties)
@@ -531,9 +504,6 @@ middlewares into Fastify plugins
   rendering support for Fastify with Nuxt.js Framework.
 - [`fastify-oas`](https://gitlab.com/m03geek/fastify-oas) Generates OpenAPI 3.0+
   documentation from routes schemas for Fastify.
-- [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs)
-  Plugin for the Fastify framework that provides integration with objectionjs
-  ORM.
 - [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes)
   Plugin to cherry-pick classes from objectionjs ORM.
 - [`fastify-opaque-apake`](https://github.com/squirrelchat/fastify-opaque-apake)
@@ -552,9 +522,6 @@ middlewares into Fastify plugins
   [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a
   Fastify server instance.
 - [`fastify-orama`](https://github.com/mateonunez/fastify-orama)
-- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
-  OrientDB connection plugin, with which you can share the OrientDB connection
-  across every part of your server.
 - [`fastify-osm`](https://github.com/gzileni/fastify-osm) Fastify
   OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-override`](https://github.com/matthyk/fastify-override)
@@ -647,12 +614,8 @@ middlewares into Fastify plugins
   Fastify plugin for sending emails via AWS SES using AWS SDK v3.
 - [`fastify-shared-schema`](https://github.com/Adibla/fastify-shared-schema) Plugin
   for sharing schemas between different routes.
-- [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
-  plugin, with this you can use slonik in every part of your server.
 - [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin
   to delay the response from the server.
-- [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
-  Socket.io plugin for Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator)
   Small plugin to allow you use multiple validators in one route based on each
   HTTP part of the request.
@@ -662,8 +625,6 @@ middlewares into Fastify plugins
   your application to a SQLite database with full Typescript support.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
-- [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
-  Server-Sent Events using Async Iterators (supports newer versions of Fastify).
 - [`fastify-ssr-vite`](https://github.com/nineohnine/fastify-ssr-vite) A simple
   plugin for setting up server side rendering with vite.
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to
@@ -675,14 +636,8 @@ middlewares into Fastify plugins
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen)
   Automatically generate a browser-compatible, trusted, self-signed,
   localhost-only, TLS certificate.
-- [`fastify-tokenize`](https://github.com/Bowser65/fastify-tokenize)
-  [Tokenize](https://github.com/Bowser65/Tokenize) plugin for Fastify that
-  removes the pain of managing authentication tokens, with built-in integration
-  for `fastify-auth`.
 - [`fastify-totp`](https://github.com/beliven-it/fastify-totp) A plugin to handle
   TOTP (e.g. for 2FA).
-- [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
-  Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-effect-schema`](https://github.com/daotl/fastify-type-provider-effect-schema)
   Fastify
   [type provider](https://fastify.dev/docs/latest/Reference/Type-Providers/)
@@ -701,8 +656,6 @@ middlewares into Fastify plugins
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on
   the same machine).
-- [`fastify-vite`](https://github.com/galvez/fastify-vite)
-  [Vite](https://vitejs.dev/) plugin for Fastify with SSR data support.
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue)
   [Nuxt.js](https://nuxtjs.org) plugin for Fastify. Control the routes nuxt
   should use.
@@ -745,13 +698,9 @@ middlewares into Fastify plugins
   plugin to easily create Google Cloud PubSub endpoints.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
-- [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
-  and updated Typeorm plugin for use with Fastify.
 
 #### [Community Tools](#community-tools)
 
-- [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
-  Reusable workflows for use in the Fastify plugin
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building

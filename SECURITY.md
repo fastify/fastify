@@ -6,13 +6,17 @@ project and its official plugins.
 ## Threat Model
 
 Fastify's threat model extends the
-[Node.js threat model](https://github.com/nodejs/node/blob/main/SECURITY.md#the-nodejs-threat-model).
+[Node.js security policy](https://github.com/nodejs/node/blob/main/SECURITY.md).
 
 **Trusted:** Application code (plugins, handlers, hooks, schemas), configuration,
 and the runtime environment.
 
 **Untrusted:** All network input (HTTP headers, body, query strings, URL
 parameters).
+
+Fastify assumes Node.js is running with `insecureHTTPParser: false` (the
+secure default). Deployments that enable `insecureHTTPParser: true` are
+outside Fastify's threat model.
 
 ### Examples of Vulnerabilities
 
@@ -36,6 +40,9 @@ patterns for routes or validation
 authorization (these are application-level concerns)
 - **Configuration mistakes**: Security issues arising from developer
 misconfiguration (configuration is trusted)
+- **`insecureHTTPParser: true` deployments**: Reports that rely on enabling
+Node.js `insecureHTTPParser` are out of scope; Fastify assumes this flag is
+`false`
 - **Third-party dependencies**: Vulnerabilities in npm packages used by the
 application (not Fastify core dependencies)
 - **Resource exhaustion from handlers**: DoS caused by expensive operations in
@@ -48,6 +55,11 @@ explicitly enabled via configuration options
 Individuals who find potential vulnerabilities in Fastify are invited to
 complete a vulnerability report via the
 [GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
+
+Do not assign or request a CVE directly.
+CVE assignment is handled by the Fastify Security Team.
+Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
+A CVE will be assigned as part of our responsible disclosure process.
 
 > ℹ️ Note:
 > Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
@@ -139,15 +151,12 @@ If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability.
 
-At this point, a CVE should be requested via GitHub Security Advisories using
-the web UI, and the request should include the Report ID and a summary.
-
 ### Secondary Contact
 
 If you do not receive an acknowledgment of your report within 6 business days,
 or if you cannot find a private security contact for the project, you may
-contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for
-assistance.
+contact the OpenJS Foundation CNA at <https://cna.openjsf.org/> (or
+`security@lists.openjsf.org`) for assistance.
 
 The CNA can help ensure your report is properly acknowledged, assist with
 coordinating disclosure timelines, and assign CVEs when necessary. This is a

@@ -443,33 +443,52 @@ export default plugin
 ## Handle errors
 <a id="handle-errors"></a>
 
-One of your plugins may fail during startup. Maybe you expect it
-and you have a custom logic that will be triggered in that case. How can you
-implement this? The `after` API is what you need. `after` simply registers a
-callback that will be executed just after a register, and it can take up to
-three parameters.
+One of your plugins may fail during startup. If you need to detect or react to  
+such failures, you can use the `after` API.
 
-The callback changes based on the parameters you are giving:
+`after` registers a callback (or returns a promise) that is executed **after the  
+current plugin and all of its nested plugins have finished loading**, and  
+**before** the server becomes ready.
 
-1. If no parameter is given to the callback and there is an error, that error
-   will be passed to the next error handler.
-1. If one parameter is given to the callback, that parameter will be the error
-   object.
-1. If two parameters are given to the callback, the first will be the error
-   object; the second will be the done callback.
-1. If three parameters are given to the callback, the first will be the error
-   object, the second will be the top-level context unless you have specified
-   both server and override, in that case, the context will be what the override
-   returns, and the third the done callback.
+### Callback form
 
-Let's see how to use it:
+When a callback is provided, it receives a single argument: an error if the plugin  
+loading failed, or `null` otherwise.
+
 ```js
 fastify
   .register(require('./database-connector'))
   .after(err => {
-    if (err) throw err
+    if (err) {
+      // handle startup failure
+      throw err
+    }
   })
 ```
+
+If the callback throws, the error will propagate and prevent the server from  
+starting.
+
+### Promise form
+
+If `after()` is called without a callback, it returns a promise that resolves  
+when the current plugin scope has finished loading, or rejects on error.
+
+```js
+fastify.register(require('./database-connector'))
+
+await fastify.after()
+// plugin loaded successfully
+```
+
+### Notes
+* `after` is **scoped to the current encapsulation context**
+* It only observes plugins registered **before** it is called
+* Child plugins are included automatically
+* Errors propagate to `ready()` and `listen()`
+
+Use `after` to coordinate plugin initialisation or to fail fast when required  
+dependencies cannot be loaded.
 
 ## Custom errors
 <a id="custom-errors"></a>

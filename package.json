@@ -181,7 +181,7 @@
     "branch-comparer": "^1.1.0",
     "concurrently": "^9.1.2",
     "cross-env": "^10.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^5.0.0",
     "fluent-json-schema": "^6.0.0",

@@ -1,6 +1,6 @@
 # Expense Policy
 
-Fastify collaborators accept donations through the [Open Collective](https://opencollective.com/fastify/)
+Fastify collaborators accept donations through the [Open Collective](https://opencollective.com/fastify)
 platform and [GitHub Sponsors](https://github.com/sponsors/fastify)
 to enhance the project and support the community.
 
@@ -102,4 +102,4 @@ If the Open Collective budget is insufficient, the expense will be rejected.
 Unclaimed bounties are available for other issues.
 
 [submit]: https://opencollective.com/fastify/expenses/new
-[openc_docs]: https://docs.oscollective.org/how-it-works/basics/invoice-and-reimbursement-examples
+[openc_docs]: https://docs.oscollective.org/for-hosted-member-projects/spending-money-and-getting-paid/invoice-and-reimbursement-examples

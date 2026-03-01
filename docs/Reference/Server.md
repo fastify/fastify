@@ -335,7 +335,8 @@ This property is used to configure the internal logger instance.
 The possible values this property may have are:
 
 + Default: `false`. The logger is disabled. All logging methods will point to a
-  null logger [abstract-logging](https://npm.im/abstract-logging) instance.
+  null logger [abstract-logging](https://www.npmjs.com/package/abstract-logging)
+  instance.
 
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
@@ -1013,7 +1014,7 @@ be invoked.
 
 This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
-attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
 
 
 ### `onBadUrl`

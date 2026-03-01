@@ -269,4 +269,4 @@ Into:
 Fastify now supports the [HTTP Trailer] response headers.
 
 
-[HTTP Trailer]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer
+[HTTP Trailer]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Trailer

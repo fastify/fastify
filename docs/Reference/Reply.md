@@ -848,7 +848,7 @@ be used to enhance the HTTP response.
 > 400, Fastify will automatically set it at 500.
 
 Tip: you can simplify errors by using the
-[`http-errors`](https://npm.im/http-errors) module or
+[`http-errors`](https://www.npmjs.com/package/http-errors) module or
 [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) plugin to
 generate errors:
 

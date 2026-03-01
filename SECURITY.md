@@ -188,7 +188,7 @@ work as a member of the Fastify Core team.
 
 ## OpenSSF CII Best Practices
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
+[![CII Best Practices](https://www.bestpractices.dev/projects/7585/badge)](https://www.bestpractices.dev/projects/7585)
 
 There are three “tiers”: passing, silver, and gold.
 

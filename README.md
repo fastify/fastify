@@ -15,7 +15,7 @@ CI](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml/
 [![Web
 site](https://github.com/fastify/fastify/actions/workflows/website.yml/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
+[![CII Best Practices](https://www.bestpractices.dev/projects/7585/badge)](https://www.bestpractices.dev/projects/7585)
 
 </div>
 
@@ -27,7 +27,7 @@ version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs
 downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![Security Responsible
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/fastify/blob/main/SECURITY.md)
-[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
+[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.com/invite/fastify)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=blue)](https://gitpod.io/#https://github.com/fastify/fastify)
 [![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)](https://github.com/sponsors/fastify#sponsors)
 
@@ -253,8 +253,8 @@ application. You should __always__ benchmark if performance matters to you.
   plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad
   set of real working examples.
-- [Discord](https://discord.gg/D3FZYPy) - Join our discord server and chat with
-  the maintainers.
+- [Discord](https://discord.com/invite/fastify) - Join our discord server and
+  chat with the maintainers.
 
 ## Support
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
@@ -402,7 +402,7 @@ This project is kindly sponsored by:
 - [Platformatic](https://platformatic.dev)
 
 Past Sponsors:
-- [LetzDoIt](https://www.letzdoitapp.com/)
+- LetzDoIt
 
 This list includes all companies that support one or more team members
 in maintaining this project.

@@ -265,7 +265,7 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 
 ### References
 - [Google Cloud Functions - Node.js Quickstart
-  ](https://cloud.google.com/functions/docs/quickstart-nodejs)
+  ](https://docs.cloud.google.com/functions/docs/quickstart-nodejs)
 
 ## Google Firebase Functions
 
@@ -403,7 +403,7 @@ the way you would write your Fastify app normally.
 
 *Follow the steps below to deploy to Google Cloud Run if you are already
 familiar with gcloud or just follow their
-[quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
+[quickstart](https://docs.cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
 
 ### Adjust Fastify server
 

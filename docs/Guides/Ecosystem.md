@@ -205,7 +205,7 @@ section.
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).
 - [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
-  A plugin to integrate [Papr](https://github.com/plexinc/papr), 
+  A plugin to integrate [Papr](https://github.com/plexinc/papr),
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
@@ -626,7 +626,7 @@ middlewares into Fastify plugins
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
   Convenient grouping and inheritance of routes.
 - [`fastify-route-preset`](https://github.com/inyourtime/fastify-route-preset)
-  A Fastify plugin that enables you to create route configurations that can be 
+  A Fastify plugin that enables you to create route configurations that can be
   applied to multiple routes.
 - [`fastify-s3-buckets`](https://github.com/kibertoad/fastify-s3-buckets)
   Ensure the existence of defined S3 buckets on the application startup.
@@ -765,4 +765,3 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
-  

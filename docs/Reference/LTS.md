@@ -38,7 +38,7 @@ A "month" is defined as 30 consecutive days.
 > occasions where we need to release breaking changes as a _minor_ version
 > release. Such changes will _always_ be noted in the [release
 > notes](https://github.com/fastify/fastify/releases).
-> 
+>
 > To avoid automatically receiving breaking security updates it is possible to
 > use the tilde (`~`) range qualifier. For example, to get patches for the 3.15
 > release, and avoid automatically updating to the 3.16 release, specify the

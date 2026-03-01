@@ -7,7 +7,7 @@ on:
         description: 'Package to test'
         required: true
         type: string
-        
+
       node-version:
         description: 'Node version to test'
         required: true

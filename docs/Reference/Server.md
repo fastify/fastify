@@ -587,8 +587,8 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is a more performant fork 
-of Node.js's core `querystring` module called 
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
 [`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
@@ -817,7 +817,7 @@ function rewriteUrl (req) {
 <a id="routeroptions"></a>
 
 Fastify uses [`find-my-way`](https://github.com/delvedor/find-my-way) for its
-HTTP router. The `routerOptions` parameter allows passing 
+HTTP router. The `routerOptions` parameter allows passing
 [`find-my-way` options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
 to customize the HTTP router within Fastify.
 
@@ -841,8 +841,8 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 <a id="build-pretty-meta"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which
-supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta` 
-function to sanitize a route's store object to use with the `prettyPrint` 
+supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta`
+function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
@@ -1102,11 +1102,11 @@ fastify.get('/dev', async (request, reply) => {
 * **Default:** `true`
 
 > ⚠ Warning:
-> This option will be set to `false` by default 
+> This option will be set to `false` by default
 > in the next major release.
 
-When set to `false`, it prevents `setErrorHandler` from being called 
-multiple times within the same scope, ensuring that the previous error 
+When set to `false`, it prevents `setErrorHandler` from being called
+multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
 
 #### Example of incorrect usage:
@@ -1851,7 +1851,7 @@ set it to 500 before calling the error handler.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
 - Stream errors thrown during piping into the response socket, as
-  headers/response were already sent to the client. 
+  headers/response were already sent to the client.
   Use custom in-stream data to signal such errors.
 
 ```js

@@ -7,6 +7,7 @@ This document contains a set of recommendations when using Fastify.
 - [Use A Reverse Proxy](#use-a-reverse-proxy)
   - [HAProxy](#haproxy)
   - [Nginx](#nginx)
+- [Common Causes Of Performance Degradation](#common-causes-of-performance-degradation)
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
 - [Running Multiple Instances](#multiple)
@@ -281,6 +282,28 @@ server {
 ```
 
 [nginx]: https://nginx.org/
+
+## Common Causes Of Performance Degradation
+
+These patterns can increase latency or reduce throughput in production:
+
+- Prefer static or simple parametric routes on hot paths. RegExp routes are
+  expensive, and routes with many parameters can also hurt router performance.
+  See [Routes - URL building](../Reference/Routes.md#url-building).
+- Use route constraints carefully. Version constraints can degrade router
+  performance, and asynchronous custom constraints should be treated as a last
+  resort. See [Routes - Constraints](../Reference/Routes.md#constraints).
+- Prefer Fastify plugins/hooks over generic middleware when possible. Fastify's
+  middleware adapters work, but native integrations are typically better for
+  performance-sensitive paths. See [Middleware](../Reference/Middleware.md).
+- Define response schemas to speed up JSON serialization. See
+  [Getting Started - Serialize your data](./Getting-Started.md#serialize-data).
+- Keep Ajv `allErrors` disabled by default. Enable it only when detailed
+  validation feedback is needed (for example, form-heavy APIs), and avoid it
+  on latency-sensitive endpoints.
+  This reduces overhead and avoids known risk patterns documented by Ajv/Fastify.
+  See [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
+  and [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
 
 ## Kubernetes
 <a id="kubernetes"></a>

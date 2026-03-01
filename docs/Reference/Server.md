@@ -671,9 +671,11 @@ const fastify = require('fastify')({
 ### `serializerOpts`
 <a id="serializer-opts"></a>
 
-Customize the options of the default
+Customize the options passed to Fastify's default serializer builder, which is
+[`@fastify/fast-json-stringify-compiler`](https://github.com/fastify/fast-json-stringify-compiler).
+Those options are forwarded to
 [`fast-json-stringify`](https://github.com/fastify/fast-json-stringify#options)
-instance that serializes the response's payload:
+to serialize the response payload:
 
 ```js
 const fastify = require('fastify')({

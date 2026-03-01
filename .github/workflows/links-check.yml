@@ -31,7 +31,7 @@ jobs:
           # As external links behavior is not predictable, we check only internal links
           # to ensure consistency.
           # See: https://github.com/lycheeverse/lychee-action/issues/17#issuecomment-1162586751
-          args: --offline --verbose --no-progress './**/*.md'
+          args: --offline --verbose --no-progress --root-dir . './**/*.md'
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 

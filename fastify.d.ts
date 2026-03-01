@@ -25,7 +25,7 @@ import {
 } from './types/logger'
 import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
-import { FastifyReply } from './types/reply'
+import { FastifyReply, ReplyType } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
@@ -183,7 +183,7 @@ declare namespace fastify {
   export type {
     LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'
     FastifyRequest, RequestGenericInterface, // './types/request'
-    FastifyReply, // './types/reply'
+    FastifyReply, ReplyType, // './types/reply'
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
     FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'

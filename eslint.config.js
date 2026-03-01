@@ -6,8 +6,7 @@ module.exports = [
     ignores: [
       'lib/config-validator.js',
       'lib/error-serializer.js',
-      'test/same-shape.test.js',
-      'test/types/import.js'
+      'test/same-shape.test.js'
     ],
     ts: true
   }),
@@ -30,6 +29,13 @@ module.exports = [
     files: ['**/*.d.ts'],
     rules: {
       'max-len': 'off'
+    }
+  },
+  {
+    files: ['test/types/**/*'],
+    rules: {
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unused-vars': 'off'
     }
   }
 ]

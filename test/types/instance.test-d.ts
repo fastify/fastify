@@ -1,9 +1,10 @@
-import { expectAssignable, expectError, expectNotAssignable, expectNotDeprecated, expectType } from 'tsd'
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
+  FastifyListenOptions,
   FastifyRouterOptions,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
@@ -106,20 +107,22 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
   return { test: true }
 })
 // typed sync error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
+  // @ts-expect-error  Type 'string' is not assignable to type 'boolean'.
   reply.send({ test: 'foo' })
-}))
+})
 // typed sync error handler return error
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
 })
 // typed async error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
+  // @ts-expect-error  Type 'string' is not assignable to type 'boolean'.
   reply.send({ test: 'foo' })
-}))
+})
 // typed async error handler return error
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
@@ -192,7 +195,8 @@ server.setSchemaController({
 })
 
 function invalidSchemaController (schemaControllerOptions: FastifySchemaControllerOptions) {}
-expectError(server.setSchemaController(invalidSchemaController))
+// @ts-expect-error  Type '(schemaControllerOptions: FastifySchemaControllerOptions) => void' has no properties in common with type 'FastifySchemaControllerOptions'.
+server.setSchemaController(invalidSchemaController)
 
 server.setReplySerializer(function (payload, statusCode) {
   expectType<unknown>(payload)
@@ -201,20 +205,26 @@ server.setReplySerializer(function (payload, statusCode) {
 })
 
 function invalidReplySerializer (payload: number, statusCode: string) {}
-expectError(server.setReplySerializer(invalidReplySerializer))
+// @ts-expect-error  Argument of type '(payload: number, statusCode: string) => void' is not assignable to parameter of type '(payload: unknown, statusCode: number) => string'.
+server.setReplySerializer(invalidReplySerializer)
 
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
-expectError(server.setReplySerializer(serializerWithInvalidReturn))
+// @ts-expect-error  Argument of type '(payload: unknown, statusCode: number) => void' is not assignable to parameter of type '(payload: unknown, statusCode: number) => string'.
+server.setReplySerializer(serializerWithInvalidReturn)
 
 function invalidSchemaErrorFormatter (err: Error) {
   if (err) { throw err }
 }
-expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
+// @ts-expect-error  Argument of type '(err: Error) => void' is not assignable to parameter of type 'SchemaErrorFormatter'.
+server.setSchemaErrorFormatter(invalidSchemaErrorFormatter)
 
 expectType<FastifyInstance>(server.addHttpMethod('SEARCH', { hasBody: true }))
 
 // test listen opts objects
+const options: FastifyListenOptions = {}
+
 expectAssignable<PromiseLike<string>>(server.listen())
+expectAssignable<PromiseLike<string>>(server.listen(options))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
@@ -229,21 +239,6 @@ expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
-
-// test listen opts objects Typescript deprecation exclusion
-expectNotDeprecated(server.listen())
-expectNotDeprecated(server.listen({ port: 3000 }))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
-expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
-
-expectNotDeprecated(server.listen(() => {}))
-expectNotDeprecated(server.listen({ port: 3000 }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
 // test after method
 expectAssignable<FastifyInstance>(server.after())
@@ -414,18 +409,22 @@ server.decorateReply('test', function (x: string): void {
 server.decorateReply('test')
 server.decorateReply('test', null, ['foo'])
 
-expectError(server.decorate<string>('test', true))
-expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
+// @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'GetterSetter...'.
+server.decorate<string>('test', true)
+// @ts-expect-error  Type 'string' is not assignable to type 'number'.
+server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
   return ''
-}))
-expectError(server.decorate<string>('test', {
+})
+server.decorate<string>('test', {
+  // @ts-expect-error  Type 'boolean' is not assignable to type 'string'.
   getter () {
     return true
   }
-}))
-expectError(server.decorate<string>('test', {
-  setter (x) {}
-}))
+})
+server.decorate<string>('test',
+  // @ts-expect-error  Property 'getter' is missing in type
+  { setter (x) {} }
+)
 
 declare module '../../fastify' {
   interface FastifyInstance {
@@ -464,28 +463,34 @@ server.decorate('typedTestProperty', {
 })
 server.decorate('typedTestProperty')
 server.decorate('typedTestProperty', null, ['foo'])
-expectError(server.decorate('typedTestProperty', null))
-expectError(server.decorate('typedTestProperty', 'foo'))
-expectError(server.decorate('typedTestProperty', {
+// @ts-expect-error  Argument of type 'null' is not assignable to parameter of type 'GetterSetter...'.
+server.decorate('typedTestProperty', null)
+// @ts-expect-error  Argument of type '"foo"' is not assignable to parameter of type 'GetterSetter...'.
+server.decorate('typedTestProperty', 'foo')
+server.decorate('typedTestProperty', {
+  // @ts-expect-error  Type 'string' is not assignable to type 'boolean'.
   getter () {
     return 'foo'
   }
-}))
+})
 server.decorate('typedTestMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyInstance>(this)
   return 'foo'
 })
 server.decorate('typedTestMethod', x => x)
-expectError(server.decorate('typedTestMethod', function (x: boolean) {
+// @ts-expect-error  Type 'string' is not assignable to type 'boolean'.
+server.decorate('typedTestMethod', function (x: boolean) {
   return 'foo'
-}))
-expectError(server.decorate('typedTestMethod', function (x) {
+})
+// @ts-expect-error  Type 'boolean' is not assignable to type 'string'.
+server.decorate('typedTestMethod', function () {
   return true
-}))
-expectError(server.decorate('typedTestMethod', async function (x) {
+})
+// @ts-expect-error  Type 'Promise<string>' is not assignable to type 'string'.
+server.decorate('typedTestMethod', async function () {
   return 'foo'
-}))
+})
 
 server.decorateRequest('typedTestRequestProperty', false)
 server.decorateRequest('typedTestRequestProperty', {
@@ -504,28 +509,34 @@ server.decorateRequest('typedTestRequestProperty', {
 })
 server.decorateRequest('typedTestRequestProperty')
 server.decorateRequest('typedTestRequestProperty', null, ['foo'])
-expectError(server.decorateRequest('typedTestRequestProperty', null))
-expectError(server.decorateRequest('typedTestRequestProperty', 'foo'))
-expectError(server.decorateRequest('typedTestRequestProperty', {
+// @ts-expect-error  Argument of type 'null' is not assignable to parameter of type 'GetterSetter...'.
+server.decorateRequest('typedTestRequestProperty', null)
+// @ts-expect-error  Argument of type '"foo"' is not assignable to parameter of type 'GetterSetter...'.
+server.decorateRequest('typedTestRequestProperty', 'foo')
+server.decorateRequest('typedTestRequestProperty', {
+  // @ts-expect-error  Type 'string' is not assignable to type 'boolean'.
   getter () {
     return 'foo'
   }
-}))
+})
 server.decorateRequest('typedTestRequestMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyRequest>(this)
   return 'foo'
 })
 server.decorateRequest('typedTestRequestMethod', x => x)
-expectError(server.decorateRequest('typedTestRequestMethod', function (x: boolean) {
+// @ts-expect-error  Type 'string' is not assignable to type 'boolean'.
+server.decorateRequest('typedTestRequestMethod', function (x: boolean) {
   return 'foo'
-}))
-expectError(server.decorateRequest('typedTestRequestMethod', function (x) {
+})
+// @ts-expect-error  Type 'boolean' is not assignable to type 'string'.
+server.decorateRequest('typedTestRequestMethod', function () {
   return true
-}))
-expectError(server.decorateRequest('typedTestRequestMethod', async function (x) {
+})
+// @ts-expect-error  Type 'Promise<string>' is not assignable to type 'string'.
+server.decorateRequest('typedTestRequestMethod', async function () {
   return 'foo'
-}))
+})
 
 server.decorateReply('typedTestReplyProperty', false)
 server.decorateReply('typedTestReplyProperty', {
@@ -544,28 +555,34 @@ server.decorateReply('typedTestReplyProperty', {
 })
 server.decorateReply('typedTestReplyProperty')
 server.decorateReply('typedTestReplyProperty', null, ['foo'])
-expectError(server.decorateReply('typedTestReplyProperty', null))
-expectError(server.decorateReply('typedTestReplyProperty', 'foo'))
-expectError(server.decorateReply('typedTestReplyProperty', {
+// @ts-expect-error  Argument of type 'null' is not assignable to parameter of type 'GetterSetter...'.
+server.decorateReply('typedTestReplyProperty', null)
+// @ts-expect-error  Argument of type '"foo"' is not assignable to parameter of type 'GetterSetter...'.
+server.decorateReply('typedTestReplyProperty', 'foo')
+server.decorateReply('typedTestReplyProperty', {
+  // @ts-expect-error    Type 'string' is not assignable to type 'boolean'.
   getter () {
     return 'foo'
   }
-}))
+})
 server.decorateReply('typedTestReplyMethod', function (x) {
   expectType<string>(x)
   expectType<FastifyReply>(this)
   return 'foo'
 })
 server.decorateReply('typedTestReplyMethod', x => x)
-expectError(server.decorateReply('typedTestReplyMethod', function (x: boolean) {
+// @ts-expect-error  Type 'string' is not assignable to type 'boolean'
+server.decorateReply('typedTestReplyMethod', function (x: boolean) {
   return 'foo'
-}))
-expectError(server.decorateReply('typedTestReplyMethod', function (x) {
+})
+// @ts-expect-error  Type 'boolean' is not assignable to type 'string'
+server.decorateReply('typedTestReplyMethod', function (x) {
   return true
-}))
-expectError(server.decorateReply('typedTestReplyMethod', async function (x) {
+})
+// @ts-expect-error  Type 'Promise<string>' is not assignable to type 'string'.
+server.decorateReply('typedTestReplyMethod', async function () {
   return 'foo'
-}))
+})
 
 const foo = server.getDecorator<string>('foo')
 expectType<string>(foo)

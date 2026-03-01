@@ -1570,3 +1570,25 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(found.status, 415)
   t.assert.strictEqual((await found.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })
+test('coercion of empty string to null with nullable types', async t => {
+  const assert = require('node:assert')
+  const fastify = Fastify()
+  fastify.get('/', {
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          param: { type: ['integer', 'null'] }
+        }
+      }
+    }
+  }, async (req, reply) => {
+    return { param: req.query.param }
+  })
+
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/?param='
+  })
+  assert.strictEqual(JSON.parse(res.payload).param, null)
+})

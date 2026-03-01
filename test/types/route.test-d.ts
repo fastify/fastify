@@ -551,3 +551,23 @@ expectType<FastifyInstance>(fastify().route({
     expectAssignable<string | Array<string>>(req.routeOptions.method)
   }
 }))
+
+// route with path alias instead of url
+expectType<FastifyInstance>(fastify().route({
+  path: '/',
+  method: 'GET',
+  handler: routeHandler
+}))
+
+// route with path alias and array methods
+expectType<FastifyInstance>(fastify().route({
+  path: '/test',
+  method: ['GET', 'POST'],
+  handler: routeHandler
+}))
+
+// route with neither url nor path (defaults to '/' at runtime)
+expectType<FastifyInstance>(fastify().route({
+  method: 'GET',
+  handler: routeHandler
+}))

@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       # It will be possible to check only for the links in the changed files
       # See: https://github.com/lycheeverse/lychee-action/issues/17
@@ -35,10 +36,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Collect changed markdown files
+        id: changed-md
+        run: |
+          # docs/Guides/Ecosystem.md is checked by scripts/validate-ecosystem-links.js
+          changed_files=$(git diff --name-only --diff-filter=ACMRT "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -E '\.md$' | grep -v '^docs/Guides/Ecosystem\.md$' || true)
+
+          if [ -z "$changed_files" ]; then
+            echo "files=" >> "$GITHUB_OUTPUT"
+            echo "No markdown files to check with linkinator."
+            exit 0
+          fi
+
+          files_as_space_list=$(echo "$changed_files" | tr '\n' ' ' | xargs)
+          echo "files=$files_as_space_list" >> "$GITHUB_OUTPUT"
+          echo "Checking markdown files: $files_as_space_list"
+
       - name: External Link Checker
+        if: steps.changed-md.outputs.files != ''
         uses: JustinBeckwith/linkinator-action@f62ba0c110a76effb2ee6022cc6ce4ab161085e3 # 2.4.0
         with:
-          paths: "*.md **/*.md"
+          paths: ${{ steps.changed-md.outputs.files }}
           retry: true
           redirects: error
           linksToSkip: "https://github.com/orgs/fastify/.*"

@@ -9,6 +9,7 @@ This document contains a set of recommendations when using Fastify.
   - [Nginx](#nginx)
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
+- [Common Causes of Performance Degradation](#common-causes-of-performance-degradation)
 - [Running Multiple Instances](#multiple)
 
 ## Use A Reverse Proxy
@@ -337,6 +338,38 @@ solutions working well with 100m-200m vCPU in Kubernetes.
 See [Node's Event Loop From the Inside Out ](https://www.youtube.com/watch?v=P9csgxBgaZ8)
 to understand the workings of Node.js in greater detail and make a
 better determination about what your specific application needs.
+
+## Common Causes of Performance Degradation
+<a id="common-causes-of-performance-degradation"></a>
+
+The following patterns are often behind throughput drops or latency spikes in
+Fastify deployments:
+
+- **Skipping a reverse proxy at the edge**
+  - Letting the application directly handle TLS termination, static assets,
+    redirects, and domain routing adds avoidable overhead and complexity.
+  - See: [Use A Reverse Proxy](#reverseproxy).
+- **Missing capacity tests for your real workload**
+  - Sizing environments without measuring your own traffic shape often leads to
+    over- or under-provisioning and unstable latency under load.
+  - See: [Capacity Planning For Production](#capacity).
+- **Blocking the event loop (CPU-heavy work on request path)**
+  - Expensive synchronous work in handlers can delay unrelated requests because
+    Node.js runs JavaScript on a single main thread.
+  - Consider offloading heavy tasks to dedicated workers/services and validate
+    impact with load tests.
+- **Unbounded or poorly tuned concurrency**
+  - Very high in-flight request counts can increase memory pressure, garbage
+    collection cost, and timeout rates.
+  - Apply backpressure, timeouts, and realistic resource limits at application
+    and infrastructure levels.
+- **Inefficient logging/serialization in hot paths**
+  - Excessive per-request computation in hooks, serializers, or log formatting
+    increases response time and CPU usage.
+  - Keep hot-path logic minimal and benchmark changes before rolling out.
+
+As a practical baseline, profile changes with production-like traffic (for
+example using `autocannon`), and compare p95/p99 latency alongside throughput.
 
 ## Running Multiple Instances
 <a id="multiple"></a>

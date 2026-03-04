@@ -225,6 +225,8 @@ section.
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
+  RFC 9457 Problem Details implementation for Fastify, with typed HTTP errors.
 - [`apitally`](https://github.com/apitally/apitally-js) Fastify plugin to
   integrate with [Apitally](https://apitally.io/fastify), an API analytics,
   logging and monitoring tool.

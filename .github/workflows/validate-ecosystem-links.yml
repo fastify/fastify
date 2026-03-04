@@ -12,6 +12,8 @@ permissions:
 jobs:
   validate-links:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out repo
         uses: actions/checkout@v6

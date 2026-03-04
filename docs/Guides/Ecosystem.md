@@ -8,6 +8,23 @@ section.
 
 #### [Core](#core)
 
+##### Authentication and Security
+
+As a first step for issue [#3618](https://github.com/fastify/fastify/issues/3618),
+these core plugins are grouped under an authentication/security category:
+
+- [`@fastify/auth`](https://github.com/fastify/fastify-auth)
+- [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth)
+- [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
+- [`@fastify/csrf-protection`](https://github.com/fastify/csrf-protection)
+- [`@fastify/helmet`](https://github.com/fastify/fastify-helmet)
+- [`@fastify/jwt`](https://github.com/fastify/fastify-jwt)
+- [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2)
+- [`@fastify/passport`](https://github.com/fastify/fastify-passport)
+- [`@fastify/rate-limit`](https://github.com/fastify/fastify-rate-limit)
+- [`@fastify/secure-session`](https://github.com/fastify/fastify-secure-session)
+- [`@fastify/session`](https://github.com/fastify/session)
+
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)

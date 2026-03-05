@@ -5,7 +5,9 @@ Fastify uses a schema-based approach. We recommend using
 [JSON Schema](https://json-schema.org/) to validate routes and serialize outputs.
 Fastify compiles the schema into a highly performant function.
 
-Validation is only attempted if the content type is `application/json`.
+Validation is only attempted if the content type is `application/json`,
+unless the body schema uses the [`content`](#body-content-type-validation)
+property to specify validation per content type.
 
 All examples use the
 [JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
@@ -228,6 +230,9 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
+#### Body Content-Type Validation
+<a id="body-content-type-validation"></a>
+
 For `body` schema, it is further possible to differentiate the schema per content
 type by nesting the schemas inside `content` property. The schema validation
 will be applied based on the `Content-Type` header in the request.
@@ -249,6 +254,36 @@ fastify.post('/the/url', {
   }
 }, handler)
 ```
+
+> **Important:** When using [custom content type
+> parsers](./ContentTypeParser.md), the parsed body will **only** be validated
+> if the request's content type is listed in the `content` object above. If you
+> add a parser for a content type (e.g., `application/yaml`) but do not include
+> it in the body schema's `content` property, the incoming data will be parsed
+> but **not validated**.
+>
+> ```js
+> // Add a custom parser for YAML
+> fastify.addContentTypeParser('application/yaml', { parseAs: 'string' }, (req, body, done) => {
+>   done(null, YAML.parse(body))
+> })
+>
+> fastify.post('/the/url', {
+>   schema: {
+>     body: {
+>       content: {
+>         'application/json': {
+>           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
+>         },
+>         // Without this entry, application/yaml requests will NOT be validated
+>         'application/yaml': {
+>           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
+>         }
+>       }
+>     }
+>   }
+> }, handler)
+> ```
 
 Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and

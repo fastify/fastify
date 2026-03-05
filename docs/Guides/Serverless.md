@@ -359,6 +359,17 @@ Final step is to export the Fastify app instance to Firebase's own
 exports.app = onRequest(fastifyApp)
 ```
 
+### Route-level analytics in Firebase
+
+When you export a single `onRequest()` function, Firebase and Google Cloud
+Functions report metrics at the function level (the exported name), not at each
+Fastify route.
+
+If you need route-specific dashboards in Firebase, you can export multiple
+functions that all forward to the same Fastify app and assign each export a
+different route at deployment time. This keeps one Fastify app while exposing
+multiple function names for analytics.
+
 ### Local test
 
 Install the Firebase tools functions so you can use the CLI:

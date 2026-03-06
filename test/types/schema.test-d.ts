@@ -133,3 +133,55 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
     }
   })
 }
+
+// OpenAPI extension properties (x-*)
+expectAssignable<FastifyInstance>(server.get(
+  '/test',
+  {
+    schema: {
+      'x-meta': 'hello'
+    }
+  },
+  async () => {
+    return { ok: true }
+  }
+))
+
+expectAssignable<FastifyInstance>(server.get(
+  '/example',
+  {
+    schema: {
+      description: 'Example of this api call',
+      'x-source-file': 'example.js',
+      tags: ['example'],
+      summary: 'Test API call get',
+      response: {
+        200: {
+          description: 'Successful response',
+          type: 'object',
+          properties: {
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  async () => {
+    return { message: 'Hello' }
+  }
+))
+
+expectAssignable<FastifyInstance>(server.post(
+  '/test-multiple-extensions',
+  {
+    schema: {
+      'x-custom-property': { nested: 'value' },
+      'x-another-extension': ['item1', 'item2'],
+      'x-source-file': 'test.js',
+      body: { type: 'object' }
+    }
+  },
+  async () => {
+    return { success: true }
+  }
+))

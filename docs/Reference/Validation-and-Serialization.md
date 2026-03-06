@@ -250,6 +250,18 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
+> ⚠ Warning:
+> Schema selection in the `content` map uses an exact match on the
+> request's [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
+> (e.g., `application/json`). If you register a content-type parser with a
+> regular expression (e.g., `/^application\/.*json$/`), the parser will match
+> a wider set of content types than the schema keys cover. Any request whose
+> content type is parsed but has no matching key in the `content` map will
+> **not** be validated. To avoid this, ensure every content type your parser
+> accepts has a corresponding entry in the `content` map, or use a catch-all
+> body schema without the `content` wrapper when strict per-type discrimination
+> is not needed.
+
 Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.

@@ -40,6 +40,15 @@ patterns for routes or validation
 authorization (these are application-level concerns)
 - **Configuration mistakes**: Security issues arising from developer
 misconfiguration (configuration is trusted)
+- **Content-type parser/schema mismatches**: When a custom content-type parser
+registered with a regular expression (e.g., `/^application\/.*json$/`) matches
+incoming requests that do not have a corresponding key in the route's
+`schema.body.content` map, validation is skipped for that request. It is the
+application's responsibility to ensure that every content type accepted by a
+parser has a matching validation schema entry. This is a configuration concern,
+not a framework vulnerability (see
+[Validation and Serialization](./docs/Reference/Validation-and-Serialization.md)
+and [Content-Type Parser](./docs/Reference/ContentTypeParser.md))
 - **`insecureHTTPParser: true` deployments**: Reports that rely on enabling
 Node.js `insecureHTTPParser` are out of scope; Fastify assumes this flag is
 `false`

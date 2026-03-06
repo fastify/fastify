@@ -7,7 +7,9 @@ Fastify compiles the schema into a highly performant function.
 
 Validation is only attempted if the content type is `application/json`,
 unless the body schema uses the [`content`](#body-content-type-validation)
-property to specify validation per content type.
+property to specify validation per content type. When the body schema defines
+a `content` field, it must enumerate all possible content types the
+application expects to handle with the associated handler.
 
 All examples use the
 [JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
@@ -257,10 +259,10 @@ fastify.post('/the/url', {
 
 > **Important:** When using [custom content type
 > parsers](./ContentTypeParser.md), the parsed body will **only** be validated
-> if the request's content type is listed in the `content` object above. If you
-> add a parser for a content type (e.g., `application/yaml`) but do not include
-> it in the body schema's `content` property, the incoming data will be parsed
-> but **not validated**.
+> if the request's content type is listed in the `content` object above. If
+> a parser for a content type (e.g., `application/yaml`) is defined,
+> but it is not not included in the body schema's `content` property,
+> the incoming data will be parsed but **not validated**.
 >
 > ```js
 > // Add a custom parser for YAML

@@ -359,6 +359,25 @@ Final step is to export the Fastify app instance to Firebase's own
 exports.app = onRequest(fastifyApp)
 ```
 
+### Route-level analytics in Firebase
+
+When you export a single `onRequest` function, Firebase/Cloud Functions reports
+metrics and logs for that exported function name (`app` in this example), not
+for each Fastify route. This means requests to `/`, `/users`, or
+`/api/v1/orders` are all grouped under one function in Firebase dashboards.
+
+If you need function-level metrics per route group, export multiple Firebase
+functions and mount a dedicated Fastify instance (or plain handler) per export.
+A minimal pattern looks like this:
+
+```js
+exports.publicApi = onRequest(buildPublicApi())
+exports.adminApi = onRequest(buildAdminApi())
+```
+
+Use this only when you really need separate operational metrics at the
+infrastructure level. Keeping a single Fastify app export is usually simpler.
+
 ### Local test
 
 Install the Firebase tools functions so you can use the CLI:

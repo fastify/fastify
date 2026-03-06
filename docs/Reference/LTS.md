@@ -38,7 +38,7 @@ A "month" is defined as 30 consecutive days.
 > occasions where we need to release breaking changes as a _minor_ version
 > release. Such changes will _always_ be noted in the [release
 > notes](https://github.com/fastify/fastify/releases).
-> 
+>
 > To avoid automatically receiving breaking security updates it is possible to
 > use the tilde (`~`) range qualifier. For example, to get patches for the 3.15
 > release, and avoid automatically updating to the 3.16 release, specify the
@@ -67,7 +67,7 @@ For more information, see their [Never Ending Support][hd-link] service.
 
 Fastify uses GitHub Actions for CI testing, please refer to [GitHub&#39;s
 documentation regarding workflow
-runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources)
+runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners#supported-runners-and-hardware-resources)
 for further details on what the latest virtual environment is in relation to the
 YAML workflow labels below:
 

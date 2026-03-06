@@ -500,6 +500,81 @@ test('WebStream should respect backpressure', async (t) => {
   t.assert.ok(secondWriteAt >= drainEmittedAt)
 })
 
+test('WebStream should stop reading on drain after response destroy', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  let cancelCalled = false
+  let resolveCancel
+  const cancelPromise = new Promise((resolve) => {
+    resolveCancel = resolve
+  })
+
+  fastify.get('/', function (request, reply) {
+    const raw = reply.raw
+    const originalWrite = raw.write.bind(raw)
+    let firstWrite = true
+
+    raw.write = function (chunk, encoding, cb) {
+      if (firstWrite) {
+        firstWrite = false
+        if (typeof cb === 'function') {
+          cb()
+        }
+        queueMicrotask(() => {
+          raw.destroy()
+          raw.emit('drain')
+        })
+        return false
+      }
+      return originalWrite(chunk, encoding, cb)
+    }
+
+    const stream = new ReadableStream({
+      start (controller) {
+        controller.enqueue(Buffer.from('chunk-1'))
+      },
+      pull (controller) {
+        controller.enqueue(Buffer.from('chunk-2'))
+        controller.close()
+      },
+      cancel () {
+        cancelCalled = true
+        resolveCancel()
+      }
+    })
+
+    reply.header('content-type', 'text/plain').send(stream)
+  })
+
+  await new Promise((resolve, reject) => {
+    fastify.listen({ port: 0 }, err => {
+      if (err) return reject(err)
+      resolve()
+    })
+  })
+
+  await new Promise((resolve, reject) => {
+    const req = http.get(`http://localhost:${fastify.server.address().port}/`, (res) => {
+      res.once('close', resolve)
+      res.resume()
+    })
+    req.once('error', (err) => {
+      if (err.code === 'ECONNRESET') {
+        resolve()
+      } else {
+        reject(err)
+      }
+    })
+  })
+
+  await cancelPromise
+  t.assert.ok(true, 'response interrupted as expected')
+  t.assert.strictEqual(cancelCalled, true)
+})
+
 test('WebStream should warn when headers already sent', async (t) => {
   t.plan(2)
 

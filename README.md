@@ -345,6 +345,7 @@ listed in alphabetical order.
 * [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://x.com/manueomm>, <https://www.npmjs.com/~eomm>
+* [__Antonio Tripodi__](https://github.com/Tony133), <https://www.npmjs.com/~tony133>
 
 ### Emeritus Contributors
 Great contributors to a specific area of the Fastify ecosystem will be invited

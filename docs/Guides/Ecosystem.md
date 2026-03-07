@@ -188,6 +188,9 @@ section.
   A Fastify plugin that protects against No(n)SQL injection by sanitizing data.
 - [`@exortek/remix-fastify`](https://github.com/ExorTek/remix-fastify)
   Fastify plugin for Remix.
+- [`@glidemq/fastify`](https://github.com/avifenesh/glidemq-fastify)
+  Queue management plugin for glide-mq with REST API endpoints, SSE events,
+  and in-memory testing mode. Powered by Valkey/Redis Streams.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.js library to make your
   Fastify API graceful.

@@ -21,7 +21,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
-  - [`loggerInstance`](#loggerInstance)
+  - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
@@ -87,7 +87,7 @@ describes the properties available in that options object.
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [setChildLoggerFactory](#setchildloggerfactory)
-    - [setGenReqId](#setGenReqId)
+    - [setGenReqId](#setgenreqid)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -1940,7 +1940,7 @@ const fastify = require('fastify')({
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
 
-#### setGenReqId
+#### setgenreqid
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id

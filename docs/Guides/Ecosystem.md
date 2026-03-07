@@ -207,6 +207,9 @@ section.
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
+- [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
+  A Fastify plugin for rendering Svelte components with support for SSR
+  (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
@@ -368,6 +371,8 @@ section.
   Fastify feature flags plugin with multiple providers support (e.g. env,
   [config](https://lorenwest.github.io/node-config/),
   [unleash](https://github.com/Unleash/unleash)).
+- [`fastify-file-router`](https://github.com/bhouston/fastify-file-router)
+  A typesafe TanStack Start / Next.JS-style router with JSON + Zod schema support.
 - [`fastify-file-routes`](https://github.com/spa5k/fastify-file-routes) Get
   Next.js based file system routing into fastify.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)

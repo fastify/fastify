@@ -42,7 +42,7 @@ jobs:
               persist-credentials: false
 
           - name: Dependency review
-            uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4.8.2
+            uses: actions/dependency-review-action@05fe4576374b728f0c523d6a13d64c25081e0803 # v4.8.3
 
   check-licenses:
     name: Check licenses
@@ -204,10 +204,54 @@ jobs:
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
+  test-pino-compat:
+    name: Test pino compatibility
+    needs:
+      - lint
+      - coverage-nix
+      - coverage-win
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        pino-version: ['^9', '^10']
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install dependencies
+        run: |
+          npm install --ignore-scripts
+
+      - name: Install pino ${{ matrix.pino-version }}
+        run: |
+          npm install --ignore-scripts --no-save pino@${{ matrix.pino-version }}
+
+      - name: Run unit tests
+        run: |
+          npm run unit
+
+      - name: Run typescript tests
+        run: |
+          npm run test:typescript
+        env:
+          NODE_OPTIONS: no-network-family-autoselection
+
   package:
     needs:
       - test-typescript
       - test-unit
+      - test-pino-compat
     runs-on: ubuntu-latest
     permissions:
       contents: read

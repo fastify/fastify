@@ -14,24 +14,19 @@ To help with the upgrade, we’ve worked with the team at
 publish codemods that will automatically update your code to many of
 the new APIs and patterns in Fastify v4.
 
-Run the following
-[migration recipe](https://go.codemod.com/fastify-4-migration-recipe) to
-automatically update your code to Fastify v4:
 
-```
+```bash
 npx codemod@latest fastify/4/migration-recipe
 ```
+This applies the following codemods:
 
-This will run the following codemods:
+- fastify/4/remove-app-use
+- fastify/4/reply-raw-access
+- fastify/4/wrap-routes-plugin
+- fastify/4/await-register-calls
 
-- [`fastify/4/remove-app-use`](https://go.codemod.com/fastify-4-remove-app-use)
-- [`fastify/4/reply-raw-access`](https://go.codemod.com/fastify-4-reply-raw-access)
-- [`fastify/4/wrap-routes-plugin`](https://go.codemod.com/fastify-4-wrap-routes-plugin)
-- [`fastify/4/await-register-calls`](https://go.codemod.com/fastify-4-await-register-calls)
-
-Each of these codemods automates the changes listed in the v4 migration guide.
-For a complete list of available Fastify codemods and further details,
-see [Codemod Registry](https://go.codemod.com/fastify).
+For information on the migration recipe, see
+https://app.codemod.com/registry/fastify/4/migration-recipe.
 
 
 ## Breaking Changes
@@ -83,8 +78,8 @@ If you need to use middleware, use
 continue to be maintained.
 However, it is strongly recommended that you migrate to Fastify's [hooks](../Reference/Hooks.md).
 
-> **Note**: Codemod remove `app.use()` with:
->
+> ℹ️ Note:
+> Codemod remove `app.use()` with:
 > ```bash
 > npx codemod@latest fastify/4/remove-app-use
 > ```
@@ -94,8 +89,8 @@ However, it is strongly recommended that you migrate to Fastify's [hooks](../Ref
 If you previously used the `reply.res` attribute to access the underlying Request
 object you will now need to use `reply.raw`.
 
-> **Note**: Codemod `reply.res` to `reply.raw` with:
->
+> ℹ️ Note:
+> Codemod `reply.res` to `reply.raw` with:
 > ```bash
 > npx codemod@latest fastify/4/reply-raw-access
 > ```
@@ -146,8 +141,9 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
-> **Note**: Codemod synchronous route definitions with:
->
+
+> ℹ️ Note:
+> Codemod synchronous route definitions with:
 > ```bash
 > npx codemod@latest fastify/4/wrap-routes-plugin
 > ```
@@ -176,8 +172,8 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
   });
   ```
 
-> **Note**: Codemod 'await register(...)' with:
->
+> ℹ️ Note:
+> Codemod 'await register(...)' with:
 > ```bash
 > npx codemod@latest fastify/4/await-register-calls
 > ```

@@ -10,6 +10,14 @@ This document contains a set of recommendations when using Fastify.
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
 - [Running Multiple Instances](#multiple)
+- [Causes of Degradation](#degradation)
+  - [Missing Response Schema](#missing-response-schema)
+  - [Asynchronous Custom Route Constraints](#async-constraints)
+  - [Route Versioning](#route-versioning)
+  - [Express-Style Middleware](#express-middleware)
+  - [Prototype Poisoning Checks](#prototype-poisoning)
+  - [Synchronous Validation Functions](#sync-validation)
+  - [Serverless Cold Starts](#serverless-cold-starts)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
@@ -351,3 +359,216 @@ It is perfectly fine to spin up several Fastify instances within the same
 Node.js process and run them concurrently, even in high load systems.
 Each Fastify instance only generates as much load as the traffic it receives,
 plus the memory used for that Fastify instance.
+
+## Causes of Degradation
+<a id="degradation"></a>
+
+This section collects all known patterns that can cause a degradation of Fastify's
+overall performance. Avoiding these patterns will help you get the most out of
+Fastify's performance characteristics.
+
+### Missing Response Schema
+<a id="missing-response-schema"></a>
+
+JSON serialization is slow by default. Fastify uses
+[fast-json-stringify](https://github.com/fastify/fast-json-stringify) to
+significantly speed up response serialization, but it **requires a JSON schema
+defined for the response**.
+
+Without a response schema, Fastify falls back to `JSON.stringify`, which is
+considerably slower:
+
+```js
+// ❌ Slow: No response schema, uses JSON.stringify
+fastify.get('/slow', async (request, reply) => {
+  return { hello: 'world' }
+})
+
+// ✅ Fast: Response schema enables fast-json-stringify
+fastify.get('/fast', {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    }
+  }
+}, async (request, reply) => {
+  return { hello: 'world' }
+})
+```
+
+Always define a `response` schema for routes where performance matters.
+See [Validation and Serialization](../Reference/Validation-and-Serialization.md)
+for more details.
+
+### Asynchronous Custom Route Constraints
+<a id="async-constraints"></a>
+
+Custom route constraints that perform asynchronous operations (e.g., database
+lookups) directly in the constraint check have a significant negative impact on
+router performance. They are evaluated on every request and bypass Fastify's
+optimized routing.
+
+```js
+// ❌ Slow: Async operation in constraint
+const dbConstraint = {
+  name: 'dbConstraint',
+  storage () {
+    return {
+      get (key) { return asyncDbLookup(key) },  // Database call per request!
+      set (key, val) {}
+    }
+  },
+  validate (value, req) { return asyncDbValidate(value) } // Async per request!
+}
+
+// ✅ Better: Cache results, prefer synchronous constraints
+```
+
+Use asynchronous custom constraints only as a last resort and consider caching
+strategies to reduce the per-request overhead. See [Routes](../Reference/Routes.md#custom-constraints)
+for more details.
+
+### Route Versioning
+<a id="route-versioning"></a>
+
+Using the built-in route versioning feature (via the `version` constraint)
+degrades the router's performance because it adds extra matching logic for
+every incoming request.
+
+```js
+// ⚠️ This degrades router performance
+fastify.route({
+  method: 'GET',
+  url: '/',
+  constraints: { version: '1.2.0' },
+  handler: (request, reply) => {
+    reply.send({ hello: 'world' })
+  }
+})
+```
+
+If you must version your API, consider path-based versioning (`/v1/route`,
+`/v2/route`) which has no overhead on the router. See [Routes](../Reference/Routes.md#constraints)
+for more details.
+
+### Express-Style Middleware
+<a id="express-middleware"></a>
+
+Using Express-style middleware via `@fastify/express` incurs additional overhead
+compared to native Fastify hooks. If you need middleware-like functionality,
+prefer:
+
+1. **Native Fastify hooks** (`preHandler`, `onRequest`, etc.) — zero overhead
+2. **`@fastify/middie`** — simpler Express-style middleware with better performance
+3. **`@fastify/express`** — full Express compatibility, but with the most overhead
+
+```js
+// ❌ Most overhead: full Express compatibility
+await fastify.register(require('@fastify/express'))
+fastify.use(myMiddleware())
+
+// ✅ Better: middie for Express-style with lower overhead
+await fastify.register(require('@fastify/middie'))
+fastify.use(myMiddleware())
+
+// ✅ Best: Native Fastify hook, no middleware overhead
+fastify.addHook('preHandler', async (request, reply) => {
+  // middleware logic here
+})
+```
+
+See [Middleware](../Reference/Middleware.md) for more details.
+
+### Prototype Poisoning Checks
+<a id="prototype-poisoning"></a>
+
+When using `@fastify/formbody` or any plugin that parses user input and
+validates it against a schema, enabling strict prototype poisoning protection
+comes with a noticeable performance cost. Payloads containing `__proto__` keys
+can cause up to **500% slower processing** when prototype-poisoning detection
+is active.
+
+```js
+// ⚠️ Prototype poisoning check adds overhead
+const fastify = require('fastify')({
+  // Enabling strict prototype poisoning detection has a performance cost
+})
+
+await fastify.register(require('@fastify/formbody'))
+```
+
+Avoid exposing user-controlled keys that could be prototype properties, and
+ensure your input validation is tight enough to prevent malicious payloads.
+See [Prototype Poisoning](./Prototype-Poisoning.md) for a thorough discussion.
+
+### Synchronous Validation Functions
+<a id="sync-validation"></a>
+
+Fastify uses [ajv](https://ajv.js.org/) by default for input validation. Using
+complex JSON schemas with deep nesting, many `anyOf`/`oneOf` branches, or
+recursive references increases validation time proportionally.
+
+```js
+// ⚠️ Complex schema may slow validation
+const complexSchema = {
+  type: 'object',
+  properties: {
+    data: {
+      anyOf: [
+        // Many alternatives add matching overhead
+        { type: 'string' },
+        { type: 'number' },
+        { type: 'array', items: { anyOf: [ /* deep nesting */ ] } }
+      ]
+    }
+  }
+}
+
+// ✅ Simpler, more specific schemas are faster
+const simpleSchema = {
+  type: 'object',
+  properties: {
+    data: { type: 'string' }
+  }
+}
+```
+
+Prefer specific, flat schemas over complex alternatives when performance is
+critical.
+
+### Serverless Cold Starts
+<a id="serverless-cold-starts"></a>
+
+When deploying Fastify in serverless environments (AWS Lambda, Google Cloud
+Functions, etc.), larger application bundles directly increase cold start times.
+Each plugin, route, and dependency registered with Fastify adds to the
+initialization time.
+
+```js
+// ⚠️ Larger apps = longer cold starts in serverless
+const fastify = require('fastify')()
+
+// Each registration adds to cold start time
+fastify.register(require('./routes/users'))
+fastify.register(require('./routes/products'))
+fastify.register(require('./routes/orders'))
+// ...many more routes
+```
+
+To reduce serverless cold start times:
+- Keep the number of plugins and routes minimal
+- Use lazy loading where possible
+- Consider using `@fastify/aws-lambda` which is optimized for Lambda
+- Profile your startup time with `fastify.ready()` before deploying
+
+See [Serverless](./Serverless.md) for platform-specific guidance.
+
+---
+
+> For general performance benchmarking and measurement tools, see
+> [Benchmarking](./Benchmarking.md).

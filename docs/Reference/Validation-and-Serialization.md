@@ -302,7 +302,7 @@ to use the correctly typed data afterwards.
 
 > ⚠ Important:
 > Fastify uses a custom [AJV configuration][1] such as `coerceTypes: 'array'`.
-> Evaluate its behavior and if it fits your needs.
+> Evaluate its behavior and verify if it meets the project requirements.
 
 [1]: https://github.com/fastify/ajv-compiler?tab=readme-ov-file#ajv-configuration
 

@@ -20,10 +20,10 @@ npx codemod@latest fastify/4/migration-recipe
 ```
 This applies the following codemods:
 
-fastify/4/remove-app-use
-fastify/4/reply-raw-access
-fastify/4/wrap-routes-plugin
-fastify/4/await-register-calls
+- fastify/4/remove-app-use
+- fastify/4/reply-raw-access
+- fastify/4/wrap-routes-plugin
+- fastify/4/await-register-calls
 
 For information on the migration recipe, see
 https://app.codemod.com/registry/fastify/4/migration-recipe.

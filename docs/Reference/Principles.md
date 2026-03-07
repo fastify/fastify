@@ -64,8 +64,8 @@ frameworks do this; Fastify does not.
 
 ## Semantic Versioning and Long Term Support
 
-A clear [Long Term Support strategy is provided](./LTS.md) to inform developers when
-to upgrade.
+A clear [Long Term Support strategy is provided](./LTS.md) to inform developers
+when to upgrade.
 
 ## Specification adherence
 

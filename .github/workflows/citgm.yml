@@ -3,7 +3,7 @@ name: CITGM
 on:
   pull_request:
     types: [labeled]
-  
+
   workflow_dispatch:
     inputs:
       node-version:
@@ -88,6 +88,7 @@ jobs:
           - '@fastify/secure-session'
           - '@fastify/sensible'
           - '@fastify/session'
+          - '@fastify/sse'
           - '@fastify/static'
           - '@fastify/swagger'
           - '@fastify/swagger-ui'

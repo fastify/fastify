@@ -81,7 +81,7 @@ start()
 Our code is setting up a Fastify server which includes the following
 functionality:
 
-- Accepting requests at http://localhost:3000, with a 3 second delayed response
+- Accepting requests at `http://localhost:3000`, with a 3 second delayed response
 of `{ ok: true }`.
 - An onRequest hook that triggers when every request is received.
 - Logic that triggers in the hook when the request is closed.

@@ -325,6 +325,47 @@ test('default clientError replies with bad request on reused keep-alive connecti
   })
 })
 
+test('non-numeric content-length is rejected before Fastify body parsing', (t, done) => {
+  t.plan(3)
+
+  let response = ''
+
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100
+  })
+
+  fastify.post('/', () => {
+    t.assert.fail('handler should not be called')
+  })
+
+  fastify.listen({ port: 0 }, function (err) {
+    t.assert.ifError(err)
+    t.after(() => fastify.close())
+
+    const client = connect(fastify.server.address().port)
+
+    client.on('data', chunk => {
+      response += chunk.toString('utf-8')
+    })
+
+    client.on('end', () => {
+      t.assert.match(response, /^HTTP\/1.1 400 Bad Request/)
+      t.assert.match(response, /"message":"Client Error"/)
+      done()
+    })
+
+    client.resume()
+    client.write('POST / HTTP/1.1\r\n')
+    client.write('Host: example.com\r\n')
+    client.write('Content-Type: text/plain\r\n')
+    client.write('Content-Length: abc\r\n')
+    client.write('Connection: close\r\n')
+    client.write('\r\n')
+    client.write('x'.repeat(32))
+  })
+})
+
 test('request.routeOptions.method is an uppercase string /1', async t => {
   t.plan(3)
   const fastify = Fastify()

@@ -1,5 +1,6 @@
 'use strict'
 
+const { networkInterfaces } = require('node:os')
 const { test, before } = require('node:test')
 const Fastify = require('..')
 const helper = require('./helper')
@@ -41,7 +42,14 @@ test('Async/await listen with arguments', async t => {
   })
   const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
   const address = fastify.server.address()
-  t.assert.strictEqual(addr, `http://127.0.0.1:${address.port}`)
+  const { protocol, hostname, port, pathname } = new URL(addr)
+  t.assert.strictEqual(protocol, 'http:')
+  t.assert.ok(Object.values(networkInterfaces())
+    .flat()
+    .filter(({ internal }) => internal)
+    .some(({ address }) => address === hostname))
+  t.assert.strictEqual(pathname, '/')
+  t.assert.strictEqual(Number(port), address.port)
   t.assert.deepEqual(address, {
     address: '0.0.0.0',
     family: 'IPv4',

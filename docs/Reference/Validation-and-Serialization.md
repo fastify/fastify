@@ -5,7 +5,11 @@ Fastify uses a schema-based approach. We recommend using
 [JSON Schema](https://json-schema.org/) to validate routes and serialize outputs.
 Fastify compiles the schema into a highly performant function.
 
-Validation is only attempted if the content type is `application/json`.
+Validation is only attempted if the content type is `application/json`,
+unless the body schema uses the [`content`](#body-content-type-validation)
+property to specify validation per content type. When the body schema defines
+a `content` field, it must enumerate all possible content types the
+application expects to handle with the associated handler.
 
 All examples use the
 [JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
@@ -228,6 +232,9 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
+#### Body Content-Type Validation
+<a id="body-content-type-validation"></a>
+
 For `body` schema, it is further possible to differentiate the schema per content
 type by nesting the schemas inside `content` property. The schema validation
 will be applied based on the `Content-Type` header in the request.
@@ -249,6 +256,36 @@ fastify.post('/the/url', {
   }
 }, handler)
 ```
+
+> **Important:** When using [custom content type
+> parsers](./ContentTypeParser.md), the parsed body will **only** be validated
+> if the request's content type is listed in the `content` object above. If
+> a parser for a content type (e.g., `application/yaml`) is defined,
+> but it is not not included in the body schema's `content` property,
+> the incoming data will be parsed but **not validated**.
+>
+> ```js
+> // Add a custom parser for YAML
+> fastify.addContentTypeParser('application/yaml', { parseAs: 'string' }, (req, body, done) => {
+>   done(null, YAML.parse(body))
+> })
+>
+> fastify.post('/the/url', {
+>   schema: {
+>     body: {
+>       content: {
+>         'application/json': {
+>           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
+>         },
+>         // Without this entry, application/yaml requests will NOT be validated
+>         'application/yaml': {
+>           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
+>         }
+>       }
+>     }
+>   }
+> }, handler)
+> ```
 
 Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
@@ -327,6 +364,31 @@ server.setValidatorCompiler(req => {
     }
     return compiler.compile(req.schema)
 })
+```
+
+When type coercion is enabled, using `anyOf` with nullable primitive types
+can produce unexpected results. For example, a value of `0` or `false` may be
+coerced to `null` because Ajv evaluates `anyOf` schemas in order and applies
+type coercion during matching. This means the `{ "type": "null" }` branch can
+match before the intended type:
+
+```json
+{
+  "anyOf": [
+    { "type": "null" },
+    { "type": "number" }
+  ]
+}
+```
+
+To avoid this, use the `nullable` keyword instead of `anyOf` for primitive
+types:
+
+```json
+{
+  "type": "number",
+  "nullable": true
+}
 ```
 
 For more information, see [Ajv Coercion](https://ajv.js.org/coercion.html).
@@ -439,7 +501,9 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-> ℹ️ Note: When using a custom validator instance, add schemas to the validator
+
+> ℹ️ Note:
+> When using a custom validator instance, add schemas to the validator
 > instead of Fastify. Fastify's `addSchema` method will not recognize the custom
 > validator.
 
@@ -675,9 +739,12 @@ const schema = {
       content: {
         'application/json': {
           schema: {
-            name: { type: 'string' },
-            image: { type: 'string' },
-            address: { type: 'string' }
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              image: { type: 'string' },
+              address: { type: 'string' }
+            }
           }
         },
         'application/vnd.v1+json': {
@@ -692,8 +759,11 @@ const schema = {
       content: {
         'application/vnd.v2+json': {
           schema: {
-            fullName: { type: 'string' },
-            phone: { type: 'string' }
+            type: 'object',
+            properties: {
+              fullName: { type: 'string' },
+              phone: { type: 'string' }
+            }
           }
         }
       }
@@ -703,7 +773,10 @@ const schema = {
         // */* is match-all content-type
         '*/*': {
           schema: {
-            desc: { type: 'string' }
+            type: 'object',
+            properties: {
+              desc: { type: 'string' }
+            }
           }
         }
       }
@@ -774,6 +847,12 @@ with the following payload:
   "message": "body should have required property 'name'"
 }
 ```
+
+> ⚠ Security Consideration: By default, validation error details from the schema
+> are included in the response payload. If your organization requires sanitizing
+> or customizing these error messages (e.g., to avoid exposing internal schema
+> details), configure a custom error handler using
+> [`setErrorHandler()`](./Server.md#seterrorhandler).
 
 To handle errors inside the route, specify the `attachValidation` option. If
 there is a validation error, the `validationError` property of the request will
@@ -1032,7 +1111,7 @@ const refToSharedSchemaDefinitions = {
 
 - [JSON Schema](https://json-schema.org/)
 - [Understanding JSON
-  Schema](https://spacetelescope.github.io/understanding-json-schema/)
+  Schema](https://json-schema.org/understanding-json-schema/about)
 - [fast-json-stringify
   documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)

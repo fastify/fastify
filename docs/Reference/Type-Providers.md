@@ -63,13 +63,13 @@ server.get('/route', {
 The following sets up a TypeBox Type Provider:
 
 ```bash
-$ npm i @fastify/type-provider-typebox
+$ npm i typebox @fastify/type-provider-typebox
 ```
 
 ```typescript
 import fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { Type } from '@sinclair/typebox'
+import { Type } from 'typebox'
 
 const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 
@@ -88,8 +88,8 @@ server.get('/route', {
 ```
 
 See the [TypeBox
-documentation](https://github.com/sinclairzx81/typebox#validation)
-for setting up AJV to work with TypeBox.
+documentation](https://sinclairzx81.github.io/typebox/#/docs/overview/2_setup)
+for setting-up AJV to work with TypeBox.
 
 ### Zod
 
@@ -109,7 +109,7 @@ Example:
 import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
-import { Type } from '@sinclair/typebox'
+import { Type } from 'typebox'
 
 const fastify = Fastify()
 
@@ -159,7 +159,7 @@ with several scopes, as shown below:
 ```ts
 import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-import { Type } from '@sinclair/typebox'
+import { Type } from 'typebox'
 
 const server = Fastify().withTypeProvider<TypeBoxTypeProvider>()
 
@@ -221,7 +221,7 @@ server.listen({ port: 3000 })
 
 ```ts
 // routes.ts
-import { Type } from '@sinclair/typebox'
+import { Type } from 'typebox'
 import {
   FastifyInstance,
   FastifyBaseLogger,

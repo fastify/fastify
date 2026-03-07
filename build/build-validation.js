@@ -28,6 +28,7 @@ const defaultInitOptions = {
   forceCloseConnections: undefined, // keep-alive connections
   maxRequestsPerSocket: 0, // no limit
   requestTimeout: 0, // no limit
+  handlerTimeout: 0, // no timeout (disabled by default)
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   allowUnsafeRegex: false,
@@ -72,6 +73,7 @@ const schema = {
     },
     maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
+    handlerTimeout: { type: 'integer', default: defaultInitOptions.handlerTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
     allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.allowUnsafeRegex },
@@ -98,7 +100,6 @@ const schema = {
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
     disableRequestLogging: {
-      type: 'boolean',
       default: false
     },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
@@ -112,7 +113,7 @@ const schema = {
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
     routerOptions: {
       type: 'object',
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
         ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },

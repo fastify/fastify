@@ -1784,7 +1784,10 @@ call is encapsulated by prefix, so different plugins can set different not found
 handlers if a different [`prefix` option](./Plugins.md#route-prefixing-option)
 is passed to `fastify.register()`. The handler is treated as a regular route
 handler so requests will go through the full [Fastify
-lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
+lifecycle](./Lifecycle.md#lifecycle) for unexisting URLs.
+*async-await* is supported as well.
+Badly formatted URLs are sent to the [`onBadUrl`](#onbadurl)
+handler instead.
 
 You can also register [`preValidation`](./Hooks.md#route-hooks) and
 [`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.

@@ -147,7 +147,7 @@ fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
   console.log(instance.util('that is ', 'awesome'))
 
-  fastify.register((instance, opts, done) => {
+  instance.register((instance, opts, done) => {
     console.log(instance.util('that is ', 'awesome')) // This will not throw an error
     done()
   })

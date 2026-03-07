@@ -188,6 +188,9 @@ section.
   A Fastify plugin that protects against No(n)SQL injection by sanitizing data.
 - [`@exortek/remix-fastify`](https://github.com/ExorTek/remix-fastify)
   Fastify plugin for Remix.
+- [`@glidemq/fastify`](https://github.com/avifenesh/glidemq-fastify)
+  Queue management plugin for glide-mq with REST API endpoints, SSE events,
+  and in-memory testing mode. Powered by Valkey/Redis Streams.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.js library to make your
   Fastify API graceful.
@@ -201,12 +204,15 @@ section.
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).
 - [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
-  A plugin to integrate [Papr](https://github.com/plexinc/papr), 
+  A plugin to integrate [Papr](https://github.com/plexinc/papr),
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
+- [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
+  A Fastify plugin for rendering Svelte components with support for SSR
+  (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
@@ -225,6 +231,8 @@ section.
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
+  RFC 9457 Problem Details implementation for Fastify, with typed HTTP errors.
 - [`apitally`](https://github.com/apitally/apitally-js) Fastify plugin to
   integrate with [Apitally](https://apitally.io/fastify), an API analytics,
   logging and monitoring tool.
@@ -366,6 +374,8 @@ section.
   Fastify feature flags plugin with multiple providers support (e.g. env,
   [config](https://lorenwest.github.io/node-config/),
   [unleash](https://github.com/Unleash/unleash)).
+- [`fastify-file-router`](https://github.com/bhouston/fastify-file-router)
+  A typesafe TanStack Start / Next.JS-style router with JSON + Zod schema support.
 - [`fastify-file-routes`](https://github.com/spa5k/fastify-file-routes) Get
   Next.js based file system routing into fastify.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)
@@ -593,7 +603,7 @@ middlewares into Fastify plugins
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
   Convenient grouping and inheritance of routes.
 - [`fastify-route-preset`](https://github.com/inyourtime/fastify-route-preset)
-  A Fastify plugin that enables you to create route configurations that can be 
+  A Fastify plugin that enables you to create route configurations that can be
   applied to multiple routes.
 - [`fastify-s3-buckets`](https://github.com/kibertoad/fastify-s3-buckets)
   Ensure the existence of defined S3 buckets on the application startup.
@@ -714,4 +724,3 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
-  

@@ -108,7 +108,7 @@ the following tasks:
 5. Read the [pinned announcements](https://github.com/orgs/fastify/discussions/categories/announcements)
    to be updated with the organization’s news.
 6. The person who does the onboarding must open a pull request to
-   [`fastify/org-admin`](https://github.com/fastify/org-admin?tab=readme-ov-file#org-admin) 
+   [`fastify/org-admin`](https://github.com/fastify/org-admin?tab=readme-ov-file#org-admin)
    so an admin can add the new member to the
    [npm org](https://www.npmjs.com/org/fastify) and the GitHub Team,
    so that the new joiner can help maintain the official plugins.

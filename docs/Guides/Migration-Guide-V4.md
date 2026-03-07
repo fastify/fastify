@@ -26,7 +26,7 @@ fastify/4/wrap-routes-plugin
 fastify/4/await-register-calls
 
 For information on the migration recipe, see
-https://app.codemod.com/registry/fastify/4/migration-recipe
+https://app.codemod.com/registry/fastify/4/migration-recipe.
 
 
 ## Breaking Changes

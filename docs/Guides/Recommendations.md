@@ -289,7 +289,7 @@ These patterns can increase latency or reduce throughput in production:
 
 - Prefer static or simple parametric routes on hot paths. RegExp routes are
   expensive, and routes with many parameters can also hurt router performance.
-  See [Routes - URL building](../Reference/Routes.md#url-building).
+  See [Routes - Url building](../Reference/Routes.md#url-building).
 - Use route constraints carefully. Version constraints can degrade router
   performance, and asynchronous custom constraints should be treated as a last
   resort. See [Routes - Constraints](../Reference/Routes.md#constraints).
@@ -300,10 +300,12 @@ These patterns can increase latency or reduce throughput in production:
   [Getting Started - Serialize your data](./Getting-Started.md#serialize-data).
 - Keep Ajv `allErrors` disabled by default. Enable it only when detailed
   validation feedback is needed (for example, form-heavy APIs), and avoid it
-  on latency-sensitive endpoints.
-  This reduces overhead and avoids known risk patterns documented by Ajv/Fastify.
-  See [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
-  and [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
+  on latency-sensitive endpoints. When `allErrors: true` is enabled, validation
+  can do more work per request and make denial-of-service attacks easier on
+  untrusted inputs.
+  See also:
+  - [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
+  - [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
 
 ## Kubernetes
 <a id="kubernetes"></a>

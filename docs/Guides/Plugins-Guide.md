@@ -487,7 +487,7 @@ await fastify.after()
 * Child plugins are included automatically
 * Errors propagate to `ready()` and `listen()`
 
-Use `after` to coordinate plugin initialisation or to fail fast when required  
+Use `after` to coordinate plugin initialization or to fail fast when required  
 dependencies cannot be loaded.
 
 ## Custom errors

@@ -300,7 +300,7 @@ Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
 
-> [!IMPORTANT]
+> ⚠ Important:
 > Fastify uses a custom [AJV configuration][1] such as `coerceTypes: 'array'`.
 > Evaluate its behavior and if it fits your needs.
 

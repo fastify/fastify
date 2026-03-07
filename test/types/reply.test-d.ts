@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyContextConfig, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
 import { FastifyInstance } from '../../types/instance'
-import { FastifyLoggerInstance } from '../../types/logger'
+import { FastifyBaseLogger } from '../../types/logger'
 import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils'
@@ -12,7 +12,7 @@ type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RouteGeneri
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
-  expectType<FastifyLoggerInstance>(reply.log)
+  expectType<FastifyBaseLogger>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.code)
   expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.status)

@@ -253,12 +253,12 @@ fastify.post('/the/url', {
 > ⚠ Warning:
 > Schema selection in the `content` map uses an exact match on the
 > request's [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
-> (e.g., `application/json`). If you register a content-type parser with a
-> regular expression (e.g., `/^application\/.*json$/`), the parser will match
+> (e.g., `application/json`). When a content-type parser is registered with a
+> regular expression (e.g., `/^application\/.*json$/`), the parser can match
 > a wider set of content types than the schema keys cover. Any request whose
 > content type is parsed but has no matching key in the `content` map will
-> **not** be validated. To avoid this, ensure every content type your parser
-> accepts has a corresponding entry in the `content` map, or use a catch-all
+> **not** be validated. To prevent this, ensure every content type accepted by
+> the parser has a corresponding entry in the `content` map, or use a catch-all
 > body schema without the `content` wrapper when strict per-type discrimination
 > is not needed.
 

@@ -34,10 +34,9 @@ parsed.
 > `schema.body.content`, the schema is selected by an **exact match** on the
 > essence MIME type, not by the parser's regex. A regex parser that accepts
 > content types with no matching key in the `content` schema map will result
-> in those requests **not being validated**. Make sure every content type your
-> regex can match has a corresponding entry in the schema's `content` map.
-> See [Validation and Serialization](./Validation-and-Serialization.md) for
-> details.
+> in those requests **not being validated**. Ensure every content type matched
+> by the regex has a corresponding entry in the schema's `content` map. See
+> [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
 ### Usage
 ```js

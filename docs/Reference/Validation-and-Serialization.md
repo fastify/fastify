@@ -67,7 +67,7 @@ keyword. Here is an overview of how references work:
 
 ```js
 fastify.addSchema({
-  $id: 'http://example.com/',
+  $id: 'http://fastify.example/',
   type: 'object',
   properties: {
     hello: { type: 'string' }
@@ -79,7 +79,7 @@ fastify.post('/', {
   schema: {
     body: {
       type: 'array',
-      items: { $ref: 'http://example.com#/properties/hello' }
+      items: { $ref: 'http://fastify.example#/properties/hello' }
     }
   }
 })

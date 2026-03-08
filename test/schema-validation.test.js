@@ -875,7 +875,7 @@ test('Use items with $ref', (t, testDone) => {
   const fastify = Fastify()
 
   fastify.addSchema({
-    $id: 'http://example.com/ref-to-external-validator.json',
+    $id: 'http://fastify.test/ref-to-external-validator.json',
     type: 'object',
     properties: {
       hello: { type: 'string' }
@@ -884,7 +884,7 @@ test('Use items with $ref', (t, testDone) => {
 
   const body = {
     type: 'array',
-    items: { $ref: 'http://example.com/ref-to-external-validator.json#' }
+    items: { $ref: 'http://fastify.test/ref-to-external-validator.json#' }
   }
 
   fastify.post('/', {

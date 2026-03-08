@@ -112,7 +112,7 @@ frontend proxy-ssl
 
   # Here we define rule pairs to handle static resources. Any incoming request
   # that has a path starting with `/static`, e.g.
-  # `https://one.example.com/static/foo.jpeg`, will be redirected to the
+  # `https://one.fastify.example/static/foo.jpeg`, will be redirected to the
   # static resources server.
   acl is_static path -i -m beg /static
   use_backend static-backend if is_static
@@ -122,10 +122,10 @@ frontend proxy-ssl
   # the incoming hostname and define a boolean indicating if it is a match.
   # The `use_backend` line is used to direct the traffic if the boolean is
   # true.
-  acl example1 hdr_sub(Host) one.example.com
+  acl example1 hdr_sub(Host) one.fastify.example
   use_backend example1-backend if example1
 
-  acl example2 hdr_sub(Host) two.example.com
+  acl example2 hdr_sub(Host) two.fastify.example
   use_backend example2-backend if example2
 
   # Finally, we have a fallback redirect if none of the requested hosts
@@ -144,14 +144,14 @@ backend default-server
   # requests over TLS, but that is outside the scope of this example.
   server server1 10.10.10.2:80
 
-# This backend configuration will serve requests for `https://one.example.com`
+# This backend configuration will serve requests for `https://one.fastify.example`
 # by proxying requests to three backend servers in a round-robin manner.
 backend example1-backend
   server example1-1 10.10.11.2:80
   server example1-2 10.10.11.2:80
   server example2-2 10.10.11.3:80
 
-# This one serves requests for `https://two.example.com`
+# This one serves requests for `https://two.fastify.example`
 backend example2-backend
   server example2-1 10.10.12.2:80
   server example2-2 10.10.12.2:80

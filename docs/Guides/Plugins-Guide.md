@@ -412,7 +412,7 @@ function dbPlugin (fastify, opts, done) {
   })
 }
 
-fastify.register(fp(dbPlugin), { url: 'https://example.com' })
+fastify.register(fp(dbPlugin), { url: 'https://fastify.example' })
 fastify.register(require('your-plugin'), parent => {
   return { connection: parent.db, otherOption: 'foo-bar' }
 })

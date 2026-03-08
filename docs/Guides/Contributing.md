@@ -7,7 +7,7 @@ us.
 
 > ## Note
 > This is an informal guide. For full details, please review the formal
-> [CONTRIBUTING 
+> [CONTRIBUTING
 > document](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 > our [Developer Certificate of
 > Origin](https://en.wikipedia.org/wiki/Developer_Certificate_of_Origin).

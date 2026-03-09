@@ -204,10 +204,10 @@ test('onRequest hook should support encapsulation / 2', (t, testDone) => {
   const fastify = Fastify()
   let pluginInstance
 
-  fastify.addHook('onRequest', () => {})
+  fastify.addHook('onRequest', () => { })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRequest', () => {})
+    instance.addHook('onRequest', () => { })
     pluginInstance = instance
     done()
   })
@@ -650,7 +650,7 @@ test('onRoute hook should preserve system route configuration', (t, testDone) =>
 test('onRoute hook should preserve handler function in options of shorthand route system configuration', (t, testDone) => {
   t.plan(2)
 
-  const handler = (req, reply) => {}
+  const handler = (req, reply) => { }
 
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
@@ -889,10 +889,10 @@ test('onResponse hook should support encapsulation / 2', (t, testDone) => {
   const fastify = Fastify()
   let pluginInstance
 
-  fastify.addHook('onResponse', () => {})
+  fastify.addHook('onResponse', () => { })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onResponse', () => {})
+    instance.addHook('onResponse', () => { })
     pluginInstance = instance
     done()
   })
@@ -959,10 +959,10 @@ test('onSend hook should support encapsulation / 1', (t, testDone) => {
   const fastify = Fastify()
   let pluginInstance
 
-  fastify.addHook('onSend', () => {})
+  fastify.addHook('onSend', () => { })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onSend', () => {})
+    instance.addHook('onSend', () => { })
     pluginInstance = instance
     done()
   })
@@ -1426,7 +1426,7 @@ test('cannot add hook after binding', (t, testDone) => {
     t.assert.ifError(err)
 
     try {
-      instance.addHook('onRequest', () => {})
+      instance.addHook('onRequest', () => { })
       t.assert.fail()
     } catch (e) {
       testDone()
@@ -2396,10 +2396,10 @@ test('preValidation hook should support encapsulation / 2', (t, testDone) => {
   const fastify = Fastify()
   let pluginInstance
 
-  fastify.addHook('preValidation', () => {})
+  fastify.addHook('preValidation', () => { })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('preValidation', () => {})
+    instance.addHook('preValidation', () => { })
     pluginInstance = instance
     done()
   })
@@ -2739,10 +2739,10 @@ test('preParsing hook should support encapsulation / 2', (t, testDone) => {
   const fastify = Fastify()
   let pluginInstance
 
-  fastify.addHook('preParsing', function a () {})
+  fastify.addHook('preParsing', function a () { })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('preParsing', function b () {})
+    instance.addHook('preParsing', function b () { })
     pluginInstance = instance
     done()
   })
@@ -3383,7 +3383,7 @@ test('onRequestAbort should be triggered', (t, testDone) => {
 
     const socket = connect(fastify.server.address().port)
 
-    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+    socket.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3434,7 +3434,7 @@ test('onRequestAbort should support encapsulation', (t, testDone) => {
 
     const socket = connect(fastify.server.address().port)
 
-    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+    socket.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3468,7 +3468,7 @@ test('onRequestAbort should handle errors / 1', (t, testDone) => {
 
     const socket = connect(fastify.server.address().port)
 
-    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+    socket.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3502,7 +3502,7 @@ test('onRequestAbort should handle errors / 2', (t, testDone) => {
 
     const socket = connect(fastify.server.address().port)
 
-    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+    socket.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3536,7 +3536,7 @@ test('onRequestAbort should handle async errors / 1', (t, testDone) => {
 
     const socket = connect(fastify.server.address().port)
 
-    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+    socket.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
     sleep(500).then(() => socket.destroy())
   })
@@ -3571,7 +3571,7 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
 
     const socket = connect(fastify.server.address().port)
 
-    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+    socket.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
     sleep(500).then(() => socket.destroy())
   })

@@ -1,4 +1,4 @@
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectDeprecated, expectError, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
   FastifyContextConfig,
@@ -66,11 +66,18 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.method)
   expectType<Readonly<RequestRouteOptions>>(request.routeOptions)
   expectType<boolean>(request.is404)
+  expectDeprecated(request.hostname)
+  expectDeprecated(request.host)
+  expectDeprecated(request.port)
+  expectDeprecated(request.ip)
+  expectDeprecated(request.ips)
+  expectDeprecated(request.protocol)
   expectType<string>(request.hostname)
   expectType<string>(request.host)
   expectType<number>(request.port)
   expectType<string>(request.ip)
   expectType<string[] | undefined>(request.ips)
+  expectType<'http' | 'https'>(request.protocol)
   expectType<RawRequestDefaultExpression>(request.raw)
   expectType<RequestBodyDefault>(request.body)
   expectType<RequestParamsDefault>(request.params)

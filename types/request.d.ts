@@ -71,13 +71,31 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
    * @deprecated Use `raw` property
    */
   readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  /**
+   * @deprecated This value is derived from untrusted request metadata. Do not use it for security decisions.
+   */
   readonly ip: string;
+  /**
+   * @deprecated This value is derived from untrusted request metadata. Do not use it for security decisions.
+   */
   readonly ips?: string[];
+  /**
+   * @deprecated This value is derived from untrusted request metadata. Do not use it for security decisions.
+   */
   readonly host: string;
+  /**
+   * @deprecated This value is derived from untrusted request metadata. Do not use it for security decisions.
+   */
   readonly port: number;
+  /**
+   * @deprecated This value is derived from untrusted request metadata. Do not use it for security decisions.
+   */
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;
+  /**
+   * @deprecated This value is derived from untrusted request metadata. Do not use it for security decisions.
+   */
   readonly protocol: 'http' | 'https';
   readonly method: string;
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>

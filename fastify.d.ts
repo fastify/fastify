@@ -126,7 +126,7 @@ declare namespace fastify {
     onConstructorPoisoning?: ConstructorAction,
     logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions,
     loggerInstance?: Logger
-    serializerOpts?: FastifySerializerOptions,
+    serializerOpts?: FastifySerializerOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,

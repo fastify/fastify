@@ -579,13 +579,13 @@ fastify.post('/the/url', {
 When implementing custom validators, follow these patterns to ensure compatibility
 with all Fastify features:
 
-** Always return objects, never throw:**
+**Always return objects, never throw:**
 ```js
 return { value: validatedData }  // On success
 return { error: validationError } // On failure
 ```
 
-** Use try-catch for safety:**
+**Use try-catch for safety:**
 ```js
 fastify.setValidatorCompiler(({ schema }) => {
   return (data) => {

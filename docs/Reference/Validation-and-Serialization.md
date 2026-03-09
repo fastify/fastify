@@ -12,14 +12,14 @@ a `content` field, it must enumerate all possible content types the
 application expects to handle with the associated handler.
 
 All examples use the
-[JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
+[JSON Schema Draft 7](https://json-schema.org/draft-07)
 specification.
 
 > ⚠ Warning:
 > Treat schema definitions as application code. Validation and serialization
 > features use `new Function()`, which is unsafe with user-provided schemas. See
-> [Ajv](https://npmjs.com/package/ajv) and
-> [fast-json-stringify](https://npmjs.com/package/fast-json-stringify) for details.
+> [Ajv](https://www.npmjs.com/package/ajv) and
+> [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for details.
 >
 > Whilst Fastify supports the
 > [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html),
@@ -907,7 +907,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 ```
 
 For custom error responses in the schema, see
-[`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Check out the
+[`ajv-errors`](https://github.com/ajv-validator/ajv-errors). Check out the
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 

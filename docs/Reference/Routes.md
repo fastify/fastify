@@ -708,9 +708,9 @@ specified as strings for exact matches or RegExps for arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.dev' },
+  constraints: { host: 'auth.fastify.example' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.dev')
+    reply.send('hello world from auth.fastify.example')
   }
 })
 
@@ -718,7 +718,7 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'example.com'
+    'Host': 'fastify.example'
   }
 }, (err, res) => {
   // 404 because the host doesn't match the constraint
@@ -742,7 +742,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.example/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

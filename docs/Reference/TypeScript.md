@@ -649,14 +649,38 @@ Using a Fastify plugin in TypeScript is just as easy as using one in JavaScript.
 Import the plugin with `import/from` and you're all set -- except there is one
 exception users should be aware of.
 
-Fastify plugins use declaration merging to modify existing Fastify type
-interfaces (check out the previous two examples for more details). Declaration
-merging is not very _smart_, meaning if the plugin type definition for a plugin
-is within the scope of the TypeScript interpreter, then the plugin types will be
-included **regardless** of if the plugin is being used or not. This is an
-unfortunate limitation of using TypeScript and is unavoidable as of right now.
+Fastify plugins have traditionally used declaration merging to modify existing
+Fastify type interfaces (check out the previous two examples for more details).
+Declaration merging is not very _smart_, meaning if the plugin type definition
+for a plugin is within the scope of the TypeScript interpreter, then the plugin
+types will be included **regardless** of if the plugin is being used or not.
 
-However, there are a couple of suggestions to help improve this experience:
+Fastify also supports **inference from `decorate*()` and `register()` return
+values**. When a plugin returns the decorated instance, TypeScript can carry the
+added decorators through the registration chain without globally augmenting all
+instances:
+
+```typescript
+const app = fastify()
+  .register((instance) => {
+    return instance.decorate('usersRepository', {
+      findAll () {
+        return []
+      }
+    })
+  })
+
+app.get('/users', (request, reply) => {
+  app.usersRepository.findAll()
+})
+```
+
+For reusable plugins, this inference-based style is preferred when available.
+Declaration merging is still supported for legacy plugins and for packages that
+need an explicit global augmentation entry point.
+
+However, there are a couple of suggestions to help improve the declaration
+merging experience when you rely on it:
 - Make sure the `no-unused-vars` rule is enabled in
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.

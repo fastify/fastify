@@ -8,9 +8,13 @@ export interface RegisterOptions {
   logSerializers?: Record<string, (value: any) => string>;
 }
 
+type MergeRegisterOptions<Options> = Options extends unknown
+  ? RegisterOptions & Omit<Options, keyof RegisterOptions>
+  : never
+
 export type FastifyRegisterOptions<Options> =
-  | (RegisterOptions & Options)
-  | ((instance: FastifyInstance) => RegisterOptions & Options)
+  | MergeRegisterOptions<Options>
+  | ((instance: FastifyInstance) => MergeRegisterOptions<Options>)
 
 /**
  * Created primarily for plugins. Having a specific server/request/reply can cause issues when combining plugins
@@ -20,6 +24,11 @@ export type FastifyRegisterOptions<Options> =
 export type AnyFastifyInstance = FastifyInstance<any, any, any, any, any, FastifyDecorators>
 
 export type ExtractDecorators<T extends AnyFastifyInstance> = T extends FastifyInstance<any, any, any, any, any, infer U> ? U : never
+
+export type ExtractPluginOptions<T extends FastifyPlugin<any, any>> =
+  T extends FastifyPlugin<infer Options, any>
+    ? Options
+    : never
 
 type UnEncapsulatedMarker = { __flavor: 'unEncapsulated' }
 

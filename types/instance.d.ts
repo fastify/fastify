@@ -6,7 +6,7 @@ import { AddressInfo } from 'node:net'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
-import { ApplyPluginChanges, FastifyRegisterOptions } from './register'
+import { ApplyPluginChanges, ExtractPluginOptions, FastifyRegisterOptions } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteShorthandMethod } from './route'
@@ -24,7 +24,7 @@ import {
 } from './type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 import { FastifyRouterOptions } from '../fastify'
-import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './plugin'
+import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback } from './plugin'
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
@@ -237,29 +237,26 @@ export interface BaseFastifyInstance<
   ready(readyListener: (err: Error | null) => void | Promise<void>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider, Decorators>;
 
   register<
-    Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginCallback<Options, this>,
+    Plugin extends FastifyPluginCallback<any, this>,
     TReturn = ApplyPluginChanges<this, Plugin>
   > (
     plugin: Plugin,
-    opts?: FastifyRegisterOptions<Options>
+    opts?: FastifyRegisterOptions<ExtractPluginOptions<Plugin>>
   ): TReturn & SafePromiseLike<TReturn>
   register<
-    Options extends FastifyPluginOptions,
-    Plugin extends FastifyPluginAsync<Options, this>,
+    Plugin extends FastifyPluginAsync<any, this>,
     TReturn = ApplyPluginChanges<this, Awaited<Plugin>>
   > (
     plugin: Plugin,
-    opts?: FastifyRegisterOptions<Options>
+    opts?: FastifyRegisterOptions<ExtractPluginOptions<Plugin>>
   ): TReturn & SafePromiseLike<TReturn>
   register<
-    Options extends FastifyPluginOptions,
     Instance extends this,
-    Plugin extends Promise<{ default: FastifyPlugin<Options, Instance> }>,
+    Plugin extends Promise<{ default: FastifyPlugin<any, Instance> }>,
     TReturn = ApplyPluginChanges<Instance, Awaited<Plugin>['default']>
   > (
     plugin: Plugin,
-    opts?: FastifyRegisterOptions<Options>
+    opts?: FastifyRegisterOptions<ExtractPluginOptions<Awaited<Plugin>['default']>>
   ): TReturn & SafePromiseLike<TReturn>
 
   routing(req: RawRequest, res: RawReply): void;

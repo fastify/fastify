@@ -69,11 +69,9 @@ expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOpts))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsAsync))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsWithType))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsWithTypeAsync))
-// @ts-expect-error
-serverWithHttp2.register(testPluginWithHttp2)
+expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2, testOptions))
-// @ts-expect-error
-serverWithHttp2.register(testPluginWithHttp2Async)
+expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2Async))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2Async, testOptions))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2WithType))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2WithTypeAsync))
@@ -123,11 +121,9 @@ expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPlu
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginOptsAsync))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginOptsWithType))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginOptsWithTypeAsync))
-// @ts-expect-error
-serverWithTypeProvider.register(testPluginWithTypeProvider)
+expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProvider))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProvider, testOptions))
-// @ts-expect-error
-serverWithTypeProvider.register(testPluginWithTypeProviderAsync)
+expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderAsync))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderAsync, testOptions))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderWithType))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderWithTypeAsync))
@@ -190,14 +186,12 @@ expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogge
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithType))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync))
 expectAssignable<ServerWithTypeProviderAndLogger>(
-  // @ts-expect-error
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger)
 )
 expectAssignable<ServerWithTypeProviderAndLogger>(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger, testOptions)
 )
 expectAssignable<ServerWithTypeProviderAndLogger>(
-  // @ts-expect-error
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync)
 )
 expectAssignable<ServerWithTypeProviderAndLogger>(

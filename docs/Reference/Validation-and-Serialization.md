@@ -12,14 +12,14 @@ a `content` field, it must enumerate all possible content types the
 application expects to handle with the associated handler.
 
 All examples use the
-[JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
+[JSON Schema Draft 7](https://json-schema.org/draft-07)
 specification.
 
 > ⚠ Warning:
 > Treat schema definitions as application code. Validation and serialization
 > features use `new Function()`, which is unsafe with user-provided schemas. See
-> [Ajv](https://npm.im/ajv) and
-> [fast-json-stringify](https://npm.im/fast-json-stringify) for details.
+> [Ajv](https://www.npmjs.com/package/ajv) and
+> [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for details.
 >
 > Whilst Fastify supports the
 > [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html),
@@ -50,7 +50,7 @@ The `addSchema` API allows adding multiple schemas to the Fastify instance for
 reuse throughout the application. This API is encapsulated.
 
 Shared schemas can be reused with the JSON Schema
-[**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8)
+[**`$ref`**](https://datatracker.ietf.org/doc/html/draft-handrews-json-schema-01#section-8)
 keyword. Here is an overview of how references work:
 
 + `myField: { $ref: '#foo' }` searches for `$id: '#foo'` in the current schema
@@ -588,13 +588,13 @@ fastify.post('/the/url', {
 When implementing custom validators, follow these patterns to ensure compatibility
 with all Fastify features:
 
-** Always return objects, never throw:**
+**Always return objects, never throw:**
 ```js
 return { value: validatedData }  // On success
 return { error: validationError } // On failure
 ```
 
-** Use try-catch for safety:**
+**Use try-catch for safety:**
 ```js
 fastify.setValidatorCompiler(({ schema }) => {
   return (data) => {
@@ -916,7 +916,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 ```
 
 For custom error responses in the schema, see
-[`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Check out the
+[`ajv-errors`](https://github.com/ajv-validator/ajv-errors). Check out the
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 
@@ -978,7 +978,7 @@ fastify.post('/', { schema, }, (request, reply) => {
 ```
 
 To return localized error messages, see
-[ajv-i18n](https://github.com/epoberezkin/ajv-i18n).
+[ajv-i18n](https://github.com/ajv-validator/ajv-i18n).
 
 ```js
 const localize = require('ajv-i18n')
@@ -1123,8 +1123,8 @@ const refToSharedSchemaDefinitions = {
   Schema](https://json-schema.org/understanding-json-schema/about)
 - [fast-json-stringify
   documentation](https://github.com/fastify/fast-json-stringify)
-- [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)
-- [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)
-- [Ajv custom errors](https://github.com/epoberezkin/ajv-errors)
+- [Ajv documentation](https://github.com/ajv-validator/ajv/blob/master/README.md)
+- [Ajv i18n](https://github.com/ajv-validator/ajv-i18n)
+- [Ajv custom errors](https://github.com/ajv-validator/ajv-errors)
 - Custom error handling with core methods with error file dumping
   [example](https://github.com/fastify/example/tree/main/validation-messages)

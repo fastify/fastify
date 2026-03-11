@@ -9,6 +9,7 @@
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP022](#FSTDEP022)
+    - [FSTDEP023](#FSTDEP023)
 
 ## Warnings
 
@@ -55,4 +56,5 @@ Deprecation codes are supported by the Node.js CLI options:
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
-| <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated router options on top option properties. | Use `options.routerOptions`. | [#5985](https://github.com/fastify/fastify/pull/5985)
+| <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated router options on top option properties. | Use `options.routerOptions`. | [#5985](https://github.com/fastify/fastify/pull/5985) |
+| <a id="FSTDEP023">FSTDEP023</a> | You are trying to access deprecated request metadata accessors such as `request.host`, `request.hostname`, `request.port`, `request.protocol`, `request.ip`, or `request.ips`. | Read request headers or socket data directly and perform explicit validation/trust checks. Never use these values for security decisions. | -

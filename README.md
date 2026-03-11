@@ -413,7 +413,7 @@ in maintaining this project.
 Licensed under [MIT](./LICENSE).
 
 For your convenience, here is a list of all the licenses of our production
-dependencies:
+dependencies: 
 - MIT
 - ISC
 - BSD-3-Clause

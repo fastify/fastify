@@ -16,24 +16,33 @@ Request is a core Fastify object containing the following fields:
   [encapsulation context](./Encapsulation.md).
 - `id` - The request ID.
 - `log` - The logger instance of the incoming request.
-- `ip` - The IP address of the incoming request.
-- `ips` - An array of the IP addresses, ordered from closest to furthest, in the
-  `X-Forwarded-For` header of the incoming request (only when the
-  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled).
+- `ip` - The IP address of the incoming request. This value is taken from
+  `socket.remoteAddress` (or from `X-Forwarded-For` when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+- `ips` - An array of IP addresses, ordered from closest to furthest, from
+  `X-Forwarded-For` (only when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
 - `host` - The host of the incoming request (derived from `X-Forwarded-Host`
-  header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
-  enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
-  exists. The host header may return an empty string if `requireHostHeader` is
-  `false`, not provided with HTTP/1.0, or removed by schema validation.
-  ⚠ Security: this value comes from client-controlled headers; only trust it
-  when you control proxy behavior and have validated or allow-listed hosts.
-  No additional validation is performed beyond RFC parsing (see
-  [RFC 9110, section 7.2](https://www.rfc-editor.org/rfc/rfc9110#section-7.2) and
-  [RFC 3986, section 3.2.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2.2)).
-- `hostname` - The hostname derived from the `host` property of the incoming request.
-- `port` - The port from the `host` property, which may refer to the port the
+  when [`trustProxy`](./Server.md#factory-trust-proxy) is enabled). For HTTP/2
+  compatibility, it returns `:authority` if no host header exists. The host
+  header may return an empty string if `requireHostHeader` is `false`, not
+  provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - The hostname parsed from `request.host`.
+- `port` - The port parsed from `request.host`, which may refer to the port the
   server is listening on.
-- `protocol` - The protocol of the incoming request (`https` or `http`).
+- `protocol` - The protocol of the incoming request (`https` or `http`). This
+  value comes from `socket.encrypted` (or `X-Forwarded-Proto` when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+
+> ⚠️ Security:
+> `request.ip`, `request.ips`, `request.host`, `request.hostname`,
+> `request.port`, and `request.protocol` come from request metadata
+> (socket and/or forwarding headers) and should be treated as untrusted input.
+> Fastify does not perform security validation for your business logic.
+> If you use these values in security-sensitive decisions, you must validate
+> them explicitly (for example: trusted proxy configuration, allow-lists,
+> strict parsing, and normalization).
+
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in

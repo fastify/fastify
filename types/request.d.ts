@@ -71,13 +71,37 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
    * @deprecated Use `raw` property
    */
   readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  /**
+   * Derived from request socket metadata or forwarding headers.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly ip: string;
+  /**
+   * Derived from forwarding headers when trustProxy is enabled.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly ips?: string[];
+  /**
+   * Derived from Host/:authority/X-Forwarded-Host request metadata.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly host: string;
+  /**
+   * Parsed from request host metadata.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly port: number;
+  /**
+   * Parsed from request host metadata.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;
+  /**
+   * Derived from socket state or forwarding headers.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly protocol: 'http' | 'https';
   readonly method: string;
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>

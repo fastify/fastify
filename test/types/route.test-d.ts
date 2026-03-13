@@ -59,6 +59,12 @@ const asyncPreHandler = async (request: FastifyRequest) => {
 
 fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
 
+// Verify that RouteHandlerMethod is assignable to route hook options (e.g. passport compatibility)
+const handlerAsHook: RouteHandlerMethod = function (_request, _reply) {}
+fastify().get('/', { preValidation: handlerAsHook }, async () => 'ok')
+fastify().get('/', { preHandler: handlerAsHook }, async () => 'ok')
+fastify().get('/', { onRequest: handlerAsHook }, async () => 'ok')
+
 fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: true } },

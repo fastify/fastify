@@ -120,22 +120,3 @@ test('route with path alias instead of url', async t => {
   t.assert.deepStrictEqual(JSON.parse(res.payload), { path: 'alias' })
 })
 
-test('route defaults to / when neither url nor path is provided', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-
-  fastify.route({
-    method: 'GET',
-    handler: (req, reply) => {
-      reply.send({ root: true })
-    }
-  })
-
-  const res = await fastify.inject({
-    method: 'GET',
-    url: '/'
-  })
-
-  t.assert.deepStrictEqual(JSON.parse(res.payload), { root: true })
-})

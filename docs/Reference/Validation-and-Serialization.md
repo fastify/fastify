@@ -257,12 +257,21 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
-> **Important:** When using [custom content type
-> parsers](./ContentTypeParser.md), the parsed body will **only** be validated
-> if the request's content type is listed in the `content` object above. If
-> a parser for a content type (e.g., `application/yaml`) is defined,
-> but it is not not included in the body schema's `content` property,
-> the incoming data will be parsed but **not validated**.
+> ⚠ Warning:
+> When using [custom content type parsers](./ContentTypeParser.md), the parsed
+> body is validated **only** when the request content type matches a key in the
+> schema `content` map.
+>
+> Schema selection uses an exact match on the request's
+> [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
+> (for example, `application/json`). If a parser is registered with a regular
+> expression (for example, `/^application\/.*json$/`), the parser can accept
+> more content types than the `content` map covers. Requests in that gap are
+> parsed but **not validated**.
+>
+> Ensure every content type accepted by the parser has a corresponding key in
+> the `content` map, or use a catch-all body schema without `content` when
+> strict per-content-type discrimination is not required.
 >
 > ```js
 > // Add a custom parser for YAML

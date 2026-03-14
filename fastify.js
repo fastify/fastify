@@ -44,7 +44,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
+const { createChildLogger, defaultChildLoggerFactory, createLogger, createInternalLogger } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
@@ -89,7 +89,7 @@ function fastify (serverOptions) {
   const {
     options,
     genReqId,
-    disableRequestLogging,
+    internalLogger,
     hasLogger,
     initialConfig
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
@@ -215,6 +215,7 @@ function fastify (serverOptions) {
     },
     // expose logger instance
     log: options.logger,
+    internalLogger, // TODO: use symbol for it
     // type provider
     withTypeProvider,
     // hooks
@@ -643,10 +644,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
-      if (resolvedDisableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
-      }
+      onBadUrlContext.server.internalLogger.incomingRequest(childLogger, request)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -674,10 +672,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
-          if (resolvedDisableRequestLogging === false) {
-            childLogger.info({ req: request }, 'incoming request')
-          }
+          onBadUrlContext.server.internalLogger.incomingRequest(childLogger, request)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
@@ -874,12 +869,17 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.logger = logger
   options.requestIdHeader = requestIdHeader
   options.requestIdLogLabel = requestIdLogLabel
-  options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
+
+  // the internal logger uses the input logger to execute the logging. This allows the user
+  // to customize every internal log line
+  const internalLogger = createInternalLogger({
+    disableRequestLogging
+  })
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
@@ -901,7 +901,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   return {
     options,
     genReqId,
-    disableRequestLogging,
+    internalLogger,
     hasLogger,
     initialConfig
   }

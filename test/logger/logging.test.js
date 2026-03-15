@@ -7,6 +7,7 @@ const split = require('split2')
 const pino = require('pino')
 
 const Fastify = require('../../fastify')
+const { LogDispatcher } = require('../../lib/log-dispatcher')
 const helper = require('../helper')
 const { once, on } = stream
 const { request } = require('./logger-test-utils')
@@ -87,12 +88,12 @@ t.test('logging', { timeout: 60000 }, async (t) => {
         stream,
         level: 'info'
       },
-      logDispatcher: {
-        isLogDisabled: () => {
+      logDispatcher: new class extends LogDispatcher {
+        isLogDisabled () {
           t.assert.ok(true, 'isLogDisabled should be called')
           return true // disable logging to test that incomingRequest is not called
         }
-      }
+      }()
     })
     t.after(() => fastify.close())
 

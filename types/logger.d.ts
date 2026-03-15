@@ -82,16 +82,26 @@ export interface FastifyLoggerOptions<
   stream?: FastifyLoggerStreamDestination;
 }
 
-export interface FastifyLogDispatcherOptions {
-  isLogDisabled?(req: FastifyRequest): boolean;
-  incomingRequest?(request: FastifyRequest): void;
-  requestCompleted?(err: Error | null, request: FastifyRequest, reply: FastifyReply): void;
-  defaultErrorLog?(err: Error, request: FastifyRequest, reply: FastifyReply): void;
-  streamError?(err: Error, reply: FastifyReply, res: RawReplyDefaultExpression<RawServerDefault>): void;
-  routeNotFound?(request: FastifyRequest): void;
-  writeHeadError?(error: Error, reply: FastifyReply): void;
-  serializerError?(err: Error, reply: FastifyReply, statusCode: number): void;
-  serviceUnavailable?(logger: FastifyBaseLogger): void;
+export interface LogDispatcherOptions {
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel?: string
+}
+
+export declare class LogDispatcher {
+  disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel: string
+
+  constructor (options?: LogDispatcherOptions)
+
+  isLogDisabled (req: FastifyRequest): boolean
+  incomingRequest (request: FastifyRequest): void
+  requestCompleted (err: Error | null, request: FastifyRequest, reply: FastifyReply): void
+  defaultErrorLog (err: Error, request: FastifyRequest, reply: FastifyReply): void
+  streamError (err: Error, reply: FastifyReply, res: RawReplyDefaultExpression<RawServerDefault>): void
+  routeNotFound (request: FastifyRequest): void
+  writeHeadError (error: Error, reply: FastifyReply): void
+  serializerError (err: Error, reply: FastifyReply, statusCode: number): void
+  serviceUnavailable (logger: FastifyBaseLogger): void
 }
 
 export interface FastifyChildLoggerFactory<

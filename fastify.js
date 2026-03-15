@@ -44,7 +44,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogDispatcher } = require('./lib/logger-factory')
+const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogDispatcher, LogDispatcher } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
@@ -78,7 +78,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTDEP023, FSTDEP024 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -843,9 +843,13 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
-  const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
+  if (options.requestIdLogLabel !== undefined) {
+    FSTDEP024()
+  }
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  const disableRequestLogging = options.disableRequestLogging || false
+  if (options.disableRequestLogging !== undefined) {
+    FSTDEP023()
+  }
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -861,6 +865,10 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   const { logger, hasLogger } = createLogger(options)
 
+  // the internal logger uses the input logger to execute the logging. This allows the user
+  // to customize every internal log line
+  const logDispatcher = createLogDispatcher(options)
+
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
@@ -873,13 +881,6 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
   const initialConfig = getSecuredInitialConfig(options)
-
-  // the internal logger uses the input logger to execute the logging. This allows the user
-  // to customize every internal log line
-  const logDispatcher = createLogDispatcher({
-    disableRequestLogging,
-    requestIdLogLabel
-  }, options.logDispatcher)
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
@@ -981,5 +982,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  */
 module.exports = fastify
 module.exports.errorCodes = errorCodes
+module.exports.LogDispatcher = LogDispatcher
 module.exports.fastify = fastify
 module.exports.default = fastify

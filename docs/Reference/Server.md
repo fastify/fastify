@@ -389,6 +389,10 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
+> **Deprecated:** Use the [`logDispatcher`](#log-dispatcher) option with
+> `disableRequestLogging` or `isLogDisabled` override instead.
+> This top-level option will be removed in `fastify@6`.
+
 + Default: `false`
 
 When logging is enabled, Fastify will issue an `info` level log
@@ -402,11 +406,21 @@ and returns a boolean. This allows for conditional request logging based on the
 request properties (e.g., URL, headers, decorations).
 
 ```js
+// Deprecated
 const fastify = require('fastify')({
   logger: true,
   disableRequestLogging: (request) => {
-    // Disable logging for health check endpoints
     return request.url === '/health' || request.url === '/ready'
+  }
+})
+
+// Recommended: use logDispatcher instead
+const fastify = require('fastify')({
+  logger: true,
+  logDispatcher: {
+    disableRequestLogging: (request) => {
+      return request.url === '/health' || request.url === '/ready'
+    }
   }
 })
 ```
@@ -440,27 +454,54 @@ fastify.addHook('onResponse', (req, reply, done) => {
 
 + Default: `undefined`
 
-Allows customization of Fastify's internal log lines by overriding individual
-methods on the `LogDispatcher`. You only need to provide the methods you want
-to customize; all others keep their default behavior.
+Accepts an instance of `LogDispatcher` (or a subclass) to customize Fastify's
+internal log lines. Extend the `LogDispatcher` class and override only the
+methods you want to customize; all others keep their default behavior.
+
+The `LogDispatcher` class is exported from `fastify`:
 
 ```js
-const fastify = require('fastify')({
-  logger: true,
-  logDispatcher: {
-    incomingRequest (request) {
-      // Use debug level instead of info for incoming requests
-      request.log.debug({ req: request }, 'incoming request')
-    },
-    requestCompleted (err, request, reply) {
-      // Add custom fields to the request completed log
-      if (err) {
-        reply.log.error({ res: reply, err, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
-      } else {
-        reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
+const { LogDispatcher } = require('fastify')
+```
+
+The constructor accepts an optional options object:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `disableRequestLogging` | `boolean \| (req) => boolean` | `false` | When `true` (or a function returning `true`), per-request log lines are suppressed. |
+| `requestIdLogLabel` | `string` | `'reqId'` | The label used for the request identifier when logging. |
+
+```js
+const { LogDispatcher } = require('fastify')
+
+class MyLogDispatcher extends LogDispatcher {
+  constructor () {
+    super({
+      requestIdLogLabel: 'traceId',
+      disableRequestLogging: (request) => {
+        return request.url === '/health'
       }
+    })
+  }
+
+  incomingRequest (request) {
+    // Use debug level instead of info for incoming requests
+    request.log.debug({ req: request }, 'incoming request')
+  }
+
+  requestCompleted (err, request, reply) {
+    // Add custom fields to the request completed log
+    if (err) {
+      reply.log.error({ res: reply, err, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
+    } else {
+      reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
     }
   }
+}
+
+const fastify = require('fastify')({
+  logger: true,
+  logDispatcher: new MyLogDispatcher()
 })
 ```
 
@@ -548,6 +589,9 @@ const fastify = require('fastify')({
 
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
+
+> **Deprecated:** Use the [`logDispatcher`](#log-dispatcher) option with
+> `requestIdLogLabel` instead. This top-level option will be removed in `fastify@6`.
 
 + Default: `'reqId'`
 

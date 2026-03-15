@@ -559,4 +559,3 @@ expectType<FastifyInstance>(fastify().route({
   method: ['GET', 'POST'],
   handler: routeHandler
 }))
-

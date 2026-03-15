@@ -119,4 +119,3 @@ test('route with path alias instead of url', async t => {
 
   t.assert.deepStrictEqual(JSON.parse(res.payload), { path: 'alias' })
 })
-

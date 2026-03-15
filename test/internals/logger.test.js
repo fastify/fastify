@@ -250,6 +250,88 @@ test('defaultErrorLog should log error for 5xx errors', t => {
   internalLogger.defaultErrorLog(err, request, reply)
 })
 
+test('writeHeadError should not log when logging is disabled (boolean)', t => {
+  t.plan(1)
+  const internalLogger = createInternalLogger({ disableRequestLogging: true })
+  const log = {
+    warn: () => { t.assert.fail('warn should not be called') }
+  }
+  const request = {}
+  const reply = { request, log }
+  internalLogger.writeHeadError(new Error('write head failed'), reply)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('writeHeadError should not log when logging is disabled (function)', t => {
+  t.plan(1)
+  const internalLogger = createInternalLogger({ disableRequestLogging: () => true })
+  const log = {
+    warn: () => { t.assert.fail('warn should not be called') }
+  }
+  const request = {}
+  const reply = { request, log }
+  internalLogger.writeHeadError(new Error('write head failed'), reply)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('writeHeadError should log warn with error message', t => {
+  t.plan(2)
+  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const error = new Error('write head failed')
+  const request = {}
+  const reply = {
+    request,
+    log: {
+      warn: (data, msg) => {
+        t.assert.strictEqual(msg, 'write head failed')
+        t.assert.strictEqual(data.err, error)
+      }
+    }
+  }
+  internalLogger.writeHeadError(error, reply)
+})
+
+test('serializerError should not log when logging is disabled (boolean)', t => {
+  t.plan(1)
+  const internalLogger = createInternalLogger({ disableRequestLogging: true })
+  const log = {
+    error: () => { t.assert.fail('error should not be called') }
+  }
+  const request = {}
+  const reply = { request, log }
+  internalLogger.serializerError(new Error('serializer failed'), reply, 500)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('serializerError should not log when logging is disabled (function)', t => {
+  t.plan(1)
+  const internalLogger = createInternalLogger({ disableRequestLogging: () => true })
+  const log = {
+    error: () => { t.assert.fail('error should not be called') }
+  }
+  const request = {}
+  const reply = { request, log }
+  internalLogger.serializerError(new Error('serializer failed'), reply, 500)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('serializerError should log error with status code', t => {
+  t.plan(2)
+  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const err = new Error('serializer failed')
+  const request = {}
+  const reply = {
+    request,
+    log: {
+      error: (data, msg) => {
+        t.assert.strictEqual(msg, 'The serializer for the given status code failed')
+        t.assert.strictEqual(data.statusCode, 500)
+      }
+    }
+  }
+  internalLogger.serializerError(err, reply, 500)
+})
+
 test('The serializer prevent fails if the request socket is undefined', t => {
   t.plan(1)
 

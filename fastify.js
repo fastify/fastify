@@ -868,7 +868,6 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
   options.requestIdHeader = requestIdHeader
-  options.requestIdLogLabel = requestIdLogLabel
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
@@ -878,7 +877,8 @@ function processOptions (options, defaultRoute, onBadUrl) {
   // the internal logger uses the input logger to execute the logging. This allows the user
   // to customize every internal log line
   const internalLogger = createInternalLogger({
-    disableRequestLogging
+    disableRequestLogging,
+    requestIdLogLabel
   })
 
   // exposeHeadRoutes have its default set from the validator

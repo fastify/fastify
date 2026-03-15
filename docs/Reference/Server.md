@@ -23,6 +23,7 @@ describes the properties available in that options object.
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
+  - [`logDispatcher`](#logdispatcher)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
@@ -433,6 +434,54 @@ fastify.addHook('onResponse', (req, reply, done) => {
   done()
 })
 ```
+
+### `logDispatcher`
+<a id="factory-log-dispatcher"></a>
+
++ Default: `undefined`
+
+Allows customization of Fastify's internal log lines by overriding individual
+methods on the `LogDispatcher`. You only need to provide the methods you want
+to customize; all others keep their default behavior.
+
+```js
+const fastify = require('fastify')({
+  logger: true,
+  logDispatcher: {
+    incomingRequest (request) {
+      // Use debug level instead of info for incoming requests
+      request.log.debug({ req: request }, 'incoming request')
+    },
+    requestCompleted (err, request, reply) {
+      // Add custom fields to the request completed log
+      if (err) {
+        reply.log.error({ res: reply, err, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
+      } else {
+        reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
+      }
+    }
+  }
+})
+```
+
+The available methods that can be overridden are:
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `isLogDisabled` | `(req)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
+| `incomingRequest` | `(request)` | Logs an incoming request at `info` level. |
+| `requestCompleted` | `(err, request, reply)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
+| `defaultErrorLog` | `(err, request, reply)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
+| `streamError` | `(err, reply, res)` | Logs stream-level errors after headers have been sent. |
+| `routeNotFound` | `(request)` | Logs a "route not found" message at `info` level. |
+| `writeHeadError` | `(error, reply)` | Logs a warning when `writeHead` fails during error handling. |
+| `serializerError` | `(err, reply, statusCode)` | Logs an error when the serializer for a given status code fails. |
+| `serviceUnavailable` | `(logger)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
+
+**Note:** When you override a method, you take full control of it — the
+default `disableRequestLogging` check is **not** automatically applied.
+If you need conditional logging, call `this.isLogDisabled(request)` yourself
+or override `isLogDisabled` as well.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>

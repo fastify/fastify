@@ -687,8 +687,8 @@ need an explicit global augmentation entry point.
 If you still rely on legacy declaration-merging plugins, the following tips can
 help reduce false-positive global augmentations:
 - Make sure the `no-unused-vars` rule is enabled in
-  [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
-  are actually being loaded.
+  [ESLint](https://eslint.org/docs/latest/rules/no-unused-vars) and any
+  imported plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
@@ -857,7 +857,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 ## Code Completion In Vanilla JavaScript
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.
-[Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by
+[Intellisense](https://code.visualstudio.com/docs/editing/intellisense)) by
 following the [TypeScript JSDoc
 Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
 

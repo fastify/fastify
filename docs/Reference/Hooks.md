@@ -376,7 +376,7 @@ fastify.addHook('preHandler', async (request, reply) => {
 If you want to respond with a stream, you should avoid using an `async` function
 for the hook. If you must use an `async` function, your code will need to follow
 the pattern in
-[test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
+[test/hooks-async.js](https://github.com/fastify/fastify/blob/main/test/hooks-async.js).
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {

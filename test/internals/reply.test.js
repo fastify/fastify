@@ -5,7 +5,7 @@ const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
-const { createInternalLogger } = require('../../lib/logger-factory')
+const { createLogDispatcher } = require('../../lib/logger-factory')
 const Fastify = require('../..')
 const { Readable, Writable } = require('node:stream')
 const {
@@ -89,7 +89,7 @@ test('reply.send will logStream error and destroy the stream', t => {
   const fakeRequest = {
     [kRouteContext]: {
       onSend: null,
-      server: { internalLogger: createInternalLogger({ disableRequestLogging: false }) }
+      server: { logDispatcher: createLogDispatcher({ disableRequestLogging: false }) }
     }
   }
 

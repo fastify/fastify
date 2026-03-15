@@ -86,7 +86,7 @@ test('Destroying streams prematurely, log is disabled', (t, testDone) => {
   const http = require('node:http')
 
   fastify.get('/', function (request, reply) {
-    reply.server.internalLogger.disableRequestLogging = true
+    reply.server.logDispatcher.disableRequestLogging = true
 
     let sent = false
     const reallyLongStream = new stream.Readable({

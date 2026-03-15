@@ -44,7 +44,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createChildLogger, defaultChildLoggerFactory, createLogger, createInternalLogger } = require('./lib/logger-factory')
+const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogDispatcher } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
@@ -89,7 +89,7 @@ function fastify (serverOptions) {
   const {
     options,
     genReqId,
-    internalLogger,
+    logDispatcher,
     hasLogger,
     initialConfig
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
@@ -215,7 +215,7 @@ function fastify (serverOptions) {
     },
     // expose logger instance
     log: options.logger,
-    internalLogger, // TODO: use symbol for it
+    logDispatcher, // TODO: use symbol for it
     // type provider
     withTypeProvider,
     // hooks
@@ -644,7 +644,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      onBadUrlContext.server.internalLogger.incomingRequest(request)
+      onBadUrlContext.server.logDispatcher.incomingRequest(request)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -672,7 +672,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          onBadUrlContext.server.internalLogger.incomingRequest(request)
+          onBadUrlContext.server.logDispatcher.incomingRequest(request)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
@@ -876,7 +876,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   // the internal logger uses the input logger to execute the logging. This allows the user
   // to customize every internal log line
-  const internalLogger = createInternalLogger({
+  const logDispatcher = createLogDispatcher({
     disableRequestLogging,
     requestIdLogLabel
   })
@@ -901,7 +901,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   return {
     options,
     genReqId,
-    internalLogger,
+    logDispatcher,
     hasLogger,
     initialConfig
   }

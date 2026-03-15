@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('../..')
 const loggerUtils = require('../../lib/logger-factory')
-const { createInternalLogger } = require('../../lib/logger-factory')
+const { createLogDispatcher } = require('../../lib/logger-factory')
 const { serializers } = require('../../lib/logger-pino')
 
 test('time resolution', t => {
@@ -145,33 +145,33 @@ test('The logger should error if both stream and file destination are given', t 
 
 test('requestCompleted should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: true })
   const log = {
     error: () => { t.assert.fail('error should not be called') },
     info: () => { t.assert.fail('info should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  internalLogger.requestCompleted(new Error('test'), request, reply)
+  logDispatcher.requestCompleted(new Error('test'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('requestCompleted should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: () => true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: () => true })
   const log = {
     error: () => { t.assert.fail('error should not be called') },
     info: () => { t.assert.fail('info should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  internalLogger.requestCompleted(new Error('test'), request, reply)
+  logDispatcher.requestCompleted(new Error('test'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('requestCompleted should log error when err is present', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false })
   const err = new Error('test')
   const log = {
     error: (data, msg) => {
@@ -180,12 +180,12 @@ test('requestCompleted should log error when err is present', t => {
   }
   const request = {}
   const reply = { request, log, elapsedTime: 42 }
-  internalLogger.requestCompleted(err, request, reply)
+  logDispatcher.requestCompleted(err, request, reply)
 })
 
 test('requestCompleted should log info when no error', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false })
   const log = {
     info: (data, msg) => {
       t.assert.strictEqual(msg, 'request completed')
@@ -193,38 +193,38 @@ test('requestCompleted should log info when no error', t => {
   }
   const request = {}
   const reply = { request, log, elapsedTime: 42 }
-  internalLogger.requestCompleted(null, request, reply)
+  logDispatcher.requestCompleted(null, request, reply)
 })
 
 test('defaultErrorLog should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: true })
   const log = {
     info: () => { t.assert.fail('info should not be called') },
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log, statusCode: 404 }
-  internalLogger.defaultErrorLog(new Error('not found'), request, reply)
+  logDispatcher.defaultErrorLog(new Error('not found'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('defaultErrorLog should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: () => true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: () => true })
   const log = {
     info: () => { t.assert.fail('info should not be called') },
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log, statusCode: 404 }
-  internalLogger.defaultErrorLog(new Error('not found'), request, reply)
+  logDispatcher.defaultErrorLog(new Error('not found'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('defaultErrorLog should log info for 4xx errors', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false })
   const err = new Error('not found')
   const log = {
     info: (data, msg) => {
@@ -233,12 +233,12 @@ test('defaultErrorLog should log info for 4xx errors', t => {
   }
   const request = {}
   const reply = { request, log, statusCode: 404 }
-  internalLogger.defaultErrorLog(err, request, reply)
+  logDispatcher.defaultErrorLog(err, request, reply)
 })
 
 test('defaultErrorLog should log error for 5xx errors', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false })
   const err = new Error('internal error')
   const log = {
     error: (data, msg) => {
@@ -247,36 +247,36 @@ test('defaultErrorLog should log error for 5xx errors', t => {
   }
   const request = {}
   const reply = { request, log, statusCode: 500 }
-  internalLogger.defaultErrorLog(err, request, reply)
+  logDispatcher.defaultErrorLog(err, request, reply)
 })
 
 test('writeHeadError should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: true })
   const log = {
     warn: () => { t.assert.fail('warn should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  internalLogger.writeHeadError(new Error('write head failed'), reply)
+  logDispatcher.writeHeadError(new Error('write head failed'), reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('writeHeadError should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: () => true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: () => true })
   const log = {
     warn: () => { t.assert.fail('warn should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  internalLogger.writeHeadError(new Error('write head failed'), reply)
+  logDispatcher.writeHeadError(new Error('write head failed'), reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('writeHeadError should log warn with error message', t => {
   t.plan(2)
-  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false })
   const error = new Error('write head failed')
   const request = {}
   const reply = {
@@ -288,36 +288,36 @@ test('writeHeadError should log warn with error message', t => {
       }
     }
   }
-  internalLogger.writeHeadError(error, reply)
+  logDispatcher.writeHeadError(error, reply)
 })
 
 test('serializerError should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: true })
   const log = {
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  internalLogger.serializerError(new Error('serializer failed'), reply, 500)
+  logDispatcher.serializerError(new Error('serializer failed'), reply, 500)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('serializerError should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const internalLogger = createInternalLogger({ disableRequestLogging: () => true })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: () => true })
   const log = {
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  internalLogger.serializerError(new Error('serializer failed'), reply, 500)
+  logDispatcher.serializerError(new Error('serializer failed'), reply, 500)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('serializerError should log error with status code', t => {
   t.plan(2)
-  const internalLogger = createInternalLogger({ disableRequestLogging: false })
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false })
   const err = new Error('serializer failed')
   const request = {}
   const reply = {
@@ -329,7 +329,7 @@ test('serializerError should log error with status code', t => {
       }
     }
   }
-  internalLogger.serializerError(err, reply, 500)
+  logDispatcher.serializerError(err, reply, 500)
 })
 
 test('The serializer prevent fails if the request socket is undefined', t => {

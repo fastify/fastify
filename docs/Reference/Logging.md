@@ -265,4 +265,4 @@ const fastify = Fastify({
 })
 ```
 
-See https://getpino.io/#/docs/redaction for more details.
+See https://github.com/pinojs/pino/blob/main/docs/redaction.md for more details.

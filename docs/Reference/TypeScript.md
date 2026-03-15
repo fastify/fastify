@@ -1439,7 +1439,7 @@ example for more details on specifying a custom logger.
 [src](https://github.com/fastify/fastify/blob/main/types/logger.d.ts#L17)
 
 An interface definition for the internal Fastify logger. It is emulative of the
-[Pino.js](https://getpino.io/#/) logger. When enabled through server options,
+[Pino.js](https://getpino.io/) logger. When enabled through server options,
 use it following the general [logger](./Logging.md) documentation.
 
 ##### fastify.FastifyLogFn

@@ -247,7 +247,7 @@ and run it with `npm run dev`.
 ### Deploy
 ```bash
 gcloud functions deploy fastifyFunction \
---runtime nodejs14 --trigger-http --region $GOOGLE_REGION --allow-unauthenticated
+--runtime nodejs20 --trigger-http --region $GOOGLE_REGION --allow-unauthenticated
 ```
 
 #### Read logs
@@ -257,7 +257,7 @@ gcloud functions logs read
 
 #### Example request to `/hello` endpoint
 ```bash
-curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
+curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/fastifyFunction \
   -H "Content-Type: application/json" \
   -d '{ "name": "Fastify" }'
 {"message":"Hello Fastify!"}
@@ -451,9 +451,9 @@ You can add any valid `Dockerfile` that packages and runs a Node app. A basic
 docs](https://github.com/knative/docs/blob/2d654d1fd6311750cc57187a86253c52f273d924/docs/serving/samples/hello-world/helloworld-nodejs/Dockerfile).
 
 ```Dockerfile
-# Use the official Node.js 10 image.
+# Use the official Node.js 20 image.
 # https://hub.docker.com/_/node
-FROM node:10
+FROM node:20
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app

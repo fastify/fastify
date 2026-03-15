@@ -346,8 +346,6 @@ test('Should supply Fastify request to the logger in frameworkErrors wrapper - F
       stream: logStream,
       serializers: {
         req (request) {
-          console.log(request)
-
           t.assert.deepStrictEqual(request.id, REQ_ID)
           return { httpVersion: request.raw.httpVersion }
         }

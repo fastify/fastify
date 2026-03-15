@@ -644,7 +644,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      onBadUrlContext.server.internalLogger.incomingRequest(childLogger, request)
+      onBadUrlContext.server.internalLogger.incomingRequest(request)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -672,7 +672,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          onBadUrlContext.server.internalLogger.incomingRequest(childLogger, request)
+          onBadUrlContext.server.internalLogger.incomingRequest(request)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }

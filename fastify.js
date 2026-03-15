@@ -879,7 +879,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   const logDispatcher = createLogDispatcher({
     disableRequestLogging,
     requestIdLogLabel
-  })
+  }, options.logDispatcher)
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes

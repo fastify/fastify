@@ -332,6 +332,59 @@ test('serializerError should log error with status code', t => {
   logDispatcher.serializerError(err, reply, 500)
 })
 
+test('createLogDispatcher should apply user overrides', t => {
+  t.plan(1)
+  const logDispatcher = createLogDispatcher(
+    { disableRequestLogging: false },
+    { incomingRequest: () => { t.assert.ok(true, 'custom incomingRequest called') } }
+  )
+  logDispatcher.incomingRequest({})
+})
+
+test('createLogDispatcher should keep defaults for non-overridden methods', t => {
+  t.plan(1)
+  const logDispatcher = createLogDispatcher(
+    { disableRequestLogging: false },
+    { incomingRequest: () => { } }
+  )
+  // requestCompleted should still be the default
+  const log = {
+    info: (data, msg) => {
+      t.assert.strictEqual(msg, 'request completed')
+    }
+  }
+  const request = {}
+  const reply = { request, log, elapsedTime: 42 }
+  logDispatcher.requestCompleted(null, request, reply)
+})
+
+test('createLogDispatcher should throw on invalid keys', t => {
+  t.plan(1)
+  t.assert.throws(() => {
+    createLogDispatcher({ disableRequestLogging: false }, { notAMethod: () => { } })
+  }, { code: 'FST_ERR_LOG_INVALID_LOG_DISPATCHER' })
+})
+
+test('createLogDispatcher should throw when override is not a function', t => {
+  t.plan(1)
+  t.assert.throws(() => {
+    createLogDispatcher({ disableRequestLogging: false }, { incomingRequest: 'not a function' })
+  }, { code: 'FST_ERR_LOG_INVALID_LOG_DISPATCHER_FN' })
+})
+
+test('createLogDispatcher should throw when overrides is not an object', t => {
+  t.plan(1)
+  t.assert.throws(() => {
+    createLogDispatcher({ disableRequestLogging: false }, 'bad')
+  }, { code: 'FST_ERR_LOG_INVALID_LOG_DISPATCHER' })
+})
+
+test('createLogDispatcher should accept null overrides', t => {
+  t.plan(1)
+  const logDispatcher = createLogDispatcher({ disableRequestLogging: false }, null)
+  t.assert.ok(logDispatcher)
+})
+
 test('The serializer prevent fails if the request socket is undefined', t => {
   t.plan(1)
 

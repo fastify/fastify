@@ -6,16 +6,17 @@ The Fastify framework is written in vanilla JavaScript, and as such type
 definitions are not as easy to maintain; however, since version 2 and beyond,
 maintainers and contributors have put in a great effort to improve the types.
 
-The type system was changed in Fastify version 3. The new type system introduces
-generic constraining and defaulting, plus a new way to define schema types such
-as a request body, querystring, and more! As the team works on improving
-framework and type definition synergy, sometimes parts of the API will not be
-typed or may be typed incorrectly. We encourage you to **contribute** to help us
-fill in the gaps. Just make sure to read our
+Fastify's type system has evolved significantly over multiple major releases.
+In Fastify 6, decorator typing is registration-scoped by default, so type
+visibility follows encapsulation and plugin registration flow.
+
+As the team keeps improving framework and type-definition synergy, some API
+areas may still be incomplete or need refinement. We encourage you to
+**contribute** to help fill the gaps. Just make sure to read our
 [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 file before getting started to make sure things go smoothly!
 
-> The documentation in this section covers Fastify version 3.x typings
+> The documentation in this section covers Fastify 6.x typings
 
 > Plugins may or may not include typings. See [Plugins](#plugins) for more
 > information. We encourage users to send pull requests to improve typings
@@ -94,10 +95,10 @@ in a blank http Fastify server.
    🏓
 
 🎉 You now have a working Typescript Fastify server! This example demonstrates
-the simplicity of the version 3.x type system. By default, the type system
-assumes you are using an `http` server. The later examples will demonstrate how
-to create more complex servers such as `https` and `http2`, how to specify route
-schemas, and more!
+the core Fastify 6 typing model. By default, the type system assumes you are
+using an `http` server. The later examples will demonstrate how to create more
+complex servers such as `https` and `http2`, how to specify route schemas, and
+more!
 
 > For more examples on initializing Fastify with TypeScript (such as enabling
 > HTTP2) check out the detailed API section [here][Fastify]
@@ -549,9 +550,9 @@ Fastify Plugin in a TypeScript Project.
    }
 
    // export plugin using fastify-plugin
-   export default fp(myPluginCallback, '3.x')
+   export default fp(myPluginCallback, '6.x')
    // or
-   // export default fp(myPluginAsync, '3.x')
+   // export default fp(myPluginAsync, '6.x')
    ```
 6. Run `npm run build` to compile the plugin code and produce both a JavaScript
    source file and a type definition file.
@@ -683,8 +684,8 @@ For reusable plugins, this inference-based style is preferred when available.
 Declaration merging is still supported for legacy plugins and for packages that
 need an explicit global augmentation entry point.
 
-However, there are a couple of suggestions to help improve the declaration
-merging experience when you rely on it:
+If you still rely on legacy declaration-merging plugins, the following tips can
+help reduce false-positive global augmentations:
 - Make sure the `no-unused-vars` rule is enabled in
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.
@@ -871,8 +872,7 @@ module.exports = async function (fastify, { optionA, optionB }) {
 
 ## API Type System Documentation
 
-This section is a detailed account of all the types available to you in Fastify
-version 3.x
+This section is a detailed account of the types available in Fastify 6.x.
 
 All `http`, `https`, and `http2` types are inferred from `@types/node`
 
@@ -1192,9 +1192,10 @@ added here disregard what kind of request object (http vs http2) and disregard
 what route level it is serving; thus calling `request.body` inside a GET request
 will not throw an error (but good luck sending a GET request with a body 😉).
 
-If you need to add custom properties to the `FastifyRequest` object (such as
-when using the [`decorateRequest`][DecorateRequest] method) you need to use
-declaration merging on this interface.
+If you need to add custom properties to `FastifyRequest` (for example with
+[`decorateRequest`][DecorateRequest]), prefer registration-scoped typing or
+`getDecorator<T>()` / `setDecorator<T>()` for local scope. Module augmentation
+is still available as a legacy/global approach.
 
 A basic example is provided in the [`FastifyRequest`][FastifyRequest] section.
 For a more detailed example check out the Learn By Example section:
@@ -1209,7 +1210,7 @@ const server = fastify()
 server.decorateRequest('someProp', 'hello!')
 
 server.get('/', async (request, reply) => {
-  const { someProp } = request // need to use declaration merging to add this prop to the request interface
+  const { someProp } = request // if using global augmentation, declare it on FastifyRequest
   return someProp
 })
 
@@ -1291,9 +1292,9 @@ This interface contains the custom properties that Fastify adds to the standard
 Node.js reply object. The properties added here disregard what kind of reply
 object (http vs http2).
 
-If you need to add custom properties to the FastifyReply object (such as when
-using the `decorateReply` method) you need to use declaration merging on this
-interface.
+If you need to add custom properties to `FastifyReply` (such as with
+`decorateReply`), prefer registration-scoped typing or `getDecorator<T>()` for
+local scope. Module augmentation remains available as a legacy/global option.
 
 A basic example is provided in the [`FastifyReply`][FastifyReply] section. For a
 more detailed example check out the Learn By Example section:
@@ -1308,7 +1309,7 @@ const server = fastify()
 server.decorateReply('someProp', 'world')
 
 server.get('/', async (request, reply) => {
-  const { someProp } = reply // need to use declaration merging to add this prop to the reply interface
+  const { someProp } = reply // if using global augmentation, declare it on FastifyReply
   return someProp
 })
 

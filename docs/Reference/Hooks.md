@@ -866,9 +866,11 @@ would be a dangerous and destructive operation. So be careful and
 make sure your property is entirely new, also using this approach
 only for very specific and small cases like this example.
 
-Regarding TypeScript in this example, you'd need to update the
-`FastifyRequest` core interface to include your new property typing
-(for more about it, see [TypeScript](./TypeScript.md) page), like:
+Regarding TypeScript in this example, in Fastify 6 you should prefer a
+registration-scoped/plugin-based typing approach. For small local cases, a
+module augmentation can still be used to type your custom property
+(for more about migration options, see [TypeScript](./TypeScript.md) and the
+[declaration-merging migration guide](../Guides/Migration-Guide-Declaration-Merging.md)):
 
 ```ts
 interface AuthenticatedUser { /* ... */ }

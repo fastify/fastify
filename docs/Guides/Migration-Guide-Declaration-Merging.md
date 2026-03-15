@@ -11,6 +11,9 @@ It is written for:
 - **application maintainers** using Fastify in production services;
 - **plugin maintainers** publishing Fastify plugins.
 
+> This registration-scoped decorator typing approach is part of the Fastify 6
+> TypeScript model.
+
 ## What changed
 
 In the declaration-merging model, decorators often appeared globally in types,

@@ -262,7 +262,7 @@ To execute the content type parser on all content types, call
 fastify.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('*', function (request, payload, done) {
-  const data = ''
+  let data = ''
   payload.on('data', chunk => { data += chunk })
   payload.on('end', () => {
     done(null, data)

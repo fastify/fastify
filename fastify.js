@@ -33,7 +33,8 @@ const {
   kChildLoggerFactory,
   kGenReqId,
   kErrorHandlerAlreadySet,
-  kHandlerTimeout
+  kHandlerTimeout,
+  kLogDispatcher
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -215,7 +216,7 @@ function fastify (serverOptions) {
     },
     // expose logger instance
     log: options.logger,
-    logDispatcher, // TODO: use symbol for it
+    [kLogDispatcher]: logDispatcher,
     // type provider
     withTypeProvider,
     // hooks
@@ -644,7 +645,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      onBadUrlContext.server.logDispatcher.incomingRequest(request)
+      onBadUrlContext.server[kLogDispatcher].incomingRequest(request)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -672,7 +673,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          onBadUrlContext.server.logDispatcher.incomingRequest(request)
+          onBadUrlContext.server[kLogDispatcher].incomingRequest(request)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }

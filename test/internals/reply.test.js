@@ -14,7 +14,8 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext
+  kRouteContext,
+  kLogDispatcher
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -89,7 +90,7 @@ test('reply.send will logStream error and destroy the stream', t => {
   const fakeRequest = {
     [kRouteContext]: {
       onSend: null,
-      server: { logDispatcher: new LogDispatcher() }
+      server: { [kLogDispatcher]: new LogDispatcher() }
     }
   }
 

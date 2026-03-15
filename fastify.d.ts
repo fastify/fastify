@@ -17,6 +17,7 @@ import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './typ
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
+  FastifyLogDispatcherOptions,
   FastifyLogFn,
   FastifyLoggerInstance,
   FastifyLoggerOptions,
@@ -122,6 +123,7 @@ declare namespace fastify {
     handlerTimeout?: number,
     maxParamLength?: number,
     disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
+    logDispatcher?: FastifyLogDispatcherOptions,
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
@@ -186,7 +188,7 @@ declare namespace fastify {
     FastifyReply, // './types/reply'
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
-    FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
+    FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, FastifyLogDispatcherOptions, LogLevel, // './types/logger'
     FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
     FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'

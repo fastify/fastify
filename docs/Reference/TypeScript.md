@@ -23,6 +23,10 @@ file before getting started to make sure things go smoothly!
 
 🚨 Don't forget to install `@types/node`
 
+If you are migrating from ambient declaration merging assumptions to Fastify's
+registration-scoped decorator typing, see the
+[Migration Guide (declaration merging to registration-scoped typing)](../Guides/Migration-Guide-Declaration-Merging.md).
+
 ## Learn By Example
 
 The best way to learn the Fastify type system is by example! The following four

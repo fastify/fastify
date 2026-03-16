@@ -16,24 +16,31 @@ Request is a core Fastify object containing the following fields:
   [encapsulation context](./Encapsulation.md).
 - `id` - The request ID.
 - `log` - The logger instance of the incoming request.
-- `ip` - The IP address of the incoming request.
-- `ips` - An array of the IP addresses, ordered from closest to furthest, in the
-  `X-Forwarded-For` header of the incoming request (only when the
-  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled).
-- `host` - The host of the incoming request (derived from `X-Forwarded-Host`
-  header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
-  enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
-  exists. The host header may return an empty string if `requireHostHeader` is
-  `false`, not provided with HTTP/1.0, or removed by schema validation.
-  ⚠ Security: this value comes from client-controlled headers; only trust it
-  when you control proxy behavior and have validated or allow-listed hosts.
-  No additional validation is performed beyond RFC parsing (see
-  [RFC 9110, section 7.2](https://www.rfc-editor.org/rfc/rfc9110#section-7.2) and
-  [RFC 3986, section 3.2.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2.2)).
-- `hostname` - The hostname derived from the `host` property of the incoming request.
-- `port` - The port from the `host` property, which may refer to the port the
-  server is listening on.
-- `protocol` - The protocol of the incoming request (`https` or `http`).
+- `ip` - **Deprecated**. The IP address of the incoming request.
+- `ips` - **Deprecated**. An array of the IP addresses, ordered from closest to
+  furthest, in the `X-Forwarded-For` header of the incoming request (only when
+  the [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled).
+- `host` - **Deprecated**. The host of the incoming request (derived from
+  `X-Forwarded-Host` header when the
+  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled). For
+  HTTP/2 compatibility, it returns `:authority` if no host header exists. The
+  host header may return an empty string if `requireHostHeader` is `false`, not
+  provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - **Deprecated**. The hostname derived from the `host` property of
+  the incoming request.
+- `port` - **Deprecated**. The port from the `host` property, which may refer
+  to the port the server is listening on.
+- `protocol` - **Deprecated**. The protocol of the incoming request (`https` or
+  `http`).
+
+> ⚠️ Security warning:
+> `request.ip`, `request.ips`, `request.host`, `request.hostname`,
+> `request.port`, and `request.protocol` are derived from untrusted request
+> metadata (socket information and/or client-controlled forwarding/host
+> headers). They are convenience accessors only and MUST NOT be used for
+> authentication, authorization, origin validation, redirect safety, or any
+> other security decision.
+
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
@@ -112,12 +119,12 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.raw)
   console.log(request.server)
   console.log(request.id)
-  console.log(request.ip)
-  console.log(request.ips)
-  console.log(request.host)
-  console.log(request.hostname)
-  console.log(request.port)
-  console.log(request.protocol)
+  console.log(request.ip) // deprecated
+  console.log(request.ips) // deprecated
+  console.log(request.host) // deprecated
+  console.log(request.hostname) // deprecated
+  console.log(request.port) // deprecated
+  console.log(request.protocol) // deprecated
   console.log(request.url)
   console.log(request.routeOptions.method)
   console.log(request.routeOptions.bodyLimit)

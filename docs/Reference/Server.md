@@ -560,12 +560,17 @@ For more examples, refer to the
 You may access the `ip`, `ips`, `host` and `protocol` values on the
 [`request`](./Request.md) object.
 
+> ⚠️ Security warning:
+> These accessors are deprecated and derived from untrusted request metadata.
+> Do not use them for authentication, authorization, origin checks, or any
+> other security decisions.
+
 ```js
 fastify.get('/', (request, reply) => {
-  console.log(request.ip)
-  console.log(request.ips)
-  console.log(request.host)
-  console.log(request.protocol)
+  console.log(request.ip) // deprecated
+  console.log(request.ips) // deprecated
+  console.log(request.host) // deprecated
+  console.log(request.protocol) // deprecated
 })
 ```
 

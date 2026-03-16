@@ -22,7 +22,7 @@ like an open wiki than a standard guarded open source project.
 
 If you think you meet the above criteria and we have not invited you yet, then 
 feel free to reach out to a [Lead Maintainer](https://github.com/fastify/fastify#team)
-privately with some links to contributions, which you consider as significant
+privately with links to contributions that you consider as significant
 and valuable.
 
 We will assess your contributions and, in a reasonable time, get back to you

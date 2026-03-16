@@ -234,7 +234,7 @@ const schema1 = {
 const validate = request.compileValidationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newValidate = request.compileValidationSchema(schema1)
 
 console.log(newValidate === validate) // true

@@ -308,7 +308,7 @@ reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'
 })
 reply.removeTrailer('server-timing')
-reply.getTrailer('server-timing') // undefined
+reply.hasTrailer('server-timing') // false
 ```
 
 
@@ -496,7 +496,7 @@ const schema1 = {
 const serialize = reply.compileSerializationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newSerialize = reply.compileSerializationSchema(schema1)
 
 console.log(newSerialize === serialize) // true

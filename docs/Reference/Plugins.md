@@ -79,8 +79,8 @@ the Fastify instance by a preceding plugin, such as utilizing an existing databa
 connection.
 
 Keep in mind that the Fastify instance passed to the function is the same as the
-one passed into the plugin, a copy of the external Fastify instance rather than a
-reference. Any usage of the instance will behave the same as it would if called
+one passed into the plugin, a copy of the external Fastify instance rather than
+a reference. Any usage of the instance will behave the same as it would if called
 within the plugin's function. For example, if `decorate` is called, the decorated
 variables will be available within the plugin's function unless it was wrapped
 with [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
@@ -171,18 +171,27 @@ export default plugin
 <a id="create-plugin"></a>
 
 Creating a plugin is easy. Create a function that takes three parameters: the
-`fastify` instance, an `options` object, and the `done` callback.
+`fastify` instance, an `options` object, and the `done` callback. Alternatively,
+use an `async` function and omit the `done` callback.
 
 Example:
 ```js
-module.exports = function (fastify, opts, done) {
+module.exports = function callbackPlugin (fastify, opts, done) {
   fastify.decorate('utility', function () {})
 
   fastify.get('/', handler)
 
   done()
 }
+
+// Or using async
+module.exports = async function asyncPlugin (fastify, opts) {
+  fastify.decorate('utility', function () {})
+
+  fastify.get('/', handler)
+}
 ```
+
 `register` can also be used inside another `register`:
 ```js
 module.exports = function (fastify, opts, done) {

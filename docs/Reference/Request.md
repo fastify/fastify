@@ -25,6 +25,11 @@ Request is a core Fastify object containing the following fields:
   enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
   exists. The host header may return an empty string if `requireHostHeader` is
   `false`, not provided with HTTP/1.0, or removed by schema validation.
+  ⚠ Security: this value comes from client-controlled headers; only trust it
+  when you control proxy behavior and have validated or allow-listed hosts.
+  No additional validation is performed beyond RFC parsing (see
+  [RFC 9110, section 7.2](https://www.rfc-editor.org/rfc/rfc9110#section-7.2) and
+  [RFC 3986, section 3.2.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2.2)).
 - `hostname` - The hostname derived from the `host` property of the incoming request.
 - `port` - The port from the `host` property, which may refer to the port the
   server is listening on.
@@ -35,12 +40,22 @@ Request is a core Fastify object containing the following fields:
   case of internal re-routing.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
+- `signal` - An `AbortSignal` that aborts when the handler timeout
+  fires or the client disconnects. Created lazily on first access, so
+  there is zero overhead when not used. When
+  [`handlerTimeout`](./Server.md#factory-handler-timeout) is configured,
+  the signal is pre-created and also aborts on timeout. Pass it to
+  `fetch()`, database queries, or any API accepting a `signal` option
+  for cooperative cancellation. On timeout, `signal.reason` is the
+  `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
+  `AbortError`. Check `signal.reason.code` to distinguish the two cases.
 - `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
   internal object. Do not use or modify it directly. It is useful to access one
   special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
+  - `handlerTimeout` - The handler timeout configured for this route.
   - `config` - The [`config`](./Routes.md#routes-config) object for this route.
   - `method` - The HTTP method for the route.
   - `url` - The path of the URL to match this route.
@@ -84,7 +99,8 @@ This operation adds new values to the request headers, accessible via
 For performance reasons, `Symbol('fastify.RequestAcceptVersion')` may be added
 to headers on `not found` routes.
 
-> ℹ️ Note: Schema validation may mutate the `request.headers` and
+> ℹ️ Note:
+> Schema validation may mutate the `request.headers` and
 > `request.raw.headers` objects, causing the headers to become empty.
 
 ```js
@@ -218,7 +234,7 @@ const schema1 = {
 const validate = request.compileValidationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newValidate = request.compileValidationSchema(schema1)
 
 console.log(newValidate === validate) // true

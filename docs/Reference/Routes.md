@@ -115,6 +115,11 @@ fastify.route(options)
   larger than this number of bytes. Must be an integer. You may also set this
   option globally when first creating the Fastify instance with
   `fastify(options)`. Defaults to `1048576` (1 MiB).
+* `handlerTimeout`: maximum number of milliseconds for the route's full
+  lifecycle. Overrides the server-level
+  [`handlerTimeout`](./Server.md#factory-handler-timeout). Must be a positive
+  integer. When the timeout fires, `request.signal` is aborted and a 503 error
+  is sent through the error handler (which can be customized per-route).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
@@ -138,7 +143,8 @@ fastify.route(options)
 
 * `reply` is defined in [Reply](./Reply.md).
 
-> ℹ️ Note: The documentation for `onRequest`, `preParsing`, `preValidation`,
+> ℹ️ Note:
+> The documentation for `onRequest`, `preParsing`, `preValidation`,
 > `preHandler`, `preSerialization`, `onSend`, and `onResponse` is detailed in
 > [Hooks](./Hooks.md). To send a response before the request is handled by the
 > `handler`, see [Respond to a request from
@@ -234,7 +240,8 @@ const opts = {
 fastify.get('/', opts)
 ```
 
-> ℹ️ Note: Specifying the handler in both `options` and as the third parameter to
+> ℹ️ Note:
+> Specifying the handler in both `options` and as the third parameter to
 > the shortcut method throws a duplicate `handler` error.
 
 ### Url building
@@ -403,7 +410,8 @@ This approach supports both `callback-style` and `async-await` with minimal
 trade-off. However, it is recommended to use only one style for consistent
 error handling within your application.
 
-> ℹ️ Note: Every async function returns a promise by itself.
+> ℹ️ Note:
+> Every async function returns a promise by itself.
 
 ### Route Prefixing
 <a id="route-prefixing"></a>
@@ -504,7 +512,7 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 
 Different log levels can be set for routes in Fastify by passing the `logLevel`
 option to the plugin or route with the desired
-[value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string).
+[value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string).
 
 Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and
@@ -533,7 +541,7 @@ Fastify Logger, accessible with `fastify.log`.*
 <a id="custom-log-serializer"></a>
 
 In some contexts, logging a large object may waste resources. Define custom
-[`serializers`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
+[`serializers`](https://github.com/pinojs/pino/blob/main/docs/api.md#serializers-object)
 and attach them in the appropriate context.
 
 ```js
@@ -636,7 +644,8 @@ has a version set, and will prefer a versioned route to a non-versioned route
 for the same path. Advanced version ranges and pre-releases currently are not
 supported.
 
-> **Note:** using this feature can degrade the router’s performance.
+> ℹ️ Note:
+> Using this feature can degrade the router's performance.
 
 ```js
 fastify.route({
@@ -699,9 +708,9 @@ specified as strings for exact matches or RegExps for arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.dev' },
+  constraints: { host: 'auth.fastify.example' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.dev')
+    reply.send('hello world from auth.fastify.example')
   }
 })
 
@@ -709,7 +718,7 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'example.com'
+    'Host': 'fastify.example'
   }
 }, (err, res) => {
   // 404 because the host doesn't match the constraint
@@ -733,7 +742,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.example/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

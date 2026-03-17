@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.6.1'
+const VERSION = '5.8.2'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -32,7 +32,8 @@ const {
   kKeepAliveConnections,
   kChildLoggerFactory,
   kGenReqId,
-  kErrorHandlerAlreadySet
+  kErrorHandlerAlreadySet,
+  kHandlerTimeout
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -82,7 +83,7 @@ const { FSTWRN004 } = require('./lib/warnings.js')
 const initChannel = diagnostics.channel('fastify.initialization')
 
 /**
- * @param {import('./fastify.js').FastifyServerOptions} options
+ * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
 function fastify (serverOptions) {
   const {
@@ -94,9 +95,7 @@ function fastify (serverOptions) {
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
 
   // Default router
-  const router = buildRouting({
-    config: options.routerOptions
-  })
+  const router = buildRouting(options.routerOptions)
 
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)
@@ -149,6 +148,7 @@ function fastify (serverOptions) {
     [kChildren]: [],
     [kServerBindings]: [],
     [kBodyLimit]: options.bodyLimit,
+    [kHandlerTimeout]: options.handlerTimeout,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kLogSerializers]: null,
@@ -643,16 +643,22 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      if (disableRequestLogging === false) {
+      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+      if (resolvedDisableRequestLogging === false) {
         childLogger.info({ req: request }, 'incoming request')
       }
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
-    const body = `{"error":"Bad Request","code":"FST_ERR_BAD_URL","message":"'${path}' is not a valid url component","statusCode":400}`
+    const body = JSON.stringify({
+      error: 'Bad Request',
+      code: 'FST_ERR_BAD_URL',
+      message: `'${path}' is not a valid url component`,
+      statusCode: 400
+    })
     res.writeHead(400, {
       'Content-Type': 'application/json',
-      'Content-Length': body.length
+      'Content-Length': Buffer.byteLength(body)
     })
     res.end(body)
   }
@@ -668,7 +674,8 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          if (disableRequestLogging === false) {
+          const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+          if (resolvedDisableRequestLogging === false) {
             childLogger.info({ req: request }, 'incoming request')
           }
 
@@ -713,7 +720,10 @@ function fastify (serverOptions) {
   function setSchemaController (schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController"!')
     const old = this[kSchemaController]
-    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(
+      old,
+      Object.assign({}, old.opts, schemaControllerOpts)
+    )
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
@@ -755,7 +765,9 @@ function fastify (serverOptions) {
 
   function printRoutes (opts = {}) {
     // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
-    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    opts.includeMeta = opts.includeHooks
+      ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks
+      : opts.includeMeta
     return router.printRoutes(opts)
   }
 

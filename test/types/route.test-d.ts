@@ -23,7 +23,16 @@ declare module '../../fastify' {
   }
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  interface FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger, RequestType> {
+  interface FastifyRequest<
+    RouteGeneric,
+    RawServer,
+    RawRequest,
+    SchemaCompiler,
+    TypeProvider,
+    ContextConfig,
+    Logger,
+    RequestType
+  > {
     message: ContextConfig extends { includeMessage: true }
       ? string
       : null;
@@ -43,6 +52,12 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
 
   return reply.send()
 }
+
+const asyncPreHandler = async (request: FastifyRequest) => {
+  expectType<FastifyRequest>(request)
+}
+
+fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
 
 fastify().get(
   '/',
@@ -466,19 +481,19 @@ expectType<boolean>(fastify().hasRoute({
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: 'auth.fastify.dev' }
+  constraints: { host: 'auth.fastify.test' }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/ }
+  constraints: { host: /.*\.fastify\.test$/ }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' }
+  constraints: { host: /.*\.fastify\.test$/, version: '1.2.3' }
 }))
 
 expectType<boolean>(fastify().hasRoute({

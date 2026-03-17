@@ -369,7 +369,8 @@ console.log(fastify.foo) // 'a getter'
 #### `getDecorator(name)`
 <a id="get-decorator"></a>
 
-Used to retrieve an existing decorator from the Fastify instance, `Request`, or `Reply`.
+Used to retrieve an existing decorator from the Fastify instance, `Request`,
+or `Reply`.
 If the decorator is not defined, an `FST_ERR_DEC_UNDECLARED` error is thrown.
 
 ```js
@@ -398,8 +399,9 @@ fastify.register(async function (fastify) {
 })
 ```
 
-> ℹ️ Note: For TypeScript users, `getDecorator` supports generic type parameters.
-> See the [TypeScript documentation](/docs/latest/Reference/TypeScript/) for
+> ℹ️ Note:
+> For TypeScript users, `getDecorator` supports generic type parameters.
+> See the [TypeScript documentation](./TypeScript.md) for
 > advanced typing examples.
 
 #### `setDecorator(name, value)`
@@ -428,6 +430,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-> ℹ️ Note: For TypeScript users, see the
-> [TypeScript documentation](/docs/latest/Reference/TypeScript/) for advanced
+> ℹ️ Note:
+> For TypeScript users, see the
+> [TypeScript documentation](./TypeScript.md) for advanced
 > typing examples using `setDecorator<T>`.

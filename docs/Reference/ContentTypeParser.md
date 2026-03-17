@@ -17,6 +17,13 @@ declared in a plugin, it is available only in that scope and its children.
 Fastify automatically adds the parsed request payload to the [Fastify
 request](./Request.md) object, accessible via `request.body`.
 
+> **Important:** When using a body schema with the
+> [`content`](./Validation-and-Serialization.md#body-content-type-validation)
+> property to validate per content type, only content types listed in the schema
+> will be validated. If you add a custom content type parser but do not include
+> its content type in the body schema's `content` property, the incoming data
+> will be parsed but **not validated**.
+
 Note that for `GET` and `HEAD` requests, the payload is never parsed. For
 `OPTIONS` and `DELETE` requests, the payload is parsed only if a valid
 `content-type` header is provided. Unlike `POST`, `PUT`, and `PATCH`, the
@@ -29,6 +36,14 @@ parsed.
 > `/^application\/([\w-]+);?/` to match the
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > only.
+>
+> Additionally, if the route uses per-content-type body validation via
+> `schema.body.content`, the schema is selected by an **exact match** on the
+> essence MIME type, not by the parser's regex. A regex parser that accepts
+> content types with no matching key in the `content` schema map will result
+> in those requests **not being validated**. Ensure every content type matched
+> by the regex has a corresponding entry in the schema's `content` map. See
+> [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
 ### Usage
 ```js
@@ -152,7 +167,8 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 })
 ```
 
-> ℹ️ Note: `function(req, done)` and `async function(req)` are
+> ℹ️ Note:
+> `function(req, done)` and `async function(req)` are
 > still supported but deprecated.
 
 #### Body Parser

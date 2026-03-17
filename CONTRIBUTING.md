@@ -25,8 +25,8 @@ feel free to reach out to a [Lead Maintainer](https://github.com/fastify/fastify
 privately with links to contributions that you consider as significant
 and valuable.
 
-We will assess your contributions and, in a reasonable time, get back to you
-with our decision.
+Your contributions will be reviewed according to maintainer availability,
+and a decision will be subsequently communicated.
 
 Read the [GOVERNANCE](GOVERNANCE.md) to get more information.
 
@@ -49,7 +49,7 @@ There are a few basic ground rules for contributors:
    the pull request a core maintainer has to document the reason of the failure
    in the pull request before merging it.
 1. Only a lead maintainer is allowed to merge pull requests with SemVer-major
-   changes into the `main`-branch of fastify core.
+   changes into the `main`-branch of the Fastify core repository.
 1. If it is not possible to reach a consensus in a pull request, the decision
    is left to the lead maintainer's team.
 
@@ -74,8 +74,8 @@ other content for the Fastify project, provided that:
 1. Collaborators can request that the contributor disclose any use of AI tools,
    irrespective of the significance of the AI usage.
 1. The contributor can discuss the reasons with the collaborators and provide
-   proper evidence of non-usage of AI tools or update the pull request
-   to comply with these rules.
+   proper evidence of non-usage of AI tools in the corresponding 
+   pull request or update the pull request to comply with these rules.
 1. The collaborators are encouraged but not obligated to discuss their
    assessments and/or decisions with the contributor.
 1. Repeated violations of these rules may result in a temporary or permanent ban
@@ -99,7 +99,7 @@ the organization's efforts for each Fastify's version.
 ## Releases
 
 Declaring formal releases remains the prerogative of the lead maintainers. Do
-not bump version numbers in the corresponding `package.json` in pull requests.
+not bump version numbers in pull requests.
 
 ## Plugins
 
@@ -121,9 +121,6 @@ Contributors to Fastify plugins must follow the same rules as the main Fastify r
 
 ## Changes to this arrangement
 
-Any feedback is welcome! This document may also be subject to pull requests or
-changes by contributors where you believe you have something valuable to add or
-change.
 
 # Fastify Organization Structure
 

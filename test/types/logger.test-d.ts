@@ -43,21 +43,21 @@ interface CustomLogger extends FastifyBaseLogger {
 
 class CustomLoggerImpl implements CustomLogger {
   level = 'info'
-  customMethod(msg: string, ...args: unknown[]) { console.log(msg, args) }
+  customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
 
   // Implementation signature must be compatible with all overloads of FastifyLogFn
-  info(arg1: unknown, arg2?: unknown, ...args: unknown[]): void {
+  info (arg1: unknown, arg2?: unknown, ...args: unknown[]): void {
     console.log(arg1, arg2, ...args)
   }
 
-  warn(...args: unknown[]) { console.log(args) }
-  error(...args: unknown[]) { console.log(args) }
-  fatal(...args: unknown[]) { console.log(args) }
-  trace(...args: unknown[]) { console.log(args) }
-  debug(...args: unknown[]) { console.log(args) }
-  silent(...args: unknown[]) { }
+  warn (...args: unknown[]) { console.log(args) }
+  error (...args: unknown[]) { console.log(args) }
+  fatal (...args: unknown[]) { console.log(args) }
+  trace (...args: unknown[]) { console.log(args) }
+  debug (...args: unknown[]) { console.log(args) }
+  silent (...args: unknown[]) { }
 
-  child(bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
+  child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
 }
 
 const customLogger = new CustomLoggerImpl()
@@ -88,7 +88,7 @@ expectType<P.Logger>(serverWithPino.log)
 serverWithPino.route({
   method: 'GET',
   url: '/',
-  handler(request) {
+  handler (request) {
     expectType<P.Logger>(this.log)
     expectType<P.Logger>(request.log)
   }
@@ -145,7 +145,7 @@ const serverWithPinoConfig = fastify({
   logger: {
     level: 'info',
     serializers: {
-      req(IncomingMessage) {
+      req (IncomingMessage) {
         expectType<FastifyRequest>(IncomingMessage)
         return {
           method: 'method',
@@ -157,7 +157,7 @@ const serverWithPinoConfig = fastify({
           other: ''
         }
       },
-      res(ServerResponse) {
+      res (ServerResponse) {
         expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
         expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
         expectNotAssignable<FastifyReply>(ServerResponse)
@@ -165,7 +165,7 @@ const serverWithPinoConfig = fastify({
           statusCode: 'statusCode'
         }
       },
-      err(FastifyError) {
+      err (FastifyError) {
         return {
           other: '',
           type: 'type',
@@ -191,7 +191,7 @@ expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 const serverAutoInferredSerializerResponseObjectOption = fastify({
   logger: {
     serializers: {
-      res(ServerResponse) {
+      res (ServerResponse) {
         expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
         expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
         expectNotAssignable<FastifyReply>(ServerResponse)
@@ -208,7 +208,7 @@ expectType<FastifyBaseLogger>(serverAutoInferredSerializerResponseObjectOption.l
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
     serializers: {
-      req(IncomingMessage) {
+      req (IncomingMessage) {
         expectType<FastifyRequest>(IncomingMessage)
         return {
           method: 'method',
@@ -220,7 +220,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
           other: ''
         }
       },
-      res(ServerResponse) {
+      res (ServerResponse) {
         expectType<ResSerializerReply<Server, FastifyReply>>(ServerResponse)
         expectAssignable<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>(ServerResponse)
         expectNotAssignable<FastifyReply>(ServerResponse)
@@ -228,7 +228,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
           statusCode: 'statusCode'
         }
       },
-      err(FastifyError) {
+      err (FastifyError) {
         return {
           other: '',
           type: 'type',
@@ -269,8 +269,8 @@ const childParent = fastify().log
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info' }))
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyBaseLogger>(childParent.child({}, { redact: ['pass', 'pin'] }))
-expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => { } } }))
-expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => { } } }))
+expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => {} } }))
+expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
 
 // no option pass
 expectError(childParent.child())
@@ -280,10 +280,6 @@ expectError(childParent.child({}, { nonExist: true }))
 // Regression test for https://github.com/fastify/fastify/issues/4960
 // FastifyInstance with a pino.Logger should be assignable to FastifyInstance
 // with the default FastifyBaseLogger in TypeScript strict mode.
-const pinoInstanceApp = fastify<
-  Server,
-  IncomingMessage,
-  ServerResponse,
-  P.Logger
->({ logger: P() })
-expectAssignable<FastifyInstanceType>(pinoInstanceApp)
+expectAssignable<FastifyInstanceType>(
+  fastify<Server, IncomingMessage, ServerResponse, P.Logger>({ logger: P() })
+)

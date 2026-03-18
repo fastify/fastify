@@ -521,7 +521,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
   const fastify = Fastify()
 
   fastify.addSchema({
-    $id: 'http://example.com/asset.json',
+    $id: 'http://fastify.test/asset.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Physical Asset',
     description: 'A generic representation of a physical asset',
@@ -539,7 +539,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       model: {
         type: 'string'
       },
-      location: { $ref: 'http://example.com/point.json#' }
+      location: { $ref: 'http://fastify.test/point.json#' }
     },
     definitions: {
       inner: {
@@ -551,7 +551,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
   })
 
   fastify.addSchema({
-    $id: 'http://example.com/point.json',
+    $id: 'http://fastify.test/point.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Longitude and Latitude Values',
     description: 'A geographical coordinate.',
@@ -561,7 +561,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       'longitude'
     ],
     properties: {
-      email: { $ref: 'http://example.com/asset.json#/definitions/inner' },
+      email: { $ref: 'http://fastify.test/asset.json#/definitions/inner' },
       latitude: {
         type: 'number',
         minimum: -90,
@@ -579,11 +579,11 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
   })
 
   const schemaLocations = {
-    $id: 'http://example.com/locations.json',
+    $id: 'http://fastify.test/locations.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'List of Asset locations',
     type: 'array',
-    items: { $ref: 'http://example.com/asset.json#' }
+    items: { $ref: 'http://fastify.test/asset.json#' }
   }
 
   fastify.post('/', {

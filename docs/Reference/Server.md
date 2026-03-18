@@ -21,7 +21,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
-  - [`loggerInstance`](#loggerInstance)
+  - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
@@ -87,7 +87,7 @@ describes the properties available in that options object.
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [setChildLoggerFactory](#setchildloggerfactory)
-    - [setGenReqId](#setGenReqId)
+    - [setGenReqId](#setgenreqid)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -223,6 +223,71 @@ in front.
 
 > ℹ️ Note:
 >  At the time of writing, only node >= v14.11.0 supports this option
+
+### `handlerTimeout`
+<a id="factory-handler-timeout"></a>
+
++ Default: `0` (no timeout)
+
+Defines the maximum number of milliseconds allowed for processing a request
+through the entire route lifecycle (from routing through onRequest, parsing,
+validation, handler execution, and serialization). If the response is not sent
+within this time, a `503 Service Unavailable` error is returned and
+`request.signal` is aborted.
+
+Unlike `connectionTimeout` and `requestTimeout` (which operate at the socket
+level), `handlerTimeout` is an application-level timeout that works correctly
+with HTTP keep-alive connections. It can be overridden per-route via
+[route options](./Routes.md#routes-options). When set at both levels, the
+route-level value takes precedence. Routes without an explicit `handlerTimeout`
+inherit the server default. Once a server-level timeout is set, individual
+routes cannot opt out of it — they can only override it with a different
+positive integer.
+
+The timeout is **cooperative**: when it fires, Fastify sends the 503 error
+response, but the handler's async work continues to run. Use
+[`request.signal`](./Request.md) to detect cancellation and stop ongoing work
+(database queries, HTTP requests, etc.). APIs that accept a `signal` option
+(`fetch()`, database drivers, `stream.pipeline()`) will cancel automatically.
+
+The timeout error (`FST_ERR_HANDLER_TIMEOUT`) is sent through the route's
+[error handler](./Routes.md#routes-options), which can be customized per-route
+to change the status code or response body.
+
+When `reply.hijack()` is called, the timeout timer is cleared — the handler
+takes full responsibility for the response lifecycle.
+
+> ℹ️ Note:
+> `handlerTimeout` does not apply to 404 handlers or custom not-found handlers
+> set via `setNotFoundHandler()`, as they bypass the route handler lifecycle.
+
+```js
+const fastify = require('fastify')({
+  handlerTimeout: 10000 // 10s default for all routes
+})
+
+// Override per-route
+fastify.get('/slow-report', { handlerTimeout: 120000 }, async (request) => {
+  // Use request.signal for cooperative cancellation
+  const data = await db.query(longQuery, { signal: request.signal })
+  return data
+})
+
+// Customize the timeout response
+fastify.get('/custom-timeout', {
+  handlerTimeout: 5000,
+  errorHandler: (error, request, reply) => {
+    if (error.code === 'FST_ERR_HANDLER_TIMEOUT') {
+      reply.code(504).send({ error: 'Gateway Timeout' })
+    } else {
+      reply.send(error)
+    }
+  }
+}, async (request) => {
+  const result = await externalService.call({ signal: request.signal })
+  return result
+})
+```
 
 ### `bodyLimit`
 <a id="factory-body-limit"></a>
@@ -522,8 +587,8 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is a more performant fork 
-of Node.js's core `querystring` module called 
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
 [`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
@@ -752,7 +817,7 @@ function rewriteUrl (req) {
 <a id="routeroptions"></a>
 
 Fastify uses [`find-my-way`](https://github.com/delvedor/find-my-way) for its
-HTTP router. The `routerOptions` parameter allows passing 
+HTTP router. The `routerOptions` parameter allows passing
 [`find-my-way` options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
 to customize the HTTP router within Fastify.
 
@@ -776,8 +841,8 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 <a id="build-pretty-meta"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which
-supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta` 
-function to sanitize a route's store object to use with the `prettyPrint` 
+supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta`
+function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
@@ -1037,11 +1102,11 @@ fastify.get('/dev', async (request, reply) => {
 * **Default:** `true`
 
 > ⚠ Warning:
-> This option will be set to `false` by default 
+> This option will be set to `false` by default
 > in the next major release.
 
-When set to `false`, it prevents `setErrorHandler` from being called 
-multiple times within the same scope, ensuring that the previous error 
+When set to `false`, it prevents `setErrorHandler` from being called
+multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
 
 #### Example of incorrect usage:
@@ -1719,7 +1784,10 @@ call is encapsulated by prefix, so different plugins can set different not found
 handlers if a different [`prefix` option](./Plugins.md#route-prefixing-option)
 is passed to `fastify.register()`. The handler is treated as a regular route
 handler so requests will go through the full [Fastify
-lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
+lifecycle](./Lifecycle.md#lifecycle) for unexisting URLs.
+*async-await* is supported as well.
+Badly formatted URLs are sent to the [`onBadUrl`](#onbadurl)
+handler instead.
 
 You can also register [`preValidation`](./Hooks.md#route-hooks) and
 [`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
@@ -1786,7 +1854,7 @@ set it to 500 before calling the error handler.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
 - Stream errors thrown during piping into the response socket, as
-  headers/response were already sent to the client. 
+  headers/response were already sent to the client.
   Use custom in-stream data to signal such errors.
 
 ```js
@@ -1875,7 +1943,7 @@ const fastify = require('fastify')({
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
 
-#### setGenReqId
+#### setgenreqid
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
@@ -2228,6 +2296,7 @@ initial options passed down by the user to the Fastify instance.
 The properties that can currently be exposed are:
 - connectionTimeout
 - keepAliveTimeout
+- handlerTimeout
 - bodyLimit
 - caseSensitive
 - http2

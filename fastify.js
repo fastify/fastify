@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.7.4'
+const VERSION = '5.8.2'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -32,7 +32,8 @@ const {
   kKeepAliveConnections,
   kChildLoggerFactory,
   kGenReqId,
-  kErrorHandlerAlreadySet
+  kErrorHandlerAlreadySet,
+  kHandlerTimeout
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -147,6 +148,7 @@ function fastify (serverOptions) {
     [kChildren]: [],
     [kServerBindings]: [],
     [kBodyLimit]: options.bodyLimit,
+    [kHandlerTimeout]: options.handlerTimeout,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kLogSerializers]: null,

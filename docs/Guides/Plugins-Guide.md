@@ -147,7 +147,7 @@ fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
   console.log(instance.util('that is ', 'awesome'))
 
-  fastify.register((instance, opts, done) => {
+  instance.register((instance, opts, done) => {
     console.log(instance.util('that is ', 'awesome')) // This will not throw an error
     done()
   })
@@ -412,7 +412,7 @@ function dbPlugin (fastify, opts, done) {
   })
 }
 
-fastify.register(fp(dbPlugin), { url: 'https://example.com' })
+fastify.register(fp(dbPlugin), { url: 'https://fastify.example' })
 fastify.register(require('your-plugin'), parent => {
   return { connection: parent.db, otherOption: 'foo-bar' }
 })

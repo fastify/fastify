@@ -1,14 +1,14 @@
+import * as fs from 'node:fs'
+import { IncomingMessage, Server, ServerResponse } from 'node:http'
+import P from 'pino'
 import { expectAssignable, expectDeprecated, expectError, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
-  FastifyLogFn,
-  LogLevel,
   FastifyBaseLogger,
+  FastifyLogFn,
+  FastifyReply,
   FastifyRequest,
-  FastifyReply
+  LogLevel
 } from '../../fastify'
-import { Server, IncomingMessage, ServerResponse } from 'node:http'
-import * as fs from 'node:fs'
-import P from 'pino'
 import { FastifyLoggerInstance, ResSerializerReply } from '../../types/logger'
 import { FastifyInstance as FastifyInstanceType } from '../../types/instance'
 
@@ -151,7 +151,7 @@ const serverWithPinoConfig = fastify({
           method: 'method',
           url: 'url',
           version: 'version',
-          host: 'hostname',
+          host: 'fastify.test',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
           other: ''
@@ -214,7 +214,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
           method: 'method',
           url: 'url',
           version: 'version',
-          host: 'hostname',
+          host: 'fastify.test',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
           other: ''
@@ -269,8 +269,8 @@ const childParent = fastify().log
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info' }))
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyBaseLogger>(childParent.child({}, { redact: ['pass', 'pin'] }))
-expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => {} } }))
-expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
+expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => { } } }))
+expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => { } } }))
 
 // no option pass
 expectError(childParent.child())

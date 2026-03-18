@@ -115,6 +115,11 @@ fastify.route(options)
   larger than this number of bytes. Must be an integer. You may also set this
   option globally when first creating the Fastify instance with
   `fastify(options)`. Defaults to `1048576` (1 MiB).
+* `handlerTimeout`: maximum number of milliseconds for the route's full
+  lifecycle. Overrides the server-level
+  [`handlerTimeout`](./Server.md#factory-handler-timeout). Must be a positive
+  integer. When the timeout fires, `request.signal` is aborted and a 503 error
+  is sent through the error handler (which can be customized per-route).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
@@ -703,9 +708,9 @@ specified as strings for exact matches or RegExps for arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.dev' },
+  constraints: { host: 'auth.fastify.example' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.dev')
+    reply.send('hello world from auth.fastify.example')
   }
 })
 
@@ -713,7 +718,7 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'example.com'
+    'Host': 'fastify.example'
   }
 }, (err, res) => {
   // 404 because the host doesn't match the constraint
@@ -737,7 +742,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.example/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

@@ -6,13 +6,17 @@ project and its official plugins.
 ## Threat Model
 
 Fastify's threat model extends the
-[Node.js threat model](https://github.com/nodejs/node/blob/main/SECURITY.md#the-nodejs-threat-model).
+[Node.js security policy](https://github.com/nodejs/node/blob/main/SECURITY.md).
 
 **Trusted:** Application code (plugins, handlers, hooks, schemas), configuration,
 and the runtime environment.
 
 **Untrusted:** All network input (HTTP headers, body, query strings, URL
 parameters).
+
+Fastify assumes Node.js is running with `insecureHTTPParser: false` (the
+secure default). Deployments that enable `insecureHTTPParser: true` are
+outside Fastify's threat model.
 
 ### Examples of Vulnerabilities
 
@@ -36,6 +40,18 @@ patterns for routes or validation
 authorization (these are application-level concerns)
 - **Configuration mistakes**: Security issues arising from developer
 misconfiguration (configuration is trusted)
+- **Content-type parser/schema mismatches**: When a custom content-type parser
+registered with a regular expression (e.g., `/^application\/.*json$/`) matches
+incoming requests that do not have a corresponding key in the route's
+`schema.body.content` map, validation is skipped for that request. It is the
+application's responsibility to ensure that every content type accepted by a
+parser has a matching validation schema entry. This is a configuration concern,
+not a framework vulnerability (see
+[Validation and Serialization](./docs/Reference/Validation-and-Serialization.md)
+and [Content-Type Parser](./docs/Reference/ContentTypeParser.md))
+- **`insecureHTTPParser: true` deployments**: Reports that rely on enabling
+Node.js `insecureHTTPParser` are out of scope; Fastify assumes this flag is
+`false`
 - **Third-party dependencies**: Vulnerabilities in npm packages used by the
 application (not Fastify core dependencies)
 - **Resource exhaustion from handlers**: DoS caused by expensive operations in
@@ -181,7 +197,7 @@ work as a member of the Fastify Core team.
 
 ## OpenSSF CII Best Practices
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
+[![CII Best Practices](https://www.bestpractices.dev/projects/7585/badge)](https://www.bestpractices.dev/en/projects/7585/passing)
 
 There are three “tiers”: passing, silver, and gold.
 

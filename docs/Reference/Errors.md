@@ -114,7 +114,7 @@ attempt to fix this.
 
 Given that it is not possible to process all uncaught errors sensibly, the best
 way to deal with them is to
-[crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly).
+[crash](https://nodejs.org/api/process.html#warning-using-uncaughtexception-correctly).
 
 #### Catching Errors In Promises
 When using promises, attach a `.catch()` handler synchronously.

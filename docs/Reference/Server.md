@@ -143,7 +143,7 @@ This option also applies when the [`http2`](#factory-http2) option is set.
 
 Defines the server timeout in milliseconds. See documentation for
 [`server.timeout`
-property](https://nodejs.org/api/http.html#http_server_timeout) to understand
+property](https://nodejs.org/api/http.html#servertimeout) to understand
 the effect of this option.
 
 When `serverFactory` option is specified this option is ignored.
@@ -155,7 +155,7 @@ When `serverFactory` option is specified this option is ignored.
 
 Defines the server keep-alive timeout in milliseconds. See documentation for
 [`server.keepAliveTimeout`
-property](https://nodejs.org/api/http.html#http_server_keepalivetimeout) to
+property](https://nodejs.org/api/http.html#serverkeepalivetimeout) to
 understand the effect of this option. This option only applies when HTTP/1 is in
 use.
 

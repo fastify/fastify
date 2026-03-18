@@ -198,7 +198,7 @@ method, otherwise attempting to set it will throw an exception.
 
 Defines the maximum number of requests a socket can handle before closing keep
 alive connection. See [`server.maxRequestsPerSocket`
-property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_maxrequestspersocket)
+property](https://nodejs.org/dist/latest/docs/api/http.html#servermaxrequestpersocket)
 to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
@@ -213,7 +213,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_requesttimeout)
+property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -1243,7 +1243,7 @@ addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callbac
 
 Be careful when deciding to listen on all interfaces; it comes with inherent
 [security
-risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 The default is to listen on `port: 0` (which picks the first available open
 port) and `host: 'localhost'`:
@@ -2283,7 +2283,7 @@ test('Uses app and closes it afterwards', async () => {
 In the above example, Fastify is closed automatically after the test finishes.
 
 Read more about the
-[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management)
+[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management/)
 and the [using keyword](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/)
 introduced in TypeScript 5.2.
 

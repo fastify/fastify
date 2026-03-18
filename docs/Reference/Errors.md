@@ -109,7 +109,7 @@
 #### Uncaught Errors
 In Node.js, uncaught errors can cause memory leaks, file descriptor leaks, and
 other major production issues.
-[Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were a failed
+[Domains](https://nodejs.org/en/blog/community/domain-postmortem) were a failed
 attempt to fix this.
 
 Given that it is not possible to process all uncaught errors sensibly, the best

@@ -33,6 +33,14 @@
     "type": "git",
     "url": "git+https://github.com/fastify/fastify.git"
   },
+  "files": [
+    "fastify.js",
+    "fastify.d.ts",
+    "lib",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "web",
     "framework",

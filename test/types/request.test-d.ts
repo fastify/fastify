@@ -68,7 +68,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
   expectType<string>(request.host)
-  expectType<number>(request.port)
+  expectType<number | null>(request.port)
   expectType<string>(request.ip)
   expectType<string[] | undefined>(request.ips)
   expectType<RawRequestDefaultExpression>(request.raw)

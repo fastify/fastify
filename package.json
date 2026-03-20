@@ -5,6 +5,12 @@
   "main": "fastify.js",
   "type": "commonjs",
   "types": "fastify.d.ts",
+  "files": [
+    "fastify.js",
+    "fastify.d.ts",
+    "lib/",
+    "types/"
+  ],
   "scripts": {
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
     "benchmark": "concurrently -k -s first \"node ./examples/benchmark/simple.js\" \"autocannon -c 100 -d 30 -p 10 localhost:3000/\"",

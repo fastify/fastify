@@ -1,4 +1,4 @@
-name: 'Lock Threads'
+name: Lock Threads
 
 on:
   schedule:
@@ -12,22 +12,8 @@ concurrency:
   group: lock
 
 jobs:
-  action:
-    runs-on: ubuntu-latest
+  lock-threads:
     permissions:
       issues: write
       pull-requests: write
-    steps:
-      - uses: jsumners/lock-threads@e460dfeb36e731f3aeb214be6b0c9a9d9a67eda6 # v3.0.0
-        with:
-          issue-inactive-days: '90'
-          exclude-any-issue-labels: 'discussion,good first issue,help wanted'
-          issue-comment: >
-            This issue has been automatically locked since there
-            has not been any recent activity after it was closed.
-            Please open a new issue for related bugs.
-          pr-comment: >
-            This pull request has been automatically locked since there
-            has not been any recent activity after it was closed.
-            Please open a new issue for related bugs.
-
+    uses: fastify/workflows/.github/workflows/lock-threads.yml@v6

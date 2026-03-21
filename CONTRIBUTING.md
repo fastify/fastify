@@ -17,6 +17,12 @@ Maintainer](https://github.com/fastify/fastify#team) privately with a few links
 to your valuable contributions. Read the [GOVERNANCE](GOVERNANCE.md) to get more
 information.
 
+## Open Source AI Manifesto
+
+This project follows the [Open Source AI Manifesto](https://human-oss.dev). Please review the manifesto before contributing.
+
+- [ ] This PR follows the [Open Source AI Manifesto](https://human-oss.dev)
+
 ## Rules
 
 There are a few basic ground rules for contributors:

@@ -89,6 +89,13 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
     handler: routeHandler
   }))
 
+  // route method with `path` alias (issue #6012)
+  expectType<FastifyInstance>(fastify().route({
+    method: method as HTTPMethods,
+    path: '/',
+    handler: routeHandler
+  }))
+
   const lowerCaseMethod: LowerCaseHTTPMethods = method.toLowerCase() as LowerCaseHTTPMethods
 
   // method as method

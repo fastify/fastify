@@ -19,7 +19,9 @@ information.
 
 ## Open Source AI Manifesto
 
-This project follows the [Open Source AI Manifesto](https://human-oss.dev). Please review the manifesto before contributing.
+This project follows the
+[Open Source AI Manifesto](https://human-oss.dev).
+Please review the manifesto before contributing.
 
 - [ ] This PR follows the [Open Source AI Manifesto](https://human-oss.dev)
 

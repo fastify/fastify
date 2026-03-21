@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(16)
+  t.plan(17)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -574,6 +574,30 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.deepEqual(line.level, 50)
       t.assert.deepEqual(line.msg, lines.shift())
       if (lines.length === 0) break
+    }
+  })
+
+  await t.test('Should throw an error if an invalid logLevel is set on a route', async (t) => {
+    t.plan(14)
+    const fastify = Fastify({ logger: true })
+    t.after(() => fastify.close())
+
+    for (const invalidLevel of ['invalid', 'tracee', 'INFO', 123]) {
+      try {
+        fastify.get('/', { logLevel: invalidLevel }, async () => 'hello')
+        t.fail(`Should throw for logLevel: ${invalidLevel}`)
+      } catch (err) {
+        t.assert.ok(err, `error thrown for logLevel: ${invalidLevel}`)
+        t.assert.strictEqual(err.code, 'FST_ERR_LOG_INVALID_LEVEL')
+      }
+    }
+
+    // sanity check: valid levels should not throw
+    for (const validLevel of ['trace', 'debug', 'info', 'warn', 'error', 'fatal']) {
+      const f = Fastify({ logger: true })
+      f.get('/' + validLevel, { logLevel: validLevel }, async () => 'ok')
+      t.assert.ok(true, `valid logLevel '${validLevel}' accepted`)
+      await f.close()
     }
   })
 })

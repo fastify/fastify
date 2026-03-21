@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(17)
+  t.plan(18)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -599,5 +599,23 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.ok(true, `valid logLevel '${validLevel}' accepted`)
       await f.close()
     }
+  })
+
+  await t.test('Should NOT validate logLevel when custom loggerInstance is provided', async (t) => {
+    t.plan(3)
+    // When a custom loggerInstance is set, fastify should skip logLevel validation
+    // because the custom logger may support non-standard levels unknown to pino.
+    const customLogger = pino({ level: 'info' })
+    const fastify = Fastify({ loggerInstance: customLogger })
+
+    // With custom loggerInstance set, route registration should succeed even with
+    // a non-standard level (since fastify doesn't know what levels custom logger accepts)
+    try {
+      fastify.get('/', { logLevel: 'verbose' }, async () => 'hello')
+      t.assert.ok(true, 'non-standard logLevel accepted with custom loggerInstance')
+    } catch (err) {
+      t.fail(`Should not throw but got: ${err.code}`)
+    }
+    t.after(() => fastify.close())
   })
 })

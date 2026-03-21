@@ -602,7 +602,7 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
   })
 
   await t.test('Should NOT validate logLevel when custom loggerInstance is provided', async (t) => {
-    t.plan(3)
+    t.plan(1)
     // When a custom loggerInstance is set, fastify should skip logLevel validation
     // because the custom logger may support non-standard levels unknown to pino.
     const customLogger = pino({ level: 'info' })

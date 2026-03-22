@@ -1100,7 +1100,7 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Since
+Fastify uses [Pino](https://getpino.io/) logging library under the hood. Since
 `pino@7`, all of it's properties can be configured via `logger` field when
 constructing Fastify's instance. If properties you need aren't exposed, please
 open an Issue to [`Pino`](https://github.com/pinojs/pino/issues) or pass a

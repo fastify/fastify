@@ -209,7 +209,7 @@ app.addHook('preHandler', function (req, reply, done) {
 > ℹ️ Note:
 > Ensure serializers never throw errors, as this can cause the Node
 > process to exit. See the
-> [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers) for more
+> [Pino documentation](https://github.com/pinojs/pino/blob/main/docs/api.md#serializers-object) for more
 > information.
 
 *Any logger other than Pino will ignore this option.*

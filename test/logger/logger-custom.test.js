@@ -1,16 +1,14 @@
 'use strict'
 
-const { test } = require('node:test')
+const { test, describe } = require('node:test')
 const stream = require('node:stream')
 const split = require('split2')
 
 const Fastify = require('../../fastify')
 const { on } = stream
 
-test('logger custom serializers with customAttributeKeys', { timeout: 60000 }, async (t) => {
-  t.plan(3)
-
-  await t.test('Should use custom req serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
+describe('logger custom serializers with customAttributeKeys', { timeout: 60000 }, () => {
+  test('Should use custom req serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
     t.plan(3)
 
     const loggerStream = split(JSON.parse)
@@ -51,7 +49,7 @@ test('logger custom serializers with customAttributeKeys', { timeout: 60000 }, a
     }
   })
 
-  await t.test('Should use custom res serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
+  test('Should use custom res serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
     t.plan(3)
 
     const loggerStream = split(JSON.parse)
@@ -92,7 +90,7 @@ test('logger custom serializers with customAttributeKeys', { timeout: 60000 }, a
     }
   })
 
-  await t.test('Should use custom err serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
+  test('Should use custom err serializer when provided with customAttributeKeys and serializer key matches custom key', async (t) => {
     t.plan(3)
 
     const loggerStream = split(JSON.parse)
@@ -137,12 +135,80 @@ test('logger custom serializers with customAttributeKeys', { timeout: 60000 }, a
       }
     }
   })
+
+  test('Should remap req serializer when customAttributeKeys.req is set', async (t) => {
+    t.plan(4)
+
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'info',
+        customAttributeKeys: {
+          req: 'httpRequest'
+        }
+      }
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.ready()
+
+    const response = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.deepEqual(response.statusCode, 200)
+
+    for await (const [line] of on(loggerStream, 'data')) {
+      if (line.msg === 'incoming request') {
+        t.assert.ok(line.httpRequest, 'should have "httpRequest" key')
+        t.assert.ok(line.httpRequest.method, 'should have method in httpRequest')
+        t.assert.strictEqual(line.req, undefined, 'should not have "req" key')
+        break
+      }
+    }
+  })
+
+  test('Should remap res serializer when customAttributeKeys.res is set', async (t) => {
+    t.plan(4)
+
+    const loggerStream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream: loggerStream,
+        level: 'info',
+        customAttributeKeys: {
+          res: 'response'
+        }
+      }
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.ready()
+
+    const response = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.deepEqual(response.statusCode, 200)
+
+    for await (const [line] of on(loggerStream, 'data')) {
+      if (line.msg === 'request completed') {
+        t.assert.ok(line.response, 'should have "response" key')
+        t.assert.ok(line.response.statusCode, 'should have statusCode in response')
+        t.assert.strictEqual(line.res, undefined, 'should not have "res" key')
+        break
+      }
+    }
+  })
 })
 
 test('logger customAttributeKeys option', { timeout: 60000 }, async (t) => {
   t.plan(8)
 
-  await t.test('Should remap req serializer when customAttributeKeys.req is set', async (t) => {
+  test('Should remap req serializer when customAttributeKeys.req is set', async (t) => {
     t.plan(4)
 
     const loggerStream = split(JSON.parse)

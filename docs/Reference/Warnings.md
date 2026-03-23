@@ -18,8 +18,8 @@ Fastify uses Node.js's [warning event](https://nodejs.org/api/process.html#event
 API to notify users of deprecated features and coding mistakes. Fastify's
 warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes. When
 encountering such a warning, it is highly recommended to determine the cause
-using the [`--trace-warnings`](https://nodejs.org/api/cli.html#--trace-warnings)
-and [`--trace-deprecation`](https://nodejs.org/api/cli.html#--trace-deprecation)
+using the [`--trace-warnings`](https://nodejs.org/api/cli.html#trace-warnings)
+and [`--trace-deprecation`](https://nodejs.org/api/cli.html#trace-deprecation)
 flags. These produce stack traces pointing to where the issue occurs in the
 application's code. Issues opened about warnings without this information will
 be closed due to lack of details.
@@ -48,9 +48,9 @@ experienced users should consider disabling warnings.
 
 Deprecation codes are supported by the Node.js CLI options:
 
-- [--no-deprecation](https://nodejs.org/api/cli.html#--no-deprecation)
-- [--throw-deprecation](https://nodejs.org/api/cli.html#--throw-deprecation)
-- [--trace-deprecation](https://nodejs.org/api/cli.html#--trace-deprecation)
+- [--no-deprecation](https://nodejs.org/api/cli.html#no-deprecation)
+- [--throw-deprecation](https://nodejs.org/api/cli.html#throw-deprecation)
+- [--trace-deprecation](https://nodejs.org/api/cli.html#trace-deprecation)
 
 
 | Code | Description | How to solve | Discussion |

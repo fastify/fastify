@@ -222,6 +222,51 @@ test('reply.serialize should serialize payload with Fastify instance', (t, done)
   })
 })
 
+test('reply.serialize should use content-type specific serializer', (t, done) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  image: { type: 'string' },
+                  address: { type: 'string' }
+                }
+              }
+            },
+            'text/plain': {
+              schema: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    handler: (req, reply) => {
+      reply.header('content-type', 'application/json')
+      const result = reply.serialize({ name: 'test', image: 'img.png', address: '123 St', extra: 'field' })
+      reply.send(result)
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.payload, '{"name":"test","image":"img.png","address":"123 St"}')
+    done()
+  })
+})
+
 test('within an instance', async t => {
   const fastify = Fastify()
   t.after(() => fastify.close())

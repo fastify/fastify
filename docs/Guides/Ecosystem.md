@@ -725,4 +725,5 @@ middlewares into Fastify plugins
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
 - [`@pompelmi/fastify-plugin`](https://github.com/pompelmi/pompelmi/tree/main/packages/fastify-plugin)
-  In-process file upload scanning for Fastify with MIME/magic-byte validation, ZIP bomb protection, size limits, and optional YARA.
+  In-process file upload scanning for Fastify with MIME/magic-byte
+  validation, ZIP bomb protection, size limits, and optional YARA.

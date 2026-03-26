@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(16)
+  t.plan(17)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -476,6 +476,21 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
     for await (const [line] of on(stream, 'data')) {
       t.assert.deepEqual(line.msg, lines.shift())
       if (lines.length === 0) break
+    }
+  })
+
+  await t.test('Should throw an error if an invalid logLevel is used in route options', (t) => {
+    t.plan(2)
+
+    const fastify = Fastify({ logger: true })
+    t.after(() => fastify.close())
+
+    try {
+      fastify.get('/', { logLevel: 'invalid' }, async () => 'hello world')
+      t.assert.fail('should have thrown')
+    } catch (err) {
+      t.assert.ok(err)
+      t.assert.strictEqual(err.code, 'FST_ERR_ROUTE_LOG_LEVEL_INVALID')
     }
   })
 

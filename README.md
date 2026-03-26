@@ -30,6 +30,7 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 [![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=blue)](https://gitpod.io/#https://github.com/fastify/fastify)
 [![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)](https://github.com/sponsors/fastify#sponsors)
+[![Stack Health](https://indiestack.ai/api/badge/health/fastify/fastify.svg)](https://indiestack.ai/audit?repo=fastify/fastify)
 
 </div>
 

@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(16)
+  t.plan(18)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -477,6 +477,31 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.deepEqual(line.msg, lines.shift())
       if (lines.length === 0) break
     }
+  })
+
+  await t.test('Should throw an error for an invalid route logLevel', async (t) => {
+    t.plan(2)
+    const fastify = Fastify({ logger: true })
+    t.after(() => fastify.close())
+
+    try {
+      fastify.get('/log', { logLevel: 'invalid' }, () => 'hello')
+    } catch (err) {
+      t.assert.ok(err)
+      t.assert.strictEqual(err.code, 'FST_ERR_LOG_INVALID_LOG_LEVEL')
+    }
+  })
+
+  await t.test('Should throw an error for an invalid plugin logLevel', async (t) => {
+    t.plan(1)
+    const fastify = Fastify({ logger: true })
+    t.after(() => fastify.close())
+    fastify.register(function (instance, opts, done) {
+      instance.get('/plugin', () => 'hello')
+      done()
+    }, { logLevel: 'invalid' })
+
+    await t.assert.rejects(fastify.ready(), { code: 'FST_ERR_LOG_INVALID_LOG_LEVEL' })
   })
 
   await t.test('should pass when using unWritable props in the logger option', (t) => {

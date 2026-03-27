@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 88
+const expectedErrors = 89
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -366,6 +366,16 @@ test('FST_ERR_LOG_INVALID_LOGGER_CONFIG', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_LOG_INVALID_LOGGER_CONFIG')
   t.assert.strictEqual(error.message, 'logger options only accepts a configuration object.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_LOG_INVALID_LOG_LEVEL', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_LOG_INVALID_LOG_LEVEL()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_LOG_INVALID_LOG_LEVEL')
+  t.assert.strictEqual(error.message, "Invalid log level '%s'. Use one of: trace, debug, info, warn, error, fatal, silent.")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
 })

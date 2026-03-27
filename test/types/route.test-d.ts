@@ -58,6 +58,7 @@ const asyncPreHandler = async (request: FastifyRequest) => {
 }
 
 fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
+expectError(fastify().get('/', { logLevel: '' }, async () => 'this is an example'))
 
 fastify().get(
   '/',

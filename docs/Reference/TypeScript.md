@@ -1635,7 +1635,7 @@ executed in the request lifecycle. The previous hook was `preSerialization`, the
 next hook will be `onResponse`.
 
 > ℹ️ Note:
->  If you change the payload, you may only change it to a string, 
+>  If you change the payload, you may only change it to a string,
 > a Buffer, a stream, or null.
 
 ##### fastify.onResponseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void

@@ -308,7 +308,7 @@ reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'
 })
 reply.removeTrailer('server-timing')
-reply.getTrailer('server-timing') // undefined
+reply.hasTrailer('server-timing') // false
 ```
 
 
@@ -496,7 +496,7 @@ const schema1 = {
 const serialize = reply.compileSerializationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newSerialize = reply.compileSerializationSchema(schema1)
 
 console.log(newSerialize === serialize) // true
@@ -848,7 +848,7 @@ be used to enhance the HTTP response.
 > 400, Fastify will automatically set it at 500.
 
 Tip: you can simplify errors by using the
-[`http-errors`](https://npm.im/http-errors) module or
+[`http-errors`](https://www.npmjs.com/package/http-errors) module or
 [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) plugin to
 generate errors:
 

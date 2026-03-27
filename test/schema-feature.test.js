@@ -12,7 +12,7 @@ const { waitForCb } = require('./toolkit')
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
 
-;['addSchema', 'getSchema', 'getSchemas', 'setValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
+  ;['addSchema', 'getSchema', 'getSchemas', 'setValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
   test(`Should expose ${f} function`, t => {
     t.plan(1)
     const fastify = Fastify()
@@ -130,8 +130,8 @@ test('Get compilers is empty when settle on routes', (t, testDone) => {
         }
       }
     },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {},
-    serializerCompiler: ({ schema, method, url, httpPart }) => {}
+    validatorCompiler: ({ schema, method, url, httpPart }) => { },
+    serializerCompiler: ({ schema, method, url, httpPart }) => { }
   }, function (req, reply) {
     reply.send('ok')
   })
@@ -177,7 +177,7 @@ test('Cannot add schema for query and querystring', (t, testDone) => {
   const fastify = Fastify()
 
   fastify.get('/', {
-    handler: () => {},
+    handler: () => { },
     schema: {
       query: {
         type: 'object',
@@ -956,7 +956,7 @@ test('Get schema anyway should not add `properties` if allOf is present', (t, te
   })
 
   fastify.get('/', {
-    handler: () => {},
+    handler: () => { },
     schema: {
       querystring: fastify.getSchema('second'),
       response: { 200: fastify.getSchema('second') }
@@ -996,7 +996,7 @@ test('Get schema anyway should not add `properties` if oneOf is present', (t, te
   })
 
   fastify.get('/', {
-    handler: () => {},
+    handler: () => { },
     schema: {
       querystring: fastify.getSchema('second'),
       response: { 200: fastify.getSchema('second') }
@@ -1036,7 +1036,7 @@ test('Get schema anyway should not add `properties` if anyOf is present', (t, te
   })
 
   fastify.get('/', {
-    handler: () => {},
+    handler: () => { },
     schema: {
       querystring: fastify.getSchema('second'),
       response: { 200: fastify.getSchema('second') }
@@ -1386,7 +1386,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
       done()
     })
 
-    i.register(async (i, o) => {})
+    i.register(async (i, o) => { })
 
     i.addHook('onReady', function (done) {
       hookCallCounter++
@@ -1471,11 +1471,11 @@ test('Add schema order should not break the startup', (t, testDone) => {
   t.plan(1)
   const fastify = Fastify()
 
-  fastify.get('/', { schema: { random: 'options' } }, () => {})
+  fastify.get('/', { schema: { random: 'options' } }, () => { })
 
   fastify.register(fp((f, opts) => {
     f.addSchema({
-      $id: 'https://example.com/bson/objectId',
+      $id: 'https://fastify.test/bson/objectId',
       type: 'string',
       pattern: '\\b[0-9A-Fa-f]{24}\\b'
     })
@@ -1487,11 +1487,11 @@ test('Add schema order should not break the startup', (t, testDone) => {
       params: {
         type: 'object',
         properties: {
-          id: { $ref: 'https://example.com/bson/objectId#' }
+          id: { $ref: 'https://fastify.test/bson/objectId#' }
         }
       }
     }
-  }, () => {})
+  }, () => { })
 
   fastify.ready(err => {
     t.assert.ifError(err)
@@ -2174,7 +2174,7 @@ test('Should return a human-friendly error if response status codes are not spec
 
 test('setSchemaController: custom validator instance should not mutate headers schema', async t => {
   t.plan(2)
-  class Headers {}
+  class Headers { }
   const fastify = Fastify()
 
   fastify.setSchemaController({
@@ -2182,7 +2182,7 @@ test('setSchemaController: custom validator instance should not mutate headers s
       buildValidator: function () {
         return ({ schema, method, url, httpPart }) => {
           t.assert.ok(schema instanceof Headers)
-          return () => {}
+          return () => { }
         }
       }
     }
@@ -2192,7 +2192,7 @@ test('setSchemaController: custom validator instance should not mutate headers s
     schema: {
       headers: new Headers()
     }
-  }, () => {})
+  }, () => { })
 
   await fastify.ready()
 })

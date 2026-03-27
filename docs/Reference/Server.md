@@ -21,7 +21,7 @@ describes the properties available in that options object.
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
-  - [`loggerInstance`](#loggerInstance)
+  - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
@@ -87,7 +87,7 @@ describes the properties available in that options object.
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [setChildLoggerFactory](#setchildloggerfactory)
-    - [setGenReqId](#setGenReqId)
+    - [setGenReqId](#setgenreqid)
     - [addConstraintStrategy](#addconstraintstrategy)
     - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
@@ -143,7 +143,7 @@ This option also applies when the [`http2`](#factory-http2) option is set.
 
 Defines the server timeout in milliseconds. See documentation for
 [`server.timeout`
-property](https://nodejs.org/api/http.html#http_server_timeout) to understand
+property](https://nodejs.org/api/http.html#servertimeout) to understand
 the effect of this option.
 
 When `serverFactory` option is specified this option is ignored.
@@ -155,7 +155,7 @@ When `serverFactory` option is specified this option is ignored.
 
 Defines the server keep-alive timeout in milliseconds. See documentation for
 [`server.keepAliveTimeout`
-property](https://nodejs.org/api/http.html#http_server_keepalivetimeout) to
+property](https://nodejs.org/api/http.html#serverkeepalivetimeout) to
 understand the effect of this option. This option only applies when HTTP/1 is in
 use.
 
@@ -198,7 +198,7 @@ method, otherwise attempting to set it will throw an exception.
 
 Defines the maximum number of requests a socket can handle before closing keep
 alive connection. See [`server.maxRequestsPerSocket`
-property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_maxrequestspersocket)
+property](https://nodejs.org/dist/latest/docs/api/http.html#servermaxrequestspersocket)
 to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
@@ -213,7 +213,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_requesttimeout)
+property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -335,7 +335,7 @@ This property is used to configure the internal logger instance.
 The possible values this property may have are:
 
 + Default: `false`. The logger is disabled. All logging methods will point to a
-  null logger [abstract-logging](https://npm.im/abstract-logging) instance.
+null logger [abstract-logging](https://www.npmjs.com/package/abstract-logging) instance.
 
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
@@ -587,8 +587,8 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 ### `querystringParser`
 <a id="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is a more performant fork 
-of Node.js's core `querystring` module called 
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
 [`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
@@ -730,7 +730,7 @@ const fastify = require('fastify')({
 <a id="client-error-handler"></a>
 
 Set a
-[clientErrorHandler](https://nodejs.org/api/http.html#http_event_clienterror)
+[clientErrorHandler](https://nodejs.org/api/http.html#event-clienterror)
 that listens to `error` events emitted by client connections and responds with a
 `400`.
 
@@ -817,7 +817,7 @@ function rewriteUrl (req) {
 <a id="routeroptions"></a>
 
 Fastify uses [`find-my-way`](https://github.com/delvedor/find-my-way) for its
-HTTP router. The `routerOptions` parameter allows passing 
+HTTP router. The `routerOptions` parameter allows passing
 [`find-my-way` options](https://github.com/delvedor/find-my-way?tab=readme-ov-file#findmywayoptions)
 to customize the HTTP router within Fastify.
 
@@ -841,8 +841,8 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 <a id="build-pretty-meta"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which
-supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta` 
-function to sanitize a route's store object to use with the `prettyPrint` 
+supports, `buildPrettyMeta` where you can assign a `buildPrettyMeta`
+function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
@@ -1013,7 +1013,7 @@ be invoked.
 
 This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
-attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
 
 
 ### `onBadUrl`
@@ -1102,11 +1102,11 @@ fastify.get('/dev', async (request, reply) => {
 * **Default:** `true`
 
 > ⚠ Warning:
-> This option will be set to `false` by default 
+> This option will be set to `false` by default
 > in the next major release.
 
-When set to `false`, it prevents `setErrorHandler` from being called 
-multiple times within the same scope, ensuring that the previous error 
+When set to `false`, it prevents `setErrorHandler` from being called
+multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
 
 #### Example of incorrect usage:
@@ -1129,7 +1129,7 @@ app.setErrorHandler(function anotherErrorHandler () {
 <a id="server"></a>
 
 `fastify.server`: The Node core
-[server](https://nodejs.org/api/http.html#http_class_http_server) object as
+[server](https://nodejs.org/api/http.html#class-httpserver) object as
 returned by the [**`Fastify factory function`**](#factory).
 
 > ⚠ Warning:
@@ -1243,7 +1243,7 @@ addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callbac
 
 Be careful when deciding to listen on all interfaces; it comes with inherent
 [security
-risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 The default is to listen on `port: 0` (which picks the first available open
 port) and `host: 'localhost'`:
@@ -1784,7 +1784,10 @@ call is encapsulated by prefix, so different plugins can set different not found
 handlers if a different [`prefix` option](./Plugins.md#route-prefixing-option)
 is passed to `fastify.register()`. The handler is treated as a regular route
 handler so requests will go through the full [Fastify
-lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
+lifecycle](./Lifecycle.md#lifecycle) for unexisting URLs.
+*async-await* is supported as well.
+Badly formatted URLs are sent to the [`onBadUrl`](#onbadurl)
+handler instead.
 
 You can also register [`preValidation`](./Hooks.md#route-hooks) and
 [`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
@@ -1851,7 +1854,7 @@ set it to 500 before calling the error handler.
 - not found (404) errors. Use [`setNotFoundHandler`](#set-not-found-handler)
   instead.
 - Stream errors thrown during piping into the response socket, as
-  headers/response were already sent to the client. 
+  headers/response were already sent to the client.
   Use custom in-stream data to signal such errors.
 
 ```js
@@ -1940,7 +1943,7 @@ const fastify = require('fastify')({
 The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different logger factories.
 
-#### setGenReqId
+#### setgenreqid
 <a id="set-gen-req-id"></a>
 
 `fastify.setGenReqId(function (rawReq))` Synchronous function for setting the request-id
@@ -2280,7 +2283,7 @@ test('Uses app and closes it afterwards', async () => {
 In the above example, Fastify is closed automatically after the test finishes.
 
 Read more about the
-[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management)
+[ECMAScript Explicit Resource Management](https://tc39.es/proposal-explicit-resource-management/)
 and the [using keyword](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2/)
 introduced in TypeScript 5.2.
 

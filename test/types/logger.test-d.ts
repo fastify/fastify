@@ -1,19 +1,19 @@
+import * as fs from 'node:fs'
+import { IncomingMessage, Server, ServerResponse } from 'node:http'
+import P from 'pino'
 import { expectAssignable, expectDeprecated, expectError, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
-  FastifyLogFn,
-  LogLevel,
   FastifyBaseLogger,
+  FastifyLogFn,
+  FastifyReply,
   FastifyRequest,
-  FastifyReply
+  LogLevel
 } from '../../fastify'
-import { Server, IncomingMessage, ServerResponse } from 'node:http'
-import * as fs from 'node:fs'
-import P from 'pino'
 import { FastifyLoggerInstance, ResSerializerReply } from '../../types/logger'
 
 expectType<FastifyBaseLogger>(fastify().log)
 
-class Foo {}
+class Foo { }
 
 ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {
   expectType<FastifyLogFn>(
@@ -62,19 +62,19 @@ class CustomLoggerImpl implements CustomLogger {
 const customLogger = new CustomLoggerImpl()
 
 const serverWithCustomLogger = fastify<
-Server,
-IncomingMessage,
-ServerResponse,
-CustomLoggerImpl
+  Server,
+  IncomingMessage,
+  ServerResponse,
+  CustomLoggerImpl
 >({ logger: customLogger })
 
 expectType<CustomLoggerImpl>(serverWithCustomLogger.log)
 
 const serverWithPino = fastify<
-Server,
-IncomingMessage,
-ServerResponse,
-P.Logger
+  Server,
+  IncomingMessage,
+  ServerResponse,
+  P.Logger
 >({
   logger: P({
     level: 'info',
@@ -99,9 +99,9 @@ serverWithPino.get('/', function (request) {
 })
 
 const serverWithLogOptions = fastify<
-Server,
-IncomingMessage,
-ServerResponse
+  Server,
+  IncomingMessage,
+  ServerResponse
 >({
   logger: {
     level: 'info'
@@ -111,9 +111,9 @@ ServerResponse
 expectType<FastifyBaseLogger>(serverWithLogOptions.log)
 
 const serverWithFileOption = fastify<
-Server,
-IncomingMessage,
-ServerResponse
+  Server,
+  IncomingMessage,
+  ServerResponse
 >({
   logger: {
     level: 'info',
@@ -150,7 +150,7 @@ const serverWithPinoConfig = fastify({
           method: 'method',
           url: 'url',
           version: 'version',
-          host: 'hostname',
+          host: 'fastify.test',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
           other: ''
@@ -213,7 +213,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
           method: 'method',
           url: 'url',
           version: 'version',
-          host: 'hostname',
+          host: 'fastify.test',
           remoteAddress: 'remoteAddress',
           remotePort: 80,
           other: ''
@@ -268,8 +268,8 @@ const childParent = fastify().log
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info' }))
 expectType<FastifyBaseLogger>(childParent.child({}, { level: 'silent' }))
 expectType<FastifyBaseLogger>(childParent.child({}, { redact: ['pass', 'pin'] }))
-expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => {} } }))
-expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
+expectType<FastifyBaseLogger>(childParent.child({}, { serializers: { key: () => { } } }))
+expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => { } } }))
 
 // no option pass
 expectError(childParent.child())

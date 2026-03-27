@@ -7,7 +7,7 @@ const helper = require('./helper')
 const fetchForwardedRequest = async (fastifyServer, forHeader, path, protoHeader) => {
   const headers = {
     'X-Forwarded-For': forHeader,
-    'X-Forwarded-Host': 'example.com'
+    'X-Forwarded-Host': 'fastify.test'
   }
   if (protoHeader) {
     headers['X-Forwarded-Proto'] = protoHeader
@@ -55,7 +55,7 @@ test('trust proxy, not add properties to node req', async t => {
   t.after(() => app.close())
 
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
@@ -78,7 +78,7 @@ test('trust proxy chain', async t => {
   t.after(() => app.close())
 
   app.get('/trustproxychain', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
@@ -94,7 +94,7 @@ test('trust proxy function', async t => {
   t.after(() => app.close())
 
   app.get('/trustproxyfunc', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
@@ -110,7 +110,7 @@ test('trust proxy number', async t => {
   t.after(() => app.close())
 
   app.get('/trustproxynumber', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'], host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'], host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
@@ -126,7 +126,7 @@ test('trust proxy IP addresses', async t => {
   t.after(() => app.close())
 
   app.get('/trustproxyipaddrs', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'], host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'], host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
@@ -142,15 +142,15 @@ test('trust proxy protocol', async t => {
   t.after(() => app.close())
 
   app.get('/trustproxyprotocol', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'lorem', host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'lorem', host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
   app.get('/trustproxynoprotocol', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'http', host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'http', host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
   app.get('/trustproxyprotocols', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'dolor', host: 'example.com', port: app.server.address().port })
+    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'dolor', host: 'fastify.test', port: app.server.address().port })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
@@ -159,4 +159,63 @@ test('trust proxy protocol', async t => {
   await fetchForwardedRequest(fastifyServer, '1.1.1.1', '/trustproxyprotocol', 'lorem')
   await fetchForwardedRequest(fastifyServer, '1.1.1.1', '/trustproxynoprotocol', undefined)
   await fetchForwardedRequest(fastifyServer, '1.1.1.1', '/trustproxyprotocols', 'ipsum, dolor')
+})
+
+test('trust proxy ignores forwarded headers from untrusted connections', async t => {
+  t.plan(3)
+
+  // Use a restrictive trust function that does NOT trust localhost
+  // (simulates a direct connection bypassing the proxy)
+  const app = fastify({
+    trustProxy: '10.0.0.1'
+  })
+  t.after(() => app.close())
+
+  app.get('/untrusted', function (req, reply) {
+    // protocol should fall back to socket state, not read x-forwarded-proto
+    t.assert.strictEqual(req.protocol, 'http', 'protocol ignores x-forwarded-proto from untrusted connection')
+    // host should fall back to raw Host header, not read x-forwarded-host
+    t.assert.notStrictEqual(req.host, 'evil.com', 'host ignores x-forwarded-host from untrusted connection')
+    // hostname should also not be spoofed
+    t.assert.notStrictEqual(req.hostname, 'evil.com', 'hostname ignores x-forwarded-host from untrusted connection')
+    reply.code(200).send({ protocol: req.protocol, host: req.host })
+  })
+
+  const fastifyServer = await app.listen({ port: 0 })
+
+  // Attacker connects directly (from localhost, which is NOT in the trust list)
+  // and sends spoofed forwarded headers
+  await fetch(fastifyServer + '/untrusted', {
+    headers: {
+      'X-Forwarded-For': '1.1.1.1',
+      'X-Forwarded-Host': 'evil.com',
+      'X-Forwarded-Proto': 'https'
+    }
+  })
+})
+
+test('trust proxy reads forwarded headers from trusted connections', async t => {
+  t.plan(2)
+
+  // Trust localhost (the actual connecting IP in tests)
+  const app = fastify({
+    trustProxy: (address) => address === localhost
+  })
+  t.after(() => app.close())
+
+  app.get('/trusted', function (req, reply) {
+    t.assert.strictEqual(req.protocol, 'https', 'protocol reads x-forwarded-proto from trusted connection')
+    t.assert.strictEqual(req.host, 'example.com', 'host reads x-forwarded-host from trusted connection')
+    reply.code(200).send({ protocol: req.protocol, host: req.host })
+  })
+
+  const fastifyServer = await app.listen({ port: 0 })
+
+  await fetch(fastifyServer + '/trusted', {
+    headers: {
+      'X-Forwarded-For': '1.1.1.1',
+      'X-Forwarded-Host': 'example.com',
+      'X-Forwarded-Proto': 'https'
+    }
+  })
 })

@@ -268,6 +268,47 @@ test('Request with trust proxy', t => {
   t.assert.ok(request.compileValidationSchema instanceof Function)
 })
 
+test('Request falls back to raw.connection remoteAddress', t => {
+  t.plan(1)
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: undefined },
+    connection: { remoteAddress: '127.0.0.1' },
+    headers: {
+      host: 'hostname'
+    }
+  }
+
+  const request = new Request('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.ip, '127.0.0.1')
+})
+
+test('Request with trust proxy falls back to raw.connection remoteAddress', t => {
+  t.plan(6)
+  const headers = {
+    'x-forwarded-for': '203.0.113.10',
+    'x-forwarded-host': 'fastify.test',
+    'x-forwarded-proto': 'https'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: undefined },
+    connection: { remoteAddress: '127.0.0.1' },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, 1)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.ok(request instanceof TpRequest)
+  t.assert.strictEqual(request.ip, '203.0.113.10')
+  t.assert.deepStrictEqual(request.ips, ['127.0.0.1', '203.0.113.10'])
+  t.assert.strictEqual(request.host, 'fastify.test')
+  t.assert.strictEqual(request.hostname, 'fastify.test')
+  t.assert.strictEqual(request.protocol, 'https')
+})
+
 test('Request with trust proxy, encrypted', t => {
   t.plan(2)
   const headers = {

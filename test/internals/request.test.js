@@ -284,6 +284,24 @@ test('Request falls back to raw.connection remoteAddress', t => {
   t.assert.strictEqual(request.ip, '127.0.0.1')
 })
 
+test('Request falls back to raw.connection when raw.socket is missing', t => {
+  t.plan(3)
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: undefined,
+    connection: { remoteAddress: '127.0.0.1', encrypted: true },
+    headers: {
+      host: 'hostname'
+    }
+  }
+
+  const request = new Request('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.socket, req.connection)
+  t.assert.strictEqual(request.ip, '127.0.0.1')
+  t.assert.strictEqual(request.protocol, 'https')
+})
+
 test('Request with trust proxy falls back to raw.connection remoteAddress', t => {
   t.plan(6)
   const headers = {
@@ -306,6 +324,30 @@ test('Request with trust proxy falls back to raw.connection remoteAddress', t =>
   t.assert.deepStrictEqual(request.ips, ['127.0.0.1', '203.0.113.10'])
   t.assert.strictEqual(request.host, 'fastify.test')
   t.assert.strictEqual(request.hostname, 'fastify.test')
+  t.assert.strictEqual(request.protocol, 'https')
+})
+
+test('Request with trust proxy falls back to raw.connection when raw.socket is missing', t => {
+  t.plan(5)
+  const headers = {
+    'x-forwarded-for': '203.0.113.10',
+    'x-forwarded-host': 'fastify.test',
+    'x-forwarded-proto': 'https'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: undefined,
+    connection: { remoteAddress: '127.0.0.1' },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, 1)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.socket, req.connection)
+  t.assert.strictEqual(request.ip, '203.0.113.10')
+  t.assert.deepStrictEqual(request.ips, ['127.0.0.1', '203.0.113.10'])
+  t.assert.strictEqual(request.host, 'fastify.test')
   t.assert.strictEqual(request.protocol, 'https')
 })
 

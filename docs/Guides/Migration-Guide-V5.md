@@ -8,7 +8,9 @@ work after upgrading.
 
 ## Codemods
 
-To streamline the migration process, you can use our official codemods. These automated scripts help you safely and quickly upgrade your codebase to Fastify v5.
+To streamline the migration process, you can use our official codemods. 
+These automated scripts help you safely and quickly upgrade your codebase 
+to Fastify v5.
 
 You can run the codemod directly using `npx`:
 

@@ -263,6 +263,89 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 {"message":"Hello Fastify!"}
 ```
 
+### Separating Routes as Individual Cloud Functions
+
+By default, exporting a single Fastify instance as one Cloud Function means every
+route appears under the same function name in the GCP dashboard. This makes it
+impossible to isolate per-route metrics, set different memory or timeout limits,
+or filter logs by route group.
+
+The solution is to create a focused Fastify instance for each route group and
+export each one as its own named Cloud Function.
+
+#### index.js
+
+```js
+const fastify = require("fastify");
+
+// Helper: build a Fastify instance and register a set of routes
+function buildApp(registerRoutes) {
+  const app = fastify({ logger: true });
+
+// GCF 1st-gen pre-parses the body pass it through as-is.
+// For 2nd-gen (functions-framework), remove this parser; the body arrives unparsed.
+  app.addContentTypeParser("application/json", {}, (req, body, done) => {
+    done(null, body.body);
+  });
+
+  registerRoutes(app);
+  return app;
+}
+
+// Route group: users
+const usersApp = buildApp((app) => {
+  app.get("/users", async (request, reply) => {
+    reply.send([{ id: 1, name: "Alice" }]);
+  });
+});
+
+// Route group: orders
+const ordersApp = buildApp((app) => {
+  app.post("/orders", async (request, reply) => {
+    const { item } = request.body;
+    reply.code(201).send({ id: 42, item });
+  });
+});
+
+// Export each group as a separate Cloud Function
+exports.usersFunction = async (req, res) => {
+  await usersApp.ready();
+  usersApp.server.emit("request", req, res);
+};
+
+exports.ordersFunction = async (req, res) => {
+  await ordersApp.ready();
+  ordersApp.server.emit("request", req, res);
+};
+```
+
+Each export becomes a distinct, independently deployable function in GCP. Logs
+written through Fastify's built-in [pino](https://github.com/pinojs/pino) logger
+are structured JSON and are automatically picked up by Cloud Logging, scoped to
+the function that emitted them. You can then filter the GCP Logs Explorer by
+`resource.labels.function_name` to see only the logs for a specific route group.
+
+#### Deploy each function
+
+```bash
+gcloud functions deploy usersFunction \
+  --runtime nodejs20 --trigger-http --region $GOOGLE_REGION --allow-unauthenticated
+
+gcloud functions deploy ordersFunction \
+  --runtime nodejs20 --trigger-http --region $GOOGLE_REGION --allow-unauthenticated
+```
+
+#### Read per-function logs
+
+```bash
+gcloud functions logs read usersFunction
+gcloud functions logs read ordersFunction
+```
+
+For larger projects where route groups live in separate files, see the Firebase
+guide on [organizing functions into multiple
+files](https://firebase.google.com/docs/functions/organize-functions).
+
 ### References
 - [Google Cloud Functions - Node.js Quickstart
   ](https://cloud.google.com/functions/docs/quickstart-nodejs)

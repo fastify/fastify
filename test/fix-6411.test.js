@@ -3,56 +3,63 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('validator compiler should correctly update with falsy values (0, "", false)', async (t) => {
-  t.plan(6)
-
+test('custom validatorCompiler returning falsy values should update request param', async (t) => {
   const fastify = Fastify()
 
   fastify.setValidatorCompiler(() => {
     return (data) => {
-      // Simulate coercion from a truthy object to a falsy primitive
-      if (data && data.coerceTo === 'zero') return { value: 0 }
-      if (data && data.coerceTo === 'empty') return { value: '' }
-      if (data && data.coerceTo === 'false') return { value: false }
-      return { value: data }
+      if (typeof data === 'object' && data !== null && 'coerceTo' in data) {
+        return { value: data.coerceTo }
+      }
+      return true
     }
   })
 
-  // We need a schema for the validator compiler to be used
   fastify.post('/test', { schema: { body: { type: 'object' } } }, (request, reply) => {
-    reply.send({ val: request.body })
+    reply.send({ body: request.body })
   })
 
-  // Test with 0
+  // value: 0 (falsy)
   {
     const res = await fastify.inject({
       method: 'POST',
       url: '/test',
-      payload: { coerceTo: 'zero' }
+      payload: { coerceTo: 0 }
     })
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(JSON.parse(res.payload).val, 0)
+    t.assert.strictEqual(JSON.parse(res.payload).body, 0, 'should update body to 0')
   }
 
-  // Test with ""
+  // value: "" (falsy)
   {
     const res = await fastify.inject({
       method: 'POST',
       url: '/test',
-      payload: { coerceTo: 'empty' }
+      payload: { coerceTo: '' }
     })
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(JSON.parse(res.payload).val, '')
+    t.assert.strictEqual(JSON.parse(res.payload).body, '', 'should update body to empty string')
   }
 
-  // Test with false
+  // value: false (falsy)
   {
     const res = await fastify.inject({
       method: 'POST',
       url: '/test',
-      payload: { coerceTo: 'false' }
+      payload: { coerceTo: false }
     })
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(JSON.parse(res.payload).val, false)
+    t.assert.strictEqual(JSON.parse(res.payload).body, false, 'should update body to false')
+  }
+
+  // value: null (falsy)
+  {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/test',
+      payload: { coerceTo: null }
+    })
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(JSON.parse(res.payload).body, null, 'should update body to null')
   }
 })

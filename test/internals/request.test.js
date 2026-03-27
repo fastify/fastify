@@ -504,3 +504,26 @@ test('Request with trust proxy and undefined socket', t => {
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.assert.deepStrictEqual(request.protocol, undefined)
 })
+
+test('Request with numeric trust proxy and undefined remoteAddress', t => {
+  t.plan(5)
+  const headers = {
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    'x-forwarded-host': 'fastify.test',
+    'x-forwarded-proto': 'https'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: undefined },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, 1)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.ip, '1.1.1.1')
+  t.assert.deepStrictEqual(request.ips, [undefined, '1.1.1.1'])
+  t.assert.strictEqual(request.host, 'fastify.test')
+  t.assert.strictEqual(request.hostname, 'fastify.test')
+  t.assert.strictEqual(request.protocol, 'https')
+})

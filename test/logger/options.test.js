@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(17)
+  t.plan(18)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -498,6 +498,22 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.strictEqual(err.statusCode, 500)
       t.assert.strictEqual(err.message, "Log level for 'GET:/log' route must be a valid logger level. Received: 'invalid'")
     }
+  })
+
+  await t.test('Should allow null custom log level for a route', async (t) => {
+    t.plan(1)
+
+    const fastify = Fastify({
+      logger: true
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/log', { logLevel: null }, (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    const response = await fastify.inject({ method: 'GET', url: '/log' })
+    t.assert.deepEqual(await response.json(), { hello: 'world' })
   })
 
   await t.test('should pass when using unWritable props in the logger option', (t) => {

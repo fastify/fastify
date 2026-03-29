@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.8.2",
+  "version": "5.8.4",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -197,7 +197,7 @@
     "split2": "^4.2.0",
     "tsd": "^0.33.0",
     "typebox": "^1.0.81",
-    "typescript": "~5.9.2",
+    "typescript": "~6.0.2",
     "undici": "^7.11.0",
     "vary": "^1.1.2",
     "yup": "^1.4.0"

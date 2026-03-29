@@ -74,7 +74,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly ip: string;
   readonly ips?: string[];
   readonly host: string;
-  readonly port: number;
+  readonly port: number | null;
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;

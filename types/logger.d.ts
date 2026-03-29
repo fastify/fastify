@@ -101,7 +101,7 @@ export declare class LogDispatcher {
   routeNotFound (request: FastifyRequest): void
   writeHeadError (error: Error, reply: FastifyReply): void
   serializerError (err: Error, reply: FastifyReply, statusCode: number): void
-  serviceUnavailable (logger: FastifyBaseLogger): void
+  serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
 }
 
 export interface FastifyChildLoggerFactory<

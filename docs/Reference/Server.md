@@ -517,7 +517,7 @@ The available methods that can be overridden are:
 | `routeNotFound` | `(request)` | Logs a "route not found" message at `info` level. |
 | `writeHeadError` | `(error, reply)` | Logs a warning when `writeHead` fails during error handling. |
 | `serializerError` | `(err, reply, statusCode)` | Logs an error when the serializer for a given status code fails. |
-| `serviceUnavailable` | `(logger)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
+| `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
 
 **Note:** When you override a method, you take full control of it — the
 default `disableRequestLogging` check is **not** automatically applied.

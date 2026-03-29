@@ -430,6 +430,34 @@ test('LogDispatcher subclass keeps defaults for non-overridden methods', t => {
   dispatcher.requestCompleted(null, request, reply)
 })
 
+test('serviceUnavailable should log with logger and receive server', t => {
+  t.plan(2)
+  const dispatcher = new LogDispatcher()
+  const fakeLogger = {
+    info: (data, msg) => {
+      t.assert.deepStrictEqual(data, { res: { statusCode: 503 } })
+      t.assert.strictEqual(msg, 'request aborted - refusing to accept new requests as server is closing')
+    }
+  }
+  const fakeServer = { name: 'test-server' }
+  dispatcher.serviceUnavailable(fakeLogger, fakeServer)
+})
+
+test('serviceUnavailable subclass can use server', t => {
+  t.plan(1)
+
+  const fakeServer = { name: 'test-server' }
+
+  class MyDispatcher extends LogDispatcher {
+    serviceUnavailable (logger, server) {
+      t.assert.strictEqual(server, fakeServer)
+    }
+  }
+
+  const dispatcher = new MyDispatcher()
+  dispatcher.serviceUnavailable({}, fakeServer)
+})
+
 test('LogDispatcher is exported from fastify', t => {
   t.plan(2)
   t.assert.ok(Fastify.LogDispatcher)

@@ -6,7 +6,7 @@ const JSONStream = require('JSONStream')
 const Readable = require('node:stream').Readable
 const split = require('split2')
 const Fastify = require('..')
-const { kDisableRequestLogging } = require('../lib/symbols.js')
+const { kLogDispatcher } = require('../lib/symbols.js')
 
 test('Destroying streams prematurely should call abort method', (t, testDone) => {
   t.plan(7)
@@ -87,7 +87,7 @@ test('Destroying streams prematurely, log is disabled', (t, testDone) => {
   const http = require('node:http')
 
   fastify.get('/', function (request, reply) {
-    reply.log[kDisableRequestLogging] = true
+    reply.server[kLogDispatcher].disableRequestLogging = true
 
     let sent = false
     const reallyLongStream = new stream.Readable({

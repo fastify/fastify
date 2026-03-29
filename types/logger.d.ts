@@ -98,7 +98,7 @@ export interface FastifyChildLoggerFactory<
    * @returns The child logger instance
    */
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyBaseLogger, TypeProvider>,
     logger: Logger,
     bindings: Bindings,
     childLoggerOpts: ChildLoggerOptions,

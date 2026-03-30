@@ -60,9 +60,9 @@ global
   # Set some baseline TLS options.
   tune.ssl.default-dh-param 2048
   ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11
-  ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+  ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!annul:!MD5:!DSS
   ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11
-  ssl-default-server-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+  ssl-default-server-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!annul:!MD5:!DSS
 
 # Each defaults section defines options that will apply to each subsequent
 # subsection until another defaults section is encountered.

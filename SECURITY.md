@@ -67,7 +67,7 @@ complete a vulnerability report via the
 
 Do not assign or request a CVE directly.
 CVE assignment is handled by the Fastify Security Team.
-Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
+Fastify falls under the [OpenJS CAN](https://can.openjsf.org/).
 A CVE will be assigned as part of our responsible disclosure process.
 
 > ℹ️ Note:
@@ -164,10 +164,10 @@ reported the vulnerability.
 
 If you do not receive an acknowledgment of your report within 6 business days,
 or if you cannot find a private security contact for the project, you may
-contact the OpenJS Foundation CNA at <https://cna.openjsf.org/> (or
+contact the OpenJS Foundation CAN at <https://can.openjsf.org/> (or
 `security@lists.openjsf.org`) for assistance.
 
-The CNA can help ensure your report is properly acknowledged, assist with
+The CAN can help ensure your report is properly acknowledged, assist with
 coordinating disclosure timelines, and assign CVEs when necessary. This is a
 support mechanism to ensure security reports are handled appropriately across
 all OpenJS Foundation projects.

@@ -835,8 +835,8 @@ Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.ht
 For example:
 
 ```js
-/**  @type {import('fastify').FastifyPluginAsync<{ optionA: boolean, optionB: string }>} */
-module.exports = async function (fastify, { optionA, optionB }) {
+/**  @type {import('fastify').FastifyPluginAsync<{ optional: boolean, optionB: string }>} */
+module.exports = async function (fastify, { optional, optionB }) {
   fastify.get('/look', () => 'at me');
 }
 ```

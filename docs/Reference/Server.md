@@ -23,7 +23,7 @@ describes the properties available in that options object.
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
-  - [`logDispatcher`](#logdispatcher)
+  - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
@@ -389,7 +389,7 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
-> **Deprecated:** Use the [`logDispatcher`](#log-dispatcher) option with
+> **Deprecated:** Use the [`logController`](#log-controller) option with
 > `disableRequestLogging` or `isLogDisabled` override instead.
 > This top-level option will be removed in `fastify@6`.
 
@@ -414,10 +414,10 @@ const fastify = require('fastify')({
   }
 })
 
-// Recommended: use logDispatcher instead
+// Recommended: use logController instead
 const fastify = require('fastify')({
   logger: true,
-  logDispatcher: {
+  logController: {
     disableRequestLogging: (request) => {
       return request.url === '/health' || request.url === '/ready'
     }
@@ -449,19 +449,19 @@ fastify.addHook('onResponse', (req, reply, done) => {
 })
 ```
 
-### `logDispatcher`
-<a id="factory-log-dispatcher"></a>
+### `logController`
+<a id="factory-log-controller"></a>
 
 + Default: `undefined`
 
-Accepts an instance of `LogDispatcher` (or a subclass) to customize Fastify's
-internal log lines. Extend the `LogDispatcher` class and override only the
+Accepts an instance of `LogController` (or a subclass) to customize Fastify's
+internal log lines. Extend the `LogController` class and override only the
 methods you want to customize; all others keep their default behavior.
 
-The `LogDispatcher` class is exported from `fastify`:
+The `LogController` class is exported from `fastify`:
 
 ```js
-const { LogDispatcher } = require('fastify')
+const { LogController } = require('fastify')
 ```
 
 The constructor accepts an optional options object:
@@ -472,9 +472,9 @@ The constructor accepts an optional options object:
 | `requestIdLogLabel` | `string` | `'reqId'` | The label used for the request identifier when logging. |
 
 ```js
-const { LogDispatcher } = require('fastify')
+const { LogController } = require('fastify')
 
-class MyLogDispatcher extends LogDispatcher {
+class MyLogController extends LogController {
   constructor () {
     super({
       requestIdLogLabel: 'traceId',
@@ -501,7 +501,7 @@ class MyLogDispatcher extends LogDispatcher {
 
 const fastify = require('fastify')({
   logger: true,
-  logDispatcher: new MyLogDispatcher()
+  logController: new MyLogController()
 })
 ```
 
@@ -590,7 +590,7 @@ const fastify = require('fastify')({
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
 
-> **Deprecated:** Use the [`logDispatcher`](#log-dispatcher) option with
+> **Deprecated:** Use the [`logController`](#log-controller) option with
 > `requestIdLogLabel` instead. This top-level option will be removed in `fastify@6`.
 
 + Default: `'reqId'`

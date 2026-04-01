@@ -34,7 +34,7 @@ const {
   kGenReqId,
   kErrorHandlerAlreadySet,
   kHandlerTimeout,
-  kLogDispatcher
+  kLogController
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -45,7 +45,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogDispatcher, LogDispatcher } = require('./lib/logger-factory')
+const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogController, LogController } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
@@ -90,7 +90,7 @@ function fastify (serverOptions) {
   const {
     options,
     genReqId,
-    logDispatcher,
+    logController,
     hasLogger,
     initialConfig
   } = processOptions(serverOptions, defaultRoute, onBadUrl)
@@ -216,7 +216,7 @@ function fastify (serverOptions) {
     },
     // expose logger instance
     log: options.logger,
-    [kLogDispatcher]: logDispatcher,
+    [kLogController]: logController,
     // type provider
     withTypeProvider,
     // hooks
@@ -645,7 +645,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
 
-      onBadUrlContext.server[kLogDispatcher].incomingRequest(request)
+      onBadUrlContext.server[kLogController].incomingRequest(request)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -673,7 +673,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
           const reply = new Reply(res, request, childLogger)
 
-          onBadUrlContext.server[kLogDispatcher].incomingRequest(request)
+          onBadUrlContext.server[kLogController].incomingRequest(request)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
@@ -868,7 +868,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   // the internal logger uses the input logger to execute the logging. This allows the user
   // to customize every internal log line
-  const logDispatcher = createLogDispatcher(options)
+  const logController = createLogController(options)
 
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
@@ -903,7 +903,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   return {
     options,
     genReqId,
-    logDispatcher,
+    logController,
     hasLogger,
     initialConfig
   }
@@ -983,6 +983,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  */
 module.exports = fastify
 module.exports.errorCodes = errorCodes
-module.exports.LogDispatcher = LogDispatcher
+module.exports.LogController = LogController
 module.exports.fastify = fastify
 module.exports.default = fastify

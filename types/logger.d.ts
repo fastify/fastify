@@ -82,16 +82,16 @@ export interface FastifyLoggerOptions<
   stream?: FastifyLoggerStreamDestination;
 }
 
-export interface LogDispatcherOptions {
+export interface LogControllerOptions {
   disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
   requestIdLogLabel?: string
 }
 
-export declare class LogDispatcher {
+export declare class LogController {
   disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
   requestIdLogLabel: string
 
-  constructor (options?: LogDispatcherOptions)
+  constructor (options?: LogControllerOptions)
 
   isLogDisabled (req: FastifyRequest): boolean
   incomingRequest (request: FastifyRequest): void

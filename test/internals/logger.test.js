@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('../..')
 const loggerUtils = require('../../lib/logger-factory')
-const { createLogDispatcher, LogDispatcher } = require('../../lib/logger-factory')
+const { createLogController, LogController } = require('../../lib/logger-factory')
 const { serializers } = require('../../lib/logger-pino')
 
 test('time resolution', t => {
@@ -143,17 +143,17 @@ test('The logger should error if both stream and file destination are given', t 
   }
 })
 
-test('LogDispatcher defaults', t => {
+test('LogController defaults', t => {
   t.plan(3)
-  const dispatcher = new LogDispatcher()
+  const dispatcher = new LogController()
   t.assert.strictEqual(dispatcher.disableRequestLogging, false)
   t.assert.strictEqual(dispatcher.requestIdLogLabel, 'reqId')
   t.assert.strictEqual(dispatcher.isLogDisabled({}), false)
 })
 
-test('LogDispatcher with custom options', t => {
+test('LogController with custom options', t => {
   t.plan(2)
-  const dispatcher = new LogDispatcher({
+  const dispatcher = new LogController({
     disableRequestLogging: true,
     requestIdLogLabel: 'traceId'
   })
@@ -161,9 +161,9 @@ test('LogDispatcher with custom options', t => {
   t.assert.strictEqual(dispatcher.requestIdLogLabel, 'traceId')
 })
 
-test('LogDispatcher with function disableRequestLogging', t => {
+test('LogController with function disableRequestLogging', t => {
   t.plan(2)
-  const dispatcher = new LogDispatcher({
+  const dispatcher = new LogController({
     disableRequestLogging: (req) => req.skip === true
   })
   t.assert.strictEqual(dispatcher.isLogDisabled({ skip: true }), true)
@@ -172,33 +172,33 @@ test('LogDispatcher with function disableRequestLogging', t => {
 
 test('requestCompleted should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: true })
+  const logController = new LogController({ disableRequestLogging: true })
   const log = {
     error: () => { t.assert.fail('error should not be called') },
     info: () => { t.assert.fail('info should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  logDispatcher.requestCompleted(new Error('test'), request, reply)
+  logController.requestCompleted(new Error('test'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('requestCompleted should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: () => true })
+  const logController = new LogController({ disableRequestLogging: () => true })
   const log = {
     error: () => { t.assert.fail('error should not be called') },
     info: () => { t.assert.fail('info should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  logDispatcher.requestCompleted(new Error('test'), request, reply)
+  logController.requestCompleted(new Error('test'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('requestCompleted should log error when err is present', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: false })
+  const logController = new LogController({ disableRequestLogging: false })
   const err = new Error('test')
   const log = {
     error: (data, msg) => {
@@ -207,12 +207,12 @@ test('requestCompleted should log error when err is present', t => {
   }
   const request = {}
   const reply = { request, log, elapsedTime: 42 }
-  logDispatcher.requestCompleted(err, request, reply)
+  logController.requestCompleted(err, request, reply)
 })
 
 test('requestCompleted should log info when no error', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: false })
+  const logController = new LogController({ disableRequestLogging: false })
   const log = {
     info: (data, msg) => {
       t.assert.strictEqual(msg, 'request completed')
@@ -220,38 +220,38 @@ test('requestCompleted should log info when no error', t => {
   }
   const request = {}
   const reply = { request, log, elapsedTime: 42 }
-  logDispatcher.requestCompleted(null, request, reply)
+  logController.requestCompleted(null, request, reply)
 })
 
 test('defaultErrorLog should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: true })
+  const logController = new LogController({ disableRequestLogging: true })
   const log = {
     info: () => { t.assert.fail('info should not be called') },
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log, statusCode: 404 }
-  logDispatcher.defaultErrorLog(new Error('not found'), request, reply)
+  logController.defaultErrorLog(new Error('not found'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('defaultErrorLog should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: () => true })
+  const logController = new LogController({ disableRequestLogging: () => true })
   const log = {
     info: () => { t.assert.fail('info should not be called') },
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log, statusCode: 404 }
-  logDispatcher.defaultErrorLog(new Error('not found'), request, reply)
+  logController.defaultErrorLog(new Error('not found'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('defaultErrorLog should log info for 4xx errors', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: false })
+  const logController = new LogController({ disableRequestLogging: false })
   const err = new Error('not found')
   const log = {
     info: (data, msg) => {
@@ -260,12 +260,12 @@ test('defaultErrorLog should log info for 4xx errors', t => {
   }
   const request = {}
   const reply = { request, log, statusCode: 404 }
-  logDispatcher.defaultErrorLog(err, request, reply)
+  logController.defaultErrorLog(err, request, reply)
 })
 
 test('defaultErrorLog should log error for 5xx errors', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: false })
+  const logController = new LogController({ disableRequestLogging: false })
   const err = new Error('internal error')
   const log = {
     error: (data, msg) => {
@@ -274,36 +274,36 @@ test('defaultErrorLog should log error for 5xx errors', t => {
   }
   const request = {}
   const reply = { request, log, statusCode: 500 }
-  logDispatcher.defaultErrorLog(err, request, reply)
+  logController.defaultErrorLog(err, request, reply)
 })
 
 test('writeHeadError should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: true })
+  const logController = new LogController({ disableRequestLogging: true })
   const log = {
     warn: () => { t.assert.fail('warn should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  logDispatcher.writeHeadError(new Error('write head failed'), reply)
+  logController.writeHeadError(new Error('write head failed'), reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('writeHeadError should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: () => true })
+  const logController = new LogController({ disableRequestLogging: () => true })
   const log = {
     warn: () => { t.assert.fail('warn should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  logDispatcher.writeHeadError(new Error('write head failed'), reply)
+  logController.writeHeadError(new Error('write head failed'), reply)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('writeHeadError should log warn with error message', t => {
   t.plan(2)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: false })
+  const logController = new LogController({ disableRequestLogging: false })
   const error = new Error('write head failed')
   const request = {}
   const reply = {
@@ -315,36 +315,36 @@ test('writeHeadError should log warn with error message', t => {
       }
     }
   }
-  logDispatcher.writeHeadError(error, reply)
+  logController.writeHeadError(error, reply)
 })
 
 test('serializerError should not log when logging is disabled (boolean)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: true })
+  const logController = new LogController({ disableRequestLogging: true })
   const log = {
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  logDispatcher.serializerError(new Error('serializer failed'), reply, 500)
+  logController.serializerError(new Error('serializer failed'), reply, 500)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('serializerError should not log when logging is disabled (function)', t => {
   t.plan(1)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: () => true })
+  const logController = new LogController({ disableRequestLogging: () => true })
   const log = {
     error: () => { t.assert.fail('error should not be called') }
   }
   const request = {}
   const reply = { request, log }
-  logDispatcher.serializerError(new Error('serializer failed'), reply, 500)
+  logController.serializerError(new Error('serializer failed'), reply, 500)
   t.assert.ok(true, 'logger was not called')
 })
 
 test('serializerError should log error with status code', t => {
   t.plan(2)
-  const logDispatcher = new LogDispatcher({ disableRequestLogging: false })
+  const logController = new LogController({ disableRequestLogging: false })
   const err = new Error('serializer failed')
   const request = {}
   const reply = {
@@ -356,48 +356,48 @@ test('serializerError should log error with status code', t => {
       }
     }
   }
-  logDispatcher.serializerError(err, reply, 500)
+  logController.serializerError(err, reply, 500)
 })
 
-test('createLogDispatcher should use LogDispatcher instance directly', t => {
+test('createLogController should use LogController instance directly', t => {
   t.plan(2)
-  const custom = new LogDispatcher({ disableRequestLogging: true, requestIdLogLabel: 'traceId' })
-  const dispatcher = createLogDispatcher({ logDispatcher: custom })
+  const custom = new LogController({ disableRequestLogging: true, requestIdLogLabel: 'traceId' })
+  const dispatcher = createLogController({ logController: custom })
   t.assert.strictEqual(dispatcher, custom)
   t.assert.strictEqual(dispatcher.requestIdLogLabel, 'traceId')
 })
 
-test('createLogDispatcher should create default when no instance provided', t => {
+test('createLogController should create default when no instance provided', t => {
   t.plan(2)
-  const dispatcher = createLogDispatcher({ disableRequestLogging: false, requestIdLogLabel: 'reqId' })
-  t.assert.ok(dispatcher instanceof LogDispatcher)
+  const dispatcher = createLogController({ disableRequestLogging: false, requestIdLogLabel: 'reqId' })
+  t.assert.ok(dispatcher instanceof LogController)
   t.assert.strictEqual(dispatcher.requestIdLogLabel, 'reqId')
 })
 
-test('createLogDispatcher should throw on invalid type', t => {
+test('createLogController should throw on invalid type', t => {
   t.plan(1)
   t.assert.throws(() => {
-    createLogDispatcher({ disableRequestLogging: false, logDispatcher: 'bad' })
-  }, { code: 'FST_ERR_LOG_INVALID_LOG_DISPATCHER' })
+    createLogController({ disableRequestLogging: false, logController: 'bad' })
+  }, { code: 'FST_ERR_LOG_INVALID_LOG_CONTROLLER' })
 })
 
-test('createLogDispatcher should throw when plain object is provided', t => {
+test('createLogController should throw when plain object is provided', t => {
   t.plan(1)
   t.assert.throws(() => {
-    createLogDispatcher({ disableRequestLogging: false, logDispatcher: { incomingRequest: () => { } } })
-  }, { code: 'FST_ERR_LOG_INVALID_LOG_DISPATCHER' })
+    createLogController({ disableRequestLogging: false, logController: { incomingRequest: () => { } } })
+  }, { code: 'FST_ERR_LOG_INVALID_LOG_CONTROLLER' })
 })
 
-test('createLogDispatcher should accept null', t => {
+test('createLogController should accept null', t => {
   t.plan(1)
-  const logDispatcher = createLogDispatcher({ disableRequestLogging: false, logDispatcher: null })
-  t.assert.ok(logDispatcher)
+  const logController = createLogController({ disableRequestLogging: false, logController: null })
+  t.assert.ok(logController)
 })
 
-test('LogDispatcher subclass should work', t => {
+test('LogController subclass should work', t => {
   t.plan(2)
 
-  class MyDispatcher extends LogDispatcher {
+  class MyDispatcher extends LogController {
     constructor () {
       super({ requestIdLogLabel: 'traceId' })
     }
@@ -412,10 +412,10 @@ test('LogDispatcher subclass should work', t => {
   dispatcher.incomingRequest({})
 })
 
-test('LogDispatcher subclass keeps defaults for non-overridden methods', t => {
+test('LogController subclass keeps defaults for non-overridden methods', t => {
   t.plan(1)
 
-  class MyDispatcher extends LogDispatcher {
+  class MyDispatcher extends LogController {
     incomingRequest () { }
   }
 
@@ -432,7 +432,7 @@ test('LogDispatcher subclass keeps defaults for non-overridden methods', t => {
 
 test('serviceUnavailable should log with logger and receive server', t => {
   t.plan(2)
-  const dispatcher = new LogDispatcher()
+  const dispatcher = new LogController()
   const fakeLogger = {
     info: (data, msg) => {
       t.assert.deepStrictEqual(data, { res: { statusCode: 503 } })
@@ -448,7 +448,7 @@ test('serviceUnavailable subclass can use server', t => {
 
   const fakeServer = { name: 'test-server' }
 
-  class MyDispatcher extends LogDispatcher {
+  class MyDispatcher extends LogController {
     serviceUnavailable (logger, server) {
       t.assert.strictEqual(server, fakeServer)
     }
@@ -458,10 +458,10 @@ test('serviceUnavailable subclass can use server', t => {
   dispatcher.serviceUnavailable({}, fakeServer)
 })
 
-test('LogDispatcher is exported from fastify', t => {
+test('LogController is exported from fastify', t => {
   t.plan(2)
-  t.assert.ok(Fastify.LogDispatcher)
-  t.assert.strictEqual(Fastify.LogDispatcher, LogDispatcher)
+  t.assert.ok(Fastify.LogController)
+  t.assert.strictEqual(Fastify.LogController, LogController)
 })
 
 test('The serializer prevent fails if the request socket is undefined', t => {

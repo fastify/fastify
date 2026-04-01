@@ -17,7 +17,7 @@ import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './typ
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
-  LogDispatcher as LogDispatcherClass,
+  LogController as LogControllerClass,
   FastifyLogFn,
   FastifyLoggerInstance,
   FastifyLoggerOptions,
@@ -45,7 +45,7 @@ type Fastify = typeof fastify
 
 declare namespace fastify {
   export const errorCodes: FastifyErrorCodes
-  export { LogDispatcherClass as LogDispatcher }
+  export { LogControllerClass as LogController }
 
   export type FastifyHttp2SecureOptions<
     Server extends http2.Http2SecureServer,
@@ -123,9 +123,9 @@ declare namespace fastify {
     bodyLimit?: number,
     handlerTimeout?: number,
     maxParamLength?: number,
-    /** @deprecated Use the `logDispatcher` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
+    /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
     disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
-    logDispatcher?: LogDispatcherClass,
+    logController?: LogControllerClass,
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
@@ -136,7 +136,7 @@ declare namespace fastify {
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
-    /** @deprecated Use the `logDispatcher` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
+    /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
     requestIdLogLabel?: string;
     useSemicolonDelimiter?: boolean,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,

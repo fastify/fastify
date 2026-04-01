@@ -5,7 +5,7 @@ const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
-const { LogDispatcher } = require('../../lib/log-dispatcher')
+const { LogController } = require('../../lib/log-controller')
 const Fastify = require('../..')
 const { Readable, Writable } = require('node:stream')
 const {
@@ -15,7 +15,7 @@ const {
   kReplyIsError,
   kReplySerializerDefault,
   kRouteContext,
-  kLogDispatcher
+  kLogController
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -90,7 +90,7 @@ test('reply.send will logStream error and destroy the stream', t => {
   const fakeRequest = {
     [kRouteContext]: {
       onSend: null,
-      server: { [kLogDispatcher]: new LogDispatcher() }
+      server: { [kLogController]: new LogController() }
     }
   }
 

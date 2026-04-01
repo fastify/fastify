@@ -7,7 +7,7 @@ const split = require('split2')
 const pino = require('pino')
 
 const Fastify = require('../../fastify')
-const { LogDispatcher } = require('../../lib/log-dispatcher')
+const { LogController } = require('../../lib/log-controller')
 const helper = require('../helper')
 const { once, on } = stream
 const { request } = require('./logger-test-utils')
@@ -81,14 +81,14 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     }
   })
 
-  await t.test('should not log if logDispatcher option disables logging', async (t) => {
+  await t.test('should not log if logController option disables logging', async (t) => {
     const stream = split(JSON.parse)
     const fastify = Fastify({
       logger: {
         stream,
         level: 'info'
       },
-      logDispatcher: new class extends LogDispatcher {
+      logController: new class extends LogController {
         isLogDisabled () {
           t.assert.ok(true, 'isLogDisabled should be called')
           return true // disable logging to test that incomingRequest is not called

@@ -419,6 +419,45 @@ expectType<FastifyInstance>(fastify().route({
   handler: routeHandler
 }))
 
+function buildHook<TReq extends FastifyRequest> (
+  relation: string,
+  object: string | ((req: TReq) => string)
+) {
+  return async function (this: FastifyInstance, req: TReq) {
+    expectType<FastifyInstance>(this)
+    expectType<TReq>(req)
+
+    if (typeof object === 'string') {
+      return `${relation} for ${object}`
+    } else {
+      return object(req)
+    }
+  }
+}
+
+fastify().post('/', {
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' }
+      }
+    },
+    body: {
+      type: 'object',
+      properties: {
+        foo: { type: 'string' }
+      }
+    }
+  },
+  preHandler: buildHook('preHandler', (req) => `preHandler for ${req.params}`),
+  preValidation: buildHook('preValidation', (req) => `preValidation for ${req.params}`),
+  preParsing: buildHook('preParsing', (req) => `preParsing for ${req.params}`)
+}, (req) => {
+  expectType<unknown>(req.params)
+  expectType<unknown>(req.body)
+})
+
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'OPTIONS',

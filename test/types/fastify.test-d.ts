@@ -79,6 +79,17 @@ expectType<
   })
 )
 
+// http2: false should resolve to an http1 server
+expectType<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({ http2: false }))
+// https with http2: false should resolve to an https server
+expectType<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>(fastify({ https: {}, http2: false }))
+
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 expectError(

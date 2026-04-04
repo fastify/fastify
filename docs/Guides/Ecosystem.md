@@ -225,6 +225,9 @@ section.
   Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
+- [`@pompelmi/fastify-plugin`](https://github.com/pompelmi/pompelmi/tree/main/packages/fastify-plugin)
+  In-process file upload scanning for Fastify with MIME/magic-byte
+  validation, ZIP bomb protection, size limits, and optional YARA.
 - [`@pybot/fastify-autoload`](https://github.com/kunal097/fastify-autoload)
   Plugin to generate routes automatically with valid json content
 - [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
@@ -724,3 +727,4 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
+

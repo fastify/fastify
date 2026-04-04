@@ -1,4 +1,4 @@
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
   FastifyContextConfig,
@@ -99,7 +99,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.getDecorator<string>('foo'))
   expectType<void>(request.setDecorator('foo', 'hello'))
   expectType<void>(request.setDecorator<string>('foo', 'hello'))
-  expectError(request.setDecorator<string>('foo', true))
+  // @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'string'.
+  request.setDecorator<string>('foo', true)
 }
 
 const getHandlerWithCustomLogger: RouteHandlerMethod<
@@ -166,18 +167,21 @@ const customLogger: CustomLoggerInterface = {
 }
 
 const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
-expectError<
+
+expectNotAssignable<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & Promise<
   FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 >
 >(serverWithCustomLogger)
+
 expectAssignable<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<
   FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 >
 >(serverWithCustomLogger)
+
 expectType<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & SafePromiseLike<

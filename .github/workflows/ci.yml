@@ -173,7 +173,7 @@ jobs:
         run: |
           npm run unit
 
-  test-typescript:
+  test-types:
     needs:
       - lint
       - coverage-nix
@@ -198,9 +198,9 @@ jobs:
         run: |
           npm install --ignore-scripts
 
-      - name: Run typescript tests
+      - name: Run type tests
         run: |
-          npm run test:typescript
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
@@ -241,15 +241,15 @@ jobs:
         run: |
           npm run unit
 
-      - name: Run typescript tests
+      - name: Run type tests
         run: |
-          npm run test:typescript
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
   package:
     needs:
-      - test-typescript
+      - test-types
       - test-unit
       - test-pino-compat
     runs-on: ubuntu-latest
@@ -288,7 +288,7 @@ jobs:
         github.event.pull_request.head.repo.full_name == github.repository &&
         github.event.pull_request.user.login == 'dependabot[bot]'
     needs:
-      - test-typescript
+      - test-types
       - test-unit
       - package
     runs-on: ubuntu-latest

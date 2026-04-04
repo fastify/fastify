@@ -78,7 +78,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTWRN005 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -797,9 +797,17 @@ function fastify (serverOptions) {
     return this
   }
 
-  function addHttpMethod (method, { hasBody = false } = {}) {
+  function addHttpMethod (method, { hasBody = false, overrideExisting = false } = {}) {
     if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
+    }
+
+    const alreadyExists =
+      this[kSupportedHTTPMethods].bodyless.has(method) ||
+      this[kSupportedHTTPMethods].bodywith.has(method)
+
+    if (alreadyExists && !overrideExisting) {
+      FSTWRN005(method)
     }
 
     if (hasBody === true) {

@@ -376,7 +376,7 @@ fastify.addHook('preHandler', async (request, reply) => {
 If you want to respond with a stream, you should avoid using an `async` function
 for the hook. If you must use an `async` function, your code will need to follow
 the pattern in
-[test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
+[test/hooks-async.test.js](https://github.com/fastify/fastify/blob/main/test/hooks-async.test.js).
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
@@ -866,9 +866,11 @@ would be a dangerous and destructive operation. So be careful and
 make sure your property is entirely new, also using this approach
 only for very specific and small cases like this example.
 
-Regarding TypeScript in this example, you'd need to update the
-`FastifyRequest` core interface to include your new property typing
-(for more about it, see [TypeScript](./TypeScript.md) page), like:
+Regarding TypeScript in this example, in Fastify 6 you should prefer a
+registration-scoped/plugin-based typing approach. For small local cases, a
+module augmentation can still be used to type your custom property
+(for more about migration options, see [TypeScript](./TypeScript.md) and the
+[declaration-merging migration guide](../Guides/Migration-Guide-Declaration-Merging.md)):
 
 ```ts
 interface AuthenticatedUser { /* ... */ }

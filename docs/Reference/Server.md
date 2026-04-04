@@ -198,7 +198,7 @@ method, otherwise attempting to set it will throw an exception.
 
 Defines the maximum number of requests a socket can handle before closing keep
 alive connection. See [`server.maxRequestsPerSocket`
-property](https://nodejs.org/dist/latest/docs/api/http.html#servermaxrequestspersocket)
+property](https://nodejs.org/api/http.html#servermaxrequestspersocket)
 to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is
 ignored.
@@ -213,7 +213,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
+property](https://nodejs.org/api/http.html#serverrequesttimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -335,7 +335,7 @@ This property is used to configure the internal logger instance.
 The possible values this property may have are:
 
 + Default: `false`. The logger is disabled. All logging methods will point to a
-null logger [abstract-logging](https://www.npmjs.com/package/abstract-logging) instance.
+  null logger [abstract-logging](https://github.com/jsumners/abstract-logging) instance.
 
 + `object`: a standard Pino [options
   object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
@@ -1243,7 +1243,7 @@ addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callbac
 
 Be careful when deciding to listen on all interfaces; it comes with inherent
 [security
-risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+risks](https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 The default is to listen on `port: 0` (which picks the first available open
 port) and `host: 'localhost'`:

@@ -23,7 +23,7 @@ declare module '../../fastify' {
   }
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  interface FastifyRequest<
+  interface BaseFastifyRequest<
     RouteGeneric,
     RawServer,
     RawRequest,

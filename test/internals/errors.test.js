@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 88
+const expectedErrors = 89
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -746,6 +746,16 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_REWRITE_NOT_STR')
   t.assert.strictEqual(error.message, 'Rewrite url for "%s" needs to be of type "string" but received "%s"')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_ROUTE_INVALID_LOG_LEVEL_OPTION', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_INVALID_LOG_LEVEL_OPTION('invalid')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_INVALID_LOG_LEVEL_OPTION')
+  t.assert.strictEqual(error.message, "'logLevel' option must be a valid log level. Got 'invalid'")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
 })

@@ -23,6 +23,7 @@ describes the properties available in that options object.
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
+  - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
@@ -388,6 +389,10 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
+> **Deprecated:** Use the [`logController`](#log-controller) option with
+> `disableRequestLogging` or `isLogDisabled` override instead.
+> This top-level option will be removed in `fastify@6`.
+
 + Default: `false`
 
 When logging is enabled, Fastify will issue an `info` level log
@@ -401,11 +406,21 @@ and returns a boolean. This allows for conditional request logging based on the
 request properties (e.g., URL, headers, decorations).
 
 ```js
+// Deprecated
 const fastify = require('fastify')({
   logger: true,
   disableRequestLogging: (request) => {
-    // Disable logging for health check endpoints
     return request.url === '/health' || request.url === '/ready'
+  }
+})
+
+// Recommended: use logController instead
+const fastify = require('fastify')({
+  logger: true,
+  logController: {
+    disableRequestLogging: (request) => {
+      return request.url === '/health' || request.url === '/ready'
+    }
   }
 })
 ```
@@ -433,6 +448,81 @@ fastify.addHook('onResponse', (req, reply, done) => {
   done()
 })
 ```
+
+### `logController`
+<a id="factory-log-controller"></a>
+
++ Default: `undefined`
+
+Accepts an instance of `LogController` (or a subclass) to customize Fastify's
+internal log lines. Extend the `LogController` class and override only the
+methods you want to customize; all others keep their default behavior.
+
+The `LogController` class is exported from `fastify`:
+
+```js
+const { LogController } = require('fastify')
+```
+
+The constructor accepts an optional options object:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `disableRequestLogging` | `boolean \| (req) => boolean` | `false` | When `true` (or a function returning `true`), per-request log lines are suppressed. |
+| `requestIdLogLabel` | `string` | `'reqId'` | The label used for the request identifier when logging. |
+
+```js
+const { LogController } = require('fastify')
+
+class MyLogController extends LogController {
+  constructor () {
+    super({
+      requestIdLogLabel: 'traceId',
+      disableRequestLogging: (request) => {
+        return request.url === '/health'
+      }
+    })
+  }
+
+  incomingRequest (request) {
+    // Use debug level instead of info for incoming requests
+    request.log.debug({ req: request }, 'incoming request')
+  }
+
+  requestCompleted (err, request, reply) {
+    // Add custom fields to the request completed log
+    if (err) {
+      reply.log.error({ res: reply, err, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
+    } else {
+      reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
+    }
+  }
+}
+
+const fastify = require('fastify')({
+  logger: true,
+  logController: new MyLogController()
+})
+```
+
+The available methods that can be overridden are:
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `isLogDisabled` | `(req)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
+| `incomingRequest` | `(request)` | Logs an incoming request at `info` level. |
+| `requestCompleted` | `(err, request, reply)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
+| `defaultErrorLog` | `(err, request, reply)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
+| `streamError` | `(err, reply, res)` | Logs stream-level errors after headers have been sent. |
+| `routeNotFound` | `(request)` | Logs a "route not found" message at `info` level. |
+| `writeHeadError` | `(error, reply)` | Logs a warning when `writeHead` fails during error handling. |
+| `serializerError` | `(err, reply, statusCode)` | Logs an error when the serializer for a given status code fails. |
+| `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
+
+**Note:** When you override a method, you take full control of it — the
+default `disableRequestLogging` check is **not** automatically applied.
+If you need conditional logging, call `this.isLogDisabled(request)` yourself
+or override `isLogDisabled` as well.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>
@@ -499,6 +589,9 @@ const fastify = require('fastify')({
 
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
+
+> **Deprecated:** Use the [`logController`](#log-controller) option with
+> `requestIdLogLabel` instead. This top-level option will be removed in `fastify@6`.
 
 + Default: `'reqId'`
 

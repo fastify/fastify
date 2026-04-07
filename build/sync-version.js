@@ -6,6 +6,10 @@ const path = require('node:path')
 // package.json:version -> fastify.js:VERSION
 const { version } = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json')).toString('utf8'))
 
+if (!/^\d+\.\d+\.\d+/.test(version)) {
+  throw new Error(`Invalid version string: ${version}`)
+}
+
 const fastifyJs = path.join(__dirname, '..', 'fastify.js')
 
 fs.writeFileSync(fastifyJs, fs.readFileSync(fastifyJs).toString('utf8').replace(/const\s*VERSION\s*=.*/, `const VERSION = '${version}'`))

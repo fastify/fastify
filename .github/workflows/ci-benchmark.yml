@@ -1,0 +1,169 @@
+name: CI Benchmark - Runner Comparison
+
+on:
+  push:
+    branches:
+      - main
+      - next
+      - '*.x'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    name: Benchmark [${{ matrix.runner }}] - Node ${{ matrix.node-version }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22, 24]
+        runner:
+          - ubuntu-latest
+          - monkci-runners-4vcpu
+          - monkci-ubuntu-24.04-4-3600iops
+
+    steps:
+      - name: Record start time
+        id: start-time
+        run: echo "start=$(date +%s%3N)" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install dependencies
+        id: install
+        run: |
+          install_start=$(date +%s%3N)
+          npm install --ignore-scripts
+          install_end=$(date +%s%3N)
+          echo "duration_ms=$((install_end - install_start))" >> $GITHUB_OUTPUT
+
+      - name: Run unit tests
+        id: test
+        run: |
+          test_start=$(date +%s%3N)
+          npm run unit
+          test_end=$(date +%s%3N)
+          echo "duration_ms=$((test_end - test_start))" >> $GITHUB_OUTPUT
+
+      - name: Record end time and compute total
+        id: end-time
+        run: |
+          end=$(date +%s%3N)
+          start=${{ steps.start-time.outputs.start }}
+          total=$((end - start))
+          echo "total_ms=$total" >> $GITHUB_OUTPUT
+          echo "total_s=$(echo "scale=2; $total / 1000" | bc)" >> $GITHUB_OUTPUT
+
+      - name: Print timing summary
+        run: |
+          echo "=============================================="
+          echo " Benchmark Timing Summary"
+          echo "=============================================="
+          echo " Runner        : ${{ matrix.runner }}"
+          echo " Node.js       : ${{ matrix.node-version }}"
+          echo "----------------------------------------------"
+          echo " npm install   : ${{ steps.install.outputs.duration_ms }} ms"
+          echo " npm run unit  : ${{ steps.test.outputs.duration_ms }} ms"
+          echo " Total job     : ${{ steps.end-time.outputs.total_ms }} ms (${{ steps.end-time.outputs.total_s }} s)"
+          echo "=============================================="
+
+      - name: Upload timing artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: timing-${{ matrix.runner }}-node${{ matrix.node-version }}
+          path: /dev/stdin
+          overwrite: true
+        env:
+          TIMING_DATA: |
+            runner=${{ matrix.runner }}
+            node_version=${{ matrix.node-version }}
+            install_ms=${{ steps.install.outputs.duration_ms }}
+            test_ms=${{ steps.test.outputs.duration_ms }}
+            total_ms=${{ steps.end-time.outputs.total_ms }}
+        # Write timing data to a temp file for the artifact upload
+        continue-on-error: true
+
+      - name: Save timing to file
+        run: |
+          mkdir -p timing-results
+          cat <<EOF > timing-results/timing-${{ matrix.runner }}-node${{ matrix.node-version }}.txt
+          runner=${{ matrix.runner }}
+          node_version=${{ matrix.node-version }}
+          install_ms=${{ steps.install.outputs.duration_ms }}
+          test_ms=${{ steps.test.outputs.duration_ms }}
+          total_ms=${{ steps.end-time.outputs.total_ms }}
+          total_s=${{ steps.end-time.outputs.total_s }}
+          EOF
+
+      - name: Upload timing file
+        uses: actions/upload-artifact@v4
+        with:
+          name: timing-${{ matrix.runner }}-node${{ matrix.node-version }}
+          path: timing-results/
+          overwrite: true
+
+  # Aggregates all timing results into a single comparison report
+  summarize:
+    name: Runner Timing Summary
+    needs: benchmark
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: always()
+
+    steps:
+      - name: Download all timing artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: timing-*
+          path: all-timings
+          merge-multiple: false
+
+      - name: Generate comparison table
+        run: |
+          echo "# Runner Benchmark Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Runner | Node.js | Install (ms) | Tests (ms) | Total (ms) | Total (s) |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|---------|-------------|------------|------------|-----------|" >> $GITHUB_STEP_SUMMARY
+
+          for dir in all-timings/timing-*/; do
+            file=$(find "$dir" -name "*.txt" | head -1)
+            if [ -f "$file" ]; then
+              runner=$(grep "^runner=" "$file" | cut -d= -f2)
+              node_v=$(grep "^node_version=" "$file" | cut -d= -f2)
+              install=$(grep "^install_ms=" "$file" | cut -d= -f2)
+              test=$(grep "^test_ms=" "$file" | cut -d= -f2)
+              total_ms=$(grep "^total_ms=" "$file" | cut -d= -f2)
+              total_s=$(grep "^total_s=" "$file" | cut -d= -f2)
+              echo "| $runner | $node_v | $install | $test | $total_ms | $total_s |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Generated by CI Benchmark workflow — runners: ubuntu-latest, monkci-runners-4vcpu, monkci-ubuntu-24.04-4-3600iops_" >> $GITHUB_STEP_SUMMARY

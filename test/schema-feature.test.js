@@ -2196,3 +2196,33 @@ test('setSchemaController: custom validator instance should not mutate headers s
 
   await fastify.ready()
 })
+
+test('schemaController: isCustomSerializerCompiler is true when only buildSerializer is provided', t => {
+  t.plan(2)
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildSerializer: function () {
+          return () => data => JSON.stringify(data)
+        }
+      }
+    }
+  })
+  t.assert.strictEqual(fastify[kSchemaController].isCustomSerializerCompiler, true)
+  t.assert.strictEqual(fastify[kSchemaController].isCustomValidatorCompiler, false)
+})
+
+test('schemaController: isCustomValidatorCompiler is true when only buildValidator is provided', t => {
+  t.plan(2)
+  const fastify = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: function () {
+          return () => () => true
+        }
+      }
+    }
+  })
+  t.assert.strictEqual(fastify[kSchemaController].isCustomValidatorCompiler, true)
+  t.assert.strictEqual(fastify[kSchemaController].isCustomSerializerCompiler, false)
+})

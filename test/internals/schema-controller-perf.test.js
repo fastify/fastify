@@ -22,6 +22,32 @@ test('SchemaController are NOT loaded when the controllers are custom', async t 
   t.assert.equal(stringifyModule, undefined, 'Stringify compiler is loaded')
 })
 
+test('isCustomSerializerCompiler is true when only a custom serializer is provided', async t => {
+  const { buildSchemaController } = require('../../lib/schema-controller')
+
+  const sc = buildSchemaController(null, {
+    compilersFactory: {
+      buildSerializer: () => () => { }
+    }
+  })
+
+  t.assert.equal(sc.isCustomValidatorCompiler, false, 'isCustomValidatorCompiler should be false')
+  t.assert.equal(sc.isCustomSerializerCompiler, true, 'isCustomSerializerCompiler should be true')
+})
+
+test('isCustomValidatorCompiler is true when only a custom validator is provided', async t => {
+  const { buildSchemaController } = require('../../lib/schema-controller')
+
+  const sc = buildSchemaController(null, {
+    compilersFactory: {
+      buildValidator: () => () => { }
+    }
+  })
+
+  t.assert.equal(sc.isCustomValidatorCompiler, true, 'isCustomValidatorCompiler should be true')
+  t.assert.equal(sc.isCustomSerializerCompiler, false, 'isCustomSerializerCompiler should be false')
+})
+
 test('SchemaController are loaded when the controllers are not custom', async t => {
   const app = Fastify()
   await app.ready()

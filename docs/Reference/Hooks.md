@@ -429,7 +429,8 @@ Application hooks do not all expose the instance in the same way.
 | `onRoute` | via `this` (if using a `function` handler) |
 | `onRegister` | via the `instance` parameter |
 
-> **Note:** Arrow functions do not bind `this`. Use a `function` handler when you need the Fastify instance from `this`.
+> **Note:** Arrow functions do not bind `this`. Use a `function` handler when
+> you need the Fastify instance from `this`.
 
 ### onReady
 Triggered before the server starts listening for requests and when `.ready()` is

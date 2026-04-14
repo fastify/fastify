@@ -6,6 +6,7 @@ const Fastify = require('..')
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
 const { waitForCb } = require('./toolkit')
+const { kRequestContentType } = require('../lib/symbols')
 
 const customSchemaCompilers = {
   body: new AJV({
@@ -1374,6 +1375,7 @@ test('Schema validation when no content type is provided', async t => {
     },
     preValidation: async (request) => {
       request.headers['content-type'] = undefined
+      request[kRequestContentType] = undefined
     }
   }, async () => 'ok')
 

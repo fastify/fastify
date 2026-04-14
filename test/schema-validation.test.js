@@ -1460,6 +1460,27 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(found.status, 400)
   t.assert.strictEqual((await found.json()).code, 'FST_ERR_VALIDATION')
 
+  let injected = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': ' application/json'
+    },
+    payload: JSON.stringify({ invalid: 'string' })
+  })
+  t.assert.strictEqual(injected.statusCode, 400)
+  t.assert.strictEqual(injected.json().code, 'FST_ERR_VALIDATION')
+
+  injected = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': ' application/json'
+    },
+    payload: JSON.stringify({ foo: 'string' })
+  })
+  t.assert.strictEqual(injected.statusCode, 200)
+
   found = await fetch(address, {
     method: 'POST',
     url: '/',

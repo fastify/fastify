@@ -1,0 +1,41 @@
+---
+description: Governance rules for fastify — quality gates, security, conventions
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+alwaysApply: true
+---
+
+# Governance — fastify
+
+> Generated from governance.md by crag. Regenerate: `crag compile --target cursor`
+
+**Stack:** node, typescript
+
+## Quality Gates
+
+Run these checks in order before committing:
+### Lint
+- `npm run lint`
+- `npx tsc --noEmit`
+
+### Test
+- `npm run test`
+
+### Ci (inferred from workflow)
+- `npm run unit`
+- `npm run test:typescript`
+- `"`
+- `npm run coverage:ci-check-coverage`
+- `./node_modules/.bin/markdownlint-cli2`
+## Security
+
+- No hardcoded secrets — grep for sk_live, AKIA, password= before commit
+
+## Conventions
+
+- Conventional commits (feat:, fix:, docs:, etc.)
+- Commit trailer: Co-Authored-By: Claude <noreply@anthropic.com>
+- Runtimes: node

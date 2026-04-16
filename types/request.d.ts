@@ -86,8 +86,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly signal: AbortSignal;
   readonly mediaType: string | undefined;
 
-  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction
+  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined
+  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined
   compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
   validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
   validateInput(input: any, httpPart?: HTTPRequestPart): boolean

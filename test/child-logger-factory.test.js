@@ -126,3 +126,32 @@ test('should throw error if invalid logger is returned', (t, done) => {
     }, { code: 'FST_ERR_LOG_INVALID_LOGGER' })
   })
 })
+
+test('should not create a child logger when logger is false and default factory is used', async t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    logger: false
+  })
+
+  let called = 0
+  fastify.log.child = function () {
+    called++
+    return this
+  }
+
+  t.after(() => fastify.close())
+
+  fastify.get('/', (req, reply) => {
+    t.assert.strictEqual(req.log, fastify.log)
+    reply.send({ ok: true })
+  })
+
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(called, 0)
+})

@@ -1,6 +1,7 @@
 const { sep } = require('node:path')
 const { test } = require('node:test')
 const Fastify = require('../../fastify')
+const { kSchemaController } = require('../../lib/symbols')
 
 test('SchemaController are NOT loaded when the controllers are custom', async t => {
   const app = Fastify({
@@ -37,4 +38,20 @@ test('SchemaController are loaded when the controllers are not custom', async t 
 
   t.assert.ok(ajvModule, 'Ajv compiler is loaded')
   t.assert.ok(stringifyModule, 'Stringify compiler is loaded')
+})
+
+test('isCustomSerializerCompiler reflects buildSerializer only', async t => {
+  const app = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: () => () => { }
+      }
+    }
+  })
+
+  await app.ready()
+
+  const schemaController = app[kSchemaController]
+  t.assert.equal(schemaController.isCustomValidatorCompiler, true)
+  t.assert.equal(schemaController.isCustomSerializerCompiler, false)
 })

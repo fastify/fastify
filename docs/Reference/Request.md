@@ -38,6 +38,8 @@ Request is a core Fastify object containing the following fields:
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
   case of internal re-routing.
+- `mediaType` - The media type extracted from `Content-Type` header. When `Content-Type`
+  header is missing, it will return `undefined`.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
 - `signal` - An `AbortSignal` that aborts when the handler timeout
@@ -234,7 +236,7 @@ const schema1 = {
 const validate = request.compileValidationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newValidate = request.compileValidationSchema(schema1)
 
 console.log(newValidate === validate) // true

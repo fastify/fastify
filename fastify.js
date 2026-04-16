@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.8.2'
+const VERSION = '5.8.5'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -922,7 +922,7 @@ function defaultBuildPrettyMeta (route) {
 
 function defaultClientErrorHandler (err, socket) {
   // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
-  // https://nodejs.org/api/http.html#http_event_clienterror
+  // https://nodejs.org/api/http.html#event-clienterror
   if (err.code === 'ECONNRESET' || socket.destroyed) {
     return
   }

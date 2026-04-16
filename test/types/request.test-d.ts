@@ -90,8 +90,12 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<AbortSignal>(request.signal)
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
   expectType<FastifyInstance>(request.server)
-  expectAssignable<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction | undefined>(request.getValidationFunction)
-  expectAssignable<(schema: { [key: string]: unknown }) => ExpectedGetValidationFunction | undefined>(request.getValidationFunction)
+  expectAssignable<
+    (httpPart: HTTPRequestPart) => ExpectedGetValidationFunction | undefined
+      >(request.getValidationFunction)
+  expectAssignable<
+    (schema: { [key: string]: unknown }) => ExpectedGetValidationFunction | undefined
+      >(request.getValidationFunction)
   expectType<ValidationFunction | undefined>(request.getValidationFunction('body'))
   expectType<ValidationFunction | undefined>(request.getValidationFunction({ type: 'object' }))
   expectAssignable<

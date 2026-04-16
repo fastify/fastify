@@ -206,7 +206,7 @@ describe('logger custom serializers with customAttributeKeys', { timeout: 60000 
 })
 
 test('logger customAttributeKeys option', { timeout: 60000 }, async (t) => {
-  t.plan(8)
+  t.plan(7)
 
   test('Should remap req serializer when customAttributeKeys.req is set', async (t) => {
     t.plan(4)

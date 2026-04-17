@@ -41,8 +41,7 @@ test('Should return 503 while closing - pipelining', async t => {
 })
 
 test('Should close the socket abruptly - pipelining - return503OnClosing: false', async t => {
-  // Since Node v20, we will always invoke server.closeIdleConnections()
-  // therefore our socket will be closed
+  // Native Node servers close idle keep-alive sockets as part of server.close().
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false

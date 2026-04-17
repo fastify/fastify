@@ -413,6 +413,27 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   t.assert.strictEqual(request.protocol, 'https')
 })
 
+test('Request with trust proxy - port is derived from x-forwarded-host', t => {
+  t.plan(3)
+  const headers = {
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    'x-forwarded-host': 'fastify.test:1234',
+    host: 'localhost:5678'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: 'ip' },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'fastify.test:1234')
+  t.assert.strictEqual(request.hostname, 'fastify.test')
+  t.assert.strictEqual(request.port, 1234)
+})
+
 test('Request with trust proxy - plain', t => {
   t.plan(1)
   const headers = {

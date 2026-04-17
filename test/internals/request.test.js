@@ -505,7 +505,7 @@ test('Request with trust proxy and undefined socket', t => {
   t.assert.deepStrictEqual(request.protocol, undefined)
 })
 
-test('Request with trust proxy and undefined socket does not trust x-forwarded-host/proto', t => {
+test('Request with trust proxy and null socket does not trust x-forwarded-host/proto', t => {
   t.plan(2)
   const headers = {
     'x-forwarded-host': 'spoofed.test',
@@ -515,7 +515,7 @@ test('Request with trust proxy and undefined socket does not trust x-forwarded-h
   const req = {
     method: 'GET',
     url: '/',
-    socket: undefined,
+    socket: null,
     headers
   }
 

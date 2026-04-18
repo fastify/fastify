@@ -89,7 +89,7 @@ the following tasks:
 1. Set up 2 factor authentication for GitHub and NPM
     - [GitHub
     2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa)
-    - [NPM 2FA](https://www.docs.npmjs.com/about-two-factor-authentication)
+    - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication/)
 2. Choose which team to join *(more than one is ok!)* based on how you want to
    help.
     - Core team: maintains core Fastify and its documentation

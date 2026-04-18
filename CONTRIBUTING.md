@@ -35,6 +35,7 @@ There are a few basic ground rules for contributors:
 1. A lead maintainer must merge SemVer-major changes in this repository.
 1. If it is not possible to reach a consensus in a pull request, the decision
    is left to the lead maintainer's team.
+1. Pure-AI contributions with no human in the loop are not welcome.
 
 ### Fastify previous versions
 

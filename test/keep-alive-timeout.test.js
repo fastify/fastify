@@ -5,7 +5,7 @@ const http = require('node:http')
 const { test } = require('node:test')
 
 test('keepAliveTimeout', t => {
-  t.plan(6)
+  t.plan(7)
 
   try {
     Fastify({ keepAliveTimeout: 1.3 })
@@ -23,6 +23,9 @@ test('keepAliveTimeout', t => {
 
   const httpServer = Fastify({ keepAliveTimeout: 1 }).server
   t.assert.strictEqual(httpServer.keepAliveTimeout, 1)
+
+  const zeroTimeoutServer = Fastify({ keepAliveTimeout: 0 }).server
+  t.assert.strictEqual(zeroTimeoutServer.keepAliveTimeout, 0)
 
   const httpsServer = Fastify({ keepAliveTimeout: 2, https: {} }).server
   t.assert.strictEqual(httpsServer.keepAliveTimeout, 2)

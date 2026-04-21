@@ -23,8 +23,7 @@ See also the Type Provider wrapper packages for each of the packages respectivel
 
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
-- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
- (3rd party)
+- [`@fastify/type-provider-zod`](https://github.com/fastify/fastify-type-provider-zod)
 
 ### Json Schema to Ts
 
@@ -93,9 +92,34 @@ for setting-up AJV to work with TypeBox.
 
 ### Zod
 
-See [official documentation](https://github.com/turkerdev/fastify-type-provider-zod)
-for Zod Type Provider instructions.
+The following sets up a Zod Type Provider:
 
+```bash
+$ npm i zod @fastify/type-provider-zod
+```
+
+```typescript
+import fastify from 'fastify'
+import { ZodTypeProvider, serializerCompiler, validatorCompiler } from '@fastify/type-provider-zod'
+import { z } from 'zod/v4'
+
+const server = fastify()
+server.setValidatorCompiler(validatorCompiler)
+server.setSerializerCompiler(serializerCompiler)
+
+server.withTypeProvider<ZodTypeProvider>().get('/route', {
+  schema: {
+    querystring: z.object({
+      foo: z.number(),
+      bar: z.string()
+    })
+  }
+}, (request, reply) => {
+
+  // type Query = { foo: number, bar: string }
+  const { foo, bar } = request.query // type safe!
+})
+```
 
 ### Scoped Type-Provider
 

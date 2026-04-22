@@ -426,7 +426,7 @@ before setting its value, preventing errors from typos in decorator names.
 fastify.decorateRequest('account', null)
 fastify.addHook('preHandler', async (req, reply) => {
   // This will throw FST_ERR_DEC_UNDECLARED due to typo in decorator name
-  req.setDecorator('acount', { id: 123 })
+  req.setDecorator('account', { id: 123 })
 })
 ```
 

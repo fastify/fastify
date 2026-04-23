@@ -561,7 +561,7 @@ export interface FastifyInstance<
    * Methods defined by default include `GET`, `HEAD`, `TRACE`, `DELETE`,
    * `OPTIONS`, `PATCH`, `PUT` and `POST`
    */
-  addHttpMethod(method: string, methodOptions?: { hasBody: boolean }): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  addHttpMethod(method: string, methodOptions?: { hasBody?: boolean; overrideExisting?: boolean }): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   /**
    * Fastify default JSON parser
    */

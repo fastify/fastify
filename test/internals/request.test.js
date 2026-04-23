@@ -504,3 +504,23 @@ test('Request with trust proxy and undefined socket', t => {
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.assert.deepStrictEqual(request.protocol, undefined)
 })
+
+test('Request with trust proxy and null socket does not trust x-forwarded-host/proto', t => {
+  t.plan(2)
+  const headers = {
+    'x-forwarded-host': 'spoofed.test',
+    'x-forwarded-proto': 'https',
+    host: 'real.test'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: null,
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'real.test')
+  t.assert.strictEqual(request.protocol, undefined)
+})

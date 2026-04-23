@@ -9,6 +9,8 @@
     - [FSTWRN002](#FSTWRN002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP022](#FSTDEP022)
+    - [FSTDEP023](#FSTDEP023)
+    - [FSTDEP024](#FSTDEP024)
 
 ## Warnings
 
@@ -56,3 +58,5 @@ Deprecation codes are supported by the Node.js CLI options:
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated router options on top option properties. | Use `options.routerOptions`. | [#5985](https://github.com/fastify/fastify/pull/5985)
+| <a id="FSTDEP023">FSTDEP023</a> | `disableRequestLogging` top-level option is deprecated. | Pass a `LogController` instance via the `logController` option with `disableRequestLogging` in its constructor instead. |
+| <a id="FSTDEP024">FSTDEP024</a> | `requestIdLogLabel` top-level option is deprecated. | Pass a `LogController` instance via the `logController` option with `requestIdLogLabel` in its constructor instead. |

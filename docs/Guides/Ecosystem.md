@@ -66,8 +66,6 @@ section.
   Fastify, internally uses [fast-jwt](https://github.com/nearform/fast-jwt).
 - [`@fastify/kafka`](https://github.com/fastify/fastify-kafka) Plugin to interact
   with Apache Kafka.
-- [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to
-  share a common LevelDB connection across Fastify.
 - [`@fastify/middie`](https://github.com/fastify/middie) Middleware engine for
   Fastify.
 - [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify

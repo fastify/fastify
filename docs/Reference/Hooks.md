@@ -416,6 +416,22 @@ You can hook into the application-lifecycle as well.
 - [onRoute](#onroute)
 - [onRegister](#onregister)
 
+### Accessing the Fastify instance in application hooks
+
+Application hooks do not all expose the instance in the same way.
+
+| Hook | How to access the instance |
+| --- | --- |
+| `onReady` | via `this` |
+| `onListen` | via `this` |
+| `onClose` | via the `instance` parameter |
+| `preClose` | via `this` |
+| `onRoute` | via `this` (if using a `function` handler) |
+| `onRegister` | via the `instance` parameter |
+
+> **Note:** Arrow functions do not bind `this`. Use a `function` handler when
+> you need the Fastify instance from `this`.
+
 ### onReady
 Triggered before the server starts listening for requests and when `.ready()` is
 invoked. It cannot change the routes or add new hooks. Registered hook functions

@@ -33,7 +33,7 @@ test('Should register a host constrained route', async t => {
       method: 'GET',
       url: '/',
       headers: {
-        host: 'example.com'
+        host: 'fastify.test'
       }
     })
 
@@ -65,9 +65,9 @@ test('Should register the same route with host constraints', async t => {
   fastify.route({
     method: 'GET',
     url: '/',
-    constraints: { host: 'example.com' },
+    constraints: { host: 'fastify.test' },
     handler: (req, reply) => {
-      reply.send('example.com')
+      reply.send('fastify.test')
     }
   })
 
@@ -88,12 +88,12 @@ test('Should register the same route with host constraints', async t => {
       method: 'GET',
       url: '/',
       headers: {
-        host: 'example.com'
+        host: 'fastify.test'
       }
     })
 
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.payload, 'example.com')
+    t.assert.strictEqual(res.payload, 'fastify.test')
   }
 
   {
@@ -568,7 +568,7 @@ test('Should allow registering an unconstrained route after a constrained route'
       method: 'GET',
       url: '/',
       headers: {
-        host: 'example.com'
+        host: 'fastify.test'
       }
     })
     t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'from any other domain' })

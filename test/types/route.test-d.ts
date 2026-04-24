@@ -481,19 +481,19 @@ expectType<boolean>(fastify().hasRoute({
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: 'auth.fastify.dev' }
+  constraints: { host: 'auth.fastify.test' }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/ }
+  constraints: { host: /.*\.fastify\.test$/ }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' }
+  constraints: { host: /.*\.fastify\.test$/, version: '1.2.3' }
 }))
 
 expectType<boolean>(fastify().hasRoute({

@@ -513,6 +513,9 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 Different log levels can be set for routes in Fastify by passing the `logLevel`
 option to the plugin or route with the desired
 [value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string).
+If a route `logLevel` is invalid, Fastify throws
+[`FST_ERR_ROUTE_LOG_LEVEL_INVALID`](./Errors.md#fst_err_route_log_level_invalid)
+during route registration.
 
 Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and
@@ -670,7 +673,7 @@ fastify.inject({
 
 > ⚠ Warning:
 > Set a
-> [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary)
+> [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Vary)
 > header in responses with the value used for versioning
 > (e.g., `'Accept-Version'`) to prevent cache poisoning attacks.
 > This can also be configured in a Proxy/CDN.
@@ -708,9 +711,9 @@ specified as strings for exact matches or RegExps for arbitrary host matching.
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: 'auth.fastify.dev' },
+  constraints: { host: 'auth.fastify.example' },
   handler: function (request, reply) {
-    reply.send('hello world from auth.fastify.dev')
+    reply.send('hello world from auth.fastify.example')
   }
 })
 
@@ -718,7 +721,7 @@ fastify.inject({
   method: 'GET',
   url: '/',
   headers: {
-    'Host': 'example.com'
+    'Host': 'fastify.example'
   }
 }, (err, res) => {
   // 404 because the host doesn't match the constraint
@@ -742,7 +745,7 @@ matching wildcard subdomains (or any other pattern):
 fastify.route({
   method: 'GET',
   url: '/',
-  constraints: { host: /.*\.fastify\.dev/ }, // will match any subdomain of fastify.dev
+  constraints: { host: /.*\.fastify\.example/ }, // will match any subdomain of fastify.dev
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

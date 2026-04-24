@@ -272,3 +272,24 @@ test('trust proxy with number and null socket remoteAddress', t => {
   t.assert.ok(request.ip, 'ip is defined')
   t.assert.strictEqual(request.ip, '1.1.1.1', 'gets ip from x-forwarded-for')
 })
+
+test('trust proxy does not trust x-forwarded-host/proto when socket is null', t => {
+  t.plan(2)
+
+  const headers = {
+    host: 'real.test',
+    'x-forwarded-host': 'spoofed.test',
+    'x-forwarded-proto': 'https'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: null,
+    headers
+  }
+
+  const TpRequest = buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'real.test', 'falls back to host header')
+  t.assert.strictEqual(request.protocol, undefined, 'does not trust x-forwarded-proto')
+})

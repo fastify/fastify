@@ -13,44 +13,46 @@ test('diagnostics channel tracks async operations in async error handlers', asyn
   let asyncStartFired = false
   let asyncEndFired = false
 
-  const onStart = (msg) => {
+  const fastify = Fastify()
+
+  function subscribe (name, handler) {
+    const wrapped = (msg) => {
+      if (msg.request.server === fastify) handler(msg)
+    }
+    diagnostics.subscribe(name, wrapped)
+    t.after(() => diagnostics.unsubscribe(name, wrapped))
+  }
+
+  subscribe('tracing:fastify.request.handler:start', (msg) => {
     t.assert.strictEqual(callOrder++, 0)
     firstEncounteredMessage = msg
     t.assert.ok(msg.request instanceof Request)
     t.assert.ok(msg.reply instanceof Reply)
-  }
+  })
 
-  const onError = (msg) => {
+  subscribe('tracing:fastify.request.handler:error', (msg) => {
     t.assert.strictEqual(callOrder++, 1)
     t.assert.ok(msg.error instanceof Error)
     t.assert.strictEqual(msg.error.message, 'handler error')
-  }
+  })
 
-  const onEnd = (msg) => {
+  subscribe('tracing:fastify.request.handler:end', (msg) => {
     t.assert.strictEqual(callOrder++, 2)
     t.assert.strictEqual(msg, firstEncounteredMessage)
     t.assert.strictEqual(msg.async, true)
-  }
+  })
 
-  const onAsyncStart = (msg) => {
+  subscribe('tracing:fastify.request.handler:asyncStart', (msg) => {
     t.assert.strictEqual(callOrder++, 3)
     t.assert.strictEqual(msg, firstEncounteredMessage)
     asyncStartFired = true
-  }
+  })
 
-  const onAsyncEnd = (msg) => {
+  subscribe('tracing:fastify.request.handler:asyncEnd', (msg) => {
     t.assert.strictEqual(callOrder++, 4)
     t.assert.strictEqual(msg, firstEncounteredMessage)
     asyncEndFired = true
-  }
-
-  diagnostics.subscribe('tracing:fastify.request.handler:start', onStart)
-  diagnostics.subscribe('tracing:fastify.request.handler:error', onError)
-  diagnostics.subscribe('tracing:fastify.request.handler:end', onEnd)
-  diagnostics.subscribe('tracing:fastify.request.handler:asyncStart', onAsyncStart)
-  diagnostics.subscribe('tracing:fastify.request.handler:asyncEnd', onAsyncEnd)
-
-  const fastify = Fastify()
+  })
 
   fastify.setErrorHandler(async (error, request, reply) => {
     await new Promise(resolve => setImmediate(resolve))
@@ -62,14 +64,7 @@ test('diagnostics channel tracks async operations in async error handlers', asyn
   })
 
   const fastifyServer = await fastify.listen({ port: 0 })
-  t.after(() => {
-    fastify.close()
-    diagnostics.unsubscribe('tracing:fastify.request.handler:start', onStart)
-    diagnostics.unsubscribe('tracing:fastify.request.handler:error', onError)
-    diagnostics.unsubscribe('tracing:fastify.request.handler:end', onEnd)
-    diagnostics.unsubscribe('tracing:fastify.request.handler:asyncStart', onAsyncStart)
-    diagnostics.unsubscribe('tracing:fastify.request.handler:asyncEnd', onAsyncEnd)
-  })
+  t.after(() => fastify.close())
 
   const response = await fetch(fastifyServer)
   t.assert.ok(!response.ok)

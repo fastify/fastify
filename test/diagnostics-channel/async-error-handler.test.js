@@ -45,7 +45,7 @@ test('diagnostics channel tracks async operations in async error handlers', asyn
   })
 
   const fastify = Fastify()
-  
+
   fastify.setErrorHandler(async (error, request, reply) => {
     await new Promise(resolve => setImmediate(resolve))
     reply.status(503).send({ error: error.message })

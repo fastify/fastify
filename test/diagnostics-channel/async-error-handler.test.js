@@ -7,7 +7,7 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
 test('diagnostics channel tracks async operations in async error handlers', async t => {
-  t.plan(12)
+  t.plan(17)
   let callOrder = 0
   let firstEncounteredMessage
   let asyncStartFired = false
@@ -26,22 +26,22 @@ test('diagnostics channel tracks async operations in async error handlers', asyn
     t.assert.strictEqual(msg.error.message, 'handler error')
   })
 
-  diagnostics.subscribe('tracing:fastify.request.handler:asyncStart', (msg) => {
+  diagnostics.subscribe('tracing:fastify.request.handler:end', (msg) => {
     t.assert.strictEqual(callOrder++, 2)
+    t.assert.strictEqual(msg, firstEncounteredMessage)
+    t.assert.strictEqual(msg.async, true)
+  })
+
+  diagnostics.subscribe('tracing:fastify.request.handler:asyncStart', (msg) => {
+    t.assert.strictEqual(callOrder++, 3)
     t.assert.strictEqual(msg, firstEncounteredMessage)
     asyncStartFired = true
   })
 
   diagnostics.subscribe('tracing:fastify.request.handler:asyncEnd', (msg) => {
-    t.assert.strictEqual(callOrder++, 3)
-    t.assert.strictEqual(msg, firstEncounteredMessage)
-    asyncEndFired = true
-  })
-
-  diagnostics.subscribe('tracing:fastify.request.handler:end', (msg) => {
     t.assert.strictEqual(callOrder++, 4)
     t.assert.strictEqual(msg, firstEncounteredMessage)
-    t.assert.strictEqual(msg.async, true)
+    asyncEndFired = true
   })
 
   const fastify = Fastify()
@@ -51,7 +51,7 @@ test('diagnostics channel tracks async operations in async error handlers', asyn
     reply.status(503).send({ error: error.message })
   })
 
-  fastify.get('/', async () => {
+  fastify.get('/', () => {
     throw new Error('handler error')
   })
 

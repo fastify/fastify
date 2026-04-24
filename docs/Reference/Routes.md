@@ -328,6 +328,22 @@ Prefer a single parameter approach, especially on routes that are on the hot
 path of your application. For more details, see
 [find-my-way](https://github.com/delvedor/find-my-way).
 
+> **Note:** When using parametric or wildcard routes, be aware that web browsers
+> automatically request `/favicon.ico` on every page load. If no static route
+> handles this path, the request will match parametric or wildcard routes, which
+> may cause unexpected behavior or unwanted log entries. To avoid this, register
+> a static route for `/favicon.ico`:
+>
+> ```js
+> fastify.get('/favicon.ico', async (request, reply) => {
+>   reply.code(204).send()
+> })
+> ```
+>
+> Alternatively, use
+> [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) to handle
+> this automatically.
+
 To include a colon in a path without declaring a parameter, use a double colon.
 For example:
 ```js

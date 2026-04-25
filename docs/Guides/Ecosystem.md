@@ -232,6 +232,8 @@ section.
   Beautiful OpenAPI/Swagger API references for Fastify
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`@validex/fastify`](https://github.com/chiptoma/validex/tree/main/packages/fastify)
+  Zod 4 validation plugin with 25 typed rules, structured error codes, and `request.validate()` decorator.
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
   RFC 9457 Problem Details implementation for Fastify, with typed HTTP errors.
 - [`apitally`](https://github.com/apitally/apitally-js) Fastify plugin to

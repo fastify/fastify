@@ -720,7 +720,7 @@ const fastify = require('fastify')({
       res.code(400)
       return res.send("Provided header is not valid")
     } else {
-      res.send(err)
+      res.send(error)
     }
   }
 })
@@ -2249,7 +2249,7 @@ fastify.get('/', {
       return
     }
 
-    fastify.errorHandler(error, request, response)
+    fastify.errorHandler(error, request, reply)
   }
 }, handler)
 ```

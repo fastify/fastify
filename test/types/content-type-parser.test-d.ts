@@ -1,5 +1,5 @@
 import fastify, { FastifyBodyParser } from '../../fastify'
-import { expectError, expectType } from 'tsd'
+import { expectType } from 'tsd'
 import { IncomingMessage } from 'node:http'
 import { FastifyRequest } from '../../types/request'
 
@@ -59,14 +59,19 @@ expectType<void>(fastify().addContentTypeParser<Buffer>('bodyContentType', { par
 
 expectType<FastifyBodyParser<string>>(fastify().getDefaultJsonParser('error', 'ignore'))
 
-expectError(fastify().getDefaultJsonParser('error', 'skip'))
+// @ts-expect-error  Argument of type '"skip"' is not assignable to parameter of type 'ConstructorAction'.
+fastify().getDefaultJsonParser('error', 'skip')
 
-expectError(fastify().getDefaultJsonParser('nothing', 'ignore'))
+// @ts-expect-error  Argument of type '"nothing"' is not assignable to parameter of type 'ProtoAction'.
+fastify().getDefaultJsonParser('nothing', 'ignore')
 
 expectType<void>(fastify().removeAllContentTypeParsers())
-expectError(fastify().removeAllContentTypeParsers('contentType'))
+fastify()
+  // @ts-expect-error  Expected 0 arguments
+  .removeAllContentTypeParsers('contentType')
 
 expectType<void>(fastify().removeContentTypeParser('contentType'))
 expectType<void>(fastify().removeContentTypeParser(/contentType+.*/))
 expectType<void>(fastify().removeContentTypeParser(['contentType', /contentType+.*/]))
-expectError(fastify().removeContentTypeParser({}))
+// @ts-expect-error  Type '{}' is not assignable to type 'string'.
+fastify().removeContentTypeParser({})

@@ -10,6 +10,7 @@ import fastify, {
   LogLevel
 } from '../../fastify'
 import { FastifyLoggerInstance, ResSerializerReply } from '../../types/logger'
+import { FastifyInstance as FastifyInstanceType } from '../../types/instance'
 
 expectType<FastifyBaseLogger>(fastify().log)
 
@@ -275,3 +276,10 @@ expectType<FastifyBaseLogger>(childParent.child({}, { level: 'info', redact: ['p
 expectError(childParent.child())
 // wrong option
 expectError(childParent.child({}, { nonExist: true }))
+
+// Regression test for https://github.com/fastify/fastify/issues/4960
+// FastifyInstance with a pino.Logger should be assignable to FastifyInstance
+// with the default FastifyBaseLogger in TypeScript strict mode.
+expectAssignable<FastifyInstanceType>(
+  fastify<Server, IncomingMessage, ServerResponse, P.Logger>({ logger: P() })
+)

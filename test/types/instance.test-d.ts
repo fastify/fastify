@@ -428,19 +428,19 @@ expectError(server.decorate<string>('test', {
 }))
 
 declare module '../../fastify' {
-  interface FastifyInstance {
+  interface BaseFastifyInstance {
     typedTestProperty: boolean
     typedTestPropertyGetterSetter: string
     typedTestMethod (x: string): string
   }
 
-  interface FastifyRequest {
+  interface BaseFastifyRequest {
     typedTestRequestProperty: boolean
     typedTestRequestPropertyGetterSetter: string
     typedTestRequestMethod (x: string): string
   }
 
-  interface FastifyReply {
+  interface BaseFastifyReply {
     typedTestReplyProperty: boolean
     typedTestReplyPropertyGetterSetter: string
     typedTestReplyMethod (x: string): string

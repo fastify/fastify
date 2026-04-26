@@ -6,22 +6,27 @@ The Fastify framework is written in vanilla JavaScript, and as such type
 definitions are not as easy to maintain; however, since version 2 and beyond,
 maintainers and contributors have put in a great effort to improve the types.
 
-The type system was changed in Fastify version 3. The new type system introduces
-generic constraining and defaulting, plus a new way to define schema types such
-as a request body, querystring, and more! As the team works on improving
-framework and type definition synergy, sometimes parts of the API will not be
-typed or may be typed incorrectly. We encourage you to **contribute** to help us
-fill in the gaps. Just make sure to read our
+Fastify's type system has evolved significantly over multiple major releases.
+In Fastify 6, decorator typing is registration-scoped by default, so type
+visibility follows encapsulation and plugin registration flow.
+
+As the team keeps improving framework and type-definition synergy, some API
+areas may still be incomplete or need refinement. We encourage you to
+**contribute** to help fill the gaps. Just make sure to read our
 [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 file before getting started to make sure things go smoothly!
 
-> The documentation in this section covers Fastify version 3.x typings
+> The documentation in this section covers Fastify 6.x typings
 
 > Plugins may or may not include typings. See [Plugins](#plugins) for more
 > information. We encourage users to send pull requests to improve typings
 > support.
 
 🚨 Don't forget to install `@types/node`
+
+If you are migrating from ambient declaration merging assumptions to Fastify's
+registration-scoped decorator typing, see the
+[Migration Guide (declaration merging to registration-scoped typing)](../Guides/Migration-Guide-Declaration-Merging.md).
 
 ## Learn By Example
 
@@ -90,10 +95,10 @@ in a blank http Fastify server.
    🏓
 
 🎉 You now have a working Typescript Fastify server! This example demonstrates
-the simplicity of the version 3.x type system. By default, the type system
-assumes you are using an `http` server. The later examples will demonstrate how
-to create more complex servers such as `https` and `http2`, how to specify route
-schemas, and more!
+the core Fastify 6 typing model. By default, the type system assumes you are
+using an `http` server. The later examples will demonstrate how to create more
+complex servers such as `https` and `http2`, how to specify route schemas, and
+more!
 
 > For more examples on initializing Fastify with TypeScript (such as enabling
 > HTTP2) check out the detailed API section [here][Fastify]
@@ -545,9 +550,9 @@ Fastify Plugin in a TypeScript Project.
    }
 
    // export plugin using fastify-plugin
-   export default fp(myPluginCallback, '3.x')
+   export default fp(myPluginCallback, '6.x')
    // or
-   // export default fp(myPluginAsync, '3.x')
+   // export default fp(myPluginAsync, '6.x')
    ```
 6. Run `npm run build` to compile the plugin code and produce both a JavaScript
    source file and a type definition file.
@@ -649,17 +654,41 @@ Using a Fastify plugin in TypeScript is just as easy as using one in JavaScript.
 Import the plugin with `import/from` and you're all set -- except there is one
 exception users should be aware of.
 
-Fastify plugins use declaration merging to modify existing Fastify type
-interfaces (check out the previous two examples for more details). Declaration
-merging is not very _smart_, meaning if the plugin type definition for a plugin
-is within the scope of the TypeScript interpreter, then the plugin types will be
-included **regardless** of if the plugin is being used or not. This is an
-unfortunate limitation of using TypeScript and is unavoidable as of right now.
+Fastify plugins have traditionally used declaration merging to modify existing
+Fastify type interfaces (check out the previous two examples for more details).
+Declaration merging is not very _smart_, meaning if the plugin type definition
+for a plugin is within the scope of the TypeScript interpreter, then the plugin
+types will be included **regardless** of if the plugin is being used or not.
 
-However, there are a couple of suggestions to help improve this experience:
+Fastify also supports **inference from `decorate*()` and `register()` return
+values**. When a plugin returns the decorated instance, TypeScript can carry the
+added decorators through the registration chain without globally augmenting all
+instances:
+
+```typescript
+const app = fastify()
+  .register((instance) => {
+    return instance.decorate('usersRepository', {
+      findAll () {
+        return []
+      }
+    })
+  })
+
+app.get('/users', (request, reply) => {
+  app.usersRepository.findAll()
+})
+```
+
+For reusable plugins, this inference-based style is preferred when available.
+Declaration merging is still supported for legacy plugins and for packages that
+need an explicit global augmentation entry point.
+
+If you still rely on legacy declaration-merging plugins, the following tips can
+help reduce false-positive global augmentations:
 - Make sure the `no-unused-vars` rule is enabled in
-  [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
-  are actually being loaded.
+  [ESLint](https://eslint.org/docs/latest/rules/no-unused-vars) and any
+  imported plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
@@ -828,7 +857,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 ## Code Completion In Vanilla JavaScript
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.
-[Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by
+[Intellisense](https://code.visualstudio.com/docs/editing/intellisense)) by
 following the [TypeScript JSDoc
 Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
 
@@ -843,8 +872,7 @@ module.exports = async function (fastify, { optionA, optionB }) {
 
 ## API Type System Documentation
 
-This section is a detailed account of all the types available to you in Fastify
-version 3.x
+This section is a detailed account of the types available in Fastify 6.x.
 
 All `http`, `https`, and `http2` types are inferred from `@types/node`
 
@@ -1072,7 +1100,7 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Since
+Fastify uses [Pino](https://getpino.io/) logging library under the hood. Since
 `pino@7`, all of it's properties can be configured via `logger` field when
 constructing Fastify's instance. If properties you need aren't exposed, please
 open an Issue to [`Pino`](https://github.com/pinojs/pino/issues) or pass a
@@ -1164,9 +1192,10 @@ added here disregard what kind of request object (http vs http2) and disregard
 what route level it is serving; thus calling `request.body` inside a GET request
 will not throw an error (but good luck sending a GET request with a body 😉).
 
-If you need to add custom properties to the `FastifyRequest` object (such as
-when using the [`decorateRequest`][DecorateRequest] method) you need to use
-declaration merging on this interface.
+If you need to add custom properties to `FastifyRequest` (for example with
+[`decorateRequest`][DecorateRequest]), prefer registration-scoped typing or
+`getDecorator<T>()` / `setDecorator<T>()` for local scope. Module augmentation
+is still available as a legacy/global approach.
 
 A basic example is provided in the [`FastifyRequest`][FastifyRequest] section.
 For a more detailed example check out the Learn By Example section:
@@ -1181,7 +1210,7 @@ const server = fastify()
 server.decorateRequest('someProp', 'hello!')
 
 server.get('/', async (request, reply) => {
-  const { someProp } = request // need to use declaration merging to add this prop to the request interface
+  const { someProp } = request // if using global augmentation, declare it on FastifyRequest
   return someProp
 })
 
@@ -1263,9 +1292,9 @@ This interface contains the custom properties that Fastify adds to the standard
 Node.js reply object. The properties added here disregard what kind of reply
 object (http vs http2).
 
-If you need to add custom properties to the FastifyReply object (such as when
-using the `decorateReply` method) you need to use declaration merging on this
-interface.
+If you need to add custom properties to `FastifyReply` (such as with
+`decorateReply`), prefer registration-scoped typing or `getDecorator<T>()` for
+local scope. Module augmentation remains available as a legacy/global option.
 
 A basic example is provided in the [`FastifyReply`][FastifyReply] section. For a
 more detailed example check out the Learn By Example section:
@@ -1280,7 +1309,7 @@ const server = fastify()
 server.decorateReply('someProp', 'world')
 
 server.get('/', async (request, reply) => {
-  const { someProp } = reply // need to use declaration merging to add this prop to the reply interface
+  const { someProp } = reply // if using global augmentation, declare it on FastifyReply
   return someProp
 })
 
@@ -1410,7 +1439,7 @@ example for more details on specifying a custom logger.
 [src](https://github.com/fastify/fastify/blob/main/types/logger.d.ts#L17)
 
 An interface definition for the internal Fastify logger. It is emulative of the
-[Pino.js](https://getpino.io/#/) logger. When enabled through server options,
+[Pino.js](https://getpino.io/) logger. When enabled through server options,
 use it following the general [logger](./Logging.md) documentation.
 
 ##### fastify.FastifyLogFn

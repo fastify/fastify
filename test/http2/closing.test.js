@@ -78,10 +78,9 @@ test('http/2 request while fastify closing Node >=24', { skip: !isNode24OrGreate
   })
 })
 
-test('http/2 request while fastify closing - return503OnClosing: false', { skip: isNode24OrGreater }, (t, done) => {
+test('http/2 request while fastify closing', { skip: isNode24OrGreater }, (t, done) => {
   const fastify = Fastify({
-    http2: true,
-    return503OnClosing: false
+    http2: true
   })
 
   t.after(() => { fastify.close() })

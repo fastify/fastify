@@ -151,7 +151,6 @@ declare namespace fastify {
         buildSerializer?: SerializerFactory;
       };
     };
-    return503OnClosing?: boolean,
     ajv?: Parameters<BuildCompilerFromPool>[1],
     frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       error: FastifyError,

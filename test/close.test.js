@@ -5,7 +5,6 @@ const http = require('node:http')
 const { test } = require('node:test')
 const Fastify = require('..')
 const { Client } = require('undici')
-const split = require('split2')
 const { sleep } = require('./helper')
 
 test('close callback', (t, testDone) => {
@@ -213,10 +212,9 @@ test('Should return error while closing (callback) - injection', (t, done) => {
   })
 })
 
-test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false', (t, done) => {
+test('Current opened connection should NOT continue to work after closing and return "connection: close" header', (t, done) => {
   t.plan(4)
   const fastify = Fastify({
-    return503OnClosing: false,
     forceCloseConnections: false
   })
 
@@ -270,44 +268,9 @@ test('Current opened connection should not accept new incoming connections', (t,
     t.assert.strictEqual(response.statusCode, 200)
 
     response = await instance.request({ path: '/', method: 'GET' })
-    t.assert.strictEqual(response.statusCode, 503)
+    t.assert.strictEqual(response.statusCode, 200)
 
     done()
-  })
-})
-
-test('rejected incoming connections should be logged', (t, done) => {
-  t.plan(2)
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    forceCloseConnections: false,
-    logger: {
-      stream,
-      level: 'info'
-    }
-  })
-
-  const messages = []
-  stream.on('data', message => {
-    messages.push(message)
-  })
-  fastify.get('/', (req, reply) => {
-    fastify.close()
-    setTimeout(() => {
-      reply.send({ hello: 'world' })
-    }, 250)
-  })
-
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    const instance = new Client('http://localhost:' + fastify.server.address().port)
-    // initial request to trigger close
-    instance.request({ path: '/', method: 'GET' })
-    // subsequent request should be rejected
-    instance.request({ path: '/', method: 'GET' }).then(() => {
-      t.assert.ok(messages.find(message => message.msg.includes('request aborted')))
-      done()
-    })
   })
 })
 

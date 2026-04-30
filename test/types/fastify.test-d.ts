@@ -228,7 +228,6 @@ expectAssignable<FastifyInstance>(fastify({
     }
   }
 }))
-expectAssignable<FastifyInstance>(fastify({ return503OnClosing: true }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
     customOptions: {
@@ -306,7 +305,6 @@ expectAssignable<FastifyInstance>(fastify({
 }))
 
 // Thenable
-expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))
 fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInstance))
 
 expectAssignable<FastifyPluginAsync>(async () => { })

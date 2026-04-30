@@ -30,7 +30,6 @@ describes the properties available in that options object.
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
   - [`exposeHeadRoutes`](#exposeheadroutes)
-  - [`return503OnClosing`](#return503onclosing)
   - [`ajv`](#ajv)
   - [`serializerOpts`](#serializeropts)
   - [`http2SessionTimeout`](#http2sessiontimeout)
@@ -626,20 +625,6 @@ const fastify = require('fastify')({
 Automatically creates a sibling `HEAD` route for each `GET` route defined. If
 you want a custom `HEAD` handler without disabling this option, make sure to
 define it before the `GET` route.
-
-### `return503OnClosing`
-<a id="factory-return-503-on-closing"></a>
-
-+ Default: `true`
-
-When `true`, any request arriving after [`close`](#close) has been called will
-receive a `503 Service Unavailable` response with `Connection: close` header
-(HTTP/1.1). This lets load balancers detect that the server is shutting down and
-stop routing traffic to it.
-
-When `false`, requests arriving during the closing phase are routed and
-processed normally. They will still receive a `Connection: close` header so that
-clients do not attempt to reuse the connection.
 
 ### `ajv`
 <a id="factory-ajv"></a>
@@ -1390,10 +1375,6 @@ if (route !== null) {
 `fastify.close(callback)`: call this function to close the server instance and
 run the [`'onClose'`](./Hooks.md#on-close) hook.
 
-Calling `close` will also cause the server to respond to every new incoming
-request with a `503` error and destroy that request. See [`return503OnClosing`
-flags](#factory-return-503-on-closing) for changing this behavior.
-
 If it is called without any arguments, it will return a Promise:
 
 ```js
@@ -1409,8 +1390,7 @@ fastify.close().then(() => {
 When `fastify.close()` is called, the following steps happen in order:
 
 1. The server is flagged as **closing**. New incoming requests receive a
-   `Connection: close` header (HTTP/1.1) and are handled according to
-   [`return503OnClosing`](#factory-return-503-on-closing).
+   `Connection: close` header (HTTP/1.1).
 2. [`preClose`](./Hooks.md#pre-close) hooks execute. The server is still
    processing in-flight requests at this point.
 3. **Connection draining** based on the

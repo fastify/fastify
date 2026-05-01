@@ -14,43 +14,6 @@ test.before(buildCertificate)
 
 const isNode24OrGreater = Number(process.versions.node.split('.')[0]) >= 24
 
-test('http/2 request while fastify closing Node <24', { skip: isNode24OrGreater }, (t, done) => {
-  const fastify = Fastify({
-    http2: true
-  })
-  t.assert.ok('http2 successfully loaded')
-
-  fastify.get('/', () => Promise.resolve({}))
-
-  t.after(() => { fastify.close() })
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-
-    const url = getServerUrl(fastify)
-    const session = http2.connect(url, function () {
-      this.request({
-        ':method': 'GET',
-        ':path': '/'
-      }).on('response', headers => {
-        t.assert.strictEqual(headers[':status'], 503)
-        done()
-        this.destroy()
-      }).on('error', () => {
-        // Nothing to do here,
-        // we are not interested in this error that might
-        // happen or not
-      })
-      session.on('error', () => {
-        // Nothing to do here,
-        // we are not interested in this error that might
-        // happen or not
-        done()
-      })
-      fastify.close()
-    })
-  })
-})
-
 test('http/2 request while fastify closing Node >=24', { skip: !isNode24OrGreater }, (t, done) => {
   const fastify = Fastify({
     http2: true

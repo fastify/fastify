@@ -27,11 +27,11 @@ jobs:
 
       - name: Install dependencies
         run: uv sync
-        working-directory: gps-sandbox/apps/review-bot
+        working-directory: gps-sandbox/apps/review-bot/backend
 
       - name: Run AI code review
         run: uv run python -m src.main
-        working-directory: gps-sandbox/apps/review-bot
+        working-directory: gps-sandbox/apps/review-bot/backend
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_PAT }}
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}

@@ -27,11 +27,11 @@ jobs:
 
       - name: Install dependencies
         run: uv sync
-        working-directory: gps-sandbox/apps/review-bot
+        working-directory: gps-sandbox/apps/review-bot/backend
 
       - name: Run approval agent
         run: uv run python -m src.approval_main
-        working-directory: gps-sandbox/apps/review-bot
+        working-directory: gps-sandbox/apps/review-bot/backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}

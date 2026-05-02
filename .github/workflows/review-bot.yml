@@ -26,11 +26,11 @@ jobs:
 
       - name: Install dependencies
         run: uv sync
-        working-directory: review-bot
+        working-directory: review-bot/backend
 
       - name: Run AI code review
         run: uv run python -m src.main
-        working-directory: review-bot
+        working-directory: review-bot/backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}

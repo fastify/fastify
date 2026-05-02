@@ -32,7 +32,7 @@ jobs:
         run: uv run python -m src.main
         working-directory: review-bot/backend
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT_PAT }}
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}
           LITELLM_API_BASE: ${{ secrets.LITELLM_API_BASE }}
           GITHUB_REPOSITORY: ${{ github.repository }}

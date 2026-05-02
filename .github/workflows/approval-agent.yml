@@ -1,0 +1,37 @@
+name: Approval Agent
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  approve:
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '## review-bot Summary')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout review-bot
+        uses: actions/checkout@v4
+        with:
+          repository: dawidbudaszewski/review-bot
+          path: review-bot
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync
+        working-directory: review-bot/backend
+
+      - name: Run approval agent
+        run: uv run python -m src.approval_main
+        working-directory: review-bot/backend
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}

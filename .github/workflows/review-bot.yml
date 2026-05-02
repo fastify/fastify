@@ -18,20 +18,19 @@ jobs:
       - name: Checkout review-bot
         uses: actions/checkout@v4
         with:
-          repository: scaleapi/gps-sandbox
-          path: gps-sandbox
-          sparse-checkout: apps/review-bot
+          repository: dawidbudaszewski/review-bot
+          path: review-bot
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v6
 
       - name: Install dependencies
         run: uv sync
-        working-directory: gps-sandbox/apps/review-bot/backend
+        working-directory: review-bot/backend
 
       - name: Run AI code review
         run: uv run python -m src.main
-        working-directory: gps-sandbox/apps/review-bot/backend
+        working-directory: review-bot/backend
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_PAT }}
           LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}

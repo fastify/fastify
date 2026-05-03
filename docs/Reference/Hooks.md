@@ -51,8 +51,12 @@ It is easy to understand where each hook is executed by looking at the
 Hooks are affected by Fastify's encapsulation, and can thus be applied to
 selected routes. See the [Scopes](#scope) section for more information.
 
-There are eight different hooks that you can use in Request/Reply *(in order of
+There are ten different hooks that you can use in Request/Reply *(in order of
 execution)*:
+
+> **Tip:** When adding multiple hooks of the same type, they are executed in the
+> order they were registered. This is useful for composing middleware-like
+> behavior across plugins.
 
 ### onRequest
 ```js

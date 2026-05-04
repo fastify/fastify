@@ -51,8 +51,8 @@ fastify.register(async function authenticatedContext (childServer) {
   childServer.route({
     path: '/one',
     method: 'GET',
-    handler (request, response) {
-      response.send({
+    handler (request, reply) {
+      reply.send({
         answer: request.answer,
         // request.foo will be undefined as it is only defined in publicContext
         foo: request.foo,
@@ -69,8 +69,8 @@ fastify.register(async function publicContext (childServer) {
   childServer.route({
     path: '/two',
     method: 'GET',
-    handler (request, response) {
-      response.send({
+    handler (request, reply) {
+      reply.send({
         answer: request.answer,
         foo: request.foo,
         // request.bar will be undefined as it is only defined in grandchildContext
@@ -85,8 +85,8 @@ fastify.register(async function publicContext (childServer) {
     grandchildServer.route({
       path: '/three',
       method: 'GET',
-      handler (request, response) {
-        response.send({
+      handler (request, reply) {
+        reply.send({
           answer: request.answer,
           foo: request.foo,
           bar: request.bar
@@ -114,12 +114,12 @@ original diagram:
 To see this, start the server and issue requests:
 
 ```sh
-# curl -H 'authorization: Bearer abc123' http://127.0.0.1:8000/one
-{"answer":42}
-# curl http://127.0.0.1:8000/two
-{"answer":42,"foo":"foo"}
-# curl http://127.0.0.1:8000/three
-{"answer":42,"foo":"foo","bar":"bar"}
+curl -H 'authorization: Bearer abc123' http://127.0.0.1:8000/one
+# {"answer":42}
+curl http://127.0.0.1:8000/two
+# {"answer":42,"foo":"foo"}
+curl http://127.0.0.1:8000/three
+# {"answer":42,"foo":"foo","bar":"bar"}
 ```
 
 [bearer]: https://github.com/fastify/fastify-bearer-auth
@@ -127,13 +127,14 @@ To see this, start the server and issue requests:
 ## Sharing Between Contexts
 <a id="shared-context"></a>
 
-Each context in the prior example inherits _only_ from its parent contexts. Parent
-contexts cannot access entities within their descendant contexts. If needed,
-encapsulation can be broken using [fastify-plugin][fastify-plugin], making
-anything registered in a descendant context available to the parent context.
+Each context in the previous example inherits _only_ from its parent contexts.
+Parent contexts cannot access entities within their descendant contexts.
+If needed, encapsulation can be broken using [fastify-plugin][fastify-plugin],
+making anything registered in a descendant context available
+to the parent context.
 
-To allow `publicContext` access to the `bar` decorator in `grandchildContext`,
-rewrite the code as follows:
+To allow `publicContext` to access the `bar` decorator from `grandchildContext`,
+update the code as follows:
 
 ```js
 'use strict'
@@ -151,8 +152,8 @@ fastify.register(async function publicContext (childServer) {
   childServer.route({
     path: '/two',
     method: 'GET',
-    handler (request, response) {
-      response.send({
+    handler (request, reply) {
+      reply.send({
         answer: request.answer,
         foo: request.foo,
         bar: request.bar
@@ -168,8 +169,8 @@ fastify.register(async function publicContext (childServer) {
     grandchildServer.route({
       path: '/three',
       method: 'GET',
-      handler (request, response) {
-        response.send({
+      handler (request, reply) {
+        reply.send({
           answer: request.answer,
           foo: request.foo,
           bar: request.bar
@@ -185,10 +186,10 @@ fastify.listen({ port: 8000 })
 Restarting the server and re-issuing the requests for `/two` and `/three`:
 
 ```sh
-# curl http://127.0.0.1:8000/two
-{"answer":42,"foo":"foo","bar":"bar"}
-# curl http://127.0.0.1:8000/three
-{"answer":42,"foo":"foo","bar":"bar"}
+curl http://127.0.0.1:8000/two
+# {"answer":42,"foo":"foo","bar":"bar"}
+curl http://127.0.0.1:8000/three
+# {"answer":42,"foo":"foo","bar":"bar"}
 ```
 
 [fastify-plugin]: https://github.com/fastify/fastify-plugin

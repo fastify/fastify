@@ -11,10 +11,10 @@ in this document:
    date. The release date of any specific version can be found at
    [https://github.com/fastify/fastify/releases](https://github.com/fastify/fastify/releases).
 2. Major releases will receive security updates for an additional six months
-   from the release of the next major release. After this period we will still
-   review and release security fixes as long as they are provided by the
-   community and they do not violate other constraints, e.g. minimum supported
-   Node.js version.
+   from the release of the next major release. After this period, Fastify maintainers
+   will still review and release security fixes as long as they are provided
+   by the community and they do not violate other constraints,
+   e.g., minimum supported Node.js version.
 3. Major releases will be tested and verified against all Node.js release lines
    that are supported by the [Node.js LTS
    policy](https://github.com/nodejs/Release) within the LTS period of that
@@ -35,21 +35,21 @@ A "month" is defined as 30 consecutive days.
 > ## Security Releases and Semver
 >
 > As a consequence of providing long-term support for major releases, there are
-> occasions where we need to release breaking changes as a _minor_ version
-> release. Such changes will _always_ be noted in the [release
+> occasions when breaking changes must be released as a _minor_ version
+> release. Such changes will _always_ be documented in the [release
 > notes](https://github.com/fastify/fastify/releases).
 >
-> To avoid automatically receiving breaking security updates it is possible to
+> To avoid automatically receiving breaking security updates, it is possible to
 > use the tilde (`~`) range qualifier. For example, to get patches for the 3.15
 > release, and avoid automatically updating to the 3.16 release, specify the
 > dependency as `"fastify": "~3.15.x"`. This will leave your application
-> vulnerable, so please use it with caution.
+> vulnerable. Use this approach with caution.
 
 ### Security Support Beyond LTS
 
 Fastify's partner, HeroDevs, provides commercial security support through the
 OpenJS Ecosystem Sustainability Program for versions of Fastify that are EOL.
-For more information, see their [Never Ending Support][hd-link] service.
+For more information, see the [Never Ending Support][hd-link] service offered.
 
 ### Schedule
 <a id="lts-schedule"></a>
@@ -62,7 +62,7 @@ For more information, see their [Never Ending Support][hd-link] service.
 | 4.0.0   | 2022-06-08   | 2025-06-30      | 14, 16, 18, 20, 22 | v5(18), v5(20) |
 | 5.0.0   | 2024-09-17   | TBD             | 20, 22             | v5(20)         |
 
-### CI tested operating systems
+### CI Tested Operating Systems
 <a id="supported-os"></a>
 
 Fastify uses GitHub Actions for CI testing, please refer to [GitHub&#39;s
@@ -78,8 +78,7 @@ YAML workflow labels below:
 | Windows | `windows-latest`    | npm             | 20          | v5(20)        |
 | MacOS   | `macos-latest`      | npm             | 20          | v5(20)        |
 
-Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines`
-flag.
+When using [yarn](https://yarnpkg.com/), the `--ignore-engines` flag may be required.
 
 [semver]: https://semver.org/
 

@@ -84,7 +84,7 @@ test('Should honor maxParamLength option', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {
@@ -727,7 +727,7 @@ test('Should honor routerOptions.maxParamLength', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex', async (t) => {
@@ -928,7 +928,7 @@ test('Should honor routerOptions.maxParamLength over maxParamLength option', asy
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex over allowUnsafeRegex option', async (t) => {

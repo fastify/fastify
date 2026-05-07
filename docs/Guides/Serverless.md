@@ -282,10 +282,11 @@ const fastify = require("fastify");
 function buildApp(registerRoutes) {
   const app = fastify({ logger: true });
 
-// GCF 1st-gen pre-parses the body pass it through as-is.
-// For 2nd-gen (functions-framework), remove this parser; the body arrives unparsed.
+// GCF 1st-gen and 2nd-gen/functions-framework can hand Fastify
+// a framework-wrapped, pre-parsed JSON body. Keep this parser so
+// Fastify receives the actual payload object in either case.
   app.addContentTypeParser("application/json", {}, (req, body, done) => {
-    done(null, body.body);
+    done(null, body && body.body !== undefined ? body.body : body);
   });
 
   registerRoutes(app);
@@ -321,9 +322,12 @@ exports.ordersFunction = async (req, res) => {
 
 Each export becomes a distinct, independently deployable function in GCP. Logs
 written through Fastify's built-in [pino](https://github.com/pinojs/pino) logger
-are structured JSON and are automatically picked up by Cloud Logging, scoped to
-the function that emitted them. You can then filter the GCP Logs Explorer by
-`resource.labels.function_name` to see only the logs for a specific route group.
+are structured JSON and are automatically picked up by Cloud Logging. For
+1st-gen Cloud Functions, you can filter the GCP Logs Explorer by
+`resource.labels.function_name` to see only the logs for a specific route
+group. For 2nd-gen Cloud Functions, Fastify/Pino stdout and stderr logs are attached to
+the underlying Cloud Run resource instead, so filter by the Cloud Run resource
+and its labels rather than `resource.labels.function_name`.
 
 #### Deploy each function
 

@@ -41,7 +41,7 @@ jobs:
           check-latest: true
 
       - name: Install Pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        uses: pnpm/action-setup@26f6d4f2c533a43e6b5da0b4a5dd983f98f7b49a # v6.0.4
         with:
           version: ${{ matrix.pnpm-version }}
 

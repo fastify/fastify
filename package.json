@@ -210,7 +210,7 @@
     "abstract-logging": "^2.0.1",
     "avvio": "^9.0.0",
     "fast-json-stringify": "^6.0.0",
-    "find-my-way": "^9.0.0",
+    "find-my-way": "^9.6.0",
     "light-my-request": "^6.0.0",
     "pino": "^9.14.0 || ^10.1.0",
     "process-warning": "^5.0.0",

@@ -290,7 +290,10 @@ t.test('logging', { timeout: 60000 }, async (t) => {
 
     await fastify.ready()
 
-    await fastify.inject({ method: 'GET', url: '/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' })
+await fastify.inject({
+  method: 'GET',
+  url: `/${'1234567890'.repeat(12)}`
+})
 
     // no more readable data
     t.assert.strictEqual(stream.readableLength, 0)

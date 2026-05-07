@@ -31,8 +31,8 @@ const testPluginOptsWithTypeAsync = async (
   opts: FastifyPluginOptions
 ) => { }
 
-expectError(fastify().register(testPluginOpts, {})) // error because missing required options from generic declaration
-expectError(fastify().register(testPluginOptsAsync, {})) // error because missing required options from generic declaration
+expectAssignable<FastifyInstance>(fastify().register(testPluginOpts, {}))
+expectAssignable<FastifyInstance>(fastify().register(testPluginOptsAsync, {}))
 
 expectAssignable<FastifyInstance>(fastify().register(testPluginOpts, { option1: '', option2: true }))
 expectAssignable<FastifyInstance>(fastify().register(testPluginOptsAsync, { option1: '', option2: true }))

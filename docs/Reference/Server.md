@@ -48,6 +48,7 @@ describes the properties available in that options object.
     - [`ignoreTrailingSlash`](#ignoretrailingslash)
     - [`maxParamLength`](#maxparamlength)
     - [`onBadUrl`](#onbadurl)
+    - [`onMaxParamLength`](#onmaxparamlength)
     - [`querystringParser`](#querystringparser)
     - [`useSemicolonDelimiter`](#usesemicolondelimiter)
 - [Instance](#instance)
@@ -1028,6 +1029,27 @@ const fastify = require('fastify')({
   routerOptions: {
     onBadUrl: (path, req, res) => {
       res.statusCode = 400
+      res.end(`Bad path: ${path}`)
+    }
+  }
+})
+```
+
+As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
+objects and do not provide Fastify's decorated helpers.
+
+### `onMaxParamLength`
+<a id="on-max-param-length"></a>
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+the use case of a provide custom handler when `maxParamLength ` is exceed.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    maxParamLength: 10,
+    onMaxParamLength: (path, req, res) => {
+      res.statusCode = 413
       res.end(`Bad path: ${path}`)
     }
   }

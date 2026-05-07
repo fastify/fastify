@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 89
+const expectedErrors = 90
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -627,6 +627,16 @@ test('FST_ERR_BAD_URL', t => {
   t.assert.strictEqual(error.code, 'FST_ERR_BAD_URL')
   t.assert.strictEqual(error.message, "'%s' is not a valid url component")
   t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_MAX_PARAM_LENGTH', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_MAX_PARAM_LENGTH()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_MAX_PARAM_LENGTH')
+  t.assert.strictEqual(error.message, "'%s' is exceeding the max param length")
+  t.assert.strictEqual(error.statusCode, 413)
   t.assert.ok(error instanceof Error)
 })
 

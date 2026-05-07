@@ -63,6 +63,7 @@ const { defaultInitOptions } = getSecuredInitialConfig
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
+  FST_ERR_MAX_PARAM_LENGTH,
   FST_ERR_OPTIONS_NOT_OBJ,
   FST_ERR_QSP_NOT_FN,
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
@@ -92,7 +93,7 @@ function fastify (serverOptions) {
     disableRequestLogging,
     hasLogger,
     initialConfig
-  } = processOptions(serverOptions, defaultRoute, onBadUrl)
+  } = processOptions(serverOptions, defaultRoute, onBadUrl, onMaxParamLength)
 
   // Default router
   const router = buildRouting(options.routerOptions)
@@ -422,8 +423,8 @@ function fastify (serverOptions) {
     })
   })
 
-  // Create bad URL context
-  const onBadUrlContext = new Context({
+  // Create route event (bad URL, max param length, etc) context
+  const routeEventContext = new Context({
     server: fastify,
     config: {}
   })
@@ -636,10 +637,10 @@ function fastify (serverOptions) {
 
   function onBadUrl (path, req, res) {
     if (options.frameworkErrors) {
-      const id = getGenReqId(onBadUrlContext.server, req)
-      const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
+      const id = getGenReqId(routeEventContext.server, req)
+      const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
 
-      const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+      const request = new Request(id, null, req, null, childLogger, routeEventContext)
       const reply = new Reply(res, request, childLogger)
 
       const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
@@ -662,15 +663,43 @@ function fastify (serverOptions) {
     res.end(body)
   }
 
+  function onMaxParamLength (path, req, res) {
+    if (options.frameworkErrors) {
+      const id = getGenReqId(routeEventContext.server, req)
+      const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
+
+      const request = new Request(id, null, req, null, childLogger, routeEventContext)
+      const reply = new Reply(res, request, childLogger)
+
+      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
+      if (resolvedDisableRequestLogging === false) {
+        childLogger.info({ req: request }, 'incoming request')
+      }
+
+      return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
+    }
+    const body = JSON.stringify({
+      error: 'Bad Request',
+      code: 'FST_ERR_MAX_PARAM_LENGTH',
+      message: `'${path}' is exceeding the max param length`,
+      statusCode: 413
+    })
+    res.writeHead(413, {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(body)
+    })
+    res.end(body)
+  }
+
   function buildAsyncConstraintCallback (isAsync, req, res) {
     if (isAsync === false) return undefined
     return function onAsyncConstraintError (err) {
       if (err) {
         if (options.frameworkErrors) {
-          const id = getGenReqId(onBadUrlContext.server, req)
-          const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
+          const id = getGenReqId(routeEventContext.server, req)
+          const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
 
-          const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+          const request = new Request(id, null, req, null, childLogger, routeEventContext)
           const reply = new Reply(res, request, childLogger)
 
           const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
@@ -820,7 +849,7 @@ function fastify (serverOptions) {
   }
 }
 
-function processOptions (options, defaultRoute, onBadUrl) {
+function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   // Options validations
   if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
@@ -889,6 +918,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.routerOptions = buildRouterOptions(options, {
     defaultRoute,
     onBadUrl,
+    onMaxParamLength,
     ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
     ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
     maxParamLength: defaultInitOptions.maxParamLength,

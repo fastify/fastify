@@ -16,7 +16,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(14)
+  t.plan(15)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -277,6 +277,20 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     await fastify.ready()
 
     await fastify.inject({ method: 'GET', url: '/%c0' })
+
+    // no more readable data
+    t.assert.strictEqual(stream.readableLength, 0)
+  })
+
+  await t.test('should not log incoming request, outgoing response and route not found for 413 onMaxParamLength when disabled', async (t) => {
+    t.plan(1)
+    const stream = split(JSON.parse)
+    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
+    t.after(() => fastify.close())
+
+    await fastify.ready()
+
+    await fastify.inject({ method: 'GET', url: '/12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' })
 
     // no more readable data
     t.assert.strictEqual(stream.readableLength, 0)

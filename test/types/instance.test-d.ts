@@ -1,3 +1,5 @@
+import { ConstraintStrategy, Config as FindMyWayConfig } from 'find-my-way'
+import { AddressInfo } from 'node:net'
 import { expectAssignable, expectError, expectNotAssignable, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBaseLogger,
@@ -11,13 +13,11 @@ import fastify, {
   RouteGenericInterface
 } from '../../fastify'
 import { HookHandlerDoneFunction } from '../../types/hooks'
+import { FindMyWayVersion } from '../../types/instance'
+import { Bindings, ChildLoggerOptions } from '../../types/logger'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
-import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
-import { AddressInfo } from 'node:net'
-import { Bindings, ChildLoggerOptions } from '../../types/logger'
-import { Config as FindMyWayConfig, ConstraintStrategy } from 'find-my-way'
-import { FindMyWayVersion } from '../../types/instance'
+import { FastifySchemaCompiler, FastifySchemaControllerOptions, FastifySerializerCompiler } from '../../types/schema'
 
 const server = fastify()
 
@@ -66,10 +66,10 @@ function fastifySetGenReqId (req: RawRequestDefaultExpression) {
 }
 server.setGenReqId(fastifySetGenReqId)
 
-function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
+function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) { }
 server.setErrorHandler(fastifyErrorHandler)
 
-async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
+async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) { }
 server.setErrorHandler(asyncFastifyErrorHandler)
 
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {
@@ -126,8 +126,8 @@ server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) 
   return { test: 'foo' }
 })
 
-function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
-async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundHandler (request: FastifyRequest, reply: FastifyReply) { }
+async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) { }
 function notFoundpreHandlerHandler (
   request: FastifyRequest,
   reply: FastifyReply,
@@ -136,7 +136,7 @@ function notFoundpreHandlerHandler (
 async function notFoundpreHandlerAsyncHandler (
   request: FastifyRequest,
   reply: FastifyReply
-) {}
+) { }
 function notFoundpreValidationHandler (
   request: FastifyRequest,
   reply: FastifyReply,
@@ -145,7 +145,7 @@ function notFoundpreValidationHandler (
 async function notFoundpreValidationAsyncHandler (
   request: FastifyRequest,
   reply: FastifyReply
-) {}
+) { }
 
 server.setNotFoundHandler(notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
@@ -191,7 +191,7 @@ server.setSchemaController({
   }
 })
 
-function invalidSchemaController (schemaControllerOptions: FastifySchemaControllerOptions) {}
+function invalidSchemaController (schemaControllerOptions: FastifySchemaControllerOptions) { }
 expectError(server.setSchemaController(invalidSchemaController))
 
 server.setReplySerializer(function (payload, statusCode) {
@@ -200,10 +200,10 @@ server.setReplySerializer(function (payload, statusCode) {
   return 'serialized'
 })
 
-function invalidReplySerializer (payload: number, statusCode: string) {}
+function invalidReplySerializer (payload: number, statusCode: string) { }
 expectError(server.setReplySerializer(invalidReplySerializer))
 
-function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
+function serializerWithInvalidReturn (payload: unknown, statusCode: number) { }
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
 function invalidSchemaErrorFormatter (err: Error) {
@@ -222,13 +222,13 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
 
-expectAssignable<void>(server.listen(() => {}))
-expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
-expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
+expectAssignable<void>(server.listen(() => { }))
+expectAssignable<void>(server.listen({ port: 3000 }, () => { }))
+expectAssignable<void>(server.listen({ port: 3000, listenTextResolver: (address) => { return `address: ${address}` } }, () => { }))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => { }))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => { }))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => { }))
+expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => { }))
 
 // test listen opts objects Typescript deprecation exclusion
 expectNotDeprecated(server.listen())
@@ -238,12 +238,12 @@ expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
 expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
 
-expectNotDeprecated(server.listen(() => {}))
-expectNotDeprecated(server.listen({ port: 3000 }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
-expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
+expectNotDeprecated(server.listen(() => { }))
+expectNotDeprecated(server.listen({ port: 3000 }, () => { }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => { }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => { }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => { }))
+expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => { }))
 
 // test after method
 expectAssignable<FastifyInstance>(server.after())
@@ -266,7 +266,7 @@ expectAssignable<Parameters<typeof server.ready>[0]>(async (err) => {
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
 expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: string }>('/', {
-  handler: () => {},
+  handler: () => { },
   errorHandler: (error, request, reply) => {
     expectAssignable<unknown>(error)
     expectAssignable<FastifyRequest>(request)
@@ -277,7 +277,7 @@ expectType<FastifyInstance>(fastify().get<RouteGenericInterface, { contextKey: s
 }))
 
 expectType<FastifyInstance>(fastify().get('/', {
-  handler: () => {},
+  handler: () => { },
   childLoggerFactory: (logger, bindings, opts, req) => {
     expectAssignable<FastifyBaseLogger>(server.childLoggerFactory(logger, bindings, opts, req))
     return server.childLoggerFactory(logger, bindings, opts, req)
@@ -355,6 +355,13 @@ fastify({
       expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
       expectNotAssignable<FastifyReply>(res)
       res.end('foo')
+    },
+    onMaxParamLength (path, req, res) {
+      expectType<string>(path)
+      expectType<RawRequestDefaultExpression<RawServerDefault>>(req)
+      expectType<RawReplyDefaultExpression<RawServerDefault>>(res)
+      expectNotAssignable<FastifyReply>(res)
+      res.end('foo')
     }
   }
 })
@@ -424,26 +431,26 @@ expectError(server.decorate<string>('test', {
   }
 }))
 expectError(server.decorate<string>('test', {
-  setter (x) {}
+  setter (x) { }
 }))
 
 declare module '../../fastify' {
   interface FastifyInstance {
     typedTestProperty: boolean
     typedTestPropertyGetterSetter: string
-    typedTestMethod (x: string): string
+    typedTestMethod(x: string): string
   }
 
   interface FastifyRequest {
     typedTestRequestProperty: boolean
     typedTestRequestPropertyGetterSetter: string
-    typedTestRequestMethod (x: string): string
+    typedTestRequestMethod(x: string): string
   }
 
   interface FastifyReply {
     typedTestReplyProperty: boolean
     typedTestReplyPropertyGetterSetter: string
-    typedTestReplyMethod (x: string): string
+    typedTestReplyMethod(x: string): string
   }
 }
 
@@ -573,12 +580,12 @@ expectType<string>(foo)
 const versionConstraintStrategy: ConstraintStrategy<FindMyWayVersion<RawServerDefault>> = {
   name: 'version',
   storage: () => ({
-    get: () => () => {},
+    get: () => () => { },
     set: () => { },
     del: () => { },
     empty: () => { }
   }),
-  validate () {},
+  validate () { },
   deriveConstraint: () => 'foo'
 }
 expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))

@@ -84,7 +84,7 @@ test('Should honor maxParamLength option', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 413)
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {
@@ -615,7 +615,7 @@ test('Should honor routerOptions.defaultRoute', async t => {
   t.assert.strictEqual(res.payload, 'default route')
 })
 
-test('Should honor routerOptions.badUrl', async t => {
+test('Should honor routerOptions.onBadUrl', async t => {
   t.plan(3)
   const fastify = Fastify({
     routerOptions: {
@@ -625,7 +625,7 @@ test('Should honor routerOptions.badUrl', async t => {
       onBadUrl: function (path, _, res) {
         t.assert.ok('bad url called')
         res.statusCode = 400
-        res.end(`Bath URL: ${path}`)
+        res.end(`Bad URL: ${path}`)
       }
     }
   })
@@ -636,7 +636,32 @@ test('Should honor routerOptions.badUrl', async t => {
 
   const res = await fastify.inject('/hello/%world')
   t.assert.strictEqual(res.statusCode, 400)
-  t.assert.strictEqual(res.payload, 'Bath URL: /hello/%world')
+  t.assert.strictEqual(res.payload, 'Bad URL: /hello/%world')
+})
+
+test('Should honor routerOptions.onMaxParamLength', async t => {
+  t.plan(3)
+  const fastify = Fastify({
+    routerOptions: {
+      defaultRoute: function (_, res) {
+        t.asset.fail('default route should not be called')
+      },
+      maxParamLength: 10,
+      onMaxParamLength: function (path, _, res) {
+        t.assert.ok('max param length called')
+        res.statusCode = 413
+        res.end(`URL: ${path}`)
+      }
+    }
+  })
+
+  fastify.get('/hello/:id', (req, res) => {
+    res.send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject('/hello/12345678901')
+  t.assert.strictEqual(res.statusCode, 413)
+  t.assert.strictEqual(res.payload, 'URL: /hello/12345678901')
 })
 
 test('Should honor routerOptions.ignoreTrailingSlash', async t => {
@@ -727,7 +752,7 @@ test('Should honor routerOptions.maxParamLength', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 413)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex', async (t) => {
@@ -854,11 +879,11 @@ test('Should honor routerOptions.buildPrettyMeta', async (t) => {
     }
   })
 
-  fastify.get('/test', () => {})
-  fastify.get('/test/hello', () => {})
-  fastify.get('/testing', () => {})
-  fastify.get('/testing/:param', () => {})
-  fastify.put('/update', () => {})
+  fastify.get('/test', () => { })
+  fastify.get('/test/hello', () => { })
+  fastify.get('/testing', () => { })
+  fastify.get('/testing/:param', () => { })
+  fastify.put('/update', () => { })
 
   await fastify.ready()
 
@@ -928,7 +953,7 @@ test('Should honor routerOptions.maxParamLength over maxParamLength option', asy
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 413)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex over allowUnsafeRegex option', async (t) => {

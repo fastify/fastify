@@ -682,9 +682,9 @@ function fastify (serverOptions) {
       error: 'Bad Request',
       code: 'FST_ERR_MAX_PARAM_LENGTH',
       message: `'${path}' is exceeding the max param length`,
-      statusCode: 413
+      statusCode: 414
     })
-    res.writeHead(413, {
+    res.writeHead(414, {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(body)
     })

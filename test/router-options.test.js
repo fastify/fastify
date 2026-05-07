@@ -84,7 +84,7 @@ test('Should honor maxParamLength option', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 413)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {
@@ -649,7 +649,7 @@ test('Should honor routerOptions.onMaxParamLength', async t => {
       maxParamLength: 10,
       onMaxParamLength: function (path, _, res) {
         t.assert.ok('max param length called')
-        res.statusCode = 413
+        res.statusCode = 414
         res.end(`URL: ${path}`)
       }
     }
@@ -660,7 +660,7 @@ test('Should honor routerOptions.onMaxParamLength', async t => {
   })
 
   const res = await fastify.inject('/hello/12345678901')
-  t.assert.strictEqual(res.statusCode, 413)
+  t.assert.strictEqual(res.statusCode, 414)
   t.assert.strictEqual(res.payload, 'URL: /hello/12345678901')
 })
 
@@ -752,7 +752,7 @@ test('Should honor routerOptions.maxParamLength', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 413)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex', async (t) => {
@@ -953,7 +953,7 @@ test('Should honor routerOptions.maxParamLength over maxParamLength option', asy
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 413)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex over allowUnsafeRegex option', async (t) => {

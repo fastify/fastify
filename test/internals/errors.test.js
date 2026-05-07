@@ -636,7 +636,7 @@ test('FST_ERR_MAX_PARAM_LENGTH', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_MAX_PARAM_LENGTH')
   t.assert.strictEqual(error.message, "'%s' is exceeding the max param length")
-  t.assert.strictEqual(error.statusCode, 413)
+  t.assert.strictEqual(error.statusCode, 414)
   t.assert.ok(error instanceof Error)
 })
 

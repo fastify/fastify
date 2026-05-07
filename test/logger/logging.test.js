@@ -282,7 +282,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     t.assert.strictEqual(stream.readableLength, 0)
   })
 
-  await t.test('should not log incoming request, outgoing response and route not found for 413 onMaxParamLength when disabled', async (t) => {
+  await t.test('should not log incoming request, outgoing response and route not found for 414 onMaxParamLength when disabled', async (t) => {
     t.plan(1)
     const stream = split(JSON.parse)
     const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })

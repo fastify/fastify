@@ -1049,7 +1049,7 @@ const fastify = require('fastify')({
   routerOptions: {
     maxParamLength: 10,
     onMaxParamLength: (path, req, res) => {
-      res.statusCode = 413
+      res.statusCode = 414
       res.end(`Bad path: ${path}`)
     }
   }

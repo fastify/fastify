@@ -198,6 +198,8 @@ section.
   Huawei and many other clouds.
 - [`@hey-api/openapi-ts`](https://heyapi.dev/openapi-ts/plugins/fastify)
   The OpenAPI to TypeScript codegen. Generate clients, SDKs, validators, and more.
+- [`@idempot/fastify-middleware`](https://github.com/idempot-dev/idempot-js)
+  Idempotency middleware implementing the IETF draft specification with support for multiple storage backends including Redis, PostgreSQL, MySQL, and SQLite.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).

@@ -632,6 +632,67 @@ test('Should honor disableRequestLogging function in frameworkErrors wrapper - F
   )
 })
 
+test('Should honor disableRequestLogging function in frameworkErrors wrapper - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(4)
+
+  let logCallCount = 0
+  const logStream = split(JSON.parse)
+
+  const fastify = Fastify({
+    maxParamLength: 1,
+    disableRequestLogging: (req) => {
+      // Disable logging for URLs containing 'silent'
+      return req.url.includes('silent')
+    },
+    frameworkErrors: function (err, req, res) {
+      res.send(`${err.message} - ${err.code}`)
+    },
+    logger: {
+      stream: logStream,
+      level: 'info'
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  logStream.on('data', (json) => {
+    if (json.msg === 'incoming request') {
+      logCallCount++
+    }
+  })
+
+  // First request: URL does not contain 'silent', so logging should happen
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
+
+      // Second request: URL contains 'silent', so logging should be disabled
+      fastify.inject(
+        {
+          method: 'GET',
+          url: '/silent/123'
+        },
+        (err2, res2) => {
+          t.assert.ifError(err2)
+          // Give time for any potential log events
+          setImmediate(() => {
+            // Only the first request should have logged
+            t.assert.strictEqual(logCallCount, 1)
+            done()
+          })
+        }
+      )
+    }
+  )
+})
+
 test('Should honor disableRequestLogging function in frameworkErrors wrapper - FST_ERR_ASYNC_CONSTRAINT', (t, done) => {
   t.plan(4)
 

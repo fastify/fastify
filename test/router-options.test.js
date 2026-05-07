@@ -6,6 +6,7 @@ const querystring = require('node:querystring')
 const Fastify = require('../')
 const {
   FST_ERR_BAD_URL,
+  FST_ERR_MAX_PARAM_LENGTH,
   FST_ERR_ASYNC_CONSTRAINT
 } = require('../lib/errors')
 
@@ -257,6 +258,130 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
     (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+      done()
+    }
+  )
+})
+
+test('Should honor frameworkErrors option - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(3)
+  const fastify = Fastify({
+    maxParamLength: 1,
+    frameworkErrors: function (err, req, res) {
+      if (err instanceof FST_ERR_MAX_PARAM_LENGTH) {
+        t.assert.ok(true)
+      } else {
+        t.assert.fail()
+      }
+      res.send(`${err.message} - ${err.code}`)
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
+      done()
+    }
+  )
+})
+
+test('Should supply Fastify request to the logger in frameworkErrors wrapper - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(8)
+
+  const REQ_ID = 'REQ-1234'
+  const logStream = split(JSON.parse)
+
+  const fastify = Fastify({
+    maxParamLength: 1,
+    frameworkErrors: function (err, req, res) {
+      t.assert.deepStrictEqual(req.id, REQ_ID)
+      t.assert.deepStrictEqual(req.raw.httpVersion, '1.1')
+      res.send(`${err.message} - ${err.code}`)
+    },
+    logger: {
+      stream: logStream,
+      serializers: {
+        req (request) {
+          t.assert.deepStrictEqual(request.id, REQ_ID)
+          return { httpVersion: request.raw.httpVersion }
+        }
+      }
+    },
+    genReqId: () => REQ_ID
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  logStream.on('data', (json) => {
+    t.assert.deepStrictEqual(json.msg, 'incoming request')
+    t.assert.deepStrictEqual(json.reqId, REQ_ID)
+    t.assert.deepStrictEqual(json.req.httpVersion, '1.1')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
+      done()
+    }
+  )
+})
+
+test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(2)
+
+  const logStream = split(JSON.parse)
+
+  const fastify = Fastify({
+    disableRequestLogging: true,
+    maxParamLength: 1,
+    frameworkErrors: function (err, req, res) {
+      res.send(`${err.message} - ${err.code}`)
+    },
+    logger: {
+      stream: logStream,
+      serializers: {
+        req () {
+          t.assert.fail('should not be called')
+        },
+        res () {
+          t.assert.fail('should not be called')
+        }
+      }
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  logStream.on('data', (json) => {
+    t.assert.fail('should not be called')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
       done()
     }
   )

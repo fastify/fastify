@@ -36,10 +36,7 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 <br />
 
 An efficient server implies a lower cost of the infrastructure, better
-responsiveness under load, and happy users. How can you efficiently handle the
-resources of your server, knowing that you are serving the highest number of
-requests possible, without sacrificing security validations and handy
-development?
+responsiveness under load, and happy users. How can you efficiently handle your server resources while serving the highest number of requests possible without sacrificing security, validation, and developer experience?
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best
 developer experience with the least overhead and a powerful plugin architecture.
@@ -212,7 +209,7 @@ second average
 | -                  |                            |              |               |
 | `http.Server`      | 16.14.2	                  | &#10007;     | 74,513        |
 
-These benchmarks taken using https://github.com/fastify/benchmarks. This is a
+These benchmarks were taken using https://github.com/fastify/benchmarks. This is a
 synthetic "hello world" benchmark that aims to evaluate the framework overhead.
 The overhead that each framework has on your application depends on your
 application. You should __always__ benchmark if performance matters to you.

@@ -29,6 +29,11 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    ignore:
+      # TODO: remove ignore until neostandard support ESLint 10
+      - dependency-name: "eslint"
+      - dependency-name: "neostandard"
+      - dependency-name: "@stylistic/*"
     open-pull-requests-limit: 10
     groups:
       # Production dependencies with breaking changes

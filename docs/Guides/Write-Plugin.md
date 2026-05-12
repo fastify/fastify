@@ -23,13 +23,13 @@ Do you have a question or need some advice? We are more than happy to help you!
 Just open an issue in our [help repository](https://github.com/fastify/help).
 
 Once you submit a plugin to our [ecosystem list](./Ecosystem.md), we will review
-your code and help you improve it if necessary.
+your code and help you improve it if it's necessary.
 
 ## Documentation
 Documentation is extremely important. If your plugin is not well documented we
 will not accept it to the ecosystem list. Lack of quality documentation makes it
-more difficult for people to use your plugin, and will likely result in it going
-unused.
+more difficult for people to use your plugin, and will likely result in the plugin 
+going unused.
 
 If you want to see some good examples of how to document a plugin take a look
 at:
@@ -50,10 +50,11 @@ licenses see the [OSI list](https://opensource.org/licenses) or GitHub's
 
 ## Examples
 Always put an example file in your repository. Examples are very helpful for
-users and give a very fast way to test your plugin. Your users will be grateful.
+users and give a very fast way to test and interact with your plugin. 
+Your users will be grateful.
 
 ## Test
-A plugin **must** be thoroughly tested to verify that is working properly.
+A plugin **must** be thoroughly tested to verify that it is working properly.
 
 A plugin without tests will not be accepted to the ecosystem list. A lack of
 tests does not inspire trust nor guarantee that the code will continue to work

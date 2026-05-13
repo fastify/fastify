@@ -776,7 +776,7 @@ function fastify (serverOptions) {
     if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
     } else if (this[kErrorHandlerAlreadySet]) {
-      FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
+      FSTWRN004()
     }
 
     this[kErrorHandlerAlreadySet] = true

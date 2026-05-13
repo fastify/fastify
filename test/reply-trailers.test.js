@@ -192,6 +192,46 @@ test('error in trailers should be ignored', (t, testDone) => {
   })
 })
 
+test('send is called once when multiple trailer callbacks run synchronously', (t, testDone) => {
+  t.plan(6)
+  const fastify = Fastify()
+  let endCalls = 0
+  let addTrailersCalls = 0
+
+  fastify.get('/', function (request, reply) {
+    const originalEnd = reply.raw.end.bind(reply.raw)
+    reply.raw.end = function (...args) {
+      endCalls++
+      return originalEnd(...args)
+    }
+    const originalAddTrailers = reply.raw.addTrailers.bind(reply.raw)
+    reply.raw.addTrailers = function (...args) {
+      addTrailersCalls++
+      return originalAddTrailers(...args)
+    }
+    reply.trailer('Return-Early', function (reply, payload, done) {
+      done(null, 'a')
+    })
+    reply.trailer('Content-MD5', function (reply, payload, done) {
+      done(null, 'b')
+    })
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.trailers['return-early'], 'a')
+    t.assert.strictEqual(res.trailers['content-md5'], 'b')
+    t.assert.strictEqual(endCalls, 1)
+    t.assert.strictEqual(addTrailersCalls, 1)
+    testDone()
+  })
+})
+
 describe('trailer handler counter', () => {
   const data = JSON.stringify({ hello: 'world' })
   const hash = createHash('md5')
@@ -262,6 +302,36 @@ describe('trailer handler counter', () => {
       t.assert.strictEqual(res.headers.trailer, 'return-early content-md5')
       t.assert.strictEqual(res.trailers['return-early'], 'return')
       t.assert.strictEqual(res.trailers['content-md5'], md5)
+      t.assert.ok(!res.headers['content-length'])
+      testDone()
+    })
+  })
+
+  test('mixed callback and promise trailers only use the first completion', (t, testDone) => {
+    t.plan(7)
+    const fastify = Fastify()
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('Async', function (reply, payload, done) {
+        setTimeout(() => done(null, 'async'), 10)
+      })
+      reply.trailer('Mixed', function (reply, payload, done) {
+        done(null, 'correct')
+        return Promise.resolve('corrupted')
+      })
+      reply.send('hello')
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, 200)
+      t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+      t.assert.strictEqual(res.headers.trailer, 'async mixed')
+      t.assert.strictEqual(res.trailers.async, 'async')
+      t.assert.strictEqual(res.trailers.mixed, 'correct')
       t.assert.ok(!res.headers['content-length'])
       testDone()
     })

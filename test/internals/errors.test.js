@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 88
+const expectedErrors = 90
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -630,6 +630,16 @@ test('FST_ERR_BAD_URL', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_MAX_PARAM_LENGTH', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_MAX_PARAM_LENGTH()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_MAX_PARAM_LENGTH')
+  t.assert.strictEqual(error.message, "'%s' is exceeding the max param length")
+  t.assert.strictEqual(error.statusCode, 414)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_ASYNC_CONSTRAINT', t => {
   t.plan(5)
   const error = new errors.FST_ERR_ASYNC_CONSTRAINT()
@@ -708,6 +718,16 @@ test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
   t.assert.strictEqual(error.message, '%s method is not supported.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_ROUTE_LOG_LEVEL_INVALID', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_LOG_LEVEL_INVALID()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_LOG_LEVEL_INVALID')
+  t.assert.strictEqual(error.message, "Log level for '%s:%s' route must be a valid logger level. Received: '%s'")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', t => {

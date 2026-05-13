@@ -17,7 +17,8 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 - [Val Town, Inc.](https://opencollective.com/valtown)
 - [Handsontable - JavaScript Data Grid](https://handsontable.com/docs/react-data-grid/?utm_source=Fastify_GH&utm_medium=sponsorship&utm_campaign=library_sponsorship_2024)
 - [Lokalise - A Localization and Translation Software Tool](https://lokalise.com/?utm_source=Fastify_GH&utm_medium=sponsorship)
-- [TestMu AI](https://www.testmu.ai/)
+- [TestMu AI](https://www.testmuai.com/?utm_medium=sponsor&utm_source=fastify)
+- [Best For Android](https://bestforandroid.com/dev/real-time-app-performance-monitoring/)
 
 ## Tier 2
 

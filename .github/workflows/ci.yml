@@ -29,90 +29,32 @@ permissions:
   contents: read
 
 jobs:
-  dependency-review:
-      name: Dependency Review
-      if: github.event_name == 'pull_request'
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-      steps:
-          - name: Check out repo
-            uses: actions/checkout@v6
-            with:
-              persist-credentials: false
-
-          - name: Dependency review
-            uses: actions/dependency-review-action@05fe4576374b728f0c523d6a13d64c25081e0803 # v4.8.3
-
-  check-licenses:
-    name: Check licenses
-    runs-on: ubuntu-latest
+  quality-check:
+    uses: fastify/workflows/.github/workflows/nested-quality.yml@v6
     permissions:
       contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
-          check-latest: true
-
-      - name: Install
-        run: |
-          npm install --ignore-scripts
-
-      - name: Check licenses
-        run: |
-          npx license-checker --production --summary --onlyAllow="0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;"
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
-          check-latest: true
-
-      - name: Install
-        run: |
-          npm install --ignore-scripts
-
-      - name: Lint code
-        run: |
-          npm run lint
+    secrets: inherit
+    with:
+      license-check: true
+      lint: true
 
   coverage-nix:
     needs:
-      - lint
+      - quality-check
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
 
   coverage-win:
     needs:
-      - lint
+      - quality-check
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml
 
   test-unit:
     needs:
-      - lint
+      - quality-check
       - coverage-nix
       - coverage-win
     runs-on: ${{ matrix.os }}
@@ -175,7 +117,7 @@ jobs:
 
   test-types:
     needs:
-      - lint
+      - quality-check
       - coverage-nix
       - coverage-win
     runs-on: 'ubuntu-latest'
@@ -207,7 +149,7 @@ jobs:
   test-pino-compat:
     name: Test pino compatibility
     needs:
-      - lint
+      - quality-check
       - coverage-nix
       - coverage-win
     runs-on: ubuntu-latest

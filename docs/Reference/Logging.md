@@ -132,9 +132,9 @@ const fastify = require('fastify')({
 ```
 
 > ⚠ Warning:
-> Logging response headers may expose sensitive data and could violate privacy
-> regulations such as GDPR, including authentication data. Use the `redact`
-> option to remove sensitive fields.
+> Logging response headers may expose sensitive data, including authentication
+> data, and may violate privacy regulations.
+> Use [log redaction](#log-redaction) to remove sensitive information.
 > The following example is for demonstration purposes only:
 
 ```js

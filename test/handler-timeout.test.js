@@ -6,7 +6,7 @@ const http2 = require('node:http2')
 const Fastify = require('..')
 const { Readable } = require('node:stream')
 const { kTimeoutTimer, kOnAbort } = require('../lib/symbols')
-const { setTimeout } = require('node:timers/promises')
+const { setTimeout: sleep } = require('node:timers/promises')
 
 // --- Option validation ---
 
@@ -82,9 +82,9 @@ test('client disconnect aborts lazily created signal (no handlerTimeout)', async
   await new Promise((resolve) => {
     const client = net.connect(address.port, () => {
       client.write('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
-      globalThis.setTimeout(() => {
+      setTimeout(() => {
         client.destroy()
-        globalThis.setTimeout(resolve, 100)
+        setTimeout(resolve, 100)
       }, 50)
     })
   })
@@ -99,7 +99,7 @@ test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT', async t => {
   const fastify = Fastify()
 
   fastify.get('/', { handlerTimeout: 50 }, async () => {
-    await setTimeout(500)
+    await sleep(500)
     return 'too late'
   })
 
@@ -128,7 +128,7 @@ test('route-level handlerTimeout overrides server default', async t => {
   const fastify = Fastify({ handlerTimeout: 5000 })
 
   fastify.get('/slow', { handlerTimeout: 50 }, async () => {
-    await setTimeout(500)
+    await sleep(500)
     return 'too late'
   })
 
@@ -169,7 +169,7 @@ test('request.signal aborts when timeout fires with reason', async t => {
     request.signal.addEventListener('abort', () => {
       signalReason = request.signal.reason
     })
-    await setTimeout(500)
+    await sleep(500)
     return 'too late'
   })
 
@@ -435,7 +435,7 @@ test('reply.hijack() clears timeout timer', async t => {
   fastify.get('/', { handlerTimeout: 100 }, async (request, reply) => {
     reply.hijack()
     // Write after the original timeout would have fired
-    await setTimeout(200)
+    await sleep(200)
     reply.raw.writeHead(200, { 'Content-Type': 'text/plain' })
     reply.raw.end('hijacked response')
   })
@@ -461,7 +461,7 @@ test('route-level errorHandler receives FST_ERR_HANDLER_TIMEOUT', async t => {
       reply.code(504).send({ custom: 'timeout' })
     }
   }, async () => {
-    await setTimeout(500)
+    await sleep(500)
     return 'too late'
   })
 
@@ -542,10 +542,10 @@ test('client disconnect aborts request.signal', async t => {
   await new Promise((resolve) => {
     const client = net.connect(address.port, () => {
       client.write('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
-      globalThis.setTimeout(() => {
+      setTimeout(() => {
         client.destroy()
         // Give the server time to process the close event
-        globalThis.setTimeout(resolve, 100)
+        setTimeout(resolve, 100)
       }, 50)
     })
   })
@@ -560,7 +560,7 @@ test('does not abort when request body stream closes', async t => {
 
   fastify.post('/', { handlerTimeout: 100 }, async (request) => {
     t.assert.strictEqual(request.signal.aborted, false)
-    await setTimeout(0, undefined, { signal: request.signal })
+    await sleep(0, undefined, { signal: request.signal })
     return 'ok'
   })
 
@@ -585,7 +585,7 @@ test('no double-send when handler completes near timeout boundary', async t => {
 
   fastify.get('/', { handlerTimeout: 50 }, async (request, reply) => {
     // Respond just before timeout
-    await setTimeout(40)
+    await sleep(40)
     reply.send({ ok: true })
     return reply
   })
@@ -606,7 +606,7 @@ test('routes inherit server-level handlerTimeout', async t => {
   fastify.get('/', async (request) => {
     // Verify the signal is present (inherited from server default)
     t.assert.ok(request.signal instanceof AbortSignal)
-    await setTimeout(500)
+    await sleep(500)
     return 'too late'
   })
 

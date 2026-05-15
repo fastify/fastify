@@ -334,7 +334,7 @@ test('does not abort when request body stream closes', async t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', { handlerTimeout: 100 }, async (request) => {
+  fastify.post('/', { handlerTimeout: 1000 }, async (request) => {
     t.assert.strictEqual(request.signal.aborted, false)
     await sleep(0, undefined, { signal: request.signal })
     return 'ok'

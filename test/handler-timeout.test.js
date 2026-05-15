@@ -353,6 +353,30 @@ test('does not abort when request body stream closes', async t => {
   t.assert.strictEqual(res.status, 200)
 })
 
+test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT for POST with body', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.post('/', { handlerTimeout: 50 }, async () => {
+    await sleep(500)
+    return 'too late'
+  })
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const { port } = fastify.server.address()
+  const res = await fetch(`http://127.0.0.1:${port}/`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ test: true })
+  })
+
+  t.assert.strictEqual(res.status, 503)
+  const payload = await res.json()
+  t.assert.strictEqual(payload.code, 'FST_ERR_HANDLER_TIMEOUT')
+})
+
 // --- Race: handler completes just as timeout fires ---
 
 test('no double-send when handler completes near timeout boundary', async t => {

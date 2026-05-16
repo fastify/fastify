@@ -23,7 +23,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<
           (hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void
             >(reply.writeEarlyHints)
-  expectType<((...args: [payload?: unknown]) => FastifyReply)>(reply.send)
+  expectType<((...args: [payload?: unknown | PromiseLike<unknown>]) => FastifyReply)>(reply.send)
   expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
   expectAssignable<(values: { [key: string]: any }) => FastifyReply>(reply.headers)
   expectAssignable<(key: string) => number | string | string[] | undefined>(reply.getHeader)
@@ -120,9 +120,9 @@ interface ReplyHttpCodesWithNoContent {
 }
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
-  // When Reply type is specified, send() requires a payload argument
-  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
-  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.code(100).send)
+  // When Reply type is specified, send() requires a payload argument (direct value or Promise)
+  expectType<((...args: [payload: ReplyPayload['Reply'] | PromiseLike<ReplyPayload['Reply']>]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
+  expectType<((...args: [payload: ReplyPayload['Reply'] | PromiseLike<ReplyPayload['Reply']>]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.code(100).send)
 }
 
 const server = fastify()
@@ -240,6 +240,20 @@ server.get<ReplyVoid>('/get-void-send-empty', async function handler (request, r
 server.get<ReplyUndefined>('/get-undefined-send-empty', async function handler (request, reply) {
   reply.send()
 })
+
+// Test: send() accepts a Promise<T> when Reply type is specified (matches runtime behavior via wrap-thenable)
+server.get<ReplyPayload>('/get-generic-send-promise', async function handler (request, reply) {
+  reply.send(Promise.resolve({ test: true }))
+})
+// Test: send() accepts Promise with async function that resolves the payload
+server.get<ReplyPayload>('/get-generic-send-async', async function handler (request, reply) {
+  const fetchData = async (): Promise<ReplyPayload['Reply']> => ({ test: true })
+  reply.send(fetchData())
+})
+// Test: send() with Promise should error when Promise resolves to wrong type
+expectError(server.get<ReplyPayload>('/get-generic-send-promise-wrong-type', async function handler (request, reply) {
+  reply.send(Promise.resolve({ foo: 'bar' }))
+}))
 
 // Issue #5534 scenario: HTTP status codes with 204 No Content
 server.get<ReplyHttpCodesWithNoContent>('/get-http-codes-no-content', async function handler (request, reply) {

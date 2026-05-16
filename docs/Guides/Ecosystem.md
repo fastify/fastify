@@ -206,7 +206,7 @@ section.
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
-- [`@joggr/fastify-prisma`](https://github.com/zrosenbauer/fastify-prisma)
+- [`@zrosenbauer/fastify-prisma`](https://github.com/zrosenbauer/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
 - [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
   A Fastify plugin for rendering Svelte components with support for SSR

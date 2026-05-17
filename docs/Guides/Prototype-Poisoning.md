@@ -7,7 +7,7 @@
 ## History behind prototype poisoning
 <a id="pp"></a>
 
-Based on the article by Eran Hammer,the issue is created by a web security bug.
+Based on the article by Eran Hammer, the issue is created by a web security bug.
 It is also a perfect illustration of the efforts required to maintain
 open-source software and the limitations of existing communication channels.
 

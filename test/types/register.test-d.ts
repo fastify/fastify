@@ -1,4 +1,4 @@
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectType } from 'tsd'
 import { IncomingMessage, Server, ServerResponse } from 'node:http'
 import { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'node:http2'
 import fastify, { FastifyInstance, FastifyError, FastifyBaseLogger, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions, RawServerDefault } from '../../fastify'
@@ -22,10 +22,14 @@ interface TestOptions extends FastifyPluginOptions {
 }
 
 // Type validation
-expectError(fastify().register(testPluginOptsAsync, { prefix: 1 }))
-expectError(fastify().register(testPluginOptsAsync, { logLevel: () => ({}) }))
-expectError(fastify().register(testPluginOptsAsync, { logSerializers: () => ({}) }))
-expectError(fastify().register({}))
+// @ts-expect-error  No overload matches this call.
+fastify().register(testPluginOptsAsync, { prefix: 1 })
+// @ts-expect-error  No overload matches this call.
+fastify().register(testPluginOptsAsync, { logLevel: () => ({}) })
+// @ts-expect-error  No overload matches this call.
+fastify().register(testPluginOptsAsync, { logSerializers: () => ({}) })
+// @ts-expect-error  No overload matches this call.
+fastify().register({})
 
 expectAssignable<FastifyInstance>(
   fastify().register(
@@ -69,10 +73,10 @@ expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOpts))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsAsync))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsWithType))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginOptsWithTypeAsync))
-// @ts-expect-error
+// @ts-expect-error  No overload matches this call.
 serverWithHttp2.register(testPluginWithHttp2)
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2, testOptions))
-// @ts-expect-error
+// @ts-expect-error  No overload matches this call.
 serverWithHttp2.register(testPluginWithHttp2Async)
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2Async, testOptions))
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginWithHttp2WithType))
@@ -125,10 +129,10 @@ expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPlu
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginOptsAsync))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginOptsWithType))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginOptsWithTypeAsync))
-// @ts-expect-error
+// @ts-expect-error  No overload matches this call.
 serverWithTypeProvider.register(testPluginWithTypeProvider)
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProvider, testOptions))
-// @ts-expect-error
+// @ts-expect-error  No overload matches this call.
 serverWithTypeProvider.register(testPluginWithTypeProviderAsync)
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderAsync, testOptions))
 expectAssignable<ServerWithTypeProvider>(serverWithTypeProvider.register(testPluginWithTypeProviderWithType))
@@ -195,17 +199,13 @@ expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogge
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsAsync))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithType))
 expectAssignable<ServerWithTypeProviderAndLogger>(serverWithTypeProviderAndLogger.register(testPluginOptsWithTypeAsync))
-expectAssignable<ServerWithTypeProviderAndLogger>(
-  // @ts-expect-error
-  serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger)
-)
+// @ts-expect-error  No overload matches this call.
+serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger)
 expectAssignable<ServerWithTypeProviderAndLogger>(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLogger, testOptions)
 )
-expectAssignable<ServerWithTypeProviderAndLogger>(
-  // @ts-expect-error
-  serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync)
-)
+// @ts-expect-error  No overload matches this call.
+serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync)
 expectAssignable<ServerWithTypeProviderAndLogger>(
   serverWithTypeProviderAndLogger.register(testPluginWithTypeProviderAndLoggerAsync, testOptions)
 )

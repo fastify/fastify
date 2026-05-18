@@ -251,7 +251,7 @@ server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async fu
 const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   // accept is a header provided by @types/node
   reply.getHeader('accept')
-  reply.getHeaders().accept
+  expect(reply.getHeaders()).type.toHaveProperty('accept')
   reply.hasHeader('accept')
   reply.header('accept', 'test')
   reply.headers({ accept: 'test' })
@@ -260,7 +260,7 @@ const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   // x-fastify-test is not a header provided by @types/node
   // and should not result in a typing error
   reply.getHeader('x-fastify-test')
-  reply.getHeaders()['x-fastify-test']
+  expect(reply.getHeaders()).type.toHaveProperty('x-fastify-test')
   reply.hasHeader('x-fastify-test')
   reply.header('x-fastify-test', 'test')
   reply.headers({ 'x-fastify-test': 'test' })

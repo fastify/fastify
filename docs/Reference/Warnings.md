@@ -14,7 +14,7 @@
 
 ### Warnings In Fastify
 
-Fastify uses Node.js's [warning event](https://nodejs.org/api/process.html#event-warning)
+Fastify uses the Node.js [warning event](https://nodejs.org/api/process.html#event-warning)
 API to notify users of deprecated features and coding mistakes. Fastify's
 warnings are recognizable by the `FSTWRN` and `FSTDEP` prefixes. When
 encountering such a warning, it is highly recommended to determine the cause
@@ -22,7 +22,7 @@ using the [`--trace-warnings`](https://nodejs.org/api/cli.html#trace-warnings)
 and [`--trace-deprecation`](https://nodejs.org/api/cli.html#trace-deprecation)
 flags. These produce stack traces pointing to where the issue occurs in the
 application's code. Issues opened about warnings without this information will
-be closed due to lack of details.
+be closed.
 
 Warnings can also be disabled, though it is not recommended. If necessary, use
 one of the following methods:
@@ -33,15 +33,14 @@ one of the following methods:
 
 For more information on disabling warnings, see [Node's documentation](https://nodejs.org/api/cli.html).
 
-Disabling warnings may cause issues when upgrading Fastify versions. Only
-experienced users should consider disabling warnings.
+Disabling warnings is not recommended and may cause unexpected behavior.
 
 ### Fastify Warning Codes
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTWRN001">FSTWRN001</a> | The specified schema for a route is missing. This may indicate the schema is not well specified. | Check the schema for the route. | [#4647](https://github.com/fastify/fastify/pull/4647) |
-| <a id="FSTWRN002">FSTWRN002</a> | The %s plugin being registered mixes async and callback styles, which will result in an error in `fastify@5`. | Do not mix async and callback style. | [#5139](https://github.com/fastify/fastify/pull/5139) |
+| <a id="FSTWRN002">FSTWRN002</a> | The %s plugin being registered mixes async and callback styles, which results in an error in `fastify@5` and later. | Do not mix async and callback styles. | [#5139](https://github.com/fastify/fastify/pull/5139) |
 
 
 ### Fastify Deprecation Codes

@@ -211,16 +211,16 @@ fastify.setErrorHandler((error, request, reply) => {
 
 fastify.register((app, options, next) => {
   // Register child error handler
-  fastify.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error, request, reply) => {
     throw error
   })
 
-  fastify.get('/bad', async () => {
+  app.get('/bad', async () => {
     // Throws a non-Error type, 'bar'
     throw 'foo'
   })
 
-  fastify.get('/good', async () => {
+  app.get('/good', async () => {
     // Throws an Error instance, 'bar'
     throw new Error('bar')
   })

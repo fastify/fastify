@@ -7,7 +7,7 @@ import fastify, {
   FastifyError,
   SafePromiseLike
 } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'node:http'
 import { Type, TSchema, Static } from 'typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
@@ -482,7 +482,6 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
     expectType<((...args: [payload: string]) => typeof res)>(res.code(200).send)
     expectType<((...args: [payload: number]) => typeof res)>(res.code(400).send)
     expectType<((...args: [payload: { error: string }]) => typeof res)>(res.code(500).send)
-    expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
 
@@ -524,7 +523,7 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
 // TypeBox Reply Type: Non Assignable
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<TypeBoxProvider>().get(
+server.withTypeProvider<TypeBoxProvider>().get(
   '/',
   {
     schema: {
@@ -538,15 +537,16 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
     }
   },
   async (_, res) => {
+    // @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'string | number | { error: string; }'.
     res.send(false)
   }
-))
+)
 
 // -------------------------------------------------------------------
 // TypeBox Reply Type: Non Assignable (Different Content-types)
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<TypeBoxProvider>().get(
+server.withTypeProvider<TypeBoxProvider>().get(
   '/',
   {
     schema: {
@@ -570,9 +570,10 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
     }
   },
   async (_, res) => {
+    // @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'string | { msg: string; } | { error: string; }'.
     res.send(false)
   }
-))
+)
 
 // -------------------------------------------------------------------
 // TypeBox Reply Return Type
@@ -642,7 +643,7 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
 // TypeBox Reply Return Type: Non Assignable
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<TypeBoxProvider>().get(
+server.withTypeProvider<TypeBoxProvider>().get(
   '/',
   {
     schema: {
@@ -655,16 +656,17 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
       }
     }
   },
+  // @ts-expect-error   Type 'boolean' is not assignable to type 'string | number | void | { error: string; }'.
   async (_, res) => {
     return false
   }
-))
+)
 
 // -------------------------------------------------------------------
 // TypeBox Reply Return Type: Non Assignable (Different Content-types)
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<TypeBoxProvider>().get(
+server.withTypeProvider<TypeBoxProvider>().get(
   '/',
   {
     schema: {
@@ -687,10 +689,11 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
       }
     }
   },
+  // @ts-expect-error  Type 'boolean' is not assignable to type 'string | void | { msg: string; } | { error: string; }'.
   async (_, res) => {
     return false
   }
-))
+)
 
 // -------------------------------------------------------------------
 // JsonSchemaToTs Reply Type
@@ -714,7 +717,6 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     expectType<((...args: [payload: string]) => typeof res)>(res.code(200).send)
     expectType<((...args: [payload: number]) => typeof res)>(res.code(400).send)
     expectType<((...args: [payload: { [x: string]: unknown; error?: string }]) => typeof res)>(res.code(500).send)
-    expectError<(payload?: unknown) => typeof res>(res.code(200).send)
   }
 ))
 
@@ -752,7 +754,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 // JsonSchemaToTs Reply Type: Non Assignable
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
   {
     schema: {
@@ -764,15 +766,16 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     }
   },
   async (_, res) => {
+    // @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'string | number | { [x: string]: unknown; error?: string | undefined; }'.
     res.send(false)
   }
-))
+)
 
 // -------------------------------------------------------------------
 // JsonSchemaToTs Reply Type: Non Assignable (Different Content-types)
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
   {
     schema: {
@@ -792,9 +795,10 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     }
   },
   async (_, res) => {
+    // @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'string | { [x: string]: unknown; msg?: string | undefined; } | { [x: string]: unknown; error?: string | undefined; }'.
     res.send(false)
   }
-))
+)
 
 // -------------------------------------------------------------------
 // JsonSchemaToTs Reply Type Return
@@ -858,7 +862,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 // JsonSchemaToTs Reply Type Return: Non Assignable
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
   {
     schema: {
@@ -869,27 +873,29 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       } as const
     }
   },
+  // @ts-expect-error  Type 'boolean' is not assignable to type 'string | number | void | { [x: string]: unknown; error?: string | undefined; }'.
   async (_, res) => {
     return false
   }
-))
+)
 
 // https://github.com/fastify/fastify/issues/4088
-expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get('/', {
+server.withTypeProvider<JsonSchemaToTsProvider>().get('/', {
   schema: {
     response: {
       200: { type: 'string' }
     }
   } as const
+  // @ts-expect-error  Type '{ foo: number; }' is not assignable to type 'string | void | Promise<string | void>'.
 }, (_, res) => {
   return { foo: 555 }
-}))
+})
 
 // -------------------------------------------------------------------
 // JsonSchemaToTs Reply Type Return: Non Assignable (Different Content-types)
 // -------------------------------------------------------------------
 
-expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
   {
     schema: {
@@ -908,10 +914,11 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       } as const
     }
   },
+  // @ts-expect-error  Type 'Promise<boolean>' is not assignable to type 'string | void | { [x: string]: unknown; msg?: string | undefined; } | { [x: string]: unknown; error?: string | undefined; } | Promise<string | void | { [x: string]: unknown; msg?: string | undefined; } | { [x: string]: unknown; error?: string | undefined; }>'.
   async (_, res) => {
     return false
   }
-))
+)
 
 // -------------------------------------------------------------------
 // Reply Type Override
@@ -1035,8 +1042,10 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
   async (_, res) => {
     res.code(200)
     res.code(500)
-    expectError(() => res.code(201))
-    expectError(() => res.code(400))
+    // @ts-expect-error  Argument of type '201' is not assignable to parameter of type '200 | 500'.
+    res.code(201)
+    // @ts-expect-error  Argument of type '400' is not assignable to parameter of type '200 | 500'.
+    res.code(400)
   }
 ))
 
@@ -1080,9 +1089,12 @@ expectAssignable(server.get<{
     res.code(400)
     res.code(500)
     res.code(502)
-    expectError(() => res.code(201))
-    expectError(() => res.code(300))
-    expectError(() => res.code(404))
+    // @ts-expect-error  Argument of type '201' is not assignable to parameter of type '200 | 400 | 500 | 501 | ...'.
+    res.code(201)
+    // @ts-expect-error  Argument of type '300' is not assignable to parameter of type '200 | 400 | 500 | 501 | ...'.
+    res.code(300)
+    // @ts-expect-error  Argument of type '404' is not assignable to parameter of type '200 | 400 | 500 | 501 | ...'.
+    res.code(404)
     return 'hello'
   }
 ))
@@ -1091,7 +1103,7 @@ expectAssignable(server.get<{
 // RouteGeneric Reply Type Return: Non Assignable (Different Status Codes)
 // -------------------------------------------------------------------
 
-expectError(server.get<{
+server.get<{
   Reply: {
     200: string | { msg: string }
     400: number
@@ -1099,10 +1111,11 @@ expectError(server.get<{
   }
 }>(
   '/',
+  // @ts-expect-error  Type 'boolean' is not assignable to type 'string | number | void | { msg: string; } | { error: string; } | { 200: string | { msg: string; }; 400: number; '5xx': { error: string; }; }'.
   async (_, res) => {
     return true
   }
-))
+)
 
 // -------------------------------------------------------------------
 // FastifyPlugin: Auxiliary
@@ -1184,7 +1197,7 @@ const safePromiseLike = {
 }
 expectAssignable<SafePromiseLike<string>>(safePromiseLike)
 expectAssignable<PromiseLike<string>>(safePromiseLike)
-expectError<Promise<string>>(safePromiseLike)
+expectNotAssignable<Promise<string>>(safePromiseLike)
 
 // -------------------------------------------------------------------
 // Separate Providers

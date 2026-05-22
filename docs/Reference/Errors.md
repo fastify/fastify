@@ -74,6 +74,7 @@
     - [FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE](#fst_err_force_close_connections_idle_not_available)
     - [FST_ERR_DUPLICATED_ROUTE](#fst_err_duplicated_route)
     - [FST_ERR_BAD_URL](#fst_err_bad_url)
+    - [FST_ERR_MAX_PARAM_LENGTH](#fst_err_max_param_length)
     - [FST_ERR_ASYNC_CONSTRAINT](#fst_err_async_constraint)
     - [FST_ERR_INVALID_URL](#fst_err_invalid_url)
     - [FST_ERR_ROUTE_OPTIONS_NOT_OBJ](#fst_err_route_options_not_obj)
@@ -350,6 +351,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_force_close_connections_idle_not_available">FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE</a> | Cannot set forceCloseConnections to `idle` as your HTTP server does not support `closeIdleConnections` method. | Use a different value for `forceCloseConnections`. | [#3925](https://github.com/fastify/fastify/pull/3925) |
 | <a id="fst_err_duplicated_route">FST_ERR_DUPLICATED_ROUTE</a> | The HTTP method already has a registered controller for that URL. | Use a different URL or register the controller for another HTTP method. | [#2954](https://github.com/fastify/fastify/pull/2954) |
 | <a id="fst_err_bad_url">FST_ERR_BAD_URL</a> | The router received an invalid URL. | Use a valid URL. | [#2106](https://github.com/fastify/fastify/pull/2106) |
+| <a id="fst_err_max_param_length">FST_ERR_MAX_PARAM_LENGTH</a> | The router received an URL that exceed max param length. | Adjust the param length or increase the max param length to meet your needs. | [#2106](https://github.com/fastify/fastify/pull/6716) |
 | <a id="fst_err_async_constraint">FST_ERR_ASYNC_CONSTRAINT</a> | The router received an error when using asynchronous constraints. | - | [#4323](https://github.com/fastify/fastify/pull/4323) |
 | <a id="fst_err_invalid_url">FST_ERR_INVALID_URL</a> | URL must be a string. | Use a string for the URL. | [#3653](https://github.com/fastify/fastify/pull/3653) |
 | <a id="fst_err_route_options_not_obj">FST_ERR_ROUTE_OPTIONS_NOT_OBJ</a> | Options for the route must be an object. | Use an object for the route options. | [#4554](https://github.com/fastify/fastify/pull/4554) |

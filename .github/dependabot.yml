@@ -6,7 +6,13 @@ updates:
       # Prefix all commit messages with "chore: "
       prefix: "chore"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "npm"
@@ -15,20 +21,24 @@ updates:
       # Prefix all commit messages with "chore: "
       prefix: "chore"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    versioning-strategy: "increase-if-necessary"
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    ignore:
+      # TODO: remove ignore until neostandard support ESLint 10
+      - dependency-name: "eslint"
+      - dependency-name: "neostandard"
+      - dependency-name: "@stylistic/*"
     open-pull-requests-limit: 10
     groups:
-      # Production dependencies without breaking changes
+      # Production dependencies with breaking changes
       dependencies:
         dependency-type: "production"
-        update-types:
-        - "minor"
-        - "patch"
-      # Production dependencies with breaking changes
-      dependencies-major:
-        dependency-type: "production"
-        update-types:
-        - "major"
       # ESLint related dependencies
       dev-dependencies-eslint:
         patterns:

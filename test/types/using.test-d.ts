@@ -12,6 +12,3 @@ async function hasSymbolDispose () {
   expectAssignable<FastifyInstance>(app)
   expectAssignable<FastifyInstance[typeof Symbol.asyncDispose]>(app.close)
 }
-
-hasSymbolDisposeWithUsing()
-hasSymbolDispose()

@@ -1,4 +1,4 @@
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   ContextConfigDefault,
   FastifyContextConfig,
@@ -17,7 +17,7 @@ import fastify, {
 import { FastifyInstance } from '../../types/instance'
 import { FastifyBaseLogger } from '../../types/logger'
 import { FastifyReply } from '../../types/reply'
-import { FastifyRequest, RequestRouteOptions } from '../../types/request'
+import { FastifyRequest, RequestRouteOptions, ValidationFunction } from '../../types/request'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
 import { RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from '../../types/utils'
 
@@ -90,8 +90,14 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<AbortSignal>(request.signal)
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
   expectType<FastifyInstance>(request.server)
-  expectAssignable<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction>(request.getValidationFunction)
-  expectAssignable<(schema: { [key: string]: unknown }) => ExpectedGetValidationFunction>(request.getValidationFunction)
+  expectAssignable<
+    (httpPart: HTTPRequestPart) => ExpectedGetValidationFunction | undefined
+      >(request.getValidationFunction)
+  expectAssignable<
+    (schema: { [key: string]: unknown }) => ExpectedGetValidationFunction | undefined
+      >(request.getValidationFunction)
+  expectType<ValidationFunction | undefined>(request.getValidationFunction('body'))
+  expectType<ValidationFunction | undefined>(request.getValidationFunction({ type: 'object' }))
   expectAssignable<
           (input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpPart?: HTTPRequestPart) => boolean
             >(request.validateInput)
@@ -99,7 +105,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.getDecorator<string>('foo'))
   expectType<void>(request.setDecorator('foo', 'hello'))
   expectType<void>(request.setDecorator<string>('foo', 'hello'))
-  expectError(request.setDecorator<string>('foo', true))
+  // @ts-expect-error  Argument of type 'boolean' is not assignable to parameter of type 'string'.
+  request.setDecorator<string>('foo', true)
 }
 
 const getHandlerWithCustomLogger: RouteHandlerMethod<
@@ -166,18 +173,21 @@ const customLogger: CustomLoggerInterface = {
 }
 
 const serverWithCustomLogger = fastify({ loggerInstance: customLogger })
-expectError<
+
+expectNotAssignable<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & Promise<
   FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 >
 >(serverWithCustomLogger)
+
 expectAssignable<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & PromiseLike<
   FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 >
 >(serverWithCustomLogger)
+
 expectType<
 FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
 & SafePromiseLike<

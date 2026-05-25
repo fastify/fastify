@@ -583,41 +583,10 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
-If you want to keep using JSON Schema but swap out the validator, the
-[`fastify-ata`](https://github.com/ata-core/fastify-ata) plugin wires
-[`ata-validator`](https://github.com/ata-core/ata-validator) into Fastify
-through `setValidatorCompiler` and returns errors in the same shape as `ajv`,
-so `schemaErrorFormatter` keeps working unchanged:
-
-```js
-const fastify = require('fastify')()
-const fastifyAta = require('fastify-ata')
-
-fastify.register(fastifyAta)
-
-fastify.post('/the/url', {
-  schema: {
-    body: {
-      type: 'object',
-      properties: {
-        hello: { type: 'string' }
-      },
-      required: ['hello']
-    }
-  }
-}, handler)
-```
-
-The plugin validates without type coercion or additional-property removal by
-default. To align with Fastify's baseline `ajv` options, pass them when
-registering:
-
-```js
-fastify.register(fastifyAta, {
-  coerceTypes: true,
-  removeAdditional: true
-})
-```
+If you want to keep using JSON Schema but swap out the default validator,
+you can plug a different JSON Schema validator into Fastify through
+`setValidatorCompiler`. Community plugins that wire alternative JSON Schema
+validators are listed in the [Ecosystem](../Guides/Ecosystem.md).
 
 ##### Custom Validator Best Practices
 

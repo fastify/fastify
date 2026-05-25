@@ -211,13 +211,8 @@ app.addHook('preHandler', function (req, reply, done) {
 > ℹ️ Note:
 > Ensure serializers never throw errors, as this can cause the Node.js
 > process to exit. See the
-<<<<<<< HEAD
-> [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers) for
-> more information.
-=======
 > [Pino documentation](https://github.com/pinojs/pino/blob/main/docs/api.md#serializers)
 > for more information.
->>>>>>> 46ce7039 (docs: fix broken pino links and line length in logging docs)
 
 *Any logger other than Pino will ignore the `serializers` option.*
 
@@ -295,9 +290,4 @@ const fastify = Fastify({
 })
 ```
 
-<<<<<<< HEAD
-See the [Pino redaction documentation](https://getpino.io/#/docs/redaction) for
-more details.
-=======
 See https://github.com/pinojs/pino/blob/main/docs/redaction.md for more details.
->>>>>>> 46ce7039 (docs: fix broken pino links and line length in logging docs)

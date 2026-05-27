@@ -532,9 +532,11 @@ connections or Server-Sent Events streams that must be explicitly terminated for
 _It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.
 
+Hook functions are invoked with `this` bound to the associated Fastify instance.
+
 ```js
 // callback style
-fastify.addHook('preClose', (done) => {
+fastify.addHook('preClose', function (done) {
   // Some code
   done()
 })

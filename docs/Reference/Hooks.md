@@ -634,6 +634,8 @@ this hook is encapsulated.
 > ℹ️ Note:
 > This hook will not be called if a plugin is wrapped inside
 > [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
+
+Hook functions are invoked with `this` bound to the parent Fastify instance (the calling scope), while `instance` refers to the newly created child instance.
 ```js
 fastify.decorate('data', [])
 
@@ -651,7 +653,7 @@ fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 }, { prefix: '/hello' })
 
-fastify.addHook('onRegister', (instance, opts) => {
+fastify.addHook('onRegister', function (instance, opts) {
   // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated
@@ -956,3 +958,4 @@ channel.subscribe((msg) => {
   console.log(msg.request, msg.reply)
 })
 ```
+

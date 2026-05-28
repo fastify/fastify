@@ -3109,6 +3109,24 @@ test('onRegister hook should be called (encapsulation)', (t, testDone) => {
   })
 })
 
+test('onRegister this refers to parent instance', (t, done) => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addHook('onRegister', function (instance, opts) {
+    t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the parent Fastify instance')
+  })
+
+  fastify.register(function (instance, opts, done) {
+    done()
+  })
+
+  fastify.ready((err) => {
+    t.assert.ifError(err)
+    done()
+  })
+})
+
 test('early termination, onRequest', (t, testDone) => {
   t.plan(3)
 
@@ -3576,3 +3594,4 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
     sleep(500).then(() => socket.destroy())
   })
 })
+

@@ -564,6 +564,7 @@ fastify.addHook('preClose', async () => {
 Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
+Hook functions are invoked with `this` bound to the associated Fastify instance.
 
 ```js
 fastify.addHook('onRoute', (routeOptions) => {

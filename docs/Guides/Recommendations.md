@@ -7,6 +7,7 @@ This document contains a set of recommendations when using Fastify.
 - [Use A Reverse Proxy](#use-a-reverse-proxy)
   - [HAProxy](#haproxy)
   - [Nginx](#nginx)
+- [Common Causes Of Performance Degradation](#common-causes-of-performance-degradation)
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
 - [Running Multiple Instances](#multiple)
@@ -112,7 +113,7 @@ frontend proxy-ssl
 
   # Here we define rule pairs to handle static resources. Any incoming request
   # that has a path starting with `/static`, e.g.
-  # `https://one.example.com/static/foo.jpeg`, will be redirected to the
+  # `https://one.fastify.example/static/foo.jpeg`, will be redirected to the
   # static resources server.
   acl is_static path -i -m beg /static
   use_backend static-backend if is_static
@@ -122,10 +123,10 @@ frontend proxy-ssl
   # the incoming hostname and define a boolean indicating if it is a match.
   # The `use_backend` line is used to direct the traffic if the boolean is
   # true.
-  acl example1 hdr_sub(Host) one.example.com
+  acl example1 hdr_sub(Host) one.fastify.example
   use_backend example1-backend if example1
 
-  acl example2 hdr_sub(Host) two.example.com
+  acl example2 hdr_sub(Host) two.fastify.example
   use_backend example2-backend if example2
 
   # Finally, we have a fallback redirect if none of the requested hosts
@@ -144,14 +145,14 @@ backend default-server
   # requests over TLS, but that is outside the scope of this example.
   server server1 10.10.10.2:80
 
-# This backend configuration will serve requests for `https://one.example.com`
+# This backend configuration will serve requests for `https://one.fastify.example`
 # by proxying requests to three backend servers in a round-robin manner.
 backend example1-backend
   server example1-1 10.10.11.2:80
   server example1-2 10.10.11.2:80
   server example2-2 10.10.11.3:80
 
-# This one serves requests for `https://two.example.com`
+# This one serves requests for `https://two.fastify.example`
 backend example2-backend
   server example2-1 10.10.12.2:80
   server example2-2 10.10.12.2:80
@@ -281,6 +282,30 @@ server {
 ```
 
 [nginx]: https://nginx.org/
+
+## Common Causes Of Performance Degradation
+
+These patterns can increase latency or reduce throughput in production:
+
+- Prefer static or simple parametric routes on hot paths. RegExp routes are
+  expensive, and routes with many parameters can also hurt router performance.
+  See [Routes - Url building](../Reference/Routes.md#url-building).
+- Use route constraints carefully. Version constraints can degrade router
+  performance, and asynchronous custom constraints should be treated as a last
+  resort. See [Routes - Constraints](../Reference/Routes.md#constraints).
+- Prefer Fastify plugins/hooks over generic middleware when possible. Fastify's
+  middleware adapters work, but native integrations are typically better for
+  performance-sensitive paths. See [Middleware](../Reference/Middleware.md).
+- Define response schemas to speed up JSON serialization. See
+  [Getting Started - Serialize your data](./Getting-Started.md#serialize-data).
+- Keep Ajv `allErrors` disabled by default. Enable it only when detailed
+  validation feedback is needed (for example, form-heavy APIs), and avoid it
+  on latency-sensitive endpoints. When `allErrors: true` is enabled, validation
+  can do more work per request and make denial-of-service attacks easier on
+  untrusted inputs.
+  See also:
+  - [Validation and Serialization - Validator Compiler](../Reference/Validation-and-Serialization.md#schema-validator)
+  - [Ajv Security Risks of Trusted Schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
 
 ## Kubernetes
 <a id="kubernetes"></a>

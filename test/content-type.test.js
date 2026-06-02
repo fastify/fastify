@@ -74,6 +74,44 @@ describe('ContentType class', () => {
     found = new ContentType('foo/π; param=1')
     t.assert.equal(found.isEmpty, true)
     t.assert.equal(found.isValid, false)
+
+    found = new ContentType('application/json<script>alert(1)</script>')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
+
+    found = new ContentType('application/json/extra/slashes')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
+
+    found = new ContentType('application/json(garbage)')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
+
+    found = new ContentType('application/json@evil')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
+
+    found = new ContentType('application/json\x00garbage')
+    t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.isValid, false)
+  })
+
+  test('subtype with multiple fields validates as incorrect', (t) => {
+    let found = new ContentType('application/json whatever')
+    t.assert.equal(found.isValid, false)
+    t.assert.equal(found.isEmpty, true)
+
+    found = new ContentType('application/    json whatever')
+    t.assert.equal(found.isValid, false)
+    t.assert.equal(found.isEmpty, true)
+
+    found = new ContentType('application/json whatever; foo=bar')
+    t.assert.equal(found.isValid, false)
+    t.assert.equal(found.isEmpty, true)
+
+    found = new ContentType('application/    json whatever; foo=bar')
+    t.assert.equal(found.isValid, false)
+    t.assert.equal(found.isEmpty, true)
   })
 
   test('returns a plain media type instance', (t) => {

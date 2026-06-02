@@ -540,7 +540,7 @@ and [#4682](https://github.com/fastify/fastify/issues/4682) for more information
 The `getDefaultRoute` and `setDefaultRoute` methods have been removed in v5.
 
 See [#4485](https://github.com/fastify/fastify/pull/4485)
-and [#4480](https://github.com/fastify/fastify/pull/4485)
+and [#4480](https://github.com/fastify/fastify/pull/4480)
 for more information.
 This was already deprecated in v4 as `FSTDEP014`,
 so you should have already updated your code.
@@ -550,7 +550,7 @@ so you should have already updated your code.
 The updated AJV compiler updates `ajv-formats` which now
 enforce the use of timezone in `time` and `date-time` format.
 A workaround is to use `iso-time` and `iso-date-time` formats
-which support an optional timezone for backwards compatibility.  
+which support an optional timezone for backwards compatibility.
 See the
 [full discussion](https://github.com/fastify/fluent-json-schema/issues/267).
 

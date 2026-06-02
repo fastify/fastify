@@ -214,7 +214,7 @@ test('Request with trust proxy', t => {
   t.plan(18)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'fastify.test'
   }
   const req = {
     method: 'GET',
@@ -257,7 +257,7 @@ test('Request with trust proxy', t => {
   t.assert.strictEqual(request.log, 'log')
   t.assert.strictEqual(request.ip, '2.2.2.2')
   t.assert.deepStrictEqual(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
-  t.assert.strictEqual(request.host, 'example.com')
+  t.assert.strictEqual(request.host, 'fastify.test')
   t.assert.strictEqual(request.body, undefined)
   t.assert.strictEqual(request.method, 'GET')
   t.assert.strictEqual(request.url, '/')
@@ -272,7 +272,7 @@ test('Request with trust proxy, encrypted', t => {
   t.plan(2)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'fastify.test'
   }
   const req = {
     method: 'GET',
@@ -377,7 +377,7 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   t.plan(2)
   const headers = {
     'x-forwarded-for': ' 2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com',
+    'x-forwarded-host': 'fastify.test',
     host: 'hostname'
   }
   const req = {
@@ -390,13 +390,13 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.assert.ok(request instanceof TpRequest)
-  t.assert.strictEqual(request.host, 'example.com')
+  t.assert.strictEqual(request.host, 'fastify.test')
 })
 
 test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
   t.plan(3)
   const headers = {
-    'x-forwarded-host': 'example2.com, example.com',
+    'x-forwarded-host': 'example2.com, fastify.test',
     'x-forwarded-proto': 'http, https'
   }
   const req = {
@@ -409,7 +409,7 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.assert.ok(request instanceof TpRequest)
-  t.assert.strictEqual(request.host, 'example.com')
+  t.assert.strictEqual(request.host, 'fastify.test')
   t.assert.strictEqual(request.protocol, 'https')
 })
 
@@ -417,7 +417,7 @@ test('Request with trust proxy - plain', t => {
   t.plan(1)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'fastify.test'
   }
   const req = {
     method: 'GET',
@@ -487,11 +487,13 @@ test('Request with undefined socket', t => {
   t.assert.ok(request.compileValidationSchema instanceof Function)
 })
 
-test('Request with trust proxy and undefined socket', t => {
-  t.plan(1)
+test('Request with trust proxy and undefined socket does not trust x-forwarded-host/proto', t => {
+  t.plan(2)
   const headers = {
+    host: 'hostname',
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'example.com'
+    'x-forwarded-host': 'fastify.test',
+    'x-forwarded-proto': 'https'
   }
   const req = {
     method: 'GET',
@@ -502,5 +504,27 @@ test('Request with trust proxy and undefined socket', t => {
 
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'hostname')
+  t.assert.deepStrictEqual(request.protocol, undefined)
+})
+
+test('Request with trust proxy and null socket does not trust x-forwarded-host/proto', t => {
+  t.plan(2)
+  const headers = {
+    host: 'hostname',
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    'x-forwarded-host': 'fastify.test',
+    'x-forwarded-proto': 'https'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: null,
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'hostname')
   t.assert.deepStrictEqual(request.protocol, undefined)
 })

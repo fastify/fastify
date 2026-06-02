@@ -692,11 +692,11 @@ test('plain string with custom json content type should NOT be serialized as jso
   const customSamples = {
     collectionjson: {
       mimeType: 'application/vnd.collection+json',
-      sample: '{"collection":{"version":"1.0","href":"http://api.example.com/people/"}}'
+      sample: '{"collection":{"version":"1.0","href":"http://api.fastify.test/people/"}}'
     },
     hal: {
       mimeType: 'application/hal+json',
-      sample: '{"_links":{"self":{"href":"https://api.example.com/people/1"}},"name":"John Doe"}'
+      sample: '{"_links":{"self":{"href":"https://api.fastify.test/people/1"}},"name":"John Doe"}'
     },
     jsonapi: {
       mimeType: 'application/vnd.api+json',
@@ -777,11 +777,11 @@ test('non-string with custom json content type SHOULD be serialized as json', as
   const customSamples = {
     collectionjson: {
       mimeType: 'application/vnd.collection+json',
-      sample: JSON.parse('{"collection":{"version":"1.0","href":"http://api.example.com/people/"}}')
+      sample: JSON.parse('{"collection":{"version":"1.0","href":"http://api.fastify.test/people/"}}')
     },
     hal: {
       mimeType: 'application/hal+json',
-      sample: JSON.parse('{"_links":{"self":{"href":"https://api.example.com/people/1"}},"name":"John Doe"}')
+      sample: JSON.parse('{"_links":{"self":{"href":"https://api.fastify.test/people/1"}},"name":"John Doe"}')
     },
     jsonapi: {
       mimeType: 'application/vnd.api+json',

@@ -399,8 +399,9 @@ fastify.register(async function (fastify) {
 })
 ```
 
-> ℹ️ Note: For TypeScript users, `getDecorator` supports generic type parameters.
-> See the [TypeScript documentation](/docs/Reference/TypeScript.md) for
+> ℹ️ Note:
+> For TypeScript users, `getDecorator` supports generic type parameters.
+> See the [TypeScript documentation](./TypeScript.md) for
 > advanced typing examples.
 
 #### `setDecorator(name, value)`
@@ -429,6 +430,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 })
 ```
 
-> ℹ️ Note: For TypeScript users, see the
-> [TypeScript documentation](/docs/Reference/TypeScript.md) for advanced
+> ℹ️ Note:
+> For TypeScript users, see the
+> [TypeScript documentation](./TypeScript.md) for advanced
 > typing examples using `setDecorator<T>`.

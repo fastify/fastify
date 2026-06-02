@@ -170,3 +170,11 @@ out.tap
 test/https/fastify.cert
 test/https/fastify.key
 /test/types/import.js
+
+# Agents files
+CLAUDE.md
+AGENTS.md
+.agents/
+.agent
+.claude
+.pi

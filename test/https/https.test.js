@@ -121,7 +121,7 @@ test('https - headers', async (t) => {
     const result = await request('https://localhost:' + fastify.server.address().port, {
       method: 'GET',
       headers: {
-        host: 'example.com'
+        host: 'fastify.test'
       },
       dispatcher: new Agent({
         connect: {
@@ -131,6 +131,6 @@ test('https - headers', async (t) => {
     })
 
     t.assert.strictEqual(result.statusCode, 200)
-    t.assert.deepStrictEqual(await result.body.json(), { hello: 'world', hostname: 'example.com', port: null })
+    t.assert.deepStrictEqual(await result.body.json(), { hello: 'world', hostname: 'fastify.test', port: null })
   })
 })

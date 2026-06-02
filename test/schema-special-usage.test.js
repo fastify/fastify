@@ -288,7 +288,7 @@ test("serializer read validator's schemas", (t, testDone) => {
   const ajvInstance = new AJV()
 
   const baseSchema = {
-    $id: 'http://example.com/schemas/base',
+    $id: 'http://fastify.test/schemas/base',
     definitions: {
       hello: { type: 'string' }
     },
@@ -299,10 +299,10 @@ test("serializer read validator's schemas", (t, testDone) => {
   }
 
   const refSchema = {
-    $id: 'http://example.com/schemas/ref',
+    $id: 'http://fastify.test/schemas/ref',
     type: 'object',
     properties: {
-      hello: { $ref: 'http://example.com/schemas/base#/definitions/hello' }
+      hello: { $ref: 'http://fastify.test/schemas/base#/definitions/hello' }
     }
   }
 
@@ -332,7 +332,7 @@ test("serializer read validator's schemas", (t, testDone) => {
   fastify.get('/', {
     schema: {
       response: {
-        '2xx': ajvInstance.getSchema('http://example.com/schemas/ref').schema
+        '2xx': ajvInstance.getSchema('http://fastify.test/schemas/ref').schema
       }
     },
     handler (req, res) { res.send({ hello: 'world', evict: 'this' }) }
@@ -754,7 +754,7 @@ test('The default schema compilers should not be called when overwritten by the 
           200: { type: 'object' }
         }
       }
-    }, () => {})
+    }, () => { })
 
   await fastify.ready()
 })

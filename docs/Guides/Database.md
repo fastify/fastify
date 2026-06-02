@@ -149,34 +149,6 @@ fastify.listen({ port: 3000 }, err => {
 })
 ```
 
-### [LevelDB](https://github.com/fastify/fastify-leveldb)
-Install the plugin by running `npm i @fastify/leveldb`
-
-*Usage:*
-```javascript
-const fastify = require('fastify')()
-
-fastify.register(
-  require('@fastify/leveldb'),
-  { name: 'db' }
-)
-
-fastify.get('/foo', async function (req, reply) {
-  const val = await this.level.db.get(req.query.key)
-  return val
-})
-
-fastify.post('/foo', async function (req, reply) {
-  await this.level.db.put(req.body.key, req.body.value)
-  return { status: 'ok' }
-})
-
-fastify.listen({ port: 3000 }, err => {
-  if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
-})
-```
-
 ### Writing plugin for a database library
 We could write a plugin for a database
 library too (e.g. Knex, Prisma, or TypeORM).

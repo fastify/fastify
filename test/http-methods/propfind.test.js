@@ -6,7 +6,7 @@ fastify.addHttpMethod('PROPFIND', { hasBody: true })
 
 const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
         <D:propfind xmlns:D="DAV:">
-          <D:prop xmlns:R="http://ns.example.com/boxschema/">
+          <D:prop xmlns:R="http://ns.fastify.test/boxschema/">
             <R:bigbox/> <R:author/> <R:DingALing/> <R:Random/>
           </D:prop>
         </D:propfind>

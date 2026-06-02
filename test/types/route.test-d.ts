@@ -1,6 +1,6 @@
 import { FastifyError } from '@fastify/error'
 import * as http from 'node:http'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
 import { RequestPayload } from '../../types/hooks'
 import { FindMyWayFindResult } from '../../types/instance'
@@ -22,7 +22,6 @@ declare module '../../fastify' {
     includeMessage?: boolean;
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   interface FastifyRequest<
     RouteGeneric,
     RawServer,
@@ -52,6 +51,12 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
 
   return reply.send()
 }
+
+const asyncPreHandler = async (request: FastifyRequest) => {
+  expectType<FastifyRequest>(request)
+}
+
+fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
 
 fastify().get(
   '/',
@@ -437,12 +442,13 @@ expectType<FastifyInstance>(fastify().route({
   handler: routeHandler
 }))
 
-expectError(fastify().route({
+fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandler,
-  schemaErrorFormatter: 500 // Not a valid formatter
-}))
+  // @ts-expect-error  Type 'number' is not assignable to type 'SchemaErrorFormatter'.
+  schemaErrorFormatter: 500
+})
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
@@ -451,9 +457,10 @@ expectType<FastifyInstance>(fastify().route({
   schemaErrorFormatter: (errors, dataVar) => new Error('')
 }))
 
-expectError(fastify().route({
-  prefixTrailingSlash: true // Not a valid value
-}))
+fastify().route({
+  // @ts-expect-error  Type 'true' is not assignable to type '"slash" | "no-slash" | "both" | undefined'.
+  prefixTrailingSlash: true
+})
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
@@ -475,19 +482,19 @@ expectType<boolean>(fastify().hasRoute({
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: 'auth.fastify.dev' }
+  constraints: { host: 'auth.fastify.test' }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/ }
+  constraints: { host: /.*\.fastify\.test$/ }
 }))
 
 expectType<boolean>(fastify().hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { host: /.*\.fastify\.dev$/, version: '1.2.3' }
+  constraints: { host: /.*\.fastify\.test$/, version: '1.2.3' }
 }))
 
 expectType<boolean>(fastify().hasRoute({
@@ -511,10 +518,11 @@ expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>(
 )
 
 // we should not expose store
-expectError(fastify().findRoute({
+fastify().findRoute({
   url: '/',
   method: 'get'
-}).store)
+  // @ts-expect-error  Property 'store' does not exist on type
+}).store
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',

@@ -6,7 +6,7 @@ fastify.addHttpMethod('PROPPATCH', { hasBody: true })
 
 const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
         <D:propertyupdate xmlns:D="DAV:"
-          xmlns:Z="http://ns.example.com/standards/z39.50/">
+          xmlns:Z="http://ns.fastify.test/standards/z39.50/">
           <D:set>
             <D:prop>
               <Z:Authors>
@@ -33,9 +33,9 @@ test('shorthand - proppatch', t => {
           .code(207)
           .send(`<?xml version="1.0" encoding="utf-8" ?>
             <D:multistatus xmlns:D="DAV:"
-              xmlns:Z="http://ns.example.com/standards/z39.50/">
+              xmlns:Z="http://ns.fastify.test/standards/z39.50/">
               <D:response>
-                <D:href>http://www.example.com/bar.html</D:href>
+                <D:href>http://www.fastify.test/bar.html</D:href>
                 <D:propstat>
                   <D:prop>
                     <Z:Authors/>

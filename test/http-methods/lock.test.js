@@ -9,7 +9,7 @@ const bodySample = `<?xml version="1.0" encoding="utf-8" ?>
           <D:lockscope> <D:exclusive/> </D:lockscope>
           <D:locktype> <D:write/> </D:locktype>
           <D:owner>
-            <D:href>http://example.org/~ejw/contact.html</D:href>
+            <D:href>http://fastify.test/~ejw/contact.html</D:href>
           </D:owner>
         </D:lockinfo> `
 
@@ -34,14 +34,14 @@ test('can be created - lock', t => {
                   </D:lockscope>
                   <D:depth>infinity</D:depth>
                   <D:owner>
-                    <D:href>http://example.org/~ejw/contact.html</D:href>
+                    <D:href>http://fastify.test/~ejw/contact.html</D:href>
                   </D:owner>
                   <D:timeout>Second-604800</D:timeout>
                   <D:locktoken>
                     <D:href>urn:uuid:e71d4fae-5dec-22d6-fea5-00a0c91e6be4</:href>
                   </D:locktoken>
                   <D:lockroot>
-                    <D:href>http://example.com/workspace/webdav/proposal.oc</D:href>
+                    <D:href>http://fastify.test/workspace/webdav/proposal.oc</D:href>
                   </D:lockroot>
                 </D:activelock>
               </D:lockdiscovery>

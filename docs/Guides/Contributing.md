@@ -7,7 +7,7 @@ us.
 
 > ## Note
 > This is an informal guide. For full details, please review the formal
-> [CONTRIBUTING 
+> [CONTRIBUTING
 > document](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 > our [Developer Certificate of
 > Origin](https://en.wikipedia.org/wiki/Developer_Certificate_of_Origin).
@@ -117,7 +117,7 @@ mkdir -p /Applications/VSCodeFastify/code-portable-data/{user-data,extensions}
 
 Before continuing, we need to add the `code` command to your terminal's `PATH`.
 To do so, we will [manually add VSCode to the
-`PATH`](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).
+`PATH`](https://code.visualstudio.com/docs/setup/mac#_launch-vs-code-from-the-command-line).
 As outlined in that document, the instructions vary depending on your default
 shell, so you should follow the instructions in that guide as relates to your
 preferred shell. However, we will tweak them slightly by defining an alias

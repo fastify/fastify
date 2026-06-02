@@ -25,6 +25,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   // `url` can be `undefined` for instance when `request.is404` is true
   url: string | undefined;
   bodyLimit: number;
+  handlerTimeout: number;
   attachValidation: boolean;
   logLevel: string;
   exposeHeadRoute: boolean;
@@ -73,7 +74,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly ip: string;
   readonly ips?: string[];
   readonly host: string;
-  readonly port: number;
+  readonly port: number | null;
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;
@@ -82,9 +83,11 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
+  readonly signal: AbortSignal;
+  readonly mediaType: string | undefined;
 
-  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction
+  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined
+  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined
   compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
   validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
   validateInput(input: any, httpPart?: HTTPRequestPart): boolean

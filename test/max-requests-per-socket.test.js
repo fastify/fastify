@@ -17,20 +17,20 @@ test('maxRequestsPerSocket', (t, done) => {
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
       client.once('data', data => {
         t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
         t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.assert.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
         client.once('data', data => {
           t.assert.match(data.toString(), /Connection:\s*close/i)
           t.assert.match(data.toString(), /200 OK/i)
 
-          client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+          client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
           client.once('data', data => {
             t.assert.match(data.toString(), /Connection:\s*close/i)
@@ -58,21 +58,21 @@ test('maxRequestsPerSocket zero should behave same as null', (t, done) => {
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
       client.once('data', data => {
         t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
         t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.assert.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
         client.once('data', data => {
           t.assert.match(data.toString(), /Connection:\s*keep-alive/i)
           t.assert.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
           t.assert.match(data.toString(), /200 OK/i)
 
-          client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+          client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\n\r\n')
 
           client.once('data', data => {
             t.assert.match(data.toString(), /Connection:\s*keep-alive/i)

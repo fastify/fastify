@@ -3,7 +3,7 @@
 ## Lifecycle
 <a id="lifecycle"></a>
 
-This schema shows the internal lifecycle of Fastify.
+This diagram shows the internal lifecycle of Fastify.
 
 The right branch of each section shows the next phase of the lifecycle. The left
 branch shows the corresponding error code generated if the parent throws an
@@ -41,6 +41,12 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
+When [`handlerTimeout`](./Server.md#factory-handler-timeout) is configured, a
+timer starts after routing. If the response is not sent within the allowed time,
+`request.signal` is aborted and a `503 Service Unavailable` error is sent.
+The timer is cancelled when the response completes
+or when `reply.hijack()` is called.
+
 Before or during the `User Handler`, `reply.hijack()` can be called to:
 - Prevent Fastify from running subsequent hooks and the user handler
 - Prevent Fastify from sending the response automatically
@@ -56,8 +62,8 @@ When the user handles the request, the result may be:
 - In an async handler: it returns a payload or throws an `Error`
 - In a sync handler: it sends a payload or an `Error` instance
 
-If the reply was hijacked, all subsequent steps are skipped. Otherwise, when
-submitted, the data flow is as follows:
+If the reply is hijacked, all subsequent steps are skipped.
+Otherwise, the data flows as follows:
 
 ```
                         ★ schema validation Error
@@ -82,3 +88,13 @@ submitted, the data flow is as follows:
 - The [serializer compiler](./Server.md#setserializercompiler) if a JSON schema
   is set for the HTTP status code
 - The default `JSON.stringify` function
+
+## Shutdown Lifecycle
+<a id="shutdown-lifecycle"></a>
+
+When [`fastify.close()`](./Server.md#close) is called, the server goes through a
+graceful shutdown sequence involving
+[`preClose`](./Hooks.md#pre-close) hooks, connection draining, and
+[`onClose`](./Hooks.md#on-close) hooks. See the
+[`close`](./Server.md#close) method documentation for the full step-by-step
+lifecycle.

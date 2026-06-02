@@ -74,6 +74,7 @@
     - [FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE](#fst_err_force_close_connections_idle_not_available)
     - [FST_ERR_DUPLICATED_ROUTE](#fst_err_duplicated_route)
     - [FST_ERR_BAD_URL](#fst_err_bad_url)
+    - [FST_ERR_MAX_PARAM_LENGTH](#fst_err_max_param_length)
     - [FST_ERR_ASYNC_CONSTRAINT](#fst_err_async_constraint)
     - [FST_ERR_INVALID_URL](#fst_err_invalid_url)
     - [FST_ERR_ROUTE_OPTIONS_NOT_OBJ](#fst_err_route_options_not_obj)
@@ -82,8 +83,12 @@
     - [FST_ERR_ROUTE_MISSING_HANDLER](#fst_err_route_missing_handler)
     - [FST_ERR_ROUTE_METHOD_INVALID](#fst_err_route_method_invalid)
     - [FST_ERR_ROUTE_METHOD_NOT_SUPPORTED](#fst_err_route_method_not_supported)
+    - [FST_ERR_ROUTE_LOG_LEVEL_INVALID](#fst_err_route_log_level_invalid)
     - [FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED](#fst_err_route_body_validation_schema_not_supported)
     - [FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT](#fst_err_route_body_limit_option_not_int)
+    - [FST_ERR_HANDLER_TIMEOUT](#fst_err_handler_timeout)
+
+    - [FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT](#fst_err_route_handler_timeout_option_not_int)
     - [FST_ERR_ROUTE_REWRITE_NOT_STR](#fst_err_route_rewrite_not_str)
     - [FST_ERR_REOPENED_CLOSE_SERVER](#fst_err_reopened_close_server)
     - [FST_ERR_REOPENED_SERVER](#fst_err_reopened_server)
@@ -106,12 +111,12 @@
 #### Uncaught Errors
 In Node.js, uncaught errors can cause memory leaks, file descriptor leaks, and
 other major production issues.
-[Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were a failed
+[Domains](https://nodejs.org/en/blog/community/domain-postmortem) were a failed
 attempt to fix this.
 
 Given that it is not possible to process all uncaught errors sensibly, the best
 way to deal with them is to
-[crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly).
+[crash](https://nodejs.org/api/process.html#warning-using-uncaughtexception-correctly).
 
 #### Catching Errors In Promises
 When using promises, attach a `.catch()` handler synchronously.
@@ -309,7 +314,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_dec_missing_dependency">FST_ERR_DEC_MISSING_DEPENDENCY</a> | The decorator cannot be registered due to a missing dependency. | Register the missing dependency. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_after_start">FST_ERR_DEC_AFTER_START</a> | The decorator cannot be added after start. | Add the decorator before starting the server. | [#2128](https://github.com/fastify/fastify/pull/2128) |
 | <a id="fst_err_dec_reference_type">FST_ERR_DEC_REFERENCE_TYPE</a> | The decorator cannot be a reference type. | Define the decorator with a getter/setter interface or an empty decorator with a hook. | [#5462](https://github.com/fastify/fastify/pull/5462) |
-| <a id="fst_err_dec_undeclared">FST_ERR_DEC_UNDECLARED</a> | An attempt was made to access a decorator that has not been declared. | Declare the decorator before using it. | [#](https://github.com/fastify/fastify/pull/)
+| <a id="fst_err_dec_undeclared">FST_ERR_DEC_UNDECLARED</a> | An attempt was made to access a decorator that has not been declared. | Declare the decorator before using it. | [#5768](https://github.com/fastify/fastify/pull/5768)
 | <a id="fst_err_hook_invalid_type">FST_ERR_HOOK_INVALID_TYPE</a> | The hook name must be a string. | Use a string for the hook name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_handler">FST_ERR_HOOK_INVALID_HANDLER</a> | The hook callback must be a function. | Use a function for the hook callback. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_hook_invalid_async_handler">FST_ERR_HOOK_INVALID_ASYNC_HANDLER</a> | Async function has too many arguments. Async hooks should not use the `done` argument. | Remove the `done` argument from the async hook. | [#4367](https://github.com/fastify/fastify/pull/4367) |
@@ -346,6 +351,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_force_close_connections_idle_not_available">FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE</a> | Cannot set forceCloseConnections to `idle` as your HTTP server does not support `closeIdleConnections` method. | Use a different value for `forceCloseConnections`. | [#3925](https://github.com/fastify/fastify/pull/3925) |
 | <a id="fst_err_duplicated_route">FST_ERR_DUPLICATED_ROUTE</a> | The HTTP method already has a registered controller for that URL. | Use a different URL or register the controller for another HTTP method. | [#2954](https://github.com/fastify/fastify/pull/2954) |
 | <a id="fst_err_bad_url">FST_ERR_BAD_URL</a> | The router received an invalid URL. | Use a valid URL. | [#2106](https://github.com/fastify/fastify/pull/2106) |
+| <a id="fst_err_max_param_length">FST_ERR_MAX_PARAM_LENGTH</a> | The router received an URL that exceed max param length. | Adjust the param length or increase the max param length to meet your needs. | [#2106](https://github.com/fastify/fastify/pull/6716) |
 | <a id="fst_err_async_constraint">FST_ERR_ASYNC_CONSTRAINT</a> | The router received an error when using asynchronous constraints. | - | [#4323](https://github.com/fastify/fastify/pull/4323) |
 | <a id="fst_err_invalid_url">FST_ERR_INVALID_URL</a> | URL must be a string. | Use a string for the URL. | [#3653](https://github.com/fastify/fastify/pull/3653) |
 | <a id="fst_err_route_options_not_obj">FST_ERR_ROUTE_OPTIONS_NOT_OBJ</a> | Options for the route must be an object. | Use an object for the route options. | [#4554](https://github.com/fastify/fastify/pull/4554) |
@@ -354,8 +360,11 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_route_missing_handler">FST_ERR_ROUTE_MISSING_HANDLER</a> | Missing handler function for the route. | Add a handler function. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_method_invalid">FST_ERR_ROUTE_METHOD_INVALID</a> | Method is not a valid value. | Use a valid value for the method. | [#4750](https://github.com/fastify/fastify/pull/4750) |
 | <a id="fst_err_route_method_not_supported">FST_ERR_ROUTE_METHOD_NOT_SUPPORTED</a> | Method is not supported for the route. | Use a supported method. | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_route_log_level_invalid">FST_ERR_ROUTE_LOG_LEVEL_INVALID</a> | `logLevel` must match a configured logger level. | Use one of the configured logger levels for the route. | [#6523](https://github.com/fastify/fastify/pull/6523) |
 | <a id="fst_err_route_body_validation_schema_not_supported">FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED</a> | Body validation schema route is not supported. | Use a different different method for the route. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_body_limit_option_not_int">FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT</a> | `bodyLimit` option must be an integer. | Use an integer for the `bodyLimit` option. | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_handler_timeout">FST_ERR_HANDLER_TIMEOUT</a> | Request timed out. | Increase the `handlerTimeout` option or optimize the handler. | - |
+| <a id="fst_err_route_handler_timeout_option_not_int">FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT</a> | `handlerTimeout` option must be a positive integer. | Use a positive integer for the `handlerTimeout` option. | - |
 | <a id="fst_err_route_rewrite_not_str">FST_ERR_ROUTE_REWRITE_NOT_STR</a> | `rewriteUrl` needs to be of type `string`. | Use a string for the `rewriteUrl`. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_reopened_close_server">FST_ERR_REOPENED_CLOSE_SERVER</a> | Fastify has already been closed and cannot be reopened. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |
 | <a id="fst_err_reopened_server">FST_ERR_REOPENED_SERVER</a> | Fastify is already listening. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |

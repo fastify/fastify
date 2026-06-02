@@ -401,7 +401,7 @@ test('get test', async t => {
       path: '/port',
       method: 'GET',
       headers: {
-        host: 'example.com'
+        host: 'fastify.test'
       }
     })
 

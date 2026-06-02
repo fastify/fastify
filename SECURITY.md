@@ -6,13 +6,17 @@ project and its official plugins.
 ## Threat Model
 
 Fastify's threat model extends the
-[Node.js threat model](https://github.com/nodejs/node/blob/main/SECURITY.md#the-nodejs-threat-model).
+[Node.js security policy](https://github.com/nodejs/node/blob/main/SECURITY.md).
 
 **Trusted:** Application code (plugins, handlers, hooks, schemas), configuration,
 and the runtime environment.
 
 **Untrusted:** All network input (HTTP headers, body, query strings, URL
 parameters).
+
+Fastify assumes Node.js is running with `insecureHTTPParser: false` (the
+secure default). Deployments that enable `insecureHTTPParser: true` are
+outside Fastify's threat model.
 
 ### Examples of Vulnerabilities
 
@@ -36,6 +40,18 @@ patterns for routes or validation
 authorization (these are application-level concerns)
 - **Configuration mistakes**: Security issues arising from developer
 misconfiguration (configuration is trusted)
+- **Content-type parser/schema mismatches**: When a custom content-type parser
+registered with a regular expression (e.g., `/^application\/.*json$/`) matches
+incoming requests that do not have a corresponding key in the route's
+`schema.body.content` map, validation is skipped for that request. It is the
+application's responsibility to ensure that every content type accepted by a
+parser has a matching validation schema entry. This is a configuration concern,
+not a framework vulnerability (see
+[Validation and Serialization](./docs/Reference/Validation-and-Serialization.md)
+and [Content-Type Parser](./docs/Reference/ContentTypeParser.md))
+- **`insecureHTTPParser: true` deployments**: Reports that rely on enabling
+Node.js `insecureHTTPParser` are out of scope; Fastify assumes this flag is
+`false`
 - **Third-party dependencies**: Vulnerabilities in npm packages used by the
 application (not Fastify core dependencies)
 - **Resource exhaustion from handlers**: DoS caused by expensive operations in
@@ -46,10 +62,16 @@ explicitly enabled via configuration options
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to
-complete a vulnerability report via the dedicated pages:
+complete a vulnerability report via the
+[GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
 
-1. [HackerOne](https://hackerone.com/fastify)
-2. [GitHub Security Advisory](https://github.com/fastify/fastify/security/advisories/new)
+Do not assign or request a CVE directly.
+CVE assignment is handled by the Fastify Security Team.
+Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
+A CVE will be assigned as part of our responsible disclosure process.
+
+> ℹ️ Note:
+> Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
 
 ### Strict measures when reporting vulnerabilities
 
@@ -60,7 +82,7 @@ reported vulnerabilities:
 * Avoid creating new "informative" reports. Only create new
   reports on a vulnerability if you are absolutely sure this should be
   tagged as an actual vulnerability. Third-party vendors and individuals are
-  tracking any new vulnerabilities reported in HackerOne or GitHub and will flag
+  tracking any new vulnerabilities reported on GitHub and will flag
   them as such for their customers (think about snyk, npm audit, ...).
 * Security reports should never be created and triaged by the same person. If
   you are creating a report for a vulnerability that you found, or on
@@ -105,9 +127,6 @@ Triaging should include updating issue fields:
 * Asset - set/create the module affected by the report
 * Severity - TBD, currently left empty
 
-Reference: [HackerOne: Submitting
-Reports](https://docs.hackerone.com/hackers/submitting-reports.html)
-
 ### Correction follow-up
 
 **Delay:** 90 days
@@ -135,27 +154,18 @@ The report's vulnerable versions upper limit should be set to:
 Within 90 days after the triage date, the vulnerability must be made public.
 
 **Severity**: Vulnerability severity is assessed using [CVSS
-v.3](https://www.first.org/cvss/user-guide). More information can be found on
-[HackerOne documentation](https://docs.hackerone.com/hackers/severity.html)
+v.3](https://www.first.org/cvss/user-guide).
 
 If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability.
 
-At this point, a CVE should be requested through the selected platform through
-the UI, which should include the Report ID and a summary.
-
-Within HackerOne, this is handled through a "public disclosure request".
-
-Reference: [HackerOne:
-Disclosure](https://docs.hackerone.com/hackers/disclosure.html)
-
 ### Secondary Contact
 
 If you do not receive an acknowledgment of your report within 6 business days,
 or if you cannot find a private security contact for the project, you may
-contact the OpenJS Foundation CNA at `security@lists.openjsf.org` for
-assistance.
+contact the OpenJS Foundation CNA at <https://cna.openjsf.org/> (or
+`security@lists.openjsf.org`) for assistance.
 
 The CNA can help ensure your report is properly acknowledged, assist with
 coordinating disclosure timelines, and assign CVEs when necessary. This is a
@@ -187,7 +197,7 @@ work as a member of the Fastify Core team.
 
 ## OpenSSF CII Best Practices
 
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
+[![CII Best Practices](https://www.bestpractices.dev/projects/7585/badge)](https://www.bestpractices.dev/en/projects/7585/passing)
 
 There are three “tiers”: passing, silver, and gold.
 

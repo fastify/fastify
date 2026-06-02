@@ -8,7 +8,7 @@ test('Example - URI $id', (t, done) => {
   t.plan(1)
   const fastify = Fastify()
   fastify.addSchema({
-    $id: 'http://example.com/',
+    $id: 'http://fastify.test/',
     type: 'object',
     properties: {
       hello: { type: 'string' }
@@ -20,7 +20,7 @@ test('Example - URI $id', (t, done) => {
     schema: {
       body: {
         type: 'array',
-        items: { $ref: 'http://example.com#/properties/hello' }
+        items: { $ref: 'http://fastify.test#/properties/hello' }
       }
     }
   })

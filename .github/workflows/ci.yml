@@ -29,90 +29,31 @@ permissions:
   contents: read
 
 jobs:
-  dependency-review:
-      name: Dependency Review
-      if: github.event_name == 'pull_request'
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-      steps:
-          - name: Check out repo
-            uses: actions/checkout@v6
-            with:
-              persist-credentials: false
-
-          - name: Dependency review
-            uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4.8.2
-
-  check-licenses:
-    name: Check licenses
-    runs-on: ubuntu-latest
+  quality-check:
+    uses: fastify/workflows/.github/workflows/nested-quality.yml@v6
     permissions:
       contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
-          check-latest: true
-
-      - name: Install
-        run: |
-          npm install --ignore-scripts
-
-      - name: Check licenses
-        run: |
-          npx license-checker --production --summary --onlyAllow="0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;"
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-
-      - name: Use Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: package.json
-          check-latest: true
-
-      - name: Install
-        run: |
-          npm install --ignore-scripts
-
-      - name: Lint code
-        run: |
-          npm run lint
+    with:
+      license-check: true
+      lint: true
 
   coverage-nix:
     needs:
-      - lint
+      - quality-check
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
 
   coverage-win:
     needs:
-      - lint
+      - quality-check
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml
 
   test-unit:
     needs:
-      - lint
+      - quality-check
       - coverage-nix
       - coverage-win
     runs-on: ${{ matrix.os }}
@@ -173,9 +114,9 @@ jobs:
         run: |
           npm run unit
 
-  test-typescript:
+  test-types:
     needs:
-      - lint
+      - quality-check
       - coverage-nix
       - coverage-win
     runs-on: 'ubuntu-latest'
@@ -198,16 +139,60 @@ jobs:
         run: |
           npm install --ignore-scripts
 
-      - name: Run typescript tests
+      - name: Run type tests
         run: |
-          npm run test:typescript
+          npm run test:types
+        env:
+          NODE_OPTIONS: no-network-family-autoselection
+
+  test-pino-compat:
+    name: Test pino compatibility
+    needs:
+      - quality-check
+      - coverage-nix
+      - coverage-win
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        pino-version: ['^9', '^10']
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package.json
+          check-latest: true
+
+      - name: Install dependencies
+        run: |
+          npm install --ignore-scripts
+
+      - name: Install pino ${{ matrix.pino-version }}
+        run: |
+          npm install --ignore-scripts --no-save pino@${{ matrix.pino-version }}
+
+      - name: Run unit tests
+        run: |
+          npm run unit
+
+      - name: Run type tests
+        run: |
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
   package:
     needs:
-      - test-typescript
+      - test-types
       - test-unit
+      - test-pino-compat
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -244,7 +229,7 @@ jobs:
         github.event.pull_request.head.repo.full_name == github.repository &&
         github.event.pull_request.user.login == 'dependabot[bot]'
     needs:
-      - test-typescript
+      - test-types
       - test-unit
       - package
     runs-on: ubuntu-latest

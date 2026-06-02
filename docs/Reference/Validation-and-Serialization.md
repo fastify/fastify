@@ -583,10 +583,7 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
-If you want to keep using JSON Schema but swap out the default validator,
-you can plug a different JSON Schema validator into Fastify through
-`setValidatorCompiler`. Community plugins that wire alternative JSON Schema
-validators are listed in the [Ecosystem](../Guides/Ecosystem.md).
+Fastify supports different JSON Schema validators via `setValidatorCompiler`. Community plugins that integrate alternative JSON Schema validators are listed on the [Ecosystem](../Guides/Ecosystem.md) page.
 
 ##### Custom Validator Best Practices
 

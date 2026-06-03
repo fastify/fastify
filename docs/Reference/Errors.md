@@ -216,7 +216,7 @@ fastify.register((app, options, next) => {
   })
 
   app.get('/bad', async () => {
-    // Throws a non-Error type, 'bar'
+    // Throws a non-Error type, 'foo'
     throw 'foo'
   })
 

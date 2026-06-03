@@ -2,6 +2,14 @@
 
 ## Logging
 
+
+Fastify uses Pino as its logger.
+
+```js
+const fastify = require('fastify')({
+  logger: true
+})
+
 ### Enable Logging
 Logging is disabled by default. Enable it by passing `{ logger: true }` or
 `{ logger: { level: 'info' } }` when creating a Fastify instance. Note that if

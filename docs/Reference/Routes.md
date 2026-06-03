@@ -102,7 +102,7 @@ fastify.route(options)
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`:
+* `serializerCompiler({ schema, method, url, httpStatus, contentType })`:
   function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.

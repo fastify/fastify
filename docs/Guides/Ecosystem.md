@@ -716,6 +716,8 @@ middlewares into Fastify plugins
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
+- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify) 
+  i18n solution for error handling, email template
 - [`jeasx`](https://www.jeasx.dev)
   A flexible server-rendering framework built on Fastify
   that leverages asynchronous JSX to simplify web development.

@@ -33,7 +33,6 @@ jobs:
     uses: fastify/workflows/.github/workflows/nested-quality.yml@v6
     permissions:
       contents: read
-    secrets: inherit
     with:
       license-check: true
       lint: true

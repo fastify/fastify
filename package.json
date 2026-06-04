@@ -179,7 +179,7 @@
     "autocannon": "^8.0.0",
     "borp": "^1.0.0",
     "branch-comparer": "^1.1.0",
-    "concurrently": "^9.1.2",
+    "concurrently": "^10.0.0",
     "cross-env": "^10.0.0",
     "eslint": "^9.0.0",
     "fast-json-body": "^1.1.0",

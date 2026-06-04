@@ -483,7 +483,7 @@ export interface FastifyInstance<
    * which allows for modifying or adding child logger bindings and logger options, or
    * returning a completely custom child logger implementation.
    */
-  childLoggerFactory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  childLoggerFactory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, FastifyBaseLogger, TypeProvider>;
 
   /**
    * Hook function that is called when creating a child logger instance for each request
@@ -502,7 +502,7 @@ export interface FastifyInstance<
    * }
    * ```
    */
-  setChildLoggerFactory(factory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  setChildLoggerFactory(factory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, FastifyBaseLogger, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Fastify schema validator for all routes.

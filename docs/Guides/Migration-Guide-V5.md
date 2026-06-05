@@ -6,6 +6,18 @@ Before migrating to v5, please ensure that you have fixed all deprecation
 warnings from v4. All v4 deprecations have been removed and will no longer
 work after upgrading.
 
+## Codemods
+
+To streamline the migration process, you can use our official codemods. 
+These automated scripts help you safely and quickly upgrade your codebase 
+to Fastify v5.
+
+You can run the codemod directly using `npx`:
+
+```bash
+npx codemod fastify/5/migrationRecipe
+```
+
 ## Long Term Support Cycle
 
 Fastify v5 will only support Node.js v20+. If you are using an older version of

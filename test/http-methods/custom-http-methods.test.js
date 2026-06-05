@@ -112,3 +112,54 @@ test('addHttpMethod rejects fake http method', t => {
   const fastify = Fastify()
   t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
 })
+
+test('addHttpMethod emits a deprecation warning when overriding an existing method without overrideExisting flag', (t, done) => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  // Attach listener BEFORE calling addHttpMethod — process.emitWarning is async (next tick)
+  process.once('warning', function onWarning (warning) {
+    if (warning.code !== 'FSTWRN005') {
+      // Might get an unrelated warning first; re-register for the next one
+      process.once('warning', onWarning)
+      return
+    }
+    t.assert.ok(true, 'A FSTWRN005 warning was emitted')
+    t.assert.strictEqual(warning.code, 'FSTWRN005')
+    done()
+  })
+
+  // GET is a built-in bodyless method — calling without overrideExisting should warn
+  fastify.addHttpMethod('GET', { hasBody: false })
+})
+
+
+test('addHttpMethod does not emit a warning when overrideExisting is true', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  let warningEmitted = false
+  const onWarning = (warning) => {
+    if (warning.code === 'FSTWRN005') warningEmitted = true
+  }
+  process.on('warning', onWarning)
+
+  // POST is a built-in bodywith method — with the flag, no warning should fire
+  fastify.addHttpMethod('POST', { overrideExisting: true })
+
+  process.off('warning', onWarning)
+  t.assert.ok(!warningEmitted, 'No FSTWRN005 warning should have been emitted')
+})
+
+
+test('addHttpMethod with overrideExisting: true can change existing method body behavior', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  // GET is bodyless by default; override it to accept a body
+  t.assert.doesNotThrow(() => {
+    fastify.addHttpMethod('GET', { hasBody: true, overrideExisting: true })
+  })
+  t.assert.ok(fastify.supportedMethods.includes('GET'))
+})
+

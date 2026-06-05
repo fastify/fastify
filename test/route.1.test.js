@@ -257,3 +257,66 @@ test('invalid schema - route', (t, done) => {
     done()
   })
 })
+test('exposeParamSchemaValidation - passes if all route params are defined in schema', async (t) => {
+  const fastify = Fastify({ exposeParamSchemaValidation: true })
+
+  fastify.get('/valid/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        }
+      }
+    }
+  }, (req, reply) => {
+    reply.send('ok')
+  })
+
+  await fastify.ready()
+  t.assert.ok(true)
+})
+
+test('exposeParamSchemaValidation - throws if schema is missing route parameter', async (t) => {
+  const fastify = Fastify({ exposeParamSchemaValidation: true })
+
+  fastify.get('/broken/:missingId', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          wrongName: { type: 'string' }
+        }
+      }
+    }
+  }, (req, reply) => {
+    reply.send('ok')
+  })
+
+  try {
+    await fastify.ready()
+    throw new Error('Server should have crashed but booted successfully')
+  } catch (err) {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+  }
+})
+
+test('exposeParamSchemaValidation - supports path parameters with regex parentheses', async (t) => {
+  const fastify = Fastify({ exposeParamSchemaValidation: true })
+
+  fastify.get('/regex/:id(\\d+)', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' }
+        }
+      }
+    }
+  }, (req, reply) => {
+    reply.send('ok')
+  })
+
+  await fastify.ready()
+  t.assert.ok(true)
+})

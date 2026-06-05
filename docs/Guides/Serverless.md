@@ -31,6 +31,7 @@ snippet of code.
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
+- [Hostinger](#hostinger)
 
 ## AWS
 
@@ -602,3 +603,14 @@ https://vercel.com/templates/backend/fastify-on-vercel).
 requires an explicit opt-in. Learn more about enabling Fluid compute
 [here](
 https://vercel.com/docs/fluid-compute#enabling-fluid-compute).
+
+## Hostinger
+[Hostinger](https://www.hostinger.com/web-apps-hosting) now also supports Fastify application deployments.
+You can easily deploy Fastify application at Hostinger using two methods
+
+1. Deploy application from your GitHub repository
+2. Deploy application from uploading your archived files
+
+Hostinger will automatically detect your application and Fastify build settings will be applied for you.
+
+[Learn more](https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/) about Node.js applications deployments at Hostinger

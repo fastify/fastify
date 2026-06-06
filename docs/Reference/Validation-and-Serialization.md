@@ -583,7 +583,10 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
-Fastify supports different JSON Schema validators via `setValidatorCompiler`. Community plugins that integrate alternative JSON Schema validators are listed on the [Ecosystem](../Guides/Ecosystem.md) page.
+Fastify supports different JSON Schema validators via
+`setValidatorCompiler`. Community plugins that integrate alternative JSON
+Schema validators are listed on the
+[Ecosystem](https://fastify.dev/docs/latest/Guides/Ecosystem/) page.
 
 ##### Custom Validator Best Practices
 

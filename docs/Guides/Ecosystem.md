@@ -537,6 +537,8 @@ middlewares into Fastify plugins
   OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-override`](https://github.com/matthyk/fastify-override)
   Fastify plugin to override decorators, plugins and hooks for testing purposes
+- [`fastify-param-schema-validation`](https://github.com/Player1205/fastify-param-schema-validation)
+  Enforce strict parameter definitions in route validation schemas to prevent missing parameter validation.
 - [`fastify-passkit-webservice`](https://github.com/alexandercerutti/fastify-passkit-webservice)
   A set of Fastify plugins to integrate Apple Wallet Web Service specification
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
@@ -716,7 +718,7 @@ middlewares into Fastify plugins
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
-- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify) 
+- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify)
   i18n solution for error handling, email template
 - [`jeasx`](https://www.jeasx.dev)
   A flexible server-rendering framework built on Fastify

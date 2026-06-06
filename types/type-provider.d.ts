@@ -122,9 +122,12 @@ export type SafePromiseLike<T> = PromiseLike<T> & { __linterBrands: 'SafePromise
  * - When ReplyType is unknown (default/unspecified), payload is optional
  * - When ReplyType is undefined or void, payload is optional (returning undefined is valid)
  * - Otherwise, payload is required
+ * 
+ * Note: send() also accepts Promise<ReplyType> for async operations, which is handled
+ * by the runtime via wrap-thenable.js
  */
 export type SendArgs<ReplyType> = unknown extends ReplyType
-  ? [payload?: ReplyType]
+  ? [payload?: ReplyType | PromiseLike<ReplyType>]
   : [ReplyType] extends [undefined | void]
-      ? [payload?: ReplyType]
-      : [payload: ReplyType]
+      ? [payload?: ReplyType | PromiseLike<ReplyType>]
+      : [payload: ReplyType | PromiseLike<ReplyType>]

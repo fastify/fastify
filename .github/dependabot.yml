@@ -49,7 +49,7 @@ updates:
       dev-dependencies-typescript:
         patterns:
           - "@types/*"
-          - "tsd"
+          - "tstyche"
           - "typescript"
       # Ajv related dependencies
       dev-dependencies-ajv:

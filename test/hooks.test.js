@@ -3579,7 +3579,7 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
 })
 
 test('onRoute hook this context binding', (t, testDone) => {
-  t.plan(3)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.addHook('onRoute', function (routeOptions) {

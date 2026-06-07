@@ -3617,4 +3617,3 @@ test('onRegister hook this context binding', (t, testDone) => {
     testDone()
   })
 })
-

@@ -62,7 +62,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20, 22, 24, 26]
+        node-version: [24]
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:

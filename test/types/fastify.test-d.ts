@@ -3,6 +3,7 @@ import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
+import pino from 'pino'
 import { expectAssignable, expectNotAssignable, expectType } from 'tsd'
 import fastify, {
   ConnectionError,
@@ -176,6 +177,9 @@ const customLogger = {
 expectAssignable<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
 >(fastify({ logger: customLogger }))
+const pinoLogger = pino()
+const pinoLoggerServer: FastifyInstance = fastify({ loggerInstance: pinoLogger })
+expectAssignable<FastifyInstance>(pinoLoggerServer)
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))

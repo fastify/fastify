@@ -1,68 +1,81 @@
 import { Buffer } from 'node:buffer'
-import { expectAssignable, expectType } from 'tsd'
-import fastify, { FastifyContextConfig, FastifyReply, FastifyRequest, FastifySchema, FastifyTypeProviderDefault, RawRequestDefaultExpression, RouteHandler, RouteHandlerMethod } from '../../fastify'
-import { FastifyInstance } from '../../types/instance'
-import { FastifyBaseLogger } from '../../types/logger'
-import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply'
-import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route'
-import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils'
+import { expect } from 'tstyche'
+import fastify, {
+  FastifyContextConfig,
+  FastifyReply,
+  FastifyRequest,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  RawRequestDefaultExpression,
+  RouteHandler,
+  RouteHandlerMethod
+} from '../../fastify.js'
+import { FastifyInstance } from '../../types/instance.js'
+import { FastifyBaseLogger } from '../../types/logger.js'
+import { ResolveReplyTypeWithRouteGeneric } from '../../types/reply.js'
+import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route.js'
+import { ContextConfigDefault, RawReplyDefaultExpression, RawServerDefault } from '../../types/utils.js'
 
 type DefaultSerializationFunction = (payload: { [key: string]: unknown }) => string
 type DefaultFastifyReplyWithCode<Code extends number> = FastifyReply<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ResolveReplyTypeWithRouteGeneric<RouteGenericInterface['Reply'], Code, FastifySchema, FastifyTypeProviderDefault>>
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
-  expectType<RawReplyDefaultExpression>(reply.raw)
-  expectType<FastifyBaseLogger>(reply.log)
-  expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
-  expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.code)
-  expectType<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>(reply.status)
-  expectType<(...args: [payload?: unknown]) => FastifyReply>(reply.code(100 as number).send)
-  expectType<number>(reply.elapsedTime)
-  expectType<number>(reply.statusCode)
-  expectType<boolean>(reply.sent)
-  expectType<
-          (hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void
-            >(reply.writeEarlyHints)
-  expectType<((...args: [payload?: unknown]) => FastifyReply)>(reply.send)
-  expectAssignable<(key: string, value: any) => FastifyReply>(reply.header)
-  expectAssignable<(values: { [key: string]: any }) => FastifyReply>(reply.headers)
-  expectAssignable<(key: string) => number | string | string[] | undefined>(reply.getHeader)
-  expectAssignable<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
-  expectAssignable<(key: string) => FastifyReply>(reply.removeHeader)
-  expectAssignable<(key: string) => boolean>(reply.hasHeader)
-  expectType<(url: string, statusCode?: number) => FastifyReply>(reply.redirect)
-  expectType<() => FastifyReply>(reply.hijack)
-  expectType<() => void>(reply.callNotFound)
-  expectType<(contentType: string) => FastifyReply>(reply.type)
-  expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
-  expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)
-  expectType<(fulfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
-  expectType<
-      (
+  expect(reply.raw).type.toBe<RawReplyDefaultExpression>()
+  expect(reply.log).type.toBe<FastifyBaseLogger>()
+  expect(reply.request).type.toBe<
+    FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>
+  >()
+  expect(reply.code).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
+  expect(reply.status).type.toBe<<Code extends number>(statusCode: Code) => DefaultFastifyReplyWithCode<Code>>()
+  expect(reply.code(100 as number).send).type.toBe<(...args: [payload?: unknown]) => FastifyReply>()
+  expect(reply.elapsedTime).type.toBe<number>()
+  expect(reply.statusCode).type.toBe<number>()
+  expect(reply.sent).type.toBe<boolean>()
+  expect(reply.writeEarlyHints).type.toBe<
+    (hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void
+  >()
+  expect(reply.send).type.toBe<((...args: [payload?: unknown]) => FastifyReply)>()
+  expect(reply.header).type.toBeAssignableTo<(key: string, value: any) => FastifyReply>()
+  expect(reply.headers).type.toBeAssignableTo<(values: { [key: string]: any }) => FastifyReply>()
+  expect(reply.getHeader).type.toBeAssignableTo<(key: string) => number | string | string[] | undefined>()
+  expect(reply.getHeaders).type.toBeAssignableTo<() => { [key: string]: number | string | string[] | undefined }>()
+  expect(reply.removeHeader).type.toBeAssignableTo<(key: string) => FastifyReply>()
+  expect(reply.hasHeader).type.toBeAssignableTo<(key: string) => boolean>()
+  expect(reply.redirect).type.toBe<(url: string, statusCode?: number) => FastifyReply>()
+  expect(reply.hijack).type.toBe<() => FastifyReply>()
+  expect(reply.callNotFound).type.toBe<() => void>()
+  expect(reply.type).type.toBe<(contentType: string) => FastifyReply>()
+  expect(reply.serializer).type.toBe<(fn: (payload: any) => string) => FastifyReply>()
+  expect(reply.serialize).type.toBe<(payload: any) => string | ArrayBuffer | Buffer>()
+  expect(reply.then).type.toBe<(fulfilled: () => void, rejected: (err: Error) => void) => void>()
+  expect(reply.trailer).type.toBe<
+    (
       key: string,
       fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) |
-        ((reply: FastifyReply, payload: string | Buffer | null,
-          done: (err: Error | null, value?: string) => void) => void)
-      ) => FastifyReply
-        >(reply.trailer)
-  expectType<(key: string) => boolean>(reply.hasTrailer)
-  expectType<(key: string) => FastifyReply>(reply.removeTrailer)
-  expectType<FastifyInstance>(reply.server)
-  expectAssignable<
-          ((httpStatus: string) => DefaultSerializationFunction | undefined)
-            >(reply.getSerializationFunction)
-  expectAssignable<
-          ((schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined)
-            >(reply.getSerializationFunction)
-  expectAssignable<
-          ((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)
-            >(reply.compileSerializationSchema)
-  expectAssignable<
-          ((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)
-            >(reply.serializeInput)
-  expectAssignable<((input: { [key: string]: unknown }, httpStatus: string) => unknown)>(reply.serializeInput)
-  expectType<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>(reply.routeOptions.config)
-  expectType<string>(reply.getDecorator<string>('foo'))
+      ((reply: FastifyReply, payload: string | Buffer | null,
+        done: (err: Error | null, value?: string) => void) => void)
+    ) => FastifyReply
+  >()
+  expect(reply.hasTrailer).type.toBe<(key: string) => boolean>()
+  expect(reply.removeTrailer).type.toBe<(key: string) => FastifyReply>()
+  expect(reply.server).type.toBe<FastifyInstance>()
+  expect(reply.getSerializationFunction).type.toBeAssignableTo<
+    ((httpStatus: string) => DefaultSerializationFunction | undefined)
+  >()
+  expect(reply.getSerializationFunction).type.toBeAssignableTo<
+    ((schema: { [key: string]: unknown }) => DefaultSerializationFunction | undefined)
+  >()
+  expect(reply.compileSerializationSchema).type.toBeAssignableTo<
+    ((schema: { [key: string]: unknown }, httpStatus?: string) => DefaultSerializationFunction)
+  >()
+  expect(reply.serializeInput).type.toBeAssignableTo<
+    ((input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string) => unknown)
+  >()
+  expect(reply.serializeInput).type.toBeAssignableTo<
+    ((input: { [key: string]: unknown }, httpStatus: string) => unknown)
+  >()
+  expect(reply.routeOptions.config).type.toBe<ContextConfigDefault & FastifyRouteConfig & FastifyContextConfig>()
+  expect(reply.getDecorator<string>('foo')).type.toBe<string>()
 }
 
 interface ReplyPayload {
@@ -121,8 +134,8 @@ interface ReplyHttpCodesWithNoContent {
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   // When Reply type is specified, send() requires a payload argument
-  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
-  expectType<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.code(100).send)
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 }
 
 const server = fastify()
@@ -238,7 +251,7 @@ server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async fu
 const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   // accept is a header provided by @types/node
   reply.getHeader('accept')
-  reply.getHeaders().accept
+  expect(reply.getHeaders()).type.toHaveProperty('accept')
   reply.hasHeader('accept')
   reply.header('accept', 'test')
   reply.headers({ accept: 'test' })
@@ -247,7 +260,7 @@ const httpHeaderHandler: RouteHandlerMethod = function (_request, reply) {
   // x-fastify-test is not a header provided by @types/node
   // and should not result in a typing error
   reply.getHeader('x-fastify-test')
-  reply.getHeaders()['x-fastify-test']
+  expect(reply.getHeaders()).type.toHaveProperty('x-fastify-test')
   reply.hasHeader('x-fastify-test')
   reply.header('x-fastify-test', 'test')
   reply.headers({ 'x-fastify-test': 'test' })

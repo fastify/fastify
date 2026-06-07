@@ -480,6 +480,7 @@ arrive.
 
 The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
+Hook functions are invoked with `this` bound to the associated Fastify instance.
 ```js
 // callback style
 fastify.addHook('onClose', (instance, done) => {
@@ -531,10 +532,11 @@ connections or Server-Sent Events streams that must be explicitly terminated for
 `server.close()` to complete.
 _It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.
+Hook functions are invoked with `this` bound to the associated Fastify instance.
 
 ```js
 // callback style
-fastify.addHook('preClose', (done) => {
+fastify.addHook('preClose', function (done) {
   // Some code
   done()
 })
@@ -564,9 +566,10 @@ fastify.addHook('preClose', async () => {
 Triggered when a new route is registered. Listeners are passed a [`routeOptions`](./Routes.md#routes-options)
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
+Hook functions are invoked with `this` bound to the associated Fastify instance.
 
 ```js
-fastify.addHook('onRoute', (routeOptions) => {
+fastify.addHook('onRoute', function (routeOptions) {
   //Some code
   routeOptions.method
   routeOptions.schema
@@ -630,6 +633,7 @@ created. The hook will be executed **before** the registered code.
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context, thus
 this hook is encapsulated.
+Hook functions are invoked with `this` bound to the parent Fastify instance.
 
 > ℹ️ Note:
 > This hook will not be called if a plugin is wrapped inside
@@ -651,7 +655,7 @@ fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 }, { prefix: '/hello' })
 
-fastify.addHook('onRegister', (instance, opts) => {
+fastify.addHook('onRegister', function (instance, opts) {
   // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated

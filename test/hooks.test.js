@@ -3577,3 +3577,44 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
     sleep(500).then(() => socket.destroy())
   })
 })
+
+test('onRoute hook this context binding', (t, testDone) => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onRoute', function (routeOptions) {
+    t.assert.strictEqual(this, fastify)
+    t.assert.ok(routeOptions.method === 'GET' || routeOptions.method === 'HEAD')
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send()
+  })
+
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
+})
+
+test('onRegister hook this context binding', (t, testDone) => {
+  t.plan(3)
+  const fastify = Fastify()
+  let instanceFromHook
+
+  fastify.addHook('onRegister', function (instance, opts) {
+    t.assert.strictEqual(this, fastify)
+    instanceFromHook = instance
+  })
+
+  fastify.register((instance, opts, done) => {
+    t.assert.strictEqual(instance, instanceFromHook)
+    done()
+  })
+
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    testDone()
+  })
+})
+

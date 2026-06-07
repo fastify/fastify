@@ -60,11 +60,11 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       matrix:
         node-version: [24]
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
@@ -132,7 +132,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true

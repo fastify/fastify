@@ -705,6 +705,11 @@ If you are sending a stream and you have not set a `'Content-Type'` header,
 As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
 
+When sending streams over HTTP/2, Fastify does not change the chunks emitted by
+the stream. If a stream can emit very large chunks, split them in your
+application code, for example by using `fs.createReadStream()` or a transform
+stream that emits smaller chunks.
+
 See special note about error handling for streams in
 [`setErrorHandler`](./Server.md#seterrorhandler).
 

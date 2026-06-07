@@ -167,7 +167,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true

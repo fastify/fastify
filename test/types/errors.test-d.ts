@@ -83,6 +83,7 @@ expect(errorCodes.FST_ERR_INSTANCE_ALREADY_LISTENING).type.toBeAssignableTo<Fast
 expect(errorCodes.FST_ERR_PLUGIN_VERSION_MISMATCH).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_PLUGIN_CALLBACK_NOT_FN).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_PLUGIN_NOT_VALID).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROOT_PLG_BOOTED).type.toBeAssignableTo<FastifyErrorConstructor>()

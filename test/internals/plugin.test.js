@@ -149,7 +149,7 @@ test('checkDependencies should check if the given dependency is present in the i
 })
 
 test('checkDependencies should check if the given dependency is present in the instance (errored)', t => {
-  t.plan(1)
+  t.plan(3)
 
   fn[Symbol.for('plugin-meta')] = {
     name: 'test-plugin',
@@ -164,6 +164,8 @@ test('checkDependencies should check if the given dependency is present in the i
     t.assert.fail('should throw')
   } catch (err) {
     t.assert.strictEqual(err.message, "The dependency 'plugin' of plugin 'test-plugin' is not registered")
+    t.assert.strictEqual(err.code, 'FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED')
+    t.assert.strictEqual(err.name, 'FastifyError')
   }
 
   function fn () {}

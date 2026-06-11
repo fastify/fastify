@@ -204,6 +204,8 @@ section.
 - [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
   A plugin to integrate [Papr](https://github.com/plexinc/papr),
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.
+- [`@inferdi/fastify`](https://github.com/inferdi/inferdi/tree/main/packages/fastify)
+  Type-safe dependency injection support for Fastify, powered by [InferDI](https://github.com/inferdi/inferdi).
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
@@ -279,6 +281,9 @@ section.
   MySQL plugin with auto SQL injection attack prevention.
 - [`fastify-at-postgres`](https://github.com/mateonunez/fastify-at-postgres) Fastify
   Postgres plugin with auto SQL injection attack prevention.
+- [`fastify-ata`](https://github.com/ata-core/fastify-ata) Use
+  [`ata-validator`](https://github.com/ata-core/ata-validator) as the JSON Schema
+  validator, keeping Fastify's default error shape.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
   [fastify-jwt](https://npm.im/fastify-jwt) and
@@ -716,6 +721,8 @@ middlewares into Fastify plugins
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
+- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify) 
+  i18n solution for error handling, email template
 - [`jeasx`](https://www.jeasx.dev)
   A flexible server-rendering framework built on Fastify
   that leverages asynchronous JSX to simplify web development.

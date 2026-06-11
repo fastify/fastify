@@ -311,3 +311,37 @@ test('trust proxy reads port from x-forwarded-host', async t => {
     headers: { 'X-Forwarded-Host': 'fastify.test:1234' }
   })
 })
+
+test('port is read from :authority header when host header is absent', t => {
+  t.plan(3)
+
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: '1.2.3.4' },
+    headers: { ':authority': 'fastify.test:8080' }
+  }
+
+  const PlainRequest = buildRequest(Request, false)
+  const request = new PlainRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'fastify.test:8080', 'host comes from :authority')
+  t.assert.strictEqual(request.hostname, 'fastify.test', 'hostname strips port from :authority')
+  t.assert.strictEqual(request.port, 8080, 'port is read from :authority')
+})
+
+test('trust proxy reads port from :authority header when host header is absent', t => {
+  t.plan(3)
+
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: '1.2.3.4' },
+    headers: { ':authority': 'fastify.test:9090' }
+  }
+
+  const TpRequest = buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.assert.strictEqual(request.host, 'fastify.test:9090', 'host comes from :authority')
+  t.assert.strictEqual(request.hostname, 'fastify.test', 'hostname strips port from :authority')
+  t.assert.strictEqual(request.port, 9090, 'port is read from :authority')
+})

@@ -58,6 +58,7 @@ class CustomLoggerImpl implements CustomLogger {
   silent (...args: unknown[]) { }
 
   child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
+  isLevelEnabled (_level: string): boolean { return true }
 }
 
 const customLogger = new CustomLoggerImpl()
@@ -274,3 +275,7 @@ expect(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serialize
 expect(childParent.child).type.not.toBeCallableWith()
 
 expect(childParent.child).type.not.toBeCallableWith({}, { nonExist: true })
+
+expect(fastify().log.isLevelEnabled('info')).type.toBe<boolean>()
+expect(fastify().log.isLevelEnabled('trace')).type.toBe<boolean>()
+expect(fastify().log.isLevelEnabled('silent')).type.toBe<boolean>()

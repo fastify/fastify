@@ -170,7 +170,8 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
-  child: () => customLogger
+  child: () => customLogger,
+  isLevelEnabled: (_level: string) => true
 }
 
 const serverWithCustomLogger = fastify({ loggerInstance: customLogger })

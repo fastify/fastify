@@ -164,7 +164,8 @@ const customLogger = {
   trace: () => { },
   debug: () => { },
   child: () => customLogger,
-  silent: () => { }
+  silent: () => { },
+  isLevelEnabled: (_level: string) => true
 }
 const serverWithTypeProviderAndLogger = fastify({
   loggerInstance: customLogger

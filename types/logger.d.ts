@@ -11,6 +11,7 @@ import type {
   BaseLogger,
   LogFn as FastifyLogFn,
   LevelWithSilent as LogLevel,
+  LevelWithSilentOrString,
   Bindings,
   ChildLoggerOptions,
   LoggerOptions as PinoLoggerOptions
@@ -26,6 +27,7 @@ export type {
 
 export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace' | 'silent'> {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
+  isLevelEnabled(level: LevelWithSilentOrString): boolean
 }
 
 // TODO delete FastifyLoggerInstance in the next major release. It seems that it is enough to have only FastifyBaseLogger.

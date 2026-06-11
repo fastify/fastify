@@ -268,6 +268,7 @@ function fastify (serverOptions) {
     addHttpMethod,
     // fake http injection
     inject,
+    isInjectionRequest,
     // pretty print of the registered routes
     printRoutes,
     // custom error handling
@@ -502,6 +503,13 @@ function fastify (serverOptions) {
         })
       }, opts)
     }
+  }
+
+  function isInjectionRequest (req) {
+    if (lightMyRequest === undefined) {
+      lightMyRequest = require('light-my-request')
+    }
+    return lightMyRequest.isInjection(req.raw ?? req)
   }
 
   function ready (cb) {

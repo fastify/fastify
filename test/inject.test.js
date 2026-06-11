@@ -500,3 +500,37 @@ test('Should not throw on access to routeConfig frameworkErrors handler - FST_ER
     }
   )
 })
+
+test('isInjectionRequest should exist', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.assert.ok(fastify.isInjectionRequest)
+  t.assert.strictEqual(typeof fastify.isInjectionRequest, 'function')
+})
+
+test('isInjectionRequest returns true for injected requests', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/test', (req, reply) => {
+    t.assert.strictEqual(fastify.isInjectionRequest(req), true)
+    reply.send({ ok: true })
+  })
+
+  await fastify.inject({ method: 'GET', url: '/test' })
+})
+
+test('isInjectionRequest returns false for real HTTP requests', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/test', (req, reply) => {
+    t.assert.strictEqual(fastify.isInjectionRequest(req), false)
+    reply.send({ ok: true })
+  })
+
+  const address = await fastify.listen({ port: 0 })
+  await fetch(address + '/test')
+})

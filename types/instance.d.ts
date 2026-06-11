@@ -167,6 +167,8 @@ export interface FastifyInstance<
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
   inject(): LightMyRequestChain;
 
+  isInjectionRequest(req: FastifyRequest | RawRequest): boolean;
+
   listen(opts: FastifyListenOptions, callback: (err: Error | null, address: string) => void): void;
   listen(opts?: FastifyListenOptions): Promise<string>;
   listen(callback: (err: Error | null, address: string) => void): void;

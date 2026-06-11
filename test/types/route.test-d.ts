@@ -1,10 +1,10 @@
-import { FastifyError } from '@fastify/error'
 import * as http from 'node:http'
-import { expectAssignable, expectType } from 'tsd'
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
-import { RequestPayload } from '../../types/hooks'
-import { FindMyWayFindResult } from '../../types/instance'
-import { HTTPMethods, RawServerDefault } from '../../types/utils'
+import { FastifyError } from '@fastify/error'
+import { expect } from 'tstyche'
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
+import { RequestPayload } from '../../types/hooks.js'
+import { FindMyWayFindResult } from '../../types/instance.js'
+import { HTTPMethods, RawServerDefault } from '../../types/utils.js'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -39,21 +39,21 @@ declare module '../../fastify' {
 }
 
 const routeHandler: RouteHandlerMethod = function (request, reply) {
-  expectType<FastifyInstance>(this)
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
+  expect(this).type.toBe<FastifyInstance>()
+  expect(request).type.toBe<FastifyRequest>()
+  expect(reply).type.toBe<FastifyReply>()
 }
 
 const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply) {
-  expectType<FastifyInstance>(this)
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
+  expect(this).type.toBe<FastifyInstance>()
+  expect(request).type.toBe<FastifyRequest>()
+  expect(reply).type.toBe<FastifyReply>()
 
   return reply.send()
 }
 
 const asyncPreHandler = async (request: FastifyRequest) => {
-  expectType<FastifyRequest>(request)
+  expect(request).type.toBe<FastifyRequest>()
 }
 
 fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
@@ -62,7 +62,7 @@ fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: true } },
   (req) => {
-    expectType<string>(req.message)
+    expect(req.message).type.toBe<string>()
   }
 )
 
@@ -70,7 +70,7 @@ fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: false } },
   (req) => {
-    expectType<null>(req.message)
+    expect(req.message).type.toBe<null>()
   }
 )
 
@@ -82,29 +82,29 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
   'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
 ].forEach(method => {
   // route method
-  expectType<FastifyInstance>(fastify().route({
+  expect(fastify().route({
     method: method as HTTPMethods,
     url: '/',
     handler: routeHandler
-  }))
+  })).type.toBe<FastifyInstance>()
 
   const lowerCaseMethod: LowerCaseHTTPMethods = method.toLowerCase() as LowerCaseHTTPMethods
 
   // method as method
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
+  expect(fastify()[lowerCaseMethod]('/', routeHandler)).type.toBe<FastifyInstance>()
+  expect(fastify()[lowerCaseMethod]('/', {}, routeHandler)).type.toBe<FastifyInstance>()
+  expect(fastify()[lowerCaseMethod]('/', { handler: routeHandler })).type.toBe<FastifyInstance>()
 
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {
+  expect(fastify()[lowerCaseMethod]('/', {
     handler: routeHandler,
     errorHandler: (error, request, reply) => {
-      expectType<FastifyError>(error)
+      expect(error).type.toBe<FastifyError>()
       reply.send('error')
     },
     childLoggerFactory: function (logger, bindings, opts) {
       return logger.child(bindings, opts)
     }
-  }))
+  })).type.toBe<FastifyInstance>()
 
   interface BodyInterface { prop: string }
   interface QuerystringInterface { prop: number }
@@ -121,20 +121,20 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
   }
 
   fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
-    expectType<BodyInterface>(req.body)
-    expectType<QuerystringInterface>(req.query)
-    expectType<ParamsInterface>(req.params)
-    expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-    expectType<string>(req.routeOptions.config.foo)
-    expectType<number>(req.routeOptions.config.bar)
-    expectType<boolean>(req.routeOptions.config.extra)
-    expectType<string>(req.routeOptions.config.url)
-    expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-    expectType<string>(res.routeOptions.config.foo)
-    expectType<number>(res.routeOptions.config.bar)
-    expectType<boolean>(res.routeOptions.config.extra)
-    expectType<string>(req.routeOptions.config.url)
-    expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+    expect(req.body).type.toBe<BodyInterface>()
+    expect(req.query).type.toBe<QuerystringInterface>()
+    expect(req.params).type.toBe<ParamsInterface>()
+    expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+    expect(req.routeOptions.config.foo).type.toBe<string>()
+    expect(req.routeOptions.config.bar).type.toBe<number>()
+    expect(req.routeOptions.config.extra).type.toBe<boolean>()
+    expect(req.routeOptions.config.url).type.toBe<string>()
+    expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+    expect(res.routeOptions.config.foo).type.toBe<string>()
+    expect(res.routeOptions.config.bar).type.toBe<number>()
+    expect(res.routeOptions.config.extra).type.toBe<boolean>()
+    expect(req.routeOptions.config.url).type.toBe<string>()
+    expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
   })
 
   fastify().route<RouteGeneric>({
@@ -143,134 +143,134 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
     config: { foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
     onRequest: (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     preParsing: (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<RequestPayload>(payload)
-      expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
-      expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(payload).type.toBe<RequestPayload>()
+      expect(done).type.toBeAssignableTo<(err?: FastifyError | null, res?: RequestPayload) => void>()
+      expect(done).type.toBeAssignableTo<(err?: NodeJS.ErrnoException) => void>()
     },
     preValidation: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     preHandler: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     onResponse: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<number>(res.statusCode)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.statusCode).type.toBe<number>()
     },
     onError: (req, res, error, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     preSerialization: (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     onSend: (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     handler: (req, res) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     }
   })
 
@@ -280,224 +280,246 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
     config: { foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
     onRequest: async (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     preParsing: async (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<RequestPayload>(payload)
-      expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
-      expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(payload).type.toBe<RequestPayload>()
+      expect(done).type.toBeAssignableTo<(err?: FastifyError | null, res?: RequestPayload) => void>()
+      expect(done).type.toBeAssignableTo<(err?: NodeJS.ErrnoException) => void>()
     },
     preValidation: async (req, res, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     preHandler: async (req, res, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     onResponse: async (req, res, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<number>(res.statusCode)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.statusCode).type.toBe<number>()
     },
     onError: async (req, res, error, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     preSerialization: async (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     onSend: async (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     },
     handler: (req, res) => {
-      expectType<BodyInterface>(req.body)
-      expectType<QuerystringInterface>(req.query)
-      expectType<ParamsInterface>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
-      expectType<string>(req.routeOptions.config.foo)
-      expectType<number>(req.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
-      expectType<string>(res.routeOptions.config.foo)
-      expectType<number>(res.routeOptions.config.bar)
-      expectType<string>(req.routeOptions.config.url)
-      expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.config.method)
+      expect(req.body).type.toBe<BodyInterface>()
+      expect(req.query).type.toBe<QuerystringInterface>()
+      expect(req.params).type.toBe<ParamsInterface>()
+      expect(req.headers).type.toBe<http.IncomingHttpHeaders & HeadersInterface>()
+      expect(req.routeOptions.config.foo).type.toBe<string>()
+      expect(req.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+      expect(res.routeOptions.config.foo).type.toBe<string>()
+      expect(res.routeOptions.config.bar).type.toBe<number>()
+      expect(req.routeOptions.config.url).type.toBe<string>()
+      expect(req.routeOptions.config.method).type.toBe<HTTPMethods | HTTPMethods[]>()
     }
   })
 })
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'CONNECT', // not a valid method but could be implemented by the user
   handler: routeHandler
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'OPTIONS',
   handler: routeHandler
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'OPTION', // OPTION is a typo for OPTIONS
   handler: routeHandler
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: ['GET', 'POST'],
   handler: routeHandler
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS
   handler: routeHandler
-}))
+})).type.toBe<FastifyInstance>()
 
-fastify().route({
-  url: '/',
-  method: 'GET',
-  handler: routeHandler,
-  // @ts-expect-error  Type 'number' is not assignable to type 'SchemaErrorFormatter'.
-  schemaErrorFormatter: 500
-})
-
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandler,
   schemaErrorFormatter: (errors, dataVar) => new Error('')
-}))
+})).type.toBe<FastifyInstance>()
 
-fastify().route({
-  // @ts-expect-error  Type 'true' is not assignable to type '"slash" | "no-slash" | "both" | undefined'.
+expect(fastify().route).type.not.toBeCallableWith({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
+  schemaErrorFormatter: 500
+})
+
+expect(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
+  prefixTrailingSlash: 'slash'
+})).type.toBe<FastifyInstance>()
+
+expect(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
+  prefixTrailingSlash: 'no-slash'
+})).type.toBe<FastifyInstance>()
+
+expect(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
+  prefixTrailingSlash: 'both'
+})).type.toBe<FastifyInstance>()
+
+expect(fastify().route).type.not.toBeCallableWith({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
   prefixTrailingSlash: true
 })
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'GET',
   handler: routeHandlerWithReturnValue
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<boolean>(fastify().hasRoute({
+expect(fastify().hasRoute({
   url: '/',
   method: 'GET'
-}))
+})).type.toBe<boolean>()
 
-expectType<boolean>(fastify().hasRoute({
+expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: { version: '1.2.0' }
-}))
+})).type.toBe<boolean>()
 
-expectType<boolean>(fastify().hasRoute({
+expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: { host: 'auth.fastify.test' }
-}))
+})).type.toBe<boolean>()
 
-expectType<boolean>(fastify().hasRoute({
+expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: { host: /.*\.fastify\.test$/ }
-}))
+})).type.toBe<boolean>()
 
-expectType<boolean>(fastify().hasRoute({
+expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: { host: /.*\.fastify\.test$/, version: '1.2.3' }
-}))
+})).type.toBe<boolean>()
 
-expectType<boolean>(fastify().hasRoute({
+expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
   constraints: {
@@ -508,48 +530,47 @@ expectType<boolean>(fastify().hasRoute({
     function: () => { },
     object: { foo: 'bar' }
   }
-}))
+})).type.toBe<boolean>()
 
-expectType<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>(
+expect(
   fastify().findRoute({
     url: '/',
     method: 'get'
   })
-)
+).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>()
 
 // we should not expose store
-fastify().findRoute({
+expect(fastify().findRoute({
   url: '/',
   method: 'get'
-  // @ts-expect-error  Property 'store' does not exist on type
-}).store
+})).type.not.toHaveProperty('store')
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'get',
   handler: routeHandlerWithReturnValue
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: ['put', 'patch'],
   handler: routeHandlerWithReturnValue
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: 'GET',
   handler: (req) => {
-    expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.method)
-    expectAssignable<string | Array<string>>(req.routeOptions.method)
+    expect(req.routeOptions.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+    expect(req.routeOptions.method).type.toBeAssignableTo<string | Array<string>>()
   }
-}))
+})).type.toBe<FastifyInstance>()
 
-expectType<FastifyInstance>(fastify().route({
+expect(fastify().route({
   url: '/',
   method: ['HEAD', 'GET'],
   handler: (req) => {
-    expectType<HTTPMethods | HTTPMethods[]>(req.routeOptions.method)
-    expectAssignable<string | Array<string>>(req.routeOptions.method)
+    expect(req.routeOptions.method).type.toBe<HTTPMethods | HTTPMethods[]>()
+    expect(req.routeOptions.method).type.toBeAssignableTo<string | Array<string>>()
   }
-}))
+})).type.toBe<FastifyInstance>()

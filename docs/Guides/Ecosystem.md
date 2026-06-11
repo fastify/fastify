@@ -538,7 +538,8 @@ middlewares into Fastify plugins
 - [`fastify-override`](https://github.com/matthyk/fastify-override)
   Fastify plugin to override decorators, plugins and hooks for testing purposes
 - [`fastify-param-schema-validation`](https://github.com/Player1205/fastify-param-schema-validation)
-  Enforce strict parameter definitions in route validation schemas to prevent missing parameter validation.
+  Enforce strict parameter definitions in route validation schemas
+  to prevent missing parameter validation.
 - [`fastify-passkit-webservice`](https://github.com/alexandercerutti/fastify-passkit-webservice)
   A set of Fastify plugins to integrate Apple Wallet Web Service specification
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)

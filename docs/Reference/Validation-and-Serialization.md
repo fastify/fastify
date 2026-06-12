@@ -583,6 +583,11 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
+Fastify supports different JSON Schema validators via
+`setValidatorCompiler`. Community plugins that integrate alternative JSON
+Schema validators are listed on the
+[Ecosystem](https://fastify.dev/docs/latest/Guides/Ecosystem/) page.
+
 ##### Custom Validator Best Practices
 
 When implementing custom validators, follow these patterns to ensure compatibility
@@ -920,8 +925,10 @@ For custom error responses in the schema, see
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 
-> Install version 1.0.1 of `ajv-errors`, as later versions are not compatible
-> with AJV v6 (the version shipped by Fastify v3).
+> Fastify v5 uses AJV v8 and requires a compatible `ajv-errors` version.
+> Fastify v3 requires `ajv-errors@1.0.1`, which supports AJV v6.
+> See the [AJV compiler versions table](https://github.com/fastify/ajv-compiler/#versions)
+> for the AJV version used by each Fastify release.
 
 Below is an example showing how to add **custom error messages for each
 property** of a schema by supplying custom AJV options. Inline comments in the

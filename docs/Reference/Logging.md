@@ -211,10 +211,31 @@ app.addHook('preHandler', function (req, reply, done) {
 > ℹ️ Note:
 > Ensure serializers never throw errors, as this can cause the Node.js
 > process to exit. See the
-> [Pino documentation](https://getpino.io/#/docs/api?id=opt-serializers) for
-> more information.
+> [Pino documentation](https://github.com/pinojs/pino/blob/main/docs/api.md#serializers)
+> for more information.
 
 *Any logger other than Pino will ignore the `serializers` option.*
+
+#### Custom Attribute Keys
+
+By default, Fastify logs use `req`, `res`, and `err` as attribute keys. These
+can be customized using the `customAttributeKeys` option:
+
+```js
+const fastify = require('fastify')({
+  logger: {
+    level: 'info',
+    customAttributeKeys: {
+      req: 'request',
+      res: 'response',
+      err: 'error'
+    }
+  }
+})
+```
+
+This will produce logs with `request`, `response`, and `error` keys instead of
+the default `req`, `res`, and `err`.
 
 ### Using Custom Loggers
 A custom logger instance can be supplied by passing it as `loggerInstance`. The
@@ -269,5 +290,4 @@ const fastify = Fastify({
 })
 ```
 
-See the [Pino redaction documentation](https://getpino.io/#/docs/redaction) for
-more details.
+See https://github.com/pinojs/pino/blob/main/docs/redaction.md for more details.

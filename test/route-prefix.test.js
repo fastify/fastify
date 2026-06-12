@@ -902,3 +902,38 @@ test('calls onRoute only once when prefixing', async t => {
 
   t.assert.deepStrictEqual(onRouteCalled, 1)
 })
+
+test('keeps routeOptions url consistent for prefixed / route aliases', async t => {
+  t.plan(3)
+  const fastify = Fastify({
+    ignoreTrailingSlash: false,
+    exposeHeadRoutes: false
+  })
+
+  const onRouteUrls = []
+  fastify.register(function (fastify, opts, next) {
+    fastify.addHook('onRoute', routeOptions => {
+      onRouteUrls.push(routeOptions.url)
+    })
+
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ routeUrl: req.routeOptions.url })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  const withoutSlash = await fastify.inject('/prefix')
+  const withSlash = await fastify.inject('/prefix/')
+
+  t.assert.deepStrictEqual(onRouteUrls, ['/prefix'])
+  t.assert.deepStrictEqual(JSON.parse(withoutSlash.payload), { routeUrl: '/prefix' })
+  t.assert.deepStrictEqual(JSON.parse(withSlash.payload), { routeUrl: '/prefix' })
+})

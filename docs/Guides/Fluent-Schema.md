@@ -78,7 +78,7 @@ const addressSchema = S.object()
 const commonSchemas = S.object()
   .id('https://fastify/demo')
   .definition('addressSchema', addressSchema)
-  .definition('otherSchema', otherSchema) // You can add any schemas you need
+  // .definition('otherSchema', otherSchema) // You can add any other schemas you need
 
 fastify.addSchema(commonSchemas)
 

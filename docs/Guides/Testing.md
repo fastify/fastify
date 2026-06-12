@@ -458,16 +458,15 @@ const { test }= require("node:test");
 const myPlugin = require("../plugin/myFirstPlugin");
 
 test("Test the Plugin Route", async t => {
-    t.plan(5)
+    t.plan(4)
     const fastify = Fastify()
 
     fastify.register(myPlugin)
 
     fastify.get("/", async (request, reply) => {
         // Testing the fastify decorators
-        t.assert.ifError(request.helloRequest)
-        t.assert.ok(request.helloRequest, "Hello World")
-        t.assert.ok(fastify.helloInstance, "Hello Fastify Instance")
+        t.assert.strictEqual(request.helloRequest, "Hello World")
+        t.assert.strictEqual(fastify.helloInstance, "Hello Fastify Instance")
         return ({ message: request.helloRequest })
     })
 

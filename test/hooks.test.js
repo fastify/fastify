@@ -815,6 +815,16 @@ test('onRoute hook should not be called when it registered after route', (t, tes
   })
 })
 
+
+test('onRoute this refers to the Fastify instance', (t, testDone) => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.addHook('onRoute', function (routeOptions) {
+    t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the Fastify instance')
+  })
+  fastify.get('/test-route', function (req, reply) { reply.send() })
+  fastify.close(testDone)
+})
 test('onResponse hook should log request error', (t, testDone) => {
   t.plan(4)
 

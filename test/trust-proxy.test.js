@@ -38,8 +38,10 @@ const testRequestValues = (t, req, options) => {
     t.assert.ok(req.protocol, 'protocol is defined')
     t.assert.strictEqual(req.protocol, options.protocol, 'gets protocol from x-forwarded-proto')
   }
-  if (options.port) {
-    t.assert.ok(req.port, 'port is defined')
+  if ('port' in options) {
+    if (options.port !== null) {
+      t.assert.ok(req.port, 'port is defined')
+    }
     t.assert.strictEqual(req.port, options.port, 'port is taken from x-forwarded-for or host')
   }
 }
@@ -50,14 +52,14 @@ before(async function () {
 })
 
 test('trust proxy, not add properties to node req', async t => {
-  t.plan(9)
+  t.plan(10)
   const app = fastify({
     trustProxy: true
   })
   t.after(() => app.close())
 
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', host: 'fastify.test' })
+    testRequestValues(t, req, { ip: '1.1.1.1', host: 'fastify.test', port: null })
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 

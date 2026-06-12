@@ -6,7 +6,7 @@ const Fastify = require('..')
 
 test('Double schema bucket - schema available for both', t => {
   const fastify = Fastify()
-  
+
   fastify.addSchema({
     $id: 'urn:schema:both',
     type: 'object',
@@ -21,7 +21,7 @@ test('Double schema bucket - schema available for both', t => {
 
 test('Double schema bucket - schema available for validator only', t => {
   const fastify = Fastify()
-  
+
   fastify.addSchema({
     $id: 'urn:schema:validator',
     type: 'object',
@@ -36,7 +36,7 @@ test('Double schema bucket - schema available for validator only', t => {
 
 test('Double schema bucket - schema available for serializer only', t => {
   const fastify = Fastify()
-  
+
   fastify.addSchema({
     $id: 'urn:schema:serializer',
     type: 'object',
@@ -51,7 +51,7 @@ test('Double schema bucket - schema available for serializer only', t => {
 
 test('Double schema bucket - getSchemas returns merged schema', t => {
   const fastify = Fastify()
-  
+
   fastify.addSchema({
     $id: 'urn:schema:serializer',
     type: 'object',

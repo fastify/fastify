@@ -232,6 +232,9 @@ section.
   Plugin to generate routes automatically with valid json content
 - [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
   Beautiful OpenAPI/Swagger API references for Fastify
+- [`@thecodepace/fastify-http-query`](https://github.com/TheCodePace/fastify-http-query)
+  Fastify plugin enabling the HTTP `QUERY` method (a safe, idempotent, cacheable
+  method with a body).
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)

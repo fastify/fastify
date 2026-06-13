@@ -14,6 +14,7 @@
 
 const fs = require('node:fs')
 const path = require('node:path')
+const { fetch } = require('undici')
 
 const ECOSYSTEM_FILE = path.join(__dirname, '../docs/Guides/Ecosystem.md')
 const GITHUB_OWNER_REGEX = /^[a-z\d](?:[a-z\d-]{0,38})$/i

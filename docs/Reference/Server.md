@@ -922,7 +922,7 @@ const fastify = require('fastify')({
 ```
 
 ### `defaultRoute`
-<a id="on-bad-url"></a>
+<a id="default-route"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
 can pass a default route with the option defaultRoute.

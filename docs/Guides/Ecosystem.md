@@ -208,7 +208,7 @@ section.
   Type-safe dependency injection support for Fastify, powered by [InferDI](https://github.com/inferdi/inferdi).
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
-- [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
+- [`@zrosenbauer/fastify-prisma`](https://github.com/zrosenbauer/fastify-prisma)
   A plugin for accessing an instantiated PrismaClient on your server.
 - [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
   A Fastify plugin for rendering Svelte components with support for SSR

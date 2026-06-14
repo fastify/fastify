@@ -67,7 +67,7 @@ test('.hostname parses hostname correctly', (t) => {
     t.assert.equal(
       req.hostname,
       fixture.expected,
-      `${fixture.req.headers.host} should parse to ${fixture.expected}`
+      `${JSON.stringify(fixture.req.headers)} should parse to ${fixture.expected}`
     )
   }
 })

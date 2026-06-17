@@ -472,7 +472,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -483,8 +483,6 @@ the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
 Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
-
-+ Default: `false`
 
 ```js
 const fastify = require('fastify')({
@@ -721,7 +719,7 @@ const fastify = require('fastify')({
       res.code(400)
       return res.send("Provided header is not valid")
     } else {
-      res.send(err)
+      res.send(error)
     }
   }
 })
@@ -847,7 +845,7 @@ function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
-fastify.get('/user/:username', (request, reply) => {
+const fastify = require('fastify')({
   routerOptions: {
     buildPrettyMeta: route => {
       const cleanMeta = Object.assign({}, route.store)
@@ -858,8 +856,12 @@ fastify.get('/user/:username', (request, reply) => {
       })
 
       return cleanMeta // this will show up in the pretty print output!
-    })
+    }
   }
+})
+
+fastify.get('/user/:username', (request, reply) => {
+  // route handler
 })
 ```
 

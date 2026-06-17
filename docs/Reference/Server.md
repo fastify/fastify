@@ -472,7 +472,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -721,7 +721,7 @@ const fastify = require('fastify')({
       res.code(400)
       return res.send("Provided header is not valid")
     } else {
-      res.send(err)
+      res.send(error)
     }
   }
 })
@@ -847,19 +847,21 @@ function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
-fastify.get('/user/:username', (request, reply) => {
+const fastify = require('fastify')({
   routerOptions: {
-    buildPrettyMeta: route => {
+    buildPrettyMeta: (route) => {
       const cleanMeta = Object.assign({}, route.store)
-
       // remove private properties
       Object.keys(cleanMeta).forEach(k => {
         if (typeof k === 'symbol') delete cleanMeta[k]
       })
-
       return cleanMeta // this will show up in the pretty print output!
-    })
+    }
   }
+})
+
+fastify.get('/user/:username', (request, reply) => {
+  reply.send({ user: request.params.username })
 })
 ```
 
@@ -1062,8 +1064,9 @@ objects and do not provide Fastify's decorated helpers.
 ### `querystringParser`
 <a id="querystringparser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core
-`querystring` module.
+The default query string parser that Fastify uses is the more performant fork
+of Node.js's core `querystring` module called
+[`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
 [`qs`](https://www.npmjs.com/package/qs).
@@ -1084,7 +1087,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('node:querystring')
+const querystring = require('fast-querystring')
 const fastify = require('fastify')({
   routerOptions: {
     querystringParser: str => querystring.parse(str.toLowerCase())

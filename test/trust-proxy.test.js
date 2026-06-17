@@ -163,6 +163,30 @@ test('trust proxy protocol', async t => {
   await fetchForwardedRequest(fastifyServer, '1.1.1.1', '/trustproxyprotocols', 'ipsum, dolor')
 })
 
+test('trust proxy derives port from x-forwarded-host', async t => {
+  t.plan(2)
+  const app = fastify({
+    trustProxy: true
+  })
+  t.after(() => app.close())
+
+  app.get('/forwarded-port', function (req, reply) {
+    t.assert.strictEqual(req.port, 8080, 'port derived from x-forwarded-host')
+    reply.code(200).send({ port: req.port })
+  })
+
+  const fastifyServer = await app.listen({ port: 0 })
+
+  // Send x-forwarded-host with a port
+  const response = await fetch(fastifyServer + '/forwarded-port', {
+    headers: {
+      'X-Forwarded-For': '1.1.1.1',
+      'X-Forwarded-Host': 'example.com:8080'
+    }
+  })
+  t.assert.strictEqual(response.status, 200)
+})
+
 test('trust proxy ignores forwarded headers from untrusted connections', async t => {
   t.plan(3)
 

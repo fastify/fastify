@@ -520,8 +520,7 @@ out [hyperid](https://github.com/mcollina/hyperid).
 
 > ℹ️ Note:
 > `genReqId` will be not called if the header set in
-> <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
-> 'request-id').
+> <code>[requestIdHeader](#requestidheader)</code> is available.
 
 ```js
 let i = 0
@@ -721,7 +720,7 @@ const fastify = require('fastify')({
       res.code(400)
       return res.send("Provided header is not valid")
     } else {
-      res.send(err)
+      res.send(error)
     }
   }
 })
@@ -847,7 +846,7 @@ function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
-fastify.get('/user/:username', (request, reply) => {
+const fastify = require('fastify')({
   routerOptions: {
     buildPrettyMeta: route => {
       const cleanMeta = Object.assign({}, route.store)
@@ -858,7 +857,7 @@ fastify.get('/user/:username', (request, reply) => {
       })
 
       return cleanMeta // this will show up in the pretty print output!
-    })
+    }
   }
 })
 ```
@@ -1062,8 +1061,9 @@ objects and do not provide Fastify's decorated helpers.
 ### `querystringParser`
 <a id="querystringparser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core
-`querystring` module.
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
+[`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
 [`qs`](https://www.npmjs.com/package/qs).
@@ -1084,10 +1084,10 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('node:querystring')
+const fastQuerystring = require('fast-querystring')
 const fastify = require('fastify')({
   routerOptions: {
-    querystringParser: str => querystring.parse(str.toLowerCase())
+    querystringParser: str => fastQuerystring.parse(str.toLowerCase())
   }
 })
 ```

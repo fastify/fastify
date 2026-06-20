@@ -90,6 +90,34 @@ const customReturnHandler: RouteHandlerMethod<
 
 expect(fastify().get<NumericReplyRoute, ContextConfigDefault, FastifySchema, Promise<string>>('/custom-return', customReturnHandler)).type.toBe<FastifyInstance>()
 
+interface CustomPluginReplyRoute {
+  Reply: number;
+}
+
+interface CustomPluginReply {
+  custom: boolean;
+}
+
+const customPluginReturnHandler: RouteHandlerMethod<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  CustomPluginReplyRoute,
+  ContextConfigDefault,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  FastifyBaseLogger,
+  Promise<CustomPluginReply>
+> = async function (request, reply) {
+  expect(this).type.toBe<FastifyInstance>()
+  expect(request).type.toBe<FastifyRequest<CustomPluginReplyRoute>>()
+  expect(reply).type.toBe<FastifyReply<CustomPluginReplyRoute>>()
+
+  return { custom: true }
+}
+
+expect(fastify().get<CustomPluginReplyRoute, ContextConfigDefault, FastifySchema, Promise<CustomPluginReply>>('/custom-plugin-return', customPluginReturnHandler)).type.toBe<FastifyInstance>()
+
 const asyncPreHandler = async (request: FastifyRequest) => {
   expect(request).type.toBe<FastifyRequest>()
 }

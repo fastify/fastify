@@ -1,0 +1,54 @@
+name: ci Deno
+
+on:
+  push:
+    branches:
+      - main
+      - next
+      - 'v*'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-unit:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        deno-version: [v2.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      # Node is used only to install fastify's dev dependencies; the test
+      # files themselves are run by Deno via its `node:test` compatibility.
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno-version }}
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      - name: Run unit tests with Deno
+        run: deno test --allow-all --no-check --no-lock test/

@@ -219,7 +219,7 @@ reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
 ```
 
 ### .removeHeader(key)
-<a id="getHeader"></a>
+<a id="removeHeader"></a>
 
 Remove the value of a previously set header.
 ```js

@@ -13,11 +13,13 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 
 ## Tier 3
 
-- [Mercedes-Benz Group](https://github.com/mercedes-benz)
-- [Val Town, Inc.](https://opencollective.com/valtown)
 - [Handsontable - JavaScript Data Grid](https://handsontable.com/docs/react-data-grid/?utm_source=Fastify_GH&utm_medium=sponsorship&utm_campaign=library_sponsorship_2024)
 - [Lokalise - A Localization and Translation Software Tool](https://lokalise.com/?utm_source=Fastify_GH&utm_medium=sponsorship)
+- [Val Town](https://www.val.town/)
+- [atagon GmbH](https://github.com/atagon-GmbH)
 
 ## Tier 2
 
-_Be the first!_
+- [Sent.dm](https://github.com/sentdm)
+- [Süddeutsche Zeitung](https://github.com/sueddeutsche)
+- [openclaw](https://github.com/openclaw)

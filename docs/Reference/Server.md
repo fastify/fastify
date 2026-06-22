@@ -519,7 +519,7 @@ generation behavior as shown below. For generating `UUID`s you may want to check
 out [hyperid](https://github.com/mcollina/hyperid).
 
 > ℹ️ Note:
-> `genReqId` will be not called if the header set in
+> `genReqId` will not be called if the header set in
 > <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
 > `false`).
 

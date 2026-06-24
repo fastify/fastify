@@ -575,7 +575,7 @@ test('allow re-thrown error to default error handler when route handler is async
 })
 
 // Issue 2078 https://github.com/fastify/fastify/issues/2078
-// Supported error code list: http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+// Supported error code list: https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 const invalidErrorCodes = [
   undefined,
   null,

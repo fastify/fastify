@@ -472,7 +472,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -589,7 +589,7 @@ controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 <a id="factory-querystring-parser"></a>
 
 The default query string parser that Fastify uses is a more performant fork
-of Node.js's core `querystring` module called
+of `fast-querystring` module called
 [`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
@@ -721,7 +721,7 @@ const fastify = require('fastify')({
       res.code(400)
       return res.send("Provided header is not valid")
     } else {
-      res.send(err)
+      res.send(error)
     }
   }
 })

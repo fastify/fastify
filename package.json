@@ -45,7 +45,7 @@
   "contributors": [
     {
       "name": "Tomas Della Vedova",
-      "url": "http://delved.org",
+      "url": "https://delvedor.dev",
       "author": true
     },
     {
@@ -59,7 +59,7 @@
     },
     {
       "name": "Dustin Deus",
-      "url": "http://starptech.de",
+      "url": "https://starptech.com",
       "email": "deusdustin@gmail.com"
     },
     {
@@ -74,7 +74,7 @@
     },
     {
       "name": "Trivikram Kamat",
-      "url": "http://trivikr.github.io",
+      "url": "https://trivikr.github.io",
       "email": "trivikr.dev@gmail.com"
     },
     {
@@ -183,7 +183,7 @@
     "cross-env": "^10.0.0",
     "eslint": "^9.0.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^5.0.0",
+    "fastify-plugin": "^6.0.0",
     "fastify-tsconfig": "^3.0.0",
     "fluent-json-schema": "^6.0.0",
     "h2url": "^0.2.0",

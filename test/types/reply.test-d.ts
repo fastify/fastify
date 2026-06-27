@@ -31,6 +31,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectAssignable<(key: string) => FastifyReply>(reply.removeHeader)
   expectAssignable<(key: string) => boolean>(reply.hasHeader)
   expectType<(url: string, statusCode?: number) => FastifyReply>(reply.redirect)
+  expectType<() => FastifyReply>(reply.noContent)
   expectType<() => FastifyReply>(reply.hijack)
   expectType<() => void>(reply.callNotFound)
   expectType<(contentType: string) => FastifyReply>(reply.type)

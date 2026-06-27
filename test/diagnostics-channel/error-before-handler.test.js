@@ -24,7 +24,7 @@ test('diagnostics channel handles an error before calling context handler', t =>
   const error = new Error('oh no')
   const request = new Request()
   const reply = new Reply({}, request)
-  request[symbols.kRouteContext] = {
+  request[symbols.kRouteCtx] = {
     config: {
       url: '/foo',
       method: 'GET'

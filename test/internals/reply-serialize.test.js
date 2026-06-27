@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { kReplyCacheSerializeFns, kRouteContext } = require('../../lib/symbols')
+const { kReplyCacheSerializeFns, kRouteCtx } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 function getDefaultSchema () {
@@ -210,9 +210,9 @@ test('Reply#compileSerializationSchema', async t => {
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
 
-      t.assert.strictEqual(reply[kRouteContext][kReplyCacheSerializeFns], null)
+      t.assert.strictEqual(reply[kRouteCtx][kReplyCacheSerializeFns], null)
       t.assert.strictEqual(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
-      t.assert.ok(reply[kRouteContext][kReplyCacheSerializeFns] instanceof WeakMap)
+      t.assert.ok(reply[kRouteCtx][kReplyCacheSerializeFns] instanceof WeakMap)
       t.assert.strictEqual(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
 
       reply.send({ hello: 'world' })
@@ -417,9 +417,9 @@ test('Reply#getSerializationFunction', async t => {
 
     fastify.get('/', (req, reply) => {
       t.assert.ok(!reply.getSerializationFunction(getDefaultSchema()))
-      t.assert.strictEqual(reply[kRouteContext][kReplyCacheSerializeFns], null)
+      t.assert.strictEqual(reply[kRouteCtx][kReplyCacheSerializeFns], null)
       t.assert.ok(!reply.getSerializationFunction('200'))
-      t.assert.strictEqual(reply[kRouteContext][kReplyCacheSerializeFns], null)
+      t.assert.strictEqual(reply[kRouteCtx][kReplyCacheSerializeFns], null)
 
       reply.send({ hello: 'world' })
     })
@@ -699,9 +699,9 @@ test('Reply#serializeInput', async t => {
 
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
-      t.assert.strictEqual(reply[kRouteContext][kReplyCacheSerializeFns], null)
+      t.assert.strictEqual(reply[kRouteCtx][kReplyCacheSerializeFns], null)
       t.assert.strictEqual(reply.serializeInput(input, getDefaultSchema()), JSON.stringify(input))
-      t.assert.ok(reply[kRouteContext][kReplyCacheSerializeFns] instanceof WeakMap)
+      t.assert.ok(reply[kRouteCtx][kReplyCacheSerializeFns] instanceof WeakMap)
 
       reply.send({ hello: 'world' })
     })

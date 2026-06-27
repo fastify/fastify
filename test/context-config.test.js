@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 
-const { kRouteContext } = require('../lib/symbols')
+const { kRouteCtx } = require('../lib/symbols')
 const Fastify = require('..')
 
 const schema = {
@@ -14,7 +14,7 @@ const schema = {
 }
 
 function handler (req, reply) {
-  reply.send(reply[kRouteContext].config)
+  reply.send(reply[kRouteCtx].config)
 }
 
 test('config', async t => {

@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const proxyquire = require('proxyquire')
 const { Readable } = require('node:stream')
-const { kTestInternals, kRouteContext } = require('../../lib/symbols')
+const { kTestInternals, kRouteCtx } = require('../../lib/symbols')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
@@ -49,7 +49,7 @@ test('rawBody function', t => {
   internals.rawBody(
     request,
     reply,
-    reply[kRouteContext]._parserOptions,
+    reply[kRouteCtx]._parserOptions,
     parser,
     done
   )
@@ -102,7 +102,7 @@ test('Should support Webpack and faux modules', t => {
   internals.rawBody(
     request,
     reply,
-    reply[kRouteContext]._parserOptions,
+    reply[kRouteCtx]._parserOptions,
     parser,
     done
   )

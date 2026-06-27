@@ -1,6 +1,6 @@
 'use strict'
 const { test } = require('node:test')
-const { kRouteContext } = require('../lib/symbols')
+const { kRouteCtx } = require('../lib/symbols')
 const fastify = require('..')
 
 test('handlers receive correct `this` context', async (t) => {
@@ -33,11 +33,11 @@ test('handlers have access to the internal context', async (t) => {
 
   const instance = fastify()
   instance.get('/', { config: { foo: 'bar' } }, function (req, reply) {
-    t.assert.ok(reply[kRouteContext])
-    t.assert.ok(reply[kRouteContext].config)
-    t.assert.ok(typeof reply[kRouteContext].config, Object)
-    t.assert.ok(reply[kRouteContext].config.foo)
-    t.assert.strictEqual(reply[kRouteContext].config.foo, 'bar')
+    t.assert.ok(reply[kRouteCtx])
+    t.assert.ok(reply[kRouteCtx].config)
+    t.assert.ok(typeof reply[kRouteCtx].config, Object)
+    t.assert.ok(reply[kRouteCtx].config.foo)
+    t.assert.strictEqual(reply[kRouteCtx].config.foo, 'bar')
     reply.send()
   })
 

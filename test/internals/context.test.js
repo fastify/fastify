@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { kRouteContext } = require('../../lib/symbols')
+const { kRouteCtx } = require('../../lib/symbols')
 const Context = require('../../lib/context')
 
 const Fastify = require('../..')
@@ -14,10 +14,10 @@ test('context', async context => {
     const app = Fastify()
 
     app.get('/', (req, reply) => {
-      t.assert.ok(req[kRouteContext] instanceof Context)
-      t.assert.ok(reply[kRouteContext] instanceof Context)
-      t.assert.ok(!('undefined' in reply[kRouteContext]))
-      t.assert.ok(!('undefined' in req[kRouteContext]))
+      t.assert.ok(req[kRouteCtx] instanceof Context)
+      t.assert.ok(reply[kRouteCtx] instanceof Context)
+      t.assert.ok(!('undefined' in reply[kRouteCtx]))
+      t.assert.ok(!('undefined' in req[kRouteCtx]))
 
       reply.send('hello world!')
     })

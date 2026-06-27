@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const Ajv = require('ajv')
-const { kRequestCacheValidateFns, kRouteContext } = require('../../lib/symbols')
+const { kRequestCacheValidateFns, kRouteCtx } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 const defaultSchema = {
@@ -240,11 +240,11 @@ test('#compileValidationSchema', async subtest => {
       t.plan(5)
 
       fastify.get('/', (req, reply) => {
-        t.assert.strictEqual(req[kRouteContext][kRequestCacheValidateFns], null)
+        t.assert.strictEqual(req[kRouteCtx][kRequestCacheValidateFns], null)
         t.assert.ok(req.compileValidationSchema(defaultSchema) instanceof Function)
-        t.assert.ok(req[kRouteContext][kRequestCacheValidateFns] instanceof WeakMap)
+        t.assert.ok(req[kRouteCtx][kRequestCacheValidateFns] instanceof WeakMap)
         t.assert.ok(req.compileValidationSchema(Object.assign({}, defaultSchema)) instanceof Function)
-        t.assert.ok(req[kRouteContext][kRequestCacheValidateFns] instanceof WeakMap)
+        t.assert.ok(req[kRouteCtx][kRequestCacheValidateFns] instanceof WeakMap)
 
         reply.send({ hello: 'world' })
       })
@@ -432,7 +432,7 @@ test('#getValidationFunction', async subtest => {
       req.getValidationFunction(defaultSchema)
       req.getValidationFunction('body')
 
-      t.assert.strictEqual(req[kRouteContext][kRequestCacheValidateFns], null)
+      t.assert.strictEqual(req[kRouteCtx][kRequestCacheValidateFns], null)
       reply.send({ hello: 'world' })
     })
 
@@ -732,9 +732,9 @@ test('#validate', async subtest => {
       t.plan(3)
 
       fastify.get('/', (req, reply) => {
-        t.assert.strictEqual(req[kRouteContext][kRequestCacheValidateFns], null)
+        t.assert.strictEqual(req[kRouteCtx][kRequestCacheValidateFns], null)
         t.assert.strictEqual(req.validateInput({ hello: 'world' }, defaultSchema), true)
-        t.assert.ok(req[kRouteContext][kRequestCacheValidateFns] instanceof WeakMap)
+        t.assert.ok(req[kRouteCtx][kRequestCacheValidateFns] instanceof WeakMap)
 
         reply.send({ hello: 'world' })
       })

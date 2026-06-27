@@ -58,6 +58,7 @@ export interface FastifyReply<
   removeHeader(key: HttpHeader): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   hasHeader(key: HttpHeader): boolean;
   redirect(url: string, statusCode?: number): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
+  noContent(): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void;
   hijack(): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   callNotFound(): void;

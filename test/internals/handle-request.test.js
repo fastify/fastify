@@ -5,7 +5,7 @@ const handleRequest = require('../../lib/handle-request')
 const internals = require('../../lib/handle-request')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
-const { kRouteContext } = require('../../lib/symbols')
+const { kRouteCtx } = require('../../lib/symbols')
 const buildSchema = require('../../lib/validation').compileSchemasForValidation
 
 const Ajv = require('ajv')
@@ -69,7 +69,7 @@ test('handler function - invalid schema', t => {
   buildSchema(context, schemaValidator)
   const request = {
     body: { hello: 'world' },
-    [kRouteContext]: context
+    [kRouteCtx]: context
   }
   internals.handler(request, new Reply(res, request))
 })
@@ -100,7 +100,7 @@ test('handler function - reply', t => {
     }
   }
   buildSchema(context, schemaValidator)
-  internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
+  internals.handler({ [kRouteCtx]: context }, new Reply(res, { [kRouteCtx]: context }))
 })
 
 test('handler function - preValidationCallback with finished response', t => {
@@ -125,7 +125,7 @@ test('handler function - preValidationCallback with finished response', t => {
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
+  internals.handler({ [kRouteCtx]: context }, new Reply(res, { [kRouteCtx]: context }))
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', async t => {

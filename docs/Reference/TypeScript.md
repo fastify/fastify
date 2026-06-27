@@ -250,7 +250,7 @@ can do it as follows:
    `Static`.
 
    ```typescript
-   import { Static, Type } from 'typebox'
+   import { Static, Type } from '@sinclair/typebox'
 
    export const User = Type.Object({
      name: Type.String(),

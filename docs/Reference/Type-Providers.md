@@ -57,6 +57,26 @@ server.get('/route', {
 })
 ```
 
+When using raw JSON Schema objects with `JsonSchemaToTsProvider`, TypeScript
+must be able to see the exact literal values in the schema. Inline schemas, like
+the example above, are inferred from the route call. If the schema is moved into
+a separate variable, use `as const`:
+
+```typescript
+const querystringSchema = {
+  type: 'object',
+  properties: {
+    foo: { type: 'number' },
+    bar: { type: 'string' },
+  },
+  required: ['foo', 'bar']
+} as const
+```
+
+Without `as const`, TypeScript may widen schema values such as `type: 'object'`
+to `type: string`, which prevents `json-schema-to-ts` from inferring the route
+types. This assertion has no effect on the schema used by Fastify at runtime.
+
 ### TypeBox
 
 The following sets up a TypeBox Type Provider:

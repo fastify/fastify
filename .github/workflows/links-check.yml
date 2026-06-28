@@ -17,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -54,7 +54,7 @@ jobs:
 
       - name: External Link Checker
         if: steps.changed-md.outputs.files != ''
-        uses: JustinBeckwith/linkinator-action@f62ba0c110a76effb2ee6022cc6ce4ab161085e3 # 2.4.0
+        uses: JustinBeckwith/linkinator-action@7b6b0bc671f6264e1a8daa4488a5bd91ce61dcd4 # 2.4.2
         with:
           paths: ${{ steps.changed-md.outputs.files }}
           retry: true

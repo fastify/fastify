@@ -66,8 +66,6 @@ section.
   Fastify, internally uses [fast-jwt](https://github.com/nearform/fast-jwt).
 - [`@fastify/kafka`](https://github.com/fastify/fastify-kafka) Plugin to interact
   with Apache Kafka.
-- [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to
-  share a common LevelDB connection across Fastify.
 - [`@fastify/middie`](https://github.com/fastify/middie) Middleware engine for
   Fastify.
 - [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
@@ -206,6 +204,8 @@ section.
 - [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
   A plugin to integrate [Papr](https://github.com/plexinc/papr),
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.
+- [`@inferdi/fastify`](https://github.com/inferdi/inferdi/tree/main/packages/fastify)
+  Type-safe dependency injection support for Fastify, powered by [InferDI](https://github.com/inferdi/inferdi).
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
@@ -225,10 +225,16 @@ section.
   Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
+- [`@pompelmi/fastify-plugin`](https://github.com/pompelmi/pompelmi/tree/main/packages/fastify-plugin)
+  In-process file upload scanning for Fastify with MIME/magic-byte
+  validation, ZIP bomb protection, size limits, and optional YARA.
 - [`@pybot/fastify-autoload`](https://github.com/kunal097/fastify-autoload)
   Plugin to generate routes automatically with valid json content
 - [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
   Beautiful OpenAPI/Swagger API references for Fastify
+- [`@thecodepace/fastify-http-query`](https://github.com/TheCodePace/fastify-http-query)
+  Fastify plugin enabling the HTTP `QUERY` method (a safe, idempotent, cacheable
+  method with a body).
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
@@ -278,6 +284,9 @@ section.
   MySQL plugin with auto SQL injection attack prevention.
 - [`fastify-at-postgres`](https://github.com/mateonunez/fastify-at-postgres) Fastify
   Postgres plugin with auto SQL injection attack prevention.
+- [`fastify-ata`](https://github.com/ata-core/fastify-ata) Use
+  [`ata-validator`](https://github.com/ata-core/ata-validator) as the JSON Schema
+  validator, keeping Fastify's default error shape.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
   [fastify-jwt](https://npm.im/fastify-jwt) and
@@ -536,6 +545,9 @@ middlewares into Fastify plugins
   OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-override`](https://github.com/matthyk/fastify-override)
   Fastify plugin to override decorators, plugins and hooks for testing purposes
+- [`fastify-param-schema-validation`](https://github.com/Player1205/fastify-param-schema-validation)
+  Enforce strict parameter definitions in route validation schemas
+  to prevent missing parameter validation.
 - [`fastify-passkit-webservice`](https://github.com/alexandercerutti/fastify-passkit-webservice)
   A set of Fastify plugins to integrate Apple Wallet Web Service specification
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
@@ -715,6 +727,8 @@ middlewares into Fastify plugins
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
+- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify)
+  i18n solution for error handling, email template
 - [`jeasx`](https://www.jeasx.dev)
   A flexible server-rendering framework built on Fastify
   that leverages asynchronous JSX to simplify web development.
@@ -724,3 +738,4 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
+

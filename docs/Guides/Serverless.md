@@ -109,13 +109,6 @@ signature to be used as a lambda `handler` function. This way all the incoming
 events (API Gateway requests) are passed to the `proxy` function of
 [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify).
 
-#### Example
-
-An example deployable with
-[claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be
-found
-[here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
-
 ### Considerations
 
 - API Gateway does not support streams yet, so you are not able to handle

@@ -312,7 +312,7 @@ listed in alphabetical order.
 * [__KaKa Ng__](https://github.com/climba03003),
   <https://www.npmjs.com/~climba03003>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),
-  <https://x.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
+  <https://www.npmjs.com/~luisorbaiceta>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://x.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm),
@@ -401,9 +401,6 @@ page where we accept and manage financial contributions.
 This project is kindly sponsored by:
 - [NearForm](https://nearform.com)
 - [Platformatic](https://platformatic.dev)
-
-Past Sponsors:
-- [LetzDoIt](https://www.letzdoitapp.com/)
 
 This list includes all companies that support one or more team members
 in maintaining this project.

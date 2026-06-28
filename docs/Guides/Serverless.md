@@ -126,7 +126,7 @@ found
 #### Beyond API Gateway
 
 If you need to integrate with more AWS services, take a look at
-[@h4ad/serverless-adapter](https://viniciusl.com.br/serverless-adapter/docs/main/frameworks/fastify)
+[@h4ad/serverless-adapter](https://serverless-adapter.viniciusl.com.br/docs/main/frameworks/fastify)
 on Fastify to find out how to integrate.
 
 ## Genezio
@@ -134,7 +134,7 @@ on Fastify to find out how to integrate.
 [Genezio](https://genezio.com/) is a platform designed to simplify the deployment
 of serverless applications to the cloud.
 
-[Genezio has a dedicated guide for deploying a Fastify application.](https://genezio.com/docs/frameworks/fastify/)
+[Genezio has a dedicated guide for deploying a Fastify application.](https://deployapps.dev/docs/frameworks/fastify/)
 
 ## Google Cloud Functions
 
@@ -265,7 +265,7 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 
 ### References
 - [Google Cloud Functions - Node.js Quickstart
-  ](https://cloud.google.com/functions/docs/quickstart-nodejs)
+  ](https://docs.cloud.google.com/run/docs/quickstarts/functions/deploy-functions-gcloud)
 
 ## Google Firebase Functions
 
@@ -403,7 +403,7 @@ the way you would write your Fastify app normally.
 
 *Follow the steps below to deploy to Google Cloud Run if you are already
 familiar with gcloud or just follow their
-[quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
+[quickstart](https://docs.cloud.google.com/run/docs/quickstarts)*.
 
 ### Adjust Fastify server
 
@@ -590,7 +590,7 @@ Then it should work fine.
 
 [Vercel](https://vercel.com) fully supports deploying Fastify applications.
 Additionally, with Vercel's
-[Fluid compute](https://vercel.com/docs/functions/fluid-compute), you can combine
+[Fluid compute](https://vercel.com/docs/fluid-compute), you can combine
 server-like concurrency with the autoscaling properties of traditional
 serverless functions.
 
@@ -598,7 +598,7 @@ Get started with the
 [Fastify template on Vercel](
 https://vercel.com/templates/backend/fastify-on-vercel).
 
-[Fluid compute](https://vercel.com/docs/functions/fluid-compute) currently
+[Fluid compute](https://vercel.com/docs/fluid-compute) currently
 requires an explicit opt-in. Learn more about enabling Fluid compute
 [here](
 https://vercel.com/docs/fluid-compute#enabling-fluid-compute).

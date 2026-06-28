@@ -17,7 +17,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(15)
+  t.plan(16)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()

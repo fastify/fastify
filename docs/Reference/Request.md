@@ -38,10 +38,10 @@ Request is a core Fastify object containing the following fields:
 > `request.ip`, `request.ips`, `request.host`, `request.hostname`,
 > `request.port`, and `request.protocol` come from request metadata
 > (socket and/or forwarding headers) and should be treated as untrusted input.
-> Fastify does not perform security validation for your business logic.
-> If you use these values in security-sensitive decisions, you must validate
-> them explicitly (for example: trusted proxy configuration, allow-lists,
-> strict parsing, and normalization).
+> Fastify does not perform security validation for business logic.
+> If these values are used in security-sensitive decisions, they must 
+> be validated explicitly (for example: trusted proxy configuration,
+> allow-lists, strict parsing, and normalization).
 
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.

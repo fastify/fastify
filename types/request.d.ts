@@ -90,11 +90,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
    * Parsed from request host metadata.
    * Treat as untrusted input and validate before security-sensitive use.
    */
-  readonly port: number;
-  /**
-   * Parsed from request host metadata.
-   * Treat as untrusted input and validate before security-sensitive use.
-   */
+  readonly port: number | null;
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;
@@ -108,9 +104,10 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
   readonly signal: AbortSignal;
+  readonly mediaType: string | undefined;
 
-  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction
+  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined
+  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined
   compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
   validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
   validateInput(input: any, httpPart?: HTTPRequestPart): boolean

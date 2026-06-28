@@ -219,7 +219,7 @@ reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
 ```
 
 ### .removeHeader(key)
-<a id="getHeader"></a>
+<a id="removeHeader"></a>
 
 Remove the value of a previously set header.
 ```js
@@ -308,7 +308,7 @@ reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'
 })
 reply.removeTrailer('server-timing')
-reply.getTrailer('server-timing') // undefined
+reply.hasTrailer('server-timing') // false
 ```
 
 
@@ -496,7 +496,7 @@ const schema1 = {
 const serialize = reply.compileSerializationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newSerialize = reply.compileSerializationSchema(schema1)
 
 console.log(newSerialize === serialize) // true
@@ -705,6 +705,11 @@ If you are sending a stream and you have not set a `'Content-Type'` header,
 As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
 
+When sending streams over HTTP/2, Fastify does not change the chunks emitted by
+the stream. If a stream can emit very large chunks, split them in your
+application code, for example by using `fs.createReadStream()` or a transform
+stream that emits smaller chunks.
+
 See special note about error handling for streams in
 [`setErrorHandler`](./Server.md#seterrorhandler).
 
@@ -848,7 +853,7 @@ be used to enhance the HTTP response.
 > 400, Fastify will automatically set it at 500.
 
 Tip: you can simplify errors by using the
-[`http-errors`](https://npm.im/http-errors) module or
+[`http-errors`](https://www.npmjs.com/package/http-errors) module or
 [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) plugin to
 generate errors:
 

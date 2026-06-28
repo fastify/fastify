@@ -232,6 +232,9 @@ section.
   Plugin to generate routes automatically with valid json content
 - [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
   Beautiful OpenAPI/Swagger API references for Fastify
+- [`@stitchapi/fastify`](https://github.com/rejifald/StitchAPI/tree/main/packages/fastify)
+  Decorate the app/request with a StitchAPI seam — request-scoped principal, SSE
+  streaming, error mapping, and a Pino-logger bridge.
 - [`@thecodepace/fastify-http-query`](https://github.com/TheCodePace/fastify-http-query)
   Fastify plugin enabling the HTTP `QUERY` method (a safe, idempotent, cacheable
   method with a body).

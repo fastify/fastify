@@ -737,9 +737,9 @@ fastify.addHook('onResponse', (request, reply, done) => {
   done()
 })
 
-fastify.addHook('preParsing', (request, reply, done) => {
+fastify.addHook('preParsing', (request, reply, payload, done) => {
   // Your code
-  done()
+  done(null, payload)
 })
 
 fastify.addHook('preValidation', (request, reply, done) => {
@@ -790,9 +790,9 @@ fastify.route({
     // this hook will always be executed after the shared `onResponse` hooks
     done()
   },
-  preParsing: function (request, reply, done) {
+  preParsing: function (request, reply, payload, done) {
     // This hook will always be executed after the shared `preParsing` hooks
-    done()
+    done(null, payload)
   },
   preValidation: function (request, reply, done) {
     // This hook will always be executed after the shared `preValidation` hooks

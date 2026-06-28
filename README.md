@@ -1,6 +1,6 @@
 <div align="center"> <a href="https://fastify.dev/">
     <img
-      src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg"
+      src="https://raw.githubusercontent.com/fastify/graphics/HEAD/fastify-landscape-outlined.svg"
       width="650"
       height="auto"
     />
@@ -383,7 +383,7 @@ active contributor's group.
 ## Hosted by
 
 [<img
-src="https://github.com/openjs-foundation/artwork/blob/main/openjs_foundation/openjs_foundation-logo-horizontal-color.png?raw=true"
+src="https://raw.githubusercontent.com/openjs-foundation/artwork/main/openjs_foundation/openjs_foundation-logo-horizontal-color.png"
 width="250px;"/>](https://openjsf.org/projects)
 
 We are an [At-Large

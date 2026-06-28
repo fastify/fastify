@@ -6,6 +6,7 @@ const Fastify = require('..')
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
 const { waitForCb } = require('./toolkit')
+const { kRequestContentType } = require('../lib/symbols')
 
 const customSchemaCompilers = {
   body: new AJV({
@@ -1374,6 +1375,7 @@ test('Schema validation when no content type is provided', async t => {
     },
     preValidation: async (request) => {
       request.headers['content-type'] = undefined
+      request[kRequestContentType] = undefined
     }
   }, async () => 'ok')
 
@@ -1459,6 +1461,27 @@ test('Schema validation will not be bypass by different content type', async t =
   })
   t.assert.strictEqual(found.status, 400)
   t.assert.strictEqual((await found.json()).code, 'FST_ERR_VALIDATION')
+
+  let injected = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': ' application/json'
+    },
+    payload: JSON.stringify({ invalid: 'string' })
+  })
+  t.assert.strictEqual(injected.statusCode, 400)
+  t.assert.strictEqual(injected.json().code, 'FST_ERR_VALIDATION')
+
+  injected = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': ' application/json'
+    },
+    payload: JSON.stringify({ foo: 'string' })
+  })
+  t.assert.strictEqual(injected.statusCode, 200)
 
   found = await fetch(address, {
     method: 'POST',

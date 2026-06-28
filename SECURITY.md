@@ -71,7 +71,7 @@ Fastify falls under the [OpenJS CNA](https://cna.openjsf.org/).
 A CVE will be assigned as part of our responsible disclosure process.
 
 > ℹ️ Note:
-> Fastify's [HackerOne](https://hackerone.com/fastify) program is now closed.
+> Fastify's HackerOne program is closed.
 
 ### Strict measures when reporting vulnerabilities
 

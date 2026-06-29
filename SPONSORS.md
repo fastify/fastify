@@ -17,6 +17,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 - [Lokalise - A Localization and Translation Software Tool](https://lokalise.com/?utm_source=Fastify_GH&utm_medium=sponsorship)
 - [Val Town](https://www.val.town/)
 - [atagon GmbH](https://github.com/atagon-GmbH)
+- [Photon](https://github.com/photon-hq)
 
 ## Tier 2
 

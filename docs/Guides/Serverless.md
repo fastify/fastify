@@ -451,9 +451,9 @@ You can add any valid `Dockerfile` that packages and runs a Node app. A basic
 docs](https://github.com/knative/docs/blob/2d654d1fd6311750cc57187a86253c52f273d924/docs/serving/samples/hello-world/helloworld-nodejs/Dockerfile).
 
 ```Dockerfile
-# Use the official Node.js 10 image.
+# Use the official Node.js LTS image.
 # https://hub.docker.com/_/node
-FROM node:10
+FROM node:lts
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app

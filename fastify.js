@@ -645,7 +645,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, routeEventContext)
       const reply = new Reply(res, request, childLogger)
 
-      routeEventContext.server[kLogController].incomingRequest(request)
+      routeEventContext.server[kLogController].incomingRequest(request, reply)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -670,7 +670,7 @@ function fastify (serverOptions) {
       const request = new Request(id, null, req, null, childLogger, routeEventContext)
       const reply = new Reply(res, request, childLogger)
 
-      routeEventContext.server[kLogController].incomingRequest(request)
+      routeEventContext.server[kLogController].incomingRequest(request, reply)
 
       return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
     }
@@ -698,7 +698,7 @@ function fastify (serverOptions) {
           const request = new Request(id, null, req, null, childLogger, routeEventContext)
           const reply = new Reply(res, request, childLogger)
 
-          routeEventContext.server[kLogController].incomingRequest(request)
+          routeEventContext.server[kLogController].incomingRequest(request, reply)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }

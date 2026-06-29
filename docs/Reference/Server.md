@@ -485,15 +485,15 @@ class MyLogController extends LogController {
     })
   }
 
-  incomingRequest (request) {
+  incomingRequest (request, reply, metadata) {
     // Use debug level instead of info for incoming requests
     request.log.debug({ req: request }, 'incoming request')
   }
 
-  requestCompleted (err, request, reply) {
+  requestCompleted (error, request, reply, metadata) {
     // Add custom fields to the request completed log
-    if (err) {
-      reply.log.error({ res: reply, err, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
+    if (error) {
+      reply.log.error({ res: reply, err: error, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
     } else {
       reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
     }
@@ -506,18 +506,23 @@ const fastify = require('fastify')({
 })
 ```
 
-The available methods that can be overridden are:
+The error-related methods share a unified signature:
+`(error, request, reply, metadata)`, where `metadata` carries any extra
+per-method data (for example, the `statusCode` passed to `serializerError`).
+`incomingRequest` and `routeNotFound` omit the `error` argument, since they fire
+at lifecycle points where no error exists. `serviceUnavailable` is a further
+exception, since no route — and therefore no `request`/`reply` — is formed.
 
 | Method | Signature | Description |
 |--------|-----------|-------------|
-| `isLogDisabled` | `(req)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
-| `incomingRequest` | `(request)` | Logs an incoming request at `info` level. |
-| `requestCompleted` | `(err, request, reply)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
-| `defaultErrorLog` | `(err, request, reply)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
-| `streamError` | `(err, reply, res)` | Logs stream-level errors after headers have been sent. |
-| `routeNotFound` | `(request)` | Logs a "route not found" message at `info` level. |
-| `writeHeadError` | `(error, reply)` | Logs a warning when `writeHead` fails during error handling. |
-| `serializerError` | `(err, reply, statusCode)` | Logs an error when the serializer for a given status code fails. |
+| `isLogDisabled` | `(request)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
+| `incomingRequest` | `(request, reply, metadata)` | Logs an incoming request at `info` level. |
+| `requestCompleted` | `(error, request, reply, metadata)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
+| `defaultErrorLog` | `(error, request, reply, metadata)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
+| `streamError` | `(error, request, reply, metadata)` | Logs stream-level errors after headers have been sent. |
+| `routeNotFound` | `(request, reply, metadata)` | Logs a "route not found" message at `info` level. |
+| `writeHeadError` | `(error, request, reply, metadata)` | Logs a warning when `writeHead` fails during error handling. |
+| `serializerError` | `(error, request, reply, metadata)` | Logs an error when the serializer for a given status code fails. The triggering status code is available as `metadata.statusCode`. |
 | `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
 
 **Note:** When you override a method, you take full control of it — the

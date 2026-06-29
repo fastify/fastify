@@ -93,14 +93,14 @@ export declare class LogController {
 
   constructor (options?: LogControllerOptions)
 
-  isLogDisabled (req: FastifyRequest): boolean
-  incomingRequest (request: FastifyRequest): void
-  requestCompleted (err: Error | null, request: FastifyRequest, reply: FastifyReply): void
-  defaultErrorLog (err: Error, request: FastifyRequest, reply: FastifyReply): void
-  streamError (err: Error, reply: FastifyReply, res: RawReplyDefaultExpression<RawServerDefault>): void
-  routeNotFound (request: FastifyRequest): void
-  writeHeadError (error: Error, reply: FastifyReply): void
-  serializerError (err: Error, reply: FastifyReply, statusCode: number): void
+  isLogDisabled (request: FastifyRequest): boolean
+  incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  requestCompleted (error: Error | null, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
   serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
 }
 

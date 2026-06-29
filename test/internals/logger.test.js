@@ -285,7 +285,7 @@ test('writeHeadError should not log when logging is disabled (boolean)', t => {
   }
   const request = {}
   const reply = { request, log }
-  logController.writeHeadError(new Error('write head failed'), reply)
+  logController.writeHeadError(new Error('write head failed'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
@@ -297,7 +297,7 @@ test('writeHeadError should not log when logging is disabled (function)', t => {
   }
   const request = {}
   const reply = { request, log }
-  logController.writeHeadError(new Error('write head failed'), reply)
+  logController.writeHeadError(new Error('write head failed'), request, reply)
   t.assert.ok(true, 'logger was not called')
 })
 
@@ -315,7 +315,7 @@ test('writeHeadError should log warn with error message', t => {
       }
     }
   }
-  logController.writeHeadError(error, reply)
+  logController.writeHeadError(error, request, reply)
 })
 
 test('serializerError should not log when logging is disabled (boolean)', t => {
@@ -326,7 +326,7 @@ test('serializerError should not log when logging is disabled (boolean)', t => {
   }
   const request = {}
   const reply = { request, log }
-  logController.serializerError(new Error('serializer failed'), reply, 500)
+  logController.serializerError(new Error('serializer failed'), request, reply, { statusCode: 500 })
   t.assert.ok(true, 'logger was not called')
 })
 
@@ -338,7 +338,7 @@ test('serializerError should not log when logging is disabled (function)', t => 
   }
   const request = {}
   const reply = { request, log }
-  logController.serializerError(new Error('serializer failed'), reply, 500)
+  logController.serializerError(new Error('serializer failed'), request, reply, { statusCode: 500 })
   t.assert.ok(true, 'logger was not called')
 })
 
@@ -356,7 +356,7 @@ test('serializerError should log error with status code', t => {
       }
     }
   }
-  logController.serializerError(err, reply, 500)
+  logController.serializerError(err, request, reply, { statusCode: 500 })
 })
 
 test('createLogController should use LogController instance directly', t => {
@@ -402,7 +402,7 @@ test('LogController subclass should work', t => {
       super({ requestIdLogLabel: 'traceId' })
     }
 
-    incomingRequest (request) {
+    incomingRequest (request, reply, metadata) {
       t.assert.ok(true, 'custom incomingRequest called')
     }
   }

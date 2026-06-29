@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        deno-version: canary
+        deno-version: [v2.9.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v6
@@ -42,7 +42,7 @@ jobs:
           deno-version: ${{ matrix.deno-version }}
 
       - name: Install dependencies
-        run: deno install --ignore-scripts
+        run: deno install
 
       - name: Run unit tests with Deno
         run: deno test --allow-all --no-check --no-lock test/

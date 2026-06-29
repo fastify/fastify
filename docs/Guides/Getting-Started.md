@@ -605,10 +605,10 @@ npm start
 
 - Slides
   - [Take your HTTP server to ludicrous
-    speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed)
+    speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed/)
     by [@mcollina](https://github.com/mcollina)
   - [What if I told you that HTTP can be
-    fast](https://delvedor.github.io/What-if-I-told-you-that-HTTP-can-be-fast)
+    fast](https://delvedor.dev/What-if-I-told-you-that-HTTP-can-be-fast/)
     by [@delvedor](https://github.com/delvedor)
 
 - Videos

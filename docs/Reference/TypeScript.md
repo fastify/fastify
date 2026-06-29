@@ -36,34 +36,40 @@ in a blank http Fastify server.
 
 1. Create a new npm project, install Fastify, and install typescript & Node.js
    types as peer dependencies:
-  ```bash
-  npm init -y
-  npm i fastify
-  npm i -D typescript @types/node
-  ```
+
+   ```bash
+   npm init -y
+   npm i fastify
+   npm i -D typescript @types/node
+   ```
+
 2. Add the following lines to the `"scripts"` section of the `package.json`:
-  ```json
-  {
-    "scripts": {
-      "build": "tsc -p tsconfig.json",
-      "start": "node index.js"
-    }
-  }
-  ```
+
+   ```json
+   {
+     "scripts": {
+       "build": "tsc -p tsconfig.json",
+       "start": "node index.js"
+     }
+   }
+   ```
 
 3. Initialize a TypeScript configuration file:
-  ```bash
-  npx tsc --init
-  ```
-  or use one of the [recommended
-  ones](https://github.com/tsconfig/bases#node-14-tsconfigjson).
 
-> ℹ️ Note:
-> Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
-> [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.
+   ```bash
+   npx tsc --init
+   ```
+
+or use one of the
+[recommended ones](https://github.com/tsconfig/bases#node-14-tsconfigjson).
+
+> ℹ️ Note: Set `target` property in `tsconfig.json` to `es2017` or greater to
+> avoid [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284)
+> warning.
 
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
+
    ```typescript
    import fastify from 'fastify'
 
@@ -81,6 +87,7 @@ in a blank http Fastify server.
      console.log(`Server listening at ${address}`)
    })
    ```
+
 6. Run `npm run build` - this will compile `index.ts` into `index.js` which can
    be executed using Node.js. If you run into any errors please open an issue in
    [fastify/help](https://github.com/fastify/help/)
@@ -107,23 +114,26 @@ generic types for route schemas and the dynamic properties located on the
 route-level `request` object.
 
 1. If you did not complete the previous example, follow steps 1-4 to get set up.
-2. Inside `index.ts`, define three interfaces `IQuerystring`,`IHeaders` and `IReply`:
+2. Inside `index.ts`, define three interfaces `IQuerystring`,`IHeaders` and
+   `IReply`:
+
    ```typescript
    interface IQuerystring {
-     username: string;
-     password: string;
+     username: string
+     password: string
    }
 
    interface IHeaders {
-     'h-Custom': string;
+     'h-Custom': string
    }
 
    interface IReply {
-     200: { success: boolean };
-     302: { url: string };
-     '4xx': { error: string };
+     200: { success: boolean }
+     302: { url: string }
+     '4xx': { error: string }
    }
    ```
+
 3. Using the three interfaces, define a new API route and pass them as generics.
    The shorthand route methods (i.e. `.get`) accept a generic object
    `RouteGenericInterface` containing five named properties: `Body`,
@@ -131,10 +141,11 @@ route-level `request` object.
    `Querystring`, `Params` and `Headers` will be passed down through the route
    method into the route method handler `request` instance and the `Reply`
    interface to the `reply` instance.
+
    ```typescript
    server.get<{
-     Querystring: IQuerystring,
-     Headers: IHeaders,
+     Querystring: IQuerystring
+     Headers: IHeaders
      Reply: IReply
    }>('/auth', async (request, reply) => {
      const { username, password } = request.query
@@ -143,34 +154,37 @@ route-level `request` object.
 
      // chaining .statusCode/.code calls with .send allows type narrowing. For example:
      // this works
-     reply.code(200).send({ success: true });
+     reply.code(200).send({ success: true })
      // but this gives a type error
-     reply.code(200).send('uh-oh');
+     reply.code(200).send('uh-oh')
      // it even works for wildcards
-     reply.code(404).send({ error: 'Not found' });
+     reply.code(404).send({ error: 'Not found' })
      return { success: true }
    })
    ```
 
 4. Build and run the server code with `npm run build` and `npm run start`
 5. Query the API
+
    ```bash
    curl localhost:8080/auth?username=admin&password=Password123!
    ```
+
    And it should return back `logged in!`
+
 6. But wait there's more! The generic interfaces are also available inside route
    level hook methods. Modify the previous route by adding a `preValidation`
    hook:
    ```typescript
    server.get<{
-     Querystring: IQuerystring,
-     Headers: IHeaders,
+     Querystring: IQuerystring
+     Headers: IHeaders
      Reply: IReply
    }>('/auth', {
      preValidation: (request, reply, done) => {
        const { username, password } = request.query
        done(username !== 'admin' ? new Error('Must be admin') : undefined) // only validate `admin` account
-     }
+     },
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
@@ -179,8 +193,7 @@ route-level `request` object.
    ```
 7. Build and run and query with the `username` query string option set to
    anything other than `admin`. The API should now return a HTTP 500 error
-   `{"statusCode":500,"error":"Internal Server Error","message":"Must be
-   admin"}`
+   `{"statusCode":500,"error":"Internal Server Error","message":"Must be admin"}`
 
 🎉 Good work, now you can define interfaces for each route and have strictly
 typed request and reply instances. Other parts of the Fastify type system rely
@@ -191,8 +204,9 @@ documentation below to learn more about what is available.
 
 To validate your requests and responses you can use JSON Schema files. If you
 didn't know already, defining schemas for your Fastify routes can increase their
-throughput! Check out the [Validation and
-Serialization](./Validation-and-Serialization.md) documentation for more info.
+throughput! Check out the
+[Validation and Serialization](./Validation-and-Serialization.md) documentation
+for more info.
 
 Also it has the advantage to use the defined type within your handlers
 (including pre-validation, etc.).
@@ -206,10 +220,11 @@ Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
 
-And a `zod` wrapper by a third party called [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+And a `zod` wrapper by a third party called
+[`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
 
-They simplify schema validation setup and you can read more about them in [Type
-Providers](./Type-Providers.md) page.
+They simplify schema validation setup and you can read more about them in
+[Type Providers](./Type-Providers.md) page.
 
 Below is how to setup schema validation using the `typebox`,
 `json-schema-to-typescript`, and `json-schema-to-ts` packages without type
@@ -217,58 +232,59 @@ providers.
 
 #### TypeBox
 
-A useful library for building types and a schema at once is [TypeBox](https://www.npmjs.com/package/typebox).
-With TypeBox you define your schema within your code and use them directly as
-types or schemas as you need them.
+A useful library for building types and a schema at once is
+[TypeBox](https://www.npmjs.com/package/typebox). With TypeBox you define your
+schema within your code and use them directly as types or schemas as you need
+them.
 
 When you want to use it for validation of some payload in a fastify route you
 can do it as follows:
 
 1. Install `typebox` in your project.
 
-    ```bash
-    npm i typebox
-    ```
+   ```bash
+   npm i typebox
+   ```
 
-2. Define the schema you need with `Type` and create the respective type  with
+2. Define the schema you need with `Type` and create the respective type with
    `Static`.
 
-    ```typescript
-    import { Static, Type } from 'typebox'
+   ```typescript
+   import { Static, Type } from '@sinclair/typebox'
 
-    export const User = Type.Object({
-      name: Type.String(),
-      mail: Type.Optional(Type.String({ format: 'email' })),
-    })
+   export const User = Type.Object({
+     name: Type.String(),
+     mail: Type.Optional(Type.String({ format: 'email' })),
+   })
 
-    export type UserType = Static<typeof User>
-    ```
+   export type UserType = Static<typeof User>
+   ```
 
 3. Use the defined type and schema during the definition of your route
 
-    ```typescript
-    import Fastify from 'fastify'
-    // ...
+   ```typescript
+   import Fastify from 'fastify'
+   // ...
 
-    const fastify = Fastify()
+   const fastify = Fastify()
 
-    fastify.post<{ Body: UserType, Reply: UserType }>(
-      '/',
-      {
-        schema: {
-          body: User,
-          response: {
-            200: User
-          },
-        },
-      },
-      (request, reply) => {
-        // The `name` and `mail` types are automatically inferred
-        const { name, mail } = request.body;
-        reply.status(200).send({ name, mail });
-      }
-    )
-    ```
+   fastify.post<{ Body: UserType; Reply: UserType }>(
+     '/',
+     {
+       schema: {
+         body: User,
+         response: {
+           200: User,
+         },
+       },
+     },
+     (request, reply) => {
+       // The `name` and `mail` types are automatically inferred
+       const { name, mail } = request.body
+       reply.status(200).send({ name, mail })
+     },
+   )
+   ```
 
 #### json-schema-to-typescript
 
@@ -316,21 +332,23 @@ interfaces!
 
 4. Add a `compile-schemas` script to the package.json:
 
-```json
+   ```json
    {
      "scripts": {
        "compile-schemas": "json2ts -i schemas -o types"
      }
    }
-```
+   ```
 
    `json2ts` is a CLI utility included in `json-schema-to-typescript`. `schemas`
    is the input path, and `types` is the output path.
+
 5. Run `npm run compile-schemas`. Two new files should have been created in the
    `types` directory.
+
 6. Update `index.ts` to have the following code:
 
-```typescript
+   ```typescript
    import fastify from 'fastify'
 
    // import json schemas as normal
@@ -344,22 +362,22 @@ interfaces!
    const server = fastify()
 
    server.get<{
-     Querystring: QuerystringSchemaInterface,
+     Querystring: QuerystringSchemaInterface
      Headers: HeadersSchemaInterface
    }>('/auth', {
      schema: {
        querystring: QuerystringSchema,
-       headers: HeadersSchema
+       headers: HeadersSchema,
      },
      preValidation: (request, reply, done) => {
        const { username, password } = request.query
        done(username !== 'admin' ? new Error('Must be admin') : undefined)
-     }
-     //  or if using async
-     //  preValidation: async (request, reply) => {
-     //    const { username, password } = request.query
-     //    if (username !== "admin") throw new Error("Must be admin");
-     //  }
+     },
+     // or if using async
+     // preValidation: async (request, reply) => {
+     //   const { username, password } = request.query
+     //   if (username !== "admin") throw new Error("Must be admin")
+     // }
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
@@ -367,14 +385,14 @@ interfaces!
    })
 
    server.route<{
-     Querystring: QuerystringSchemaInterface,
+     Querystring: QuerystringSchemaInterface
      Headers: HeadersSchemaInterface
    }>({
      method: 'GET',
      url: '/auth2',
      schema: {
        querystring: QuerystringSchema,
-       headers: HeadersSchema
+       headers: HeadersSchema,
      },
      preHandler: (request, reply, done) => {
        const { username, password } = request.query
@@ -384,8 +402,8 @@ interfaces!
      handler: (request, reply) => {
        const { username, password } = request.query
        const customerHeader = request.headers['h-Custom']
-       reply.status(200).send({username});
-     }
+       reply.status(200).send({ username })
+     },
    })
 
    server.listen({ port: 8080 }, (err, address) => {
@@ -396,6 +414,7 @@ interfaces!
      console.log(`Server listening at ${address}`)
    })
    ```
+
    Pay special attention to the imports at the top of this file. It might seem
    redundant, but you need to import both the schema files and the generated
    interfaces.
@@ -416,7 +435,7 @@ npm i -D json-schema-to-ts
 ```
 
 In your code you can define your schema like a normal object. But be aware of
-making it *const* like explained in the docs of the module.
+making it _const_ like explained in the docs of the module.
 
 ```typescript
 const todo = {
@@ -427,14 +446,15 @@ const todo = {
     done: { type: 'boolean' },
   },
   required: ['name'],
-} as const; // don't forget to use const !
+} as const // don't forget to use const !
 ```
 
 With the provided type `FromSchema` you can build a type from your schema and
 use it in your handler.
 
 ```typescript
-import { FromSchema } from "json-schema-to-ts";
+import { FromSchema } from 'json-schema-to-ts'
+
 fastify.post<{ Body: FromSchema<typeof todo> }>(
   '/todo',
   {
@@ -445,10 +465,9 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
           type: 'string',
         },
       },
-    }
+    },
   },
   async (request, reply): Promise<void> => {
-
     /*
     request.body has type
     {
@@ -462,17 +481,16 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
     request.body.name // will not throw type error
     request.body.notthere // will throw type error
 
-    reply.status(201).send();
+    reply.status(201).send()
   },
-);
+)
 ```
 
 ### Plugins
 
 One of Fastify's most distinguishable features is its extensive plugin
 ecosystem. Plugin types are fully supported, and take advantage of the
-[declaration
-merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html)
+[declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html)
 pattern. This example is broken up into three parts: Creating a TypeScript
 Fastify Plugin, Creating Type Definitions for a Fastify Plugin, and Using a
 Fastify Plugin in a TypeScript Project.
@@ -480,13 +498,16 @@ Fastify Plugin in a TypeScript Project.
 #### Creating a TypeScript Fastify Plugin
 
 1. Initialize a new npm project and install required dependencies
+
    ```bash
    npm init -y
    npm i fastify fastify-plugin
    npm i -D typescript @types/node
    ```
+
 2. Add a `build` script to the `"scripts"` section and `'index.d.ts'` to the
    `"types"` section of the `package.json` file:
+
    ```json
    {
      "types": "index.d.ts",
@@ -495,12 +516,16 @@ Fastify Plugin in a TypeScript Project.
      }
    }
    ```
+
 3. Initialize a TypeScript configuration file:
+
    ```bash
    npx typescript --init
    ```
+
    Once the file is generated, enable the `"declaration"` option in the
    `"compilerOptions"` object.
+
    ```json
    {
      "compilerOptions": {
@@ -508,8 +533,11 @@ Fastify Plugin in a TypeScript Project.
      }
    }
    ```
+
 4. Create an `index.ts` file - this will contain the plugin code
+
 5. Add the following code to `index.ts`
+
    ```typescript
    import { FastifyPluginCallback, FastifyPluginAsync } from 'fastify'
    import fp from 'fastify-plugin'
@@ -549,9 +577,12 @@ Fastify Plugin in a TypeScript Project.
    // or
    // export default fp(myPluginAsync, '3.x')
    ```
+
 6. Run `npm run build` to compile the plugin code and produce both a JavaScript
    source file and a type definition file.
+
 7. With the plugin now complete you can [publish to npm] or use it locally.
+
    > You do not _need_ to publish your plugin to npm to use it. You can include
    > it in a Fastify project and reference it as you would any piece of code! As
    > a TypeScript user, make sure the declaration override exists somewhere that
@@ -565,27 +596,31 @@ outlined in this example are for adding TypeScript support for users consuming
 your plugin.
 
 1. Initialize a new npm project and install required dependencies
+
    ```bash
    npm init -y
    npm i fastify-plugin
    ```
+
 2. Create two files `index.js` and `index.d.ts`
 3. Modify the package json to include these files under the `main` and `types`
    properties (the name does not have to be `index` explicitly, but it is
    recommended the files have the same name):
+
    ```json
    {
      "main": "index.js",
      "types": "index.d.ts"
    }
    ```
+
 4. Open `index.js` and add the following code:
+
    ```javascript
    // fastify-plugin is highly recommended for any plugin you write
    const fp = require('fastify-plugin')
 
-   function myPlugin (instance, options, done) {
-
+   function myPlugin(instance, options, done) {
      // decorate the fastify instance with a custom function called myPluginFunc
      instance.decorate('myPluginFunc', (input) => {
        return input.toUpperCase()
@@ -596,10 +631,12 @@ your plugin.
 
    module.exports = fp(myPlugin, {
      fastify: '5.x',
-     name: 'my-plugin' // this is used by fastify-plugin to derive the property name
+     name: 'my-plugin', // this is used by fastify-plugin to derive the property name
    })
    ```
+
 5. Open `index.d.ts` and add the following code:
+
    ```typescript
    import { FastifyPluginCallback } from 'fastify'
 
@@ -628,7 +665,7 @@ your plugin.
    export default myPlugin
    ```
 
-__Note__: [fastify-plugin](https://github.com/fastify/fastify-plugin) v2.3.0 and
+**Note**: [fastify-plugin](https://github.com/fastify/fastify-plugin) v2.3.0 and
 newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
@@ -640,8 +677,8 @@ TypeScript project!
 
 The Fastify plugin system enables developers to decorate the Fastify instance,
 and the request/reply instances. For more information check out this blog post
-on [Declaration Merging and Generic
-Inheritance](https://dev.to/ethanarrowood/is-declaration-merging-and-generic-inheritance-at-the-same-time-impossible-53cp).
+on
+[Declaration Merging and Generic Inheritance](https://dev.to/ethanarrowood/is-declaration-merging-and-generic-inheritance-at-the-same-time-impossible-53cp).
 
 #### Using a Plugin
 
@@ -657,6 +694,7 @@ included **regardless** of if the plugin is being used or not. This is an
 unfortunate limitation of using TypeScript and is unavoidable as of right now.
 
 However, there are a couple of suggestions to help improve this experience:
+
 - Make sure the `no-unused-vars` rule is enabled in
   [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
   are actually being loaded.
@@ -665,9 +703,9 @@ However, there are a couple of suggestions to help improve this experience:
   dependencies are being used somewhere in your project.
 
 Note that using `require` will not load the type definitions properly and may
-cause type errors.
-TypeScript can only identify the types that are directly imported into code,
-which means that you can use require inline with import on top. For example:
+cause type errors. TypeScript can only identify the types that are directly
+imported into code, which means that you can use require inline with import on
+top. For example:
 
 ```typescript
 import 'plugin' // here will trigger the type augmentation.
@@ -682,22 +720,25 @@ fastify.register(plugin)
 ```
 
 Or even explicit config on tsconfig
+
 ```jsonc
 {
-  "types": ["plugin"] // we force TypeScript to import the types
+  "types": ["plugin"], // we force TypeScript to import the types
 }
 ```
 
 #### `getDecorator<T>`
 
-Fastify's `getDecorator<T>` method retrieves decorators with enhanced type safety.
+Fastify's `getDecorator<T>` method retrieves decorators with enhanced type
+safety.
 
 The `getDecorator<T>` method supports generic type parameters for enhanced type
 safety:
 
 ```typescript
 // Type-safe decorator retrieval
-const usersRepository = fastify.getDecorator<IUsersRepository>('usersRepository')
+const usersRepository =
+  fastify.getDecorator<IUsersRepository>('usersRepository')
 const session = request.getDecorator<ISession>('session')
 const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
 ```
@@ -720,16 +761,16 @@ declare module 'fastify' {
 }
 ```
 
-This approach modifies the Fastify instance globally, which may lead to conflicts
-and inconsistent behavior in multi-server setups or with plugin encapsulation.
+This approach modifies the Fastify instance globally, which may lead to
+conflicts and inconsistent behavior in multi-server setups or with plugin
+encapsulation.
 
 Using `getDecorator<T>` allows limiting types scope:
 
 ```typescript
 serverOne.register(async function (fastify) {
-  const usersRepository = fastify.getDecorator<PostgreUsersRepository>(
-    'usersRepository'
-  )
+  const usersRepository =
+    fastify.getDecorator<PostgreUsersRepository>('usersRepository')
 
   fastify.decorateRequest('session', null)
   fastify.addHook('onRequest', async (req, reply) => {
@@ -743,9 +784,8 @@ serverOne.register(async function (fastify) {
 })
 
 serverTwo.register(async function (fastify) {
-  const usersRepository = fastify.getDecorator<SqlLiteUsersRepository>(
-    'usersRepository'
-  )
+  const usersRepository =
+    fastify.getDecorator<SqlLiteUsersRepository>('usersRepository')
 
   fastify.decorateReply('sendSuccess', function (data) {
     return this.send({ success: true })
@@ -760,23 +800,24 @@ serverTwo.register(async function (fastify) {
 
 **Bound Functions Inference**
 
-To save time, it is common to infer function types instead of writing them manually:
+To save time, it is common to infer function types instead of writing them
+manually:
 
 ```typescript
-function sendSuccess (this: FastifyReply) {
+function sendSuccess(this: FastifyReply) {
   return this.send({ success: true })
 }
 
 export type SendSuccess = typeof sendSuccess
 ```
 
-However, `getDecorator` returns functions with the `this` context already **bound**,
-meaning the `this` parameter disappears from the function signature.
+However, `getDecorator` returns functions with the `this` context already
+**bound**, meaning the `this` parameter disappears from the function signature.
 
 To correctly type it, use the `OmitThisParameter` utility:
 
 ```typescript
-function sendSuccess (this: FastifyReply) {
+function sendSuccess(this: FastifyReply) {
   return this.send({ success: true })
 }
 
@@ -791,8 +832,8 @@ fastify.get('/success', async (request, reply) => {
 
 #### `setDecorator<T>`
 
-Fastify's `setDecorator<T>` method provides enhanced type safety for updating request
-decorators.
+Fastify's `setDecorator<T>` method provides enhanced type safety for updating
+request decorators.
 
 The `setDecorator<T>` method provides enhanced type safety for updating request
 decorators:
@@ -807,8 +848,8 @@ fastify.addHook('preHandler', async (req, reply) => {
 
 **Type Safety Benefits**
 
-If the `FastifyRequest` interface does not declare the decorator, type assertions
-are typically needed:
+If the `FastifyRequest` interface does not declare the decorator, type
+assertions are typically needed:
 
 ```typescript
 fastify.addHook('preHandler', async (req, reply) => {
@@ -829,15 +870,15 @@ fastify.addHook('preHandler', async (req, reply) => {
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.
 [Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by
-following the [TypeScript JSDoc
-Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+following the
+[TypeScript JSDoc Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
 
 For example:
 
 ```js
 /**  @type {import('fastify').FastifyPluginAsync<{ optionA: boolean, optionB: string }>} */
 module.exports = async function (fastify, { optionA, optionB }) {
-  fastify.get('/look', () => 'at me');
+  fastify.get('/look', () => 'at me')
 }
 ```
 
@@ -851,10 +892,9 @@ All `http`, `https`, and `http2` types are inferred from `@types/node`
 [Generics](#generics) are documented by their default value as well as their
 constraint value(s). Read these articles for more information on TypeScript
 generics.
-- [Generic Parameter
-  Default](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#generic-parameter-defaults)
-- [Generic Constraints](https://www.typescriptlang.org/docs/handbook/2/generics.html#generic-constraints)
 
+- [Generic Parameter Default](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#generic-parameter-defaults)
+- [Generic Constraints](https://www.typescriptlang.org/docs/handbook/2/generics.html#generic-constraints)
 
 #### How to import
 
@@ -865,54 +905,69 @@ There are a couple supported import methods with the Fastify type system.
 
 1. `import fastify from 'fastify'`
    - Types are resolved but not accessible using dot notation
+
    - Example:
+
      ```typescript
      import fastify from 'fastify'
 
      const f = fastify()
-     f.listen({ port: 8080 }, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => console.log('running'))
      ```
+
    - Gain access to types with destructuring:
+
      ```typescript
      import fastify, { FastifyInstance } from 'fastify'
 
      const f: FastifyInstance = fastify()
-     f.listen({ port: 8080 }, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => console.log('running'))
      ```
+
    - Destructuring also works for the main API method:
+
      ```typescript
      import { fastify, FastifyInstance } from 'fastify'
 
      const f: FastifyInstance = fastify()
-     f.listen({ port: 8080 }, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => console.log('running'))
      ```
+
 2. `import * as Fastify from 'fastify'`
    - Types are resolved and accessible using dot notation
+
    - Calling the main Fastify API method requires a slightly different syntax
      (see example)
+
    - Example:
+
      ```typescript
      import * as Fastify from 'fastify'
 
      const f: Fastify.FastifyInstance = Fastify.fastify()
-     f.listen({ port: 8080 }, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => console.log('running'))
      ```
+
 3. `const fastify = require('fastify')`
    - This syntax is valid and will import fastify as expected; however, types
      will **not** be resolved
+
    - Example:
+
      ```typescript
      const fastify = require('fastify')
 
      const f = fastify()
-     f.listen({ port: 8080 }, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => console.log('running'))
      ```
+
    - Destructuring is supported and will resolve types properly
+
      ```typescript
      const { fastify } = require('fastify')
 
      const f = fastify()
-     f.listen({ port: 8080 }, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => console.log('running'))
      ```
 
 #### Generics
@@ -923,6 +978,7 @@ documented, in detail, within this section.
 Most definitions depend on `@types/node` modules `http`, `https`, and `http2`
 
 ##### RawServer
+
 Underlying Node.js server type
 
 Default: `http.Server`
@@ -934,6 +990,7 @@ Enforces generic parameters: [`RawRequest`][RawRequestGeneric],
 [`RawReply`][RawReplyGeneric]
 
 ##### RawRequest
+
 Underlying Node.js request type
 
 Default: [`RawRequestDefaultExpression`][RawRequestDefaultExpression]
@@ -943,6 +1000,7 @@ Constraints: `http.IncomingMessage`, `http2.Http2ServerRequest`
 Enforced by: [`RawServer`][RawServerGeneric]
 
 ##### RawReply
+
 Underlying Node.js response type
 
 Default: [`RawReplyDefaultExpression`][RawReplyDefaultExpression]
@@ -952,6 +1010,7 @@ Constraints: `http.ServerResponse`, `http2.Http2ServerResponse`
 Enforced by: [`RawServer`][RawServerGeneric]
 
 ##### Logger
+
 Fastify logging utility
 
 Default: [`FastifyLoggerOptions`][FastifyLoggerOptions]
@@ -959,6 +1018,7 @@ Default: [`FastifyLoggerOptions`][FastifyLoggerOptions]
 Enforced by: [`RawServer`][RawServerGeneric]
 
 ##### RawBody
+
 A generic parameter for the content-type-parser methods.
 
 Constraints: `string | Buffer`
@@ -968,6 +1028,7 @@ Constraints: `string | Buffer`
 #### Fastify
 
 ##### fastify< [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(opts?: [FastifyServerOptions][FastifyServerOptions]): [FastifyInstance][FastifyInstance]
+
 [src](https://github.com/fastify/fastify/blob/main/fastify.d.ts#L19)
 
 The main Fastify API method. By default creates an HTTP server. Utilizing
@@ -982,11 +1043,13 @@ and generic breakdown below for more information.
 ###### Example 1: Standard HTTP server
 
 No need to specify the `Server` generic as the type system defaults to HTTP.
+
 ```typescript
 import fastify from 'fastify'
 
 const server = fastify()
 ```
+
 Check out the Learn By Example - [Getting Started](#getting-started) example for
 a more detailed http server walkthrough.
 
@@ -998,21 +1061,24 @@ a more detailed http server walkthrough.
    import path from 'node:path'
    import fastify from 'fastify'
    ```
-2. Perform the following steps before setting up a Fastify HTTPS server
-to create the `key.pem` and `cert.pem` files:
-```sh
-openssl genrsa -out key.pem
-openssl req -new -key key.pem -out csr.pem
-openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
-rm csr.pem
-```
+2. Perform the following steps before setting up a Fastify HTTPS server to
+   create the `key.pem` and `cert.pem` files:
+
+   ```sh
+   openssl genrsa -out key.pem
+   openssl req -new -key key.pem -out csr.pem
+   openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+   rm csr.pem
+   ```
+
 3. Instantiate a Fastify https server and add a route:
+
    ```typescript
    const server = fastify({
      https: {
        key: fs.readFileSync(path.join(__dirname, 'key.pem')),
-       cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
-     }
+       cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
+     },
    })
 
    server.get('/', async function (request, reply) {
@@ -1027,8 +1093,9 @@ rm csr.pem
      console.log(`Server listening at ${address}`)
    })
    ```
-4. Build and run! Test your server out by querying with: `curl -k
-   https://localhost:8080`
+
+4. Build and run! Test your server out by querying with:
+   `curl -k https://localhost:8080`
 
 ###### Example 3: HTTP2 server
 
@@ -1041,7 +1108,7 @@ property will create an insecure http2 server.
 const insecureServer = fastify({ http2: true })
 const secureServer = fastify({
   http2: true,
-  https: {} // use the `key.pem` and `cert.pem` files from the https section
+  https: {}, // use the `key.pem` and `cert.pem` files from the https section
 })
 ```
 
@@ -1054,6 +1121,7 @@ Not only can you specify the server type, but also the request and reply types.
 Thus, allowing you to specify special properties, methods, and more! When
 specified at server instantiation, the custom type becomes available on all
 further instances of the custom type.
+
 ```typescript
 import fastify from 'fastify'
 import http from 'node:http'
@@ -1087,8 +1155,8 @@ const server = fastify({
   logger: {
     level: 'info',
     redact: ['x-userinfo'],
-    messageKey: 'message'
-  }
+    messageKey: 'message',
+  },
 })
 
 server.get('/', async (request, reply) => {
@@ -1100,20 +1168,23 @@ server.get('/', async (request, reply) => {
 ---
 
 ##### fastify.HTTPMethods
+
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L8)
 
-Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' |
-'OPTIONS'`
+Union type of:
+`'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
 
 ##### fastify.RawServerBase
+
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L13)
 
 Dependent on `@types/node` modules `http`, `https`, `http2`
 
-Union type of: `http.Server | https.Server | http2.Http2Server |
-http2.Http2SecureServer`
+Union type of:
+`http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
 
 ##### fastify.RawServerDefault
+
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L18)
 
 Dependent on `@types/node` modules `http`
@@ -1139,8 +1210,8 @@ instantiating a Fastify server with TypeScript.
 
 Interface that represents the Fastify server object. This is the returned server
 instance from the [`fastify()`][Fastify] method. This type is an interface so it
-can be extended via [declaration
-merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html)
+can be extended via
+[declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html)
 if your code makes use of the `decorate` method.
 
 Through the use of generic cascading, all methods attached to the instance
@@ -1157,6 +1228,7 @@ details on this interface.
 #### Request
 
 ##### fastify.FastifyRequest< [RequestGeneric][FastifyRequestGenericInterface], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]>
+
 [src](https://github.com/fastify/fastify/blob/main/types/request.d.ts#L15)
 
 This interface contains properties of Fastify request object. The properties
@@ -1173,6 +1245,7 @@ For a more detailed example check out the Learn By Example section:
 [Plugins](#plugins)
 
 ###### Example
+
 ```typescript
 import fastify from 'fastify'
 
@@ -1194,7 +1267,7 @@ declare module 'fastify' {
 
 // Or you can type your request using
 type CustomRequest = FastifyRequest<{
-  Body: { test: boolean };
+  Body: { test: boolean }
 }>
 
 server.get('/typedRequest', async (request: CustomRequest, reply: FastifyReply) => {
@@ -1203,6 +1276,7 @@ server.get('/typedRequest', async (request: CustomRequest, reply: FastifyReply) 
 ```
 
 ##### fastify.RequestGenericInterface
+
 [src](https://github.com/fastify/fastify/blob/main/types/request.d.ts#L4)
 
 Fastify request objects have four dynamic properties: `body`, `params`, `query`,
@@ -1233,6 +1307,7 @@ If you want to see a detailed example of using this interface check out the
 Learn by Example section: [JSON Schema](#json-schema).
 
 ##### fastify.RawRequestDefaultExpression\<[RawServer][RawServerGeneric]\>
+
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L23)
 
 Dependent on `@types/node` modules `http`, `https`, `http2`
@@ -1257,6 +1332,7 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 #### Reply
 
 ##### fastify.FastifyReply<[RequestGeneric][FastifyRequestGenericInterface], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [ContextConfig][ContextConfigGeneric]>
+
 [src](https://github.com/fastify/fastify/blob/main/types/reply.d.ts#L32)
 
 This interface contains the custom properties that Fastify adds to the standard
@@ -1272,6 +1348,7 @@ more detailed example check out the Learn By Example section:
 [Plugins](#plugins)
 
 ###### Example
+
 ```typescript
 import fastify from 'fastify'
 
@@ -1293,6 +1370,7 @@ declare module 'fastify' {
 ```
 
 ##### fastify.RawReplyDefaultExpression< [RawServer][RawServerGeneric]>
+
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L27)
 
 Dependent on `@types/node` modules `http`, `https`, `http2`
@@ -1325,18 +1403,21 @@ module. Additionally, there is a guide to creating plugins with TypeScript and
 Fastify available in the Learn by Example, [Plugins](#plugins) section.
 
 ##### fastify.FastifyPluginCallback< [Options][FastifyPluginOptions]>
+
 [src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L9)
 
 Interface method definition used within the
 [`fastify.register()`][FastifyRegister] method.
 
 ##### fastify.FastifyPluginAsync< [Options][FastifyPluginOptions]>
+
 [src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L20)
 
 Interface method definition used within the
 [`fastify.register()`][FastifyRegister] method.
 
 ##### fastify.FastifyPlugin< [Options][FastifyPluginOptions]>
+
 [src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L29)
 
 Interface method definition used within the
@@ -1345,22 +1426,29 @@ Interface method definition used within the
 doesn't properly infer types for async functions.
 
 ##### fastify.FastifyPluginOptions
+
 [src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L31)
 
 A loosely typed object used to constrain the `options` parameter of
 [`fastify.register()`][FastifyRegister] to an object. When creating a plugin,
-define its options as an extension of this interface (`interface MyPluginOptions
-extends FastifyPluginOptions`) so they can be passed to the register method.
+define its options as an extension of this interface
+(`interface MyPluginOptions extends FastifyPluginOptions`) so they can be passed
+to the register method.
 
 ---
 
 #### Register
 
 ##### fastify.FastifyRegister(plugin: [FastifyPluginCallback][FastifyPluginCallback], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
+
 ##### fastify.FastifyRegister(plugin: [FastifyPluginAsync][FastifyPluginAsync], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
+
 ##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
 
 This type interface specifies the type for the
@@ -1379,9 +1467,9 @@ Below is an example of the options inference in action:
 const server = fastify()
 
 const plugin: FastifyPluginCallback<{
-  option1: string;
-  option2: boolean;
-}> = function (instance, opts, done) { }
+  option1: string
+  option2: boolean
+}> = function (instance, opts, done) {}
 
 server().register(plugin, {}) // Error - options object is missing required properties
 server().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
@@ -1391,12 +1479,13 @@ See the Learn By Example, [Plugins](#plugins) section for more detailed examples
 of creating TypeScript plugins in Fastify.
 
 ##### fastify.FastifyRegisterOptions
+
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L16)
 
 This type is the intersection of the `Options` generic and a non-exported
-interface `RegisterOptions` that specifies two optional properties: `prefix:
-string` and `logLevel`: [LogLevel][LogLevel]. This type can also be specified as
-a function that returns the previously described intersection.
+interface `RegisterOptions` that specifies two optional properties:
+`prefix: string` and `logLevel`: [LogLevel][LogLevel]. This type can also be
+specified as a function that returns the previously described intersection.
 
 ---
 
@@ -1484,6 +1573,7 @@ handlers respectively.
 
 An interface that extends RouteShorthandOptions and adds the following three
 required properties:
+
 1. `method` which corresponds to a singular [HTTPMethod][HTTPMethods] or a list
    of [HTTPMethods][HTTPMethods]
 2. `url` a string for the route
@@ -1635,7 +1725,7 @@ executed in the request lifecycle. The previous hook was `preSerialization`, the
 next hook will be `onResponse`.
 
 > ℹ️ Note:
->  If you change the payload, you may only change it to a string,
+> If you change the payload, you may only change it to a string,
 > a Buffer, a stream, or null.
 
 ##### fastify.onResponseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
@@ -1693,11 +1783,10 @@ Triggered when fastify.close() is invoked to stop the server. It is useful when
 plugins need a "shutdown" event, for example to close an open connection to a
 database.
 
-
 <!-- Links -->
 
 [Fastify]:
-    #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
+  #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
 [RawServerGeneric]: #rawserver
 [RawRequestGeneric]: #rawrequest
 [RawReplyGeneric]: #rawreply
@@ -1716,14 +1805,14 @@ database.
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric
 [FastifyPlugin]:
-    #fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
+  #fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
 [FastifyPluginCallback]: #fastifyfastifyplugincallbackoptions
 [FastifyPluginAsync]: #fastifyfastifypluginasyncoptions
 [FastifyPluginOptions]: #fastifyfastifypluginoptions
 [FastifyRegister]:
-    #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
+  #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
 [FastifyRegisterOptions]: #fastifyfastifytregisteroptions
 [LogLevel]: #fastifyloglevel
 [FastifyError]: #fastifyfastifyerror
 [RouteOptions]:
-    #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig
+  #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig

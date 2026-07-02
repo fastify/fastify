@@ -629,7 +629,7 @@ test('preClose callback', (t, done) => {
   fastify.addHook('preClose', preClose)
 
   function preClose (done) {
-    t.assert.ok(typeof this === typeof fastify)
+    t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     preCloseCalled = true
     done()
   }
@@ -657,7 +657,7 @@ test('preClose async', async t => {
 
   async function preClose () {
     preCloseCalled = true
-    t.assert.ok(typeof this === typeof fastify)
+    t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
   }
 
   await fastify.listen({ port: 0 })

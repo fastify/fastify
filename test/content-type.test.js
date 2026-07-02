@@ -179,3 +179,17 @@ describe('ContentType class', () => {
     )
   })
 })
+
+describe('ContentType class cache', () => {
+  test('returns same instance for the same content type string', (t) => {
+    const contentType1 = ContentType.from('application/json')
+    const contentType2 = ContentType.from('application/json')
+    t.assert.equal(contentType1, contentType2)
+  })
+
+  test('returns different instances for different content type strings', (t) => {
+    const contentType1 = ContentType.from('application/json')
+    const contentType2 = ContentType.from('text/plain')
+    t.assert.notEqual(contentType1, contentType2)
+  })
+})

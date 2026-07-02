@@ -74,7 +74,7 @@ guide, do one of the following:
 ## Setting Up Your Environment
 <a id="contributing-environment"></a>
 
-Please adhere to the project's code and documentation style. For writing documentation, please refer to the [Style Guide](./Style-Guide.md). Some popular tools
+Please adhere to the project's code and [documentation](./Style-Guide.md) style. Some popular tools
 that automatically "correct" code and documentation do not follow a style that
 conforms to this project's styles. Notably, this project uses
 [StandardJS](https://standardjs.com) for code formatting.

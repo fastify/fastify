@@ -58,7 +58,7 @@ jobs:
       contents: read
     steps:
         - name: Check out Fastify
-          uses: actions/checkout@v6
+          uses: actions/checkout@v7
           with:
             persist-credentials: false
 
@@ -88,7 +88,7 @@ jobs:
               const result = repositoryUrl.match( /.*\/([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+)\.git/)[1]
               return result
         - name: Check out ${{inputs.package}}
-          uses: actions/checkout@v6
+          uses: actions/checkout@v7
           with:
             repository: ${{ steps.repository-url.outputs.result }}
             path: package

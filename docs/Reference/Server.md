@@ -561,6 +561,12 @@ For more examples, refer to the
 You may access the `ip`, `ips`, `host` and `protocol` values on the
 [`request`](./Request.md) object.
 
+> ⚠️ Security:
+> These values are derived from socket/forwarding metadata and must be treated
+> as untrusted input unless your proxy chain is explicitly trusted and
+> validated. Do not use them directly for authorization or other
+> security-sensitive decisions without explicit validation.
+
 ```js
 fastify.get('/', (request, reply) => {
   console.log(request.ip)
@@ -2272,7 +2278,7 @@ fastify.get('/', {
       return
     }
 
-    fastify.errorHandler(error, request, response)
+    fastify.errorHandler(error, request, reply)
   }
 }, handler)
 ```

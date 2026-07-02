@@ -89,7 +89,7 @@ conforms to this project's styles. Notably, this project uses
 <a id="contributing-vscode"></a>
 
 What follows is how to use [Visual Studio Code (VSCode)
-portable](https://code.visualstudio.com/docs/editor/portable) to create a
+portable](https://code.visualstudio.com/docs/setup/portable) to create a
 Fastify specific environment. This guide is written as if you are setting up the
 environment on macOS, but the principles are the same across all platforms. See
 the previously linked VSCode portable guide for help with other platforms.
@@ -165,7 +165,7 @@ the left sidebar. But wait! We are not quite done yet. There are a few more
 baseline settings that should be set before VSCode is ready.
 
 Press `cmd+shift+p` to bring up the VSCode command input prompt. Type `open
-settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
+settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/configure/settings)
 options will appear in the dropdown: Workspace, Default,
 and User settings. We recommend selecting Default. This will open a document
 that is the settings for the editor. Paste the following JSON into this

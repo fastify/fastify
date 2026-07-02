@@ -3599,3 +3599,74 @@ test('onRequestAbort should handle async errors / 2', (t, testDone) => {
     sleep(500).then(() => socket.destroy())
   })
 })
+
+test('socket timeout listener is removed when socket._meta is cleared after response', async t => {
+  t.plan(4)
+
+  const fastify = Fastify({ connectionTimeout: 200 })
+  t.after(() => fastify.close())
+
+  fastify.addHook('onTimeout', function (req, reply, done) { done() })
+
+  fastify.addHook('onResponse', function (req, reply, done) {
+    const socket = req.raw.socket
+    t.assert.strictEqual(socket._meta, null, 'socket._meta must be null after response')
+    t.assert.strictEqual(socket.listeners('timeout').some(listener => listener.name === 'handleTimeout'), false, 'Fastify timeout listener must be removed after response')
+    done()
+  })
+
+  fastify.get('/', async () => ({ ok: true }))
+
+  const address = await fastify.listen({ port: 0 })
+  const result = await fetch(address)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+})
+
+test('socket._meta and timeout listener are cleared on reply.hijack() when onTimeout is registered', async t => {
+  // reply.hijack() opts out of Fastify's response lifecycle so onResFinished
+  // never fires. Before this fix, socket._meta was left pointing at the
+  // request/reply objects for the full keep-alive socket lifetime when
+  // an onTimeout hook was registered.
+  t.plan(3)
+
+  const net = require('node:net')
+  const fastify = Fastify({ connectionTimeout: 300 })
+  t.after(() => fastify.close())
+
+  fastify.addHook('onTimeout', function (req, reply, done) { done() })
+
+  let metaAfterHijack = 'not-set'
+  let hasFastifyTimeoutListenerAfterHijack = true
+  fastify.get('/', async (req, reply) => {
+    reply.hijack()
+    // _meta must be cleared synchronously inside hijack()
+    metaAfterHijack = req.raw.socket._meta
+    hasFastifyTimeoutListenerAfterHijack = req.raw.socket.listeners('timeout').some(listener => listener.name === 'handleTimeout')
+    // Write a minimal valid HTTP/1.1 response and close
+    reply.raw.write('HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok')
+    reply.raw.end()
+    return reply
+  })
+
+  await fastify.listen({ port: 0 })
+
+  // Use raw TCP so we are not affected by fetch() rejecting a closed socket.
+  // Extract host/port from the server address object to handle IPv6 (::1) on Windows.
+  const { port, address: host } = fastify.server.address()
+  await new Promise((resolve, reject) => {
+    const socket = net.connect(port, host, () => {
+      socket.write('GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n')
+    })
+    socket.on('data', () => {})
+    socket.on('close', resolve)
+    socket.on('error', reject)
+  })
+
+  t.assert.ok(true, 'no crash during hijacked request with onTimeout registered')
+  t.assert.ok(
+    metaAfterHijack == null,
+    `socket._meta must be null or undefined after reply.hijack() — got: ${JSON.stringify(metaAfterHijack)}`
+  )
+  t.assert.strictEqual(hasFastifyTimeoutListenerAfterHijack, false, 'Fastify timeout listener must be removed after reply.hijack()')
+})

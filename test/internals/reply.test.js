@@ -1149,7 +1149,7 @@ test('reply.hasHeader computes raw and fastify headers', async t => {
 })
 
 test('Reply should handle JSON content type with a charset', async t => {
-  t.plan(8)
+  t.plan(9)
 
   const fastify = require('../../')()
 
@@ -1199,6 +1199,12 @@ test('Reply should handle JSON content type with a charset', async t => {
       .send({ hello: 'world' })
   })
 
+  fastify.get('/upper-charset', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; CHARSET=utf-8')
+      .send({ hello: 'world' })
+  })
+
   {
     const res = await fastify.inject('/default')
     t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
@@ -1231,6 +1237,11 @@ test('Reply should handle JSON content type with a charset', async t => {
   {
     const res = await fastify.inject('/type-utf32')
     t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-32')
+  }
+
+  {
+    const res = await fastify.inject('/upper-charset')
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; CHARSET=utf-8')
   }
 
   {

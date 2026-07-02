@@ -764,7 +764,7 @@ test('non-string with custom json\'s content-type SHOULD be serialized as json',
 
   const result = await fetch(fastifyServer)
   t.assert.ok(result.ok)
-  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version=2; charset=utf-8')
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version="2"; charset=utf-8')
   t.assert.deepStrictEqual(await result.text(), JSON.stringify({ key: 'hello world!' }))
 })
 

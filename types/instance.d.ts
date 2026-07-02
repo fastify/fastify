@@ -133,9 +133,11 @@ export interface FastifyInstance<
   addresses(): AddressInfo[]
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
-  addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  addSchema(schema: unknown, options?: { validator?: boolean, serializer?: boolean }): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   getSchema(schemaId: string): unknown;
   getSchemas(): Record<string, unknown>;
+  getValidatorSchemas(): Record<string, unknown>;
+  getSerializerSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & SafePromiseLike<undefined>;
   after(afterListener: (err: Error | null) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;

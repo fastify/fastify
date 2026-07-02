@@ -207,6 +207,59 @@ const fastifyFunction = async (request, reply) => {
 exports.fastifyFunction = fastifyFunction;
 ```
 
+### Export multiple functions for route-level observability
+
+Google Cloud Functions shows metrics and logs per exported function. If you
+export a single Fastify handler, all Fastify routes are grouped under that
+function in the Cloud Functions UI. If you need separate function entries for
+selected Fastify routes, export multiple named functions that reuse the same
+Fastify instance.
+
+The helper below prefixes the incoming request URL before handing it to
+Fastify. This lets each Cloud Function map to a specific Fastify route prefix
+while preserving any additional path segments and the query string:
+
+```js
+const fastify = require('fastify')({ logger: true })
+
+fastify.get('/api/v1/users', async (request, reply) => {
+  reply.send({ users: [] })
+})
+
+fastify.get('/api/v1/products/:id', async (request, reply) => {
+  reply.send({ productId: request.params.id })
+})
+
+const fastifyFunction = async (request, reply) => {
+  await fastify.ready()
+  fastify.server.emit('request', request, reply)
+}
+
+function routeFunction (routePrefix) {
+  return async (request, reply) => {
+    const suffix = request.url === '/' ? '' : request.url
+
+    request.url = `${routePrefix}${suffix}`
+    await fastifyFunction(request, reply)
+  }
+}
+
+exports.getUsers = routeFunction('/api/v1/users')
+exports.getProduct = routeFunction('/api/v1/products')
+```
+
+Deploy each export as its own function by setting the entry point:
+
+```bash
+gcloud functions deploy getUsers \
+--runtime nodejs20 --trigger-http --entry-point=getUsers --region $GOOGLE_REGION
+```
+
+This pattern is useful when Cloud Functions per-function dashboards are more
+important than exposing one Fastify application endpoint. For larger
+applications, prefer Cloud Run or another container-based platform so Fastify
+can handle routing directly.
+
 ### Local test
 
 Install [Google Functions Framework for
@@ -351,6 +404,32 @@ Final step is to export the Fastify app instance to Firebase's own
 ```js
 exports.app = onRequest(fastifyApp)
 ```
+
+### Export multiple Firebase functions for selected routes
+
+Firebase Functions also reports metrics per exported function. To keep separate
+entries in the Firebase console for selected Fastify routes, export multiple
+`onRequest()` handlers and prefix the URL before calling the shared Fastify
+handler:
+
+```js
+function routeFunction (routePrefix) {
+  return onRequest(async (request, reply) => {
+    const suffix = request.url === "/" ? "" : request.url
+
+    request.url = `${routePrefix}${suffix}`
+    await fastifyApp(request, reply)
+  })
+}
+
+exports.getUsers = routeFunction("/api/v1/users")
+exports.getProduct = routeFunction("/api/v1/products")
+```
+
+With this setup, `getUsers` and `getProduct` appear as separate Firebase
+Functions, but both use the same Fastify application and route definitions.
+Only export the routes that need separate Cloud Functions visibility; exporting
+many routes this way increases deployment and cold-start management overhead.
 
 ### Local test
 

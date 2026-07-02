@@ -101,6 +101,7 @@
     - [FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE](#fst_err_plugin_not_present_in_instance)
     - [FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER](#fst_err_plugin_invalid_async_handler)
     - [FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED](#fst_err_plugin_dependency_not_registered)
+    - [FST_ERR_PLUGIN_DEPENDENCY_INVALID_TYPE](#fst_err_plugin_dependency_invalid_type)
     - [FST_ERR_VALIDATION](#fst_err_validation)
     - [FST_ERR_LISTEN_OPTIONS_INVALID](#fst_err_listen_options_invalid)
     - [FST_ERR_ERROR_HANDLER_NOT_FN](#fst_err_error_handler_not_fn)
@@ -378,6 +379,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_plugin_not_present_in_instance">FST_ERR_PLUGIN_NOT_PRESENT_IN_INSTANCE</a> | The decorator is not present in the instance. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_plugin_invalid_async_handler">FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER</a> | The plugin being registered mixes async and callback styles. | - | [#5141](https://github.com/fastify/fastify/pull/5141) |
 | <a id="fst_err_plugin_dependency_not_registered">FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED</a> | The dependency of a plugin is not registered. | Register the missing dependency before registering this plugin. | [#6774](https://github.com/fastify/fastify/pull/6774) |
+| <a id="fst_err_plugin_dependency_invalid_type">FST_ERR_PLUGIN_DEPENDENCY_INVALID_TYPE</a> | The `dependencies` of a plugin must be of type `Array`. | Provide an array of strings for the plugin `dependencies`. | - |
 | <a id="fst_err_validation">FST_ERR_VALIDATION</a> | The Request failed the payload validation. | Check the request payload. | [#4824](https://github.com/fastify/fastify/pull/4824) |
 | <a id="fst_err_listen_options_invalid">FST_ERR_LISTEN_OPTIONS_INVALID</a> | Invalid listen options. | Check the listen options. | [#4886](https://github.com/fastify/fastify/pull/4886) |
 | <a id="fst_err_error_handler_not_fn">FST_ERR_ERROR_HANDLER_NOT_FN</a> | Error Handler must be a function | Provide a function to `setErrorHandler`. | [#5317](https://github.com/fastify/fastify/pull/5317) | <a id="fst_err_error_handler_already_set">FST_ERR_ERROR_HANDLER_ALREADY_SET</a> | Error Handler already set in this scope. Set `allowErrorHandlerOverride: true` to allow overriding. | By default, `setErrorHandler` can only be called once per encapsulation context. | [#6097](https://github.com/fastify/fastify/pull/6098) |

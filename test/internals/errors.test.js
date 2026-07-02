@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 91
+const expectedErrors = 92
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -838,6 +838,16 @@ test('FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED', t => {
   t.assert.strictEqual(error.message, "The dependency 'my-dep' of plugin 'my-plugin' is not registered")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_PLUGIN_DEPENDENCY_INVALID_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_PLUGIN_DEPENDENCY_INVALID_TYPE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_PLUGIN_DEPENDENCY_INVALID_TYPE')
+  t.assert.strictEqual(error.message, 'The dependencies of plugin must be of type Array.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {

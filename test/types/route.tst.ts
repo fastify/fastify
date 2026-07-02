@@ -1,10 +1,24 @@
 import * as http from 'node:http'
 import { FastifyError } from '@fastify/error'
 import { expect } from 'tstyche'
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
+import fastify, {
+  FastifyBaseLogger,
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  RouteHandlerMethod
+} from '../../fastify.js'
 import { RequestPayload } from '../../types/hooks.js'
 import { FindMyWayFindResult } from '../../types/instance.js'
-import { HTTPMethods, RawServerDefault } from '../../types/utils.js'
+import {
+  ContextConfigDefault,
+  HTTPMethods,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerDefault
+} from '../../types/utils.js'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -51,6 +65,58 @@ const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply
 
   return reply.send()
 }
+
+interface NumericReplyRoute {
+  Reply: number;
+}
+
+const customReturnHandler: RouteHandlerMethod<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  NumericReplyRoute,
+  ContextConfigDefault,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  FastifyBaseLogger,
+  Promise<string>
+> = async function (request, reply) {
+  expect(this).type.toBe<FastifyInstance>()
+  expect(request).type.toBe<FastifyRequest<NumericReplyRoute>>()
+  expect(reply).type.toBe<FastifyReply<NumericReplyRoute>>()
+
+  return 'string'
+}
+
+expect(fastify().get<NumericReplyRoute, ContextConfigDefault, FastifySchema, Promise<string>>('/custom-return', customReturnHandler)).type.toBe<FastifyInstance>()
+
+interface CustomPluginReplyRoute {
+  Reply: number;
+}
+
+interface CustomPluginReply {
+  custom: boolean;
+}
+
+const customPluginReturnHandler: RouteHandlerMethod<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  CustomPluginReplyRoute,
+  ContextConfigDefault,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  FastifyBaseLogger,
+  Promise<CustomPluginReply>
+> = async function (request, reply) {
+  expect(this).type.toBe<FastifyInstance>()
+  expect(request).type.toBe<FastifyRequest<CustomPluginReplyRoute>>()
+  expect(reply).type.toBe<FastifyReply<CustomPluginReplyRoute>>()
+
+  return { custom: true }
+}
+
+expect(fastify().get<CustomPluginReplyRoute, ContextConfigDefault, FastifySchema, Promise<CustomPluginReply>>('/custom-plugin-return', customPluginReturnHandler)).type.toBe<FastifyInstance>()
 
 const asyncPreHandler = async (request: FastifyRequest) => {
   expect(request).type.toBe<FastifyRequest>()

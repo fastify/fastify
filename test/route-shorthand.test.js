@@ -21,8 +21,13 @@ describe('route-shorthand', () => {
 
       const instance = new Client(`http://localhost:${fastify.server.address().port}`)
 
-      const response = await instance.request({ path: '/', method })
-      t.assert.strictEqual(response.statusCode, 200)
+      if (method === 'QUERY') {
+        const response = await instance.request({ path: '/', method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hello: 'world' }) })
+        t.assert.strictEqual(response.statusCode, 200)
+      } else {
+        const response = await instance.request({ path: '/', method })
+        t.assert.strictEqual(response.statusCode, 200)
+      }
     })
   }
 
@@ -41,8 +46,13 @@ describe('route-shorthand', () => {
       currentMethod = method
       const instance = new Client(`http://localhost:${fastify.server.address().port}`)
 
-      const response = await instance.request({ path: '/', method })
-      t.assert.strictEqual(response.statusCode, 200)
+      if (method === 'QUERY') {
+        const response = await instance.request({ path: '/', method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hello: 'world' }) })
+        t.assert.strictEqual(response.statusCode, 200)
+      } else {
+        const response = await instance.request({ path: '/', method })
+        t.assert.strictEqual(response.statusCode, 200)
+      }
     }
   })
 })

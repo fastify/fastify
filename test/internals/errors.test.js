@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 92
+const expectedErrors = 94
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -768,6 +768,26 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
   t.assert.strictEqual(error.message, 'Rewrite url for "%s" needs to be of type "string" but received "%s"')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_ROUTE_MISSING_CONTENT_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT_TYPE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT_TYPE')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a 'Content-Type' header.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_ROUTE_MISSING_CONTENT', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a request body.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
 })
 
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {

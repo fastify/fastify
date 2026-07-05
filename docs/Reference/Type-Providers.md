@@ -23,8 +23,7 @@ See also the Type Provider wrapper packages for each of the packages respectivel
 
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
-- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
- (3rd party)
+- [`@fastify/type-provider-zod`](https://github.com/fastify/fastify-type-provider-zod)
 
 ### Json Schema to Ts
 
@@ -58,6 +57,26 @@ server.get('/route', {
 })
 ```
 
+When using raw JSON Schema objects with `JsonSchemaToTsProvider`, TypeScript
+must be able to see the exact literal values in the schema. Inline schemas, like
+the example above, are inferred from the route call. If the schema is moved into
+a separate variable, use `as const`:
+
+```typescript
+const querystringSchema = {
+  type: 'object',
+  properties: {
+    foo: { type: 'number' },
+    bar: { type: 'string' },
+  },
+  required: ['foo', 'bar']
+} as const
+```
+
+Without `as const`, TypeScript may widen schema values such as `type: 'object'`
+to `type: string`, which prevents `json-schema-to-ts` from inferring the route
+types. This assertion has no effect on the schema used by Fastify at runtime.
+
 ### TypeBox
 
 The following sets up a TypeBox Type Provider:
@@ -88,14 +107,39 @@ server.get('/route', {
 ```
 
 See the [TypeBox
-documentation](https://sinclairzx81.github.io/typebox/#/docs/overview/2_setup)
+documentation](https://sinclairzx81.github.io/typebox/)
 for setting-up AJV to work with TypeBox.
 
 ### Zod
 
-See [official documentation](https://github.com/turkerdev/fastify-type-provider-zod)
-for Zod Type Provider instructions.
+The following sets up a Zod Type Provider:
 
+```bash
+$ npm i zod @fastify/type-provider-zod
+```
+
+```typescript
+import fastify from 'fastify'
+import { ZodTypeProvider, serializerCompiler, validatorCompiler } from '@fastify/type-provider-zod'
+import { z } from 'zod/v4'
+
+const server = fastify()
+server.setValidatorCompiler(validatorCompiler)
+server.setSerializerCompiler(serializerCompiler)
+
+server.withTypeProvider<ZodTypeProvider>().get('/route', {
+  schema: {
+    querystring: z.object({
+      foo: z.number(),
+      bar: z.string()
+    })
+  }
+}, (request, reply) => {
+
+  // type Query = { foo: number, bar: string }
+  const { foo, bar } = request.query // type safe!
+})
+```
 
 ### Scoped Type-Provider
 

@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.8.4",
+  "version": "5.9.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -19,11 +19,11 @@
     "lint:markdown": "markdownlint-cli2",
     "lint:eslint": "eslint",
     "prepublishOnly": "cross-env PREPUBLISH=true borp --reporter=@jsumners/line-reporter && npm run test:validator:integrity && npm run build:sync-version",
-    "test": "npm run lint && npm run unit && npm run test:typescript",
-    "test:ci": "npm run unit && npm run test:typescript",
-    "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
+    "test": "npm run lint && npm run unit && npm run test:types",
+    "test:ci": "npm run unit && npm run test:types",
+    "test:report": "npm run lint && npm run unit:report && npm run test:types",
     "test:validator:integrity": "npm run build:validation && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/error-serializer.js && git diff --quiet --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol lib/config-validator.js",
-    "test:typescript": "tsc test/types/import.ts --target es2022 --moduleResolution node16 --module node16 --noEmit && tsd",
+    "test:types": "tstyche",
     "test:watch": "npm run unit -- --watch --coverage-report=none --reporter=terse",
     "unit": "borp",
     "unit:report": "c8 --reporter html borp --reporter=@jsumners/line-reporter",
@@ -45,7 +45,7 @@
   "contributors": [
     {
       "name": "Tomas Della Vedova",
-      "url": "http://delved.org",
+      "url": "https://delvedor.dev",
       "author": true
     },
     {
@@ -59,7 +59,7 @@
     },
     {
       "name": "Dustin Deus",
-      "url": "http://starptech.de",
+      "url": "https://starptech.com",
       "email": "deusdustin@gmail.com"
     },
     {
@@ -74,7 +74,7 @@
     },
     {
       "name": "Trivikram Kamat",
-      "url": "http://trivikr.github.io",
+      "url": "https://trivikr.github.io",
       "email": "trivikr.dev@gmail.com"
     },
     {
@@ -170,7 +170,7 @@
     "@sinonjs/fake-timers": "^11.2.2",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@stylistic/eslint-plugin-js": "^4.1.0",
-    "@types/node": "^25.0.3",
+    "@types/node": "^26.0.1",
     "ajv": "^8.12.0",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",
@@ -179,11 +179,12 @@
     "autocannon": "^8.0.0",
     "borp": "^1.0.0",
     "branch-comparer": "^1.1.0",
-    "concurrently": "^9.1.2",
+    "concurrently": "^10.0.0",
     "cross-env": "^10.0.0",
     "eslint": "^9.0.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^5.0.0",
+    "fastify-plugin": "^6.0.0",
+    "fastify-tsconfig": "^3.0.0",
     "fluent-json-schema": "^6.0.0",
     "h2url": "^0.2.0",
     "http-errors": "^2.0.0",
@@ -195,7 +196,7 @@
     "node-forge": "^1.3.1",
     "proxyquire": "^2.1.3",
     "split2": "^4.2.0",
-    "tsd": "^0.33.0",
+    "tstyche": "^7.0.0",
     "typebox": "^1.0.81",
     "typescript": "~6.0.2",
     "undici": "^7.11.0",
@@ -209,8 +210,8 @@
     "@fastify/proxy-addr": "^5.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^9.0.0",
-    "fast-json-stringify": "^6.0.0",
-    "find-my-way": "^9.0.0",
+    "fast-json-stringify": "^7.0.0",
+    "find-my-way": "^9.6.0",
     "light-my-request": "^6.0.0",
     "pino": "^9.14.0 || ^10.1.0",
     "process-warning": "^5.0.0",
@@ -218,8 +219,5 @@
     "secure-json-parse": "^4.0.0",
     "semver": "^7.6.0",
     "toad-cache": "^3.7.0"
-  },
-  "tsd": {
-    "directory": "test/types"
   }
 }

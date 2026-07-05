@@ -6,7 +6,7 @@ import { Socket } from 'node:net'
 import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
 import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
-import { Config as FindMyWayConfig, ConstraintStrategy, HTTPVersion } from 'find-my-way'
+import { ConstraintStrategy, Config as FindMyWayConfig, HTTPVersion } from 'find-my-way'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
@@ -17,6 +17,7 @@ import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './typ
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
+  LogController as LogControllerClass,
   FastifyLogFn,
   FastifyLoggerInstance,
   FastifyLoggerOptions,
@@ -28,7 +29,7 @@ import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './type
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
-import { FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
@@ -44,6 +45,7 @@ type Fastify = typeof fastify
 
 declare namespace fastify {
   export const errorCodes: FastifyErrorCodes
+  export { LogControllerClass as LogController }
 
   export type FastifyHttp2SecureOptions<
     Server extends http2.Http2SecureServer,
@@ -90,12 +92,17 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
-  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'querystringParser'> & {
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'> & {
     defaultRoute?: (
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
     ) => void,
     onBadUrl?: (
+      path: string,
+      req: RawRequestDefaultExpression<RawServer>,
+      res: RawReplyDefaultExpression<RawServer>
+    ) => void,
+    onMaxParamLength?: (
       path: string,
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
@@ -121,7 +128,9 @@ declare namespace fastify {
     bodyLimit?: number,
     handlerTimeout?: number,
     maxParamLength?: number,
+    /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
     disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
+    logController?: LogControllerClass,
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
@@ -132,6 +141,7 @@ declare namespace fastify {
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
+    /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
     requestIdLogLabel?: string;
     useSemicolonDelimiter?: boolean,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,

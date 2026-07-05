@@ -50,7 +50,7 @@ experience with the least overhead and a plugin architecture.
 
 Technical leadership for the projects within the [OpenJS Foundation][openjs
 foundation] is delegated to the projects through their project charters by the
-[OpenJS Foundation Cross-Project Council](https://openjsf.org/about/governance/)
+[OpenJS Foundation Cross-Project Council](https://openjsf.org/governance)
 (CPC). In the case of the Fastify project, it is delegated to the [Fastify
 Collaborators](README.md#team). The OpenJS Foundation's business leadership is
 the Board of Directors (the "Board").

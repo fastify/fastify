@@ -16,6 +16,7 @@ on:
           - '20'
           - '22'
           - '24'
+          - '26'
           - 'lts/*'
           - 'nightly'
           - 'current'
@@ -57,7 +58,7 @@ jobs:
       contents: read
     steps:
         - name: Check out Fastify
-          uses: actions/checkout@v6
+          uses: actions/checkout@v7
           with:
             persist-credentials: false
 
@@ -76,7 +77,7 @@ jobs:
           run: |
             npm link
         - name: Determine repository URL of ${{inputs.package}}
-          uses: actions/github-script@v8
+          uses: actions/github-script@v9
           id: repository-url
           with:
             result-encoding: string
@@ -87,7 +88,7 @@ jobs:
               const result = repositoryUrl.match( /.*\/([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+)\.git/)[1]
               return result
         - name: Check out ${{inputs.package}}
-          uses: actions/checkout@v6
+          uses: actions/checkout@v7
           with:
             repository: ${{ steps.repository-url.outputs.result }}
             path: package

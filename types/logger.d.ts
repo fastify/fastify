@@ -82,6 +82,28 @@ export interface FastifyLoggerOptions<
   stream?: FastifyLoggerStreamDestination;
 }
 
+export interface LogControllerOptions {
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel?: string
+}
+
+export declare class LogController {
+  disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel: string
+
+  constructor (options?: LogControllerOptions)
+
+  isLogDisabled (request: FastifyRequest): boolean
+  incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  requestCompleted (error: Error | null, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
+  serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
+}
+
 export interface FastifyChildLoggerFactory<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,

@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "5.8.5",
+  "version": "5.9.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -45,7 +45,7 @@
   "contributors": [
     {
       "name": "Tomas Della Vedova",
-      "url": "http://delved.org",
+      "url": "https://delvedor.dev",
       "author": true
     },
     {
@@ -59,7 +59,7 @@
     },
     {
       "name": "Dustin Deus",
-      "url": "http://starptech.de",
+      "url": "https://starptech.com",
       "email": "deusdustin@gmail.com"
     },
     {
@@ -74,7 +74,7 @@
     },
     {
       "name": "Trivikram Kamat",
-      "url": "http://trivikr.github.io",
+      "url": "https://trivikr.github.io",
       "email": "trivikr.dev@gmail.com"
     },
     {
@@ -170,7 +170,7 @@
     "@sinonjs/fake-timers": "^11.2.2",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@stylistic/eslint-plugin-js": "^4.1.0",
-    "@types/node": "^25.0.3",
+    "@types/node": "^26.0.1",
     "ajv": "^8.12.0",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",
@@ -183,7 +183,7 @@
     "cross-env": "^10.0.0",
     "eslint": "^9.0.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^5.0.0",
+    "fastify-plugin": "^6.0.0",
     "fastify-tsconfig": "^3.0.0",
     "fluent-json-schema": "^6.0.0",
     "h2url": "^0.2.0",

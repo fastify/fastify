@@ -17,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -59,4 +59,5 @@ jobs:
           paths: ${{ steps.changed-md.outputs.files }}
           retry: true
           redirects: error
+          verbosity: error
           linksToSkip: "https://github.com/orgs/fastify/.*,https://github.com/fastify/fastify/security/advisories/new"

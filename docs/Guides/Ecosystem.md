@@ -144,7 +144,7 @@ section.
 - [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`@fastify/vite`](https://github.com/fastify/fastify-vite) Integration with
-  [Vite](https://vitejs.dev/), allows for serving SPA/MPA/SSR Vite applications.
+  [Vite](https://vite.dev/), allows for serving SPA/MPA/SSR Vite applications.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`@fastify/zipkin`](https://github.com/fastify/fastify-zipkin) Plugin
@@ -196,7 +196,7 @@ section.
   Run REST APIs and other web applications using your existing Node.js
   application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda,
   Huawei and many other clouds.
-- [`@hey-api/openapi-ts`](https://heyapi.dev/openapi-ts/plugins/fastify)
+- [`@hey-api/openapi-ts`](https://heyapi.dev/docs/openapi/typescript/plugins/fastify)
   The OpenAPI to TypeScript codegen. Generate clients, SDKs, validators, and more.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
@@ -204,6 +204,8 @@ section.
 - [`@inaiat/fastify-papr`](https://github.com/inaiat/fastify-papr)
   A plugin to integrate [Papr](https://github.com/plexinc/papr),
   the MongoDB ORM for TypeScript & MongoDB, with Fastify.
+- [`@inferdi/fastify`](https://github.com/inferdi/inferdi/tree/main/packages/fastify)
+  Type-safe dependency injection support for Fastify, powered by [InferDI](https://github.com/inferdi/inferdi).
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
 - [`@joggr/fastify-prisma`](https://github.com/joggrdocs/fastify-prisma)
@@ -230,6 +232,12 @@ section.
   Plugin to generate routes automatically with valid json content
 - [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
   Beautiful OpenAPI/Swagger API references for Fastify
+- [`@stitchapi/fastify`](https://github.com/rejifald/StitchAPI/tree/main/packages/fastify)
+  Decorate the app/request with a StitchAPI seam — request-scoped principal, SSE
+  streaming, error mapping, and a Pino-logger bridge.
+- [`@thecodepace/fastify-http-query`](https://github.com/TheCodePace/fastify-http-query)
+  Fastify plugin enabling the HTTP `QUERY` method (a safe, idempotent, cacheable
+  method with a body).
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
@@ -279,10 +287,13 @@ section.
   MySQL plugin with auto SQL injection attack prevention.
 - [`fastify-at-postgres`](https://github.com/mateonunez/fastify-at-postgres) Fastify
   Postgres plugin with auto SQL injection attack prevention.
+- [`fastify-ata`](https://github.com/ata-core/fastify-ata) Use
+  [`ata-validator`](https://github.com/ata-core/ata-validator) as the JSON Schema
+  validator, keeping Fastify's default error shape.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
-  [fastify-jwt](https://npm.im/fastify-jwt) and
-  [jsonwebtoken](https://npm.im/jsonwebtoken).
+  [fastify-jwt](https://www.npmjs.com/package/fastify-jwt) and
+  [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken).
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
   Plugin to scan and load routes based on filesystem path from a custom
   directory.
@@ -382,7 +393,7 @@ section.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)
   Handy plugin to provide multipart support and fastify-swagger integration.
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace)
-  [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference)
+  [Google Cloud Trace API](https://docs.cloud.google.com/trace/docs/reference)
   Connector for Fastify.
 - [`fastify-get-head`](https://github.com/MetCoder95/fastify-get-head) Small
   plugin to set a new HEAD route handler for each GET route previously
@@ -537,6 +548,9 @@ middlewares into Fastify plugins
   OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-override`](https://github.com/matthyk/fastify-override)
   Fastify plugin to override decorators, plugins and hooks for testing purposes
+- [`fastify-param-schema-validation`](https://github.com/Player1205/fastify-param-schema-validation)
+  Enforce strict parameter definitions in route validation schemas
+  to prevent missing parameter validation.
 - [`fastify-passkit-webservice`](https://github.com/alexandercerutti/fastify-passkit-webservice)
   A set of Fastify plugins to integrate Apple Wallet Web Service specification
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
@@ -550,7 +564,7 @@ middlewares into Fastify plugins
   to handle i18n using
   [node-polyglot](https://www.npmjs.com/package/node-polyglot).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
-  Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in
+  Plugin to integrate [PostGraphile](https://postgraphile.org/postgraphile/4/) in
   a Fastify project.
 - [`fastify-postgres-dot-js`](https://github.com/kylerush/fastify-postgresjs) Fastify
   PostgreSQL connection plugin that uses [Postgres.js](https://github.com/porsager/postgres).
@@ -668,7 +682,7 @@ middlewares into Fastify plugins
   multiple subdomains to the same IP address, while running different servers on
   the same machine).
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue)
-  [Nuxt.js](https://nuxtjs.org) plugin for Fastify. Control the routes nuxt
+  [Nuxt.js](https://nuxt.com) plugin for Fastify. Control the routes nuxt
   should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web
   Application Messaging Protocol router for Fastify.
@@ -716,6 +730,8 @@ middlewares into Fastify plugins
   generator by directory structure.
 - [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
   Fastify APIs using decorators and convert Typescript interface to JSON Schema.
+- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify)
+  i18n solution for error handling, email template
 - [`jeasx`](https://www.jeasx.dev)
   A flexible server-rendering framework built on Fastify
   that leverages asynchronous JSX to simplify web development.

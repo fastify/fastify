@@ -32,7 +32,7 @@ const defaultInitOptions = {
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   allowUnsafeRegex: false,
-  disableRequestLogging: false,
+  disableRequestLogging: false, // TODO: remove it in v6
   ignoreTrailingSlash: false,
   ignoreDuplicateSlashes: false,
   maxParamLength: 100,
@@ -40,7 +40,7 @@ const defaultInitOptions = {
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
   requestIdHeader: false,
-  requestIdLogLabel: 'reqId',
+  requestIdLogLabel: 'reqId', // TODO: remove it in v6
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
   useSemicolonDelimiter: false,

@@ -76,16 +76,35 @@ jobs:
         - name: Npm Link Fastify
           run: |
             npm link
-        - name: Determine repository URL of ${{inputs.package}}
+        - name: Determine repository URL of ${{ inputs.package }}
           uses: actions/github-script@v9
           id: repository-url
+          env:
+            NPM_PACKAGE: ${{ inputs.package }}
           with:
             result-encoding: string
             script: |
-              const response = await fetch('https://registry.npmjs.org/${{inputs.package}}')
+              const packageName = process.env.NPM_PACKAGE
+              const packageNameRegex = /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._~-]*$/i
+
+              if (!packageName || !packageNameRegex.test(packageName)) {
+                throw new Error(`Invalid npm package name: ${packageName}`)
+              }
+
+              const response = await fetch(`https://registry.npmjs.org/${encodeURIComponent(packageName)}`)
+
+              if (!response.ok) {
+                throw new Error(`Failed to fetch npm metadata for ${packageName}: ${response.status} ${response.statusText}`)
+              }
+
               const data = await response.json()
-              const repositoryUrl = data.repository.url
-              const result = repositoryUrl.match( /.*\/([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+)\.git/)[1]
+              const repositoryUrl = data.repository?.url
+              const result = repositoryUrl?.match(/github\.com[:/]([a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+)(?:\.git)?(?:[#/].*)?$/)?.[1]
+
+              if (!result) {
+                throw new Error(`Unsupported repository URL for ${packageName}: ${repositoryUrl}`)
+              }
+
               return result
         - name: Check out ${{inputs.package}}
           uses: actions/checkout@v7

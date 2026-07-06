@@ -23,6 +23,7 @@ describes the properties available in that options object.
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
   - [`disableRequestLogging`](#disablerequestlogging)
+  - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
@@ -389,6 +390,10 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
+> **Deprecated:** Use the [`logController`](#log-controller) option with
+> `disableRequestLogging` or `isLogDisabled` override instead.
+> This top-level option will be removed in `fastify@6`.
+
 + Default: `false`
 
 When logging is enabled, Fastify will issue an `info` level log
@@ -402,11 +407,21 @@ and returns a boolean. This allows for conditional request logging based on the
 request properties (e.g., URL, headers, decorations).
 
 ```js
+// Deprecated
 const fastify = require('fastify')({
   logger: true,
   disableRequestLogging: (request) => {
-    // Disable logging for health check endpoints
     return request.url === '/health' || request.url === '/ready'
+  }
+})
+
+// Recommended: use logController instead
+const fastify = require('fastify')({
+  logger: true,
+  logController: {
+    disableRequestLogging: (request) => {
+      return request.url === '/health' || request.url === '/ready'
+    }
   }
 })
 ```
@@ -434,6 +449,86 @@ fastify.addHook('onResponse', (req, reply, done) => {
   done()
 })
 ```
+
+### `logController`
+<a id="factory-log-controller"></a>
+
++ Default: `undefined`
+
+Accepts an instance of `LogController` (or a subclass) to customize Fastify's
+internal log lines. Extend the `LogController` class and override only the
+methods you want to customize; all others keep their default behavior.
+
+The `LogController` class is exported from `fastify`:
+
+```js
+const { LogController } = require('fastify')
+```
+
+The constructor accepts an optional options object:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `disableRequestLogging` | `boolean \| (req) => boolean` | `false` | When `true` (or a function returning `true`), per-request log lines are suppressed. |
+| `requestIdLogLabel` | `string` | `'reqId'` | The label used for the request identifier when logging. |
+
+```js
+const { LogController } = require('fastify')
+
+class MyLogController extends LogController {
+  constructor () {
+    super({
+      requestIdLogLabel: 'traceId',
+      disableRequestLogging: (request) => {
+        return request.url === '/health'
+      }
+    })
+  }
+
+  incomingRequest (request, reply, metadata) {
+    // Use debug level instead of info for incoming requests
+    request.log.debug({ req: request }, 'incoming request')
+  }
+
+  requestCompleted (error, request, reply, metadata) {
+    // Add custom fields to the request completed log
+    if (error) {
+      reply.log.error({ res: reply, err: error, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
+    } else {
+      reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
+    }
+  }
+}
+
+const fastify = require('fastify')({
+  logger: true,
+  logController: new MyLogController()
+})
+```
+
+The error-related methods share a unified signature:
+`(error, request, reply, metadata)`, where `metadata` carries any extra
+per-method data (for example, the `statusCode` passed to `serializerError`).
+`incomingRequest` and `routeNotFound` omit the `error` argument, since they fire
+at lifecycle points where no error exists. `serviceUnavailable` is a further
+exception, since no route — and therefore no `request`/`reply` — is formed.
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `isLogDisabled` | `(request)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
+| `incomingRequest` | `(request, reply, metadata)` | Logs an incoming request at `info` level. |
+| `requestCompleted` | `(error, request, reply, metadata)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
+| `defaultErrorLog` | `(error, request, reply, metadata)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
+| `streamError` | `(error, request, reply, metadata)` | Logs stream-level errors after headers have been sent. |
+| `routeNotFound` | `(request, reply, metadata)` | Logs a "route not found" message at `info` level. |
+| `writeHeadError` | `(error, request, reply, metadata)` | Logs a warning when `writeHead` fails during error handling. |
+| `serializerError` | `(error, request, reply, metadata)` | Logs an error when the serializer for a given status code fails. The triggering status code is available as `metadata.statusCode`. |
+| `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
+
+**Note:** When you override a method, you take full control of it — the
+default `disableRequestLogging` check is **not** automatically applied.
+If you need conditional logging, call `this.isLogDisabled(request)` yourself
+or override `isLogDisabled` as well.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>
@@ -501,6 +596,9 @@ const fastify = require('fastify')({
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
 
+> **Deprecated:** Use the [`logController`](#log-controller) option with
+> `requestIdLogLabel` instead. This top-level option will be removed in `fastify@6`.
+
 + Default: `'reqId'`
 
 Defines the label used for the request identifier when logging the request.
@@ -519,9 +617,9 @@ generation behavior as shown below. For generating `UUID`s you may want to check
 out [hyperid](https://github.com/mcollina/hyperid).
 
 > ℹ️ Note:
-> `genReqId` will be not called if the header set in
+> `genReqId` will not be called if the header set in
 > <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
-> 'request-id').
+> `false`).
 
 ```js
 let i = 0
@@ -853,7 +951,7 @@ function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
-fastify.get('/user/:username', (request, reply) => {
+const fastify = require('fastify')({
   routerOptions: {
     buildPrettyMeta: route => {
       const cleanMeta = Object.assign({}, route.store)
@@ -864,7 +962,7 @@ fastify.get('/user/:username', (request, reply) => {
       })
 
       return cleanMeta // this will show up in the pretty print output!
-    })
+    }
   }
 })
 ```
@@ -1068,8 +1166,9 @@ objects and do not provide Fastify's decorated helpers.
 ### `querystringParser`
 <a id="querystringparser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core
-`querystring` module.
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
+[`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
 [`qs`](https://www.npmjs.com/package/qs).
@@ -1090,7 +1189,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('node:querystring')
+const querystring = require('fast-querystring')
 const fastify = require('fastify')({
   routerOptions: {
     querystringParser: str => querystring.parse(str.toLowerCase())

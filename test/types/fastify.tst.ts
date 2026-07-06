@@ -198,6 +198,8 @@ expect(fastify({
   }
 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ trustProxy: true })).type.toBeAssignableTo<FastifyInstance>()
+// @ts-expect-error  No overload matches this call.
+fastify({ trustProxy: 1 })
 expect(fastify({ querystringParser: () => ({ foo: 'bar' }) })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ querystringParser: () => ({ foo: ['bar', 'fuzz'] }) })).type.toBeAssignableTo<FastifyInstance>()

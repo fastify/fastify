@@ -149,7 +149,7 @@ declare namespace fastify {
     requestIdLogLabel?: string;
     useSemicolonDelimiter?: boolean,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
-    trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
+    trustProxy?: boolean | string | string[] | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: unknown },
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,

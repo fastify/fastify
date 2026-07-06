@@ -638,11 +638,14 @@ const fastify = require('fastify')({
 + `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
-+ `number`: Trust the nth hop from the front-facing proxy server as the client.
++ `number`: Hop-count-only trust is disabled because it cannot validate the
+  immediate peer and lets direct clients spoof `X-Forwarded-*` values. Use an
+  IP/CIDR string, array, or custom function that validates the proxy address
+  instead.
 + `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
-      return address === '1.2.3.4' || hop === 1
+      return address === '1.2.3.4' && hop === 0
     }
     ```
 
@@ -664,7 +667,9 @@ You may access the `ip`, `ips`, `host` and `protocol` values on the
 > These values are derived from socket/forwarding metadata and must be treated
 > as untrusted input unless your proxy chain is explicitly trusted and
 > validated. Do not use them directly for authorization or other
-> security-sensitive decisions without explicit validation.
+> security-sensitive decisions without explicit validation. Custom trust
+> functions must validate the `address` argument; hop-count-only checks such as
+> `hop < 1` are unsafe when the Fastify origin can be reached directly.
 
 ```js
 fastify.get('/', (request, reply) => {

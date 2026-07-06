@@ -106,20 +106,33 @@ test('trust proxy function', async t => {
   await fetchForwardedRequest(fastifyServer, '1.1.1.1', '/trustproxyfunc', undefined, 'fastify.test:1234')
 })
 
-test('trust proxy number', async t => {
-  t.plan(8)
+test('trust proxy number ignores forwarded headers', async t => {
+  t.plan(5)
   const app = fastify({
     trustProxy: 1
   })
   t.after(() => app.close())
 
   app.get('/trustproxynumber', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'], host: 'fastify.test:1234', hostname: 'fastify.test', port: 1234 })
+    t.assert.strictEqual(req.ip, '203.0.113.7', 'ip falls back to socket remote address')
+    t.assert.deepStrictEqual(req.ips, ['203.0.113.7'], 'ips falls back to socket remote address')
+    t.assert.strictEqual(req.host, 'app.example.com', 'host ignores x-forwarded-host')
+    t.assert.strictEqual(req.hostname, 'app.example.com', 'hostname ignores x-forwarded-host')
+    t.assert.strictEqual(req.protocol, 'http', 'protocol ignores x-forwarded-proto')
     reply.code(200).send({ ip: req.ip, host: req.host })
   })
 
-  const fastifyServer = await app.listen({ port: 0 })
-  await fetchForwardedRequest(fastifyServer, '2.2.2.2, 1.1.1.1', '/trustproxynumber', undefined, 'fastify.test:1234')
+  await app.inject({
+    method: 'GET',
+    url: '/trustproxynumber',
+    remoteAddress: '203.0.113.7',
+    headers: {
+      host: 'app.example.com',
+      'x-forwarded-for': '9.9.9.9, 8.8.8.8',
+      'x-forwarded-host': 'evil.com',
+      'x-forwarded-proto': 'https'
+    }
+  })
 })
 
 test('trust proxy IP addresses', async t => {
@@ -241,18 +254,15 @@ test('trust proxy reads forwarded headers from trusted connections', async t => 
   })
 })
 
-test('trust proxy with number and undefined socket remoteAddress', t => {
+test('trust proxy with number and undefined socket remoteAddress ignores forwarded headers', t => {
   t.plan(3)
 
-  // Test case for issue #6606: trustProxy: 1 with undefined/null socket.remoteAddress
-  // This simulates IISNode on Windows where socket.remoteAddress may be undefined
   const headers = {
+    host: 'real.test',
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'fastify.test',
     'x-forwarded-proto': 'https'
   }
-  // socket must exist but remoteAddress can be undefined
-  // This is what happens in IISNode with enableXFF="true"
   const req = {
     method: 'GET',
     url: '/',
@@ -262,20 +272,16 @@ test('trust proxy with number and undefined socket remoteAddress', t => {
 
   const TpRequest = buildRequest(Request, 1)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  // Even with undefined socket.remoteAddress, req.ip should be populated from X-Forwarded-For
-  t.assert.ok(request.ip, 'ip is defined')
-  // With trustProxy: 1, we trust 1 hop from socket. Since socket.remoteAddress is undefined,
-  // the hop count check should skip it and we get 1.1.1.1 (the first trusted address from X-Forwarded-For)
-  t.assert.strictEqual(request.ip, '1.1.1.1', 'gets ip from x-forwarded-for')
-  // The host should also work correctly
-  t.assert.strictEqual(request.host, 'fastify.test', 'gets host from x-forwarded-host')
+  t.assert.strictEqual(request.ip, undefined, 'ip falls back to undefined socket remote address')
+  t.assert.strictEqual(request.host, 'real.test', 'host ignores x-forwarded-host')
+  t.assert.strictEqual(request.protocol, 'http', 'protocol ignores x-forwarded-proto')
 })
 
-test('trust proxy with number and null socket remoteAddress', t => {
+test('trust proxy with number and null socket remoteAddress ignores forwarded headers', t => {
   t.plan(2)
 
-  // Test case for trustProxy: 1 with null socket.remoteAddress
   const headers = {
+    host: 'real.test',
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'fastify.test'
   }
@@ -288,8 +294,8 @@ test('trust proxy with number and null socket remoteAddress', t => {
 
   const TpRequest = buildRequest(Request, 1)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
-  t.assert.ok(request.ip, 'ip is defined')
-  t.assert.strictEqual(request.ip, '1.1.1.1', 'gets ip from x-forwarded-for')
+  t.assert.strictEqual(request.ip, null, 'ip falls back to null socket remote address')
+  t.assert.strictEqual(request.host, 'real.test', 'host ignores x-forwarded-host')
 })
 
 test('trust proxy does not trust x-forwarded-host/proto when socket is null', t => {

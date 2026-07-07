@@ -1254,7 +1254,7 @@ app.setErrorHandler(function anotherErrorHandler () {
 
 + Default: `undefined`
 
-Customize Fastify's warnings manager before the instance is created.
+Customize Fastify warnings manager before the instance is created.
 This lets you listen to specific warnings, disable forwarding to
 `process.emitWarning`, or remove built-in warnings.
 
@@ -1276,7 +1276,7 @@ const fastify = require('fastify')({
 
 The `warnings` object supports:
 
-- `warnings.withProcess`: forwards warnings to `process.emitWarning` when set to `true`
+- `warnings.withProcess`: forwards warnings to `process.emitWarning` when set to `true` (default: `true`)
 - `warnings.has(code)`: checks whether a warning is registered
 - `warnings.remove(code)`: removes a warning definition
 - `warnings.on(code, listener)`: listens for a specific warning code

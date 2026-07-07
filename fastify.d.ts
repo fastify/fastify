@@ -92,8 +92,6 @@ declare namespace fastify {
 
   export interface FastifyWarnings {
     withProcess: boolean;
-    add(name: string, code: string, message: string, unlimited?: boolean): this;
-    emit(code: string, ...args: unknown[]): boolean;
     has(code: string): boolean;
     remove(code: string): this;
     on(code: string, listener: (warning: { name: string, code: string, message: string }) => void): this;

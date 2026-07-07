@@ -58,7 +58,7 @@ const {
   ...errorCodes
 } = require('./lib/errors')
 const PonyPromise = require('./lib/promise')
-const { Warnings } = require('./lib/warnings.js')
+const { Warnings, buildPublicWarningsOptions } = require('./lib/warnings.js')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -855,7 +855,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength, warn
   }
 
   if (typeof options.configureWarnings === 'function') {
-    options.configureWarnings(warnings)
+    options.configureWarnings(buildPublicWarningsOptions(warnings))
   }
 
   if (

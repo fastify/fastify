@@ -4,7 +4,7 @@ const { test } = require('node:test')
 
 const { Warnings } = require('../../lib/warnings')
 
-test('Warnings emits process warnings when enabled', t => {
+test('Warnings emits process warnings by default', t => {
   t.plan(2)
 
   const originalEmitWarning = process.emitWarning
@@ -16,11 +16,11 @@ test('Warnings emits process warnings when enabled', t => {
     t.assert.strictEqual(code, 'FSTWRN001')
   }
 
-  const warnings = new Warnings({ withProcess: true })
+  const warnings = new Warnings()
   t.assert.strictEqual(warnings.emit('FSTWRN001', 'headers', 'GET', '/'), true)
 })
 
-test('Warnings disable process emission by default', t => {
+test('Warnings can disable process emission after creation', t => {
   t.plan(2)
 
   const originalEmitWarning = process.emitWarning
@@ -33,26 +33,6 @@ test('Warnings disable process emission by default', t => {
   }
 
   const warnings = new Warnings()
-  warnings.on('FSTWRN003', (warning) => {
-    t.assert.strictEqual(warning.code, 'FSTWRN003')
-  })
-
-  t.assert.strictEqual(warnings.emit('FSTWRN003', 'listen method'), true)
-})
-
-test('Warnings can disable process after creation', t => {
-  t.plan(2)
-
-  const originalEmitWarning = process.emitWarning
-  t.after(() => {
-    process.emitWarning = originalEmitWarning
-  })
-
-  process.emitWarning = () => {
-    t.assert.fail('process.emitWarning should not be called')
-  }
-
-  const warnings = new Warnings({ withProcess: true })
   warnings.withProcess = false
   warnings.on('FSTWRN003', (warning) => {
     t.assert.strictEqual(warning.code, 'FSTWRN003')

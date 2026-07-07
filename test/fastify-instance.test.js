@@ -111,6 +111,21 @@ test('fastify instance should contain default childLoggerFactory', t => {
   t.assert.deepStrictEqual(Object.getOwnPropertyDescriptor(fastify, 'childLoggerFactory').set, undefined)
 })
 
+test('configureWarnings only exposes the public warnings controls', t => {
+  t.plan(6)
+
+  Fastify({
+    configureWarnings (warnings) {
+      t.assert.strictEqual(typeof warnings.withProcess, 'boolean')
+      t.assert.strictEqual(typeof warnings.has, 'function')
+      t.assert.strictEqual(typeof warnings.remove, 'function')
+      t.assert.strictEqual(typeof warnings.on, 'function')
+      t.assert.strictEqual(warnings.add, undefined)
+      t.assert.strictEqual(warnings.emit, undefined)
+    }
+  })
+})
+
 test('childLoggerFactory in plugin should be separate from the external one', async t => {
   t.plan(4)
   const fastify = Fastify()

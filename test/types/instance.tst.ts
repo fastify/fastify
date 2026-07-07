@@ -25,14 +25,17 @@ const configuredWarningsServer = fastify({
   configureWarnings (warnings) {
     expect(warnings.withProcess).type.toBe<boolean>()
     expect(warnings.has('FSTWRN001')).type.toBe<boolean>()
-    expect(warnings.emit('FSTWRN001', 'headers', 'GET', '/')).type.toBe<boolean>()
     expect(warnings.on('FSTWRN001', (warning) => {
       expect(warning.code).type.toBe<string>()
       expect(warning.message).type.toBe<string>()
       expect(warning.name).type.toBe<string>()
     })).type.toBe<typeof warnings>()
     warnings.withProcess = false
-    warnings.remove('FSTWRN001').add('FastifyWarning', 'FSTCUS001', 'custom %s')
+    warnings.remove('FSTWRN001')
+    // @ts-expect-error Property 'add' does not exist on type 'FastifyWarnings'.
+    warnings.add('FastifyWarning', 'FSTCUS001', 'custom %s')
+    // @ts-expect-error Property 'emit' does not exist on type 'FastifyWarnings'.
+    warnings.emit('FSTWRN001', 'headers', 'GET', '/')
   }
 })
 

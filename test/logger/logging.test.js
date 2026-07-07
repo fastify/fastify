@@ -17,7 +17,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(16)
+  t.plan(17)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -117,6 +117,31 @@ t.test('logging', { timeout: 60000 }, async (t) => {
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
+  })
+
+  await t.test('requestCompleted receives null instead of undefined for a successful response', async (t) => {
+    t.plan(1)
+
+    let resolveCompleted
+    const completed = new Promise((resolve) => { resolveCompleted = resolve })
+
+    const fastify = Fastify({
+      logger: { level: 'silent' },
+      logController: new class extends LogController {
+        requestCompleted (error) {
+          resolveCompleted(error)
+        }
+      }()
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/', function (req, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({ method: 'GET', url: '/' })
+
+    t.assert.strictEqual(await completed, null)
   })
 
   await t.test('should log the error if no error handler is defined', async (t) => {

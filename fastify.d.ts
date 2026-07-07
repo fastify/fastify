@@ -90,6 +90,15 @@ declare namespace fastify {
     }
   }
 
+  export interface FastifyWarnings {
+    withProcess: boolean;
+    add(name: string, code: string, message: string, unlimited?: boolean): this;
+    emit(code: string, ...args: unknown[]): boolean;
+    has(code: string): boolean;
+    remove(code: string): this;
+    on(code: string, listener: (warning: { name: string, code: string, message: string }) => void): this;
+  }
+
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
   export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'> & {
@@ -136,6 +145,7 @@ declare namespace fastify {
     onConstructorPoisoning?: ConstructorAction,
     logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions,
     loggerInstance?: Logger
+    configureWarnings?: (warnings: FastifyWarnings) => void,
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,

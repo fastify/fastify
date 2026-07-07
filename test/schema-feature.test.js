@@ -6,7 +6,6 @@ const fp = require('fastify-plugin')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
-const { FSTWRN001 } = require('../lib/warnings')
 const { waitForCb } = require('./toolkit')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
@@ -320,17 +319,13 @@ test('Should not change the input schemas', (t, testDone) => {
 
 test('Should emit warning if the schema headers is undefined', (t, testDone) => {
   t.plan(4)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN001', (warning) => {
+        t.assert.strictEqual(warning.name, 'FastifyWarning')
+        t.assert.strictEqual(warning.code, 'FSTWRN001')
+      })
+    }
   })
 
   fastify.post('/:id', {
@@ -352,17 +347,13 @@ test('Should emit warning if the schema headers is undefined', (t, testDone) => 
 
 test('Should emit warning if the schema body is undefined', (t, testDone) => {
   t.plan(4)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN001', (warning) => {
+        t.assert.strictEqual(warning.name, 'FastifyWarning')
+        t.assert.strictEqual(warning.code, 'FSTWRN001')
+      })
+    }
   })
 
   fastify.post('/:id', {
@@ -384,17 +375,13 @@ test('Should emit warning if the schema body is undefined', (t, testDone) => {
 
 test('Should emit warning if the schema query is undefined', (t, testDone) => {
   t.plan(4)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN001', (warning) => {
+        t.assert.strictEqual(warning.name, 'FastifyWarning')
+        t.assert.strictEqual(warning.code, 'FSTWRN001')
+      })
+    }
   })
 
   fastify.post('/:id', {
@@ -416,17 +403,13 @@ test('Should emit warning if the schema query is undefined', (t, testDone) => {
 
 test('Should emit warning if the schema params is undefined', (t, testDone) => {
   t.plan(4)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN001', (warning) => {
+        t.assert.strictEqual(warning.name, 'FastifyWarning')
+        t.assert.strictEqual(warning.code, 'FSTWRN001')
+      })
+    }
   })
 
   fastify.post('/:id', {
@@ -448,24 +431,20 @@ test('Should emit warning if the schema params is undefined', (t, testDone) => {
 
 test('Should emit a warning for every route with undefined schema', (t, testDone) => {
   t.plan(16)
-  const fastify = Fastify()
-
   let runs = 0
   const expectedWarningEmitted = [0, 1, 2, 3]
   // It emits 4 warnings:
   // - 2 - GET and HEAD for /undefinedParams/:id
   // - 2 - GET and HEAD for /undefinedBody/:id
   // => 3 x 4 assertions = 12 assertions
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-    t.assert.strictEqual(runs++, expectedWarningEmitted.shift())
-  }
-
-  process.on('warning', onWarning)
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN001', (warning) => {
+        t.assert.strictEqual(warning.name, 'FastifyWarning')
+        t.assert.strictEqual(warning.code, 'FSTWRN001')
+        t.assert.strictEqual(runs++, expectedWarningEmitted.shift())
+      })
+    }
   })
 
   fastify.get('/undefinedParams/:id', {

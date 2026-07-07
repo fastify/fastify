@@ -490,15 +490,15 @@ test('Safeguard against content-type spoofing - string', async t => {
 test('Warning against improper content-type - regexp', async t => {
   await t.test('improper regex - text plain', (t, done) => {
     t.plan(2)
-    const fastify = Fastify()
-
-    process.on('warning', onWarning)
-    function onWarning (warning) {
-      t.assert.strictEqual(warning.name, 'FastifySecurity')
-      t.assert.strictEqual(warning.code, 'FSTSEC001')
-      done()
-    }
-    t.after(() => process.removeListener('warning', onWarning))
+    const fastify = Fastify({
+      configureWarnings (warnings) {
+        warnings.on('FSTSEC001', (warning) => {
+          t.assert.strictEqual(warning.name, 'FastifySecurity')
+          t.assert.strictEqual(warning.code, 'FSTSEC001')
+          done()
+        })
+      }
+    })
 
     fastify.removeAllContentTypeParsers()
     fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
@@ -508,15 +508,15 @@ test('Warning against improper content-type - regexp', async t => {
 
   await t.test('improper regex - application json', (t, done) => {
     t.plan(2)
-    const fastify = Fastify()
-
-    process.on('warning', onWarning)
-    function onWarning (warning) {
-      t.assert.strictEqual(warning.name, 'FastifySecurity')
-      t.assert.strictEqual(warning.code, 'FSTSEC001')
-      done()
-    }
-    t.after(() => process.removeListener('warning', onWarning))
+    const fastify = Fastify({
+      configureWarnings (warnings) {
+        warnings.on('FSTSEC001', (warning) => {
+          t.assert.strictEqual(warning.name, 'FastifySecurity')
+          t.assert.strictEqual(warning.code, 'FSTSEC001')
+          done()
+        })
+      }
+    })
 
     fastify.removeAllContentTypeParsers()
 

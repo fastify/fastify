@@ -40,6 +40,27 @@ test('Warnings disable process emission by default', t => {
   t.assert.strictEqual(warnings.emit('FSTWRN003', 'listen method'), true)
 })
 
+test('Warnings can disable process after creation', t => {
+  t.plan(2)
+
+  const originalEmitWarning = process.emitWarning
+  t.after(() => {
+    process.emitWarning = originalEmitWarning
+  })
+
+  process.emitWarning = () => {
+    t.assert.fail('process.emitWarning should not be called')
+  }
+
+  const warnings = new Warnings({ withProcess: true })
+  warnings.withProcess = false
+  warnings.on('FSTWRN003', (warning) => {
+    t.assert.strictEqual(warning.code, 'FSTWRN003')
+  })
+
+  t.assert.strictEqual(warnings.emit('FSTWRN003', 'listen method'), true)
+})
+
 test('Warnings can remove warning definitions', t => {
   t.plan(3)
 

@@ -58,6 +58,7 @@ const {
   ...errorCodes
 } = require('./lib/errors')
 const PonyPromise = require('./lib/promise')
+const { Warnings } = require('./lib/warnings.js')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -80,7 +81,6 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -88,16 +88,18 @@ const initChannel = diagnostics.channel('fastify.initialization')
  * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
 function fastify (serverOptions) {
+  const warnings = new Warnings()
+
   const {
     options,
     genReqId,
     logController,
     hasLogger,
     initialConfig
-  } = processOptions(serverOptions, defaultRoute, onBadUrl, onMaxParamLength)
+  } = processOptions(serverOptions, defaultRoute, onBadUrl, onMaxParamLength, warnings)
 
   // Default router
-  const router = buildRouting(options.routerOptions)
+  const router = buildRouting(options.routerOptions, warnings)
 
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)
@@ -112,7 +114,7 @@ function fastify (serverOptions) {
     serverHasCloseAllConnections,
     serverHasCloseHttp2Sessions,
     keepAliveConnections
-  } = createServer(options, httpHandler)
+  } = createServer(options, httpHandler, warnings)
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
@@ -164,7 +166,8 @@ function fastify (serverOptions) {
     [kContentTypeParser]: new ContentTypeParser(
       options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning),
+      warnings
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
@@ -769,7 +772,7 @@ function fastify (serverOptions) {
     if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
     } else if (this[kErrorHandlerAlreadySet]) {
-      FSTWRN004()
+      warnings.emit('FSTWRN004')
     }
 
     this[kErrorHandlerAlreadySet] = true
@@ -842,13 +845,17 @@ function fastify (serverOptions) {
   }
 }
 
-function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
+function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength, warnings) {
   // Options validations
   if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
   } else {
     // Shallow copy options object to prevent mutations outside of this function
     options = Object.assign({}, options)
+  }
+
+  if (typeof options.configureWarnings === 'function') {
+    options.configureWarnings(warnings)
   }
 
   if (
@@ -870,11 +877,11 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   if (options.requestIdLogLabel !== undefined) {
-    FSTDEP024()
+    warnings.emit('FSTDEP024')
   }
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   if (options.disableRequestLogging !== undefined) {
-    FSTDEP023()
+    warnings.emit('FSTDEP023')
   }
 
   const ajvOptions = Object.assign({
@@ -924,7 +931,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
     allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
     buildPrettyMeta: defaultBuildPrettyMeta,
     useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
-  })
+  }, warnings)
 
   return {
     options,

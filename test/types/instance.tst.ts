@@ -21,8 +21,23 @@ import { FastifyRequest } from '../../types/request.js'
 import { FastifySchemaCompiler, FastifySchemaControllerOptions, FastifySerializerCompiler } from '../../types/schema.js'
 
 const server = fastify()
+const configuredWarningsServer = fastify({
+  configureWarnings (warnings) {
+    expect(warnings.withProcess).type.toBe<boolean>()
+    expect(warnings.has('FSTWRN001')).type.toBe<boolean>()
+    expect(warnings.emit('FSTWRN001', 'headers', 'GET', '/')).type.toBe<boolean>()
+    expect(warnings.on('FSTWRN001', (warning) => {
+      expect(warning.code).type.toBe<string>()
+      expect(warning.message).type.toBe<string>()
+      expect(warning.name).type.toBe<string>()
+    })).type.toBe<typeof warnings>()
+    warnings.withProcess = false
+    warnings.remove('FSTWRN001').add('FastifyWarning', 'FSTCUS001', 'custom %s')
+  }
+})
 
 expect(server.addSchema({ type: 'null' })).type.toBe<FastifyInstance>()
+expect(configuredWarningsServer).type.toBeAssignableTo<FastifyInstance>()
 expect(server.addSchema({ schemaId: 'id' })).type.toBe<FastifyInstance>()
 expect(server.addSchema({ schemas: [] })).type.toBe<FastifyInstance>()
 

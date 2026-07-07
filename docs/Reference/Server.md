@@ -52,6 +52,7 @@ describes the properties available in that options object.
     - [`onMaxParamLength`](#onmaxparamlength)
     - [`querystringParser`](#querystringparser)
     - [`useSemicolonDelimiter`](#usesemicolondelimiter)
+  - [`configureWarnings`](#configurewarnings)
 - [Instance](#instance)
   - [Server Methods](#server-methods)
     - [server](#server)
@@ -1247,6 +1248,43 @@ app.setErrorHandler(function anotherErrorHandler () {
   // Overrides the previous handler
 })
 ```
+
+### `configureWarnings`
+<a id="factory-configure-warnings"></a>
+
++ Default: `undefined`
+
+Customize Fastify's warnings manager before the instance is created.
+This lets you listen to specific warnings, disable forwarding to
+`process.emitWarning`, or remove built-in warnings.
+
+```js
+const fastify = require('fastify')({
+  configureWarnings (warnings) {
+    warnings.withProcess = false
+
+    warnings.on('FSTWRN003', (warning) => {
+      // Warnings might happen before the instance is created,
+      // so fastify.log is unavailable at this time.
+      console.log(warning.code, warning.message)
+    })
+
+    warnings.remove('FSTWRN004')
+  }
+})
+```
+
+The `warnings` object supports:
+
+- `warnings.withProcess`: forwards warnings to `process.emitWarning` when set to `true`
+- `warnings.has(code)`: checks whether a warning is registered
+- `warnings.remove(code)`: removes a warning definition
+- `warnings.on(code, listener)`: listens for a specific warning code
+
+Listeners receive an object with `name`, `code`, and `message` properties.
+
+For the list of built-in Fastify warning and deprecation codes, see
+[Warnings](./Warnings.md).
 
 ## Instance
 

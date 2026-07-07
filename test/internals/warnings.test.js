@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 
-const { Warnings } = require('../../lib/warnings')
+const { Warnings, buildPublicWarningsOptions } = require('../../lib/warnings')
 
 test('Warnings emits process warnings by default', t => {
   t.plan(2)
@@ -98,4 +98,15 @@ test('Warnings can register multiple listeners for the same warning', t => {
   })
 
   t.assert.strictEqual(warnings.emit('FSTSEC001', 'text\\/plain'), true)
+})
+
+test('public warnings options can update withProcess', t => {
+  t.plan(2)
+
+  const warnings = new Warnings()
+  const warningsOptions = buildPublicWarningsOptions(warnings)
+
+  t.assert.strictEqual(warningsOptions.withProcess, true)
+  warningsOptions.withProcess = false
+  t.assert.strictEqual(warnings.withProcess, false)
 })

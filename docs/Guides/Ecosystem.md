@@ -208,8 +208,6 @@ section.
   Type-safe dependency injection support for Fastify, powered by [InferDI](https://github.com/inferdi/inferdi).
 - [`@jerome1337/fastify-enforce-routes-pattern`](https://github.com/Jerome1337/fastify-enforce-routes-pattern)
   A Fastify plugin that enforces naming pattern for routes path.
-- [`@zrosenbauer/fastify-prisma`](https://github.com/zrosenbauer/fastify-prisma)
-  A plugin for accessing an instantiated PrismaClient on your server.
 - [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
   A Fastify plugin for rendering Svelte components with support for SSR
   (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
@@ -239,6 +237,8 @@ section.
   SeaweedFS for Fastify
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
   RFC 9457 Problem Details implementation for Fastify, with typed HTTP errors.
+- [`@zrosenbauer/fastify-prisma`](https://github.com/zrosenbauer/fastify-prisma)
+  A plugin for accessing an instantiated PrismaClient on your server.
 - [`apitally`](https://github.com/apitally/apitally-js) Fastify plugin to
   integrate with [Apitally](https://apitally.io/fastify), an API analytics,
   logging and monitoring tool.

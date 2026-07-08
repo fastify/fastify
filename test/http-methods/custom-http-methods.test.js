@@ -129,7 +129,6 @@ test('addHttpMethod emits a deprecation warning when overriding an existing meth
     done()
   })
 
-  // GET is a built-in bodyless method — calling without overrideExisting should warn
   fastify.addHttpMethod('GET', { hasBody: false })
 })
 

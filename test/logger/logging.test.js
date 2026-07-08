@@ -7,6 +7,7 @@ const split = require('split2')
 const pino = require('pino')
 
 const Fastify = require('../../fastify')
+const { LogController } = require('../../lib/log-controller')
 const helper = require('../helper')
 const { once, on } = stream
 const { request } = require('./logger-test-utils')
@@ -16,7 +17,7 @@ t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(14)
+  t.plan(16)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -73,6 +74,44 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     t.plan(lines.length + 1)
 
     await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
+
+    for await (const [line] of on(stream, 'data')) {
+      t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
+      if (lines.length === 0) break
+    }
+  })
+
+  await t.test('should not log if logController option disables logging', async (t) => {
+    const stream = split(JSON.parse)
+    const fastify = Fastify({
+      logger: {
+        stream,
+        level: 'info'
+      },
+      logController: new class extends LogController {
+        isLogDisabled () {
+          t.assert.ok(true, 'isLogDisabled should be called')
+          return true // disable logging to test that incomingRequest is not called
+        }
+      }()
+    })
+    t.after(() => fastify.close())
+
+    fastify.get('/info', function (req, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.ready()
+    const server = await fastify.listen({ port: 0, host: localhost })
+    const lines = [
+      { msg: `Server listening at ${server}` }
+    ]
+    // 2:
+    // - incoming request
+    // - request completed
+    t.plan(lines.length + 2)
+
+    await request(`http://${localhostForURL}:` + fastify.server.address().port + '/info')
 
     for await (const [line] of on(stream, 'data')) {
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
@@ -277,6 +316,23 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     await fastify.ready()
 
     await fastify.inject({ method: 'GET', url: '/%c0' })
+
+    // no more readable data
+    t.assert.strictEqual(stream.readableLength, 0)
+  })
+
+  await t.test('should not log incoming request, outgoing response and route not found for 414 onMaxParamLength when disabled', async (t) => {
+    t.plan(1)
+    const stream = split(JSON.parse)
+    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
+    t.after(() => fastify.close())
+
+    await fastify.ready()
+
+    await fastify.inject({
+      method: 'GET',
+      url: `/${'1234567890'.repeat(12)}`
+    })
 
     // no more readable data
     t.assert.strictEqual(stream.readableLength, 0)

@@ -6,6 +6,7 @@ const querystring = require('node:querystring')
 const Fastify = require('../')
 const {
   FST_ERR_BAD_URL,
+  FST_ERR_MAX_PARAM_LENGTH,
   FST_ERR_ASYNC_CONSTRAINT
 } = require('../lib/errors')
 
@@ -84,7 +85,7 @@ test('Should honor maxParamLength option', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should expose router options via getters on request and reply', (t, done) => {
@@ -257,6 +258,130 @@ test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST
     (err, res) => {
       t.assert.ifError(err)
       t.assert.strictEqual(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+      done()
+    }
+  )
+})
+
+test('Should honor frameworkErrors option - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(3)
+  const fastify = Fastify({
+    maxParamLength: 1,
+    frameworkErrors: function (err, req, res) {
+      if (err instanceof FST_ERR_MAX_PARAM_LENGTH) {
+        t.assert.ok(true)
+      } else {
+        t.assert.fail()
+      }
+      res.send(`${err.message} - ${err.code}`)
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
+      done()
+    }
+  )
+})
+
+test('Should supply Fastify request to the logger in frameworkErrors wrapper - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(8)
+
+  const REQ_ID = 'REQ-1234'
+  const logStream = split(JSON.parse)
+
+  const fastify = Fastify({
+    maxParamLength: 1,
+    frameworkErrors: function (err, req, res) {
+      t.assert.deepStrictEqual(req.id, REQ_ID)
+      t.assert.deepStrictEqual(req.raw.httpVersion, '1.1')
+      res.send(`${err.message} - ${err.code}`)
+    },
+    logger: {
+      stream: logStream,
+      serializers: {
+        req (request) {
+          t.assert.deepStrictEqual(request.id, REQ_ID)
+          return { httpVersion: request.raw.httpVersion }
+        }
+      }
+    },
+    genReqId: () => REQ_ID
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  logStream.on('data', (json) => {
+    t.assert.deepStrictEqual(json.msg, 'incoming request')
+    t.assert.deepStrictEqual(json.reqId, REQ_ID)
+    t.assert.deepStrictEqual(json.req.httpVersion, '1.1')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
+      done()
+    }
+  )
+})
+
+test('Should honor disableRequestLogging option in frameworkErrors wrapper - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(2)
+
+  const logStream = split(JSON.parse)
+
+  const fastify = Fastify({
+    disableRequestLogging: true,
+    maxParamLength: 1,
+    frameworkErrors: function (err, req, res) {
+      res.send(`${err.message} - ${err.code}`)
+    },
+    logger: {
+      stream: logStream,
+      serializers: {
+        req () {
+          t.assert.fail('should not be called')
+        },
+        res () {
+          t.assert.fail('should not be called')
+        }
+      }
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  logStream.on('data', (json) => {
+    t.assert.fail('should not be called')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
       done()
     }
   )
@@ -507,6 +632,67 @@ test('Should honor disableRequestLogging function in frameworkErrors wrapper - F
   )
 })
 
+test('Should honor disableRequestLogging function in frameworkErrors wrapper - FST_ERR_MAX_PARAM_LENGTH', (t, done) => {
+  t.plan(4)
+
+  let logCallCount = 0
+  const logStream = split(JSON.parse)
+
+  const fastify = Fastify({
+    maxParamLength: 1,
+    disableRequestLogging: (req) => {
+      // Disable logging for URLs containing 'silent'
+      return req.url.includes('silent')
+    },
+    frameworkErrors: function (err, req, res) {
+      res.send(`${err.message} - ${err.code}`)
+    },
+    logger: {
+      stream: logStream,
+      level: 'info'
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  logStream.on('data', (json) => {
+    if (json.msg === 'incoming request') {
+      logCallCount++
+    }
+  })
+
+  // First request: URL does not contain 'silent', so logging should happen
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/123'
+    },
+    (err, res) => {
+      t.assert.ifError(err)
+      t.assert.strictEqual(res.body, '\'/test/123\' is exceeding the max param length - FST_ERR_MAX_PARAM_LENGTH')
+
+      // Second request: URL contains 'silent', so logging should be disabled
+      fastify.inject(
+        {
+          method: 'GET',
+          url: '/silent/123'
+        },
+        (err2, res2) => {
+          t.assert.ifError(err2)
+          // Give time for any potential log events
+          setImmediate(() => {
+            // Only the first request should have logged
+            t.assert.strictEqual(logCallCount, 1)
+            done()
+          })
+        }
+      )
+    }
+  )
+})
+
 test('Should honor disableRequestLogging function in frameworkErrors wrapper - FST_ERR_ASYNC_CONSTRAINT', (t, done) => {
   t.plan(4)
 
@@ -615,7 +801,7 @@ test('Should honor routerOptions.defaultRoute', async t => {
   t.assert.strictEqual(res.payload, 'default route')
 })
 
-test('Should honor routerOptions.badUrl', async t => {
+test('Should honor routerOptions.onBadUrl', async t => {
   t.plan(3)
   const fastify = Fastify({
     routerOptions: {
@@ -625,7 +811,7 @@ test('Should honor routerOptions.badUrl', async t => {
       onBadUrl: function (path, _, res) {
         t.assert.ok('bad url called')
         res.statusCode = 400
-        res.end(`Bath URL: ${path}`)
+        res.end(`Bad URL: ${path}`)
       }
     }
   })
@@ -636,7 +822,32 @@ test('Should honor routerOptions.badUrl', async t => {
 
   const res = await fastify.inject('/hello/%world')
   t.assert.strictEqual(res.statusCode, 400)
-  t.assert.strictEqual(res.payload, 'Bath URL: /hello/%world')
+  t.assert.strictEqual(res.payload, 'Bad URL: /hello/%world')
+})
+
+test('Should honor routerOptions.onMaxParamLength', async t => {
+  t.plan(3)
+  const fastify = Fastify({
+    routerOptions: {
+      defaultRoute: function (_, res) {
+        t.asset.fail('default route should not be called')
+      },
+      maxParamLength: 10,
+      onMaxParamLength: function (path, _, res) {
+        t.assert.ok('max param length called')
+        res.statusCode = 414
+        res.end(`URL: ${path}`)
+      }
+    }
+  })
+
+  fastify.get('/hello/:id', (req, res) => {
+    res.send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject('/hello/12345678901')
+  t.assert.strictEqual(res.statusCode, 414)
+  t.assert.strictEqual(res.payload, 'URL: /hello/12345678901')
 })
 
 test('Should honor routerOptions.ignoreTrailingSlash', async t => {
@@ -727,7 +938,7 @@ test('Should honor routerOptions.maxParamLength', async (t) => {
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex', async (t) => {
@@ -854,11 +1065,11 @@ test('Should honor routerOptions.buildPrettyMeta', async (t) => {
     }
   })
 
-  fastify.get('/test', () => {})
-  fastify.get('/test/hello', () => {})
-  fastify.get('/testing', () => {})
-  fastify.get('/testing/:param', () => {})
-  fastify.put('/update', () => {})
+  fastify.get('/test', () => { })
+  fastify.get('/test/hello', () => { })
+  fastify.get('/testing', () => { })
+  fastify.get('/testing/:param', () => { })
+  fastify.put('/update', () => { })
 
   await fastify.ready()
 
@@ -928,7 +1139,7 @@ test('Should honor routerOptions.maxParamLength over maxParamLength option', asy
     method: 'GET',
     url: '/test/123456789abcd'
   })
-  t.assert.strictEqual(resError.statusCode, 404)
+  t.assert.strictEqual(resError.statusCode, 414)
 })
 
 test('Should honor routerOptions.allowUnsafeRegex over allowUnsafeRegex option', async (t) => {

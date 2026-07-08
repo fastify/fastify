@@ -133,7 +133,6 @@ test('addHttpMethod emits a deprecation warning when overriding an existing meth
   fastify.addHttpMethod('GET', { hasBody: false })
 })
 
-
 test('addHttpMethod does not emit a warning when overrideExisting is true', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -151,7 +150,6 @@ test('addHttpMethod does not emit a warning when overrideExisting is true', t =>
   t.assert.ok(!warningEmitted, 'No FSTWRN005 warning should have been emitted')
 })
 
-
 test('addHttpMethod with overrideExisting: true can change existing method body behavior', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -162,4 +160,3 @@ test('addHttpMethod with overrideExisting: true can change existing method body 
   })
   t.assert.ok(fastify.supportedMethods.includes('GET'))
 })
-

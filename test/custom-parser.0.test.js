@@ -6,8 +6,6 @@ const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
 const { plainTextParser } = require('./helper')
 
-process.removeAllListeners('warning')
-
 test('contentTypeParser method should exist', t => {
   t.plan(1)
   const fastify = Fastify()

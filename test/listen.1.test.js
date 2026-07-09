@@ -13,15 +13,13 @@ before(async function () {
 })
 
 test('listen works without arguments', async t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
-
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('should not warn'))
+    }
+  })
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
   await fastify.listen()
   const address = fastify.server.address()
@@ -30,15 +28,13 @@ test('listen works without arguments', async t => {
 })
 
 test('Async/await listen with arguments', async t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
-
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('should not warn'))
+    }
+  })
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
   const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
   const address = fastify.server.address()
@@ -59,15 +55,13 @@ test('Async/await listen with arguments', async t => {
 
 test('listen accepts a callback', (t, done) => {
   t.plan(2)
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
-
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('should not warn'))
+    }
+  })
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
   fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
@@ -78,15 +72,13 @@ test('listen accepts a callback', (t, done) => {
 
 test('listen accepts options and a callback', (t, done) => {
   t.plan(1)
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
-
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('should not warn'))
+    }
+  })
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
   fastify.listen({
     port: 0,
@@ -118,16 +110,14 @@ test('listen after Promise.resolve()', (t, done) => {
 })
 
 test('listen works with undefined host', async t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
-
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('should not warn'))
+    }
+  })
   t.after(() => fastify.close())
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
   await fastify.listen({ host: undefined, port: 0 })
   const address = fastify.server.address()
@@ -136,16 +126,14 @@ test('listen works with undefined host', async t => {
 })
 
 test('listen works with null host', async t => {
-  const doNotWarn = () => {
-    t.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
-
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('should not warn'))
+    }
+  })
   t.after(() => fastify.close())
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
   await fastify.listen({ host: null, port: 0 })
   const address = fastify.server.address()

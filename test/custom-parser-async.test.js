@@ -3,8 +3,6 @@
 const { test } = require('node:test')
 const Fastify = require('../fastify')
 
-process.removeAllListeners('warning')
-
 test('contentTypeParser should add a custom async parser', async t => {
   t.plan(2)
   const fastify = Fastify()

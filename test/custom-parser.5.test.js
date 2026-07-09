@@ -5,8 +5,6 @@ const Fastify = require('../fastify')
 const jsonParser = require('fast-json-body')
 const { plainTextParser } = require('./helper')
 
-process.removeAllListeners('warning')
-
 test('cannot remove all content type parsers after binding', async (t) => {
   t.plan(1)
 

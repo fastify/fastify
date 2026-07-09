@@ -11,8 +11,6 @@ const { deepFreezeObject } = require('../../lib/initial-config-validation').util
 
 const { buildCertificate } = require('../build-certificate')
 
-process.removeAllListeners('warning')
-
 let localhost
 let localhostForURL
 

@@ -5,8 +5,6 @@ const split = require('split2')
 const net = require('node:net')
 const Fastify = require('../fastify')
 
-process.removeAllListeners('warning')
-
 const lifecycleHooks = [
   'onRequest',
   'preParsing',

@@ -10,8 +10,6 @@ const {
   kOptions
 } = require('../../lib/symbols')
 
-process.removeAllListeners('warning')
-
 test('Regular request', t => {
   const headers = {
     host: 'hostname'

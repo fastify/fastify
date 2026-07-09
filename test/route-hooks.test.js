@@ -4,8 +4,6 @@ const { Readable } = require('node:stream')
 const { test } = require('node:test')
 const Fastify = require('../')
 
-process.removeAllListeners('warning')
-
 function endRouteHook (doneOrPayload, done, doneValue) {
   if (typeof doneOrPayload === 'function') {
     doneOrPayload(doneValue)

@@ -7,8 +7,6 @@ const fs = require('node:fs')
 const { sleep } = require('./helper')
 const { waitForCb } = require('./toolkit')
 
-process.removeAllListeners('warning')
-
 test('async hooks', async t => {
   t.plan(20)
   const fastify = Fastify({ exposeHeadRoutes: false })

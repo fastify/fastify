@@ -281,7 +281,11 @@ test('route onSend can be function or array of functions', async t => {
 })
 
 test('no warning for exposeHeadRoute', async t => {
-  const fastify = Fastify()
+  const fastify = Fastify({
+    configureWarnings (warnings) {
+      warnings.on('FSTWRN003', () => t.assert.fail('no warning'))
+    }
+  })
 
   fastify.route({
     method: 'GET',
@@ -292,15 +296,7 @@ test('no warning for exposeHeadRoute', async t => {
     }
   })
 
-  const listener = (w) => {
-    t.assert.fail('no warning')
-  }
-
-  process.on('warning', listener)
-
   await fastify.listen({ port: 0 })
-
-  process.removeListener('warning', listener)
 
   await fastify.close()
 })

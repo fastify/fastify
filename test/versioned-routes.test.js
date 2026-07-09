@@ -7,8 +7,6 @@ const http = require('node:http')
 const split = require('split2')
 const append = require('vary').append
 
-process.removeAllListeners('warning')
-
 let localhost
 before(async function () {
   [localhost] = await helper.getLoopbackHost()

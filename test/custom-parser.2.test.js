@@ -3,8 +3,6 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-process.removeAllListeners('warning')
-
 test('Wrong parseAs parameter', t => {
   t.plan(2)
   const fastify = Fastify()

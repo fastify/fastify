@@ -14,8 +14,6 @@ const { sleep } = require('./helper')
 const { waitForCb } = require('./toolkit.js')
 const { fetch } = require('undici')
 
-process.removeAllListeners('warning')
-
 test('hooks', async t => {
   t.plan(48)
   const fastify = Fastify({ exposeHeadRoutes: false })

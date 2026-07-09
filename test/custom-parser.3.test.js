@@ -4,8 +4,6 @@ const { test } = require('node:test')
 const Fastify = require('..')
 const jsonParser = require('fast-json-body')
 
-process.removeAllListeners('warning')
-
 test('should be able to use default parser for extra content type', async t => {
   t.plan(3)
   const fastify = Fastify()

@@ -87,9 +87,9 @@ Request is a core Fastify object containing the following fields:
   default (or customized) `ValidationCompiler`. The optional `httpPart` is
   forwarded to the `ValidationCompiler` if provided, defaults to `null`.
 - [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
-  Validates the input using the specified schema and returns the serialized
-  payload. If `httpPart` is provided, the function uses the serializer for
-  that HTTP Status Code. Defaults to `null`.
+  Validates the input using the specified schema or HTTP part and returns
+  `true` if the input is valid, `false` otherwise. If `httpPart` is provided,
+  the function uses the validator for that HTTP part. Defaults to `null`.
 
 ### Headers
 

@@ -76,7 +76,8 @@ const {
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
   FST_ERR_ERROR_HANDLER_ALREADY_SET,
-  FST_ERR_ROUTE_METHOD_INVALID
+  FST_ERR_ROUTE_METHOD_INVALID,
+  FST_ERR_ROUTE_PARAMS_SCHEMA_MISMATCH
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -443,6 +444,61 @@ function fastify (serverOptions) {
     throwIfAlreadyStarted,
     keepAliveConnections
   })
+
+  // When validateRouteParams is enabled, check that every route's schema.params
+  // properties match the dynamic parameters in the route URL at startup time.
+  if (options.validateRouteParams === true) {
+    const kRoutes = Symbol('fastify.validateRouteParams.routes')
+    fastify[kRoutes] = []
+
+    fastify.addHook('onRoute', function (routeOptions) {
+      fastify[kRoutes].push(routeOptions)
+    })
+
+    fastify.addHook('onReady', function () {
+      for (const routeOptions of fastify[kRoutes]) {
+        const schema = routeOptions.schema
+        if (!schema || !schema.params) {
+          continue
+        }
+
+        // Only validate object schemas with properties
+        const schemaParams = schema.params.properties
+        if (!schemaParams) {
+          continue
+        }
+
+        const route = fastify.findRoute({
+          method: Array.isArray(routeOptions.method) ? routeOptions.method[0] : routeOptions.method,
+          url: routeOptions.url,
+          constraints: routeOptions.constraints
+        })
+
+        if (!route) {
+          continue
+        }
+
+        const schemaParamNames = Object.keys(schemaParams)
+        const urlParamNames = Object.keys(route.params)
+
+        for (const param of schemaParamNames) {
+          if (!urlParamNames.includes(param)) {
+            throw new FST_ERR_ROUTE_PARAMS_SCHEMA_MISMATCH(
+              `Route '${routeOptions.url}' has a schema param '${param}' but it is not in the route path`
+            )
+          }
+        }
+
+        for (const param of urlParamNames) {
+          if (!schemaParamNames.includes(param)) {
+            throw new FST_ERR_ROUTE_PARAMS_SCHEMA_MISMATCH(
+              `Route '${routeOptions.url}' has a path param ':${param}' but it is not defined in the schema`
+            )
+          }
+        }
+      }
+    })
+  }
 
   // Delay configuring clientError handler so that it can access fastify state.
   server.on('clientError', options.clientErrorHandler.bind(fastify))

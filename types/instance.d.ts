@@ -130,7 +130,7 @@ export interface FastifyInstance<
   version: string;
   log: Logger;
   listeningOrigin: string;
-  addresses(): AddressInfo[]
+  addresses(): Array<AddressInfo | string>
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;

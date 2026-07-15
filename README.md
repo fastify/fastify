@@ -244,6 +244,7 @@ application. You should __always__ benchmark if performance matters to you.
 * [__`TypeScript and types support`__](./docs/Reference/TypeScript.md)
 * [__`Serverless`__](./docs/Guides/Serverless.md)
 * [__`Recommendations`__](./docs/Guides/Recommendations.md)
+* [__`Migrating from Express`__](./docs/Guides/Migration-Guide-Express.md)
 
 ## Ecosystem
 

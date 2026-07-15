@@ -273,6 +273,13 @@ fastify.get('/example/:userId/:secretToken', function (request, reply) {
 fastify.get('/example/*', function (request, reply) {})
 ```
 
+> ℹ️ Note:
+> Web browsers automatically request `/favicon.ico`. If no static route handles
+> that path, the request can match parametric or wildcard routes (for example
+> `/:id` or `/*`), which may trigger unexpected handlers or noisy logs. Register
+> a static `/favicon.ico` route, ignore the request in your handler, or use
+> [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon).
+
 Regular expression routes are supported, but slashes must be escaped.
 Take note that RegExp is also very expensive in terms of performance!
 ```js

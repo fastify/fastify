@@ -578,6 +578,38 @@ test('content-type match parameters - regexp', async t => {
   })
 })
 
+test('content-type match - RegExp with global flag', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.addContentTypeParser(/^application\/.+\+xml$/g, { parseAs: 'string' }, function (request, body, done) {
+    done(null, body)
+  })
+
+  fastify.post('/', async (request) => request.body)
+
+  // Two distinct content types that both match the parser. A RegExp with the
+  // `g` flag keeps a mutable lastIndex between test() calls, so the second
+  // content type must still match rather than fall through to 415.
+  const first = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: { 'content-type': 'application/vnd.a+xml' },
+    body: '<a/>'
+  })
+  const second = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: { 'content-type': 'application/vnd.b+xml' },
+    body: '<b/>'
+  })
+
+  t.assert.strictEqual(first.statusCode, 200)
+  t.assert.strictEqual(first.payload, '<a/>')
+  t.assert.strictEqual(second.statusCode, 200)
+  t.assert.strictEqual(second.payload, '<b/>')
+})
+
 test('content-type fail when parameters not match - string 1', async t => {
   t.plan(1)
 

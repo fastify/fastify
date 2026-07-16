@@ -53,7 +53,7 @@ Always put an example file in your repository. Examples are very helpful for
 users and give a very fast way to test your plugin. Your users will be grateful.
 
 ## Test
-A plugin **must** be thoroughly tested to verify that is working properly.
+A plugin **must** be thoroughly tested to verify that it is working properly.
 
 A plugin without tests will not be accepted to the ecosystem list. A lack of
 tests does not inspire trust nor guarantee that the code will continue to work

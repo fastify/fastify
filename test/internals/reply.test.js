@@ -5,6 +5,7 @@ const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
+const { LogController } = require('../../lib/log-controller')
 const Fastify = require('../..')
 const { Readable, Writable } = require('node:stream')
 const {
@@ -13,7 +14,8 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext
+  kRouteContext,
+  kLogController
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -85,7 +87,14 @@ test('reply.send will logStream error and destroy the stream', t => {
     warn: () => { }
   }
 
-  const reply = new Reply(response, { [kRouteContext]: { onSend: null } }, log)
+  const fakeRequest = {
+    [kRouteContext]: {
+      onSend: null,
+      server: { [kLogController]: new LogController() }
+    }
+  }
+
+  const reply = new Reply(response, fakeRequest, log)
   reply.send(payload)
   payload.destroy(new Error('stream error'))
 
@@ -764,7 +773,7 @@ test('non-string with custom json\'s content-type SHOULD be serialized as json',
 
   const result = await fetch(fastifyServer)
   t.assert.ok(result.ok)
-  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version=2; charset=utf-8')
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version="2"; charset=utf-8')
   t.assert.deepStrictEqual(await result.text(), JSON.stringify({ key: 'hello world!' }))
 })
 
@@ -1149,7 +1158,7 @@ test('reply.hasHeader computes raw and fastify headers', async t => {
 })
 
 test('Reply should handle JSON content type with a charset', async t => {
-  t.plan(8)
+  t.plan(10)
 
   const fastify = require('../../')()
 
@@ -1199,6 +1208,18 @@ test('Reply should handle JSON content type with a charset', async t => {
       .send({ hello: 'world' })
   })
 
+  fastify.get('/upper-charset', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; CHARSET=utf-8')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/random-case', function (req, reply) {
+    reply
+      .header('content-type', 'ApPlIcAtIoN/JsOn; ChArSeT=utf-8')
+      .send({ hello: 'world' })
+  })
+
   {
     const res = await fastify.inject('/default')
     t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
@@ -1231,6 +1252,16 @@ test('Reply should handle JSON content type with a charset', async t => {
   {
     const res = await fastify.inject('/type-utf32')
     t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-32')
+  }
+
+  {
+    const res = await fastify.inject('/upper-charset')
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; CHARSET=utf-8')
+  }
+
+  {
+    const res = await fastify.inject('/random-case')
+    t.assert.strictEqual(res.headers['content-type'], 'ApPlIcAtIoN/JsOn; ChArSeT=utf-8')
   }
 
   {

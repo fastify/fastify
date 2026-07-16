@@ -10,7 +10,7 @@ work after upgrading.
 ### Fastify v4 Codemods
 
 To help with the upgrade, we’ve worked with the team at
-[Codemod](https://github.com/codemod-com/codemod) to
+[Codemod](https://github.com/codemod/codemod) to
 publish codemods that will automatically update your code to many of
 the new APIs and patterns in Fastify v4.
 
@@ -264,4 +264,4 @@ Into:
 Fastify now supports the [HTTP Trailer] response headers.
 
 
-[HTTP Trailer]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer
+[HTTP Trailer]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Trailer

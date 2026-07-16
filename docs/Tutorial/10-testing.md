@@ -134,7 +134,25 @@ try {
 }
 ```
 
-Tests can now import `createApp()` and call `inject()` directly, without
+### test/app.js
+
+For tests, it is convenient to expose a small helper that creates the app
+with quiet defaults. That avoids repeating `createApp({ logger: false })`
+in every test while still allowing overrides when needed.
+
+```js
+// test/app.js
+import { createApp } from "../app.js";
+
+export function createTestApp(options = {}) {
+  return createApp({
+    logger: false,
+    ...options,
+  });
+}
+```
+
+Tests can now import `createTestApp()` and call `inject()` directly, without
 running `listen()`.
 
 ## Writing tests for `/quotes`
@@ -155,11 +173,11 @@ Each test creates a fresh Fastify instance and closes it afterward.
 ```js
 // test/quotes.test.js
 import { test, describe } from "node:test";
-import { createApp } from "../app.js";
+import { createTestApp } from "./app.js";
 
 describe("GET /quotes", () => {
   test("fails without Authorization header", async (t) => {
-    const app = createApp({ logger: false });
+    const app = createTestApp();
 
     const res = await app.inject({
       method: "GET",
@@ -175,7 +193,7 @@ describe("GET /quotes", () => {
   });
 
   test("returns an empty list for authenticated users", async (t) => {
-    const app = createApp({ logger: false });
+    const app = createTestApp();
 
     const res = await app.inject({
       method: "GET",
@@ -196,7 +214,7 @@ describe("GET /quotes", () => {
 ```js
 describe("POST /quotes", () => {
   test("fails without Authorization", async (t) => {
-    const app = createApp({ logger: false });
+    const app = createTestApp();
 
     const res = await app.inject({
       method: "POST",
@@ -213,7 +231,7 @@ describe("POST /quotes", () => {
   });
 
   test("fails with invalid payload", async (t) => {
-    const app = createApp({ logger: false });
+    const app = createTestApp();
 
     const res = await app.inject({
       method: "POST",
@@ -232,7 +250,7 @@ describe("POST /quotes", () => {
   });
 
   test("creates a quote and returns sanitized output", async (t) => {
-    const app = createApp({ logger: false });
+    const app = createTestApp();
 
     const res = await app.inject({
       method: "POST",
@@ -266,7 +284,7 @@ We use `t.mock.method` to capture calls to `app.log.error`.
 ```js
 describe("global error handler", () => {
   test("logs and hides internal errors", async (t) => {
-    const app = createApp({ logger: "silent" });
+    const app = createTestApp({ logger: "silent" });
 
     // Native node test runner utility
     // See: https://nodejs.org/api/test.html#mockmethodobject-methodname-implementation-options

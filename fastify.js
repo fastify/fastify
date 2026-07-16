@@ -143,7 +143,9 @@ function fastify (serverOptions) {
         'OPTIONS',
         'PATCH',
         'PUT',
-        'POST'
+        'POST',
+        // RFC 10008
+        'QUERY'
       ])
     },
     [kOptions]: options,
@@ -199,6 +201,9 @@ function fastify (serverOptions) {
     },
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+    },
+    query: function _query (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'QUERY', url, options, handler })
     },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })

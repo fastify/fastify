@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   quality-check:
-    uses: fastify/workflows/.github/workflows/nested-quality.yml@2073dc8e1f9e172bf42daa3843c9dbd31af1e8cb #v6.0.0
+    uses: fastify/workflows/.github/workflows/nested-quality.yml@2073dc8e1f9e172bf42daa3843c9dbd31af1e8cb # v6.0.0
     permissions:
       contents: read
     with:

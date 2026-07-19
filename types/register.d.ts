@@ -1,17 +1,36 @@
 import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from './plugin'
-import { LogLevel } from './logger'
+import { FastifyBaseLogger, LogLevel } from './logger'
 import { FastifyInstance } from './instance'
-import { RawServerBase } from './utils'
-import { FastifyBaseLogger, FastifyTypeProvider, RawServerDefault } from '../fastify'
+import { FastifyTypeProvider } from './type-provider'
+import { RawServerBase, RawServerDefault } from './utils'
 
 export interface RegisterOptions {
-  prefix?: string;
-  logLevel?: LogLevel;
-  logSerializers?: Record<string, (value: any) => string>;
+  prefix?: string
+  logLevel?: LogLevel
+  /** Serializer input is intentionally open for Pino compatibility. */
+  logSerializers?: Record<string, (value: any) => string>
 }
 
-export type FastifyRegisterOptions<Options> = (RegisterOptions & Options)
-  | ((instance: FastifyInstance) => RegisterOptions & Options)
+export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | ((instance: FastifyInstance) => RegisterOptions & Options)
+
+type ImportedPluginFor<
+  Options extends FastifyPluginOptions,
+  Server extends RawServerBase,
+  TypeProvider extends FastifyTypeProvider,
+  Logger extends FastifyBaseLogger
+> = Promise<{
+  default: FastifyPluginCallback<Options, Server, TypeProvider, Logger> | FastifyPluginAsync<Options, Server, TypeProvider, Logger>
+}>
+
+type RegisterablePluginFor<
+  Options extends FastifyPluginOptions,
+  Server extends RawServerBase,
+  TypeProvider extends FastifyTypeProvider,
+  Logger extends FastifyBaseLogger
+> =
+  | FastifyPluginCallback<Options, Server, TypeProvider, Logger>
+  | FastifyPluginAsync<Options, Server, TypeProvider, Logger>
+  | ImportedPluginFor<Options, Server, TypeProvider, Logger>
 
 /**
  * FastifyRegister
@@ -24,13 +43,9 @@ export interface FastifyRegister<
   TypeProviderDefault extends FastifyTypeProvider = FastifyTypeProvider,
   LoggerDefault extends FastifyBaseLogger = FastifyBaseLogger
 > {
-  <
-    Server extends RawServerBase = RawServer,
-    TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
-    Logger extends FastifyBaseLogger = LoggerDefault
-  >(
+  <Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault, Logger extends FastifyBaseLogger = LoggerDefault>(
     plugin: FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>
-  ): T;
+  ): T
   <
     Options extends FastifyPluginOptions,
     Server extends RawServerBase = RawServer,
@@ -39,14 +54,10 @@ export interface FastifyRegister<
   >(
     plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger>,
     opts: FastifyRegisterOptions<Options>
-  ): T;
-  <
-    Server extends RawServerBase = RawServer,
-    TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
-    Logger extends FastifyBaseLogger = LoggerDefault
-  >(
+  ): T
+  <Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault, Logger extends FastifyBaseLogger = LoggerDefault>(
     plugin: FastifyPluginAsync<FastifyPluginOptions, Server, TypeProvider, Logger>
-  ): T;
+  ): T
   <
     Options extends FastifyPluginOptions,
     Server extends RawServerBase = RawServer,
@@ -55,31 +66,17 @@ export interface FastifyRegister<
   >(
     plugin: FastifyPluginAsync<Options, Server, TypeProvider, Logger>,
     opts: FastifyRegisterOptions<Options>
-  ): T;
-  <
-    Server extends RawServerBase = RawServer,
-    TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
-    Logger extends FastifyBaseLogger = LoggerDefault
-  >(
-    plugin:
-      FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>
-      | FastifyPluginAsync<FastifyPluginOptions, Server, TypeProvider, Logger>
-      | Promise<{
-        default: FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>
-      }>
-      | Promise<{ default: FastifyPluginAsync<FastifyPluginOptions, Server, TypeProvider, Logger> }>,
-  ): T;
+  ): T
+  <Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault, Logger extends FastifyBaseLogger = LoggerDefault>(
+    plugin: RegisterablePluginFor<FastifyPluginOptions, Server, TypeProvider, Logger>
+  ): T
   <
     Options extends FastifyPluginOptions,
     Server extends RawServerBase = RawServer,
     TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
     Logger extends FastifyBaseLogger = LoggerDefault
   >(
-    plugin:
-      FastifyPluginCallback<Options, Server, TypeProvider, Logger>
-      | FastifyPluginAsync<Options, Server, TypeProvider, Logger>
-      | Promise<{ default: FastifyPluginCallback<Options, Server, TypeProvider, Logger> }>
-      | Promise<{ default: FastifyPluginAsync<Options, Server, TypeProvider, Logger> }>,
+    plugin: RegisterablePluginFor<Options, Server, TypeProvider, Logger>,
     opts: FastifyRegisterOptions<Options>
-  ): T;
+  ): T
 }

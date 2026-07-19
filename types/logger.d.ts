@@ -7,29 +7,16 @@ import { FastifySchema } from './schema'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
-import type {
-  BaseLogger,
-  LogFn as FastifyLogFn,
-  LevelWithSilent as LogLevel,
-  Bindings,
-  ChildLoggerOptions,
-  LoggerOptions as PinoLoggerOptions
-} from 'pino'
+import type { BaseLogger, LogFn as FastifyLogFn, LevelWithSilent as LogLevel, Bindings, ChildLoggerOptions, LoggerOptions as PinoLoggerOptions } from 'pino'
 
-export type {
-  FastifyLogFn,
-  LogLevel,
-  Bindings,
-  ChildLoggerOptions,
-  PinoLoggerOptions
-}
+export type { FastifyLogFn, LogLevel, Bindings, ChildLoggerOptions, PinoLoggerOptions }
 
 export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace' | 'silent'> {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
 export interface FastifyLoggerStreamDestination {
-  write(msg: string): void;
+  write(msg: string): void
 }
 
 /**
@@ -37,20 +24,14 @@ export interface FastifyLoggerStreamDestination {
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends FastifyRequest<
+  RequestForSerializer extends FastifyRequest<
     RouteGenericInterface,
     RawServer,
     RawRequestDefaultExpression<RawServer>,
     FastifySchema,
     FastifyTypeProvider
-  > = FastifyRequest<
-    RouteGenericInterface,
-    RawServer,
-    RawRequestDefaultExpression<RawServer>,
-    FastifySchema,
-    FastifyTypeProviderDefault
-  >,
-  RawReply extends FastifyReply<
+  > = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
+  ReplyForSerializer extends FastifyReply<
     RouteGenericInterface,
     RawServer,
     RawRequestDefaultExpression<RawServer>,
@@ -69,30 +50,30 @@ export interface FastifyLoggerOptions<
   >
 > {
   serializers?: {
-    req?: (req: RawRequest) => {
-      method?: string;
-      url?: string;
-      version?: string;
-      host?: string;
-      remoteAddress?: string;
-      remotePort?: number;
-      [key: string]: unknown;
-    };
+    req?: (req: RequestForSerializer) => {
+      method?: string
+      url?: string
+      version?: string
+      host?: string
+      remoteAddress?: string
+      remotePort?: number
+      [key: string]: unknown
+    }
     err?: (err: FastifyError) => {
-      type: string;
-      message: string;
-      stack: string;
-      [key: string]: unknown;
-    };
-    res?: (res: Partial<RawReply>) => {
-      statusCode?: string | number;
-      [key: string]: unknown;
-    };
-  };
-  level?: string;
-  file?: string;
-  genReqId?: (req: RawRequest) => string;
-  stream?: FastifyLoggerStreamDestination;
+      type: string
+      message: string
+      stack: string
+      [key: string]: unknown
+    }
+    res?: (res: Partial<ReplyForSerializer> & Pick<ReplyForSerializer, 'statusCode'>) => {
+      statusCode?: string | number
+      [key: string]: unknown
+    }
+  }
+  level?: string
+  file?: string
+  genReqId?: (req: RequestForSerializer) => string
+  stream?: FastifyLoggerStreamDestination
 }
 
 export interface LogControllerOptions {
@@ -108,12 +89,7 @@ export declare class LogController {
 
   isLogDisabled (request: FastifyRequest): boolean
   incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  requestCompleted (
-    error: Error | null | undefined,
-    request: FastifyRequest,
-    reply: FastifyReply,
-    metadata?: Record<string, unknown>
-  ): void
+  requestCompleted (error: Error | null | undefined, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void

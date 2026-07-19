@@ -3,6 +3,7 @@ import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, 
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyBaseLogger } from './logger'
 
+/** Compatibility escape hatch: changing property reads to `unknown` is breaking. */
 export type FastifyPluginOptions = Record<string, any>
 
 /**

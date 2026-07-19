@@ -13,7 +13,9 @@ RawServer extends http.Server | https.Server ?
     (request: http2.Http2ServerRequest & RawRequest, response: http2.Http2ServerResponse & RawReply) => void
 
 export interface FastifyServerFactory<
-  RawServer extends RawServerBase = RawServerDefault
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
-  (handler: FastifyServerFactoryHandler<RawServer>, opts: Record<string, unknown>): RawServer;
+  (handler: FastifyServerFactoryHandler<RawServer, RawRequest, RawReply>, opts: Record<string, unknown>): RawServer;
 }

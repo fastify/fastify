@@ -83,6 +83,44 @@ Let’s unpack the important pieces:
 This gives us one clear contract for configuration:
 if the application boots, `app.config` is present and valid.
 
+## Loading a `.env` File
+
+At this point, it is worth making one detail explicit:
+`@fastify/env` reads from `process.env`, but Fastify does not load a `.env`
+file by itself.
+
+There are several ways to provide environment variables:
+
+* directly in the shell,
+* through your process manager or deployment platform,
+* or from a local `.env` file loaded at process start.
+
+For local development, Node.js can load a `.env` file before the application
+starts.
+It is useful to define a dedicated `dev` script for that, while keeping
+`start` as the more production-like entrypoint.
+
+For example, we can define our `dev` script like this:
+
+```json
+{
+  "scripts": {
+    "dev": "node --watch --env-file=.env server.js"
+  }
+}
+```
+
+And then create a `.env` file:
+
+```dotenv
+HOST=127.0.0.1
+PORT=3000
+```
+
+With this setup, `node --watch --env-file=.env server.js` loads the variables
+into `process.env` before `server.js` runs.
+Then `@fastify/env` validates them and exposes the result as `app.config`.
+
 ## Register configuration first
 
 Configuration should be available before the rest of the application boots.

@@ -46,13 +46,11 @@ To ensure reliability and maintainability, we’ll set up a solid testing workfl
 
 ### Plugin Ecosystem and Integration
 
-We’ll integrate some Core Fastify plugins to  extend the application:
-
+We’ll integrate some Core Fastify plugins to extend the application:
 - Configuration
-- Database integration
+- Database integration with Knex
 - CORS
 - Rate limiting
-- Monitoring and observability
 - Authentication and authorization
 - API documentation with Swagger
 

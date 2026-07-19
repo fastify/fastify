@@ -5,7 +5,7 @@ import { FastifyBaseLogger } from './logger'
 import { FastifyRouteConfig, RouteGenericInterface, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
 import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
-import { ContextConfigDefault, HTTPMethods, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
+import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
 
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 export interface RequestGenericInterface {
@@ -15,8 +15,8 @@ export interface RequestGenericInterface {
   Headers?: RequestHeadersDefault;
 }
 
-export interface ValidationFunction {
-  (input: any): boolean
+export interface ValidationFunction<Input = unknown> {
+  (input: Input): boolean
   errors?: null | ErrorObject[];
 }
 
@@ -47,13 +47,13 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
+  ServerInstance = FastifyInstance
 // ^ Temporary Note: RequestType has been re-ordered to be the last argument in
-//   generic list. This generic argument is now considered optional as it can be
+//   the historical generic list. This generic argument is optional as it can be
 //   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
-//   arguments. Implementations that already pass this argument can either omit
-//   the RequestType (preferred) or swap Logger and RequestType arguments when
-//   creating custom types of FastifyRequest. Related issue #4123
+//   arguments. ServerInstance was appended later so existing RequestType positions
+//   stay compatible. Related issue #4123
 > {
   id: string;
   params: RequestType['params']; // deferred inference
@@ -61,10 +61,13 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   query: RequestType['query'];
   headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: Logger;
-  server: FastifyInstance;
+  server: ServerInstance;
   body: RequestType['body'];
 
-  /** in order for this to be used the user should ensure they have set the attachValidation option. */
+  /**
+   * In order for this to be used the user should set `attachValidation`.
+   * `validation` remains `any` for exact Fastify 5 compatibility.
+   */
   validationError?: Error & { validation: any; validationContext: string };
 
   /**
@@ -107,10 +110,32 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly mediaType: string | undefined;
 
   getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined
-  compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
-  validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
-  validateInput(input: any, httpPart?: HTTPRequestPart): boolean
+  getValidationFunction(schema: Record<string, unknown>): ValidationFunction | undefined
+  compileValidationSchema(schema: Record<string, unknown>, httpPart?: HTTPRequestPart): ValidationFunction
+  validateInput(input: unknown, schema: Record<string, unknown>, httpPart?: HTTPRequestPart): boolean
+  validateInput(input: unknown, httpPart?: HTTPRequestPart): boolean
   getDecorator<T>(name: string | symbol): T;
   setDecorator<T = unknown>(name: string | symbol, value: T): void;
 }
+
+/** Constructs the request view shared by routes, hooks, and replies. */
+export type FastifyRequestForRoute<
+  RouteGeneric extends RouteGenericInterface,
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer>,
+  SchemaCompiler extends FastifySchema,
+  TypeProvider extends FastifyTypeProvider,
+  ContextConfig,
+  Logger extends FastifyBaseLogger
+> = FastifyRequest<
+  RouteGeneric,
+  RawServer,
+  RawRequest,
+  SchemaCompiler,
+  TypeProvider,
+  ContextConfig,
+  Logger,
+  ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
+  FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+>

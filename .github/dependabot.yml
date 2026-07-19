@@ -3,8 +3,8 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore"
+      include: "scope"
+      prefix: "ci"
     schedule:
       interval: "weekly"
     cooldown:
@@ -18,8 +18,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore"
+      include: "scope"
+      prefix: "build"
     schedule:
       interval: "weekly"
     cooldown:

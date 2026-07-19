@@ -215,6 +215,8 @@ function invalidSchemaErrorFormatter (err: Error) {
 server.setSchemaErrorFormatter(invalidSchemaErrorFormatter)
 
 expect(server.addHttpMethod('SEARCH', { hasBody: true })).type.toBe<FastifyInstance>()
+expect(server.addHttpMethod('GET', { overrideExisting: true })).type.toBe<FastifyInstance>()
+expect(server.addHttpMethod('POST', { hasBody: true, overrideExisting: true })).type.toBe<FastifyInstance>()
 
 // test listen opts objects
 const options: FastifyListenOptions = {}

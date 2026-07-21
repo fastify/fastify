@@ -79,6 +79,7 @@ describes the properties available in that options object.
     - [getSchemas](#getschemas)
     - [getSchema](#getschema)
     - [setReplySerializer](#setreplyserializer)
+    - [addContentTypeSerializer](#addcontenttypeserializer)
     - [setValidatorCompiler](#setvalidatorcompiler)
     - [setSchemaErrorFormatter](#setschemaerrorformatter)
     - [setSerializerCompiler](#setserializercompiler)
@@ -1762,6 +1763,36 @@ out the [`setErrorHandler`](#seterrorhandler) for errors.
 fastify.setReplySerializer(function (payload, statusCode){
   // serialize the payload with a sync function
   return `my serialized ${statusCode} content: ${payload}`
+})
+```
+
+#### addContentTypeSerializer
+<a id="add-content-type-serializer"></a>
+
+Adds a reply serializer for a specific media type. The serializer is selected
+from the response `Content-Type`, must return a string or `Buffer`, is fully
+encapsulated, and runs after the `preSerialization` hooks. A serializer
+registered without parameters also matches response content types with
+parameters. An exact parameterized registration takes priority over that
+fallback.
+
+The serializers are synchronous, like [`reply.serializer()`](./Reply.md#serializerfunc).
+A serializer set directly on the reply takes priority. A matching content type
+serializer is used instead of [`setReplySerializer()`](#set-reply-serializer)
+or a schema serializer.
+
+```js
+fastify.addContentTypeSerializer('application/xml', payload => {
+  return payload.toXmlString()
+})
+
+fastify.get('/', async (request, reply) => {
+  reply.type('application/xml')
+  return {
+    toXmlString () {
+      return '<message>hello</message>'
+    }
+  }
 })
 ```
 

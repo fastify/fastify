@@ -576,6 +576,9 @@ reply
   .serializer(protoBuf.serialize)
 ```
 
+To reuse a serializer for every response with a specific media type, use
+[`addContentTypeSerializer()`](./Server.md#add-content-type-serializer).
+
 Note that you don't need to use this utility inside a `handler` because Buffers,
 streams, and strings (unless a serializer is set) are considered to already be
 serialized.

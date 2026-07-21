@@ -34,12 +34,12 @@ test('Should accept a custom childLoggerFactory function', (t, done) => {
 })
 
 test('Should accept a custom childLoggerFactory function as option', (t, done) => {
-  t.plan(2)
+  t.plan(4)
 
   const fastify = Fastify({
     childLoggerFactory: function (logger, bindings, opts) {
-      t.ok(bindings.reqId)
-      t.ok(opts)
+      t.assert.ok(bindings.reqId)
+      t.assert.ok(opts)
       this.log.debug(bindings, 'created child logger')
       return logger.child(bindings, opts)
     }

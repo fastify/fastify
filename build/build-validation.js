@@ -16,7 +16,7 @@ module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
 /* c8 ignore stop */
 `
 
-    const file = path.join(__dirname, '..', 'lib', 'configValidator.js')
+    const file = path.join(__dirname, '..', 'lib', 'config-validator.js')
     fs.writeFileSync(file, moduleCode)
     console.log(`Saved ${file} file successfully`)
   }
@@ -28,10 +28,11 @@ const defaultInitOptions = {
   forceCloseConnections: undefined, // keep-alive connections
   maxRequestsPerSocket: 0, // no limit
   requestTimeout: 0, // no limit
+  handlerTimeout: 0, // no timeout (disabled by default)
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   allowUnsafeRegex: false,
-  disableRequestLogging: false,
+  disableRequestLogging: false, // TODO: remove it in v6
   ignoreTrailingSlash: false,
   ignoreDuplicateSlashes: false,
   maxParamLength: 100,
@@ -39,10 +40,18 @@ const defaultInitOptions = {
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
   requestIdHeader: false,
-  requestIdLogLabel: 'reqId',
+  requestIdLogLabel: 'reqId', // TODO: remove it in v6
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
-  useSemicolonDelimiter: false
+  useSemicolonDelimiter: false,
+  allowErrorHandlerOverride: true, // TODO: set to false in v6
+  routerOptions: {
+    ignoreTrailingSlash: false,
+    ignoreDuplicateSlashes: false,
+    maxParamLength: 100,
+    allowUnsafeRegex: false,
+    useSemicolonDelimiter: false
+  }
 }
 
 const schema = {
@@ -64,6 +73,7 @@ const schema = {
     },
     maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
+    handlerTimeout: { type: 'integer', default: defaultInitOptions.handlerTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
     allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.allowUnsafeRegex },
@@ -90,7 +100,6 @@ const schema = {
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
     disableRequestLogging: {
-      type: 'boolean',
       default: false
     },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
@@ -102,6 +111,17 @@ const schema = {
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
+    routerOptions: {
+      type: 'object',
+      additionalProperties: true,
+      properties: {
+        ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
+        ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },
+        maxParamLength: { type: 'integer', default: defaultInitOptions.routerOptions.maxParamLength },
+        allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.routerOptions.allowUnsafeRegex },
+        useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.routerOptions.useSemicolonDelimiter }
+      }
+    },
     constraints: {
       type: 'object',
       additionalProperties: {

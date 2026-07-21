@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('..')()
 
 const opts = {
@@ -90,37 +89,33 @@ test('unlisted response code', t => {
 })
 
 test('start server and run tests', async (t) => {
-  await fastify.listen({ port: 0 })
-  const baseUrl = 'http://localhost:' + fastify.server.address().port
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
-  function sgetAsync (opts) {
-    return new Promise((resolve, reject) => {
-      sget(opts, (err, res, body) => {
-        if (err) return reject(err)
-        resolve({ res, body })
-      })
-    })
-  }
-
   await test('shorthand - string get ok', async (t) => {
-    const { res, body } = await sgetAsync({ method: 'GET', url: `${baseUrl}/string` })
-    t.assert.strictEqual(res.statusCode, 200)
-    t.assert.strictEqual(res.headers['content-length'], '' + body.length)
+    const result = await fetch(fastifyServer + '/string')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
     t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
   await test('shorthand - number get ok', async (t) => {
-    const { res, body } = await sgetAsync({ method: 'GET', url: `${baseUrl}/number` })
-    t.assert.strictEqual(res.statusCode, 201)
-    t.assert.strictEqual(res.headers['content-length'], '' + body.length)
+    const result = await fetch(fastifyServer + '/number')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 201)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
     t.assert.deepStrictEqual(JSON.parse(body), { hello: 55 })
   })
 
   await test('shorthand - wrong-object-for-schema', async (t) => {
-    const { res, body } = await sgetAsync({ method: 'GET', url: `${baseUrl}/wrong-object-for-schema` })
-    t.assert.strictEqual(res.statusCode, 500)
-    t.assert.strictEqual(res.headers['content-length'], '' + body.length)
+    const result = await fetch(fastifyServer + '/wrong-object-for-schema')
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 500)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
     t.assert.deepStrictEqual(JSON.parse(body), {
       statusCode: 500,
       error: 'Internal Server Error',
@@ -129,14 +124,17 @@ test('start server and run tests', async (t) => {
   })
 
   await test('shorthand - empty', async (t) => {
-    const { res } = await sgetAsync({ method: 'GET', url: `${baseUrl}/empty` })
-    t.assert.strictEqual(res.statusCode, 204)
+    const result = await fetch(fastifyServer + '/empty')
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 204)
   })
 
   await test('shorthand - 400', async (t) => {
-    const { res, body } = await sgetAsync({ method: 'GET', url: `${baseUrl}/400` })
-    t.assert.strictEqual(res.statusCode, 400)
-    t.assert.strictEqual(res.headers['content-length'], '' + body.length)
+    const result = await fetch(fastifyServer + '/400')
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 400)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
     t.assert.deepStrictEqual(JSON.parse(body), { hello: 'DOOM' })
   })
 })

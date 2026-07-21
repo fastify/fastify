@@ -3,7 +3,6 @@
 const { test, before } = require('node:test')
 const helper = require('./helper')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 const http = require('node:http')
 const split = require('split2')
 const append = require('vary').append
@@ -233,8 +232,8 @@ test('Versioned route but not version header should return a 404', (t, done) => 
   })
 })
 
-test('Should register a versioned route (server)', (t, done) => {
-  t.plan(6)
+test('Should register a versioned route (server)', async t => {
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.route({
@@ -246,34 +245,27 @@ test('Should register a versioned route (server)', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': '1.x'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port,
-        headers: {
-          'Accept-Version': '2.x'
-        }
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 404)
-        done()
-      })
-    })
+  const result1 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': '1.x'
+    }
   })
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  const body1 = await result1.json()
+  t.assert.deepStrictEqual(body1, { hello: 'world' })
+
+  const result2 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': '2.x'
+    }
+  })
+
+  t.assert.ok(!result2.ok)
+  t.assert.strictEqual(result2.status, 404)
 })
 
 test('Shorthand route declaration', (t, done) => {
@@ -402,8 +394,8 @@ test('Bad accept version (inject)', (t, done) => {
   })
 })
 
-test('Bad accept version (server)', (t, done) => {
-  t.plan(5)
+test('Bad accept version (server)', async t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.route({
@@ -415,33 +407,24 @@ test('Bad accept version (server)', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: {
-        'Accept-Version': 'a.b.c'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port,
-        headers: {
-          'Accept-Version': 12
-        }
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 404)
-        done()
-      })
-    })
+  const result1 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': 'a.b.c'
+    }
   })
+  t.assert.ok(!result1.ok)
+  t.assert.strictEqual(result1.status, 404)
+
+  const result2 = await fetch(fastifyServer, {
+    headers: {
+      'Accept-Version': '12'
+    }
+  })
+  t.assert.ok(!result2.ok)
+  t.assert.strictEqual(result2.status, 404)
 })
 
 test('test log stream', (t, done) => {

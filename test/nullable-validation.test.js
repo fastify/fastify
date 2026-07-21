@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('nullable string', (t, done) => {
@@ -52,8 +51,8 @@ test('nullable string', (t, done) => {
   })
 })
 
-test('object or null body', (t, done) => {
-  t.plan(5)
+test('object or null body', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -88,24 +87,20 @@ test('object or null body', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => { fastify.close() })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { isUndefinedBody: true })
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { isUndefinedBody: true })
 })
 
-test('nullable body', (t, done) => {
-  t.plan(5)
+test('nullable body', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -141,24 +136,20 @@ test('nullable body', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), { isUndefinedBody: true })
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { isUndefinedBody: true })
 })
 
-test('Nullable body with 204', (t, done) => {
-  t.plan(5)
+test('Nullable body with 204', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -183,18 +174,14 @@ test('Nullable body with 204', (t, done) => {
     }
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 204)
-      t.assert.strictEqual(body.length, 0)
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 204)
+  t.assert.strictEqual((await result.text()).length, 0)
 })

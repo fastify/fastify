@@ -1,6 +1,7 @@
 'use strict'
 
 const stream = require('node:stream')
+const { ReadableStream } = require('node:stream/web')
 const { test } = require('node:test')
 const Fastify = require('..')
 
@@ -90,13 +91,14 @@ test('Will not create a HEAD route that is not GET', async t => {
 })
 
 test('HEAD route should handle properly each response type', async t => {
-  t.plan(20)
+  t.plan(24)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
   const resString = 'Found me!'
   const resJSON = { here: 'is Johnny' }
   const resBuffer = Buffer.from('I am a buffer!')
   const resStream = stream.Readable.from('I am a stream!')
+  const resWebStream = ReadableStream.from('I am a web stream!')
 
   fastify.route({
     method: 'GET',
@@ -139,6 +141,14 @@ test('HEAD route should handle properly each response type', async t => {
     }
   })
 
+  fastify.route({
+    method: 'GET',
+    path: '/web-stream',
+    handler: (req, reply) => {
+      return resWebStream
+    }
+  })
+
   let res = await fastify.inject({
     method: 'HEAD',
     url: '/json'
@@ -178,6 +188,15 @@ test('HEAD route should handle properly each response type', async t => {
   res = await fastify.inject({
     method: 'HEAD',
     url: '/stream'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], undefined)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+  t.assert.strictEqual(res.body, '')
+
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-stream'
   })
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.headers['content-type'], undefined)

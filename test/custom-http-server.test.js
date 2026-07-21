@@ -3,7 +3,6 @@
 const { test } = require('node:test')
 const http = require('node:http')
 const dns = require('node:dns').promises
-const sget = require('simple-get').concat
 const Fastify = require('..')
 const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 
@@ -11,7 +10,7 @@ async function setup () {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
   test('Should support a custom http server', { skip: localAddresses.length < 1 }, async t => {
-    t.plan(4)
+    t.plan(5)
 
     const fastify = Fastify({
       serverFactory: (handler, opts) => {
@@ -34,20 +33,13 @@ async function setup () {
 
     await fastify.listen({ port: 0 })
 
-    await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
-        }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        resolve()
-      })
+    const response = await fetch('http://localhost:' + fastify.server.address().port, {
+      method: 'GET'
     })
+    t.assert.ok(response.ok)
+    t.assert.strictEqual(response.status, 200)
+    const body = await response.text()
+    t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
   })
 
   test('Should not allow forceCloseConnection=idle if the server does not support closeIdleConnections', t => {
@@ -69,6 +61,44 @@ async function setup () {
       FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
       "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
     )
+  })
+
+  test('Should not make an extra closeIdleConnections call for native servers', async t => {
+    const fastify = Fastify({
+      forceCloseConnections: 'idle'
+    })
+
+    await fastify.listen({ port: 0 })
+
+    let called = 0
+    fastify.server.closeIdleConnections = function () {
+      called++
+    }
+
+    await fastify.close()
+
+    t.assert.strictEqual(called, 1)
+  })
+
+  test('Should preserve the extra closeIdleConnections call for custom servers', async t => {
+    let called = 0
+    const fastify = Fastify({
+      forceCloseConnections: 'idle',
+      serverFactory (handler) {
+        const server = http.createServer(handler)
+        const originalCloseIdleConnections = server.closeIdleConnections.bind(server)
+        server.closeIdleConnections = function () {
+          called++
+          return originalCloseIdleConnections()
+        }
+        return server
+      }
+    })
+
+    await fastify.listen({ port: 0 })
+    await fastify.close()
+
+    t.assert.strictEqual(called, 2)
   })
 
   test('Should accept user defined serverFactory and ignore secondary server creation', async t => {

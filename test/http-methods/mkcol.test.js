@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('../../')()
 fastify.addHttpMethod('MKCOL')
 
@@ -22,18 +21,15 @@ test('can be created - mkcol', t => {
 })
 
 test('mkcol test', async t => {
-  await fastify.listen({ port: 0 })
+  const fastifyServer = await fastify.listen({ port: 0 })
   t.after(() => { fastify.close() })
 
-  await t.test('request - mkcol', (t, done) => {
+  await t.test('request - mkcol', async t => {
     t.plan(2)
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test/`,
+    const result = await fetch(`${fastifyServer}/test/`, {
       method: 'MKCOL'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 201)
-      done()
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 201)
   })
 })

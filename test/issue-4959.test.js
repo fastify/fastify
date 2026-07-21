@@ -3,8 +3,15 @@
 const { test } = require('node:test')
 const http = require('node:http')
 const Fastify = require('../fastify')
+const { setTimeout } = require('node:timers')
 
-function runBadClientCall (reqOptions, payload) {
+/*
+* Ensure that a socket error during the request does not cause the
+* onSend hook to be called multiple times.
+*
+* @see https://github.com/fastify/fastify/issues/4959
+*/
+function runBadClientCall (reqOptions, payload, waitBeforeDestroy) {
   let innerResolve, innerReject
   const promise = new Promise((resolve, reject) => {
     innerResolve = resolve
@@ -23,9 +30,25 @@ function runBadClientCall (reqOptions, payload) {
     innerReject(new Error('Request should have failed'))
   })
 
-  // Kill the socket immediately (before sending data)
-  req.on('socket', (socket) => {
-    setTimeout(() => { socket.destroy() }, 5)
+  // Kill the socket after the request has been fully written.
+  // Destroying it on `connect` can race before any bytes are sent, making the
+  // server-side assertions (hooks/handler) non-deterministic.
+  //
+  // To keep the test deterministic, we optionally wait for a server-side signal
+  // (e.g. onSend entered) before aborting the client.
+  let socket
+  req.on('socket', (s) => { socket = s })
+  req.on('finish', () => {
+    if (waitBeforeDestroy && typeof waitBeforeDestroy.then === 'function') {
+      Promise.race([
+        waitBeforeDestroy,
+        new Promise(resolve => setTimeout(resolve, 200))
+      ]).then(() => {
+        if (socket) socket.destroy()
+      }, innerResolve)
+      return
+    }
+    setTimeout(() => { socket.destroy() }, 0)
   })
   req.on('error', innerResolve)
   req.write(postData)
@@ -34,9 +57,14 @@ function runBadClientCall (reqOptions, payload) {
   return promise
 }
 
-test('should handle a soket error', async (t) => {
+test('should handle a socket error', async (t) => {
   t.plan(4)
   const fastify = Fastify()
+
+  let resolveOnSendEntered
+  const onSendEntered = new Promise((resolve) => {
+    resolveOnSendEntered = resolve
+  })
 
   function shouldNotHappen () {
     t.assert.fail('This should not happen')
@@ -61,8 +89,14 @@ test('should handle a soket error', async (t) => {
     t.assert.ok('onSend hook called')
     request.onSendCalled = true
 
-    // Introduce a delay
-    await new Promise(resolve => setTimeout(resolve, 5))
+    if (resolveOnSendEntered) {
+      resolveOnSendEntered()
+      resolveOnSendEntered = null
+    }
+
+    // Introduce a delay (gives time for client-side abort to happen while the
+    // request has already been processed, exercising the original issue).
+    await new Promise(resolve => setTimeout(resolve, 50))
     return payload
   })
 
@@ -79,6 +113,6 @@ test('should handle a soket error', async (t) => {
     port: fastify.server.address().port,
     path: '/',
     method: 'PUT'
-  }, { test: 'me' })
+  }, { test: 'me' }, onSendEntered)
   t.assert.equal(err.code, 'ECONNRESET')
 })

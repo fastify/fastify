@@ -58,8 +58,9 @@ in a blank http Fastify server.
   or use one of the [recommended
   ones](https://github.com/tsconfig/bases#node-14-tsconfigjson).
 
-*Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
-[FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
+> ℹ️ Note:
+> Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
+> [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.
 
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
@@ -147,7 +148,7 @@ route-level `request` object.
      reply.code(200).send('uh-oh');
      // it even works for wildcards
      reply.code(404).send({ error: 'Not found' });
-     return `logged in!`
+     return { success: true }
    })
    ```
 
@@ -173,7 +174,7 @@ route-level `request` object.
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
-     return `logged in!`
+     return { success: true }
    })
    ```
 7. Build and run and query with the `username` query string option set to
@@ -216,7 +217,7 @@ providers.
 
 #### TypeBox
 
-A useful library for building types and a schema at once is [TypeBox](https://www.npmjs.com/package/@sinclair/typebox).
+A useful library for building types and a schema at once is [TypeBox](https://www.npmjs.com/package/typebox).
 With TypeBox you define your schema within your code and use them directly as
 types or schemas as you need them.
 
@@ -226,14 +227,14 @@ can do it as follows:
 1. Install `typebox` in your project.
 
     ```bash
-    npm i @sinclair/typebox
+    npm i typebox
     ```
 
 2. Define the schema you need with `Type` and create the respective type  with
    `Static`.
 
     ```typescript
-    import { Static, Type } from '@sinclair/typebox'
+    import { Static, Type } from 'typebox'
 
     export const User = Type.Object({
       name: Type.String(),
@@ -657,8 +658,8 @@ unfortunate limitation of using TypeScript and is unavoidable as of right now.
 
 However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in
-  [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
-  are actually being loaded.
+  [ESLint](https://eslint.org/docs/latest/rules/no-unused-vars) and any
+  imported plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
@@ -687,10 +688,147 @@ Or even explicit config on tsconfig
 }
 ```
 
+#### `getDecorator<T>`
+
+Fastify's `getDecorator<T>` method retrieves decorators with enhanced type safety.
+
+The `getDecorator<T>` method supports generic type parameters for enhanced type
+safety:
+
+```typescript
+// Type-safe decorator retrieval
+const usersRepository = fastify.getDecorator<IUsersRepository>('usersRepository')
+const session = request.getDecorator<ISession>('session')
+const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+```
+
+**Alternative to Module Augmentation**
+
+Decorators are typically typed via module augmentation:
+
+```typescript
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersRepository: IUsersRepository
+  }
+  interface FastifyRequest {
+    session: ISession
+  }
+  interface FastifyReply {
+    sendSuccess: SendSuccessFn
+  }
+}
+```
+
+This approach modifies the Fastify instance globally, which may lead to conflicts
+and inconsistent behavior in multi-server setups or with plugin encapsulation.
+
+Using `getDecorator<T>` allows limiting types scope:
+
+```typescript
+serverOne.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<PostgreUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateRequest('session', null)
+  fastify.addHook('onRequest', async (req, reply) => {
+    req.setDecorator('session', { user: 'Jean' })
+  })
+
+  fastify.get('/me', (request, reply) => {
+    const session = request.getDecorator<ISession>('session')
+    reply.send(session)
+  })
+})
+
+serverTwo.register(async function (fastify) {
+  const usersRepository = fastify.getDecorator<SqlLiteUsersRepository>(
+    'usersRepository'
+  )
+
+  fastify.decorateReply('sendSuccess', function (data) {
+    return this.send({ success: true })
+  })
+
+  fastify.get('/success', async (request, reply) => {
+    const sendSuccess = reply.getDecorator<SendSuccessFn>('sendSuccess')
+    await sendSuccess()
+  })
+})
+```
+
+**Bound Functions Inference**
+
+To save time, it is common to infer function types instead of writing them manually:
+
+```typescript
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+export type SendSuccess = typeof sendSuccess
+```
+
+However, `getDecorator` returns functions with the `this` context already **bound**,
+meaning the `this` parameter disappears from the function signature.
+
+To correctly type it, use the `OmitThisParameter` utility:
+
+```typescript
+function sendSuccess (this: FastifyReply) {
+  return this.send({ success: true })
+}
+
+type BoundSendSuccess = OmitThisParameter<typeof sendSuccess>
+
+fastify.decorateReply('sendSuccess', sendSuccess)
+fastify.get('/success', async (request, reply) => {
+  const sendSuccess = reply.getDecorator<BoundSendSuccess>('sendSuccess')
+  await sendSuccess()
+})
+```
+
+#### `setDecorator<T>`
+
+Fastify's `setDecorator<T>` method provides enhanced type safety for updating request
+decorators.
+
+The `setDecorator<T>` method provides enhanced type safety for updating request
+decorators:
+
+```typescript
+fastify.decorateRequest('user', '')
+fastify.addHook('preHandler', async (req, reply) => {
+  // Type-safe decorator setting
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
+```
+
+**Type Safety Benefits**
+
+If the `FastifyRequest` interface does not declare the decorator, type assertions
+are typically needed:
+
+```typescript
+fastify.addHook('preHandler', async (req, reply) => {
+  (req as typeof req & { user: string }).user = 'Bob Dylan'
+})
+```
+
+The `setDecorator<T>` method eliminates the need for explicit type assertions
+while providing type safety:
+
+```typescript
+fastify.addHook('preHandler', async (req, reply) => {
+  req.setDecorator<string>('user', 'Bob Dylan')
+})
+```
+
 ## Code Completion In Vanilla JavaScript
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.
-[Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by
+[Intellisense](https://code.visualstudio.com/docs/editing/intellisense)) by
 following the [TypeScript JSDoc
 Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
 
@@ -1484,8 +1622,9 @@ previous hook was `preValidation`, the next hook will be `preSerialization`.
 `preSerialization` is the fifth hook to be executed in the request lifecycle.
 The previous hook was `preHandler`, the next hook will be `onSend`.
 
-Note: the hook is NOT called if the payload is a string, a Buffer, a stream or
-null.
+> ℹ️ Note:
+> The hook is NOT called if the payload is a string, a Buffer,
+> a stream, or null.
 
 ##### fastify.onSendHookHandler< OnSendPayload, [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: OnSendPayload, done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
 
@@ -1495,8 +1634,9 @@ You can change the payload with the `onSend` hook. It is the sixth hook to be
 executed in the request lifecycle. The previous hook was `preSerialization`, the
 next hook will be `onResponse`.
 
-Note: If you change the payload, you may only change it to a string, a Buffer, a
-stream, or null.
+> ℹ️ Note:
+>  If you change the payload, you may only change it to a string,
+> a Buffer, a stream, or null.
 
 ##### fastify.onResponseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
@@ -1519,9 +1659,7 @@ specific header in case of error.
 It is not intended for changing the error, and calling reply.send will throw an
 exception.
 
-This hook will be executed only after the customErrorHandler has been executed,
-and only if the customErrorHandler sends an error back to the user (Note that
-the default customErrorHandler always sends the error back to the user).
+This hook will be executed before the customErrorHandler.
 
 Notice: unlike the other hooks, pass an error to the done function is not
 supported.
@@ -1544,7 +1682,8 @@ created. The hook will be executed before the registered code.
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context.
 
-Note: This hook will not be called if a plugin is wrapped inside fastify-plugin.
+> ℹ️ Note:
+> This hook will not be called if a plugin is wrapped inside fastify-plugin.
 
 ##### fastify.onCloseHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 

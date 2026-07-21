@@ -3,7 +3,6 @@
 const { test, describe } = require('node:test')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
-const sget = require('simple-get').concat
 const symbols = require('../lib/symbols.js')
 
 test('server methods should exist', t => {
@@ -118,8 +117,24 @@ test('should pass error for missing request decorator', (t, done) => {
     })
 })
 
-test('decorateReply inside register', (t, done) => {
-  t.plan(11)
+const runTests = async (t, fastifyServer) => {
+  const endpoints = [
+    { path: '/yes', expectedBody: { hello: 'world' } },
+    { path: '/no', expectedBody: { hello: 'world' } }
+  ]
+
+  for (const { path, expectedBody } of endpoints) {
+    const result = await fetch(`${fastifyServer}${path}`)
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    const body = await result.text()
+    t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+    t.assert.deepStrictEqual(JSON.parse(body), expectedBody)
+  }
+}
+
+test('decorateReply inside register', async (t) => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -138,44 +153,14 @@ test('decorateReply inside register', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-  })
+  await runTests(t, fastifyServer)
 })
 
-test('decorateReply as plugin (inside .after)', (t, done) => {
-  t.plan(11)
+test('decorateReply as plugin (inside .after)', async t => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -196,44 +181,14 @@ test('decorateReply as plugin (inside .after)', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-  })
+  await runTests(t, fastifyServer)
 })
 
-test('decorateReply as plugin (outside .after)', (t, done) => {
-  t.plan(11)
+test('decorateReply as plugin (outside .after)', async t => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -254,44 +209,14 @@ test('decorateReply as plugin (outside .after)', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-  })
+  await runTests(t, fastifyServer)
 })
 
-test('decorateRequest inside register', (t, done) => {
-  t.plan(11)
+test('decorateRequest inside register', async t => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -310,44 +235,14 @@ test('decorateRequest inside register', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-  })
+  await runTests(t, fastifyServer)
 })
 
-test('decorateRequest as plugin (inside .after)', (t, done) => {
-  t.plan(11)
+test('decorateRequest as plugin (inside .after)', async t => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -368,44 +263,14 @@ test('decorateRequest as plugin (inside .after)', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-  })
+  await runTests(t, fastifyServer)
 })
 
-test('decorateRequest as plugin (outside .after)', (t, done) => {
-  t.plan(11)
+test('decorateRequest as plugin (outside .after)', async (t) => {
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
@@ -426,40 +291,10 @@ test('decorateRequest as plugin (outside .after)', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    let pending = 2
-
-    function completed () {
-      if (--pending === 0) {
-        done()
-      }
-    }
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      completed()
-    })
-  })
+  await runTests(t, fastifyServer)
 })
 
 test('decorators should be instance separated', (t, done) => {
@@ -1064,8 +899,8 @@ test('plugin required decorators', async t => {
   await app.ready()
 })
 
-test('decorateRequest/decorateReply empty string', (t, done) => {
-  t.plan(7)
+test('decorateRequest/decorateReply empty string', async t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.decorateRequest('test', '')
@@ -1077,25 +912,19 @@ test('decorateRequest/decorateReply empty string', (t, done) => {
   })
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
-    })
-  })
+  const result = await fetch(`${fastifyServer}/yes`)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })
 
-test('decorateRequest/decorateReply is undefined', (t, done) => {
-  t.plan(7)
+test('decorateRequest/decorateReply is undefined', async t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.decorateRequest('test', undefined)
@@ -1107,25 +936,19 @@ test('decorateRequest/decorateReply is undefined', (t, done) => {
   })
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
-    })
-  })
+  const result = await fetch(`${fastifyServer}/yes`)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })
 
-test('decorateRequest/decorateReply is not set to a value', (t, done) => {
-  t.plan(7)
+test('decorateRequest/decorateReply is not set to a value', async t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.decorateRequest('test')
@@ -1137,21 +960,15 @@ test('decorateRequest/decorateReply is not set to a value', (t, done) => {
   })
   t.after(() => fastify.close())
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => fastify.close())
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/yes'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-      t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-      done()
-    })
-  })
+  const result = await fetch(`${fastifyServer}/yes`)
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  const body = await result.text()
+  t.assert.strictEqual(result.headers.get('content-length'), '' + body.length)
+  t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
 })
 
 test('decorateRequest with dependencies', (t, done) => {

@@ -2,39 +2,9 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
-test('case insensitive', (t, done) => {
-  t.plan(4)
-
-  const fastify = Fastify({
-    caseSensitive: false
-  })
-  t.after(() => fastify.close())
-
-  fastify.get('/foo', (req, reply) => {
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FOO'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        hello: 'world'
-      })
-      done()
-    })
-  })
-})
-
-test('case insensitive inject', (t, done) => {
-  t.plan(4)
+test('case insensitive', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify({
     caseSensitive: false
@@ -45,25 +15,44 @@ test('case insensitive inject', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FOO'
-    }, (err, response) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(response.payload), {
-        hello: 'world'
-      })
-      done()
-    })
+  const result = await fetch(`${fastifyServer}/FOO`)
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), {
+    hello: 'world'
   })
 })
 
-test('case insensitive (parametric)', (t, done) => {
-  t.plan(5)
+test('case insensitive inject', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({
+    caseSensitive: false
+  })
+  t.after(() => fastify.close())
+
+  fastify.get('/foo', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fastify.inject({
+    method: 'GET',
+    url: fastifyServer + '/FOO'
+  })
+
+  t.assert.strictEqual(result.statusCode, 200)
+  t.assert.deepStrictEqual(result.json(), {
+    hello: 'world'
+  })
+})
+
+test('case insensitive (parametric)', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify({
     caseSensitive: false
@@ -75,25 +64,21 @@ test('case insensitive (parametric)', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        hello: 'world'
-      })
-      done()
-    })
+  const result = await fetch(`${fastifyServer}/FoO/bAr`, {
+    method: 'GET'
+  })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), {
+    hello: 'world'
   })
 })
 
-test('case insensitive (wildcard)', (t, done) => {
-  t.plan(5)
+test('case insensitive (wildcard)', async (t) => {
+  t.plan(4)
 
   const fastify = Fastify({
     caseSensitive: false
@@ -105,19 +90,13 @@ test('case insensitive (wildcard)', (t, done) => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(JSON.parse(body), {
-        hello: 'world'
-      })
-      done()
-    })
+  const result = await fetch(`${fastifyServer}/FoO/bAr/baZ`)
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
+  t.assert.deepStrictEqual(await result.json(), {
+    hello: 'world'
   })
 })

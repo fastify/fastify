@@ -16,31 +16,57 @@ Request is a core Fastify object containing the following fields:
   [encapsulation context](./Encapsulation.md).
 - `id` - The request ID.
 - `log` - The logger instance of the incoming request.
-- `ip` - The IP address of the incoming request.
-- `ips` - An array of the IP addresses, ordered from closest to furthest, in the
-  `X-Forwarded-For` header of the incoming request (only when the
-  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled).
+- `ip` - The IP address of the incoming request. This value is taken from
+  `socket.remoteAddress` (or from `X-Forwarded-For` when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+- `ips` - An array of IP addresses, ordered from closest to furthest, from
+  `X-Forwarded-For` (only when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
 - `host` - The host of the incoming request (derived from `X-Forwarded-Host`
-  header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
-  enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
-  exists. The host header may return an empty string if `requireHostHeader` is
-  `false`, not provided with HTTP/1.0, or removed by schema validation.
-- `hostname` - The hostname derived from the `host` property of the incoming request.
-- `port` - The port from the `host` property, which may refer to the port the
+  when [`trustProxy`](./Server.md#factory-trust-proxy) is enabled). For HTTP/2
+  compatibility, it returns `:authority` if no host header exists. The host
+  header may return an empty string if `requireHostHeader` is `false`, not
+  provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - The hostname parsed from `request.host`.
+- `port` - The port parsed from `request.host`, which may refer to the port the
   server is listening on.
-- `protocol` - The protocol of the incoming request (`https` or `http`).
+- `protocol` - The protocol of the incoming request (`https` or `http`). This
+  value comes from `socket.encrypted` (or `X-Forwarded-Proto` when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+
+> ⚠️ Security:
+> `request.ip`, `request.ips`, `request.host`, `request.hostname`,
+> `request.port`, and `request.protocol` come from request metadata
+> (socket and/or forwarding headers) and should be treated as untrusted input.
+> Fastify does not perform security validation for business logic.
+> If these values are used in security-sensitive decisions, they must 
+> be validated explicitly (for example: trusted proxy configuration,
+> allow-lists, strict parsing, and normalization).
+
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
   case of internal re-routing.
+- `mediaType` - The media type extracted from `Content-Type` header. When `Content-Type`
+  header is missing, it will return `undefined`.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
+- `signal` - An `AbortSignal` that aborts when the handler timeout
+  fires or the client disconnects. Created lazily on first access, so
+  there is zero overhead when not used. When
+  [`handlerTimeout`](./Server.md#factory-handler-timeout) is configured,
+  the signal is pre-created and also aborts on timeout. Pass it to
+  `fetch()`, database queries, or any API accepting a `signal` option
+  for cooperative cancellation. On timeout, `signal.reason` is the
+  `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
+  `AbortError`. Check `signal.reason.code` to distinguish the two cases.
 - `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
   internal object. Do not use or modify it directly. It is useful to access one
   special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
+  - `handlerTimeout` - The handler timeout configured for this route.
   - `config` - The [`config`](./Routes.md#routes-config) object for this route.
   - `method` - The HTTP method for the route.
   - `url` - The path of the URL to match this route.
@@ -61,9 +87,9 @@ Request is a core Fastify object containing the following fields:
   default (or customized) `ValidationCompiler`. The optional `httpPart` is
   forwarded to the `ValidationCompiler` if provided, defaults to `null`.
 - [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
-  Validates the input using the specified schema and returns the serialized
-  payload. If `httpPart` is provided, the function uses the serializer for
-  that HTTP Status Code. Defaults to `null`.
+  Validates the input using the specified schema or HTTP part and returns
+  `true` if the input is valid, `false` otherwise. If `httpPart` is provided,
+  the function uses the validator for that HTTP part. Defaults to `null`.
 
 ### Headers
 
@@ -84,7 +110,8 @@ This operation adds new values to the request headers, accessible via
 For performance reasons, `Symbol('fastify.RequestAcceptVersion')` may be added
 to headers on `not found` routes.
 
-> 🛈 Note: Schema validation may mutate the `request.headers` and
+> ℹ️ Note:
+> Schema validation may mutate the `request.headers` and
 > `request.raw.headers` objects, causing the headers to become empty.
 
 ```js
@@ -105,14 +132,14 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.url)
   console.log(request.routeOptions.method)
   console.log(request.routeOptions.bodyLimit)
-  console.log(request.routeOptions.method)
+  console.log(request.routeOptions.handlerTimeout)
   console.log(request.routeOptions.url)
   console.log(request.routeOptions.attachValidation)
   console.log(request.routeOptions.logLevel)
   console.log(request.routeOptions.version)
   console.log(request.routeOptions.exposeHeadRoute)
   console.log(request.routeOptions.prefixTrailingSlash)
-  console.log(request.routeOptions.logLevel)
+  console.log(request.routeOptions.config)
   request.log.info('some info')
 })
 ```
@@ -218,7 +245,7 @@ const schema1 = {
 const validate = request.compileValidationSchema(schema1)
 
 // Later on...
-schema1.properties.foo.type. = 'integer'
+schema1.properties.foo.type = 'integer'
 const newValidate = request.compileValidationSchema(schema1)
 
 console.log(newValidate === validate) // true
@@ -237,7 +264,7 @@ const newValidate = request.compileValidationSchema(newSchema)
 console.log(newValidate === validate) // false
 ```
 
-### .validateInput(data, [schema | httpStatus], [httpStatus])
+### .validateInput(data, [schema | httpPart], [httpPart])
 <a id="validate"></a>
 
 This function validates the input based on the provided schema or HTTP part. If

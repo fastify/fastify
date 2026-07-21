@@ -1,11 +1,10 @@
 'use strict'
 
 const Fastify = require('..')
-const sget = require('simple-get').concat
 const { test } = require('node:test')
 
-test('proto-poisoning error', (t, done) => {
-  t.plan(3)
+test('proto-poisoning error', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -13,52 +12,46 @@ test('proto-poisoning error', (t, done) => {
     t.assert.fail('handler should not be called')
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 } }'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      fastify.close()
-      done()
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{ "__proto__": { "a": 42 } }'
   })
+
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 400)
 })
 
-test('proto-poisoning remove', (t, done) => {
-  t.plan(4)
+test('proto-poisoning remove', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify({ onProtoPoisoning: 'remove' })
+
+  t.after(() => fastify.close())
 
   fastify.post('/', (request, reply) => {
     t.assert.strictEqual(undefined, Object.assign({}, request.body).a)
     reply.send({ ok: true })
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 }, "b": 42 }'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      fastify.close()
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{ "__proto__": { "a": 42 }, "b": 42 }'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('proto-poisoning ignore', (t, done) => {
-  t.plan(4)
+test('proto-poisoning ignore', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify({ onProtoPoisoning: 'ignore' })
 
@@ -67,25 +60,22 @@ test('proto-poisoning ignore', (t, done) => {
     reply.send({ ok: true })
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "__proto__": { "a": 42 }, "b": 42 }'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      fastify.close()
-      done()
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{ "__proto__": { "a": 42 }, "b": 42 }'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })
 
-test('constructor-poisoning error (default in v3)', (t, done) => {
-  t.plan(3)
+test('constructor-poisoning error (default in v3)', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify()
 
@@ -93,72 +83,63 @@ test('constructor-poisoning error (default in v3)', (t, done) => {
     reply.send('ok')
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  t.after(() => fastify.close())
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      fastify.close()
-      done()
-    })
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
   })
+
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 400)
 })
 
-test('constructor-poisoning error', (t, done) => {
-  t.plan(3)
+test('constructor-poisoning error', async (t) => {
+  t.plan(2)
 
   const fastify = Fastify({ onConstructorPoisoning: 'error' })
+
+  t.after(() => fastify.close())
 
   fastify.post('/', (request, reply) => {
     t.assert.fail('handler should not be called')
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 400)
-      fastify.close()
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
   })
+
+  t.assert.ok(!result.ok)
+  t.assert.strictEqual(result.status, 400)
 })
 
-test('constructor-poisoning remove', (t, done) => {
-  t.plan(4)
+test('constructor-poisoning remove', async (t) => {
+  t.plan(3)
 
   const fastify = Fastify({ onConstructorPoisoning: 'remove' })
+
+  t.after(() => fastify.close())
 
   fastify.post('/', (request, reply) => {
     t.assert.strictEqual(undefined, Object.assign({}, request.body).foo)
     reply.send({ ok: true })
   })
 
-  fastify.listen({ port: 0 }, function (err) {
-    t.assert.ifError(err)
+  const fastifyServer = await fastify.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      fastify.close()
-      done()
-    })
+  const result = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
   })
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 200)
 })

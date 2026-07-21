@@ -49,4 +49,26 @@ test('Buffer test', async t => {
       statusCode: 400
     })
   })
+
+  await test('should return 400 if the body is invalid json', async t => {
+    t.plan(3)
+
+    const response = await fastify.inject({
+      method: 'DELETE',
+      url: '/',
+      payload: Buffer.from(']'),
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+
+    t.assert.ifError(response.error)
+    t.assert.strictEqual(response.statusCode, 400)
+    t.assert.deepStrictEqual(JSON.parse(response.payload.toString()), {
+      error: 'Bad Request',
+      code: 'FST_ERR_CTP_INVALID_JSON_BODY',
+      message: 'Body is not valid JSON but content-type is set to \'application/json\'',
+      statusCode: 400
+    })
+  })
 })

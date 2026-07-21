@@ -1,7 +1,7 @@
 'use strict'
 
 const { describe, test } = require('node:test')
-const sget = require('simple-get').concat
+const { Client } = require('undici')
 const Fastify = require('..')
 
 describe('route-shorthand', () => {
@@ -19,19 +19,15 @@ describe('route-shorthand', () => {
       await fastify.listen({ port: 0 })
       t.after(() => fastify.close())
 
-      await new Promise((resolve, reject) => {
-        sget({
-          method,
-          url: `http://localhost:${fastify.server.address().port}`
-        }, (err, response, body) => {
-          if (err) {
-            t.assert.ifError(err)
-            return reject(err)
-          }
-          t.assert.strictEqual(response.statusCode, 200)
-          resolve()
-        })
-      })
+      const instance = new Client(`http://localhost:${fastify.server.address().port}`)
+
+      if (method === 'QUERY') {
+        const response = await instance.request({ path: '/', method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hello: 'world' }) })
+        t.assert.strictEqual(response.statusCode, 200)
+      } else {
+        const response = await instance.request({ path: '/', method })
+        t.assert.strictEqual(response.statusCode, 200)
+      }
     })
   }
 
@@ -48,19 +44,15 @@ describe('route-shorthand', () => {
 
     for (const method of supportedMethods) {
       currentMethod = method
-      await new Promise((resolve, reject) => {
-        sget({
-          method,
-          url: `http://localhost:${fastify.server.address().port}`
-        }, (err, response, body) => {
-          if (err) {
-            t.assert.ifError(err)
-            return reject(err)
-          }
-          t.assert.strictEqual(response.statusCode, 200)
-          resolve()
-        })
-      })
+      const instance = new Client(`http://localhost:${fastify.server.address().port}`)
+
+      if (method === 'QUERY') {
+        const response = await instance.request({ path: '/', method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hello: 'world' }) })
+        t.assert.strictEqual(response.statusCode, 200)
+      } else {
+        const response = await instance.request({ path: '/', method })
+        t.assert.strictEqual(response.statusCode, 200)
+      }
     }
   })
 })

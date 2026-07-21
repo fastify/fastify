@@ -25,6 +25,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   // `url` can be `undefined` for instance when `request.is404` is true
   url: string | undefined;
   bodyLimit: number;
+  handlerTimeout: number;
   attachValidation: boolean;
   logLevel: string;
   exposeHeadRoute: boolean;
@@ -32,6 +33,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
   schema?: SchemaCompiler; // it is empty for 404 requests
   handler: RouteHandlerMethod;
+  version?: string;
 }
 
 /**
@@ -69,21 +71,43 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
    * @deprecated Use `raw` property
    */
   readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  /**
+   * Derived from request socket metadata or forwarding headers.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly ip: string;
+  /**
+   * Derived from forwarding headers when trustProxy is enabled.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly ips?: string[];
+  /**
+   * Derived from Host/:authority/X-Forwarded-Host request metadata.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly host: string;
-  readonly port: number;
+  /**
+   * Parsed from request host metadata.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
+  readonly port: number | null;
   readonly hostname: string;
   readonly url: string;
   readonly originalUrl: string;
+  /**
+   * Derived from socket state or forwarding headers.
+   * Treat as untrusted input and validate before security-sensitive use.
+   */
   readonly protocol: 'http' | 'https';
   readonly method: string;
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
+  readonly signal: AbortSignal;
+  readonly mediaType: string | undefined;
 
-  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction
+  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined
+  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined
   compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
   validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
   validateInput(input: any, httpPart?: HTTPRequestPart): boolean

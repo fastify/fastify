@@ -112,3 +112,19 @@ RouteGeneric
  * https://github.com/fastify/fastify/issues/5498
  */
 export type SafePromiseLike<T> = PromiseLike<T> & { __linterBrands: 'SafePromiseLike' }
+
+// -----------------------------------------------------------------------------------------------
+// SendArgs
+// -----------------------------------------------------------------------------------------------
+
+/**
+ * Determines whether the send() payload parameter should be required or optional.
+ * - When ReplyType is unknown (default/unspecified), payload is optional
+ * - When ReplyType is undefined or void, payload is optional (returning undefined is valid)
+ * - Otherwise, payload is required
+ */
+export type SendArgs<ReplyType> = unknown extends ReplyType
+  ? [payload?: ReplyType]
+  : [ReplyType] extends [undefined | void]
+      ? [payload?: ReplyType]
+      : [payload: ReplyType]

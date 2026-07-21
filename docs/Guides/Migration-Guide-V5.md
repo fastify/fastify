@@ -105,7 +105,7 @@ const fastify = require('fastify')({
 Starting with v5, Fastify instances will no longer default to supporting the use
 of semicolon delimiters in the query string as they did in v4.
 This is due to it being non-standard
-behavior and not adhering to [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986#section-3.4).
+behavior and not adhering to [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4).
 
 If you still wish to use semicolons as delimiters, you can do so by
 setting `useSemicolonDelimiter: true` in the server configuration.
@@ -540,10 +540,19 @@ and [#4682](https://github.com/fastify/fastify/issues/4682) for more information
 The `getDefaultRoute` and `setDefaultRoute` methods have been removed in v5.
 
 See [#4485](https://github.com/fastify/fastify/pull/4485)
-and [#4480](https://github.com/fastify/fastify/pull/4485)
+and [#4480](https://github.com/fastify/fastify/pull/4480)
 for more information.
 This was already deprecated in v4 as `FSTDEP014`,
 so you should have already updated your code.
+
+### `time` and `date-time` formats enforce timezone
+
+The updated AJV compiler updates `ajv-formats` which now
+enforce the use of timezone in `time` and `date-time` format.
+A workaround is to use `iso-time` and `iso-date-time` formats
+which support an optional timezone for backwards compatibility.
+See the
+[full discussion](https://github.com/fastify/fluent-json-schema/issues/267).
 
 ## New Features
 
@@ -557,7 +566,6 @@ and provides a way to trace the lifecycle of a request.
 'use strict'
 
 const diagnostics = require('node:diagnostics_channel')
-const sget = require('simple-get').concat
 const Fastify = require('fastify')
 
 diagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {
@@ -583,15 +591,12 @@ fastify.route({
   }
 })
 
-fastify.listen({ port: 0 }, function () {
-  sget({
-    method: 'GET',
-    url: fastify.listeningOrigin + '/7'
-  }, (err, response, body) => {
-    t.error(err)
-    t.equal(response.statusCode, 200)
-    t.same(JSON.parse(body), { hello: 'world' })
-  })
+fastify.listen({ port: 0 }, async function () {
+  const result = await fetch(fastify.listeningOrigin + '/7')
+
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(response.status, 200)
+  t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
 })
 ```
 

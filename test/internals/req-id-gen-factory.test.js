@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { reqIdGenFactory } = require('../../lib/reqIdGenFactory')
+const { reqIdGenFactory } = require('../../lib/req-id-gen-factory')
 
 test('should create incremental ids deterministically', t => {
   t.plan(1)

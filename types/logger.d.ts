@@ -7,24 +7,28 @@ import { FastifySchema } from './schema'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
-import pino from 'pino'
+import type {
+  BaseLogger,
+  LogFn as FastifyLogFn,
+  LevelWithSilent as LogLevel,
+  Bindings,
+  ChildLoggerOptions,
+  LoggerOptions as PinoLoggerOptions
+} from 'pino'
 
-/**
- * Standard Fastify logging function
- */
-export type FastifyLogFn = pino.LogFn
+export type {
+  FastifyLogFn,
+  LogLevel,
+  Bindings,
+  ChildLoggerOptions,
+  PinoLoggerOptions
+}
 
-export type LogLevel = pino.LevelWithSilent
-
-export type Bindings = pino.Bindings
-
-export type ChildLoggerOptions = pino.ChildLoggerOptions
-
-export interface FastifyBaseLogger extends pino.BaseLogger {
+export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace' | 'silent'> {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
-// TODO delete FastifyBaseLogger in the next major release. It seems that it is enough to have only FastifyBaseLogger.
+// TODO delete FastifyLoggerInstance in the next major release. It seems that it is enough to have only FastifyBaseLogger.
 /**
  * @deprecated Use FastifyBaseLogger instead
  */
@@ -33,8 +37,6 @@ export type FastifyLoggerInstance = FastifyBaseLogger
 export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
 }
-
-export type PinoLoggerOptions = pino.LoggerOptions
 
 // TODO: once node 18 is EOL, this type can be replaced with plain FastifyReply.
 /**
@@ -78,6 +80,28 @@ export interface FastifyLoggerOptions<
   file?: string;
   genReqId?: (req: RawRequest) => string;
   stream?: FastifyLoggerStreamDestination;
+}
+
+export interface LogControllerOptions {
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel?: string
+}
+
+export declare class LogController {
+  disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel: string
+
+  constructor (options?: LogControllerOptions)
+
+  isLogDisabled (request: FastifyRequest): boolean
+  incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  requestCompleted (error: Error | null, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
+  serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
 }
 
 export interface FastifyChildLoggerFactory<

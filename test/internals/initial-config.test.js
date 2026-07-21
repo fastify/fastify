@@ -7,7 +7,7 @@ const http = require('node:http')
 const pino = require('pino')
 const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
-const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
+const { deepFreezeObject } = require('../../lib/initial-config-validation').utils
 
 const { buildCertificate } = require('../build-certificate')
 
@@ -34,6 +34,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     keepAliveTimeout: 72000,
     maxRequestsPerSocket: 0,
     requestTimeout: 0,
+    handlerTimeout: 0,
     bodyLimit: 1024 * 1024,
     caseSensitive: true,
     allowUnsafeRegex: false,
@@ -273,6 +274,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       keepAliveTimeout: 72000,
       maxRequestsPerSocket: 0,
       requestTimeout: 0,
+      handlerTimeout: 0,
       bodyLimit: 1024 * 1024,
       caseSensitive: true,
       allowUnsafeRegex: false,

@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('REPORT', { hasBody: true })
 
@@ -80,88 +79,64 @@ test('report test', async t => {
     fastify.close()
   })
 
-  await t.test('request - report', (t, done) => {
+  await t.test('request - report', async (t) => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/`,
-        method: 'REPORT'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/`, {
+      method: 'REPORT'
+    })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + (await result.text()).length)
   })
 
-  await t.test('request with other path - report', (t, done) => {
+  await t.test('request with other path - report', async (t) => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        method: 'REPORT'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
+      method: 'REPORT'
+    })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + (await result.text()).length)
   })
 
   // the body test uses a text/plain content type instead of application/xml because it requires
   // a specific content type parser
-  await t.test('request with body - report', (t, done) => {
+  await t.test('request with body - report', async (t) => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        headers: { 'content-type': 'text/plain' },
-        body: bodySample,
-        method: 'REPORT'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
+      method: 'REPORT',
+      headers: { 'content-type': 'text/plain' },
+      body: bodySample
+    })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + (await result.text()).length)
   })
 
-  await t.test('request with body and no content type (415 error) - report', (t, done) => {
+  await t.test('request with body and no content type (415 error) - report', async (t) => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        body: bodySample,
-        method: 'REPORT'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 415)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
+      method: 'REPORT',
+      body: bodySample,
+      headers: { 'content-type': '' }
+    })
+
+    t.assert.ok(!result.ok)
+    t.assert.strictEqual(result.status, 415)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + (await result.text()).length)
   })
 
-  await t.test('request without body - report', (t, done) => {
+  await t.test('request without body - report', async (t) => {
     t.plan(3)
-    sget(
-      {
-        url: `http://localhost:${fastify.server.address().port}/test`,
-        method: 'REPORT'
-      },
-      (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 207)
-        t.assert.strictEqual(response.headers['content-length'], '' + body.length)
-        done()
-      }
-    )
+    const result = await fetch(`http://localhost:${fastify.server.address().port}/test`, {
+      method: 'REPORT'
+    })
+
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 207)
+    t.assert.strictEqual(result.headers.get('content-length'), '' + (await result.text()).length)
   })
 })

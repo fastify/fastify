@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const { kReplyHijacked } = require('../lib/symbols')
-const wrapThenable = require('../lib/wrapThenable')
+const wrapThenable = require('../lib/wrap-thenable')
 const Reply = require('../lib/reply')
 
 test('should resolve immediately when reply[kReplyHijacked] is true', async t => {

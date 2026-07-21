@@ -34,7 +34,8 @@ are Request/Reply hooks and application hooks:
 - [Using Hooks to Inject Custom Properties](#using-hooks-to-inject-custom-properties)
 - [Diagnostics Channel Hooks](#diagnostics-channel-hooks)
 
-> 🛈 Note: The `done` callback is not available when using `async`/`await` or
+> ℹ️ Note:
+> The `done` callback is not available when using `async`/`await` or
 > returning a `Promise`. If you do invoke a `done` callback in this situation
 > unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
@@ -50,7 +51,7 @@ It is easy to understand where each hook is executed by looking at the
 Hooks are affected by Fastify's encapsulation, and can thus be applied to
 selected routes. See the [Scopes](#scope) section for more information.
 
-There are eight different hooks that you can use in Request/Reply *(in order of
+There are ten different hooks that you can use in Request/Reply *(in order of
 execution)*:
 
 ### onRequest
@@ -68,7 +69,8 @@ fastify.addHook('onRequest', async (request, reply) => {
 })
 ```
 
-> 🛈 Note: In the [onRequest](#onrequest) hook, `request.body` will always be
+> ℹ️ Note:
+> In the [onRequest](#onrequest) hook, `request.body` will always be
 > `undefined`, because the body parsing happens before the
 > [preValidation](#prevalidation) hook.
 
@@ -98,16 +100,19 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 })
 ```
 
-> 🛈 Note: In the [preParsing](#preparsing) hook, `request.body` will always be
+> ℹ️ Note:
+> In the [preParsing](#preparsing) hook, `request.body` will always be
 > `undefined`, because the body parsing happens before the
 > [preValidation](#prevalidation) hook.
 
-> 🛈 Note: You should also add a `receivedEncodedLength` property to the
+> ℹ️ Note:
+> You should also add a `receivedEncodedLength` property to the
 > returned stream. This property is used to correctly match the request payload
 > with the `Content-Length` header value. Ideally, this property should be updated
 > on each received chunk.
 
-> 🛈 Note: The size of the returned stream is checked to not exceed the limit
+> ℹ️ Note:
+> The size of the returned stream is checked to not exceed the limit
 > set in [`bodyLimit`](./Server.md#bodylimit) option.
 
 ### preValidation
@@ -166,7 +171,8 @@ fastify.addHook('preSerialization', async (request, reply, payload) => {
 })
 ```
 
-> 🛈 Note: The hook is NOT called if the payload is a `string`, a `Buffer`, a
+> ℹ️ Note:
+> The hook is NOT called if the payload is a `string`, a `Buffer`, a
 > `stream`, or `null`.
 
 ### onError
@@ -189,14 +195,11 @@ specific header in case of error.
 It is not intended for changing the error, and calling `reply.send` will throw
 an exception.
 
-This hook will be executed only after
-the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler)
-has been executed, and only if the custom error handler sends an error back to the
-user
-*(Note that the default error handler always sends the error back to the
-user)*.
+This hook will be executed before
+the [Custom Error Handler set by `setErrorHandler`](./Server.md#seterrorhandler).
 
-> 🛈 Note: Unlike the other hooks, passing an error to the `done` function is not
+> ℹ️ Note:
+> Unlike the other hooks, passing an error to the `done` function is not
 > supported.
 
 ### onSend
@@ -233,7 +236,8 @@ fastify.addHook('onSend', (request, reply, payload, done) => {
 > to `0`, whereas the `Content-Length` header will not be set if the payload is
 > `null`.
 
-> 🛈 Note: If you change the payload, you may only change it to a `string`, a
+> ℹ️ Note:
+> If you change the payload, you may only change it to a `string`, a
 > `Buffer`, a `stream`, a `ReadableStream`, a `Response`, or `null`.
 
 
@@ -256,7 +260,8 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
-> 🛈 Note: Setting `disableRequestLogging` to `true` will disable any error log
+> ℹ️ Note:
+> Setting `disableRequestLogging` to `true` will disable any error log
 > inside the `onResponse` hook. In this case use `try - catch` to log errors.
 
 ### onTimeout
@@ -279,6 +284,12 @@ service (if the `connectionTimeout` property is set on the Fastify instance).
 The `onTimeout` hook is executed when a request is timed out and the HTTP socket
 has been hung up. Therefore, you will not be able to send data to the client.
 
+> ℹ️ Note:
+> The `onTimeout` hook is triggered by socket-level timeouts set via
+> `connectionTimeout`. For application-level per-route timeouts, see the
+> [`handlerTimeout`](./Server.md#factory-handler-timeout) option which uses
+> `request.signal` for cooperative cancellation.
+
 ### onRequestAbort
 
 ```js
@@ -298,7 +309,8 @@ The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been processed. Therefore, you will not be able to send
 data to the client.
 
-> 🛈 Note: Client abort detection is not completely reliable.
+> ℹ️ Note:
+> Client abort detection is not completely reliable.
 > See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)
 
 ### Manage Errors from a hook
@@ -452,16 +464,19 @@ fastify.addHook('onListen', async function () {
 })
 ```
 
-> 🛈 Note: This hook will not run when the server is started using
-> fastify.inject()` or `fastify.ready()`.
+> ℹ️ Note:
+> This hook will not run when the server is started using
+> `fastify.inject()` or `fastify.ready()`.
 
 ### onClose
 <a id="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server, after all in-flight
-HTTP requests have been completed.
-It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example,
-to close an open connection to a database.
+Triggered when `fastify.close()` is invoked to stop the server. By the time
+`onClose` hooks execute, the HTTP server has already stopped listening, all
+in-flight HTTP requests have been completed, and connections have been drained.
+This makes `onClose` the safe place for [plugins](./Plugins.md) to release
+resources such as database connection pools, as no new requests will
+arrive.
 
 The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
@@ -479,13 +494,41 @@ fastify.addHook('onClose', async (instance) => {
 })
 ```
 
+#### Execution order
+
+When multiple `onClose` hooks are registered across plugins, child-plugin hooks
+execute before parent-plugin hooks. This means a database plugin's `onClose`
+hook will run before the root-level `onClose` hooks:
+
+```js
+fastify.register(function dbPlugin (instance, opts, done) {
+  instance.addHook('onClose', async (instance) => {
+    // Runs first — close the database pool
+    await instance.db.close()
+  })
+  done()
+})
+
+fastify.addHook('onClose', async (instance) => {
+  // Runs second — after child plugins have cleaned up
+})
+```
+
+See [`close`](./Server.md#close) for the full shutdown lifecycle.
+
 ### preClose
 <a id="pre-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server, before all in-flight
-HTTP requests have been completed.
-It is useful when [plugins](./Plugins.md) have set up some state attached
-to the HTTP server that would prevent the server to close.
+Triggered when `fastify.close()` is invoked to stop the server. At this
+point the server is already rejecting new requests with `503` (when
+[`return503OnClosing`](./Server.md#factory-return-503-on-closing) is `true`),
+but the HTTP server has not yet stopped listening and in-flight requests are
+still being processed.
+
+It is useful when [plugins](./Plugins.md) have set up state attached to the HTTP
+server that would prevent the server from closing, such as open WebSocket
+connections or Server-Sent Events streams that must be explicitly terminated for
+`server.close()` to complete.
 _It is unlikely you will need to use this hook_,
 use the [`onClose`](#onclose) for the most common case.
 
@@ -500,6 +543,18 @@ fastify.addHook('preClose', (done) => {
 fastify.addHook('preClose', async () => {
   // Some async code
   await removeSomeServerState()
+})
+```
+
+For example, closing WebSocket connections during shutdown:
+
+```js
+fastify.addHook('preClose', async () => {
+  // Close all WebSocket connections so that server.close() can complete.
+  // Without this, open connections would keep the server alive.
+  for (const ws of activeWebSockets) {
+    ws.close(1001, 'Server shutting down')
+  }
 })
 ```
 
@@ -576,7 +631,8 @@ This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context, thus
 this hook is encapsulated.
 
-> 🛈 Note: This hook will not be called if a plugin is wrapped inside
+> ℹ️ Note:
+> This hook will not be called if a plugin is wrapped inside
 > [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
@@ -681,9 +737,9 @@ fastify.addHook('onResponse', (request, reply, done) => {
   done()
 })
 
-fastify.addHook('preParsing', (request, reply, done) => {
+fastify.addHook('preParsing', (request, reply, payload, done) => {
   // Your code
-  done()
+  done(null, payload)
 })
 
 fastify.addHook('preValidation', (request, reply, done) => {
@@ -734,9 +790,9 @@ fastify.route({
     // this hook will always be executed after the shared `onResponse` hooks
     done()
   },
-  preParsing: function (request, reply, done) {
+  preParsing: function (request, reply, payload, done) {
     // This hook will always be executed after the shared `preParsing` hooks
-    done()
+    done(null, payload)
   },
   preValidation: function (request, reply, done) {
     // This hook will always be executed after the shared `preValidation` hooks
@@ -774,7 +830,8 @@ fastify.route({
 })
 ```
 
-> 🛈 Note: Both options also accept an array of functions.
+> ℹ️ Note:
+> Both options also accept an array of functions.
 
 ## Using Hooks to Inject Custom Properties
 <a id="using-hooks-to-inject-custom-properties"></a>
@@ -861,7 +918,8 @@ channel.subscribe(function ({ fastify }) {
 })
 ```
 
-> 🛈 Note: The TracingChannel class API is currently experimental and may undergo
+> ℹ️ Note:
+> The TracingChannel class API is currently experimental and may undergo
 > breaking changes even in semver-patch releases of Node.js.
 
 Five other events are published on a per-request basis following the

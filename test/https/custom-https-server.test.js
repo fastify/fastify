@@ -4,8 +4,8 @@ const { test } = require('node:test')
 const Fastify = require('../..')
 const https = require('node:https')
 const dns = require('node:dns').promises
-const sget = require('simple-get').concat
 const { buildCertificate } = require('../build-certificate')
+const { Agent } = require('undici')
 
 async function setup () {
   await buildCertificate()
@@ -13,7 +13,7 @@ async function setup () {
   const localAddresses = await dns.lookup('localhost', { all: true })
 
   test('Should support a custom https server', { skip: localAddresses.length < 1 }, async t => {
-    t.plan(4)
+    t.plan(5)
 
     const fastify = Fastify({
       serverFactory: (handler, opts) => {
@@ -42,20 +42,16 @@ async function setup () {
 
     await fastify.listen({ port: 0 })
 
-    await new Promise((resolve, reject) => {
-      sget({
-        method: 'GET',
-        url: 'https://localhost:' + fastify.server.address().port,
-        rejectUnauthorized: false
-      }, (err, response, body) => {
-        if (err) {
-          return reject(err)
+    const result = await fetch('https://localhost:' + fastify.server.address().port, {
+      dispatcher: new Agent({
+        connect: {
+          rejectUnauthorized: false
         }
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(JSON.parse(body), { hello: 'world' })
-        resolve()
       })
     })
+    t.assert.ok(result.ok)
+    t.assert.strictEqual(result.status, 200)
+    t.assert.deepStrictEqual(await result.json(), { hello: 'world' })
   })
 }
 

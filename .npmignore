@@ -12,6 +12,12 @@ CONTRIBUTING.md
 EXPENSE_POLICY.md
 .clinic
 .gitpod.yml
+.vscode/
+*.log
+
+# AI files
+.claude/
+CLAUDE.md
 
 # test certification
 test/https/fastify.cert

@@ -5,23 +5,34 @@ Fastify uses a schema-based approach. We recommend using
 [JSON Schema](https://json-schema.org/) to validate routes and serialize outputs.
 Fastify compiles the schema into a highly performant function.
 
-Validation is only attempted if the content type is `application/json`.
+Validation is only attempted if the content type is `application/json`,
+unless the body schema uses the [`content`](#body-content-type-validation)
+property to specify validation per content type. When the body schema defines
+a `content` field, it must enumerate all possible content types the
+application expects to handle with the associated handler.
 
 All examples use the
-[JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7)
+[JSON Schema Draft 7](https://json-schema.org/draft-07)
 specification.
 
 > ⚠ Warning:
 > Treat schema definitions as application code. Validation and serialization
 > features use `new Function()`, which is unsafe with user-provided schemas. See
-> [Ajv](https://npm.im/ajv) and
-> [fast-json-stringify](https://npm.im/fast-json-stringify) for details.
+> [Ajv](https://www.npmjs.com/package/ajv) and
+> [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for details.
 >
 > Whilst Fastify supports the
 > [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html),
 > it should not be used for initial validation. Accessing databases during
 > validation may lead to Denial of Service attacks. Use
 > [Fastify's hooks](./Hooks.md) like `preHandler` for `async` tasks after validation.
+>
+> When using custom validators with async `preValidation` hooks,
+> validators **must return** `{error}` objects instead of throwing errors.
+> Throwing errors from custom validators will cause unhandled promise rejections
+> that crash the application when combined with async hooks. See the
+> [custom validator examples](#using-other-validation-libraries) below for the
+> correct pattern.
 
 ### Core concepts
 Validation and serialization are handled by two customizable dependencies:
@@ -39,7 +50,7 @@ The `addSchema` API allows adding multiple schemas to the Fastify instance for
 reuse throughout the application. This API is encapsulated.
 
 Shared schemas can be reused with the JSON Schema
-[**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8)
+[**`$ref`**](https://datatracker.ietf.org/doc/html/draft-handrews-json-schema-01#section-8)
 keyword. Here is an overview of how references work:
 
 + `myField: { $ref: '#foo' }` searches for `$id: '#foo'` in the current schema
@@ -56,7 +67,7 @@ keyword. Here is an overview of how references work:
 
 ```js
 fastify.addSchema({
-  $id: 'http://example.com/',
+  $id: 'http://fastify.example/',
   type: 'object',
   properties: {
     hello: { type: 'string' }
@@ -68,7 +79,7 @@ fastify.post('/', {
   schema: {
     body: {
       type: 'array',
-      items: { $ref: 'http://example.com#/properties/hello' }
+      items: { $ref: 'http://fastify.example#/properties/hello' }
     }
   }
 })
@@ -221,6 +232,9 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
+#### Body Content-Type Validation
+<a id="body-content-type-validation"></a>
+
 For `body` schema, it is further possible to differentiate the schema per content
 type by nesting the schemas inside `content` property. The schema validation
 will be applied based on the `Content-Type` header in the request.
@@ -243,9 +257,54 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
+> ⚠ Warning:
+> When using [custom content type parsers](./ContentTypeParser.md), the parsed
+> body is validated **only** when the request content type matches a key in the
+> schema `content` map.
+>
+> Schema selection uses an exact match on the request's
+> [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
+> (for example, `application/json`). If a parser is registered with a regular
+> expression (for example, `/^application\/.*json$/`), the parser can accept
+> more content types than the `content` map covers. Requests in that gap are
+> parsed but **not validated**.
+>
+> Ensure every content type accepted by the parser has a corresponding key in
+> the `content` map, or use a catch-all body schema without `content` when
+> strict per-content-type discrimination is not required.
+>
+> ```js
+> // Add a custom parser for YAML
+> fastify.addContentTypeParser('application/yaml', { parseAs: 'string' }, (req, body, done) => {
+>   done(null, YAML.parse(body))
+> })
+>
+> fastify.post('/the/url', {
+>   schema: {
+>     body: {
+>       content: {
+>         'application/json': {
+>           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
+>         },
+>         // Without this entry, application/yaml requests will NOT be validated
+>         'application/yaml': {
+>           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
+>         }
+>       }
+>     }
+>   }
+> }, handler)
+> ```
+
 Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
+
+> ⚠ Important:
+> Fastify uses a custom [AJV configuration][1] such as `coerceTypes: 'array'`.
+> Evaluate its behavior and verify if it meets the project requirements.
+
+[1]: https://github.com/fastify/ajv-compiler?tab=readme-ov-file#ajv-configuration
 
 The Ajv default configuration in Fastify supports coercing array parameters in
 `querystring`. Example:
@@ -320,6 +379,31 @@ server.setValidatorCompiler(req => {
     }
     return compiler.compile(req.schema)
 })
+```
+
+When type coercion is enabled, using `anyOf` with nullable primitive types
+can produce unexpected results. For example, a value of `0` or `false` may be
+coerced to `null` because Ajv evaluates `anyOf` schemas in order and applies
+type coercion during matching. This means the `{ "type": "null" }` branch can
+match before the intended type:
+
+```json
+{
+  "anyOf": [
+    { "type": "null" },
+    { "type": "number" }
+  ]
+}
+```
+
+To avoid this, use the `nullable` keyword instead of `anyOf` for primitive
+types:
+
+```json
+{
+  "type": "number",
+  "nullable": true
+}
 ```
 
 For more information, see [Ajv Coercion](https://ajv.js.org/coercion.html).
@@ -432,7 +516,9 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-> 🛈 Note: When using a custom validator instance, add schemas to the validator
+
+> ℹ️ Note:
+> When using a custom validator instance, add schemas to the validator
 > instead of Fastify. Fastify's `addSchema` method will not recognize the custom
 > validator.
 
@@ -446,14 +532,25 @@ JavaScript validation libraries like [joi](https://github.com/hapijs/joi/) or
 ```js
 const Joi = require('joi')
 
+fastify.setValidatorCompiler(({ schema }) => {
+  return (data) => {
+    try {
+      const { error, value } = schema.validate(data)
+      if (error) {
+        return { error } // Return the error, do not throw it
+      }
+      return { value }
+    } catch (e) {
+      return { error: e } // Catch any unexpected errors too
+    }
+  }
+})
+
 fastify.post('/the/url', {
   schema: {
     body: Joi.object().keys({
       hello: Joi.string().required()
     }).required()
-  },
-  validatorCompiler: ({ schema, method, url, httpPart }) => {
-    return data => schema.validate(data)
   }
 }, handler)
 ```
@@ -491,6 +588,45 @@ fastify.post('/the/url', {
   }
 }, handler)
 ```
+
+Fastify supports different JSON Schema validators via
+`setValidatorCompiler`. Community plugins that integrate alternative JSON
+Schema validators are listed on the
+[Ecosystem](https://fastify.dev/docs/latest/Guides/Ecosystem/) page.
+
+##### Custom Validator Best Practices
+
+When implementing custom validators, follow these patterns to ensure compatibility
+with all Fastify features:
+
+**Always return objects, never throw:**
+```js
+return { value: validatedData }  // On success
+return { error: validationError } // On failure
+```
+
+**Use try-catch for safety:**
+```js
+fastify.setValidatorCompiler(({ schema }) => {
+  return (data) => {
+    try {
+      // Validation logic here
+      const result = schema.validate(data)
+      if (result.error) {
+        return { error: result.error }
+      }
+      return { value: result.value }
+    } catch (e) {
+      // Catch any unexpected errors
+      return { error: e }
+    }
+  }
+})
+```
+
+This pattern ensures validators work correctly with both sync and async
+`preValidation` hooks, preventing unhandled promise rejections that can crash
+an application.
 
 ##### .statusCode property
 
@@ -623,9 +759,12 @@ const schema = {
       content: {
         'application/json': {
           schema: {
-            name: { type: 'string' },
-            image: { type: 'string' },
-            address: { type: 'string' }
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              image: { type: 'string' },
+              address: { type: 'string' }
+            }
           }
         },
         'application/vnd.v1+json': {
@@ -640,8 +779,11 @@ const schema = {
       content: {
         'application/vnd.v2+json': {
           schema: {
-            fullName: { type: 'string' },
-            phone: { type: 'string' }
+            type: 'object',
+            properties: {
+              fullName: { type: 'string' },
+              phone: { type: 'string' }
+            }
           }
         }
       }
@@ -651,7 +793,10 @@ const schema = {
         // */* is match-all content-type
         '*/*': {
           schema: {
-            desc: { type: 'string' }
+            type: 'object',
+            properties: {
+              desc: { type: 'string' }
+            }
           }
         }
       }
@@ -723,6 +868,12 @@ with the following payload:
 }
 ```
 
+> ⚠ Security Consideration: By default, validation error details from the schema
+> are included in the response payload. If your organization requires sanitizing
+> or customizing these error messages (e.g., to avoid exposing internal schema
+> details), configure a custom error handler using
+> [`setErrorHandler()`](./Server.md#seterrorhandler).
+
 To handle errors inside the route, specify the `attachValidation` option. If
 there is a validation error, the `validationError` property of the request will
 contain the `Error` object with the raw validation result as shown below:
@@ -776,12 +927,14 @@ fastify.setErrorHandler(function (error, request, reply) {
 ```
 
 For custom error responses in the schema, see
-[`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Check out the
+[`ajv-errors`](https://github.com/ajv-validator/ajv-errors). Check out the
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 
-> Install version 1.0.1 of `ajv-errors`, as later versions are not compatible
-> with AJV v6 (the version shipped by Fastify v3).
+> Fastify v5 uses AJV v8 and requires a compatible `ajv-errors` version.
+> Fastify v3 requires `ajv-errors@1.0.1`, which supports AJV v6.
+> See the [AJV compiler versions table](https://github.com/fastify/ajv-compiler/#versions)
+> for the AJV version used by each Fastify release.
 
 Below is an example showing how to add **custom error messages for each
 property** of a schema by supplying custom AJV options. Inline comments in the
@@ -838,7 +991,7 @@ fastify.post('/', { schema, }, (request, reply) => {
 ```
 
 To return localized error messages, see
-[ajv-i18n](https://github.com/epoberezkin/ajv-i18n).
+[ajv-i18n](https://github.com/ajv-validator/ajv-i18n).
 
 ```js
 const localize = require('ajv-i18n')
@@ -980,11 +1133,11 @@ const refToSharedSchemaDefinitions = {
 
 - [JSON Schema](https://json-schema.org/)
 - [Understanding JSON
-  Schema](https://spacetelescope.github.io/understanding-json-schema/)
+  Schema](https://json-schema.org/understanding-json-schema/about)
 - [fast-json-stringify
   documentation](https://github.com/fastify/fast-json-stringify)
-- [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)
-- [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)
-- [Ajv custom errors](https://github.com/epoberezkin/ajv-errors)
+- [Ajv documentation](https://github.com/ajv-validator/ajv/blob/master/README.md)
+- [Ajv i18n](https://github.com/ajv-validator/ajv-i18n)
+- [Ajv custom errors](https://github.com/ajv-validator/ajv-errors)
 - Custom error handling with core methods with error file dumping
   [example](https://github.com/fastify/example/tree/main/validation-messages)

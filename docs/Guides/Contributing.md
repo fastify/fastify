@@ -7,7 +7,7 @@ us.
 
 > ## Note
 > This is an informal guide. For full details, please review the formal
-> [CONTRIBUTING 
+> [CONTRIBUTING
 > document](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 > our [Developer Certificate of
 > Origin](https://en.wikipedia.org/wiki/Developer_Certificate_of_Origin).
@@ -89,7 +89,7 @@ conforms to this project's styles. Notably, this project uses
 <a id="contributing-vscode"></a>
 
 What follows is how to use [Visual Studio Code (VSCode)
-portable](https://code.visualstudio.com/docs/editor/portable) to create a
+portable](https://code.visualstudio.com/docs/setup/portable) to create a
 Fastify specific environment. This guide is written as if you are setting up the
 environment on macOS, but the principles are the same across all platforms. See
 the previously linked VSCode portable guide for help with other platforms.
@@ -117,7 +117,7 @@ mkdir -p /Applications/VSCodeFastify/code-portable-data/{user-data,extensions}
 
 Before continuing, we need to add the `code` command to your terminal's `PATH`.
 To do so, we will [manually add VSCode to the
-`PATH`](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).
+`PATH`](https://code.visualstudio.com/docs/setup/mac#_launch-vs-code-from-the-command-line).
 As outlined in that document, the instructions vary depending on your default
 shell, so you should follow the instructions in that guide as relates to your
 preferred shell. However, we will tweak them slightly by defining an alias
@@ -165,7 +165,7 @@ the left sidebar. But wait! We are not quite done yet. There are a few more
 baseline settings that should be set before VSCode is ready.
 
 Press `cmd+shift+p` to bring up the VSCode command input prompt. Type `open
-settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
+settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/configure/settings)
 options will appear in the dropdown: Workspace, Default,
 and User settings. We recommend selecting Default. This will open a document
 that is the settings for the editor. Paste the following JSON into this

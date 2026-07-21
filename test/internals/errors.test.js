@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 84
+const expectedErrors = 94
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -165,7 +165,7 @@ test('FST_ERR_CTP_INVALID_MEDIA_TYPE', t => {
   const error = new errors.FST_ERR_CTP_INVALID_MEDIA_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
-  t.assert.strictEqual(error.message, 'Unsupported Media Type: %s')
+  t.assert.strictEqual(error.message, 'Unsupported Media Type')
   t.assert.strictEqual(error.statusCode, 415)
   t.assert.ok(error instanceof Error)
 })
@@ -186,6 +186,16 @@ test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_EMPTY_JSON_BODY')
   t.assert.strictEqual(error.message, "Body cannot be empty when content-type is set to 'application/json'")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_CTP_INVALID_JSON_BODY', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTP_INVALID_JSON_BODY()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_JSON_BODY')
+  t.assert.strictEqual(error.message, "Body is not valid JSON but content-type is set to 'application/json'")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
 })
@@ -620,6 +630,16 @@ test('FST_ERR_BAD_URL', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_MAX_PARAM_LENGTH', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_MAX_PARAM_LENGTH()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_MAX_PARAM_LENGTH')
+  t.assert.strictEqual(error.message, "'%s' is exceeding the max param length")
+  t.assert.strictEqual(error.statusCode, 414)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_ASYNC_CONSTRAINT', t => {
   t.plan(5)
   const error = new errors.FST_ERR_ASYNC_CONSTRAINT()
@@ -700,6 +720,16 @@ test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_ROUTE_LOG_LEVEL_INVALID', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_LOG_LEVEL_INVALID()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_LOG_LEVEL_INVALID')
+  t.assert.strictEqual(error.message, "Log level for '%s:%s' route must be a valid logger level. Received: '%s'")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
+})
+
 test('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', t => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED()
@@ -738,6 +768,26 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
   t.assert.strictEqual(error.message, 'Rewrite url for "%s" needs to be of type "string" but received "%s"')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_ROUTE_MISSING_CONTENT_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT_TYPE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT_TYPE')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a 'Content-Type' header.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_ROUTE_MISSING_CONTENT', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a request body.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
 })
 
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
@@ -798,6 +848,16 @@ test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', t => {
   t.assert.strictEqual(error.message, 'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED('my-dep', 'my-plugin')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED')
+  t.assert.strictEqual(error.message, "The dependency 'my-dep' of plugin 'my-plugin' is not registered")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
 })
 
 test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {
@@ -925,6 +985,45 @@ test('Ensure that non-existing errors are not in Errors.md documented', t => {
 
   const matchRE = /<a id="[0-9a-zA-Z_]+">([0-9a-zA-Z_]+)<\/a>/g
   const matches = errorsMd.matchAll(matchRE)
+  const exportedKeys = Object.keys(errors)
+
+  for (const match of matches) {
+    t.assert.ok(exportedKeys.indexOf(match[1]) !== -1, match[1])
+  }
+})
+
+test('Ensure that all errors are in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
+  const errorTypes = [...matches].map(match => match[1])
+  const exportedKeys = Object.keys(errors)
+
+  for (const key of exportedKeys) {
+    if (errors[key].name === 'FastifyError') {
+      t.assert.ok(errorTypes.includes(key), key)
+    }
+  }
+})
+
+test('Ensure that non-existing errors are not in errors.d.ts', t => {
+  t.plan(expectedErrors)
+
+  const errorsDts = readFileSync(resolve(__dirname, '../../types/errors.d.ts'), 'utf8')
+
+  const FastifyErrorCodesRE = /export type FastifyErrorCodes = Record<([^>]+),\s*FastifyErrorConstructor>/m
+
+  const [, errorCodeType] = errorsDts.match(FastifyErrorCodesRE)
+
+  const errorCodeRE = /'([A-Z0-9_]+)'/g
+  const matches = errorCodeType.matchAll(errorCodeRE)
   const exportedKeys = Object.keys(errors)
 
   for (const match of matches) {

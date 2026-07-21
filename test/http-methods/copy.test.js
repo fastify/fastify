@@ -1,29 +1,13 @@
 'use strict'
 
 const { test } = require('node:test')
-const sget = require('simple-get').concat
 const fastify = require('../../fastify')()
 fastify.addHttpMethod('COPY')
 
-test('can be created - copy', (t, done) => {
-  t.plan(4)
+test('can be created - copy', async t => {
+  t.plan(3)
 
-  fastify.listen({ port: 0 }, err => {
-    t.assert.ifError(err)
-    t.after(() => { fastify.close() })
-
-    sget({
-      url: `http://localhost:${fastify.server.address().port}/test.txt`,
-      method: 'COPY',
-      headers: {
-        Destination: '/test2.txt'
-      }
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 204)
-      done()
-    })
-  })
+  t.after(() => fastify.close())
 
   try {
     fastify.route({
@@ -37,4 +21,15 @@ test('can be created - copy', (t, done) => {
   } catch (e) {
     t.assert.fail()
   }
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+
+  const result = await fetch(`${fastifyServer}/test.txt`, {
+    method: 'COPY',
+    headers: {
+      Destination: '/test2.txt'
+    }
+  })
+  t.assert.ok(result.ok)
+  t.assert.strictEqual(result.status, 204)
 })

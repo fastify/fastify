@@ -3,10 +3,9 @@
 const { AsyncLocalStorage } = require('node:async_hooks')
 const { test } = require('node:test')
 const Fastify = require('..')
-const sget = require('simple-get').concat
 
-test('Async Local Storage test', (t, done) => {
-  t.plan(13)
+test('Async Local Storage test', async (t) => {
+  t.plan(12)
   if (!AsyncLocalStorage) {
     t.skip('AsyncLocalStorage not available, skipping test')
     process.exit(0)
@@ -14,6 +13,8 @@ test('Async Local Storage test', (t, done) => {
 
   const storage = new AsyncLocalStorage()
   const app = Fastify({ logger: false })
+
+  t.after(() => app.close())
 
   let counter = 0
   app.addHook('onRequest', (req, reply, next) => {
@@ -33,45 +34,32 @@ test('Async Local Storage test', (t, done) => {
     reply.send({ id })
   })
 
-  app.listen({ port: 0 }, function (err, address) {
-    t.assert.ifError(err)
+  const fastifyServer = await app.listen({ port: 0 })
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + app.server.address().port,
-      body: {
-        hello: 'world'
-      },
-      json: true
-    }, (err, response, body) => {
-      t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 200)
-      t.assert.deepStrictEqual(body, { id: 0 })
-
-      sget({
-        method: 'POST',
-        url: 'http://localhost:' + app.server.address().port,
-        body: {
-          hello: 'world'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.assert.ifError(err)
-        t.assert.strictEqual(response.statusCode, 200)
-        t.assert.deepStrictEqual(body, { id: 1 })
-
-        sget({
-          method: 'GET',
-          url: 'http://localhost:' + app.server.address().port,
-          json: true
-        }, (err, response, body) => {
-          t.assert.ifError(err)
-          t.assert.strictEqual(response.statusCode, 200)
-          t.assert.deepStrictEqual(body, { id: 2 })
-          app.close()
-          done()
-        })
-      })
-    })
+  // First POST request
+  const result1 = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hello: 'world' })
   })
+  t.assert.ok(result1.ok)
+  t.assert.strictEqual(result1.status, 200)
+  t.assert.deepStrictEqual(await result1.json(), { id: 0 })
+
+  const result2 = await fetch(fastifyServer, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hello: 'world' })
+  })
+  t.assert.ok(result2.ok)
+  t.assert.strictEqual(result2.status, 200)
+  t.assert.deepStrictEqual(await result2.json(), { id: 1 })
+
+  // GET request
+  const result3 = await fetch(fastifyServer, {
+    method: 'GET'
+  })
+  t.assert.ok(result3.ok)
+  t.assert.strictEqual(result3.status, 200)
+  t.assert.deepStrictEqual(await result3.json(), { id: 2 })
 })

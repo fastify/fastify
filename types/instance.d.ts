@@ -535,6 +535,11 @@ export interface FastifyInstance<
   */
   setReplySerializer(replySerializer: (payload: unknown, statusCode: number) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
+  /**
+   * Add a reply serializer for a content type.
+   */
+  addContentTypeSerializer<Payload = unknown>(contentType: string, serializer: (payload: Payload) => string | Buffer): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
   /*
   * Set the schema error formatter for all routes.
   */

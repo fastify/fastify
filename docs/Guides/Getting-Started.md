@@ -146,7 +146,7 @@ declaration](../Reference/Routes.md) docs).
 ```js
 // ESM
 import Fastify from 'fastify'
-import firstRoute from './our-first-route.js'
+import routes from './our-first-route.js'
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
  */
@@ -154,7 +154,7 @@ const fastify = Fastify({
   logger: true
 })
 
-fastify.register(firstRoute)
+fastify.register(routes)
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -236,7 +236,7 @@ npm i fastify-plugin @fastify/mongodb
 // ESM
 import Fastify from 'fastify'
 import dbConnector from './our-db-connector.js'
-import firstRoute from './our-first-route.js'
+import routes from './our-first-route.js'
 
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
@@ -245,7 +245,7 @@ const fastify = Fastify({
   logger: true
 })
 fastify.register(dbConnector)
-fastify.register(firstRoute)
+fastify.register(routes)
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {

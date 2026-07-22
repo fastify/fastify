@@ -32,13 +32,17 @@ type UndefinedToUnknown<T> = [T] extends [undefined] ? unknown : T
 type KeysOf<T> = T extends any ? keyof T : never
 
 // Resolves Request types either from generic argument or Type Provider.
-type ResolveRequestParams<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
+type ResolveRequestParams<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema,
+  RouteGeneric extends RouteGenericInterface> =
   UndefinedToUnknown<KeysOf<RouteGeneric['Params']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['params']> : RouteGeneric['Params']>
-type ResolveRequestQuerystring<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
+type ResolveRequestQuerystring<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema,
+  RouteGeneric extends RouteGenericInterface> =
   UndefinedToUnknown<KeysOf<RouteGeneric['Querystring']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']>
-type ResolveRequestHeaders<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
+type ResolveRequestHeaders<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema,
+  RouteGeneric extends RouteGenericInterface> =
   UndefinedToUnknown<KeysOf<RouteGeneric['Headers']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']>
-type ResolveRequestBody<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
+type ResolveRequestBody<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema,
+  RouteGeneric extends RouteGenericInterface> =
   UndefinedToUnknown<KeysOf<RouteGeneric['Body']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
 
 // The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
@@ -50,7 +54,8 @@ export interface FastifyRequestType<Params = unknown, Querystring = unknown, Hea
 }
 
 // Resolves the FastifyRequest generic parameters
-export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> extends FastifyRequestType {
+export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvider,
+  SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> extends FastifyRequestType {
   params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>,
   query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>,
   headers: RecordKeysToLowercase<ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>>,
@@ -81,9 +86,10 @@ export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, Sc
 // -----------------------------------------------------------------------------------------------
 
 // Resolves the Reply return type by taking a union of response status codes in the generic argument
-type ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric extends RouteGenericInterface> = RouteGeneric extends { Reply: infer Return }
-  ? keyof Return extends HttpKeys ? Return[keyof Return] | Return : Return
-  : unknown
+type ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric extends RouteGenericInterface> =
+  RouteGeneric extends { Reply: infer Return }
+    ? keyof Return extends HttpKeys ? Return[keyof Return] | Return : Return
+    : unknown
 
 // The target reply return type. This type is inferenced on fastify 'routes' via generic argument assignment
 export type ResolveFastifyReplyReturnType<

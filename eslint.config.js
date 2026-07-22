@@ -26,12 +26,6 @@ module.exports = [
     }
   },
   {
-    files: ['**/*.d.ts'],
-    rules: {
-      'max-len': 'off'
-    }
-  },
-  {
     files: ['test/types/**/*'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off'

@@ -26,6 +26,12 @@ module.exports = [
     }
   },
   {
+    files: ['**/*.d.ts'],
+    rules: {
+      '@stylistic/indent-binary-ops': ['error', 2]
+    }
+  },
+  {
     files: ['test/types/**/*'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off'

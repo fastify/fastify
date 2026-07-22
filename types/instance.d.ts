@@ -473,9 +473,10 @@ export interface FastifyInstance<
   * Triggered when fastify.listen() is invoked to start the server. It is useful when plugins need a "onListen" event, for example to run logics after the server start listening for requests.
   */
   addHook<
-    Fn extends onListenHookHandler<RawServer, RawRequest, RawReply, Logger,
-      TypeProvider> | onListenAsyncHookHandler<RawServer, RawRequest, RawReply, Logger,
-      TypeProvider> = onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    Fn extends
+    onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    | onListenAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    = onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   >(
     name: 'onListen',
     hook: Fn extends unknown ? Fn extends AsyncFunction ? onListenAsyncHookHandler : onListenHookHandler : Fn,
@@ -512,18 +513,22 @@ export interface FastifyInstance<
   /**
      * Set the 404 handler
      */
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  setNotFoundHandler<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig extends ContextConfigDefault = ContextConfigDefault,
     TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema>(
+    SchemaCompiler extends FastifySchema = FastifySchema
+  >(
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  setNotFoundHandler<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig extends ContextConfigDefault = ContextConfigDefault,
     TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-    SchemaCompiler extends FastifySchema = FastifySchema>(
+    SchemaCompiler extends FastifySchema = FastifySchema
+  >(
     opts: {
       preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
         SchemaCompiler, TypeProvider> | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric,
@@ -548,13 +553,19 @@ export interface FastifyInstance<
   /**
    * Set a function that will be invoked whenever an exception is thrown during the request lifecycle.
    */
-  setErrorHandler<TError = unknown, RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  setErrorHandler<
+    TError = unknown,
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     SchemaCompiler extends FastifySchema = FastifySchema,
-    TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, error: TError,
+    TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+  >(
+    handler: (
+      this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+      error: TError,
       request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
       reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler,
-      TypeProvider>) => any | Promise<any>
+        TypeProvider>
+    ) => any | Promise<any>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**

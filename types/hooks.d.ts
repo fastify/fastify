@@ -74,7 +74,7 @@ export type onRequestMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<onRequestAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+    | ReturnType<onRequestAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
   = ReturnType<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
@@ -139,8 +139,8 @@ export type preParsingMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<preParsingAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    | ReturnType<preParsingAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
 > = Return extends ReturnType<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
@@ -201,7 +201,7 @@ export type preValidationMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    | ReturnType<preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
@@ -263,8 +263,8 @@ export type preHandlerMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    | ReturnType<preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
 > = Return extends ReturnType<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
@@ -338,8 +338,8 @@ export type preSerializationMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
     RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<preSerializationAsyncHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
-    ContextConfig, SchemaCompiler, TypeProvider, Logger>>
+    | ReturnType<preSerializationAsyncHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
+    RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
     ContextConfig, SchemaCompiler, TypeProvider, Logger>>
 > = Return extends ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
@@ -406,7 +406,7 @@ export type onSendMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric,
     ContextConfig, SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<onSendAsyncHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    | ReturnType<onSendAsyncHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<onSendHookHandler<OnSendPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
@@ -469,8 +469,8 @@ export type onResponseMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<onResponseAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-    TypeProvider, Logger>>
+    | ReturnType<onResponseAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
 > = Return extends ReturnType<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
@@ -532,7 +532,7 @@ export type onTimeoutMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<onTimeoutAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+    | ReturnType<onTimeoutAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
   = ReturnType<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
@@ -602,7 +602,7 @@ export type onErrorMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<onErrorAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError,
+    | ReturnType<onErrorAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError,
     SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, TError, SchemaCompiler,
     TypeProvider, Logger>>
@@ -664,7 +664,7 @@ export type onRequestAbortMetaHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   Return extends ReturnType<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
-  | ReturnType<onRequestAbortAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    | ReturnType<onRequestAbortAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
     SchemaCompiler, TypeProvider, Logger>>
   = ReturnType<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>>
@@ -676,16 +676,16 @@ export type onRequestAbortMetaHookHandler<
     TypeProvider, Logger>
 
 export type LifecycleHook = 'onRequest'
-| 'preParsing'
-| 'preValidation'
-| 'preHandler'
-| 'preSerialization'
-| 'onSend'
-| 'onResponse'
-| 'onRequest'
-| 'onError'
-| 'onTimeout'
-| 'onRequestAbort'
+  | 'preParsing'
+  | 'preValidation'
+  | 'preHandler'
+  | 'preSerialization'
+  | 'onSend'
+  | 'onResponse'
+  | 'onRequest'
+  | 'onError'
+  | 'onTimeout'
+  | 'onRequestAbort'
 
 export type LifecycleHookLookup<K extends LifecycleHook> = K extends 'onRequest'
   ? onRequestHookHandler
@@ -891,11 +891,11 @@ export interface preCloseAsyncHookHandler<
 }
 
 export type ApplicationHook = 'onRoute'
-| 'onRegister'
-| 'onReady'
-| 'onListen'
-| 'onClose'
-| 'preClose'
+  | 'onRegister'
+  | 'onReady'
+  | 'onListen'
+  | 'onClose'
+  | 'preClose'
 
 export type ApplicationHookLookup<K extends ApplicationHook> = K extends 'onRegister'
   ? onRegisterHookHandler

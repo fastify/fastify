@@ -14,8 +14,8 @@ export interface ReplyGenericInterface {
 type HttpCodesReplyType = Partial<Record<HttpKeys, unknown>>
 
 type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
-  RouteGenericReply extends HttpCodesReplyType & Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>,
-    never> ?
+  RouteGenericReply extends HttpCodesReplyType &
+  Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never> ?
     Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
       CodeToReplyKey<Code> extends keyof RouteGenericReply ? RouteGenericReply[CodeToReplyKey<Code>] : unknown :
     RouteGenericReply
@@ -73,22 +73,54 @@ export interface FastifyReply<
     SchemaCompiler, TypeProvider>;
   serialize(payload: any): string | ArrayBuffer | Buffer;
   // Serialization Methods
-  getSerializationFunction(httpStatus: string,
-    contentType?: string): ((payload: { [key: string]: unknown }) => string) | undefined;
-  getSerializationFunction(schema: { [key: string]: unknown }): ((payload: { [key: string]: unknown }) => string)
-    | undefined;
-  compileSerializationSchema(schema: { [key: string]: unknown }, httpStatus?: string,
-    contentType?: string): (payload: { [key: string]: unknown }) => string;
-  serializeInput(input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string,
-    contentType?: string): string;
+  getSerializationFunction(
+    httpStatus: string,
+    contentType?: string
+  ): ((payload: { [key: string]: unknown }) => string) | undefined;
+  getSerializationFunction(
+    schema: { [key: string]: unknown }
+  ): ((payload: { [key: string]: unknown }) => string) | undefined;
+  compileSerializationSchema(
+    schema: { [key: string]: unknown },
+    httpStatus?: string,
+    contentType?: string
+  ): (payload: { [key: string]: unknown }) => string;
+  serializeInput(
+    input: { [key: string]: unknown },
+    schema: { [key: string]: unknown },
+    httpStatus?: string,
+    contentType?: string
+  ): string;
   serializeInput(input: { [key: string]: unknown }, httpStatus: string, contentType?: string): unknown;
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
   trailer: (
     key: string,
-    fn: ((reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
-      TypeProvider>, payload: string | Buffer | null) => Promise<string>) | ((reply: FastifyReply<RouteGeneric,
-      RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>, payload: string | Buffer | null,
-        done: (err: Error | null, value?: string) => void) => void)
+    fn:
+      ((
+        reply: FastifyReply<
+            RouteGeneric,
+            RawServer,
+            RawRequest,
+            RawReply,
+            ContextConfig,
+            SchemaCompiler,
+            TypeProvider
+          >,
+        payload: string | Buffer | null
+      ) => Promise<string>)
+      | ((
+        reply: FastifyReply<
+            RouteGeneric,
+            RawServer,
+            RawRequest,
+            RawReply,
+            ContextConfig,
+            SchemaCompiler,
+            TypeProvider
+          >,
+        payload: string | Buffer | null,
+        done: (err: Error | null, value?: string) => void
+      ) => void)
   ) => FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>;
   hasTrailer(key: string): boolean;
   removeTrailer(key: string): FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,

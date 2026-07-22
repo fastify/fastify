@@ -78,7 +78,8 @@ declare namespace fastify {
     http?: http.ServerOptions | null
   }
 
-  type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1
+  type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server
+    ? HTTPVersion.V1
     : HTTPVersion.V2
   type FindMyWayConfigForServer<RawServer extends RawServerBase> = FindMyWayConfig<FindMyWayVersion<RawServer>>
 
@@ -164,20 +165,39 @@ declare namespace fastify {
     };
     return503OnClosing?: boolean,
     ajv?: Parameters<BuildCompilerFromPool>[1],
-    frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+    frameworkErrors?: <
+      RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
       TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-      SchemaCompiler extends FastifySchema = FastifySchema>(
+      SchemaCompiler extends FastifySchema = FastifySchema
+    >(
       error: FastifyError,
-      req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema,
-        TypeProvider>,
-      res: FastifyReply<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>,
-        RawReplyDefaultExpression<RawServer>, FastifyContextConfig, SchemaCompiler, TypeProvider>
+      req: FastifyRequest<
+        RequestGeneric,
+        RawServer,
+        RawRequestDefaultExpression<RawServer>,
+        FastifySchema,
+        TypeProvider
+      >,
+      res: FastifyReply<
+        RequestGeneric,
+        RawServer,
+        RawRequestDefaultExpression<RawServer>,
+        RawReplyDefaultExpression<RawServer>,
+        FastifyContextConfig,
+        SchemaCompiler,
+        TypeProvider
+      >
     ) => void,
     rewriteUrl?: (
       // The RawRequestDefaultExpression, RawReplyDefaultExpression, and FastifyTypeProviderDefault parameters
       // should be narrowed further but those generic parameters are not passed to this FastifyServerOptions type
-      this: FastifyInstance<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>,
-        Logger, FastifyTypeProviderDefault>,
+      this: FastifyInstance<
+        RawServer,
+        RawRequestDefaultExpression<RawServer>,
+        RawReplyDefaultExpression<RawServer>,
+        Logger,
+        FastifyTypeProviderDefault
+      >,
       req: RawRequestDefaultExpression<RawServer>
     ) => string,
     schemaErrorFormatter?: SchemaErrorFormatter,

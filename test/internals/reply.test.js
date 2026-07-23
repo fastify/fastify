@@ -1949,3 +1949,25 @@ test('Uint8Array view of ArrayBuffer returns correct byteLength', (t, done) => {
     })
   })
 })
+
+test('reply.send should not treat charset= inside a quoted parameter value as an already-declared charset', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', function (req, reply) {
+    // A quoted parameter value that happens to contain the substring
+    // `charset=` is opaque content of that value, not a real charset
+    // parameter, so reply.send must still append `; charset=utf-8`.
+    reply.header('content-type', 'application/json; name="a=b;charset=fake"')
+    reply.send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(
+    res.headers['content-type'],
+    'application/json; name="a=b;charset=fake"; charset=utf-8'
+  )
+})

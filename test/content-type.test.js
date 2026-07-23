@@ -161,12 +161,11 @@ describe('ContentType class', () => {
     t.assert.equal(found.mediaType, 'application/json')
     t.assert.equal(found.type, 'application')
     t.assert.equal(found.subtype, 'json')
-    t.assert.equal(found.parameters.size, 3)
+    t.assert.equal(found.parameters.size, 2)
 
     const expected = [
       ['charset', 'utf-8'],
-      ['foo', 'BaR'],
-      ['baz', 'invalid quoted string']
+      ['foo', 'BaR']
     ]
     t.assert.deepStrictEqual(
       Array.from(found.parameters.entries()),
@@ -175,8 +174,36 @@ describe('ContentType class', () => {
 
     t.assert.equal(
       found.toString(),
-      'application/json; charset="utf-8"; foo="BaR"; baz="invalid quoted string"'
+      'application/json; charset="utf-8"; foo="BaR"'
     )
+  })
+
+  test('preserves a semicolon inside a quoted parameter value', (t) => {
+    // RFC 9110 §5.6.6: ';' is a literal qdtext octet inside a quoted-string
+    // and does not terminate the parameter value.
+    const found = new ContentType('application/json; name="foo;bar"; charset=utf-8')
+    t.assert.equal(found.isValid, true)
+    t.assert.equal(found.mediaType, 'application/json')
+    t.assert.equal(found.parameters.get('name'), 'foo;bar')
+    t.assert.equal(found.parameters.get('charset'), 'utf-8')
+  })
+
+  test('does not leak a fake parameter out of a quoted value', (t) => {
+    // A `key=value;` sequence inside a quoted-string is opaque content of the
+    // enclosing value, not a subsequent parameter.
+    const found = new ContentType('application/json; name="a=b;charset=fake"; boundary=xyz')
+    t.assert.equal(found.isValid, true)
+    t.assert.equal(found.parameters.get('name'), 'a=b;charset=fake')
+    t.assert.equal(found.parameters.get('boundary'), 'xyz')
+    t.assert.equal(found.parameters.has('charset'), false)
+  })
+
+  test('unescapes a quoted-pair inside a quoted-string', (t) => {
+    // RFC 9110 §5.6.4: a quoted-pair MUST be handled as if replaced by
+    // the octet following the backslash.
+    const found = new ContentType('application/json; name="he said \\"hi\\""')
+    t.assert.equal(found.isValid, true)
+    t.assert.equal(found.parameters.get('name'), 'he said "hi"')
   })
 })
 

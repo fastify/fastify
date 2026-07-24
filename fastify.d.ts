@@ -121,7 +121,8 @@ type FastifyFactoryResult<
   Reply extends RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider
-> = FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & SafePromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+> = FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & SafePromiseLike<FastifyInstance<Server, Request,
+  Reply, Logger, TypeProvider>>
 
 declare namespace fastify {
   export const errorCodes: FastifyErrorCodes
@@ -261,7 +262,8 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> (opts: fastify.FastifyHttp2SecureOptions<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server, Request, Reply, Logger, TypeProvider>
+> (opts: fastify.FastifyHttp2SecureOptions<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server,
+  Request, Reply, Logger, TypeProvider>
 
 declare function fastify<
   Server extends http2.Http2Server,
@@ -269,7 +271,8 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> (opts: fastify.FastifyHttp2Options<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server, Request, Reply, Logger, TypeProvider>
+> (opts: fastify.FastifyHttp2Options<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server,
+  Request, Reply, Logger, TypeProvider>
 
 declare function fastify<
   Server extends https.Server,
@@ -277,7 +280,8 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> (opts: fastify.FastifyHttpsOptions<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server, Request, Reply, Logger, TypeProvider>
+> (opts: fastify.FastifyHttpsOptions<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server,
+  Request, Reply, Logger, TypeProvider>
 
 declare function fastify<
   Server extends http.Server,
@@ -285,7 +289,8 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> (opts?: fastify.FastifyHttpOptions<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server, Request, Reply, Logger, TypeProvider>
+> (opts?: fastify.FastifyHttpOptions<Server, Logger, Request, Reply, TypeProvider>): FastifyFactoryResult<Server,
+  Request, Reply, Logger, TypeProvider>
 
 // CJS export
 // const fastify = require('fastify')

@@ -43,26 +43,46 @@ export interface FastifyInstanceRouting<
     Context['Logger']
   >): Instance
 
-  delete: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  get: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  head: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  patch: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  post: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  put: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  options: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  propfind: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  proppatch: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  mkcalendar: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  mkcol: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  copy: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  move: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  lock: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  unlock: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  trace: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  report: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  search: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  query: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
-  all: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'], Context['Logger']>
+  delete: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  get: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  head: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  patch: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  post: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  put: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  options: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  propfind: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  proppatch: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  mkcalendar: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  mkcol: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  copy: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  move: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  lock: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  unlock: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  trace: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  report: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  search: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>,
+    Context['TypeProvider'], Context['Logger']>
+  query: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
+  all: RouteShorthandMethod<Context['RawServer'], RawRequestOf<Context>, RawReplyOf<Context>, Context['TypeProvider'],
+    Context['Logger']>
 
   hasRoute<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

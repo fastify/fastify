@@ -42,9 +42,13 @@ export interface FastifyValidationResult<Input = any, Output = any> {
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler<T, Input = any, Output = any> = (routeSchema: FastifyRouteSchemaDef<T>) => FastifyValidationResult<Input, Output>
+export type FastifySchemaCompiler<T, Input = any, Output = any> = (
+  routeSchema: FastifyRouteSchemaDef<T>
+) => FastifyValidationResult<Input, Output>
 
-export type FastifySerializerCompiler<T, Input = any> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: Input) => string
+export type FastifySerializerCompiler<T, Input = any> = (
+  routeSchema: FastifyRouteSchemaDef<T>
+) => (data: Input) => string
 
 export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {

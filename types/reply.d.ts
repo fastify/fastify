@@ -31,8 +31,11 @@ export interface ReplyGenericInterface {
 
 type HttpCodesReplyType = Partial<Record<HttpKeys, unknown>>
 
-type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> = RouteGenericReply extends HttpCodesReplyType &
-  Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never>
+type ReplyTypeConstrainer<
+  RouteGenericReply,
+  Code extends ReplyKeysToCodes<keyof RouteGenericReply>
+> = RouteGenericReply extends HttpCodesReplyType &
+Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never>
   ? Code extends keyof RouteGenericReply
     ? RouteGenericReply[Code]
     : CodeToReplyKey<Code> extends keyof RouteGenericReply
@@ -119,7 +122,8 @@ export interface FastifyReply<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  RequestView = FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
+  RequestView = FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig,
+    Logger>,
   ServerInstance = FastifyInstance
 > {
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
@@ -163,41 +167,63 @@ export interface FastifyReply<
   sent: boolean
   send(
     ...args: SendArgs<ReplyType>
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   header(
     key: HttpHeader,
     value: unknown
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   headers(
     values: Partial<Record<HttpHeader, number | string | string[] | undefined>>
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   getHeader(key: HttpHeader): number | string | string[] | undefined
   getHeaders(): Record<HttpHeader, number | string | string[] | undefined>
   removeHeader(
     key: HttpHeader
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   hasHeader(key: HttpHeader): boolean
   redirect(
     url: string,
     statusCode?: number
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void
-  hijack(): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  hijack(): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   callNotFound(): void
   type(
     contentType: string
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   /** `any` preserves contextual compatibility for existing serializer callbacks. */
   serializer(
     fn: (payload: any) => string
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   /** `any` is preserved because the exact public method type is tested. */
   serialize(payload: any): string | ArrayBuffer | Buffer
   // Serialization Methods
-  getSerializationFunction(httpStatus: string, contentType?: string): ((payload: { [key: string]: unknown }) => string) | undefined
-  getSerializationFunction(schema: { [key: string]: unknown }): ((payload: { [key: string]: unknown }) => string) | undefined
-  compileSerializationSchema(schema: { [key: string]: unknown }, httpStatus?: string, contentType?: string): (payload: { [key: string]: unknown }) => string
-  serializeInput(input: { [key: string]: unknown }, schema: { [key: string]: unknown }, httpStatus?: string, contentType?: string): string
+  getSerializationFunction(
+    httpStatus: string,
+    contentType?: string
+  ): ((payload: { [key: string]: unknown }) => string) | undefined
+  getSerializationFunction(
+    schema: { [key: string]: unknown }
+  ): ((payload: { [key: string]: unknown }) => string) | undefined
+  compileSerializationSchema(
+    schema: { [key: string]: unknown },
+    httpStatus?: string,
+    contentType?: string
+  ): (payload: { [key: string]: unknown }) => string
+  serializeInput(
+    input: { [key: string]: unknown },
+    schema: { [key: string]: unknown },
+    httpStatus?: string,
+    contentType?: string
+  ): string
   serializeInput(input: { [key: string]: unknown }, httpStatus: string, contentType?: string): unknown
   then(fulfilled: () => void, rejected: (err: Error) => void): void
   trailer: (
@@ -234,11 +260,13 @@ export interface FastifyReply<
         payload: string | Buffer | null,
         done: (err: Error | null, value?: string) => void
       ) => void)
-  ) => FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ) => FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   hasTrailer(key: string): boolean
   removeTrailer(
     key: string
-  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider, Logger, RequestView, ServerInstance>
+  ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
+    Logger, RequestView, ServerInstance>
   getDecorator<T>(name: string | symbol): T
 }
 
@@ -262,6 +290,7 @@ export type FastifyReplyForRoute<
   TypeProvider,
   ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>,
   Logger,
-  FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
+  FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider, ContextConfig,
+    Logger>,
   FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
 >

@@ -53,7 +53,8 @@ export type FastifyServerOptions<
   disableRequestLogging?:
     | boolean
     | ((
-      request: FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider, ContextConfigDefault, Logger>
+      request: FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema,
+        TypeProvider, ContextConfigDefault, Logger>
     ) => boolean)
   logController?: LogController
   exposeHeadRoutes?: boolean
@@ -88,13 +89,22 @@ export type FastifyServerOptions<
   ajv?: Parameters<BuildCompilerFromPool>[1]
   frameworkErrors?: (
     error: FastifyError,
-    request: FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider, FastifyContextConfig, Logger>,
-    reply: FastifyReplyForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifyContextConfig, FastifySchema, TypeProvider, Logger>
+    request: FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider,
+      FastifyContextConfig, Logger>,
+    reply: FastifyReplyForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifyContextConfig,
+      FastifySchema, TypeProvider, Logger>
   ) => void
-  rewriteUrl?: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, request: RawRequest) => string
+  rewriteUrl?: (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    request: RawRequest
+  ) => string
   schemaErrorFormatter?: SchemaErrorFormatter
   /** Listener for errors emitted by client connections. */
-  clientErrorHandler?: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, error: ConnectionError, socket: Socket) => void
+  clientErrorHandler?: (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    error: ConnectionError,
+    socket: Socket
+  ) => void
   childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   allowErrorHandlerOverride?: boolean
   routerOptions?: FastifyRouterOptions<RawServer>

@@ -29,7 +29,8 @@ export interface FastifyLoggerStreamDestination {
 /**
  * Specialized reply type used for the `res` log serializer, since only `statusCode` is passed in certain cases.
  */
-export type ResSerializerReply<RawServer extends RawServerBase, RawReply extends FastifyReply<RouteGenericInterface, RawServer>> = Partial<RawReply> &
+export type ResSerializerReply<RawServer extends RawServerBase, RawReply extends FastifyReply<RouteGenericInterface,
+  RawServer>> = Partial<RawReply> &
   Pick<RawReply, 'statusCode'>
 
 /**
@@ -43,7 +44,8 @@ export interface FastifyLoggerOptions<
     RawRequestDefaultExpression<RawServer>,
     FastifySchema,
     FastifyTypeProvider
-  > = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
+  > = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema,
+    FastifyTypeProviderDefault>,
   ReplyForSerializer extends FastifyReply<
     RouteGenericInterface,
     RawServer,
@@ -102,7 +104,8 @@ export declare class LogController {
 
   isLogDisabled (request: FastifyRequest): boolean
   incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  requestCompleted (error: Error | null, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  requestCompleted (error: Error | null, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string,
+    unknown>): void
   defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void

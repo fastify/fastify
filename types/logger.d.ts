@@ -52,8 +52,36 @@ export type ResSerializerReply<
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProvider> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
-  RawReply extends FastifyReply<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>
+  RawRequest extends FastifyRequest<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    FastifySchema,
+    FastifyTypeProvider
+  > = FastifyRequest<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >,
+  RawReply extends FastifyReply<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    RawReplyDefaultExpression<RawServer>,
+    ContextConfigDefault,
+    FastifySchema,
+    FastifyTypeProvider
+  > = FastifyReply<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    RawReplyDefaultExpression<RawServer>,
+    ContextConfigDefault,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >
 > {
   serializers?: {
     req?: (req: RawRequest) => {
@@ -95,7 +123,12 @@ export declare class LogController {
 
   isLogDisabled (request: FastifyRequest): boolean
   incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  requestCompleted (error: Error | null, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  requestCompleted (
+    error: Error | null,
+    request: FastifyRequest,
+    reply: FastifyReply,
+    metadata?: Record<string, unknown>
+  ): void
   defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void

@@ -31,6 +31,9 @@
     - [FST_ERR_CTP_EMPTY_JSON_BODY](#fst_err_ctp_empty_json_body)
     - [FST_ERR_CTP_INVALID_JSON_BODY](#fst_err_ctp_invalid_json_body)
     - [FST_ERR_CTP_INSTANCE_ALREADY_STARTED](#fst_err_ctp_instance_already_started)
+    - [FST_ERR_CTS_ALREADY_PRESENT](#fst_err_cts_already_present)
+    - [FST_ERR_CTS_INVALID_TYPE](#fst_err_cts_invalid_type)
+    - [FST_ERR_CTS_INVALID_HANDLER](#fst_err_cts_invalid_handler)
     - [FST_ERR_INSTANCE_ALREADY_LISTENING](#fst_err_instance_already_listening)
     - [FST_ERR_DEC_ALREADY_PRESENT](#fst_err_dec_already_present)
     - [FST_ERR_DEC_DEPENDENCY_INVALID_TYPE](#fst_err_dec_dependency_invalid_type)
@@ -312,6 +315,9 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_ctp_empty_json_body">FST_ERR_CTP_EMPTY_JSON_BODY</a> | Body is not valid JSON but content-type is set to <code>application/json</code>. | Check if the request body is valid JSON. | [#5925](https://github.com/fastify/fastify/pull/5925) |
 | <a id="fst_err_ctp_invalid_json_body">FST_ERR_CTP_INVALID_JSON_BODY</a> | Body cannot be empty when content-type is set to <code>application/json</code>. | Check the request body. | [#1253](https://github.com/fastify/fastify/pull/1253) |
 | <a id="fst_err_ctp_instance_already_started">FST_ERR_CTP_INSTANCE_ALREADY_STARTED</a> | Fastify is already started. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_cts_already_present">FST_ERR_CTS_ALREADY_PRESENT</a> | The serializer for this content type was already registered. | Use a different content type. | [#5282](https://github.com/fastify/fastify/issues/5282) |
+| <a id="fst_err_cts_invalid_type">FST_ERR_CTS_INVALID_TYPE</a> | `Content-Type` wrongly specified. | Use a valid media type. | [#5282](https://github.com/fastify/fastify/issues/5282) |
+| <a id="fst_err_cts_invalid_handler">FST_ERR_CTS_INVALID_HANDLER</a> | Invalid serializer for the content type. | Use a synchronous function. | [#5282](https://github.com/fastify/fastify/issues/5282) |
 | <a id="fst_err_instance_already_listening">FST_ERR_INSTANCE_ALREADY_LISTENING</a> | Fastify instance is already listening. | - | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_dec_already_present">FST_ERR_DEC_ALREADY_PRESENT</a> | A decorator with the same name is already registered. | Use a different decorator name. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_dec_dependency_invalid_type">FST_ERR_DEC_DEPENDENCY_INVALID_TYPE</a> | The dependencies of decorator must be of type `Array`. | Use an array for the dependencies. | [#3090](https://github.com/fastify/fastify/pull/3090) |

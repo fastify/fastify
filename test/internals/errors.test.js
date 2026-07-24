@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 94
+const expectedErrors = 97
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -208,6 +208,36 @@ test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', t => {
   t.assert.strictEqual(error.message, 'Cannot call "%s" when fastify instance is already started!')
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_CTS_ALREADY_PRESENT', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTS_ALREADY_PRESENT()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTS_ALREADY_PRESENT')
+  t.assert.strictEqual(error.message, "Content type serializer '%s' already present.")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_CTS_INVALID_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTS_INVALID_TYPE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTS_INVALID_TYPE')
+  t.assert.strictEqual(error.message, 'The content type should be a valid media type')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_CTS_INVALID_HANDLER', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_CTS_INVALID_HANDLER()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_CTS_INVALID_HANDLER')
+  t.assert.strictEqual(error.message, 'The content type serializer should be a function')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
 })
 
 test('FST_ERR_DEC_ALREADY_PRESENT', t => {

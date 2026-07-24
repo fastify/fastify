@@ -200,6 +200,21 @@ server.setReplySerializer(function (payload, statusCode) {
   return 'serialized'
 })
 
+expect(
+  server.addContentTypeSerializer<{ toXmlString: () => string }>('application/xml', function (payload) {
+    return payload.toXmlString()
+  })
+).type.toBe<FastifyInstance>()
+
+expect(
+  server.addContentTypeSerializer('application/octet-stream', function () {
+    return Buffer.from('serialized')
+  })
+).type.toBe<FastifyInstance>()
+
+// @ts-expect-error Type 'void' is not assignable to type 'string | Buffer<ArrayBufferLike>'.
+server.addContentTypeSerializer('application/xml', function () {})
+
 function invalidReplySerializer (payload: number, statusCode: string) { }
 // @ts-expect-error  Argument of type '(payload: number, statusCode: string) => void' is not assignable to parameter of type '(payload: unknown, statusCode: number) => string'.
 server.setReplySerializer(invalidReplySerializer)

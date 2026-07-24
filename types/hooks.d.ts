@@ -6,7 +6,10 @@ import { FastifyRequestForRoute } from './request'
 import { FastifyReplyForRoute } from './reply'
 import { FastifyError } from '@fastify/error'
 import { FastifyBaseLogger } from './logger'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import {
+  FastifyTypeProvider,
+  FastifyTypeProviderDefault
+} from './type-provider'
 import { RegisterOptions } from './register'
 import { FastifySchema } from './schema'
 import { FastifyPluginOptions } from './plugin'
@@ -14,7 +17,7 @@ import { FastifyPluginOptions } from './plugin'
 type HookHandlerDoneFunction = <TError extends Error = FastifyError>(err?: TError) => void
 
 interface RequestPayload extends Readable {
-  receivedEncodedLength?: number
+  receivedEncodedLength?: number;
 }
 
 // Lifecycle Hooks
@@ -40,7 +43,7 @@ export interface onRequestHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface onRequestAsyncHookHandler<
@@ -59,7 +62,7 @@ export interface onRequestAsyncHookHandler<
       ContextConfig, Logger>,
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether onRequestHookHandler or onRequestAsyncHookHandler are
@@ -111,7 +114,7 @@ export interface preParsingHookHandler<
       TypeProvider, Logger>,
     payload: RequestPayload,
     done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void
-  ): void
+  ): void;
 }
 
 export interface preParsingAsyncHookHandler<
@@ -131,7 +134,7 @@ export interface preParsingAsyncHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     payload: RequestPayload
-  ): Promise<RequestPayload | unknown>
+  ): Promise<RequestPayload | unknown>;
 }
 
 // helper type which infers whether preParsingHookHandler or preParsingAsyncHookHandler are
@@ -181,7 +184,7 @@ export interface preValidationHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface preValidationAsyncHookHandler<
@@ -200,7 +203,7 @@ export interface preValidationAsyncHookHandler<
       ContextConfig, Logger>,
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether preValidationHookHandler or preValidationAsyncHookHandler are
@@ -250,7 +253,7 @@ export interface preHandlerHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface preHandlerAsyncHookHandler<
@@ -269,7 +272,7 @@ export interface preHandlerAsyncHookHandler<
       ContextConfig, Logger>,
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether preHandlerHookHandler or preHandlerAsyncHookHandler are
@@ -301,9 +304,9 @@ export type preHandlerMetaHookHandler<
 
 // This is used within the `preSerialization` and `onSend` hook handlers
 interface DoneFuncWithErrOrRes {
-  (): void
-  <TError extends Error = FastifyError>(err: TError): void
-  (err: null, res: unknown): void
+  (): void;
+  <TError extends Error = FastifyError>(err: TError): void;
+  (err: null, res: unknown): void;
 }
 
 /**
@@ -329,7 +332,7 @@ export interface preSerializationHookHandler<
       TypeProvider, Logger>,
     payload: PreSerializationPayload,
     done: DoneFuncWithErrOrRes
-  ): void
+  ): void;
 }
 
 export interface preSerializationAsyncHookHandler<
@@ -350,7 +353,7 @@ export interface preSerializationAsyncHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     payload: PreSerializationPayload
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether preSerializationHookHandler or preSerializationAsyncHookHandler are
@@ -428,7 +431,7 @@ export interface onSendHookHandler<
       TypeProvider, Logger>,
     payload: OnSendPayload,
     done: DoneFuncWithErrOrRes
-  ): void
+  ): void;
 }
 
 export interface onSendAsyncHookHandler<
@@ -449,7 +452,7 @@ export interface onSendAsyncHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     payload: OnSendPayload
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether onSendHookHandler or onSendAsyncHookHandler are
@@ -503,7 +506,7 @@ export interface onResponseHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface onResponseAsyncHookHandler<
@@ -522,7 +525,7 @@ export interface onResponseAsyncHookHandler<
       ContextConfig, Logger>,
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether onResponseHookHandler or onResponseAsyncHookHandler are
@@ -573,7 +576,7 @@ export interface onTimeoutHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface onTimeoutAsyncHookHandler<
@@ -592,7 +595,7 @@ export interface onTimeoutAsyncHookHandler<
       ContextConfig, Logger>,
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether onTimeoutHookHandler or onTimeoutAsyncHookHandler are
@@ -647,7 +650,7 @@ export interface onErrorHookHandler<
       TypeProvider, Logger>,
     error: TError,
     done: () => void
-  ): void
+  ): void;
 }
 
 export interface onErrorAsyncHookHandler<
@@ -668,7 +671,7 @@ export interface onErrorAsyncHookHandler<
     reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>,
     error: TError
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether onErrorHookHandler or onErrorAsyncHookHandler are
@@ -719,7 +722,7 @@ export interface onRequestAbortHookHandler<
     request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
       ContextConfig, Logger>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface onRequestAbortAsyncHookHandler<
@@ -736,7 +739,7 @@ export interface onRequestAbortAsyncHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
       ContextConfig, Logger>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 // helper type which infers whether onRequestAbortHookHandler or onRequestAbortHookHandler are
@@ -793,9 +796,7 @@ interface LifecycleHookAsyncLookupMap {
 }
 
 export type LifecycleHook = keyof LifecycleHookLookupMap
-
 export type LifecycleHookLookup<K extends LifecycleHook> = LifecycleHookLookupMap[K]
-
 export type LifecycleHookAsyncLookup<K extends LifecycleHook> = LifecycleHookAsyncLookupMap[K]
 
 // Application Hooks
@@ -815,12 +816,9 @@ export interface onRouteHookHandler<
 > {
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> & {
-      routePath: string
-      path: string
-      prefix: string
-    }
-  ): Promise<unknown> | void
+    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      TypeProvider> & { routePath: string; path: string; prefix: string }
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -840,7 +838,7 @@ export interface onRegisterHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     opts: RegisterOptions & Options
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -853,7 +851,10 @@ export interface onReadyHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
-  (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, done: HookHandlerDoneFunction): void
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
 }
 
 export interface onReadyAsyncHookHandler<
@@ -863,7 +864,9 @@ export interface onReadyAsyncHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
-  (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>): Promise<unknown>
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  ): Promise<unknown>;
 }
 
 /**
@@ -876,7 +879,10 @@ export interface onListenHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
-  (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, done: HookHandlerDoneFunction): void
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
 }
 
 export interface onListenAsyncHookHandler<
@@ -886,7 +892,9 @@ export interface onListenAsyncHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
-  (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>): Promise<unknown>
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  ): Promise<unknown>;
 }
 /**
  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
@@ -902,7 +910,7 @@ export interface onCloseHookHandler<
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
-  ): void
+  ): void;
 }
 
 export interface onCloseAsyncHookHandler<
@@ -915,7 +923,7 @@ export interface onCloseAsyncHookHandler<
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
-  ): Promise<unknown>
+  ): Promise<unknown>;
 }
 
 /**
@@ -928,7 +936,10 @@ export interface preCloseHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
-  (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, done: HookHandlerDoneFunction): void
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
 }
 
 export interface preCloseAsyncHookHandler<
@@ -938,7 +949,9 @@ export interface preCloseAsyncHookHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
 > {
-  (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>): Promise<unknown>
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  ): Promise<unknown>;
 }
 
 interface ApplicationHookLookupMap {
@@ -963,11 +976,7 @@ interface HookLookupMap extends LifecycleHookLookupMap, ApplicationHookLookupMap
 interface HookAsyncLookupMap extends LifecycleHookAsyncLookupMap, ApplicationHookAsyncLookupMap {}
 
 export type ApplicationHook = keyof ApplicationHookLookupMap
-
 export type ApplicationHookLookup<K extends ApplicationHook> = ApplicationHookLookupMap[K]
-
 export type ApplicationHookAsyncLookup<K extends ApplicationHook> = ApplicationHookAsyncLookupMap[K]
-
 export type HookLookup<K extends ApplicationHook | LifecycleHook> = HookLookupMap[K]
-
 export type HookAsyncLookup<K extends ApplicationHook | LifecycleHook> = HookAsyncLookupMap[K]

@@ -28,9 +28,7 @@ export interface FastifyInstanceDecorators<Instance, Request, Reply> {
   decorate: DecorationMethod<Instance, Instance>
   decorateRequest: DecorationMethod<Request, Instance>
   decorateReply: DecorationMethod<Reply, Instance>
-
   getDecorator<Value>(name: string | symbol): Value
-
   hasDecorator(decorator: string | symbol): boolean
   hasRequestDecorator(decorator: string | symbol): boolean
   hasReplyDecorator(decorator: string | symbol): boolean

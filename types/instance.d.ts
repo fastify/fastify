@@ -13,7 +13,11 @@ import { FastifyRequest, FastifyRequestForRoute } from './request'
 import { FastifyRouterOptions } from './router-options'
 import { RouteGenericInterface, RouteHandlerMethod } from './route'
 import { FastifySchema } from './schema'
-import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './type-provider'
+import {
+  FastifyTypeProvider,
+  FastifyTypeProviderDefault,
+  SafePromiseLike
+} from './type-provider'
 import { FastifyTypeContextOf } from './type-context'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
@@ -21,7 +25,6 @@ export type { FindMyWayVersion } from './router-options'
 export type { FindMyWayFindResult, PrintRoutesOptions } from './instance-routing'
 export type { FastifyListenOptions } from './instance-lifecycle'
 
-/** Historical error-handler return escape hatch; the runtime ignores it. */
 type ErrorHandlerResult = any | Promise<any>
 
 /**
@@ -51,11 +54,10 @@ export interface FastifyInstance<
       FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
     > {
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger,
-    Provider>
+    Provider>;
 
-  register: FastifyRegister<
-    FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & SafePromiseLike<undefined>
-  >
+  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger,
+    TypeProvider> & SafePromiseLike<undefined>>;
 
   /**
    * Set the 404 handler
@@ -68,7 +70,7 @@ export interface FastifyInstance<
   >(
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
       HandlerTypeProvider, Logger>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   setNotFoundHandler<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
@@ -85,7 +87,7 @@ export interface FastifyInstance<
           | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
           HandlerTypeProvider, Logger>[]
           | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-          HandlerTypeProvider, Logger>[]
+          HandlerTypeProvider, Logger>[];
       preHandler?:
         | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
           HandlerTypeProvider, Logger>
@@ -94,7 +96,7 @@ export interface FastifyInstance<
           | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
           HandlerTypeProvider, Logger>[]
           | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-          HandlerTypeProvider, Logger>[]
+          HandlerTypeProvider, Logger>[];
     },
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
       HandlerTypeProvider, Logger>
@@ -103,7 +105,7 @@ export interface FastifyInstance<
   /**
    * Fastify default error handler
    */
-  errorHandler: <TError = unknown>(error: TError, request: FastifyRequest, reply: FastifyReply) => void
+  errorHandler: <TError = unknown>(error: TError, request: FastifyRequest, reply: FastifyReply) => void;
 
   /**
    * Set a function that will be invoked whenever an exception is thrown during the request lifecycle.
@@ -122,19 +124,19 @@ export interface FastifyInstance<
       reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler,
         HandlerTypeProvider, Logger>
     ) => ErrorHandlerResult
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Set a function that will generate a request-ids
    */
-  setGenReqId(fn: (req: RawRequest) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  setGenReqId(fn: (req: RawRequest) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Hook function that is called when creating a child logger instance for each request
    * which allows for modifying or adding child logger bindings and logger options, or
    * returning a completely custom child logger implementation.
    */
-  childLoggerFactory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  childLoggerFactory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Hook function that is called when creating a child logger instance for each request
@@ -153,40 +155,39 @@ export interface FastifyInstance<
    * }
    * ```
    */
-  setChildLoggerFactory(
-    factory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  setChildLoggerFactory(factory: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger,
+    TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Prints the representation of the plugin tree used by avvio, the plugin registration system
    */
-  printPlugins(): string
+  printPlugins(): string;
 
   /**
    *  Frozen read-only object registering the initial options passed down by the user to the fastify instance
    */
   initialConfig: Readonly<{
-    connectionTimeout?: number
-    keepAliveTimeout?: number
-    forceCloseConnections?: boolean
-    bodyLimit?: number
-    caseSensitive?: boolean
-    allowUnsafeRegex?: boolean
-    http2?: boolean
-    https?: boolean | Readonly<{ allowHTTP1: boolean }>
-    ignoreTrailingSlash?: boolean
-    ignoreDuplicateSlashes?: boolean
+    connectionTimeout?: number,
+    keepAliveTimeout?: number,
+    forceCloseConnections?: boolean,
+    bodyLimit?: number,
+    caseSensitive?: boolean,
+    allowUnsafeRegex?: boolean,
+    http2?: boolean,
+    https?: boolean | Readonly<{ allowHTTP1: boolean }>,
+    ignoreTrailingSlash?: boolean,
+    ignoreDuplicateSlashes?: boolean,
     /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
-    maxParamLength?: number
-    onProtoPoisoning?: ProtoAction
-    onConstructorPoisoning?: ConstructorAction
-    pluginTimeout?: number
-    requestIdHeader?: string | false
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
+    maxParamLength?: number,
+    onProtoPoisoning?: ProtoAction,
+    onConstructorPoisoning?: ConstructorAction,
+    pluginTimeout?: number,
+    requestIdHeader?: string | false,
     /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
-    requestIdLogLabel?: string
-    http2SessionTimeout?: number
-    useSemicolonDelimiter?: boolean
+    requestIdLogLabel?: string,
+    http2SessionTimeout?: number,
+    useSemicolonDelimiter?: boolean,
     routerOptions?: FastifyRouterOptions<RawServer>
   }>
 }

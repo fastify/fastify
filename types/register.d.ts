@@ -5,14 +5,13 @@ import { FastifyTypeProvider } from './type-provider'
 import { RawServerBase, RawServerDefault } from './utils'
 
 export interface RegisterOptions {
-  prefix?: string
-  logLevel?: LogLevel
-  /** Serializer input is intentionally open for Pino compatibility. */
-  logSerializers?: Record<string, (value: any) => string>
+  prefix?: string;
+  logLevel?: LogLevel;
+  logSerializers?: Record<string, (value: any) => string>;
 }
 
-export type FastifyRegisterOptions<Options> =
-  (RegisterOptions & Options) | ((instance: FastifyInstance) => RegisterOptions & Options)
+export type FastifyRegisterOptions<Options> = (RegisterOptions & Options)
+  | ((instance: FastifyInstance) => RegisterOptions & Options)
 
 type ImportedPluginFor<
   Options extends FastifyPluginOptions,
@@ -51,7 +50,7 @@ export interface FastifyRegister<
     Logger extends FastifyBaseLogger = LoggerDefault
   >(
     plugin: FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>
-  ): T
+  ): T;
   <
     Options extends FastifyPluginOptions,
     Server extends RawServerBase = RawServer,
@@ -60,14 +59,14 @@ export interface FastifyRegister<
   >(
     plugin: FastifyPluginCallback<Options, Server, TypeProvider, Logger>,
     opts: FastifyRegisterOptions<Options>
-  ): T
+  ): T;
   <
     Server extends RawServerBase = RawServer,
     TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
     Logger extends FastifyBaseLogger = LoggerDefault
   >(
     plugin: FastifyPluginAsync<FastifyPluginOptions, Server, TypeProvider, Logger>
-  ): T
+  ): T;
   <
     Options extends FastifyPluginOptions,
     Server extends RawServerBase = RawServer,
@@ -76,14 +75,14 @@ export interface FastifyRegister<
   >(
     plugin: FastifyPluginAsync<Options, Server, TypeProvider, Logger>,
     opts: FastifyRegisterOptions<Options>
-  ): T
+  ): T;
   <
     Server extends RawServerBase = RawServer,
     TypeProvider extends FastifyTypeProvider = TypeProviderDefault,
     Logger extends FastifyBaseLogger = LoggerDefault
   >(
     plugin: RegisterablePluginFor<FastifyPluginOptions, Server, TypeProvider, Logger>
-  ): T
+  ): T;
   <
     Options extends FastifyPluginOptions,
     Server extends RawServerBase = RawServer,
@@ -92,5 +91,5 @@ export interface FastifyRegister<
   >(
     plugin: RegisterablePluginFor<Options, Server, TypeProvider, Logger>,
     opts: FastifyRegisterOptions<Options>
-  ): T
+  ): T;
 }

@@ -7,9 +7,9 @@ import { HttpKeys, RecordKeysToLowercase } from './utils'
 // -----------------------------------------------------------------------------------------------
 
 export interface FastifyTypeProvider {
-  readonly schema: unknown
-  readonly validator: unknown
-  readonly serializer: unknown
+  readonly schema: unknown,
+  readonly validator: unknown,
+  readonly serializer: unknown,
 }
 
 export interface FastifyTypeProviderDefault extends FastifyTypeProvider {}
@@ -65,9 +65,9 @@ type ResolveRequestBody<
 
 // The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
 export interface FastifyRequestType<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {
-  params: Params
-  query: Querystring
-  headers: Headers
+  params: Params,
+  query: Querystring,
+  headers: Headers,
   body: Body
 }
 
@@ -77,9 +77,9 @@ export interface ResolveFastifyRequestType<
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
 > extends FastifyRequestType {
-  params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>
-  query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>
-  headers: RecordKeysToLowercase<ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>>
+  params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>,
+  query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>,
+  headers: RecordKeysToLowercase<ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>>,
   body: ResolveRequestBody<TypeProvider, SchemaCompiler, RouteGeneric>
 }
 
@@ -89,9 +89,7 @@ export interface ResolveFastifyRequestType<
 
 // Resolves the Reply type by taking a union of response status codes and content-types
 type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema> = {
-  [K1 in keyof SchemaCompiler['response']]: SchemaCompiler['response'][K1] extends {
-    content: { [keyof: string]: { schema: unknown } }
-  }
+  [K1 in keyof SchemaCompiler['response']]: SchemaCompiler['response'][K1] extends { content: { [keyof: string]: { schema: unknown } } }
     ? {
         [K2 in keyof SchemaCompiler['response'][K1]['content']]: CallSerializerTypeProvider<
           TypeProvider,
@@ -123,29 +121,29 @@ export type ResolveFastifyReplyType<
 // -----------------------------------------------------------------------------------------------
 
 // Resolves the Reply return type by taking a union of response status codes in the generic argument
-type ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric extends RouteGenericInterface> = RouteGeneric extends {
-  Reply: infer Return
-}
-  ? keyof Return extends HttpKeys
-    ? Return[keyof Return] | Return
-    : Return
-  : unknown
+type ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric extends RouteGenericInterface> =
+  RouteGeneric extends { Reply: infer Return }
+    ? keyof Return extends HttpKeys ? Return[keyof Return] | Return : Return
+    : unknown
 
 // The target reply return type. This type is inferenced on fastify 'routes' via generic argument assignment
 export type ResolveFastifyReplyReturnType<
   TypeProvider extends FastifyTypeProvider,
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
-> =
-  ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric> extends infer ReplyType
-    ? RouteGeneric['Reply'] extends ReplyType
-      ? ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric> extends infer Return
-        ? Return | void | Promise<Return | void>
-        : unknown
-      : ReplyType | void | Promise<ReplyType | void>
-    : // review: support both async and sync return types
-  // (Promise<Return> | Return | Promise<void> | void)
-    unknown
+> = ResolveFastifyReplyType<
+TypeProvider,
+SchemaCompiler,
+RouteGeneric
+> extends infer ReplyType
+  ? RouteGeneric['Reply'] extends ReplyType
+    ? ResolveReplyReturnTypeFromRouteGeneric<RouteGeneric> extends infer Return
+      ? Return | void | Promise<Return | void>
+      : unknown
+    : ReplyType | void | Promise<ReplyType | void>
+// review: support both async and sync return types
+// (Promise<Return> | Return | Promise<void> | void)
+  : unknown
 
 /**
  * This branded type is needed to indicate APIs that return Promise-likes which can

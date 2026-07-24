@@ -17,17 +17,12 @@ import {
 import { FastifyTypeContext, RawRequestOf } from './type-context'
 
 /** Schema compilation, serialization, and content parsing members. */
-export interface FastifyInstanceSchema<
-  Context extends FastifyTypeContext,
-  Instance
-> {
-  /** Kept as `any` for compatibility with the historical compiler property. */
+export interface FastifyInstanceSchema<Context extends FastifyTypeContext, Instance> {
   validatorCompiler: FastifySchemaCompiler<any> | undefined
   setValidatorCompiler<Schema = FastifySchema>(
     schemaCompiler: FastifySchemaCompiler<Schema>
   ): Instance
 
-  /** Kept as `any` for compatibility with the historical compiler property. */
   serializerCompiler: FastifySerializerCompiler<any> | undefined
   setSerializerCompiler<Schema = FastifySchema>(
     schemaCompiler: FastifySerializerCompiler<Schema>
@@ -49,7 +44,6 @@ export interface FastifyInstanceSchema<
   hasContentTypeParser: hasContentTypeParser
   removeContentTypeParser: removeContentTypeParser
   removeAllContentTypeParsers: removeAllContentTypeParsers
-
   getDefaultJsonParser: getDefaultJsonParser
   defaultTextParser: FastifyBodyParser<string>
 }

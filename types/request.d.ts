@@ -64,10 +64,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   server: ServerInstance;
   body: RequestType['body'];
 
-  /**
-   * In order for this to be used the user should set `attachValidation`.
-   * `validation` remains `any` for exact Fastify 5 compatibility.
-   */
+  /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
 
   /**

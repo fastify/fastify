@@ -32,7 +32,6 @@ export interface FastifyInstanceLifecycle {
   inject(opts: InjectOptions | string, cb: LightMyRequestCallback): void
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>
   inject(): LightMyRequestChain
-
   listen(
     opts: FastifyListenOptions,
     callback: (err: Error | null, address: string) => void

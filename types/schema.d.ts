@@ -9,34 +9,33 @@ import { SafePromiseLike } from './type-provider'
  * out here: https://github.com/fastify/fastify/blob/main/docs/Reference/TypeScript.md#json-schema
  */
 export interface FastifySchema {
-  body?: unknown
-  querystring?: unknown
-  params?: unknown
-  headers?: unknown
-  response?: unknown
+  body?: unknown;
+  querystring?: unknown;
+  params?: unknown;
+  headers?: unknown;
+  response?: unknown;
 }
 
 export interface FastifyRouteSchemaDef<T> {
-  schema: T
-  method: string
-  url: string
-  httpPart?: string
-  httpStatus?: string
-  contentType?: string
+  schema: T;
+  method: string;
+  url: string;
+  httpPart?: string;
+  httpStatus?: string;
+  contentType?: string;
 }
 
 export interface FastifySchemaValidationError {
-  keyword: string
-  instancePath: string
-  schemaPath: string
-  params: Record<string, unknown>
-  message?: string
+  keyword: string;
+  instancePath: string;
+  schemaPath: string;
+  params: Record<string, unknown>;
+  message?: string;
 }
 
-/** `any` defaults preserve validator variance from the existing public API. */
 export interface FastifyValidationResult<Input = any, Output = any> {
-  (data: Input): boolean | SafePromiseLike<Output> | { error?: Error | FastifySchemaValidationError[]; value?: Output }
-  errors?: FastifySchemaValidationError[] | null
+  (data: Input): boolean | SafePromiseLike<Output> | { error?: Error | FastifySchemaValidationError[], value?: Output }
+  errors?: FastifySchemaValidationError[] | null;
 }
 
 /**
@@ -52,14 +51,14 @@ export type FastifySerializerCompiler<T, Input = any> = (
 
 export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {
-    add(schema: unknown): FastifyInstance
-    getSchema(schemaId: string): unknown
-    getSchemas(): Record<string, unknown>
-  }
+    add(schema: unknown): FastifyInstance;
+    getSchema(schemaId: string): unknown;
+    getSchemas(): Record<string, unknown>;
+  };
   compilersFactory?: {
-    buildValidator?: ValidatorFactory
-    buildSerializer?: SerializerFactory
-  }
+    buildValidator?: ValidatorFactory;
+    buildSerializer?: SerializerFactory;
+  };
 }
 
 export type SchemaErrorDataVar = 'body' | 'headers' | 'params' | 'querystring'

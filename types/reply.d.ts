@@ -4,53 +4,28 @@ import { FastifyBaseLogger } from './logger'
 import { FastifyRequest, FastifyRequestForRoute, RequestRouteOptions } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
-import {
-  CallSerializerTypeProvider,
-  FastifyReplyType,
-  FastifyTypeProvider,
-  FastifyTypeProviderDefault,
-  ResolveFastifyReplyType,
-  SendArgs
-} from './type-provider'
-import {
-  CodeToReplyKey,
-  ContextConfigDefault,
-  HttpHeader,
-  HttpKeys,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerBase,
-  RawServerDefault,
-  ReplyDefault,
-  ReplyKeysToCodes
-} from './utils'
+import { CallSerializerTypeProvider, FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType, SendArgs } from './type-provider'
+import { CodeToReplyKey, ContextConfigDefault, HttpHeader, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
 
 export interface ReplyGenericInterface {
-  Reply?: ReplyDefault
+  Reply?: ReplyDefault;
 }
 
 type HttpCodesReplyType = Partial<Record<HttpKeys, unknown>>
 
-type ReplyTypeConstrainer<
-  RouteGenericReply,
-  Code extends ReplyKeysToCodes<keyof RouteGenericReply>
-> = RouteGenericReply extends HttpCodesReplyType &
-Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never>
-  ? Code extends keyof RouteGenericReply
-    ? RouteGenericReply[Code]
-    : CodeToReplyKey<Code> extends keyof RouteGenericReply
-      ? RouteGenericReply[CodeToReplyKey<Code>]
-      : unknown
-  : RouteGenericReply
+type ReplyTypeConstrainer<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>> =
+  RouteGenericReply extends HttpCodesReplyType &
+  Record<Exclude<keyof RouteGenericReply, keyof HttpCodesReplyType>, never> ?
+    Code extends keyof RouteGenericReply ? RouteGenericReply[Code] :
+      CodeToReplyKey<Code> extends keyof RouteGenericReply ? RouteGenericReply[CodeToReplyKey<Code>] : unknown :
+    RouteGenericReply
 
-export type ResolveReplyTypeWithRouteGeneric<
-  RouteGenericReply,
-  Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
+export type ResolveReplyTypeWithRouteGeneric<RouteGenericReply, Code extends ReplyKeysToCodes<keyof RouteGenericReply>,
   SchemaCompiler extends FastifySchema = FastifySchema,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
-> = Code extends keyof SchemaCompiler['response']
-  ? CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][Code]>
-  : ResolveFastifyReplyType<TypeProvider, SchemaCompiler, { Reply: ReplyTypeConstrainer<RouteGenericReply, Code> }>
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault> =
+  Code extends keyof SchemaCompiler['response'] ?
+    CallSerializerTypeProvider<TypeProvider, SchemaCompiler['response'][Code]> :
+    ResolveFastifyReplyType<TypeProvider, SchemaCompiler, { Reply: ReplyTypeConstrainer<RouteGenericReply, Code> }>
 
 type ReplyStatusCode<RouteReply, SchemaCompiler extends FastifySchema> = keyof SchemaCompiler['response'] extends never
   ? ReplyKeysToCodes<keyof RouteReply>
@@ -128,11 +103,11 @@ export interface FastifyReply<
 > {
   readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
 
-  raw: RawReply
-  elapsedTime: number
-  log: Logger
-  request: RequestView
-  server: ServerInstance
+  raw: RawReply;
+  elapsedTime: number;
+  log: Logger;
+  request: RequestView;
+  server: ServerInstance;
   code<Code extends ReplyStatusCode<RouteGeneric['Reply'], SchemaCompiler>>(
     statusCode: Code
   ): FastifyReplyAfterStatus<
@@ -147,7 +122,7 @@ export interface FastifyReply<
     Logger,
     RequestView,
     ServerInstance
-  >
+  >;
   status<Code extends ReplyStatusCode<RouteGeneric['Reply'], SchemaCompiler>>(
     statusCode: Code
   ): FastifyReplyAfterStatus<
@@ -162,70 +137,68 @@ export interface FastifyReply<
     Logger,
     RequestView,
     ServerInstance
-  >
-  statusCode: number
-  sent: boolean
+  >;
+  statusCode: number;
+  sent: boolean;
   send(
     ...args: SendArgs<ReplyType>
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
+    Logger, RequestView, ServerInstance>;
   header(
     key: HttpHeader,
     value: unknown
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
+    Logger, RequestView, ServerInstance>;
   headers(
     values: Partial<Record<HttpHeader, number | string | string[] | undefined>>
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  getHeader(key: HttpHeader): number | string | string[] | undefined
-  getHeaders(): Record<HttpHeader, number | string | string[] | undefined>
+    Logger, RequestView, ServerInstance>;
+  getHeader(key: HttpHeader): number | string | string[] | undefined;
+  getHeaders(): Record<HttpHeader, number | string | string[] | undefined>;
   removeHeader(
     key: HttpHeader
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  hasHeader(key: HttpHeader): boolean
+    Logger, RequestView, ServerInstance>;
+  hasHeader(key: HttpHeader): boolean;
   redirect(
     url: string,
     statusCode?: number
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void
+    Logger, RequestView, ServerInstance>;
+  writeEarlyHints(hints: Record<string, string | string[]>, callback?: () => void): void;
   hijack(): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  callNotFound(): void
+    Logger, RequestView, ServerInstance>;
+  callNotFound(): void;
   type(
     contentType: string
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  /** `any` preserves contextual compatibility for existing serializer callbacks. */
+    Logger, RequestView, ServerInstance>;
   serializer(
     fn: (payload: any) => string
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  /** `any` is preserved because the exact public method type is tested. */
-  serialize(payload: any): string | ArrayBuffer | Buffer
+    Logger, RequestView, ServerInstance>;
+  serialize(payload: any): string | ArrayBuffer | Buffer;
   // Serialization Methods
   getSerializationFunction(
     httpStatus: string,
     contentType?: string
-  ): ((payload: { [key: string]: unknown }) => string) | undefined
+  ): ((payload: { [key: string]: unknown }) => string) | undefined;
   getSerializationFunction(
     schema: { [key: string]: unknown }
-  ): ((payload: { [key: string]: unknown }) => string) | undefined
+  ): ((payload: { [key: string]: unknown }) => string) | undefined;
   compileSerializationSchema(
     schema: { [key: string]: unknown },
     httpStatus?: string,
     contentType?: string
-  ): (payload: { [key: string]: unknown }) => string
+  ): (payload: { [key: string]: unknown }) => string;
   serializeInput(
     input: { [key: string]: unknown },
     schema: { [key: string]: unknown },
     httpStatus?: string,
     contentType?: string
-  ): string
-  serializeInput(input: { [key: string]: unknown }, httpStatus: string, contentType?: string): unknown
-  then(fulfilled: () => void, rejected: (err: Error) => void): void
+  ): string;
+  serializeInput(input: { [key: string]: unknown }, httpStatus: string, contentType?: string): unknown;
+  then(fulfilled: () => void, rejected: (err: Error) => void): void;
   trailer: (
     key: string,
     fn:
@@ -261,13 +234,13 @@ export interface FastifyReply<
         done: (err: Error | null, value?: string) => void
       ) => void)
   ) => FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  hasTrailer(key: string): boolean
+    Logger, RequestView, ServerInstance>;
+  hasTrailer(key: string): boolean;
   removeTrailer(
     key: string
   ): FastifyReplyBase<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider,
-    Logger, RequestView, ServerInstance>
-  getDecorator<T>(name: string | symbol): T
+    Logger, RequestView, ServerInstance>;
+  getDecorator<T>(name: string | symbol): T;
 }
 
 /** Constructs the reply view shared by routes and hooks. */

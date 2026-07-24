@@ -4,7 +4,6 @@ import { RouteGenericInterface } from './route'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
-/** `any` is the historical default; callers can opt into a parsed body type. */
 type ContentTypeParserDoneFunction<ParsedBody = any> = (err: Error | null, body?: ParsedBody) => void
 
 /**
@@ -63,20 +62,22 @@ export interface AddContentTypeParser<
   (
     contentType: string | string[] | RegExp,
     opts: {
-      bodyLimit?: number
+      bodyLimit?: number;
     },
     parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
-  ): void
-  (contentType: string | string[] | RegExp, parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric,
-    SchemaCompiler, TypeProvider>): void
+  ): void;
+  (
+    contentType: string | string[] | RegExp,
+    parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
+  ): void;
   <parseAs extends string | Buffer>(
     contentType: string | string[] | RegExp,
     opts: {
-      parseAs: parseAs extends Buffer ? 'buffer' : 'string'
-      bodyLimit?: number
+      parseAs: parseAs extends Buffer ? 'buffer' : 'string';
+      bodyLimit?: number;
     },
     parser: FastifyBodyParser<parseAs, RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
-  ): void
+  ): void;
 }
 
 /**

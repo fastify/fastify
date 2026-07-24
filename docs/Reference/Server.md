@@ -1702,7 +1702,7 @@ Fake HTTP injection (for testing purposes)
 <a id="addHttpMethod"></a>
 
 Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
-`PATCH`, `PUT` and `POST` HTTP methods by default.
+`PATCH`, `PUT`, `POST` and `QUERY` HTTP methods by default.
 The `addHttpMethod` method allows to add any non standard HTTP
 methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
 

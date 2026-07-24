@@ -1,5 +1,5 @@
-import * as http from 'node:http'
 import { FastifyError } from '@fastify/error'
+import * as http from 'node:http'
 import { expect } from 'tstyche'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
 import { RequestPayload } from '../../types/hooks.js'
@@ -75,10 +75,10 @@ fastify().get(
 )
 
 type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put' |
-  'options' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
+  'options' | 'query' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
   'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
 
-  ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'PROPFIND',
+  ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'QUERY', 'PROPFIND',
   'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
 ].forEach(method => {
   // route method

@@ -1114,6 +1114,80 @@ test('reply.removeHeader can remove the value', async t => {
   await fetch(`${fastifyServer}/headers`)
 })
 
+test('reply.removeHeader removes raw headers', async t => {
+  t.plan(9)
+
+  const fastify = require('../../')()
+
+  t.after(() => fastify.close())
+
+  fastify.get('/headers', function (req, reply) {
+    reply.raw.setHeader('X-Foo', 'raw')
+    t.assert.strictEqual(reply.getHeader('x-foo'), 'raw')
+    t.assert.strictEqual(reply.getHeaders()['x-foo'], 'raw')
+    t.assert.strictEqual(reply.hasHeader('x-foo'), true)
+
+    t.assert.strictEqual(reply.removeHeader('x-FoO'), reply)
+    t.assert.strictEqual(reply.getHeader('x-foo'), undefined)
+    t.assert.strictEqual(Object.hasOwn(reply.getHeaders(), 'x-foo'), false)
+    t.assert.strictEqual(reply.hasHeader('x-foo'), false)
+    t.assert.strictEqual(reply.removeHeader('X-FOO'), reply)
+
+    reply.send()
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const response = await fetch(`${fastifyServer}/headers`)
+  t.assert.strictEqual(response.headers.get('x-foo'), null)
+})
+
+test('reply.removeHeader removes layered headers', async t => {
+  t.plan(7)
+
+  const fastify = require('../../')()
+
+  t.after(() => fastify.close())
+
+  fastify.get('/headers', function (req, reply) {
+    reply.raw.setHeader('x-foo', 'raw')
+    reply.header('x-foo', 'fastify')
+    t.assert.strictEqual(reply.getHeader('x-foo'), 'fastify')
+    t.assert.strictEqual(reply.getHeaders()['x-foo'], 'fastify')
+
+    t.assert.strictEqual(reply.removeHeader('x-foo'), reply)
+    t.assert.strictEqual(reply.getHeader('x-foo'), undefined)
+    t.assert.strictEqual(Object.hasOwn(reply.getHeaders(), 'x-foo'), false)
+    t.assert.strictEqual(reply.hasHeader('x-foo'), false)
+
+    reply.send()
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const response = await fetch(`${fastifyServer}/headers`)
+  t.assert.strictEqual(response.headers.get('x-foo'), null)
+})
+
+test('reply.removeHeader does not throw after headers are sent', async t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  t.after(() => fastify.close())
+
+  fastify.get('/headers', function (req, reply) {
+    reply.hijack()
+    reply.raw.setHeader('x-foo', 'raw')
+    reply.raw.flushHeaders()
+    t.assert.strictEqual(reply.raw.headersSent, true)
+    t.assert.doesNotThrow(() => reply.removeHeader('x-foo'))
+    reply.raw.end()
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const response = await fetch(`${fastifyServer}/headers`)
+  t.assert.strictEqual(response.headers.get('x-foo'), 'raw')
+})
+
 test('reply.header can reset the value', async t => {
   t.plan(1)
 

@@ -46,7 +46,7 @@ through `NODE_OPTIONS`:
 NODE_OPTIONS='--disable-warning=FSTWRN004' node app.js
 ```
 
-> **Note**
+> ⚠ Warning:
 > Node.js marks `--disable-warning` as
 > [Stability 1.1 - Active development](https://nodejs.org/api/documentation.html#stability-index).
 > Experimental features are not covered by semantic versioning and may change

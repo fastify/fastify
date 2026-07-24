@@ -96,6 +96,19 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
   expect(fastify()[lowerCaseMethod]('/', { handler: routeHandler })).type.toBe<FastifyInstance>()
 
   expect(fastify()[lowerCaseMethod]('/', {
+    logSerializers: {
+      user: () => 'serialized-user'
+    }
+  }, routeHandler)).type.toBe<FastifyInstance>()
+
+  expect(fastify()[lowerCaseMethod]('/', {
+    handler: routeHandler,
+    logSerializers: {
+      user: () => 'serialized-user'
+    }
+  })).type.toBe<FastifyInstance>()
+
+  expect(fastify()[lowerCaseMethod]('/', {
     handler: routeHandler,
     errorHandler: (error, request, reply) => {
       expect(error).type.toBe<FastifyError>()

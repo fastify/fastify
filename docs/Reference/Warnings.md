@@ -27,24 +27,19 @@ flags. These produce stack traces pointing to where the issue occurs in the
 application's code. Issues opened about warnings without this information will
 be closed.
 
-Warnings should be resolved rather than suppressed. If suppression is necessary,
-prefer disabling a single known warning so unrelated warnings remain visible.
+Warnings should be resolved rather than suppressed. To suppress every process
+warning instead, use one of the following commands:
 
-Node.js 21.3.0 introduced
+- `NODE_NO_WARNINGS=1 node app.js`
+- `node --no-warnings app.js`
+- `NODE_OPTIONS='--no-warnings' node app.js`
+
+Disabling all warnings can hide important problems and cause unexpected
+behavior.
+
+For more targeted suppression, Node.js 21.3.0 introduced
 [`--disable-warning`](https://nodejs.org/api/cli.html#--disable-warningcode-or-type),
-which accepts a warning code or type. For example, the following command
-suppresses `FSTWRN004`:
-
-```sh
-node --disable-warning=FSTWRN004 app.js
-```
-
-All other process warnings remain enabled. The option can also be provided
-through `NODE_OPTIONS`:
-
-```sh
-NODE_OPTIONS='--disable-warning=FSTWRN004' node app.js
-```
+which accepts a warning code or type.
 
 > ⚠ Warning:
 > Node.js marks `--disable-warning` as
@@ -52,14 +47,20 @@ NODE_OPTIONS='--disable-warning=FSTWRN004' node app.js
 > Experimental features are not covered by semantic versioning and may change
 > or be removed in a future release.
 
-To suppress every process warning instead, use one of the following commands:
+For example, the following command suppresses `FSTWRN004` while leaving all
+other process warnings enabled:
 
-- `NODE_NO_WARNINGS=1 node app.js`
-- `node --no-warnings app.js`
-- `NODE_OPTIONS='--no-warnings' node app.js`
+```sh
+node --disable-warning=FSTWRN004 app.js
+```
 
-Disabling all warnings can hide important problems and cause unexpected
-behavior. For more information, see
+The option can also be provided through `NODE_OPTIONS`:
+
+```sh
+NODE_OPTIONS='--disable-warning=FSTWRN004' node app.js
+```
+
+For more information, see
 [Node's documentation](https://nodejs.org/api/cli.html).
 
 ### Fastify Warning Codes

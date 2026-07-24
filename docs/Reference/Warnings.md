@@ -27,15 +27,12 @@ flags. These produce stack traces pointing to where the issue occurs in the
 application's code. Issues opened about warnings without this information will
 be closed.
 
-Warnings should be resolved rather than suppressed. To suppress every process
-warning instead, use one of the following commands:
+Warnings can also be disabled, though it is not recommended. If necessary, use
+one of the following methods:
 
 - `NODE_NO_WARNINGS=1 node app.js`
 - `node --no-warnings app.js`
 - `NODE_OPTIONS='--no-warnings' node app.js`
-
-Disabling all warnings can hide important problems and cause unexpected
-behavior.
 
 For more targeted suppression, Node.js 21.3.0 introduced
 [`--disable-warning`](https://nodejs.org/api/cli.html#--disable-warningcode-or-type),
@@ -60,8 +57,9 @@ The option can also be provided through `NODE_OPTIONS`:
 NODE_OPTIONS='--disable-warning=FSTWRN004' node app.js
 ```
 
-For more information, see
-[Node's documentation](https://nodejs.org/api/cli.html).
+For more information on disabling warnings, see [Node's documentation](https://nodejs.org/api/cli.html).
+
+Disabling warnings is not recommended and may cause unexpected behavior.
 
 ### Fastify Warning Codes
 

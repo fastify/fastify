@@ -1,6 +1,7 @@
 import { ValidatorFactory } from '@fastify/ajv-compiler'
 import { SerializerFactory } from '@fastify/fast-json-stringify-compiler'
-import { FastifyInstance, SafePromiseLike } from '../fastify'
+import { FastifyInstance } from './instance'
+import { SafePromiseLike } from './type-provider'
 /**
  * Schemas in Fastify follow the JSON-Schema standard. For this reason
  * we have opted to not ship strict schema based types. Instead we provide
@@ -32,17 +33,21 @@ export interface FastifySchemaValidationError {
   message?: string;
 }
 
-export interface FastifyValidationResult {
-  (data: any): boolean | SafePromiseLike<any> | { error?: Error | FastifySchemaValidationError[], value?: any }
+export interface FastifyValidationResult<Input = any, Output = any> {
+  (data: Input): boolean | SafePromiseLike<Output> | { error?: Error | FastifySchemaValidationError[], value?: Output }
   errors?: FastifySchemaValidationError[] | null;
 }
 
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => FastifyValidationResult
+export type FastifySchemaCompiler<T, Input = any, Output = any> = (
+  routeSchema: FastifyRouteSchemaDef<T>
+) => FastifyValidationResult<Input, Output>
 
-export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string
+export type FastifySerializerCompiler<T, Input = any> = (
+  routeSchema: FastifyRouteSchemaDef<T>
+) => (data: Input) => string
 
 export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {

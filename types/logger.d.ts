@@ -52,20 +52,15 @@ export type ResSerializerReply<
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends FastifyRequest<
+  RequestForSerializer extends FastifyRequest<
     RouteGenericInterface,
     RawServer,
     RawRequestDefaultExpression<RawServer>,
     FastifySchema,
     FastifyTypeProvider
-  > = FastifyRequest<
-    RouteGenericInterface,
-    RawServer,
-    RawRequestDefaultExpression<RawServer>,
-    FastifySchema,
-    FastifyTypeProviderDefault
-  >,
-  RawReply extends FastifyReply<
+  > = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema,
+    FastifyTypeProviderDefault>,
+  ReplyForSerializer extends FastifyReply<
     RouteGenericInterface,
     RawServer,
     RawRequestDefaultExpression<RawServer>,
@@ -84,7 +79,7 @@ export interface FastifyLoggerOptions<
   >
 > {
   serializers?: {
-    req?: (req: RawRequest) => {
+    req?: (req: RequestForSerializer) => {
       method?: string;
       url?: string;
       version?: string;
@@ -99,14 +94,14 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: ResSerializerReply<RawServer, RawReply>) => {
+    res?: (res: ResSerializerReply<RawServer, ReplyForSerializer>) => {
       statusCode?: string | number;
       [key: string]: unknown;
     };
   };
   level?: string;
   file?: string;
-  genReqId?: (req: RawRequest) => string;
+  genReqId?: (req: RequestForSerializer) => string;
   stream?: FastifyLoggerStreamDestination;
 }
 

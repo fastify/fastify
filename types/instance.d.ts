@@ -37,8 +37,10 @@ export interface FastifyInstance<
       FastifyTypeContextOf<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
       FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
     >,
-  FastifyInstanceDecorators<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, FastifyRequest, FastifyReply>,
-  FastifyInstanceHooks<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  FastifyInstanceDecorators<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, FastifyRequest,
+    FastifyReply>,
+  FastifyInstanceHooks<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, RawServer, RawRequest,
+    RawReply, Logger, TypeProvider>,
   FastifyInstanceLifecycle,
   FastifyInstanceRouting<
       FastifyTypeContextOf<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
@@ -48,9 +50,12 @@ export interface FastifyInstance<
       FastifyTypeContextOf<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
       FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
     > {
-  withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>
+  withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger,
+    Provider>
 
-  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & SafePromiseLike<undefined>>
+  register: FastifyRegister<
+    FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & SafePromiseLike<undefined>
+  >
 
   /**
    * Set the 404 handler
@@ -61,7 +66,8 @@ export interface FastifyInstance<
     HandlerTypeProvider extends FastifyTypeProvider = TypeProvider,
     SchemaCompiler extends FastifySchema = FastifySchema
   >(
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      HandlerTypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
 
   setNotFoundHandler<
@@ -72,17 +78,26 @@ export interface FastifyInstance<
   >(
     opts: {
       preValidation?:
-        | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>
-        | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>
-        | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>[]
-        | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>[]
+        | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>
+          | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>
+          | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>[]
+          | preValidationAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>[]
       preHandler?:
-        | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>
-        | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>
-        | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>[]
-        | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>[]
+        | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>
+          | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>
+          | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>[]
+          | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+          HandlerTypeProvider, Logger>[]
     },
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, HandlerTypeProvider, Logger>
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+      HandlerTypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
 
   /**
@@ -102,8 +117,10 @@ export interface FastifyInstance<
     handler: (
       this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, HandlerTypeProvider>,
       error: TError,
-      request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, HandlerTypeProvider, ContextConfigDefault, Logger>,
-      reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler, HandlerTypeProvider, Logger>
+      request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler,
+        HandlerTypeProvider, ContextConfigDefault, Logger>,
+      reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler,
+        HandlerTypeProvider, Logger>
     ) => ErrorHandlerResult
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
 

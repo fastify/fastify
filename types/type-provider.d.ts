@@ -45,20 +45,23 @@ type ResolveRequestQuerystring<
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
 > = UndefinedToUnknown<
-  KeysOfUnion<RouteGeneric['Querystring']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']
+  KeysOfUnion<RouteGeneric['Querystring']> extends never ? CallValidatorTypeProvider<TypeProvider,
+    SchemaCompiler['querystring']> : RouteGeneric['Querystring']
 >
 type ResolveRequestHeaders<
   TypeProvider extends FastifyTypeProvider,
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
 > = UndefinedToUnknown<
-  KeysOfUnion<RouteGeneric['Headers']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']
+  KeysOfUnion<RouteGeneric['Headers']> extends never ? CallValidatorTypeProvider<TypeProvider,
+    SchemaCompiler['headers']> : RouteGeneric['Headers']
 >
 type ResolveRequestBody<
   TypeProvider extends FastifyTypeProvider,
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
-> = UndefinedToUnknown<KeysOfUnion<RouteGeneric['Body']> extends never ? CallValidatorTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
+> = UndefinedToUnknown<KeysOfUnion<RouteGeneric['Body']> extends never ? CallValidatorTypeProvider<TypeProvider,
+  SchemaCompiler['body']> : RouteGeneric['Body']>
 
 // The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
 export interface FastifyRequestType<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {
@@ -112,7 +115,8 @@ export type ResolveFastifyReplyType<
   TypeProvider extends FastifyTypeProvider,
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
-> = UndefinedToUnknown<KeysOfUnion<RouteGeneric['Reply']> extends never ? ResolveReplyFromSchemaCompiler<TypeProvider, SchemaCompiler> : RouteGeneric['Reply']>
+> = UndefinedToUnknown<KeysOfUnion<RouteGeneric['Reply']> extends never ? ResolveReplyFromSchemaCompiler<TypeProvider,
+  SchemaCompiler> : RouteGeneric['Reply']>
 
 // -----------------------------------------------------------------------------------------------
 // FastifyReplyReturnType

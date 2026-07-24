@@ -24,7 +24,10 @@ export type FastifyBodyParser<
     rawBody: RawBody,
     done: ContentTypeParserDoneFunction<ParsedBody>
   ) => void)
-  | ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, rawBody: RawBody) => Promise<ParsedBody>)
+  | ((
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+    rawBody: RawBody
+  ) => Promise<ParsedBody>)
 
 /**
  * Content Type Parser method that operates on request content
@@ -37,7 +40,10 @@ export type FastifyContentTypeParser<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ParsedBody = any
 > =
-  | ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, payload: RawRequest) => Promise<ParsedBody>)
+  | ((
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+    payload: RawRequest
+  ) => Promise<ParsedBody>)
   | ((
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     payload: RawRequest,
@@ -61,7 +67,8 @@ export interface AddContentTypeParser<
     },
     parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
   ): void
-  (contentType: string | string[] | RegExp, parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>): void
+  (contentType: string | string[] | RegExp, parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric,
+    SchemaCompiler, TypeProvider>): void
   <parseAs extends string | Buffer>(
     contentType: string | string[] | RegExp,
     opts: {
@@ -81,7 +88,10 @@ export type ProtoAction = 'error' | 'remove' | 'ignore'
 
 export type ConstructorAction = 'error' | 'remove' | 'ignore'
 
-export type getDefaultJsonParser = (onProtoPoisoning: ProtoAction, onConstructorPoisoning: ConstructorAction) => FastifyBodyParser<string>
+export type getDefaultJsonParser = (
+  onProtoPoisoning: ProtoAction,
+  onConstructorPoisoning: ConstructorAction
+) => FastifyBodyParser<string>
 
 export type removeContentTypeParser = (contentType: string | RegExp | (string | RegExp)[]) => void
 

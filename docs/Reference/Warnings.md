@@ -35,10 +35,6 @@ one of the following methods:
 - Set `no-warnings` in the `NODE_OPTIONS` environment variable
 - Pass `--disable-warning=FSTWRN004` to disable a specific warning
 
-Node.js 21.3.0 introduced
-[`--disable-warning`](https://nodejs.org/api/cli.html#--disable-warningcode-or-type),
-which accepts a warning code or type.
-
 > ⚠ Warning:
 > Node.js marks `--disable-warning` as
 > [Stability 1.1 - Active development](https://nodejs.org/api/documentation.html#stability-index).

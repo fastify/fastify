@@ -30,11 +30,12 @@ be closed.
 Warnings can also be disabled, though it is not recommended. If necessary, use
 one of the following methods:
 
-- `NODE_NO_WARNINGS=1 node app.js`
-- `node --no-warnings app.js`
-- `NODE_OPTIONS='--no-warnings' node app.js`
+- Set the `NODE_NO_WARNINGS` environment variable to `1`
+- Pass the `--no-warnings` flag to the node process
+- Set `no-warnings` in the `NODE_OPTIONS` environment variable
+- Pass `--disable-warning=FSTWRN004` to disable a specific warning
 
-For more targeted suppression, Node.js 21.3.0 introduced
+Node.js 21.3.0 introduced
 [`--disable-warning`](https://nodejs.org/api/cli.html#--disable-warningcode-or-type),
 which accepts a warning code or type.
 
@@ -43,19 +44,6 @@ which accepts a warning code or type.
 > [Stability 1.1 - Active development](https://nodejs.org/api/documentation.html#stability-index).
 > Experimental features are not covered by semantic versioning and may change
 > or be removed in a future release.
-
-For example, the following command suppresses `FSTWRN004` while leaving all
-other process warnings enabled:
-
-```sh
-node --disable-warning=FSTWRN004 app.js
-```
-
-The option can also be provided through `NODE_OPTIONS`:
-
-```sh
-NODE_OPTIONS='--disable-warning=FSTWRN004' node app.js
-```
 
 For more information on disabling warnings, see [Node's documentation](https://nodejs.org/api/cli.html).
 

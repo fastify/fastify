@@ -146,7 +146,7 @@ declaration](../Reference/Routes.md) docs).
 ```js
 // ESM
 import Fastify from 'fastify'
-import routes from './our-first-route.js'
+import routes from './our-first-routes.js'
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
  */
@@ -174,7 +174,7 @@ const fastify = require('fastify')({
   logger: true
 })
 
-fastify.register(require('./our-first-route'))
+fastify.register(require('./our-first-routes'))
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -187,7 +187,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 
 ```js
-// our-first-route.js
+// our-first-routes.js
 
 /**
  * Encapsulates the routes
@@ -236,7 +236,7 @@ npm i fastify-plugin @fastify/mongodb
 // ESM
 import Fastify from 'fastify'
 import dbConnector from './our-db-connector.js'
-import routes from './our-first-route.js'
+import routes from './our-first-routes.js'
 
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
@@ -266,7 +266,7 @@ const fastify = require('fastify')({
 })
 
 fastify.register(require('./our-db-connector'))
-fastify.register(require('./our-first-route'))
+fastify.register(require('./our-first-routes'))
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -325,7 +325,7 @@ module.exports = fastifyPlugin(dbConnector)
 
 ```
 
-**our-first-route.js**
+**our-first-routes.js**
 ```js
 /**
  * A plugin that provide encapsulated routes

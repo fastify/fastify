@@ -124,7 +124,7 @@ export declare class LogController {
   isLogDisabled (request: FastifyRequest): boolean
   incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   requestCompleted (
-    error: Error | null,
+    error: Error | null | undefined,
     request: FastifyRequest,
     reply: FastifyReply,
     metadata?: Record<string, unknown>

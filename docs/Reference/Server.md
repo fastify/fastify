@@ -567,7 +567,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -578,8 +578,6 @@ the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
 Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
-
-+ Default: `false`
 
 ```js
 const fastify = require('fastify')({

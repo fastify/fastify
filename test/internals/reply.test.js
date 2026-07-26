@@ -1971,3 +1971,28 @@ test('reply.send should not treat charset= inside a quoted parameter value as an
     'application/json; name="a=b;charset=fake"; charset=utf-8'
   )
 })
+
+test('reply.send(promise) resolves the promise and sends its value', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Promise.resolve({ hello: 'world' }))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+})
+
+test('reply.send(promise) sends the rejection reason as an error', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Promise.reject(new Error('kaboom')))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 500)
+})

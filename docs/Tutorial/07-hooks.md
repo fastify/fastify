@@ -118,7 +118,7 @@ We’ll add three hooks to *Quote Vault*:
 
 1. **`onClose`** – clean up our fake database when the server shuts down.
 2. **`onRequest`** – attach a fake user object based on the `Authorization` header.
-3. **`preHandler`** – ensure only an admin can delete quotes.
+3. **Route-level `onRequest`** – ensure only an admin can delete quotes.
 
 ### Close resources on our fake DB
 
@@ -231,10 +231,15 @@ import configureHooks from './hooks.js';
 configureHooks(app)
 ```
 
-## Route-level hooks with `preHandler`
+## Route-level hooks with `onRequest`
 
 Sometimes, we want to apply extra checks on a **specific route only**.
-The `preHandler` hook runs **just before the route handler**.
+Authorization only needs the user established by the earlier authentication
+hook, so it should also run in `onRequest`. This lets Fastify reject the request
+before parsing a body or validating route input.
+
+Use a later hook such as `preValidation` or `preHandler` when a check genuinely
+needs parsed or validated request data.
 
 For example, our `delete` endpoint should only be accessible to admins:
 
@@ -249,7 +254,7 @@ app.delete(
         403: { $ref: "errorMessage#" }
       },
     },
-    preHandler: async function (request, reply) {
+    onRequest: async function (request, reply) {
       if (request.user?.role !== 'admin') {
         reply.code(403);
         return reply.send({ message: "Admin only" });

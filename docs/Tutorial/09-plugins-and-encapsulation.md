@@ -439,6 +439,7 @@ export const quotesRoutesPlugin = fp(
   },
   {
     name: "quotes-routes",
+    encapsulate: true,
     decorators: {
       // Ensure `quotesRepository` is accessible
       fastify: ["quotesRepository"],

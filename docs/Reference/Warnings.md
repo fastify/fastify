@@ -36,7 +36,7 @@ one of the following methods:
 - Pass `--disable-warning=FSTWRN004` to disable a specific warning
 
 > ⚠ Warning:
-> Node.js marks `--disable-warning` as
+> Node.js marks [`--disable-warning`](https://nodejs.org/api/cli.html#--disable-warningcode-or-type) as
 > [Stability 1.1 - Active development](https://nodejs.org/api/documentation.html#stability-index).
 > Experimental features are not covered by semantic versioning and may change
 > or be removed in a future release.

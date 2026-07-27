@@ -18,34 +18,12 @@ Install it:
 npm i @fastify/env
 ```
 
-## Plugin layout: `app` vs `external`
+## Infrastructure configuration plugin
 
-Before writing the plugin itself, let’s improve our folder structure.
+The previous chapter reserved `plugins/infrastructure` for adapters around
+third-party plugins. Configuration is its first integration.
 
-* `plugins/app` for plugins we own.
-* `plugins/external` for wrappers around third-party plugins.
-
-Our `plugins` directory now looks like this:
-
-```text
-plugins/
-  app/
-    auth.js
-    db.js
-    quotes-repo.js
-  external/
-    env.js
-```
-
-In larger applications, responsibilities are often split more aggressively.
-But this is enough to keep the examples organized without turning the tutorial
-into an architecture discussion.
-
-## External configuration plugin
-
-We will put the configuration logic in `plugins/external/env.js`.
-
-### `plugins/external/env.js`
+### `plugins/infrastructure/env.js`
 
 ```js
 import fp from 'fastify-plugin'
@@ -83,6 +61,26 @@ Let’s unpack the important pieces:
 This gives us one clear contract for configuration:
 if the application boots, `app.config` is present and valid.
 
+### `plugins/infrastructure/infrastructure.plugin.js`
+
+As with an application domain, infrastructure has one entry point:
+
+```js
+import fp from 'fastify-plugin'
+import { envPlugin } from './env.js'
+
+export const infrastructurePlugin = fp(
+  async function infrastructurePlugin (app, options) {
+    app.register(envPlugin, { override: options.env })
+  },
+  { name: 'infrastructure' }
+)
+```
+
+The entry point is wrapped with `fastify-plugin` so `app.config` is visible to
+the application scope registered after it. Later infrastructure integrations
+will be added here instead of imported individually by `app.js`.
+
 ## Loading a `.env` File
 
 At this point, it is worth making one detail explicit:
@@ -117,6 +115,19 @@ HOST=127.0.0.1
 PORT=3000
 ```
 
+Keep the discoverable local defaults in `.env.example`:
+
+```dotenv
+HOST=127.0.0.1
+PORT=3000
+```
+
+Create the local file from that example:
+
+```bash
+cp .env.example .env
+```
+
 With this setup, `node --watch --env-file=.env server.js` loads the variables
 into `process.env` before `server.js` runs.
 Then `@fastify/env` validates them and exposes the result as `app.config`.
@@ -132,12 +143,14 @@ That way, any later plugin can depend on it when needed.
 
 ```js
 import fastify from 'fastify'
-import { idParam } from './schemas.js'
-import configureErrorHandlers from './error-handlers.js'
-import { dbPlugin } from './plugins/app/db.js'
-import { quotesRepositoryPlugin } from './plugins/app/quotes-repo.js'
-import { envPlugin } from './plugins/external/env.js'
-import { protectedRoutes } from './routes/protected.js'
+import {
+  authenticationPlugin
+} from './plugins/app/authentication/authentication.plugin.js'
+import { errorsPlugin } from './plugins/app/errors/errors.plugin.js'
+import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.js'
+import {
+  infrastructurePlugin
+} from './plugins/infrastructure/infrastructure.plugin.js'
 
 export function createApp (options = {}) {
   const app = fastify({
@@ -151,15 +164,13 @@ export function createApp (options = {}) {
     }
   })
 
-  app.register(envPlugin, { override: options.env })
-  app.register(dbPlugin)
-  app.register(quotesRepositoryPlugin)
+  app.register(infrastructurePlugin, options)
+  app.register(errorsPlugin)
 
-  app.addSchema(idParam)
-
-  app.register(protectedRoutes)
-
-  configureErrorHandlers(app)
+  app.register(async function application (app) {
+    app.register(authenticationPlugin)
+    app.register(quotesPlugin)
+  })
 
   app.get('/throw', async function () {
     throw new Error('💥 Kaboom!')
@@ -173,9 +184,9 @@ export function createApp (options = {}) {
 }
 ```
 
-The important detail is that `envPlugin` is registered first.
-That keeps configuration available before the rest of the application is
-assembled.
+The infrastructure entry point is registered before the application scope.
+It owns the configuration override and makes validated configuration available
+to every domain.
 
 ## Use configuration when starting the server
 
@@ -250,9 +261,9 @@ This keeps tests deterministic and makes config overrides explicit.
 
 ## Testing configuration
 
-Since configuration is now part of the application contract, we should test it.
-Because this behavior belongs to an external plugin integration, it fits well in
-`test/plugins`.
+Since configuration is now part of the application contract, we should test
+it. Because this behavior belongs to an infrastructure integration, it fits
+well in `test/plugins`.
 
 For example:
 
@@ -309,5 +320,4 @@ applied correctly.
 In this chapter, we introduced configuration as a first-class part of the
 application.
 We used `@fastify/env` to validate environment variables, exposed them through
-`app.config`, organized plugins into `app` and `external`, and updated our test
-helper so configuration is stable in tests.
+`app.config`, and updated our test helper so configuration is stable in tests.

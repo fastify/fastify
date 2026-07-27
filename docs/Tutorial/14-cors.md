@@ -13,7 +13,7 @@ In this chapter, we are going to:
 * explain what CORS solves,
 * add `@fastify/cors` to the project,
 * expose the allowed frontend origin through configuration,
-* register CORS as an external Fastify plugin,
+* register CORS through an infrastructure plugin,
 * and test both regular cross-origin requests and preflight requests.
 
 ## Why CORS matters
@@ -121,17 +121,17 @@ And keep the example file in sync.
 HOST=127.0.0.1
 PORT=3000
 CORS_ORIGIN=http://127.0.0.1:5173
-POSTGRES_HOST=your-postgres-host
+POSTGRES_HOST=127.0.0.1
 POSTGRES_PORT=5432
-POSTGRES_USER=your-postgres-user
-POSTGRES_PASSWORD=your-postgres-password
-POSTGRES_DB=your-postgres-database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=quote_vault
 CAN_CREATE_DATABASE=0
 CAN_DROP_DATABASE=0
 CAN_SEED_DATABASE=0
 ```
 
-### `plugins/external/env.js`
+### `plugins/infrastructure/env.js`
 
 ```js
 import fp from 'fastify-plugin'
@@ -179,18 +179,18 @@ We make `CORS_ORIGIN` required for the same reason we made database settings
 explicit in the previous chapter:
 the application should not silently guess how it is meant to be used.
 
-## Wrap CORS in an external plugin
+## Wrap CORS in an infrastructure plugin
 
 CORS support comes from a third-party package, so it belongs in
-`plugins/external`.
+`plugins/infrastructure`.
 
-### `plugins/external/cors.js`
+### `plugins/infrastructure/cors.js`
 
 ```js
 import fp from 'fastify-plugin'
 import cors from '@fastify/cors'
 
-export function buildCorsOptions (app) {
+function buildCorsOptions (app) {
   return {
     // Only allow the frontend origin configured for this environment.
     origin: app.config.CORS_ORIGIN,
@@ -222,65 +222,26 @@ The allowed methods match the routes we expose in Quote Vault.
 We also make `Authorization` and `Content-Type` explicit because the browser
 will ask about them during preflight checks before calling protected JSON
 endpoints such as `POST /quotes`.
- 
+
 ## Register the plugin
 
-In our implementation, the CORS plugin depends on validated configuration from
-`envPlugin`.
-That means it should be registered after `envPlugin`, because its options are
-built from `app.config.CORS_ORIGIN`.
-
-### `app.js`
+Add CORS to `infrastructure.plugin.js` after configuration, because its options
+use `app.config.CORS_ORIGIN`:
 
 ```js
-import fastify from 'fastify'
-import { idParam } from './schemas.js'
-import configureErrorHandlers from './error-handlers.js'
-import { quotesRepositoryPlugin } from './plugins/app/quotes-repo.js'
-// New for this chapter: register the external CORS plugin.
-import { corsPlugin } from './plugins/external/cors.js'
-import { envPlugin } from './plugins/external/env.js'
-import { knexPlugin } from './plugins/external/knex.js'
-import { protectedRoutes } from './routes/protected.js'
-
-export function createApp (options = {}) {
-  const app = fastify({
-    logger: options.logger ?? false,
-    ajv: {
-      customOptions: {
-        allErrors: false,
-        coerceTypes: 'array',
-        removeAdditional: 'all'
-      }
-    }
-  })
-
-  app.register(envPlugin, { override: options.env })
-  // New for this chapter: build CORS options from validated config.
-  app.register(corsPlugin, { override: options.cors })
-  app.register(knexPlugin, { override: options.knex })
-  app.register(quotesRepositoryPlugin)
-
-  app.addSchema(idParam)
-
-  app.register(protectedRoutes)
-
-  configureErrorHandlers(app)
-
-  app.get('/throw', async function () {
-    throw new Error('💥 Kaboom!')
-  })
-
-  app.get('/not-protected', async function () {
-    return { ok: true }
-  })
-
-  return app
-}
+export const infrastructurePlugin = fp(
+  async function infrastructurePlugin (app, options) {
+    app.register(envPlugin, { override: options.env })
+    // New for this chapter: build CORS options from validated config.
+    app.register(corsPlugin, { override: options.cors })
+    app.register(knexPlugin, { override: options.knex })
+  },
+  { name: 'infrastructure' }
+)
 ```
 
-At this point, every route in the application benefits from the same CORS
-configuration.
+`app.js` still registers only `infrastructurePlugin`. At this point, every
+route benefits from the same CORS configuration.
 
 ## Test the behavior
 
@@ -485,7 +446,7 @@ verify that the API is returning the information a browser expects.
 
 Quote Vault now supports browser clients running on another origin:
 
-* `@fastify/cors` is installed and wrapped in an external plugin,
+* `@fastify/cors` is installed and wrapped in an infrastructure plugin,
 * the allowed frontend origin is validated through configuration,
 * CORS is registered early in the app lifecycle,
 * regular responses include the expected CORS headers,

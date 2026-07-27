@@ -100,7 +100,7 @@ Now we extend that configuration so the app knows how to reach PostgreSQL.
 For this chapter, we want these database settings to be explicit, so we will
 require them from a `.env` file instead of silently defaulting them.
 
-Create a `.env` file:
+Add the values to `.env` and keep `.env.example` synchronized:
 
 ```dotenv
 HOST=127.0.0.1
@@ -115,10 +115,7 @@ CAN_DROP_DATABASE=0
 CAN_SEED_DATABASE=0
 ```
 
-You can also keep a `.env.example` file as a template for other developers, but
-it should contain dummy values rather than real credentials.
-
-### `plugins/external/env.js`
+### `plugins/infrastructure/env.js`
 
 ```js
 import fp from 'fastify-plugin'
@@ -187,17 +184,18 @@ environment.
 And independently of that, database backups should be configured at the
 infrastructure level.
 
-## Wrap Knex in an external plugin
+## Wrap Knex in an infrastructure plugin
 
-Knex is a third-party dependency, so it belongs in `plugins/external`.
+The Knex client manages a database connection pool, so it belongs in
+`plugins/infrastructure`.
 
-### `plugins/external/knex.js`
+### `plugins/infrastructure/knex.js`
 
 ```js
 import fp from 'fastify-plugin'
 import knex from 'knex'
 
-export function buildKnexConfig (app) {
+function buildKnexConfig (app) {
   return {
     // Use the PostgreSQL driver for this tutorial.
     client: 'pg',
@@ -235,6 +233,23 @@ export const knexPlugin = fp(
 This is the same integration idea we have used in earlier chapters:
 one plugin owns the infrastructure setup, and the rest of the app consumes a
 stable decorator.
+
+Add Knex to the infrastructure entry point:
+
+```js
+import fp from 'fastify-plugin'
+import { envPlugin } from './env.js'
+import { knexPlugin } from './knex.js'
+
+export const infrastructurePlugin = fp(
+  async function infrastructurePlugin (app, options) {
+    app.register(envPlugin, { override: options.env })
+    // New for this chapter: expose the shared database client.
+    app.register(knexPlugin, { override: options.knex })
+  },
+  { name: 'infrastructure' }
+)
+```
 
 ## Add a Knex migration
 
@@ -429,10 +444,6 @@ try {
 }
 ```
 
-This script is a little more careful because PostgreSQL will not drop a
-database while clients are still connected to it.
-So it first terminates active connections, then drops the database.
-
 Run the migration step with:
 
 ```bash
@@ -455,23 +466,27 @@ CAN_DROP_DATABASE=1 npm run db:drop
 
 ## Run migrations outside the application
 
-At this point, we deliberately drop the `plugins/app/db.js` migration plugin
-approach.
+At this point, we remove the in-memory
+`plugins/app/quotes/quotes-database.service.js`.
 The application itself should not run migrations for us.
 Migrations are an operational step that should be handled by the developers of
 the project, locally or in CI, before the server starts.
+
+Remove `quotesDatabaseServicePlugin` from `quotes.plugin.js`. The quote domain
+will keep its repository; only the resource it uses changes from an in-memory
+decoration to the inherited `app.knex` client.
 
 ## Rewrite the repository with SQL queries
 
 The routes should not care whether data comes from a `Map` or from PostgreSQL.
 That is the reason the repository abstraction exists.
 
-### `plugins/app/quotes-repo.js`
+### `plugins/app/quotes/quotes.repository.js`
 
 ```js
 import fp from 'fastify-plugin'
 
-export function createQuotesRepository (app) {
+function createQuotesRepository (app) {
   const repository = {
     async list (limit) {
       return app.knex('quotes')
@@ -490,8 +505,8 @@ export function createQuotesRepository (app) {
     },
 
     async create (text) {
-      const [id] = await app.knex('quotes').insert({ text }, ['id'])
-      return repository.get(id.id)
+      const [{ id }] = await app.knex('quotes').insert({ text }, ['id'])
+      return repository.get(id)
     },
 
     async update (id, text) {
@@ -519,11 +534,11 @@ export function createQuotesRepository (app) {
 }
 
 export const quotesRepositoryPlugin = fp(
-  async function quotesRepo (app) {
+  async function quotesRepositoryPlugin (app) {
     app.decorate('quotesRepository', createQuotesRepository(app))
   },
   {
-    name: 'quotes-repo',
+    name: 'quotes-repository',
     decorators: { fastify: ['knex'] }
   }
 )
@@ -535,19 +550,21 @@ That is exactly the kind of refactoring boundary we want.
 
 ## Register the new plugin chain
 
-Now the application assembly needs one extra step: create the Knex client
-before the repository.
+The root composition does not import Knex or the repository directly. Their
+entry plugins own that detail.
 
 ### `app.js`
 
 ```js
 import fastify from 'fastify'
-import { idParam } from './schemas.js'
-import configureErrorHandlers from './error-handlers.js'
-import { quotesRepositoryPlugin } from './plugins/app/quotes-repo.js'
-import { envPlugin } from './plugins/external/env.js'
-import { knexPlugin } from './plugins/external/knex.js'
-import { protectedRoutes } from './routes/protected.js'
+import {
+  authenticationPlugin
+} from './plugins/app/authentication/authentication.plugin.js'
+import { errorsPlugin } from './plugins/app/errors/errors.plugin.js'
+import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.js'
+import {
+  infrastructurePlugin
+} from './plugins/infrastructure/infrastructure.plugin.js'
 
 export function createApp (options = {}) {
   const app = fastify({
@@ -561,15 +578,13 @@ export function createApp (options = {}) {
     }
   })
 
-  app.register(envPlugin, { override: options.env })
-  app.register(knexPlugin, { override: options.knex })
-  app.register(quotesRepositoryPlugin)
+  app.register(infrastructurePlugin, options)
+  app.register(errorsPlugin)
 
-  app.addSchema(idParam)
-
-  app.register(protectedRoutes)
-
-  configureErrorHandlers(app)
+  app.register(async function application (app) {
+    app.register(authenticationPlugin)
+    app.register(quotesPlugin)
+  })
 
   app.get('/throw', async function () {
     throw new Error('💥 Kaboom!')
@@ -587,8 +602,9 @@ The dependency chain is now:
 
 1. configuration,
 2. Knex,
-3. repository,
-4. routes.
+3. the quote domain,
+4. its repository,
+5. its routes.
 
 ## Await The Repository Calls
 
@@ -694,11 +710,6 @@ Running with `--concurrency=1` avoids those issues until the test setup grows
 into something more isolated, such as one database per worker or one schema per
 test process.
 
-If one day you need to persist data across several test app instances, you can
-always extend the helper with an explicit opt-out.
-For now, always cleaning the table keeps the tutorial simpler and the test
-suite easier to reason about.
-
 ## Manual verification
 
 Start PostgreSQL:
@@ -758,7 +769,7 @@ Quote Vault now has a real database layer:
 * PostgreSQL runs in Docker Compose,
 * configuration provides the connection settings,
 * guarded helper scripts manage create, seed, and drop operations,
-* Knex is wrapped in an external plugin,
+* Knex is wrapped in an infrastructure plugin,
 * Knex migrations define the schema,
 * the repository now issues SQL queries,
 * and the test helper prepares a clean migrated database when needed.

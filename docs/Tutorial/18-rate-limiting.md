@@ -119,8 +119,8 @@ and an availability plan.
 
 ## Install the rate-limit plugin
 
-The official Redis client is already installed and connected. Add the Fastify
-rate-limit plugin:
+The Redis client created in the authentication chapter is already installed
+and connected. Add the Fastify rate-limit plugin:
 
 ```bash
 npm i @fastify/rate-limit
@@ -172,17 +172,17 @@ RATE_LIMIT_TIME_WINDOW=60000
 QUOTE_CREATE_RATE_LIMIT_MAX=10
 QUOTE_CREATE_RATE_LIMIT_TIME_WINDOW=60000
 
-POSTGRES_HOST=your-postgres-host
+POSTGRES_HOST=127.0.0.1
 POSTGRES_PORT=5432
-POSTGRES_USER=your-postgres-user
-POSTGRES_PASSWORD=your-postgres-password
-POSTGRES_DB=your-postgres-database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=quote_vault
 CAN_CREATE_DATABASE=0
 CAN_DROP_DATABASE=0
 CAN_SEED_DATABASE=0
 ```
 
-Then extend `plugins/external/env.js`:
+Then extend `plugins/infrastructure/env.js`:
 
 ```js
 const schema = {
@@ -214,13 +214,13 @@ const schema = {
 The minimum constraints prevent a zero or negative quota and time window from
 passing startup validation.
 
-## Adapt the current rate-limit store
+## Adapt the shared Redis client
 
-The current `@fastify/rate-limit` Redis option expects `ioredis`. A small
-custom store lets us keep using the official node-redis client until native
-support lands.
+`@fastify/rate-limit` accepts a custom counter store. We will implement that
+small contract around the existing `app.redis` client instead of creating
+another Redis connection.
 
-### `plugins/external/node-redis-rate-limit-store.js`
+### `plugins/infrastructure/redis-rate-limit-store.js`
 
 ```js
 const INCREMENT_AND_EXPIRE = `
@@ -233,8 +233,8 @@ const INCREMENT_AND_EXPIRE = `
   return { current, redis.call('PTTL', KEYS[1]) }
 `
 
-export function createNodeRedisRateLimitStore (redis, namespace) {
-  return class NodeRedisRateLimitStore {
+export function createRedisRateLimitStore (redis, namespace) {
+  return class RedisRateLimitStore {
     constructor () {
       this.prefix = namespace
     }
@@ -249,7 +249,7 @@ export function createNodeRedisRateLimitStore (redis, namespace) {
     }
 
     child (routeOptions) {
-      const store = new NodeRedisRateLimitStore()
+      const store = new RedisRateLimitStore()
       store.prefix += [
         routeOptions.routeInfo.method,
         routeOptions.routeInfo.url,
@@ -262,24 +262,24 @@ export function createNodeRedisRateLimitStore (redis, namespace) {
 ```
 
 The script increments the counter and applies its expiry atomically. `child`
-gives a route-specific policy its own key prefix. Keep this compatibility code
-isolated: it can be removed when `@fastify/rate-limit` supports node-redis
-directly. It implements the fixed-window policy used in this tutorial.
+gives a route-specific policy its own key prefix. Keeping the adapter isolated
+also keeps Redis-specific counter commands out of the rate-limit plugin. It
+implements the fixed-window policy used in this tutorial.
 
 ## Register the rate limiter
 
-Create an external plugin for the third-party integration.
+Create an infrastructure plugin for the third-party integration.
 
-### `plugins/external/rate-limit.js`
+### `plugins/infrastructure/rate-limit.js`
 
 ```js
 import fp from 'fastify-plugin'
 import rateLimit from '@fastify/rate-limit'
 import {
-  createNodeRedisRateLimitStore
-} from './node-redis-rate-limit-store.js'
+  createRedisRateLimitStore
+} from './redis-rate-limit-store.js'
 
-export function buildRateLimitOptions (app) {
+function buildRateLimitOptions (app) {
   return {
     max: app.config.RATE_LIMIT_MAX,
     timeWindow: app.config.RATE_LIMIT_TIME_WINDOW,
@@ -299,8 +299,8 @@ export const rateLimitPlugin = fp(
       ...options.override
     }
 
-    // Remove this adapter when @fastify/rate-limit supports node-redis.
-    settings.store = createNodeRedisRateLimitStore(
+    // Reuse the shared Redis client through the rate-limit store contract.
+    settings.store = createRedisRateLimitStore(
       app.redis,
       settings.nameSpace
     )
@@ -315,7 +315,7 @@ export const rateLimitPlugin = fp(
 ```
 
 The custom store uses our existing shared client. The namespace keeps counter
-keys separate from the session keys added in the previous chapter.
+keys separate from the session keys added in the authentication chapter.
 
 The `session` dependency is important for both boot order and request hook
 order. The session plugin registers its `onRequest` hook first, so it loads the
@@ -334,51 +334,54 @@ use an isolated namespace while still exercising Redis.
 
 ## Register the plugin before routes
 
-Add the rate limiter after the session and service domains, but before the
-application scope loads its route-owning domains.
+Add the rate limiter to the infrastructure entry point after sessions:
+
+```js
+export const infrastructurePlugin = fp(
+  async function infrastructurePlugin (app, options) {
+    app.register(envPlugin, { override: options.env })
+    app.register(corsPlugin, { override: options.cors })
+    app.register(redisPlugin, { override: options.redis })
+    app.register(sessionPlugin, { override: options.session })
+    app.register(knexPlugin, { override: options.knex })
+    // New for this chapter: shared rate-limit counters.
+    app.register(rateLimitPlugin, { override: options.rateLimit })
+  },
+  { name: 'infrastructure' }
+)
+```
+
+The session plugin is registered first, so its `onRequest` hook loads the
+session before the rate limiter chooses an IP or user key.
 
 ### `app.js`
 
 ```js
-import { rateLimitPlugin } from './plugins/external/rate-limit.js'
-
 export function createApp (options = {}) {
   const app = fastify({
     // Existing Fastify options.
   })
 
-  app.register(envPlugin, { override: options.env })
-  app.register(corsPlugin, { override: options.cors })
-  app.register(redisPlugin, { override: options.redis })
-  app.register(sessionPlugin, { override: options.session })
-  app.register(knexPlugin, { override: options.knex })
-  app.register(passwordManagerPlugin)
-  app.register(usersRepositoryPlugin)
-
-  // New for this chapter: install the hook before declaring routes.
-  app.register(rateLimitPlugin, { override: options.rateLimit })
+  app.register(infrastructurePlugin, options)
+  app.register(errorsPlugin)
 
   app.register(async function application (app) {
+    app.register(usersPlugin)
+    app.register(passwordsPlugin)
+    app.register(registrationPlugin)
     app.register(authenticationPlugin)
     app.register(authorizationPlugin)
     app.register(quotesPlugin)
 
-    // Existing error handlers and public routes.
+    // Existing public routes.
   })
 
   return app
 }
 ```
 
-`app.register()` queues a plugin for Fastify's boot process, while a following
-root-level `app.get()` call would declare its route immediately. Our
-synchronous app factory already places routes inside the `application` plugin,
-so Fastify loads the queued infrastructure plugins first.
-
-This follows the documented `@fastify/rate-limit` contract: register the
-limiter before declaring the routes it should protect. Another valid design
-would make `createApp()` asynchronous, await infrastructure registration, and
-then declare root-level routes.
+Fastify loads the infrastructure entry point before the application scope, so
+the rate-limit hook exists before domain and public routes are declared.
 
 The plugin's `global` option defaults to `true`, so the hook applies to every
 route declared below it. Routes can opt out or replace part of the policy.
@@ -409,7 +412,7 @@ creating counters.
 Quote creation performs a database write, so apply the smaller configured
 quota to that route.
 
-### `plugins/app/quotes/quotes.js`
+### `plugins/app/quotes/quotes.routes.js`
 
 ```js
 app.post(
@@ -469,6 +472,8 @@ export function createTestApp (options = {}) {
     }
   })
 
+  // Keep the `app.login()` test decorator from the authentication chapter.
+
   app.addHook('onReady', async function () {
     // Existing migration and PostgreSQL fixture setup.
 
@@ -482,7 +487,7 @@ export function createTestApp (options = {}) {
 
 The suite still runs with `--concurrency=1` because tests reset shared
 PostgreSQL and Redis state. `FLUSHDB` is appropriate only for the dedicated,
-disposable test Redis database described in the previous chapter.
+disposable test Redis database described in the authentication chapter.
 
 Also extend the expected object in `test/plugins/env.test.js` with the four new
 values.
@@ -521,7 +526,8 @@ key.
 ## Test authenticated keys
 
 A separate test proves that quote creation uses the session user rather than
-the shared injection IP:
+the shared injection IP. It reuses the `app.login()` test decorator defined in
+the Authentication chapter:
 
 ```js
 test('gives authenticated users separate quotas', async (t) => {
@@ -530,8 +536,8 @@ test('gives authenticated users separate quotas', async (t) => {
   })
   t.after(() => app.close())
 
-  const userCookie = await login(app)
-  const adminCookie = await login(app, 'admin@example.com')
+  const userCookie = await app.login()
+  const adminCookie = await app.login('admin@example.com')
 
   const createQuote = (cookie, text) => app.inject({
     method: 'POST',
@@ -573,7 +579,7 @@ test('shares an authenticated quota across application instances', async (t) => 
   await firstApp.ready()
   await secondApp.ready()
 
-  const cookie = await login(firstApp)
+  const cookie = await firstApp.login()
   const first = await firstApp.inject({
     method: 'POST',
     url: '/quotes',
@@ -603,13 +609,15 @@ npm test
 
 ## Manual verification
 
-Start the application and log in with the seeded user while saving the cookie:
+Start the application and log in with the seeded user. As in the authentication
+chapter, `-c cookies.txt` creates a cookie jar that later commands can read with
+`-b cookies.txt`:
 
 ```bash
 curl -i \
   -c cookies.txt \
   -H 'content-type: application/json' \
-  -d '{"email":"user@example.com","password":"user-password"}' \
+  -d '{"email":"user@example.com","password":"User-password1!"}' \
   http://127.0.0.1:3000/login
 ```
 
@@ -624,7 +632,12 @@ curl -i \
 ```
 
 The response headers show the stricter quote-creation limit. After the quota
-is exhausted, the same user receives `429` until the window expires.
+is exhausted, the same user receives `429` until the window expires. Remove
+the local cookie jar when the checks are complete:
+
+```bash
+rm cookies.txt
+```
 
 ## Summary
 

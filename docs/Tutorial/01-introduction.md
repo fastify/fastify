@@ -1,71 +1,54 @@
 # Introduction
 
-This tutorial is designed to give a clear and practical understanding 
-of how to build applications with Fastify.
+This tutorial builds a small Fastify REST API named *Quote Vault*. Users can
+register, authenticate, and manage memorable quotes. Role-based authorization
+reserves destructive operations for administrators.
 
-We’ll progressively build a small REST API named *Quote Vault* - 
-that allows users to store, retrieve, update, and delete memorable quotes. 
-The name fits the purpose: we’ll treat quotes as something worth protecting, 
-applying authentication, role-based access control, and other security 
-best practices - all while benefiting from the performance Fastify is 
-known for.
-
+We start with a single server and refine it incrementally. Each chapter adds a
+Fastify concept or an application feature, updates the runnable demo, and
+verifies the resulting behavior.
 
 ## Prerequisites
 
-To follow along with this tutorial, these prerequisites are recommended:
+To follow the tutorial, you should have:
 
-- Basic understanding of **JavaScript**, **Node.js**, **HTTP**
-- **Node.js 24 or later** installed
-- An HTTP client such as **curl** or **Postman** to test the API
-- Familiarity with a package manager such as **npm**
-- Basic bash/shell skills for running commands
+* a basic understanding of JavaScript, Node.js, and HTTP,
+* Node.js 20 or later,
+* npm,
+* an HTTP client such as curl or Postman,
+* Docker with Docker Compose for PostgreSQL and Redis,
+* and basic familiarity with terminal commands.
 
+## What we will cover
 
-## What will we cover
+The first chapters introduce Fastify's core:
 
-We’ll start by exploring Fastify’s core features:
+* creating a server and defining routes,
+* decorating Fastify instances,
+* validating input and serializing responses with JSON Schema,
+* choosing and scoping lifecycle hooks,
+* handling errors and unknown routes,
+* using plugins and encapsulation,
+* and testing with `node:test` through `borp`, `fastify.inject()`, and coverage.
 
-- Setting up a basic Fastify server and defining routes
-- Decorating the Fastify instance
-- Adding validation and response serialization using JSON schemas
-- Understanding and using application and request lifecycle hooks
-- Implementing custom error handling and fallback (404) routes
-- Using the plugin system and encapsulation to structure our application
+We then organize the application around domain entry plugins. Routes, schemas,
+services, repositories, and hook builders stay with the domain that owns them.
+Infrastructure plugins manage shared integrations such as configuration,
+PostgreSQL, Redis, sessions, CORS, and rate limiting.
 
+Finally, we implement the application features:
 
-### Testing
+* PostgreSQL persistence with Knex and explicit migrations,
+* browser access through CORS,
+* user registration and password hashing,
+* Redis-backed cookie sessions,
+* authentication and role-based authorization,
+* and shared rate limits for public and authenticated requests.
 
-To ensure reliability and maintainability, we’ll set up a solid testing workflow:
+The tutorial combines official Fastify plugins, independent libraries, and
+application code written specifically for Quote Vault. Fastify provides the
+plugin model and lifecycle; it does not restrict how application features are
+implemented.
 
-- Use the built-in **Node.js test runner**
-- Test routes and behaviors with **`fastify.inject()`**
-- Get **code coverage** using [`borp`](https://github.com/mcollina/borp), 
-  a lightweight runner with TypeScript support and built-in coverage
-
-
-### Plugin Ecosystem and Integration
-
-We’ll integrate some Core Fastify plugins to extend the application:
-- Configuration
-- Database integration with Knex
-- CORS
-- Rate limiting
-- Authentication and authorization
-- API documentation with Swagger
-
-
-### TypeScript and Architecture
-
-To finish, we’ll introduce Fastify’s TypeScript tools
-and best practices:
-
-- `@fastify/type-provider-typebox` for type-safe schemas
-- Module augmentation to type decorators 
-- Alternative to module augmentation with `getDecorator`
-
-By the end of this tutorial, you’ll have a solid understanding of how to
-build, test, and maintain a Fastify application, along with practical
-experience in implementing common backend features.
-
-Let’s get started! 🚀
+By the end, you will have a tested Fastify application and a practical model
+for deciding where routes, hooks, domain behavior, and infrastructure belong.

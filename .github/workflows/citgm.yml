@@ -118,7 +118,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Remove citgm-core-plugins label
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@b91aabaa861c777dcdb14e2387e30eddf04619ae # v3.0.0
         id: remove-label
         with:
           route: DELETE /repos/{repo}/issues/{issue_number}/labels/{name}

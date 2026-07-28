@@ -567,7 +567,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -578,8 +578,6 @@ the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
 Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
-
-+ Default: `false`
 
 ```js
 const fastify = require('fastify')({
@@ -1702,7 +1700,7 @@ Fake HTTP injection (for testing purposes)
 <a id="addHttpMethod"></a>
 
 Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
-`PATCH`, `PUT` and `POST` HTTP methods by default.
+`PATCH`, `PUT`, `POST` and `QUERY` HTTP methods by default.
 The `addHttpMethod` method allows to add any non standard HTTP
 methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
 

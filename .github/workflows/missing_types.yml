@@ -18,7 +18,7 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'missing-types')
     steps:
       - name: Create an issue
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@b91aabaa861c777dcdb14e2387e30eddf04619ae # v3.0.0
         with:
           route: POST /repos/{owner}/{repo}/issues
           owner: ${{ github.repository_owner }}

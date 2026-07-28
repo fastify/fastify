@@ -80,7 +80,8 @@ import { protectedRoutes } from "./routes/protected.js";
 // configuration.
 export function createApp(options = {}) {
   const app = fastify({
-    logger: options.logger ?? false,
+    logger: options.logger,
+    forceCloseConnections: false,
     ajv: {
       customOptions: {
         allErrors: false,
@@ -111,6 +112,10 @@ export function createApp(options = {}) {
 }
 ```
 
+Fastify already disables logging when `logger` is `undefined`. The factory only
+forwards an explicit logger choice; `server.js` enables logging with `true`,
+while the test helper uses `false` unless a test supplies another value.
+
 ### server.js
 
 ```js
@@ -119,15 +124,18 @@ import { createApp } from "./app.js";
 
 const app = createApp({ logger: true });
 
-closeWithGrace(async ({ err }) => {
-  if (err != null) {
-    app.log.error(err);
+closeWithGrace(
+  { delay: 15_000 },
+  async function ({ err }) {
+    if (err != null) {
+      app.log.error(err);
+    }
+    await app.close();
   }
-  await app.close();
-});
+);
 
 try {
-  await app.listen({ port: 3000 });
+  await app.listen({ host: "0.0.0.0", port: 3000 });
 } catch (err) {
   app.log.error(err);
   process.exit(1);
@@ -155,190 +163,314 @@ export function createTestApp(options = {}) {
 Tests can now import `createTestApp()` and call `inject()` directly, without
 running `listen()`.
 
-## Writing tests for `/quotes`
 
-Create a file `test/quotes.test.js`.
+## Organize tests by responsibility
 
-We test a few representative cases, and you will extend the suite as an
-exercise:
+Reaching 100% coverage requires us to exercise success, failure, and lifecycle
+branches. Those checks should still be grouped by the behavior they describe,
+rather than collected in one coverage-only suite.
 
-* GET /quotes: authentication and response.
-* POST /quotes: authentication, validation, sanitized output.
-* Global error handler.
+We will create four test files:
+
+* `test/auth.test.js` covers the teaching authentication hook.
+* `test/quotes.test.js` covers validation, serialization, and quote CRUD.
+* `test/app.test.js` covers public routes and global error handling.
+* `test/plugins/db.test.js` covers the database plugin lifecycle.
 
 Each test creates a fresh Fastify instance and closes it afterward.
 
-### Testing GET /quotes
+### `test/auth.test.js`
+
+Authentication is inherited by the protected quote routes. Test both ways in
+which that hook rejects a request:
 
 ```js
-// test/quotes.test.js
-import { test, describe } from "node:test";
+import { describe, test } from "node:test";
 import { createTestApp } from "./app.js";
 
-describe("GET /quotes", () => {
-  test("fails without Authorization header", async (t) => {
+describe("authentication", () => {
+  test("rejects a missing Authorization header", async (t) => {
     const app = createTestApp();
+    t.after(() => app.close());
 
-    const res = await app.inject({
-      method: "GET",
-      url: "/quotes",
-    });
+    const res = await app.inject("/quotes");
 
     t.assert.equal(res.statusCode, 401);
     t.assert.deepStrictEqual(res.json(), {
       message: "Missing Authorization",
     });
-
-    await app.close();
   });
 
-  test("returns an empty list for authenticated users", async (t) => {
+  test("rejects an invalid token", async (t) => {
     const app = createTestApp();
+    t.after(() => app.close());
 
     const res = await app.inject({
       method: "GET",
       url: "/quotes",
-      headers: { authorization: "Bearer user" },
+      headers: { authorization: "Bearer hacker" },
     });
 
-    t.assert.equal(res.statusCode, 200);
-    t.assert.deepStrictEqual(res.json(), []);
-
-    await app.close();
+    t.assert.equal(res.statusCode, 401);
+    t.assert.deepStrictEqual(res.json(), {
+      message: "Invalid token",
+    });
   });
 });
 ```
 
-### Testing POST /quotes
+The valid user and administrator branches are exercised by the quote tests
+below.
+
+### `test/quotes.test.js`
+
+Create a helper for the repeated quote setup, then cover every quote route:
 
 ```js
-describe("POST /quotes", () => {
-  test("fails without Authorization", async (t) => {
+import { describe, test } from "node:test";
+import { createTestApp } from "./app.js";
+
+const userHeaders = { authorization: "Bearer user" };
+const adminHeaders = { authorization: "Bearer admin" };
+
+async function createQuote(app, text = "New quote") {
+  return app.inject({
+    method: "POST",
+    url: "/quotes",
+    headers: userHeaders,
+    payload: { text },
+  });
+}
+
+describe("quote routes", () => {
+  test("lists quotes with the default and an explicit limit", async (t) => {
     const app = createTestApp();
+    t.after(() => app.close());
 
-    const res = await app.inject({
-      method: "POST",
+    const empty = await app.inject({
+      method: "GET",
       url: "/quotes",
-      payload: { text: "X" },
+      headers: userHeaders,
     });
 
-    t.assert.equal(res.statusCode, 401);
-    t.assert.deepStrictEqual(res.json(), {
-      message: "Missing Authorization",
+    await createQuote(app, "First");
+    await createQuote(app, "Second");
+
+    const limited = await app.inject({
+      method: "GET",
+      url: "/quotes?limit=1",
+      headers: userHeaders,
     });
 
-    await app.close();
+    t.assert.equal(empty.statusCode, 200);
+    t.assert.deepStrictEqual(empty.json(), []);
+    t.assert.deepStrictEqual(limited.json(), [
+      { id: 1, text: "First" },
+    ]);
   });
 
-  test("fails with invalid payload", async (t) => {
+  test("gets an existing quote and reports invalid or missing IDs", async (t) => {
     const app = createTestApp();
+    t.after(() => app.close());
+    await createQuote(app);
 
-    const res = await app.inject({
-      method: "POST",
-      url: "/quotes",
-      headers: {
-        authorization: "Bearer user",
-        "content-type": "application/json",
-      },
-      payload: { wrong: "field" },
+    const found = await app.inject({
+      method: "GET",
+      url: "/quotes/1",
+      headers: userHeaders,
+    });
+    const missing = await app.inject({
+      method: "GET",
+      url: "/quotes/2",
+      headers: userHeaders,
+    });
+    const invalid = await app.inject({
+      method: "GET",
+      url: "/quotes/not-an-id",
+      headers: userHeaders,
     });
 
-    t.assert.equal(res.statusCode, 400);
-    t.assert.equal(typeof res.json().message, "string");
-
-    await app.close();
-  });
-
-  test("creates a quote and returns sanitized output", async (t) => {
-    const app = createTestApp();
-
-    const res = await app.inject({
-      method: "POST",
-      url: "/quotes",
-      headers: {
-        authorization: "Bearer user",
-        "content-type": "application/json",
-      },
-      payload: { text: "New quote" },
-    });
-
-    t.assert.equal(res.statusCode, 201);
-
-    const body = res.json();
-    t.assert.deepStrictEqual(body, {
-      id: body.id,
+    t.assert.equal(found.statusCode, 200);
+    t.assert.deepStrictEqual(found.json(), {
+      id: 1,
       text: "New quote",
     });
+    t.assert.equal(missing.statusCode, 404);
+    t.assert.equal(invalid.statusCode, 400);
+  });
 
-    await app.close();
+  test("validates and serializes created quotes", async (t) => {
+    const app = createTestApp();
+    t.after(() => app.close());
+
+    const invalid = await app.inject({
+      method: "POST",
+      url: "/quotes",
+      headers: userHeaders,
+      payload: { wrong: "field" },
+    });
+    const created = await createQuote(app);
+
+    t.assert.equal(invalid.statusCode, 400);
+    t.assert.equal(created.statusCode, 201);
+    t.assert.deepStrictEqual(created.json(), {
+      id: 1,
+      text: "New quote",
+    });
+  });
+
+  test("updates a quote and reports a missing one", async (t) => {
+    const app = createTestApp();
+    t.after(() => app.close());
+    await createQuote(app);
+
+    const updated = await app.inject({
+      method: "PUT",
+      url: "/quotes/1",
+      headers: userHeaders,
+      payload: { text: "Updated quote" },
+    });
+    const missing = await app.inject({
+      method: "PUT",
+      url: "/quotes/2",
+      headers: userHeaders,
+      payload: { text: "Missing quote" },
+    });
+
+    t.assert.equal(updated.statusCode, 200);
+    t.assert.deepStrictEqual(updated.json(), {
+      id: 1,
+      text: "Updated quote",
+    });
+    t.assert.equal(missing.statusCode, 404);
+  });
+
+  test("allows only administrators to delete quotes", async (t) => {
+    const app = createTestApp();
+    t.after(() => app.close());
+    await createQuote(app);
+
+    const forbidden = await app.inject({
+      method: "DELETE",
+      url: "/quotes/1",
+      headers: userHeaders,
+    });
+    const deleted = await app.inject({
+      method: "DELETE",
+      url: "/quotes/1",
+      headers: adminHeaders,
+    });
+    const missing = await app.inject({
+      method: "DELETE",
+      url: "/quotes/1",
+      headers: adminHeaders,
+    });
+
+    t.assert.equal(forbidden.statusCode, 403);
+    t.assert.equal(deleted.statusCode, 204);
+    t.assert.equal(missing.statusCode, 404);
   });
 });
 ```
 
-### Testing the global error handler
+The create assertion also proves response serialization: the route returns a
+demonstration `secret` property internally, but the response schema removes it.
 
-This checks that internal errors are logged and that the user sees a
-generic message.
-We use `t.mock.method` to capture calls to `app.log.error`.
+### `test/app.test.js`
+
+Application-level tests cover routes outside the protected subtree and the
+global handlers:
 
 ```js
-describe("global error handler", () => {
+import { describe, test } from "node:test";
+import { createApp } from "../app.js";
+import { createTestApp } from "./app.js";
+
+describe("application behavior", () => {
+  test("keeps public and not-found routes outside authentication", async (t) => {
+    const app = createTestApp();
+    t.after(() => app.close());
+
+    const publicRoute = await app.inject("/not-protected");
+    const missing = await app.inject("/does-not-exist");
+
+    t.assert.equal(publicRoute.statusCode, 200);
+    t.assert.deepStrictEqual(publicRoute.json(), { ok: true });
+    t.assert.equal(missing.statusCode, 404);
+    t.assert.deepStrictEqual(missing.json(), {
+      message: "This is not the route you are looking for!",
+    });
+  });
+
+  test("builds the application when options are omitted", async (t) => {
+    const app = createApp();
+    t.after(() => app.close());
+
+    const res = await app.inject("/not-protected");
+    t.assert.equal(res.statusCode, 200);
+  });
+
   test("logs and hides internal errors", async (t) => {
     const app = createTestApp({ logger: "silent" });
+    t.after(() => app.close());
 
-    // Native node test runner utility
-    // See: https://nodejs.org/api/test.html#mockmethodobject-methodname-implementation-options
+    // Native Node.js test runner utility:
+    // https://nodejs.org/api/test.html#mockmethodobject-methodname-implementation-options
     const { mock: errorMock } = t.mock.method(app.log, "error");
 
-    const res = await app.inject({
-      method: "GET",
-      url: "/throw",
-    });
+    const res = await app.inject("/throw");
 
-    // Inspect response
     t.assert.equal(res.statusCode, 500);
     t.assert.deepStrictEqual(res.json(), {
       message: "Internal Server Error",
     });
-
     t.assert.equal(errorMock.calls.length, 1);
 
-    // Inspect logger call arguments
-    const call = errorMock.calls[0];
-    t.assert.equal(call.arguments.length, 2);
+    const [logObject, logMessage] =
+      errorMock.calls[0].arguments;
 
-    const [logObj, logMsg] = call.arguments;
-
-    t.assert.equal(typeof logMsg, "string");
-    t.assert.ok(logMsg.includes("Unhandled error occurred"));
-
-    t.assert.ok(logObj.err instanceof Error);
-    t.assert.equal(logObj.request.url, "/throw");
-    t.assert.equal(logObj.request.method, "GET");
-
-    await app.close();
+    t.assert.equal(logMessage, "Unhandled error occurred");
+    t.assert.ok(logObject.err instanceof Error);
+    t.assert.equal(logObject.request.url, "/throw");
+    t.assert.equal(logObject.request.method, "GET");
   });
 });
 ```
 
+### `test/plugins/db.test.js`
+
+The database plugin owns its resource, so its shutdown behavior belongs in a
+plugin test:
+
+```js
+import { test } from "node:test";
+import { createTestApp } from "../app.js";
+
+test("closes the database resource", async (t) => {
+  const app = createTestApp();
+  t.after(() => app.close());
+  await app.ready();
+  const database = app.db;
+
+  t.assert.equal(database.started, true);
+  t.assert.deepStrictEqual(database.getAll("quotes"), []);
+
+  await app.close();
+  t.assert.equal(database.started, false);
+});
+```
+
+This direct call to `getAll()` also exercises the database branch where no
+limit is supplied. The route tests always provide a default numeric limit.
+
 ## Running tests and reviewing coverage
 
-Run tests:
+Run:
 
 ```bash
 npm test
 ```
 
-Use the coverage report to find untested paths (404 cases, admin-only
-deletes, validation branches).
-
-## Challenge
-
-Extend the test suite to cover:
-
-* GET /quotes/:id (found and not found)
-* PUT /quotes/:id (update and not found)
-* DELETE /quotes/:id (403 for user, 204 for admin, 404 when missing)
-* The 404 handler
-
-A broader suite increases confidence when evolving the application.
+The suite must report 100% for statements, branches, functions, and lines
+before continuing. Coverage confirms that each code path ran; the file
+boundaries above keep each assertion attached to the concern it describes.

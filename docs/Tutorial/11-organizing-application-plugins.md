@@ -217,7 +217,8 @@ import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.js'
 
 export function createApp (options = {}) {
   const app = fastify({
-    logger: options.logger ?? false,
+    logger: options.logger,
+    forceCloseConnections: false,
     ajv: {
       customOptions: {
         allErrors: false,
@@ -249,6 +250,46 @@ export function createApp (options = {}) {
 The application scope remains encapsulated, so its authentication hook does
 not leak to `/not-protected`. Inside that scope, the `authentication` domain is
 registered before the `quotes` domain that depends on it.
+
+## Organize tests by domain
+
+The test layout should evolve with the application layout. Keep the shared
+test factory and application-composition test at the root, then group domain
+tests under the plugin they exercise:
+
+```text
+test/
+  app.js
+  app.test.js
+  plugins/
+    app/
+      authentication/
+        authentication.test.js
+      quotes/
+        quotes.test.js
+        quotes-database.service.test.js
+```
+
+Move the existing files:
+
+| Before | After |
+| --- | --- |
+| `test/auth.test.js` | `test/plugins/app/authentication/authentication.test.js` |
+| `test/quotes.test.js` | `test/plugins/app/quotes/quotes.test.js` |
+| `test/plugins/db.test.js` | `test/plugins/app/quotes/quotes-database.service.test.js` |
+
+`test/app.test.js` remains at the test root because it verifies application
+composition, public routes, and global error handling. `test/app.js` also stays
+there because it is shared by every test domain.
+
+After moving the three files, update their test-helper import:
+
+```js
+import { createTestApp } from '../../../app.js'
+```
+
+Only the paths change in this chapter. Keep the assertions from the previous
+chapter unchanged.
 
 ## Verify behavior
 

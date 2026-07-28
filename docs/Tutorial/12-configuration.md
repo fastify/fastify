@@ -43,7 +43,7 @@ export const envPlugin = fp(
     await app.register(fastifyEnv, {
       confKey: 'config',
       schema,
-      data: options.override ?? process.env
+      data: options.override
     })
   },
   { name: 'env' }
@@ -55,8 +55,9 @@ Let’s unpack the important pieces:
 * `@fastify/env` validates configuration against a schema.
 * `confKey: 'config'` means validated values are exposed on the Fastify
   instance as `app.config`.
-* `data: options.override ?? process.env` means our wrapper accepts an explicit
-  override object, while normal runs still default to `process.env`.
+* `@fastify/env` reads `process.env` by default.
+* `data: options.override` lets tests and other callers provide explicit values
+  without modifying the process environment.
 
 This gives us one clear contract for configuration:
 if the application boots, `app.config` is present and valid.
@@ -154,7 +155,8 @@ import {
 
 export function createApp (options = {}) {
   const app = fastify({
-    logger: options.logger ?? false,
+    logger: options.logger,
+    forceCloseConnections: false,
     ajv: {
       customOptions: {
         allErrors: false,
@@ -204,13 +206,16 @@ import { createApp } from './app.js'
 
 const app = createApp({ logger: true })
 
-closeWithGrace(async ({ err }) => {
-  if (err != null) {
-    app.log.error(err)
-  }
+closeWithGrace(
+  { delay: 15_000 },
+  async function ({ err }) {
+    if (err != null) {
+      app.log.error(err)
+    }
 
-  await app.close()
-})
+    await app.close()
+  }
+)
 
 try {
   await app.ready()
@@ -263,12 +268,15 @@ This keeps tests deterministic and makes config overrides explicit.
 
 Since configuration is now part of the application contract, we should test
 it. Because this behavior belongs to an infrastructure integration, it fits
-well in `test/plugins`.
+in `test/plugins/infrastructure`.
 
 For example:
 
 ```js
-// test/plugins/env.test.js
+// test/plugins/infrastructure/env.test.js
+import { test } from 'node:test'
+import { createTestApp } from '../../app.js'
+
 test('loads validated configuration from the env plugin', async (t) => {
   const app = createTestApp({
     env: {

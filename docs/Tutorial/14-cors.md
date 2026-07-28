@@ -168,7 +168,7 @@ export const envPlugin = fp(
     await app.register(fastifyEnv, {
       confKey: 'config',
       schema,
-      data: options.override ?? process.env
+      data: options.override
     })
   },
   { name: 'env' }
@@ -293,11 +293,11 @@ export function createTestApp (options = {}) {
 We should also update the environment plugin test so it reflects the new
 startup contract.
 
-### `test/plugins/env.test.js`
+### `test/plugins/infrastructure/env.test.js`
 
 ```js
 import { describe, test } from 'node:test'
-import { createTestApp } from '../app.js'
+import { createTestApp } from '../../app.js'
 
 describe('env plugin', () => {
   test('loads validated configuration from the env plugin', async (t) => {
@@ -329,11 +329,11 @@ describe('env plugin', () => {
 
 Now we can add dedicated CORS tests.
 
-### `test/plugins/cors.test.js`
+### `test/plugins/infrastructure/cors.test.js`
 
 ```js
 import { describe, test } from 'node:test'
-import { createTestApp } from '../app.js'
+import { createTestApp } from '../../app.js'
 
 describe('cors plugin', () => {
   test('adds CORS headers to regular requests from the allowed origin', async (t) => {
@@ -381,6 +381,31 @@ describe('cors plugin', () => {
     t.assert.equal(
       res.headers['access-control-allow-headers'],
       'Content-Type, Authorization'
+    )
+
+    await app.close()
+  })
+
+  test('accepts explicit CORS options', async (t) => {
+    const app = createTestApp({
+      cors: {
+        origin: 'http://example.test',
+        methods: ['GET']
+      }
+    })
+
+    const res = await app.inject({
+      method: 'GET',
+      url: '/not-protected',
+      headers: {
+        origin: 'http://example.test'
+      }
+    })
+
+    t.assert.equal(res.statusCode, 200)
+    t.assert.equal(
+      res.headers['access-control-allow-origin'],
+      'http://example.test'
     )
 
     await app.close()

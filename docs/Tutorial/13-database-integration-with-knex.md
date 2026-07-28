@@ -148,7 +148,7 @@ export const envPlugin = fp(
     await app.register(fastifyEnv, {
       confKey: 'config',
       schema,
-      data: options.override ?? process.env
+      data: options.override
     })
   },
   { name: 'env' }
@@ -343,6 +343,10 @@ if (Number(process.env.CAN_CREATE_DATABASE) !== 1) {
 
 const databaseName = process.env.POSTGRES_DB
 
+if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(databaseName)) {
+  throw new Error('POSTGRES_DB must be a valid PostgreSQL identifier.')
+}
+
 const client = new Client({
   host: process.env.POSTGRES_HOST,
   port: Number(process.env.POSTGRES_PORT),
@@ -370,7 +374,10 @@ try {
 ```
 
 This connects to PostgreSQL’s default `postgres` database and creates our
-application database only when it does not already exist.
+application database only when it does not already exist. PostgreSQL does not
+allow a database identifier to be passed as a query parameter, so the script
+validates `POSTGRES_DB` before interpolating it into `CREATE DATABASE`. The drop
+script applies the same check.
 
 ### `scripts/seed-database.js`
 
@@ -414,6 +421,10 @@ if (Number(process.env.CAN_DROP_DATABASE) !== 1) {
 }
 
 const databaseName = process.env.POSTGRES_DB
+
+if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(databaseName)) {
+  throw new Error('POSTGRES_DB must be a valid PostgreSQL identifier.')
+}
 
 const client = new Client({
   host: process.env.POSTGRES_HOST,
@@ -475,6 +486,11 @@ the project, locally or in CI, before the server starts.
 Remove `quotesDatabaseServicePlugin` from `quotes.plugin.js`. The quote domain
 will keep its repository; only the resource it uses changes from an in-memory
 decoration to the inherited `app.knex` client.
+
+Delete
+`test/plugins/app/quotes/quotes-database.service.test.js`
+as well. It tests the in-memory resource that we just removed; the Knex plugin
+test later in this chapter replaces that lifecycle coverage.
 
 ## Rewrite the repository with SQL queries
 
@@ -568,7 +584,8 @@ import {
 
 export function createApp (options = {}) {
   const app = fastify({
-    logger: options.logger ?? false,
+    logger: options.logger,
+    forceCloseConnections: false,
     ajv: {
       customOptions: {
         allErrors: false,
@@ -634,8 +651,14 @@ app.get(
 )
 ```
 
-The rest of the file changes in the same way:
-the route structure stays the same, we just `await` the repository methods.
+Apply the same change to every repository call in `quotes.routes.js`:
+
+* `await this.quotesRepository.list(limit)`
+* `await this.quotesRepository.create(request.body.text)`
+* `await this.quotesRepository.update(request.params.id, request.body.text)`
+* `await this.quotesRepository.remove(request.params.id)`
+
+The route structure and response handling stay unchanged.
 
 ## Keep the tests isolated
 
@@ -695,7 +718,7 @@ Update the test script:
 ```json
 {
   "scripts": {
-    "test": "borp --coverage --check-coverage --concurrency=1"
+    "test": "borp --coverage --check-coverage --coverage-exclude \"migrations/**\" --coverage-exclude \"test/**\" --concurrency=1"
   }
 }
 ```
@@ -709,6 +732,105 @@ assume they are starting from an empty database.
 Running with `--concurrency=1` avoids those issues until the test setup grows
 into something more isolated, such as one database per worker or one schema per
 test process.
+
+Migration files are excluded from application coverage. Their contract is the
+change they make to a real database, which you verify by applying them to the
+disposable PostgreSQL database later in this chapter. A unit test built around
+a hand-written Knex mock would mostly test that mock rather than the migration.
+The explicit `test/**` exclusion preserves Borp’s usual behavior of leaving
+test files and helpers out of application coverage.
+
+The configuration and database plugin are now executable application code, so
+they must be covered. Remove the
+`builds the application when options are omitted` test from
+`test/app.test.js`; it does not assert useful application behavior. Remove the
+now-unused `createApp` import from that file as well. The environment plugin
+test continues to exercise the explicit configuration contract owned by our
+wrapper. Reading `process.env` when `data` is omitted is behavior provided by
+`@fastify/env` itself.
+
+Replace `test/plugins/infrastructure/env.test.js` with:
+
+```js
+import { describe, test } from 'node:test'
+import { createTestApp } from '../../app.js'
+
+describe('env plugin', function () {
+  test('loads validated configuration', async function (t) {
+    const app = createTestApp({
+      env: {
+        HOST: '127.0.0.1',
+        PORT: '4321'
+      }
+    })
+    t.after(() => app.close())
+
+    await app.ready()
+
+    t.assert.deepStrictEqual(app.config, {
+      HOST: '127.0.0.1',
+      PORT: 4321,
+      POSTGRES_HOST: '127.0.0.1',
+      POSTGRES_PORT: 5432,
+      POSTGRES_USER: 'postgres',
+      POSTGRES_PASSWORD: 'postgres',
+      POSTGRES_DB: 'quote_vault'
+    })
+  })
+})
+```
+
+Add `test/plugins/infrastructure/knex.test.js` to prove that the explicit
+infrastructure override is selected and can establish a database connection:
+
+```js
+import { test } from 'node:test'
+import { createApp } from '../../../app.js'
+
+test('accepts an explicit Knex configuration', async function (t) {
+  const app = createApp({
+    env: {
+      HOST: '127.0.0.1',
+      PORT: 3000,
+      POSTGRES_HOST: '127.0.0.1',
+      POSTGRES_PORT: 5432,
+      POSTGRES_USER: 'postgres',
+      POSTGRES_PASSWORD: 'postgres',
+      POSTGRES_DB: 'quote_vault'
+    },
+    knex: {
+      client: 'pg',
+      connection: {
+        host: '127.0.0.1',
+        port: 5432,
+        user: 'postgres',
+        password: 'postgres',
+        database: 'quote_vault'
+      },
+      pool: { min: 0, max: 1 }
+    }
+  })
+  t.after(() => app.close())
+
+  await app.ready()
+
+  t.assert.deepStrictEqual(
+    app.knex.client.config.pool,
+    { min: 0, max: 1 }
+  )
+
+  const result = await app.knex.raw(
+    'SELECT 1 AS connection_test'
+  )
+  t.assert.equal(
+    Number(result.rows[0].connection_test),
+    1
+  )
+})
+```
+
+Run `npm test` after PostgreSQL is healthy. The suite should remain at 100% for
+all four coverage metrics.
 
 ## Manual verification
 

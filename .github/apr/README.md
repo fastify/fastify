@@ -13,7 +13,7 @@ El agente:
 La ejecución automática de APR-1 está en el workflow:
 
 - Archivo del workflow: [`/.github/workflows/apr-1-auditor.yml`](../workflows/apr-1-auditor.yml)
-- Enlace del workflow en GitHub Actions: `https://github.com/fastify/fastify/actions/workflows/apr-1-auditor.yml`
+- Enlace del workflow en GitHub Actions: `https://github.com/Liceth02usma/fastify/actions/workflows/apr-1-auditor.yml`
 
 El workflow se activa en `pull_request_target` (`opened`, `synchronize`, `reopened`, `ready_for_review`), construye evidencia del PR (diff, estado de CI y enlaces SonarCloud detectados), invoca un modelo de lenguaje y publica la tabla de auditoría como comentario del PR.
 

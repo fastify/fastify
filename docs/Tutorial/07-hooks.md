@@ -137,7 +137,9 @@ export function createDb() {
   }
 
   return {
-    started,
+    get started() {
+      return started;
+    },
     // existing methods...
 
     close() {
@@ -148,6 +150,10 @@ export function createDb() {
   };
 }
 ```
+
+Use a getter here rather than a plain `started` property. A plain property
+would copy the initial `true` value and would not reflect the change made by
+`close()`.
 
 > Later we’ll do this with a real database.
 > For now we just illustrate the Fastify fundamentals.
@@ -214,10 +220,28 @@ We put all the logic into a `configureHooks` function in its own file `hooks.js`
 ```js
 // hooks.js
 export default function configureHooks(app) {
-  // Add onClose hook here...
+  app.addHook('onClose', async function (instance) {
+    instance.log.info('closing database');
+    instance.db.close();
+  });
 
   app.decorateRequest('user', null);
-  // Add onRequest hook here...
+
+  app.addHook('onRequest', async function (request, reply) {
+    const auth = request.headers.authorization;
+
+    if (!auth) {
+      return reply.code(401).send({ message: 'Missing Authorization' });
+    }
+
+    if (auth === 'Bearer admin') {
+      request.user = { role: 'admin' };
+    } else if (auth === 'Bearer user') {
+      request.user = { role: 'user' };
+    } else {
+      return reply.code(401).send({ message: 'Invalid token' });
+    }
+  });
 }
 ```
 
@@ -267,7 +291,7 @@ app.delete(
       reply.code(404);
       return { message: "Quote not found" };
     }
-    reply.code(204).send();
+    return reply.code(204).send();
   }
 );
 ```
@@ -311,10 +335,19 @@ Expected: `403 Forbidden` – only admins can delete.
 
 * **Admin can delete**:
 
+Create a quote first so there is a known ID to delete:
+
+```bash
+curl -i http://localhost:3000/quotes \
+  -H "Authorization: Bearer admin" \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hooks can stop work early"}'
+```
+
 ```bash
 curl -i -X DELETE http://localhost:3000/quotes/1 \
   -H "Authorization: Bearer admin"
 ```
 
-Expected: `204 No Content` – quote successfully deleted.
-Or 404 if the quote doesn't exist.
+Expected: `204 No Content` – quote successfully deleted. If the create request
+returned another ID, use that ID in the delete URL.

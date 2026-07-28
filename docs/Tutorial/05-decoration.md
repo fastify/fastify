@@ -139,6 +139,8 @@ app.decorate(
 
 Update existing routes to call `this.quotesRepository.`. 
 Avoid arrow functions for decorators/handlers where `this` must be Fastify.
+The repository now owns the in-memory state, so remove the old `id` and
+`quotes` declarations from `server.js`.
 
 ```js
 // server.js
@@ -181,7 +183,7 @@ app.delete("/quotes/:id", async function (request, reply) {
     reply.code(404);
     return { message: "Quote not found" };
   }
-  reply.code(204).send();
+  return reply.code(204).send();
 });
 ```
 

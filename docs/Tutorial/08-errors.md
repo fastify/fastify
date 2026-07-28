@@ -15,10 +15,10 @@ Fastify provides dedicated APIs for this:
 
 ## Implementation
 
-We’ll centralize error handling in a new file, `handle-errors.js`.
+We’ll centralize error handling in a new file, `error-handlers.js`.
 
 ```js
-// handle-errors.js
+// error-handlers.js
 export default function configureErrorHandlers(app) {
   app.setErrorHandler((err, request, reply) => {
     // [1] 500 errors are logged in detail
@@ -74,7 +74,7 @@ Register the handlers in `server.js`:
 
 ```js
 // server.js
-import configureErrorHandlers from "./handle-errors.js";
+import configureErrorHandlers from "./error-handlers.js";
 
 // after hooks and routes
 configureErrorHandlers(app);
@@ -158,18 +158,18 @@ import { errorCodes } from "fastify";
 app.setErrorHandler((err, request, reply) => {
   if (err instanceof errorCodes.FST_ERR_BAD_STATUS_CODE) {
     app.log.error("Invalid status code sent:", err);
-    reply.code(500).send({ message: "Internal Server Error" });
-    return;
+    return reply.code(500).send({ message: "Internal Server Error" });
   }
 
   // fallback to normal behavior
-  reply.code(err.statusCode ?? 500).send({ message: err.message });
+  return reply.code(err.statusCode ?? 500).send({ message: err.message });
 });
 ```
 
-### The `fastify-error` package
+### The `@fastify/error` package
 
-The Fastify team also maintains [fastify-error](https://github.com/fastify/fastify-error).
+The Fastify team also maintains
+[`@fastify/error`](https://github.com/fastify/fastify-error).
 
 This package makes it easy to define **structured errors** with a 
 code, message, and optional status code. The main advantage 

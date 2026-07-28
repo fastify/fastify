@@ -23,6 +23,10 @@ We'll use shorthand methods for simplicity.
 
 Let's start by creating a basic in-memory API:
 
+In `server.js`, replace the `/slow` demonstration route from the previous
+chapter with the code below. Keep the existing Fastify instance, graceful
+shutdown handler, and `app.listen()` call.
+
 ```js
 // Simple in-memory database
 let id = 1;
@@ -40,7 +44,7 @@ app.get("/quotes/:id", async (request, reply) => {
   );
   const quote = quotes.find((q) => q.id === id);
   if (!quote) {
-    reply.code(404).send({ message: "Quote not found" });
+    return reply.code(404).send({ message: "Quote not found" });
   }
   return quote; // [4]
 });
@@ -51,7 +55,7 @@ app.post("/quotes", async (request, reply) => {
     text: request.body.text, // [3]
   };
   quotes.push(quote);
-  reply.code(201).send(quote); // [5]
+  return reply.code(201).send(quote); // [5]
 });
 ```
 
@@ -86,7 +90,7 @@ Let’s review a few important details from these examples.
 
    #### Important Caveats
 
-   * If you use both `return` and `reply.send()`, the first one takes 
+   * If you use both `return` and `reply.send()`, the first one takes
    precedence and the second is ignored.
 
    * `undefined` cannot be returned directly.
@@ -171,7 +175,7 @@ app.delete("/quotes/:id", async (request, reply) => {
 
   quotes.splice(index, 1);
 
-  reply
+  return reply
     // 204 No Content: successful deletion, no body in response
     .code(204)
     // `undefined` cannot be returned directly, we must use send()
@@ -182,6 +186,8 @@ app.delete("/quotes/:id", async (request, reply) => {
 ## Testing Routes
 
 You can test your routes using `curl` commands:
+
+The commands below assume the first created quote has ID `1`.
 
 * **Add a new quote:**
 
@@ -208,13 +214,13 @@ curl http://localhost:3000/quotes
 * **Retrieve a specific quote by ID:**
 
 ```bash
-curl http://localhost:3000/quotes/<quote-id>
+curl http://localhost:3000/quotes/1
 ```
 
 * **Update a quote:**
 
 ```bash
-curl -X PUT http://localhost:3000/quotes/<quote-id> \
+curl -X PUT http://localhost:3000/quotes/1 \
   -H "Content-Type: application/json" \
   -d '{"text":"In God we trust. All others must bring data. – W. Edwards Deming"}'
 ```
@@ -222,7 +228,7 @@ curl -X PUT http://localhost:3000/quotes/<quote-id> \
 * **Delete a quote:**
 
 ```bash
-curl -X DELETE http://localhost:3000/quotes/<quote-id>
+curl -X DELETE http://localhost:3000/quotes/1
 ```
 
 Alternatively, you can use HTTP clients like

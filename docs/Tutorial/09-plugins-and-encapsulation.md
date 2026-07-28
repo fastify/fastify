@@ -248,7 +248,7 @@ const myFeature = fp(
       // on request and reply
     },
     // plugins that need to be registered before
-    dependencies: ['database']-
+    dependencies: ['database']
   }
 );
 ```
@@ -325,7 +325,8 @@ plugin explains its purpose, then shows its code.
 ### fastify-plugin
 
 First, install `fastify-plugin`:
-```
+
+```bash
 npm i fastify-plugin
 ```
 
@@ -335,9 +336,9 @@ This plugin exposes `app.db` to the rest of the application and closes
 the connection on shutdown.
 
 ```js
+// plugins/db.js
 import fp from "fastify-plugin";
-
-// Put `createDb` function here
+import { createDb } from "../db.js";
 
 export const dbPlugin = fp(
   async function dbPlugin(app) {
@@ -360,8 +361,7 @@ This plugin needs the database. It exposes
 ```js
 // plugins/quotes-repo.js
 import fp from 'fastify-plugin';
-
-// Put `createQuotesRepository` function here
+import { createQuotesRepository } from '../quotes-repository.js';
 
 export const quotesRepositoryPlugin = fp(
   async function quotesRepo(app) {
@@ -417,7 +417,6 @@ scope.
 
 ```js
 // routes/quotes.js
-// plugins/quotes-routes.js
 import fp from "fastify-plugin";
 import {
   quoteBody,
@@ -435,7 +434,101 @@ export const quotesRoutesPlugin = fp(
     app.addSchema(quoteResponse);
     app.addSchema(errorMessage);
 
-    // Put quotes routes here...
+    app.get(
+      "/quotes",
+      {
+        schema: {
+          querystring: listQuery,
+          response: listQuotesResponse,
+        },
+      },
+      function (request) {
+        const limit = request.query.limit ?? 10;
+        return this.quotesRepository.list(limit);
+      }
+    );
+
+    app.get(
+      "/quotes/:id",
+      {
+        schema: {
+          params: { $ref: "idParam#" },
+          response: singleQuoteResponse,
+        },
+      },
+      function (request, reply) {
+        const quote = this.quotesRepository.get(request.params.id);
+        if (!quote) {
+          reply.code(404);
+          return { message: "Quote not found" };
+        }
+        return quote;
+      }
+    );
+
+    app.post(
+      "/quotes",
+      {
+        schema: {
+          body: quoteBody,
+          response: singleQuoteResponse,
+        },
+      },
+      function (request, reply) {
+        const quote = this.quotesRepository.create(request.body.text);
+        const demo = { ...quote, secret: "do-not-leak" };
+        reply.code(201);
+        return demo;
+      }
+    );
+
+    app.put(
+      "/quotes/:id",
+      {
+        schema: {
+          params: { $ref: "idParam#" },
+          body: quoteBody,
+          response: singleQuoteResponse,
+        },
+      },
+      function (request, reply) {
+        const updated = this.quotesRepository.update(
+          request.params.id,
+          request.body.text
+        );
+        if (!updated) {
+          reply.code(404);
+          return { message: "Quote not found" };
+        }
+        return updated;
+      }
+    );
+
+    app.delete(
+      "/quotes/:id",
+      {
+        schema: {
+          params: { $ref: "idParam#" },
+          response: {
+            ...deleteQuoteResponse,
+            403: { $ref: "errorMessage#" },
+          },
+        },
+        onRequest: async function (request, reply) {
+          if (request.user?.role !== "admin") {
+            return reply.code(403).send({ message: "Admin only" });
+          }
+        },
+      },
+      function (request, reply) {
+        const deleted = this.quotesRepository.remove(request.params.id);
+        if (!deleted) {
+          reply.code(404);
+          return { message: "Quote not found" };
+        }
+        return reply.code(204).send();
+      }
+    );
   },
   {
     name: "quotes-routes",
@@ -463,9 +556,8 @@ import { authPlugin } from "../plugins/auth.js";
 import { quotesRoutesPlugin } from "./quotes.js";
 
 export const protectedRoutes = async function protectedRoutes(app) {
-  // Register with `fp`, to get apply to the siblings (protected routes plugins)
-  // But because `protectedRoutes` plugin is itself encasulate, it does not
-  // leak into parent scope, only siblings.
+  // Promote auth to this wrapper so sibling route plugins inherit its hook.
+  // The wrapper itself remains encapsulated from the root application.
   app.register(fp(authPlugin, { name: 'auth' }));
 
   await app.register(quotesRoutesPlugin);
@@ -479,8 +571,17 @@ Finally we assemble the server. We load infrastructure plugins first,
 then the protected routes, then set up error handling, then start.
 
 ```js
+import fastify from "fastify";
+import closeWithGrace from "close-with-grace";
+import configureErrorHandlers from "./error-handlers.js";
+import { dbPlugin } from "./plugins/db.js";
+import { quotesRepositoryPlugin } from "./plugins/quotes-repo.js";
+import { protectedRoutes } from "./routes/protected.js";
+import { idParam } from "./schemas.js";
+
 const app = fastify({
   logger: true,
+  forceCloseConnections: false,
   ajv: {
     customOptions: {
       allErrors: false,
@@ -513,13 +614,16 @@ app.get("/not-protected", async function () {
 // Root error handlers
 configureErrorHandlers(app)
 
-closeWithGrace(async ({ err }) => {
-  if (err != null) {
-    app.log.error(err);
-  }
+closeWithGrace(
+  { delay: 15_000 },
+  async ({ err }) => {
+    if (err != null) {
+      app.log.error(err);
+    }
 
-  await app.close();
-});
+    await app.close();
+  }
+);
 
 try {
   await app.listen({ port: 3000 });

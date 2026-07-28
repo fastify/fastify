@@ -97,7 +97,9 @@ import fastify from 'fastify'
 import closeWithGrace from 'close-with-grace'
 
 const app = fastify({
-  logger: true
+  logger: true,
+  // Allow in-flight requests to finish after app.close() starts.
+  forceCloseConnections: false
 })
 
 // Define a SLOW route for demonstration
@@ -108,6 +110,7 @@ app.get('/slow', async function slowHandler (request, reply) {
 
 // Set up graceful shutdown
 closeWithGrace(
+  { delay: 15_000 },
   async ({ err }) => {
     if (err != null) {
       app.log.error(err)
@@ -140,6 +143,14 @@ node server.js
 You can now send a request to the `/slow` endpoint to simulate a long-running request.
 While that request is being processed, try stopping the server with `CTRL + C`.
 The server will wait for the `/slow` request to complete before shutting down!
+
+Run the slow request from a second terminal:
+
+```bash
+curl http://127.0.0.1:3000/slow
+```
+
+The 15-second delay bounds shutdown if a request or resource cannot finish.
 
 ## Summary
 

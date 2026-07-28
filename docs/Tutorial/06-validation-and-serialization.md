@@ -97,7 +97,7 @@ export const idParam = {
 export const quoteBody = {
   type: "object",
   required: ["text"],
-  additionalProperties: false, // Forbid any extra keys in the body
+  additionalProperties: false, // Only declared keys are kept
   properties: {
     text: { type: "string", minLength: 1 },
   },
@@ -170,6 +170,7 @@ import {
 
 const app = fastify({
   logger: true,
+  forceCloseConnections: false,
   ajv: {
     customOptions: {
       // Explicitly disable allErrors to avoid CVE-2020-8192 risk
@@ -181,6 +182,13 @@ const app = fastify({
     }
   }
 });
+
+app.decorate('db', createDb());
+app.decorate(
+  'quotesRepository',
+  createQuotesRepository(app),
+  ['db']
+);
 
 // Shared schemas
 app.addSchema(quoteResponse);
@@ -273,17 +281,20 @@ app.delete(
       reply.code(404);
       return { message: "Quote not found" };
     }
-    reply.code(204).send();
+    return reply.code(204).send();
   }
 );
 
-closeWithGrace(async ({ err }) => {
-  if (err != null) {
-    app.log.error(err);
-  }
+closeWithGrace(
+  { delay: 15_000 },
+  async ({ err }) => {
+    if (err != null) {
+      app.log.error(err);
+    }
 
-  await app.close();
-});
+    await app.close();
+  }
+);
 
 // Start the server
 try {
@@ -339,6 +350,12 @@ Expected: `201 Created` with `{ "id": 1, "text": "..." }` - no `secret` field.
 A concrete example: you want to validate `text` and show a user-friendly message
 instead of Ajv’s default.
 
+Install the optional plugin before trying this example:
+
+```bash
+npm install ajv-errors
+```
+
 ```js
 import AjvErrors from 'ajv-errors';
 
@@ -384,7 +401,7 @@ Here is a trivial compiler that **always accepts data**, no matter what:
 ```js
 function myAlwaysValidCompiler() {
   return function validate(data) {
-    return true;
+    return { value: data };
   };
 }
 
@@ -400,6 +417,10 @@ curl -i http://localhost:3000/quotes/abc
 
 Normally this would fail because `id` must be an integer.
 With our custom compiler, the request is accepted.
+
+Fastify custom validators return `{ value }` for accepted data or `{ error }`
+for rejected data. Remove this deliberately unsafe compiler after the
+experiment to restore the Quote Vault validation rules.
 
 ### Overriding the serializer
 

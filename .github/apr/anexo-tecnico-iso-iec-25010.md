@@ -1,6 +1,7 @@
 # Anexo Técnico ISO/IEC 25010 para APR-1
 
-> Mantén en este archivo la lista oficial y vigente de condiciones verificables que APR-1 debe auditar por Pull Request.
+> Mantén en este archivo la lista oficial y vigente de condiciones
+> verificables que APR-1 debe auditar por Pull Request.
 
 ## Condiciones
 

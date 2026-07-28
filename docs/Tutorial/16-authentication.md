@@ -377,7 +377,7 @@ function createAuthenticationService (app) {
   return {
     async authenticate ({ email, password }) {
       const user = await app.usersRepository.findByEmail(email.toLowerCase())
-      const passwordMatches = await app.passwordManager.compare(
+      const passwordMatches = await app.passwordManager.comparePassword(
         password,
         user?.password ?? DUMMY_PASSWORD_HASH
       )
@@ -411,39 +411,51 @@ export const authenticationServicePlugin = fp(
 )
 ```
 
-Keep the reusable session check in a hook module.
+Register the reusable session check as an application-wide hook.
 
 ### `plugins/app/authentication/authentication.hooks.js`
 
 ```js
 import fp from 'fastify-plugin'
 
-// This plugin deliberately exposes the `authenticate` decorator to sibling
-// domains. It does not install a lifecycle hook globally: each route or domain
-// must opt in with `onRequest` or `addHook`. Reassess this visibility whenever
-// the authentication policy changes.
-export const authenticationHooksPlugin = fp(
-  async function authenticationHooksPlugin (app) {
-    app.decorate('authenticate', async function authenticate (request, reply) {
-      if (request.session.user == null) {
-        return reply.code(401).send({
-          message: 'You must be authenticated to access this route.'
-        })
+const publicRoutes = new Set([
+  'GET /not-protected',
+  'GET /throw',
+  'POST /login',
+  'POST /register'
+])
+
+function isPublicRequest (request) {
+  const [path] = request.url.split('?', 1)
+  return publicRoutes.has(`${request.method} ${path}`)
+}
+
+export const authenticationHookPlugin = fp(
+  async function authenticationHookPlugin (app) {
+    app.addHook(
+      'onRequest',
+      async function authenticationHook (request, reply) {
+        if (isPublicRequest(request)) return
+
+        if (request.session.user == null) {
+          return reply.code(401).send({
+            message: 'You must be authenticated to access this route.'
+          })
+        }
       }
-    })
+    )
   },
   {
-    name: 'authentication-hooks',
+    name: 'authentication-hook',
     dependencies: ['session']
   }
 )
 ```
 
-Session authentication needs only the user loaded by the session plugin. We
-therefore run it in `onRequest`, before Fastify parses a body or validates
-input. An unauthorized request is rejected without doing that unnecessary
-work. A policy that needs parsed or validated request data must use a later
-hook instead.
+Session authentication needs only the user loaded by the session plugin, so
+`onRequest` runs before Fastify parses a body or validates input. An
+unauthorized request is rejected without doing that unnecessary work. A policy
+that needs parsed or validated request data must use a later hook instead.
 
 Finally, the route module translates HTTP input into service calls and manages
 the session lifecycle.
@@ -484,7 +496,6 @@ export const authenticationRoutesPlugin = fp(
     })
 
     app.get('/me', {
-      onRequest: app.authenticate,
       schema: {
         response: {
           200: { $ref: 'user#' },
@@ -496,7 +507,6 @@ export const authenticationRoutesPlugin = fp(
     })
 
     app.post('/logout', {
-      onRequest: app.authenticate,
       schema: {
         response: {
           204: { type: 'null' },
@@ -513,12 +523,12 @@ export const authenticationRoutesPlugin = fp(
     name: 'authentication-routes',
     encapsulate: true,
     dependencies: [
-      'authentication-hooks',
+      'authentication-hook',
       'authentication-service',
       'users-schemas'
     ],
     decorators: {
-      fastify: ['authenticate', 'authenticationService']
+      fastify: ['authenticationService']
     }
   }
 )
@@ -541,7 +551,7 @@ composition.
 ```js
 import fp from 'fastify-plugin'
 import {
-  authenticationHooksPlugin
+  authenticationHookPlugin
 } from './authentication.hooks.js'
 import {
   authenticationRoutesPlugin
@@ -553,52 +563,83 @@ import {
 export const authenticationPlugin = fp(
   async function authenticationPlugin (app) {
     app.register(authenticationServicePlugin)
-    app.register(authenticationHooksPlugin)
+    app.register(authenticationHookPlugin)
     app.register(authenticationRoutesPlugin)
   },
   {
     name: 'authentication',
-    // Shared so quote and authorization domains can use `app.authenticate`.
-    // Keep the route plugin itself encapsulated.
+    // Shared so the application scope inherits the authentication hook.
     dependencies: ['passwords', 'session', 'users']
   }
 )
 ```
 
-Authentication is shared because the quote and authorization domains will use
-its `authenticate` decorator. Its entry point still keeps the service, hook,
-and routes together.
+Authentication is shared so its `onRequest` hook applies to the route domains
+registered after it. Its entry point still keeps the service, hook, and routes
+together.
 
 ## Protect the quote domain
 
-The quote route module already owns the complete HTTP domain. Replace the
-teaching token dependency with the new session hook:
+The application-wide hook protects quote routes automatically because they are
+registered after authentication and are not in `publicRoutes`. The quote route
+module no longer installs its own authentication handler. Update its metadata
+to record the hook-order dependency without requiring an `authenticate`
+decorator:
 
 ```js
-export const quotesRoutesPlugin = fp(
-  async function quotesRoutesPlugin (app) {
-    app.addSchema(idParam)
-    app.addSchema(quoteResponse)
-    app.addSchema(quoteError)
+{
+  name: 'quotes-routes',
+  encapsulate: true,
+  dependencies: [
+    'authentication-hook',
+    'quotes-repository'
+  ],
+  decorators: {
+    fastify: ['quotesRepository']
+  }
+}
+```
 
-    // Authentication applies to every route in this domain.
-    app.addHook('onRequest', app.authenticate)
+`/register`, `/login`, and the other listed routes pass through the same hook
+but are allowed to continue without a session.
 
-    // Move the existing GET, POST, PUT, and DELETE routes here.
-  },
+The existing delete route still has the temporary role check from the Hooks
+chapter. It must now read the authenticated session instead of the removed
+`request.user` teaching value. Replace the complete route declaration with:
+
+```js
+app.delete(
+  '/quotes/:id',
   {
-    name: 'quotes-routes',
-    encapsulate: true,
-    dependencies: ['authentication-hooks', 'quotes-repository'],
-    decorators: {
-      fastify: ['authenticate', 'quotesRepository']
+    schema: {
+      params: { $ref: 'idParam#' },
+      response: deleteQuoteResponse
+    },
+    onRequest: async function (request, reply) {
+      if (!request.session.user.roles.includes('admin')) {
+        return reply.code(403).send({
+          message: 'Admin only'
+        })
+      }
     }
+  },
+  async function (request, reply) {
+    const deleted = await this.quotesRepository.remove(
+      request.params.id
+    )
+    if (!deleted) {
+      reply.code(404)
+      return { message: 'Quote not found' }
+    }
+    return reply.code(204).send()
   }
 )
 ```
 
-Encapsulation keeps the hook inside the quote domain. `/register`, `/login`,
-and other public routes are unaffected.
+The global authentication hook runs before this route-level hook. An
+unauthenticated request is rejected before the role check reads the session.
+The next chapter replaces this inline policy with the reusable authorization
+builder.
 
 ## Allow the browser to send the cookie
 
@@ -630,12 +671,17 @@ app.register(errorsPlugin)
 app.register(async function application (app) {
   app.register(usersPlugin)
   app.register(passwordsPlugin)
-  app.register(registrationPlugin)
-  // New for this chapter: credential verification and session routes.
+  // Register the application-wide policy before route domains.
   app.register(authenticationPlugin)
+  // Registration remains public through the hook's explicit allowlist.
+  app.register(registrationPlugin)
   app.register(quotesPlugin)
 })
 ```
+
+This keeps the application boundary introduced in the registration chapter.
+Only the authentication implementation and its public-route list change here;
+the shared services and route domains remain in the same scope.
 
 ## Verify shared sessions
 
@@ -661,58 +707,435 @@ the manual checks:
 rm cookies.txt
 ```
 
-Tests also need to log in repeatedly. Add a test-only helper to
-`createTestApp()` after creating the application:
+## Update the test fixtures
+
+Replace `test/app.js` with the complete session-aware helper:
 
 ```js
-app.decorate('login', async function login (
-  email = 'user@example.com'
-) {
-  const response = await this.inject({
-    method: 'POST',
-    url: '/login',
-    payload: {
-      email,
-      password: TEST_PASSWORD
+import { createApp } from '../app.js'
+import { fileURLToPath } from 'node:url'
+
+const migrationsDirectory = fileURLToPath(
+  new URL('../migrations', import.meta.url)
+)
+
+export const TEST_PASSWORD = 'Test-password1!'
+const TEST_PASSWORD_HASH =
+  '8868154c9dada8c28e25d841551a51d0.' +
+  '36d210eaa751723df3828efe7949867e' +
+  '11ba02dd6de76bc46a34b95ed051bb1f'
+
+export function createTestApp (options = {}) {
+  const app = createApp({
+    ...options,
+    logger: options.logger ?? false,
+    env: {
+      HOST: '127.0.0.1',
+      PORT: 3000,
+      CORS_ORIGIN: 'http://127.0.0.1:5173',
+      REDIS_HOST: '127.0.0.1',
+      REDIS_PORT: 6379,
+      SESSION_COOKIE_SECRET:
+        'test-session-secret-at-least-32-characters',
+      SESSION_COOKIE_NAME: 'quoteVaultTestSession',
+      SESSION_COOKIE_SECURE: false,
+      SESSION_MAX_AGE: 1800000,
+      POSTGRES_HOST: '127.0.0.1',
+      POSTGRES_PORT: 5432,
+      POSTGRES_USER: 'postgres',
+      POSTGRES_PASSWORD: 'postgres',
+      POSTGRES_DB: 'quote_vault',
+      ...options.env
     }
   })
 
-  if (response.statusCode !== 200) {
-    throw new Error(`Test login failed with status ${response.statusCode}`)
-  }
+  app.decorate('login', async function login (
+    email = 'user@example.com'
+  ) {
+    const response = await this.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        email,
+        password: TEST_PASSWORD
+      }
+    })
 
-  return response.headers['set-cookie'].split(';', 1)[0]
-})
+    if (response.statusCode !== 200) {
+      throw new Error(
+        `Test login failed with status ${response.statusCode}`
+      )
+    }
+
+    return response.headers['set-cookie'].split(';', 1)[0]
+  })
+
+  app.addHook('onReady', async function () {
+    await this.knex.migrate.latest({
+      directory: migrationsDirectory
+    })
+
+    await this.knex.raw(
+      'TRUNCATE TABLE user_roles, users, roles, quotes RESTART IDENTITY'
+    )
+
+    const [userRole, adminRole] =
+      await this.knex('roles').insert([
+        { name: 'user' },
+        { name: 'admin' }
+      ], ['id', 'name'])
+
+    const [user, admin] = await this.knex('users')
+      .insert([
+        {
+          username: 'Test User',
+          email: 'user@example.com',
+          password: TEST_PASSWORD_HASH
+        },
+        {
+          username: 'Test Admin',
+          email: 'admin@example.com',
+          password: TEST_PASSWORD_HASH
+        }
+      ], ['id', 'email'])
+
+    await this.knex('user_roles').insert([
+      {
+        user_id: user.id,
+        role_id: userRole.id
+      },
+      {
+        user_id: admin.id,
+        role_id: userRole.id
+      },
+      {
+        user_id: admin.id,
+        role_id: adminRole.id
+      }
+    ])
+
+    // This Redis database is disposable and dedicated to tests.
+    await this.redis.flushDb()
+  })
+
+  return app
+}
 ```
 
-The decorator keeps login setup attached to the application instance it uses.
-It returns only the cookie header needed by later injected requests.
+The precomputed test hash avoids repeating an expensive hash operation during
+every fixture reset while still letting login verify the configured scrypt
+format. `FLUSHDB` is safe only because this Redis database is dedicated,
+disposable test infrastructure.
 
-The key distributed-session test logs in through one application instance and
-uses the cookie on another:
+Add the Redis and session settings to the expected object in
+`test/plugins/infrastructure/env.test.js`. The test helper shown above already
+provides these values explicitly.
+
+The CORS preflight test must now request and expect only `Content-Type`:
 
 ```js
-await firstApp.ready()
-await secondApp.ready()
+'access-control-request-headers': 'content-type'
 
-const cookie = await firstApp.login()
-const response = await secondApp.inject({
-  method: 'GET',
-  url: '/me',
-  headers: { cookie }
-})
-
-t.assert.equal(response.statusCode, 200)
+t.assert.equal(
+  response.headers['access-control-allow-headers'],
+  'Content-Type'
+)
 ```
 
-The test helper resets a dedicated disposable Redis database. Never use
-`FLUSHDB` against shared or production infrastructure.
+Cookies are sent through the browser's credential mode; the application no
+longer uses the teaching `Authorization` header.
+
+## Test authentication
+
+Replace the teaching-token tests in
+`test/plugins/app/authentication/authentication.test.js` with the session
+authentication tests below:
+
+```js
+import { describe, test } from 'node:test'
+import {
+  TEST_PASSWORD,
+  createTestApp
+} from '../../../app.js'
+
+describe('authentication', function () {
+  test('creates a session for valid credentials', async function (t) {
+    const app = createTestApp()
+    t.after(() => app.close())
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        email: 'admin@example.com',
+        password: TEST_PASSWORD
+      }
+    })
+
+    t.assert.equal(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.json(), {
+      user: {
+        id: 2,
+        username: 'Test Admin',
+        email: 'admin@example.com',
+        roles: ['admin', 'user']
+      }
+    })
+    t.assert.match(
+      response.headers['set-cookie'],
+      /HttpOnly/
+    )
+    t.assert.match(
+      response.headers['set-cookie'],
+      /SameSite=Lax/
+    )
+    t.assert.doesNotMatch(
+      response.headers['set-cookie'],
+      /Secure/
+    )
+  })
+
+  test(
+    'rejects unknown users and incorrect passwords',
+    async function (t) {
+      const app = createTestApp()
+      t.after(() => app.close())
+
+      for (const credentials of [
+        {
+          email: 'missing@example.com',
+          password: TEST_PASSWORD
+        },
+        {
+          email: 'user@example.com',
+          password: 'Wrong-password1!'
+        }
+      ]) {
+        const response = await app.inject({
+          method: 'POST',
+          url: '/login',
+          payload: credentials
+        })
+
+        t.assert.equal(response.statusCode, 401)
+        t.assert.deepStrictEqual(response.json(), {
+          message: 'Invalid email or password.'
+        })
+      }
+    }
+  )
+
+  test('validates the login password policy', async function (t) {
+    const app = createTestApp()
+    t.after(() => app.close())
+
+    for (const password of [
+      'too-short',
+      'lowercase-password1!',
+      'UPPERCASE-PASSWORD1!',
+      'Missing-number!',
+      'MissingSymbol123',
+      `Valid-password1!${'x'.repeat(113)}`
+    ]) {
+      const response = await app.inject({
+        method: 'POST',
+        url: '/login',
+        payload: {
+          email: 'user@example.com',
+          password
+        }
+      })
+
+      t.assert.equal(response.statusCode, 400)
+    }
+  })
+
+  test(
+    'loads and destroys the authenticated session',
+    async function (t) {
+      const app = createTestApp()
+      t.after(() => app.close())
+      const cookie = await app.login()
+
+      const currentUser = await app.inject({
+        method: 'GET',
+        url: '/me',
+        headers: { cookie }
+      })
+      t.assert.equal(currentUser.statusCode, 200)
+      t.assert.equal(
+        currentUser.json().email,
+        'user@example.com'
+      )
+
+      const logout = await app.inject({
+        method: 'POST',
+        url: '/logout',
+        headers: { cookie }
+      })
+      t.assert.equal(logout.statusCode, 204)
+      t.assert.match(
+        logout.headers['set-cookie'],
+        /Max-Age=0/
+      )
+
+      const afterLogout = await app.inject({
+        method: 'GET',
+        url: '/me',
+        headers: { cookie }
+      })
+      t.assert.equal(afterLogout.statusCode, 401)
+    }
+  )
+
+  test('shares sessions across instances', async function (t) {
+    const firstApp = createTestApp()
+    const secondApp = createTestApp()
+    t.after(() => Promise.all([
+      firstApp.close(),
+      secondApp.close()
+    ]))
+
+    // Finish both reset hooks before creating shared state.
+    await firstApp.ready()
+    await secondApp.ready()
+
+    const cookie = await firstApp.login()
+    const response = await secondApp.inject({
+      method: 'GET',
+      url: '/me',
+      headers: { cookie }
+    })
+
+    t.assert.equal(response.statusCode, 200)
+    t.assert.equal(
+      response.json().email,
+      'user@example.com'
+    )
+  })
+})
+```
+
+## Update quote tests
+
+The existing quote tests now need session cookies instead of teaching headers.
+Change the helper to accept a cookie:
+
+```js
+async function createQuote (
+  app,
+  cookie,
+  text = 'New quote'
+) {
+  return app.inject({
+    method: 'POST',
+    url: '/quotes',
+    headers: { cookie },
+    payload: { text }
+  })
+}
+```
+
+In each authenticated test, log in before the first quote request:
+
+```js
+const cookie = await app.login()
+```
+
+Pass `headers: { cookie }` to reads and updates. The missing-session case now
+expects:
+
+```js
+{
+  message: 'You must be authenticated to access this route.'
+}
+```
+
+For the delete policy test, create both sessions:
+
+```js
+const userCookie = await app.login()
+const adminCookie = await app.login('admin@example.com')
+```
+
+Use the regular cookie for the `403` request and the administrator cookie for
+the `204` and `404` requests. These changes keep all existing CRUD assertions
+while replacing only their authentication setup.
+
+## Test the Redis wrapper
+
+Create `test/plugins/infrastructure/redis.test.js`:
+
+```js
+import { randomUUID } from 'node:crypto'
+import { test } from 'node:test'
+import { createTestApp } from '../../app.js'
+
+test(
+  'connects, reports errors, and closes Redis',
+  async function (t) {
+    const app = createTestApp()
+    const key = `quote-vault-test-${randomUUID()}`
+    t.after(() => app.close())
+    await app.ready()
+
+    app.redis.emit(
+      'error',
+      new Error('Expected Redis test error')
+    )
+    await app.redis.set(key, 'available', {
+      expiration: {
+        type: 'EX',
+        value: 10
+      }
+    })
+
+    t.assert.equal(
+      await app.redis.get(key),
+      'available'
+    )
+    t.assert.equal(
+      app.redis.options.name,
+      'quote-vault'
+    )
+    await app.redis.del(key)
+
+    await app.close()
+    t.assert.equal(app.redis.isOpen, false)
+  }
+)
+
+test('accepts explicit Redis options', async function (t) {
+  const app = createTestApp({
+    redis: {
+      name: 'quote-vault-test-override',
+      socket: {
+        host: '127.0.0.1',
+        port: 6379,
+        connectTimeout: 500
+      }
+    }
+  })
+  t.after(() => app.close())
+
+  await app.ready()
+  t.assert.equal(
+    app.redis.options.name,
+    'quote-vault-test-override'
+  )
+})
+```
 
 Run the suite:
 
 ```bash
 npm test
 ```
+
+The authentication, quote, and infrastructure tests must retain 100%
+statement, branch, function, and line coverage. As established in the database
+chapter, migration files remain outside application coverage and are verified
+against the disposable PostgreSQL database.
 
 ## Summary
 

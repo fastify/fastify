@@ -103,7 +103,7 @@ export async function hashPassword (value) {
   return `${salt.toString('hex')}.${key.toString('hex')}`
 }
 
-export async function comparePassword (value, storedHash) {
+async function comparePassword (value, storedHash) {
   const [saltHex, keyHex] = storedHash.split('.')
   const expected = Buffer.from(keyHex, 'hex')
 
@@ -113,11 +113,12 @@ export async function comparePassword (value, storedHash) {
   return timingSafeEqual(actual, expected)
 }
 
-// The seed script and registration service use the same `hash` operation.
+// The seed script and registration service use the same `hashPassword`
+// operation.
 // Building a password-reset workflow is outside this chapter.
 const passwordManager = {
-  hash: hashPassword,
-  compare: comparePassword
+  hashPassword,
+  comparePassword
 }
 
 export const passwordManagerPlugin = fp(
@@ -129,7 +130,7 @@ export const passwordManagerPlugin = fp(
 ```
 
 Every password gets a random salt, so two users with the same password do not
-receive the same stored value. The next chapter will use `compare`.
+receive the same stored value. The next chapter will use `comparePassword`.
 
 ## Build the users domain
 
@@ -270,7 +271,7 @@ import fp from 'fastify-plugin'
 function createRegistrationService (app) {
   return {
     async register ({ username, email, password }) {
-      const passwordHash = await app.passwordManager.hash(password)
+      const passwordHash = await app.passwordManager.hashPassword(password)
 
       return app.usersRepository.create({
         username,
@@ -410,7 +411,63 @@ export const registrationPlugin = fp(
 Registration can remain encapsulated because no other domain consumes its
 service.
 
-Register only the domain entry points in the application scope:
+The teaching authentication hook currently requires a token for every route in
+the application scope. Registration is public, so update
+`plugins/app/authentication/authentication.hooks.js` with an explicit
+public-route policy before composing the new domains:
+
+```js
+import fp from 'fastify-plugin'
+
+const publicRoutes = new Set([
+  'GET /not-protected',
+  'GET /throw',
+  'POST /register'
+])
+
+function isPublicRequest (request) {
+  const [path] = request.url.split('?', 1)
+  return publicRoutes.has(`${request.method} ${path}`)
+}
+
+export const authenticationHooksPlugin = fp(
+  async function authenticationHooksPlugin (app) {
+    app.decorateRequest('user', null)
+
+    app.addHook(
+      'onRequest',
+      async function authenticationHook (request, reply) {
+        if (isPublicRequest(request)) return
+
+        const auth = request.headers.authorization
+
+        if (auth === 'Bearer admin') {
+          request.user = { role: 'admin' }
+        } else if (auth === 'Bearer user') {
+          request.user = { role: 'user' }
+        } else if (auth == null) {
+          return reply.code(401).send({
+            message: 'Missing Authorization'
+          })
+        } else {
+          return reply.code(401).send({
+            message: 'Invalid token'
+          })
+        }
+      }
+    )
+  },
+  {
+    name: 'authentication-hooks'
+  }
+)
+```
+
+Matching both the HTTP method and path avoids accidentally making every method
+on `/register` public. Removing the query string keeps a request such as
+`/not-protected?source=tutorial` public.
+
+Now register all application domains in the existing application scope:
 
 ```js
 app.register(infrastructurePlugin, options)
@@ -419,14 +476,40 @@ app.register(errorsPlugin)
 app.register(async function application (app) {
   app.register(usersPlugin)
   app.register(passwordsPlugin)
-  // New for this chapter: user registration owns its service and route.
-  app.register(registrationPlugin)
   app.register(authenticationPlugin)
+  // New for this chapter: registration is allowed by the public-route policy.
+  app.register(registrationPlugin)
   app.register(quotesPlugin)
 
-  // Existing public routes.
+  app.get('/throw', async function () {
+    throw new Error('💥 Kaboom!')
+  })
+
+  app.get('/not-protected', async function () {
+    return { ok: true }
+  })
 })
 ```
+
+The users and passwords domains expose services to their sibling domains
+without leaking them onto the root instance returned by `createApp()`.
+Authentication is registered before all route domains governed by its hook.
+The next chapter replaces its teaching-token checks with session
+authentication while retaining the public-route policy.
+
+The existing application behavior test now verifies an allowlisted route,
+rather than a route outside authentication. In `test/app.test.js`, rename that
+test to `allows public routes and preserves not-found handling`, and add a query
+string to its public request:
+
+```js
+const publicRoute = await app.inject(
+  '/not-protected?source=test'
+)
+```
+
+The existing `200` and `404` assertions remain unchanged. The public response
+also covers the query-string handling in `isPublicRequest()`.
 
 ## Seed and verify
 
@@ -559,11 +642,14 @@ app.addHook('onReady', async function () {
 
 Now create the registration tests:
 
-### `test/registration.test.js`
+### `test/plugins/app/registration/registration.test.js`
 
 ```js
 import { describe, test } from 'node:test'
-import { TEST_PASSWORD, createTestApp } from './app.js'
+import {
+  TEST_PASSWORD,
+  createTestApp
+} from '../../../app.js'
 
 describe('registration', () => {
   test('registers a user with the default role', async (t) => {
@@ -587,17 +673,14 @@ describe('registration', () => {
     t.assert.equal(user.email, 'new-user@example.com')
     t.assert.deepStrictEqual(user.roles, ['user'])
 
-    // Registration stores a verifiable hash, never the submitted password.
+    // Registration stores a scrypt hash, never the submitted password.
     const storedUser = await app.knex('users')
       .select('password')
       .where({ id: user.id })
       .first()
 
     t.assert.notEqual(storedUser.password, TEST_PASSWORD)
-    t.assert.equal(
-      await app.passwordManager.compare(TEST_PASSWORD, storedUser.password),
-      true
-    )
+    t.assert.match(storedUser.password, /^[a-f0-9]{32}\.[a-f0-9]{64}$/)
   })
 
   test('rejects registration with an existing email', async (t) => {
@@ -650,11 +733,63 @@ describe('registration', () => {
 })
 ```
 
+This test checks the registration outcome: the database contains the expected
+salt-and-key representation instead of the submitted password. Password
+verification is a separate responsibility, so test that contract directly
+through the password manager in
+`test/plugins/app/passwords/password-manager.test.js`:
+
+```js
+import fastify from 'fastify'
+import { test } from 'node:test'
+import {
+  passwordsPlugin
+} from '../../../../plugins/app/passwords/passwords.plugin.js'
+
+test('hashes and verifies passwords', async function (t) {
+  const app = fastify()
+  app.register(passwordsPlugin)
+  t.after(() => app.close())
+  await app.ready()
+
+  const hash = await app.passwordManager.hashPassword(
+    'correct horse battery staple'
+  )
+
+  t.assert.equal(
+    await app.passwordManager.comparePassword(
+      'correct horse battery staple',
+      hash
+    ),
+    true
+  )
+  t.assert.equal(
+    await app.passwordManager.comparePassword(
+      'incorrect',
+      hash
+    ),
+    false
+  )
+  t.assert.equal(
+    await app.passwordManager.comparePassword(
+      'anything',
+      'invalid.hash'
+    ),
+    false
+  )
+})
+```
+
+The malformed hash case exercises the length check before
+`timingSafeEqual()`, which requires equal-sized buffers.
+
 Run the suite:
 
 ```bash
 npm test
 ```
+
+All four coverage metrics must remain at 100%.
 
 ## Summary
 

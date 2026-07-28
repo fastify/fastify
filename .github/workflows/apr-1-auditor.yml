@@ -1,0 +1,176 @@
+name: apr-1 auditor
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  actions: read
+  models: read
+  pull-requests: write
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  apr-1-audit:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run APR-1
+        uses: actions/github-script@v7
+        env:
+          APR1_MODEL: openai/gpt-4.1-mini
+        with:
+          script: |
+            const fs = require('node:fs')
+
+            const annexPath = '.github/apr/anexo-tecnico-iso-iec-25010.md'
+            if (!fs.existsSync(annexPath)) {
+              core.setFailed(`No existe ${annexPath}.`) 
+              return
+            }
+
+            const annex = fs.readFileSync(annexPath, 'utf8').trim()
+            if (!annex) {
+              core.setFailed(`El archivo ${annexPath} está vacío.`)
+              return
+            }
+
+            const owner = context.repo.owner
+            const repo = context.repo.repo
+            const pullNumber = context.payload.pull_request.number
+
+            const pr = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pullNumber
+            })
+
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner,
+                repo,
+                pull_number: pullNumber,
+                per_page: 100
+              }
+            )
+
+            const workflowRunsResponse = await github.rest.actions.listWorkflowRunsForRepo({
+              owner,
+              repo,
+              event: 'pull_request',
+              head_sha: pr.data.head.sha,
+              per_page: 10
+            })
+
+            const workflowRuns = workflowRunsResponse.data.workflow_runs || []
+
+            const fileSummary = files
+              .slice(0, 50)
+              .map(file => `- ${file.filename} (${file.status}, +${file.additions}/-${file.deletions}, cambios: ${file.changes})`)
+              .join('\n') || '- Sin cambios reportados por GitHub API.'
+
+            const patchSummary = files
+              .filter(file => file.patch)
+              .slice(0, 8)
+              .map(file => {
+                const patch = file.patch.length > 1500 ? `${file.patch.slice(0, 1500)}\n... [patch truncado]` : file.patch
+                return `### ${file.filename}\n\n\`\`\`diff\n${patch}\n\`\`\``
+              })
+              .join('\n\n') || 'No hay parches disponibles en la API para este PR.'
+
+            const ciEvidence = workflowRuns
+              .slice(0, 10)
+              .map(run => `- ${run.name}: status=${run.status}, conclusion=${run.conclusion || 'N/A'}, url=${run.html_url}`)
+              .join('\n') || '- Sin ejecuciones de CI asociadas al commit del PR.'
+
+            const sonarMatch = (pr.data.body || '').match(/https?:\/\/[^\s]*sonarcloud[^\s)]*/ig) || []
+            const sonarEvidence = sonarMatch.length > 0
+              ? sonarMatch.map(url => `- ${url}`).join('\n')
+              : '- Sin enlaces de SonarCloud en la descripción del PR.'
+
+            const systemPrompt = [
+              'Eres APR-1 (Auditor de Pull Requests), un agente auditor de calidad de software',
+              'que actúa en nombre de un comité de interventoría para el proyecto fastify/fastify.',
+              'No eres un asistente de programación: no corriges código, no sugieres',
+              'refactorizaciones, no opinas sobre estilo, y no evalúas nada que no esté',
+              'explícitamente definido en el Anexo Técnico que se te entrega.',
+              '',
+              'CONTEXTO QUE RECIBIRÁS:',
+              '1. El Anexo Técnico ISO/IEC 25010 del proyecto: una lista de condiciones con su',
+              '   criterio, umbral y método de medición esperado.',
+              '2. Evidencia técnica de un Pull Request específico: puede ser el diff del código,',
+              '   el resultado del pipeline de CI, y/o métricas de SonarCloud asociadas a ese cambio.',
+              '',
+              'TU TAREA:',
+              'Evalúa el Pull Request ÚNICAMENTE contra las condiciones del Anexo Técnico. Por',
+              'cada condición del Anexo:',
+              '- Revisa si la evidencia entregada la respalda, la contradice, o no dice nada al respecto.',
+              '- Clasifícala en una de tres categorías: CUMPLE, NO CUMPLE o SIN EVIDENCIA SUFICIENTE.',
+              '- Nunca marques CUMPLE si no tienes evidencia directa y explícita que lo sustente.',
+              '  Ante la duda, clasifica como SIN EVIDENCIA SUFICIENTE en lugar de asumir.',
+              '- No asumas buenas intenciones del autor del PR: verifica, no infieras.',
+              '',
+              'REGLAS ESTRICTAS:',
+              '- Si el Anexo no cubre algún aspecto del PR, no lo menciones ni lo evalúes por tu cuenta.',
+              '- No agregues condiciones nuevas que no estén en el Anexo.',
+              '- No tomes decisiones de aprobación, rechazo o fusión del PR: tu única salida es',
+              '  la clasificación y su evidencia. La decisión final es siempre humana.',
+              '- Si la evidencia entregada es insuficiente para evaluar TODAS las condiciones,',
+              '  dilo explícitamente al final, indicando cuáles quedaron sin evaluar y qué',
+              '  evidencia adicional se necesitaría.',
+              '',
+              'FORMATO DE SALIDA (obligatorio, sin texto adicional antes o después):',
+              'Una tabla con las columnas:',
+              '| Condición del Anexo | Veredicto | Evidencia citada |',
+              '',
+              'No agregues introducción, conclusión, ni recomendaciones fuera de la tabla.'
+            ].join('\\n')
+
+            const userPrompt = `ANEXO TÉCNICO ISO/IEC 25010:\n\n${annex}\n\nEVIDENCIA DEL PULL REQUEST:\n\n- PR: #${pr.data.number}\n- Título: ${pr.data.title}\n- URL: ${pr.data.html_url}\n- Autor: ${pr.data.user?.login || 'N/A'}\n\nDescripción del PR:\n${pr.data.body || 'Sin descripción.'}\n\nResumen de archivos modificados:\n${fileSummary}\n\nExtracto de diff:\n${patchSummary}\n\nResultado de CI asociado al commit del PR:\n${ciEvidence}\n\nResultado relevante de SonarCloud:\n${sonarEvidence}`
+
+            const token = process.env['GITHUB_TOKEN']
+
+            const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'api-key': token
+              },
+              body: JSON.stringify({
+                model: process.env.APR1_MODEL,
+                temperature: 0,
+                messages: [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ]
+              })
+            })
+
+            const result = await response.json().catch(() => null)
+            if (!response.ok || !result) {
+              core.setFailed(`Falló la invocación del modelo: ${response.status} ${JSON.stringify(result)}`)
+              return
+            }
+
+            const auditTable = result.choices?.[0]?.message?.content?.trim()
+            if (!auditTable) {
+              core.setFailed('El modelo no devolvió contenido.')
+              return
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pullNumber,
+              body: auditTable
+            })

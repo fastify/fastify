@@ -319,7 +319,7 @@ keys separate from the session keys added in the authentication chapter.
 
 The `session` dependency is important for both boot order and request hook
 order. The session plugin registers its `onRequest` hook first, so it loads the
-session before the rate limiter calls `keyGenerator`. The protected route's
+session before the rate limiter calls `keyGenerator`. The application
 authentication hook runs afterward. Public requests still have a session
 object, but no `session.user`, so they use the IP fallback.
 
@@ -368,8 +368,8 @@ export function createApp (options = {}) {
   app.register(async function application (app) {
     app.register(usersPlugin)
     app.register(passwordsPlugin)
-    app.register(registrationPlugin)
     app.register(authenticationPlugin)
+    app.register(registrationPlugin)
     app.register(authorizationPlugin)
     app.register(quotesPlugin)
 
@@ -388,7 +388,21 @@ route declared below it. Routes can opt out or replace part of the policy.
 
 ## Exclude the health check
 
-Platform health checks should not consume a client quota. Opt the route out:
+Platform health checks should require neither a session nor a client quota.
+First add the new route to `publicRoutes` in
+`plugins/app/authentication/authentication.hooks.js`:
+
+```js
+const publicRoutes = new Set([
+  'GET /health',
+  'GET /not-protected',
+  'GET /throw',
+  'POST /login',
+  'POST /register'
+])
+```
+
+Then opt the route out of rate limiting:
 
 ```js
 app.get(
@@ -489,14 +503,20 @@ The suite still runs with `--concurrency=1` because tests reset shared
 PostgreSQL and Redis state. `FLUSHDB` is appropriate only for the dedicated,
 disposable test Redis database described in the authentication chapter.
 
-Also extend the expected object in `test/plugins/env.test.js` with the four new
-values.
+Also extend the expected object in
+`test/plugins/infrastructure/env.test.js` with the four new values. The test
+helper’s explicit environment must include them as well so every test app
+satisfies the validated startup contract.
 
 ## Test public limits
 
-First, lower the global quota and verify the response boundary and headers:
+Create `test/plugins/infrastructure/rate-limit.test.js`:
 
 ```js
+import { describe, test } from 'node:test'
+import { createTestApp } from '../../app.js'
+
+describe('rate limit plugin', function () {
 test('returns 429 and rate-limit headers after the quota is exhausted', async (t) => {
   const app = createTestApp({
     rateLimit: {
@@ -518,10 +538,65 @@ test('returns 429 and rate-limit headers after the quota is exhausted', async (t
   t.assert.equal(limited.statusCode, 429)
   t.assert.equal(limited.headers['retry-after'], '60')
 })
+})
 ```
 
 This public route has no authenticated subject, so the requests use the IP
 key.
+
+Add a cross-instance public check inside the same `describe` block:
+
+```js
+test('shares a public quota across instances', async function (t) {
+  const rateLimit = {
+    max: 1,
+    timeWindow: 60000
+  }
+  const firstApp = createTestApp({ rateLimit })
+  const secondApp = createTestApp({ rateLimit })
+  t.after(() => Promise.all([
+    firstApp.close(),
+    secondApp.close()
+  ]))
+
+  await firstApp.ready()
+  await secondApp.ready()
+
+  const first = await firstApp.inject('/not-protected')
+  const limited = await secondApp.inject('/not-protected')
+
+  t.assert.equal(first.statusCode, 200)
+  t.assert.equal(limited.statusCode, 429)
+})
+```
+
+Also prove that the health route opts out and cover its handler:
+
+```js
+test('excludes the health check', async function (t) {
+  const app = createTestApp({
+    rateLimit: {
+      max: 1,
+      timeWindow: 60000
+    }
+  })
+  t.after(() => app.close())
+
+  for (
+    let requestNumber = 0;
+    requestNumber < 3;
+    requestNumber++
+  ) {
+    const response = await app.inject('/health')
+
+    t.assert.equal(response.statusCode, 200)
+    t.assert.equal(
+      response.headers['x-ratelimit-limit'],
+      undefined
+    )
+  }
+})
+```
 
 ## Test authenticated keys
 

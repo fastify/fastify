@@ -23,8 +23,8 @@ The corresponding HTTP responses are:
 * `401 Unauthorized` when valid authentication is missing,
 * `403 Forbidden` when an authenticated user lacks permission.
 
-The authentication hook runs first for the quote domain, so authorization can
-safely inspect `request.session.user.roles`.
+The application authentication hook runs before route-level authorization, so
+authorization can safely inspect `request.session.user.roles`.
 
 ## Define the forbidden response
 
@@ -43,19 +43,19 @@ export const forbiddenResponse = {
 
 The quote response schema will reuse this object for status `403`.
 
-## Build authorization hooks
+## Build the authorization service
 
-Create `plugins/app/authorization/authorization.hook-builder.js`:
+Create `plugins/app/authorization/authorization.service.js`:
 
 ```js
 import fp from 'fastify-plugin'
 
-// This decorator is shared so other domains can opt in to role checks. No
-// lifecycle hook is installed globally; authorization remains route-specific.
-export const authorizationHookBuilderPlugin = fp(
-  async function authorizationHookBuilderPlugin (app) {
-    app.decorate('authorize', function buildAuthorizationHook (...allowedRoles) {
-      return async function authorizationHook (request, reply) {
+// This service is shared so other domains can opt in to role checks.
+// Authorization remains route-specific.
+export const authorizationServicePlugin = fp(
+  async function authorizationServicePlugin (app) {
+    app.decorate('requireRoles', function requireRoles (...allowedRoles) {
+      return async function enforceRequiredRoles (request, reply) {
         const authorized = allowedRoles.some((role) => {
           return request.session.user.roles.includes(role)
         })
@@ -69,41 +69,42 @@ export const authorizationHookBuilderPlugin = fp(
     })
   },
   {
-    name: 'authorization-hook-builder',
-    dependencies: ['authentication-hooks']
+    name: 'authorization-service',
+    dependencies: ['authentication-hook']
   }
 )
 ```
 
-`authorize` is a hook builder. Calling `app.authorize('admin')` creates an
-`onRequest` hook for that policy. Passing several roles would allow any one of
-them.
+`requireRoles` is exposed to route domains by the authorization service.
+Calling `app.requireRoles('admin')` returns a request handler for that policy,
+which this tutorial uses with `onRequest`. Passing several roles would allow
+any one of them.
 
 The role check only reads the user already loaded from the session. Running it
 in `onRequest` rejects a forbidden request before body parsing and validation.
-The quote domain's authentication `onRequest` hook runs first, so authorization
+The application authentication `onRequest` hook runs first, so authorization
 can safely inspect `request.session.user`.
 
 The dependency records an important assumption: authorization only runs after
 authentication has made a trusted user available.
 
-Expose the hook through the authorization domain entry point.
+Expose the service through the authorization domain entry point.
 
 ### `plugins/app/authorization/authorization.plugin.js`
 
 ```js
 import fp from 'fastify-plugin'
 import {
-  authorizationHookBuilderPlugin
-} from './authorization.hook-builder.js'
+  authorizationServicePlugin
+} from './authorization.service.js'
 
 export const authorizationPlugin = fp(
   async function authorizationPlugin (app) {
-    app.register(authorizationHookBuilderPlugin)
+    app.register(authorizationServicePlugin)
   },
   {
     name: 'authorization',
-    // Shared so route domains can opt in with `app.authorize(...)`.
+    // Shared so route domains can opt in with `app.requireRoles(...)`.
     dependencies: ['authentication']
   }
 )
@@ -138,7 +139,7 @@ app.delete(
       response: deleteQuoteResponse
     },
     // New for this chapter: deleting a quote requires the administrator role.
-    onRequest: app.authorize('admin')
+    onRequest: app.requireRoles('admin')
   },
   async function (request, reply) {
     const deleted = await this.quotesRepository.remove(request.params.id)
@@ -146,7 +147,7 @@ app.delete(
       reply.code(404)
       return { message: 'Quote not found' }
     }
-    reply.code(204).send()
+    return reply.code(204).send()
   }
 )
 ```
@@ -158,12 +159,12 @@ Update the quote plugin metadata too:
   name: 'quotes-routes',
   encapsulate: true,
   dependencies: [
-    'authentication-hooks',
-    'authorization-hook-builder',
+    'authentication-hook',
+    'authorization-service',
     'quotes-repository'
   ],
   decorators: {
-    fastify: ['authenticate', 'authorize', 'quotesRepository']
+    fastify: ['requireRoles', 'quotesRepository']
   }
 }
 ```
@@ -197,8 +198,8 @@ decorator:
 app.register(async function application (app) {
   app.register(usersPlugin)
   app.register(passwordsPlugin)
-  app.register(registrationPlugin)
   app.register(authenticationPlugin)
+  app.register(registrationPlugin)
   // New for this chapter: reusable role-based policies.
   app.register(authorizationPlugin)
   app.register(quotesPlugin)
@@ -238,6 +239,15 @@ Tests should prove all three boundaries:
 * an authenticated regular user receives `403`,
 * and an authenticated administrator can delete the quote.
 
+Update the existing forbidden assertion in
+`test/plugins/app/quotes/quotes.test.js`:
+
+```js
+t.assert.deepStrictEqual(forbidden.json(), {
+  message: 'You are not authorized to access this resource.'
+})
+```
+
 Run the suite:
 
 ```bash
@@ -247,8 +257,8 @@ npm test
 ## Summary
 
 Quote Vault now separates identity from permission. Authentication protects
-the complete quote domain, while the authorization hook builder creates a
-reusable role policy for administrator-only operations.
+the complete quote domain, while the authorization service provides a reusable
+role policy for administrator-only operations.
 
 The next chapter will add shared rate limits for both public and authenticated
 requests.

@@ -1729,9 +1729,7 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
-Calling `addHttpMethod` for an existing method overrides its body behavior. In
-Fastify v5, the override still occurs, but Fastify emits `FSTWRN005` unless
-`overrideExisting` is `true`:
+Calling `addHttpMethod` for an existing method overrides its body behavior.
 
 ```js
 fastify.addHttpMethod('GET', {
@@ -1740,8 +1738,8 @@ fastify.addHttpMethod('GET', {
 })
 ```
 
-In Fastify v6, overriding an existing method without `overrideExisting: true`
-will throw an error.
+In Fastify v5, omitting `overrideExisting: true` emits `FSTWRN005`; in Fastify
+v6, it will throw an error.
 
 #### addSchema
 <a id="add-schema"></a>

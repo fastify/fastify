@@ -27,7 +27,9 @@ jobs:
       - name: Run APR-1
         uses: actions/github-script@v7
         env:
-          APR1_MODEL: openai/gpt-4.1-mini
+          APR1_MODEL: ${{ secrets.APR1_MODEL || 'openai/gpt-4.1-mini' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -140,16 +142,34 @@ jobs:
 
             const userPrompt = `ANEXO TÉCNICO ISO/IEC 25010:\n\n${annex}\n\nEVIDENCIA DEL PULL REQUEST:\n\n- PR: #${pr.data.number}\n- Título: ${pr.data.title}\n- URL: ${pr.data.html_url}\n- Autor: ${pr.data.user?.login || 'N/A'}\n\nDescripción del PR:\n${pr.data.body || 'Sin descripción.'}\n\nResumen de archivos modificados:\n${fileSummary}\n\nExtracto de diff:\n${patchSummary}\n\nResultado de CI asociado al commit del PR:\n${ciEvidence}\n\nResultado relevante de SonarCloud:\n${sonarEvidence}`
 
-            const token = process.env['GITHUB_TOKEN'] || core.getInput('github-token')
+            let apiEndpoint = 'https://models.inference.ai.azure.com/chat/completions'
+            let modelName = process.env.APR1_MODEL || 'openai/gpt-4.1-mini'
+            let apiKey = process.env.GH_PAT || process.env.OPENAI_API_KEY || process.env.GITHUB_TOKEN || core.getInput('github-token')
 
-            const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+            let headers = {
+              'Content-Type': 'application/json'
+            }
+
+            if (process.env.OPENAI_API_KEY) {
+              apiEndpoint = 'https://api.openai.com/v1/chat/completions'
+              modelName = process.env.APR1_MODEL || 'gpt-4o-mini'
+              apiKey = process.env.OPENAI_API_KEY
+              headers['Authorization'] = `Bearer ${apiKey}`
+            } else if (process.env.GH_PAT) {
+              apiEndpoint = 'https://models.inference.ai.azure.com/chat/completions'
+              apiKey = process.env.GH_PAT
+              headers['Authorization'] = `Bearer ${apiKey}`
+            } else {
+              // Fallback default: GitHub Token o GitHub Models Azure Inference
+              apiEndpoint = 'https://models.inference.ai.azure.com/chat/completions'
+              headers['Authorization'] = `Bearer ${apiKey}`
+            }
+
+            const response = await fetch(apiEndpoint, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
+              headers,
               body: JSON.stringify({
-                model: process.env.APR1_MODEL,
+                model: modelName,
                 temperature: 0,
                 messages: [
                   { role: 'system', content: systemPrompt },
@@ -160,9 +180,18 @@ jobs:
 
             const result = await response.json().catch(() => null)
             if (!response.ok || !result) {
-              core.setFailed(`Falló la invocación del modelo: ${response.status} ${JSON.stringify(result)}`)
+              let detailMsg = `Falló la invocación del modelo (HTTP ${response.status}): ${JSON.stringify(result)}`
+              if (response.status === 401) {
+                detailMsg += '\n\n💡 CAUSA Y SOLUCIÓN DEL ERROR 401 UNAUTHORIZED:\n' +
+                  'El GITHUB_TOKEN por defecto generado en GitHub Actions no tiene autorización para llamar a GitHub Models (Azure Inference).\n' +
+                  'Para solucionarlo en tu repositorio GitHub:\n' +
+                  'Option A (Recomendado con OpenAI): Agrega el Secret `OPENAI_API_KEY` en Settings > Secrets and variables > Actions.\n' +
+                  'Option B (GitHub Models): Crea un Personal Access Token (PAT) en tu cuenta de GitHub y agrégalo como Secret `GH_PAT` en tu repositorio.'
+              }
+              core.setFailed(detailMsg)
               return
             }
+
 
             const auditTable = result.choices?.[0]?.message?.content?.trim()
             if (!auditTable) {
@@ -170,9 +199,19 @@ jobs:
               return
             }
 
+            const commentBody = [
+              '### 🤖 Reporte de Auditoría SQA - APR-1 (Agente IA)',
+              '',
+              '> 🚨 **PUNTO DE CONTROL HUMANO OBLIGATORIO**:',
+              '> Esta auditoría es un **insumo preliminar** generado automáticamente por el agente APR-1. Un ingeniero auditor del equipo DEBE verificar manualmente que la evidencia citada (SonarCloud, CI, diff) sea real y suficiente antes de incorporar este resultado al dictamen final de la interventoría. El agente NO toma decisiones de aprobación ni fusión del PR.',
+              '',
+              auditTable
+            ].join('\n')
+
             await github.rest.issues.createComment({
               owner,
               repo,
               issue_number: pullNumber,
-              body: auditTable
+              body: commentBody
             })
+

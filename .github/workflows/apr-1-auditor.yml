@@ -28,7 +28,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           APR1_MODEL: ${{ secrets.APR1_MODEL || 'openai/gpt-4o' }}
-          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_TOKEN:: ${{ secrets.GH_PAT }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -137,7 +137,7 @@ jobs:
 
             const apiEndpoint = 'https://models.github.ai/inference/chat/completions'
             const modelName = process.env.APR1_MODEL || 'openai/gpt-4o'
-            const token = process.env.GH_PAT
+            const token = process.env.GITHUB_TOKEN
 
             const response = await fetch(apiEndpoint, {
               method: 'POST',

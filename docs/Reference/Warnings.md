@@ -33,6 +33,7 @@ one of the following methods:
 - Set the `NODE_NO_WARNINGS` environment variable to `1`
 - Pass the `--no-warnings` flag to the node process
 - Set `no-warnings` in the `NODE_OPTIONS` environment variable
+- Pass `--disable-warning=FSTWRN004` to disable a specific warning
 
 For more information on disabling warnings, see [Node's documentation](https://nodejs.org/api/cli.html).
 

@@ -1,9 +1,7 @@
 'use strict'
 
 const http = require('node:http')
-const { once } = require('node:events')
 const { test } = require('node:test')
-const { setImmediate: setImmediateAsync } = require('node:timers/promises')
 const Fastify = require('../../fastify')
 
 function addEcho (fastify, method) {
@@ -115,33 +113,36 @@ test('addHttpMethod rejects fake http method', t => {
   t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
 })
 
-test('addHttpMethod warns when overriding an existing method', async t => {
-  const warningPromise = once(process, 'warning')
+test('addHttpMethod warns when overriding an existing method', (t, done) => {
   const fastify = Fastify()
+  const onWarning = warning => {
+    t.assert.strictEqual(warning.name, 'FastifyWarning')
+    t.assert.strictEqual(warning.code, 'FSTWRN005')
+    done()
+  }
+  process.once('warning', onWarning)
+
+  t.after(() => {
+    fastify.close()
+    process.removeListener('warning', onWarning)
+  })
 
   fastify.addHttpMethod('GET', { hasBody: true })
-
-  const [warning] = await warningPromise
-  t.assert.strictEqual(warning.name, 'FastifyWarning')
-  t.assert.strictEqual(warning.code, 'FSTWRN005')
 })
 
-test('addHttpMethod does not warn when overriding an existing method explicitly', async t => {
-  let warning
-  function onWarning (emittedWarning) {
-    if (emittedWarning.code === 'FSTWRN005') {
-      warning = emittedWarning
-    }
+test('addHttpMethod does not warn when overriding an existing method explicitly', t => {
+  const doNotWarn = () => {
+    t.assert.fail('should not warn')
   }
-
-  process.on('warning', onWarning)
-  t.after(() => process.off('warning', onWarning))
+  process.on('warning', doNotWarn)
 
   const fastify = Fastify()
-  fastify.addHttpMethod('POST', { overrideExisting: true })
-  await setImmediateAsync()
+  t.after(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
 
-  t.assert.strictEqual(warning, undefined)
+  fastify.addHttpMethod('POST', { overrideExisting: true })
 })
 
 test('addHttpMethod can change an existing method body behavior', async t => {

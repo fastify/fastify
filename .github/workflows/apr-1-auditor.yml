@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
 
@@ -28,6 +28,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           APR1_MODEL: openai/gpt-4.1-mini
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
             const fs = require('node:fs')
@@ -134,7 +135,7 @@ jobs:
               '| Condición del Anexo | Veredicto | Evidencia citada |',
               '',
               'No agregues introducción, conclusión, ni recomendaciones fuera de la tabla.'
-            ].join('\\n')
+            ].join('\n')
 
             const userPrompt = `ANEXO TÉCNICO ISO/IEC 25010:\n\n${annex}\n\nEVIDENCIA DEL PULL REQUEST:\n\n- PR: #${pr.data.number}\n- Título: ${pr.data.title}\n- URL: ${pr.data.html_url}\n- Autor: ${pr.data.user?.login || 'N/A'}\n\nDescripción del PR:\n${pr.data.body || 'Sin descripción.'}\n\nResumen de archivos modificados:\n${fileSummary}\n\nExtracto de diff:\n${patchSummary}\n\nResultado de CI asociado al commit del PR:\n${ciEvidence}\n\nResultado relevante de SonarCloud:\n${sonarEvidence}`
 
@@ -144,7 +145,7 @@ jobs:
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'api-key': token
+                'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify({
                 model: process.env.APR1_MODEL,

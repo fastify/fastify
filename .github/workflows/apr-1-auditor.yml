@@ -30,6 +30,7 @@ jobs:
           APR1_MODEL: openai/gpt-4.1-mini
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('node:fs')
 
@@ -139,7 +140,7 @@ jobs:
 
             const userPrompt = `ANEXO TÉCNICO ISO/IEC 25010:\n\n${annex}\n\nEVIDENCIA DEL PULL REQUEST:\n\n- PR: #${pr.data.number}\n- Título: ${pr.data.title}\n- URL: ${pr.data.html_url}\n- Autor: ${pr.data.user?.login || 'N/A'}\n\nDescripción del PR:\n${pr.data.body || 'Sin descripción.'}\n\nResumen de archivos modificados:\n${fileSummary}\n\nExtracto de diff:\n${patchSummary}\n\nResultado de CI asociado al commit del PR:\n${ciEvidence}\n\nResultado relevante de SonarCloud:\n${sonarEvidence}`
 
-            const token = process.env['GITHUB_TOKEN']
+            const token = process.env['GITHUB_TOKEN'] || core.getInput('github-token')
 
             const response = await fetch('https://models.inference.ai.azure.com/chat/completions', {
               method: 'POST',

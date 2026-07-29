@@ -1,4 +1,4 @@
-name: apr-1 auditor
+name: apr-1 auditor (debug)
 
 on:
   pull_request_target:
@@ -28,15 +28,23 @@ jobs:
         uses: actions/github-script@v7
         env:
           APR1_MODEL: ${{ secrets.APR1_MODEL || 'openai/gpt-4o' }}
-          GITHUB_TOKEN:: ${{ secrets.GH_PAT }}
+          GH_MODELS_TOKEN: ${{ secrets.GH_PAT }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('node:fs')
 
+            // === DEBUG: confirmar qué variables de entorno llegaron ===
+            core.startGroup('DEBUG: variables de entorno recibidas')
+            core.info(`APR1_MODEL = ${process.env.APR1_MODEL || '(vacío)'}`)
+            core.info(`GH_MODELS_TOKEN presente: ${Boolean(process.env.GH_MODELS_TOKEN)}`)
+            core.info(`GH_MODELS_TOKEN longitud: ${(process.env.GH_MODELS_TOKEN || '').length}`)
+            core.info(`GITHUB_TOKEN (input github-token, manejado por el action, no por env) - no se imprime aquí`)
+            core.endGroup()
+
             const annexPath = '.github/apr/anexo-tecnico-iso-iec-25010.md'
             if (!fs.existsSync(annexPath)) {
-              core.setFailed(`No existe ${annexPath}.`) 
+              core.setFailed(`No existe ${annexPath}.`)
               return
             }
 
@@ -46,9 +54,18 @@ jobs:
               return
             }
 
+            core.startGroup('DEBUG: anexo técnico')
+            core.info(`Longitud del anexo: ${annex.length} caracteres`)
+            core.info(`Primeras 200 caracteres:\n${annex.slice(0, 200)}`)
+            core.endGroup()
+
             const owner = context.repo.owner
             const repo = context.repo.repo
             const pullNumber = context.payload.pull_request.number
+
+            core.startGroup('DEBUG: contexto del PR')
+            core.info(`owner=${owner} repo=${repo} pullNumber=${pullNumber}`)
+            core.endGroup()
 
             const pr = await github.rest.pulls.get({
               owner,
@@ -65,6 +82,10 @@ jobs:
                 per_page: 100
               }
             )
+
+            core.startGroup('DEBUG: archivos del PR')
+            core.info(`Total de archivos: ${files.length}`)
+            core.endGroup()
 
             const workflowRunsResponse = await github.rest.actions.listWorkflowRunsForRepo({
               owner,
@@ -137,7 +158,16 @@ jobs:
 
             const apiEndpoint = 'https://models.github.ai/inference/chat/completions'
             const modelName = process.env.APR1_MODEL || 'openai/gpt-4o'
-            const token = process.env.GITHUB_TOKEN
+            const token = process.env.GH_MODELS_TOKEN
+
+            core.startGroup('DEBUG: llamada al modelo')
+            core.info(`Endpoint: ${apiEndpoint}`)
+            core.info(`Modelo: ${modelName}`)
+            core.info(`Token presente antes del fetch: ${Boolean(token)}`)
+            if (!token) {
+              core.warning('GH_MODELS_TOKEN está vacío. La llamada fallará con 401. Revisa que el secret GH_PAT exista en el repo/organización y que tenga permiso "models: read".')
+            }
+            core.endGroup()
 
             const response = await fetch(apiEndpoint, {
               method: 'POST',
@@ -155,15 +185,27 @@ jobs:
               })
             })
 
-            const result = await response.json().catch(() => null)
+            const rawText = await response.text()
+            core.startGroup('DEBUG: respuesta cruda del modelo')
+            core.info(`HTTP status: ${response.status}`)
+            core.info(`Cuerpo de la respuesta (primeros 2000 caracteres):\n${rawText.slice(0, 2000)}`)
+            core.endGroup()
+
+            let result = null
+            try {
+              result = JSON.parse(rawText)
+            } catch (e) {
+              core.warning(`No se pudo parsear la respuesta como JSON: ${e.message}`)
+            }
+
             if (!response.ok || !result) {
-              core.setFailed(`Falló la invocación del modelo (HTTP ${response.status}): ${JSON.stringify(result)}`)
+              core.setFailed(`Falló la invocación del modelo (HTTP ${response.status}): ${rawText.slice(0, 500)}`)
               return
             }
 
             const auditTable = result.choices?.[0]?.message?.content?.trim()
             if (!auditTable) {
-              core.setFailed('El modelo no devolvió contenido.')
+              core.setFailed(`El modelo no devolvió contenido. Respuesta completa: ${JSON.stringify(result).slice(0, 1000)}`)
               return
             }
 
@@ -182,6 +224,3 @@ jobs:
               issue_number: pullNumber,
               body: commentBody
             })
-
-
-

@@ -1704,6 +1704,13 @@ Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
 The `addHttpMethod` method allows to add any non standard HTTP
 methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
 
+The method accepts an optional configuration object:
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| `hasBody` | `boolean` | `false` | Whether the method accepts a request body. |
+| `overrideExisting` | `boolean` | `false` | Whether to explicitly override an existing method. |
+
 ```js
 // Add a new HTTP method called 'MKCOL' that supports a request body
 fastify.addHttpMethod('MKCOL', { hasBody: true,  })
@@ -1722,8 +1729,19 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
-> ⚠ Warning:
-> `addHttpMethod` overrides existing methods.
+Calling `addHttpMethod` for an existing method overrides its body behavior. In
+Fastify v5, the override still occurs, but Fastify emits `FSTWRN005` unless
+`overrideExisting` is `true`:
+
+```js
+fastify.addHttpMethod('GET', {
+  hasBody: true,
+  overrideExisting: true
+})
+```
+
+In Fastify v6, overriding an existing method without `overrideExisting: true`
+will throw an error.
 
 #### addSchema
 <a id="add-schema"></a>

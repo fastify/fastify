@@ -1,7 +1,9 @@
 'use strict'
 
 const http = require('node:http')
+const { once } = require('node:events')
 const { test } = require('node:test')
+const { setImmediate: setImmediateAsync } = require('node:timers/promises')
 const Fastify = require('../../fastify')
 
 function addEcho (fastify, method) {
@@ -111,4 +113,62 @@ test('addHttpMethod rejects fake http method', t => {
   t.plan(1)
   const fastify = Fastify()
   t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
+})
+
+test('addHttpMethod warns when overriding an existing method', async t => {
+  const warningPromise = once(process, 'warning')
+  const fastify = Fastify()
+
+  fastify.addHttpMethod('GET', { hasBody: true })
+
+  const [warning] = await warningPromise
+  t.assert.strictEqual(warning.name, 'FastifyWarning')
+  t.assert.strictEqual(warning.code, 'FSTWRN005')
+})
+
+test('addHttpMethod does not warn when overriding an existing method explicitly', async t => {
+  let warning
+  function onWarning (emittedWarning) {
+    if (emittedWarning.code === 'FSTWRN005') {
+      warning = emittedWarning
+    }
+  }
+
+  process.on('warning', onWarning)
+  t.after(() => process.off('warning', onWarning))
+
+  const fastify = Fastify()
+  fastify.addHttpMethod('POST', { overrideExisting: true })
+  await setImmediateAsync()
+
+  t.assert.strictEqual(warning, undefined)
+})
+
+test('addHttpMethod can change an existing method body behavior', async t => {
+  const fastify = Fastify()
+
+  fastify.addHttpMethod('GET', {
+    hasBody: true,
+    overrideExisting: true
+  })
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    exposeHeadRoute: false,
+    schema: {
+      body: {
+        type: 'object'
+      }
+    },
+    handler: async request => request.body
+  })
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    payload: { hello: 'world' }
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
 })

@@ -116,8 +116,8 @@ test('addHttpMethod rejects fake http method', t => {
 test('addHttpMethod warns when overriding an existing method', (t, done) => {
   const fastify = Fastify()
   const onWarning = warning => {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, 'FSTWRN005')
+    t.assert.strictEqual(warning.name, 'FastifyDeprecation')
+    t.assert.strictEqual(warning.code, 'FSTDEP025')
     done()
   }
   process.once('warning', onWarning)

@@ -1738,7 +1738,7 @@ fastify.addHttpMethod('GET', {
 })
 ```
 
-In Fastify v5, omitting `overrideExisting: true` emits `FSTWRN005`; in Fastify
+In Fastify v5, omitting `overrideExisting: true` emits `FSTDEP025`; in Fastify
 v6, it will throw an error.
 
 #### addSchema

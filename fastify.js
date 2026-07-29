@@ -80,7 +80,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTWRN005, FSTDEP023, FSTDEP024 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -832,7 +832,7 @@ function fastify (serverOptions) {
       this[kSupportedHTTPMethods].bodywith.has(method)
 
     if (alreadyExists && !overrideExisting) {
-      FSTWRN005(method)
+      FSTDEP025(method)
     }
 
     if (hasBody === true) {

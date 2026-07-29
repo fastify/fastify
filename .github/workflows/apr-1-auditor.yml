@@ -27,7 +27,7 @@ jobs:
       - name: Run APR-1
         uses: actions/github-script@v7
         env:
-          APR1_MODEL: ${{ secrets.APR1_MODEL || 'openai/gpt-4.1-mini' }}
+          APR1_MODEL: ${{ secrets.APR1_MODEL || 'google/gemini-3-pro-preview' }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -214,4 +214,5 @@ jobs:
               issue_number: pullNumber,
               body: commentBody
             })
+
 

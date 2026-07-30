@@ -903,7 +903,7 @@ export function createTestApp (
       }
     ])
 
-    // This Redis database is disposable and dedicated to tests.
+    // Tests own the configured local Redis state and remove every key.
     await this.redis.flushDb()
   })
 
@@ -916,8 +916,9 @@ every fixture reset while still letting login verify the configured scrypt
 format. `TestApp` keeps the `login()` helper local to test code instead of
 augmenting every Fastify instance in the project. The assertion function
 records the type refinement performed by `decorate()` without a type cast.
-`FLUSHDB` is safe only because this Redis database is dedicated, disposable
-test infrastructure.
+`FLUSHDB` removes every key from the configured Redis database, including
+sessions created during manual checks. Use this test configuration only with
+the disposable local Redis service, and log in again after running the suite.
 
 Add the Redis and session settings to the expected object in
 `test/plugins/infrastructure/env.test.ts`. The test helper shown above already

@@ -574,8 +574,9 @@ export function createTestApp (
 ```
 
 The suite still runs with `--concurrency=1` because tests reset shared
-PostgreSQL and Redis state. `FLUSHDB` is appropriate only for the dedicated,
-disposable test Redis database described in the authentication chapter.
+PostgreSQL and Redis state. `FLUSHDB` is appropriate only for the disposable
+local Redis service described in the authentication chapter. It also
+invalidates sessions created during manual checks.
 
 Also extend the expected object in
 `test/plugins/infrastructure/env.test.ts` with the four new values. The test
@@ -823,3 +824,6 @@ We also made the operational choices explicit:
 * expensive writes use a stricter route policy,
 * Redis errors fail closed,
 * and tests prove both key isolation and cross-instance consistency.
+
+The next chapter will turn our route schemas into an OpenAPI document and an
+interactive Swagger UI.

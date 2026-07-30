@@ -43,12 +43,14 @@ Finally, we implement the application features:
 * user registration and password hashing,
 * Redis-backed cookie sessions,
 * authentication and role-based authorization,
-* and shared rate limits for public and authenticated requests.
+* shared rate limits for public and authenticated requests,
+* and interactive OpenAPI documentation with Swagger UI.
 
 The tutorial combines official Fastify plugins, independent libraries, and
 application code written specifically for Quote Vault. Fastify provides the
 plugin model and lifecycle; it does not restrict how application features are
 implemented.
 
-By the end, you will have a tested Fastify application and a practical model
-for deciding where routes, hooks, domain behavior, and infrastructure belong.
+By the end, you will have a tested and documented Fastify application and a
+practical model for deciding where routes, hooks, domain behavior, and
+infrastructure belong.

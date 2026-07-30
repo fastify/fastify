@@ -805,6 +805,15 @@ export function createTestApp (options: AppOptions = {}) {
 This keeps the tests deterministic:
 every fresh test app starts from the same migrated and empty database state.
 
+> **Warning:** The test helper truncates the configured local tables. Running
+> `npm test` can therefore remove quotes and users created during manual checks.
+> If the application later appears to have inconsistent data after a test run,
+> restore the tutorial fixtures:
+>
+> ```bash
+> CAN_SEED_DATABASE=1 npm run db:seed
+> ```
+
 Because those tests now share one PostgreSQL database, we should also run them
 serially for now.
 Update the test script:

@@ -481,3 +481,17 @@ npm test
 The suite must report 100% for statements, branches, functions, and lines
 before continuing. Coverage confirms that each code path ran; the file
 boundaries above keep each assertion attached to the concern it describes.
+
+## Tests and shared state in later chapters
+
+The application is still in memory at this point, so every test app owns its
+state. Later chapters replace that storage with local PostgreSQL and Redis
+services. Their test fixtures deliberately clear and replace data to keep each
+test deterministic.
+
+Treat those test services as disposable. Running `npm test` can remove records
+created during manual checks and invalidate browser sessions. If manual
+behavior becomes inconsistent after a test run, restore the tutorial fixtures
+with the latest database seeding instructions and log in again. Never point
+the test configuration at a database or Redis instance containing data you
+need to preserve.

@@ -10,8 +10,7 @@ In this chapter, we are going to:
 * serve an interactive Swagger UI,
 * organize operations with summaries and tags,
 * describe the request body, parameters, responses, and session cookie,
-* authenticate from the documentation,
-* and test the generated contract.
+* and authenticate from the documentation.
 
 ## OpenAPI and Swagger
 
@@ -508,3 +507,6 @@ administrator session and expires the browser cookie.
 
 Quote Vault now publishes an OpenAPI document and an interactive Swagger UI
 from the schemas already used at runtime.
+
+The final chapter compares ways to preserve clear application boundaries as a
+Fastify codebase and its team grow.

@@ -4,7 +4,7 @@ const stream = require('node:stream')
 const { ReadableStream } = require('node:stream/web')
 const { test } = require('node:test')
 const Fastify = require('..')
-const { assertNoWarning } = require('./toolkit')
+const { assertNoWarning } = require('./helper')
 
 test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
   t.plan(1)

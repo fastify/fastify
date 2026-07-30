@@ -390,8 +390,8 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
-> **Deprecated:** Use the [`logController`](#log-controller) option with
-> `disableRequestLogging` or `isLogDisabled` override instead.
+> **Deprecated:** Use the [`logController`](#factory-log-controller)
+> option with `disableRequestLogging` or `isLogDisabled` override instead.
 > This top-level option will be removed in `fastify@6`.
 
 + Default: `false`
@@ -407,6 +407,8 @@ and returns a boolean. This allows for conditional request logging based on the
 request properties (e.g., URL, headers, decorations).
 
 ```js
+const { LogController } = require('fastify')
+
 // Deprecated
 const fastify = require('fastify')({
   logger: true,
@@ -418,11 +420,11 @@ const fastify = require('fastify')({
 // Recommended: use logController instead
 const fastify = require('fastify')({
   logger: true,
-  logController: {
+  logController: new LogController({
     disableRequestLogging: (request) => {
       return request.url === '/health' || request.url === '/ready'
     }
-  }
+  })
 })
 ```
 
@@ -594,8 +596,9 @@ const fastify = require('fastify')({
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
 
-> **Deprecated:** Use the [`logController`](#log-controller) option with
-> `requestIdLogLabel` instead. This top-level option will be removed in `fastify@6`.
+> **Deprecated:** Use the [`logController`](#factory-log-controller)
+> option with `requestIdLogLabel` instead. This top-level option will be
+> removed in `fastify@6`.
 
 + Default: `'reqId'`
 

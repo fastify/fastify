@@ -3,6 +3,7 @@
 const http = require('node:http')
 const { test } = require('node:test')
 const Fastify = require('../../fastify')
+const { assertNoWarning } = require('../toolkit')
 
 function addEcho (fastify, method) {
   fastify.route({
@@ -131,16 +132,9 @@ test('addHttpMethod warns when overriding an existing method', (t, done) => {
 })
 
 test('addHttpMethod does not warn when overriding an existing method explicitly', t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not warn')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
 
   fastify.addHttpMethod('POST', { overrideExisting: true })
 })

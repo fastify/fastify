@@ -61,3 +61,13 @@ exports.partialDeepStrictEqual = function partialDeepStrictEqual (actual, expect
 
   return true
 }
+
+exports.assertNoWarning = function (t) {
+  function doNotWarn () {
+    t.assert.fail('no warning')
+  }
+  process.on('warning', doNotWarn)
+  t.after(() => {
+    process.off('warning', doNotWarn)
+  })
+}

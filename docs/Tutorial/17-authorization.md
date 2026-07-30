@@ -28,9 +28,9 @@ authorization can safely inspect `request.session.user.roles`.
 
 ## Define the forbidden response
 
-Create `plugins/app/authorization/schemas.js`:
+Create `plugins/app/authorization/schemas.ts`:
 
-```js
+```ts
 export const forbiddenResponse = {
   type: 'object',
   additionalProperties: false,
@@ -45,19 +45,37 @@ The quote response schema will reuse this object for status `403`.
 
 ## Build the authorization service
 
-Create `plugins/app/authorization/authorization.service.js`:
+Create `plugins/app/authorization/authorization.service.ts`:
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type {
+  FastifyReply,
+  FastifyRequest,
+  onRequestHookHandler
+} from 'fastify'
+
+type Role = string
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    requireRoles: (...allowedRoles: Role[]) => onRequestHookHandler
+  }
+}
 
 // This service is shared so other domains can opt in to role checks.
 // Authorization remains route-specific.
 export const authorizationServicePlugin = fp(
   async function authorizationServicePlugin (app) {
-    app.decorate('requireRoles', function requireRoles (...allowedRoles) {
-      return async function enforceRequiredRoles (request, reply) {
+    app.decorate('requireRoles', function requireRoles (
+      ...allowedRoles: Role[]
+    ) {
+      return async function enforceRequiredRoles (
+        request: FastifyRequest,
+        reply: FastifyReply
+      ) {
         const authorized = allowedRoles.some((role) => {
-          return request.session.user.roles.includes(role)
+          return request.session.user?.roles.includes(role)
         })
 
         if (!authorized) {
@@ -90,13 +108,13 @@ authentication has made a trusted user available.
 
 Expose the service through the authorization domain entry point.
 
-### `plugins/app/authorization/authorization.plugin.js`
+### `plugins/app/authorization/authorization.plugin.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import {
   authorizationServicePlugin
-} from './authorization.service.js'
+} from './authorization.service.ts'
 
 export const authorizationPlugin = fp(
   async function authorizationPlugin (app) {
@@ -115,11 +133,11 @@ domain registered after it.
 
 ## Protect quote deletion
 
-Import `forbiddenResponse` in `plugins/app/quotes/schemas.js` and add it to the
+Import `forbiddenResponse` in `plugins/app/quotes/schemas.ts` and add it to the
 delete responses:
 
-```js
-import { forbiddenResponse } from '../authorization/schemas.js'
+```ts
+import { forbiddenResponse } from '../authorization/schemas.ts'
 
 export const deleteQuoteResponse = {
   204: { type: 'null' },
@@ -130,8 +148,8 @@ export const deleteQuoteResponse = {
 
 Then add the role hook to the existing delete route:
 
-```js
-app.delete(
+```ts
+app.delete<{ Params: { id: number } }>(
   '/quotes/:id',
   {
     schema: {
@@ -154,7 +172,7 @@ app.delete(
 
 Update the quote plugin metadata too:
 
-```js
+```ts
 {
   name: 'quotes-routes',
   encapsulate: true,
@@ -171,7 +189,7 @@ Update the quote plugin metadata too:
 
 The quote domain entry point now records the new domain-level dependency:
 
-```js
+```ts
 export const quotesPlugin = fp(
   async function quotesPlugin (app) {
     app.register(quotesRepositoryPlugin)
@@ -194,7 +212,7 @@ the stronger policy.
 Register the authorization domain before the quote domain that consumes its
 decorator:
 
-```js
+```ts
 app.register(async function application (app) {
   app.register(usersPlugin)
   app.register(passwordsPlugin)
@@ -240,9 +258,9 @@ Tests should prove all three boundaries:
 * and an authenticated administrator can delete the quote.
 
 Update the existing forbidden assertion in
-`test/plugins/app/quotes/quotes.test.js`:
+`test/plugins/app/quotes/quotes.test.ts`:
 
-```js
+```ts
 t.assert.deepStrictEqual(forbidden.json(), {
   message: 'You are not authorized to access this resource.'
 })

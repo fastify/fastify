@@ -15,12 +15,14 @@ Fastify provides dedicated APIs for this:
 
 ## Implementation
 
-We’ll centralize error handling in a new file, `error-handlers.js`.
+We’ll centralize error handling in a new file, `error-handlers.ts`.
 
-```js
-// error-handlers.js
-export default function configureErrorHandlers(app) {
-  app.setErrorHandler((err, request, reply) => {
+```ts
+// error-handlers.ts
+import type { FastifyError, FastifyInstance } from "fastify";
+
+export default function configureErrorHandlers(app: FastifyInstance) {
+  app.setErrorHandler((err: FastifyError, request, reply) => {
     // [1] 500 errors are logged in detail
     app.log.error(
       {
@@ -70,11 +72,11 @@ export default function configureErrorHandlers(app) {
 
 ## Using the error handlers
 
-Register the handlers in `server.js`:
+Register the handlers in `server.ts`:
 
-```js
-// server.js
-import configureErrorHandlers from "./error-handlers.js";
+```ts
+// server.ts
+import configureErrorHandlers from "./error-handlers.ts";
 
 // after hooks and routes
 configureErrorHandlers(app);
@@ -84,7 +86,7 @@ configureErrorHandlers(app);
 
 To confirm our setup works, let’s add a route that deliberately fails:
 
-```js
+```ts
 app.get("/throw", async function () {
   throw new Error("💥 Kaboom!");
 });
@@ -152,7 +154,7 @@ They are all listed in the `fastify.errorCodes` object.
 
 Example of usage:
 
-```js
+```ts
 import { errorCodes } from "fastify";
 
 app.setErrorHandler((err, request, reply) => {

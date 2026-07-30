@@ -23,21 +23,35 @@ We'll use shorthand methods for simplicity.
 
 Let's start by creating a basic in-memory API:
 
-In `server.js`, replace the `/slow` demonstration route from the previous
+In `server.ts`, replace the `/slow` demonstration route from the previous
 chapter with the code below. Keep the existing Fastify instance, graceful
 shutdown handler, and `app.listen()` call.
 
-```js
+The route methods below use a TypeScript generic to describe the request data
+available to each handler. For example, `Querystring` types `request.query`,
+while `Params` and `Body` type `request.params` and `request.body`.
+
+We will write these types explicitly for now so the relationship is visible.
+Later, we will use TypeBox and a Fastify type provider to derive the request
+types from the validation schemas, avoiding the need to declare the same shape
+twice.
+
+```ts
+interface Quote {
+  id: number;
+  text: string;
+}
+
 // Simple in-memory database
 let id = 1;
-const quotes = [];
+const quotes: Quote[] = [];
 
-app.get("/quotes", async (request, reply) => {
+app.get<{ Querystring: { limit?: number } }>("/quotes", async (request, reply) => {
   const { limit = 10 } = request.query; // [1]
   return quotes.slice(0, limit);
 });
 
-app.get("/quotes/:id", async (request, reply) => {
+app.get<{ Params: { id: string } }>("/quotes/:id", async (request, reply) => {
   const id = Number(
     // [2]
     request.params.id
@@ -49,7 +63,7 @@ app.get("/quotes/:id", async (request, reply) => {
   return quote; // [4]
 });
 
-app.post("/quotes", async (request, reply) => {
+app.post<{ Body: { text: string } }>("/quotes", async (request, reply) => {
   const quote = {
     id: id++,
     text: request.body.text, // [3]
@@ -105,13 +119,13 @@ Let’s review a few important details from these examples.
 
 ### Let's create all our routes now
 
-```js
+```ts
 /**
  * GET /quotes
  * Returns a list of quotes, limited by the `limit` query parameter.
  * Default limit is 10.
  */
-app.get("/quotes", async (request, reply) => {
+app.get<{ Querystring: { limit?: number } }>("/quotes", async (request, reply) => {
   const limit = Number(request.query.limit ?? 10);
   return quotes.slice(0, limit);
 });
@@ -121,7 +135,7 @@ app.get("/quotes", async (request, reply) => {
  * Returns a single quote by its ID.
  * Responds with 404 if not found.
  */
-app.get("/quotes/:id", async (request, reply) => {
+app.get<{ Params: { id: string } }>("/quotes/:id", async (request, reply) => {
   const id = Number(request.params.id);
   const quote = quotes.find((q) => q.id === id);
   if (!quote) {
@@ -136,7 +150,7 @@ app.get("/quotes/:id", async (request, reply) => {
  * Creates a new quote. Expects JSON body with `text`.
  * Responds with 201 Created and the new quote.
  */
-app.post("/quotes", async (request, reply) => {
+app.post<{ Body: { text: string } }>("/quotes", async (request, reply) => {
   const quote = { id: id++, text: request.body.text };
   quotes.push(quote);
   reply.code(201);
@@ -148,7 +162,10 @@ app.post("/quotes", async (request, reply) => {
  * Updates an existing quote by ID.
  * Responds with 404 if not found.
  */
-app.put("/quotes/:id", async (request, reply) => {
+app.put<{
+  Params: { id: string };
+  Body: { text: string };
+}>("/quotes/:id", async (request, reply) => {
   const id = Number(request.params.id);
   const quote = quotes.find((q) => q.id === id);
   if (!quote) {
@@ -165,7 +182,7 @@ app.put("/quotes/:id", async (request, reply) => {
  * Deletes a quote by ID.
  * Responds with 204 No Content if successful, 404 if not found.
  */
-app.delete("/quotes/:id", async (request, reply) => {
+app.delete<{ Params: { id: string } }>("/quotes/:id", async (request, reply) => {
   const id = Number(request.params.id);
   const index = quotes.findIndex((q) => q.id === id);
   if (index === -1) {

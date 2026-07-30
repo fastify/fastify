@@ -66,19 +66,24 @@ server. We introduce a factory `createApp()` that returns a configured
 Fastify instance. This instance can be used by both HTTP server startup
 and tests.
 
-### app.js
+### app.ts
 
-```js
+```ts
 import fastify from "fastify";
-import { idParam } from "./schemas.js";
-import configureErrorHandlers from "./error-handlers.js";
-import { dbPlugin } from "./plugins/db.js";
-import { quotesRepositoryPlugin } from "./plugins/quotes-repo.js";
-import { protectedRoutes } from "./routes/protected.js";
+import { idParam } from "./schemas.ts";
+import configureErrorHandlers from "./error-handlers.ts";
+import { dbPlugin } from "./plugins/db.ts";
+import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
+import { protectedRoutes } from "./routes/protected.ts";
+import type { FastifyServerOptions } from "fastify";
+
+interface AppOptions {
+  logger?: FastifyServerOptions["logger"];
+}
 
 // This factory also allows to customize
 // configuration.
-export function createApp(options = {}) {
+export function createApp(options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
     forceCloseConnections: false,
@@ -113,14 +118,14 @@ export function createApp(options = {}) {
 ```
 
 Fastify already disables logging when `logger` is `undefined`. The factory only
-forwards an explicit logger choice; `server.js` enables logging with `true`,
+forwards an explicit logger choice; `server.ts` enables logging with `true`,
 while the test helper uses `false` unless a test supplies another value.
 
-### server.js
+### server.ts
 
-```js
+```ts
 import closeWithGrace from "close-with-grace";
-import { createApp } from "./app.js";
+import { createApp } from "./app.ts";
 
 const app = createApp({ logger: true });
 
@@ -142,17 +147,18 @@ try {
 }
 ```
 
-### test/app.js
+### test/app.ts
 
 For tests, it is convenient to expose a small helper that creates the app
 with quiet defaults. That avoids repeating `createApp({ logger: false })`
 in every test while still allowing overrides when needed.
 
-```js
-// test/app.js
-import { createApp } from "../app.js";
+```ts
+// test/app.ts
+import { createApp } from "../app.ts";
+import type { AppOptions } from "../app.ts";
 
-export function createTestApp(options = {}) {
+export function createTestApp(options: AppOptions = {}) {
   return createApp({
     logger: false,
     ...options,
@@ -172,24 +178,24 @@ rather than collected in one coverage-only suite.
 
 We will create four test files:
 
-* `test/auth.test.js` covers the teaching authentication hook.
-* `test/quotes.test.js` covers validation, serialization, and quote CRUD.
-* `test/app.test.js` covers public routes and global error handling.
-* `test/plugins/db.test.js` covers the database plugin lifecycle.
+* `test/auth.test.ts` covers the teaching authentication hook.
+* `test/quotes.test.ts` covers validation, serialization, and quote CRUD.
+* `test/app.test.ts` covers public routes and global error handling.
+* `test/plugins/db.test.ts` covers the database plugin lifecycle.
 
 Each test creates a fresh Fastify instance and closes it afterward.
 
-### `test/auth.test.js`
+### `test/auth.test.ts`
 
 Authentication is inherited by the protected quote routes. Test both ways in
 which that hook rejects a request:
 
-```js
-import { describe, test } from "node:test";
-import { createTestApp } from "./app.js";
+```ts
+import { describe, test, type TestContext } from "node:test";
+import { createTestApp } from "./app.ts";
 
 describe("authentication", () => {
-  test("rejects a missing Authorization header", async (t) => {
+  test("rejects a missing Authorization header", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
 
@@ -201,7 +207,7 @@ describe("authentication", () => {
     });
   });
 
-  test("rejects an invalid token", async (t) => {
+  test("rejects an invalid token", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
 
@@ -222,18 +228,22 @@ describe("authentication", () => {
 The valid user and administrator branches are exercised by the quote tests
 below.
 
-### `test/quotes.test.js`
+### `test/quotes.test.ts`
 
 Create a helper for the repeated quote setup, then cover every quote route:
 
-```js
-import { describe, test } from "node:test";
-import { createTestApp } from "./app.js";
+```ts
+import { describe, test, type TestContext } from "node:test";
+import { createTestApp } from "./app.ts";
+import type { FastifyInstance } from "fastify";
 
 const userHeaders = { authorization: "Bearer user" };
 const adminHeaders = { authorization: "Bearer admin" };
 
-async function createQuote(app, text = "New quote") {
+async function createQuote(
+  app: FastifyInstance,
+  text = "New quote"
+) {
   return app.inject({
     method: "POST",
     url: "/quotes",
@@ -243,7 +253,7 @@ async function createQuote(app, text = "New quote") {
 }
 
 describe("quote routes", () => {
-  test("lists quotes with the default and an explicit limit", async (t) => {
+  test("lists quotes with the default and an explicit limit", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
 
@@ -269,7 +279,7 @@ describe("quote routes", () => {
     ]);
   });
 
-  test("gets an existing quote and reports invalid or missing IDs", async (t) => {
+  test("gets an existing quote and reports invalid or missing IDs", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
     await createQuote(app);
@@ -299,7 +309,7 @@ describe("quote routes", () => {
     t.assert.equal(invalid.statusCode, 400);
   });
 
-  test("validates and serializes created quotes", async (t) => {
+  test("validates and serializes created quotes", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
 
@@ -319,7 +329,7 @@ describe("quote routes", () => {
     });
   });
 
-  test("updates a quote and reports a missing one", async (t) => {
+  test("updates a quote and reports a missing one", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
     await createQuote(app);
@@ -345,7 +355,7 @@ describe("quote routes", () => {
     t.assert.equal(missing.statusCode, 404);
   });
 
-  test("allows only administrators to delete quotes", async (t) => {
+  test("allows only administrators to delete quotes", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
     await createQuote(app);
@@ -376,18 +386,18 @@ describe("quote routes", () => {
 The create assertion also proves response serialization: the route returns a
 demonstration `secret` property internally, but the response schema removes it.
 
-### `test/app.test.js`
+### `test/app.test.ts`
 
 Application-level tests cover routes outside the protected subtree and the
 global handlers:
 
-```js
-import { describe, test } from "node:test";
-import { createApp } from "../app.js";
-import { createTestApp } from "./app.js";
+```ts
+import { describe, test, type TestContext } from "node:test";
+import { createApp } from "../app.ts";
+import { createTestApp } from "./app.ts";
 
 describe("application behavior", () => {
-  test("keeps public and not-found routes outside authentication", async (t) => {
+  test("keeps public and not-found routes outside authentication", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
 
@@ -402,7 +412,7 @@ describe("application behavior", () => {
     });
   });
 
-  test("builds the application when options are omitted", async (t) => {
+  test("builds the application when options are omitted", async (t: TestContext) => {
     const app = createApp();
     t.after(() => app.close());
 
@@ -410,7 +420,7 @@ describe("application behavior", () => {
     t.assert.equal(res.statusCode, 200);
   });
 
-  test("logs and hides internal errors", async (t) => {
+  test("logs and hides internal errors", async (t: TestContext) => {
     const app = createTestApp({ logger: "silent" });
     t.after(() => app.close());
 
@@ -437,16 +447,16 @@ describe("application behavior", () => {
 });
 ```
 
-### `test/plugins/db.test.js`
+### `test/plugins/db.test.ts`
 
 The database plugin owns its resource, so its shutdown behavior belongs in a
 plugin test:
 
-```js
-import { test } from "node:test";
-import { createTestApp } from "../app.js";
+```ts
+import { test, type TestContext } from "node:test";
+import { createTestApp } from "../app.ts";
 
-test("closes the database resource", async (t) => {
+test("closes the database resource", async (t: TestContext) => {
   const app = createTestApp();
   t.after(() => app.close());
   await app.ready();

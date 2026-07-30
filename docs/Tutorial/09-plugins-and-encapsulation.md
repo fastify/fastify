@@ -20,15 +20,23 @@ feature.
 
 Example of a simple plugin:
 
-```js
-// Define plugin
-async function myPlugin(fastify, opts) {
-  fastify.decorate('greet', (name) => `Hello, ${name}`);
+```ts
+import type { FastifyPluginAsync } from "fastify";
 
-  fastify.get('/hello/:name', (req, reply) => {
+declare module "fastify" {
+  interface FastifyInstance {
+    greet: (name: string) => string;
+  }
+}
+
+// Define plugin
+const myPlugin: FastifyPluginAsync = async function (fastify, opts) {
+  fastify.decorate('greet', (name: string) => `Hello, ${name}`);
+
+  fastify.get<{ Params: { name: string } }>('/hello/:name', (req, reply) => {
     reply.send({ message: fastify.greet(req.params.name) });
   });
-}
+};
 
 // Register plugin
 app.register(myPlugin);
@@ -42,13 +50,14 @@ the parent or sibling plugins. This prevents leakage, reduces accidental
 side effects, and keeps overhead local to where it is needed.
 
 ### Tree representation
-```js
+```ts
+import type { FastifyPluginAsync } from "fastify";
+
 // root scope
 const app = Fastify();
 
-async function parentPlugin(
-  instance // root -> instance scope
-) {
+const parentPlugin: FastifyPluginAsync =
+async function parentPlugin(instance) { // root -> instance scope
 
   // root -> instance -> childA scope
   await instance.register(async function childA(childA) {
@@ -77,24 +86,31 @@ In this tree:
 Decorator encapsulation prevents features from leaking to the parent and
 to sibling plugins.
 
-```js
+```ts
 import Fastify from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 
-async function usersPlugin(fastify) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    scope: string;
+  }
+}
+
+const usersPlugin: FastifyPluginAsync = async function usersPlugin(fastify) {
   fastify.decorate('scope', 'users');
 
   fastify.get('/users', async function () {
     return { scope: fastify.scope };
   });
-}
+};
 
-async function tasksPlugin(fastify) {
+const tasksPlugin: FastifyPluginAsync = async function tasksPlugin(fastify) {
   fastify.decorate('scope', 'tasks');
 
   fastify.get('/tasks', async function () {
     return { scope: fastify.scope };
   });
-}
+};
 
 const app = Fastify();
 
@@ -123,24 +139,25 @@ When the router matches a route, Fastify runs only the hooks that belong
 to the same encapsulation context as the route. This keeps work small and
 targeted.
 
-```js
+```ts
 import Fastify from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 
-async function usersPlugin(fastify) {
+const usersPlugin: FastifyPluginAsync = async function usersPlugin(fastify) {
   fastify.addHook('onRequest', async () => {
     fastify.log.info('users onRequest');
   });
 
   fastify.get('/users', async () => ({ ok: true }));
-}
+};
 
-async function tasksPlugin(fastify) {
+const tasksPlugin: FastifyPluginAsync = async function tasksPlugin(fastify) {
   fastify.addHook('onRequest', async () => {
     fastify.log.info('tasks onRequest');
   });
 
   fastify.get('/tasks', async () => ({ ok: true }));
-}
+};
 
 const app = Fastify({ logger: true });
 
@@ -182,9 +199,20 @@ A typical use case that justifies skipping the encapsulation is
 if you want a utility to be used across the application and let 
 it access its decorators.
 
-```js
+```ts
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
+import type { FastifyPluginAsync } from 'fastify';
+
+interface Database {
+  query: () => string;
+}
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    db: Database;
+  }
+}
 
 const dbPlugin = fp(
   async function (fastify) {
@@ -193,11 +221,11 @@ const dbPlugin = fp(
   { name: 'db' } // encapsulation is skipped by default
 );
 
-async function routesPlugin(fastify) {
+const routesPlugin: FastifyPluginAsync = async function routesPlugin(fastify) {
   fastify.get('/needs-db', async function () {
     return { q: fastify.db.query() };
   });
-}
+};
 
 const app = Fastify();
 
@@ -213,8 +241,14 @@ await app.listen({ port: 3000 });
 You can keep encapsulation and still profit from the metadata features
 `fastify-plugin` offers.
 
-```js
+```ts
 import fp from 'fastify-plugin';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    audit: { record: () => boolean };
+  }
+}
 
 const auditPlugin = fp(
   async function (fastify) {
@@ -232,7 +266,7 @@ const auditPlugin = fp(
 You can declare what your plugin needs. Fastify will fail fast when the
 requirements are not met.
 
-```js
+```ts
 import fp from 'fastify-plugin';
 
 const myFeature = fp(
@@ -277,9 +311,17 @@ is sometimes required.
 Note: awaiting one plugin causes Fastify to load all plugins that were
 queued before it.
 
-```js
+```ts
 import Fastify from 'fastify';
 import fp from 'fastify-plugin';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    a: { query: () => string };
+    b: { query: () => string };
+    c: { query: () => string };
+  }
+}
 
 const app = Fastify();
 
@@ -335,10 +377,10 @@ npm i fastify-plugin
 This plugin exposes `app.db` to the rest of the application and closes
 the connection on shutdown.
 
-```js
-// plugins/db.js
+```ts
+// plugins/db.ts
 import fp from "fastify-plugin";
-import { createDb } from "../db.js";
+import { createDb } from "../db.ts";
 
 export const dbPlugin = fp(
   async function dbPlugin(app) {
@@ -358,10 +400,10 @@ export const dbPlugin = fp(
 This plugin needs the database. It exposes
 `app.quotesRepository` so route plugins can query it.
 
-```js
-// plugins/quotes-repo.js
+```ts
+// plugins/quotes-repo.ts
 import fp from 'fastify-plugin';
-import { createQuotesRepository } from '../quotes-repository.js';
+import { createQuotesRepository } from '../quotes-repository.ts';
 
 export const quotesRepositoryPlugin = fp(
   async function quotesRepo(app) {
@@ -380,9 +422,21 @@ export const quotesRepositoryPlugin = fp(
 This plugin adds an authenticated user to the request. It rejects
 requests that do not present a valid token.
 
-```js
-// plugins/auth.js
-export const authPlugin = async function authPlugin(app) {
+```ts
+// plugins/auth.ts
+import type { FastifyPluginAsync } from "fastify";
+
+interface User {
+  role: "admin" | "user";
+}
+
+declare module "fastify" {
+  interface FastifyRequest {
+    user: User | null;
+  }
+}
+
+export const authPlugin: FastifyPluginAsync = async function authPlugin(app) {
   app.decorateRequest("user", null);
 
   app.addHook("onRequest", async function (req, reply) {
@@ -415,8 +469,8 @@ This plugin defines all `/quotes` routes. It assumes
 `app.quotesRepository` exists. It registers all schemas inside its own
 scope.
 
-```js
-// routes/quotes.js
+```ts
+// routes/quotes.ts
 import fp from "fastify-plugin";
 import {
   quoteBody,
@@ -426,7 +480,8 @@ import {
   listQuotesResponse,
   singleQuoteResponse,
   deleteQuoteResponse,
-} from "../schemas.js";
+} from "../schemas.ts";
+import type { IdParams, ListQuery, QuoteBody } from "../schemas.ts";
 
 export const quotesRoutesPlugin = fp(
   async function quotesRoutesPlugin(app) {
@@ -434,7 +489,7 @@ export const quotesRoutesPlugin = fp(
     app.addSchema(quoteResponse);
     app.addSchema(errorMessage);
 
-    app.get(
+    app.get<{ Querystring: ListQuery }>(
       "/quotes",
       {
         schema: {
@@ -448,7 +503,7 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.get(
+    app.get<{ Params: IdParams }>(
       "/quotes/:id",
       {
         schema: {
@@ -466,7 +521,7 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.post(
+    app.post<{ Body: QuoteBody }>(
       "/quotes",
       {
         schema: {
@@ -482,7 +537,7 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.put(
+    app.put<{ Params: IdParams; Body: QuoteBody }>(
       "/quotes/:id",
       {
         schema: {
@@ -504,7 +559,7 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.delete(
+    app.delete<{ Params: IdParams }>(
       "/quotes/:id",
       {
         schema: {
@@ -549,13 +604,15 @@ This plugin protects its children by first registering the auth plugin,
 then registering any route plugins under it. Everything in this subtree
 now requires authentication.
 
-```js
-// routes/protected.js
+```ts
+// routes/protected.ts
 import fp from "fastify-plugin";
-import { authPlugin } from "../plugins/auth.js";
-import { quotesRoutesPlugin } from "./quotes.js";
+import type { FastifyPluginAsync } from "fastify";
+import { authPlugin } from "../plugins/auth.ts";
+import { quotesRoutesPlugin } from "./quotes.ts";
 
-export const protectedRoutes = async function protectedRoutes(app) {
+export const protectedRoutes: FastifyPluginAsync =
+async function protectedRoutes(app) {
   // Promote auth to this wrapper so sibling route plugins inherit its hook.
   // The wrapper itself remains encapsulated from the root application.
   app.register(fp(authPlugin, { name: 'auth' }));
@@ -570,14 +627,14 @@ export const protectedRoutes = async function protectedRoutes(app) {
 Finally we assemble the server. We load infrastructure plugins first,
 then the protected routes, then set up error handling, then start.
 
-```js
+```ts
 import fastify from "fastify";
 import closeWithGrace from "close-with-grace";
-import configureErrorHandlers from "./error-handlers.js";
-import { dbPlugin } from "./plugins/db.js";
-import { quotesRepositoryPlugin } from "./plugins/quotes-repo.js";
-import { protectedRoutes } from "./routes/protected.js";
-import { idParam } from "./schemas.js";
+import configureErrorHandlers from "./error-handlers.ts";
+import { dbPlugin } from "./plugins/db.ts";
+import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
+import { protectedRoutes } from "./routes/protected.ts";
+import { idParam } from "./schemas.ts";
 
 const app = fastify({
   logger: true,

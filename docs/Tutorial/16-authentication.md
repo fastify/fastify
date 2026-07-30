@@ -126,9 +126,19 @@ Create `.env` from it:
 cp .env.example .env
 ```
 
-Extend the schema in `plugins/infrastructure/env.js`:
+Extend the schema in `plugins/infrastructure/env.ts`:
 
-```js
+```ts
+// Add these fields to AppConfig.
+export interface AppConfig {
+  REDIS_HOST: string
+  REDIS_PORT: number
+  SESSION_COOKIE_SECRET: string
+  SESSION_COOKIE_NAME: string
+  SESSION_COOKIE_SECURE: boolean
+  SESSION_MAX_AGE: number
+}
+
 const schema = {
   type: 'object',
   required: [
@@ -160,15 +170,27 @@ The comments localize the changes in an existing file.
 
 ## Connect Fastify to Redis
 
-Create `plugins/infrastructure/redis.js`:
+Create `plugins/infrastructure/redis.ts`:
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import { createClient } from 'redis'
+import type { FastifyInstance } from 'fastify'
+import type { RedisClientOptions } from 'redis'
 
 const REDIS_CONNECTION_NAME = 'quote-vault'
 
-function buildRedisOptions (app) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    redis: ReturnType<typeof createClient>
+  }
+}
+
+interface RedisPluginOptions {
+  override?: RedisClientOptions
+}
+
+function buildRedisOptions (app: FastifyInstance): RedisClientOptions {
   return {
     name: REDIS_CONNECTION_NAME,
     socket: {
@@ -179,7 +201,7 @@ function buildRedisOptions (app) {
   }
 }
 
-export const redisPlugin = fp(
+export const redisPlugin = fp<RedisPluginOptions>(
   async function redisPlugin (app, options) {
     const redis = createClient(options.override ?? buildRedisOptions(app))
 
@@ -211,17 +233,30 @@ load sessions. Production Redis connections normally add credentials and TLS.
 
 ## Register cookie sessions
 
-Create `plugins/infrastructure/session.js`:
+Create `plugins/infrastructure/session.ts`:
 
-```js
+```ts
 import fastifyCookie from '@fastify/cookie'
 import fastifySession from '@fastify/session'
 import { RedisStore } from 'connect-redis'
 import fp from 'fastify-plugin'
+import type { FastifySessionOptions } from '@fastify/session'
+import type { FastifyInstance } from 'fastify'
+import type { AuthenticatedUser } from '../app/authentication/schemas.ts'
 
 const SESSION_KEY_PREFIX = 'quote-vault-session:'
 
-function buildSessionOptions (app) {
+declare module 'fastify' {
+  interface Session {
+    user?: AuthenticatedUser
+  }
+}
+
+interface SessionPluginOptions {
+  override?: Partial<FastifySessionOptions>
+}
+
+function buildSessionOptions (app: FastifyInstance): FastifySessionOptions {
   return {
     secret: app.config.SESSION_COOKIE_SECRET,
     cookieName: app.config.SESSION_COOKIE_NAME,
@@ -240,7 +275,7 @@ function buildSessionOptions (app) {
   }
 }
 
-export const sessionPlugin = fp(
+export const sessionPlugin = fp<SessionPluginOptions>(
   async function sessionPlugin (app, options) {
     await app.register(fastifyCookie)
     await app.register(fastifySession, {
@@ -262,9 +297,18 @@ It serializes session data and expires each Redis key with the session.
 `saveUninitialized: false` avoids storing sessions for visitors who never log
 in, and `rolling: true` renews active sessions.
 
-Add Redis and sessions to `infrastructure.plugin.js`:
+Add Redis and sessions to `infrastructure.plugin.ts`:
 
-```js
+```ts
+import type { FastifySessionOptions } from '@fastify/session'
+import type { RedisClientOptions } from 'redis'
+
+// Add these fields to the existing infrastructure options.
+export interface InfrastructureOptions {
+  redis?: RedisClientOptions
+  session?: Partial<FastifySessionOptions>
+}
+
 export const infrastructurePlugin = fp(
   async function infrastructurePlugin (app, options) {
     app.register(envPlugin, { override: options.env })
@@ -285,11 +329,19 @@ hooks.
 ## Add the authentication query
 
 Extend the repository created in the Registration chapter with
-`findByEmail`:
+`findByEmail`. Add `StoredUser` to the existing type-only import from
+`schemas.ts`, then add the method:
 
-```js
-async findByEmail (email) {
-  return app.knex('users')
+```ts
+import type {
+  CreateUser,
+  PublicUser,
+  StoredUser
+} from './schemas.ts'
+
+// Add this method to the existing repository.
+async findByEmail (email: string): Promise<StoredUser | undefined> {
+  return app.knex<StoredUser>('users')
     .leftJoin('user_roles', 'users.id', 'user_roles.user_id')
     .leftJoin('roles', 'roles.id', 'user_roles.role_id')
     .select(
@@ -319,10 +371,22 @@ preserves a user who currently has no role.
 
 ## Build the authentication domain
 
-Create `plugins/app/authentication/schemas.js`:
+Create `plugins/app/authentication/schemas.ts`:
 
-```js
-import { passwordProperty } from '../passwords/schemas.js'
+```ts
+import { passwordProperty } from '../passwords/schemas.ts'
+
+export interface Credentials {
+  email: string
+  password: string
+}
+
+export interface AuthenticatedUser {
+  id: number
+  username: string
+  email: string
+  roles: string[]
+}
 
 export const credentialsBody = {
   type: 'object',
@@ -364,18 +428,26 @@ than locking out users whose older password no longer matches the new policy.
 Credential verification belongs in a service that knows nothing about
 `request`, `reply`, cookies, or status codes.
 
-### `plugins/app/authentication/authentication.service.js`
+### `plugins/app/authentication/authentication.service.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type { FastifyInstance } from 'fastify'
+import type { Credentials } from './schemas.ts'
 
 // Compare a valid precomputed hash when the email is unknown so that both
 // login paths do similar work, reducing account discovery through timing.
 const DUMMY_PASSWORD_HASH = '00112233445566778899aabbccddeeff.745fa59b7f1a240c5831b6e4178500966400fdab1f7727e7ebfc43de46297907'
 
-function createAuthenticationService (app) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    authenticationService: ReturnType<typeof createAuthenticationService>
+  }
+}
+
+function createAuthenticationService (app: FastifyInstance) {
   return {
-    async authenticate ({ email, password }) {
+    async authenticate ({ email, password }: Credentials) {
       const user = await app.usersRepository.findByEmail(email.toLowerCase())
       const passwordMatches = await app.passwordManager.comparePassword(
         password,
@@ -413,10 +485,11 @@ export const authenticationServicePlugin = fp(
 
 Register the reusable session check as an application-wide hook.
 
-### `plugins/app/authentication/authentication.hooks.js`
+### `plugins/app/authentication/authentication.hooks.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type { FastifyRequest } from 'fastify'
 
 const publicRoutes = new Set([
   'GET /not-protected',
@@ -425,7 +498,7 @@ const publicRoutes = new Set([
   'POST /register'
 ])
 
-function isPublicRequest (request) {
+function isPublicRequest (request: FastifyRequest) {
   const [path] = request.url.split('?', 1)
   return publicRoutes.has(`${request.method} ${path}`)
 }
@@ -460,21 +533,22 @@ that needs parsed or validated request data must use a later hook instead.
 Finally, the route module translates HTTP input into service calls and manages
 the session lifecycle.
 
-### `plugins/app/authentication/authentication.routes.js`
+### `plugins/app/authentication/authentication.routes.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import {
   authenticationError,
   credentialsBody,
   loginResponse
-} from './schemas.js'
+} from './schemas.ts'
+import type { Credentials } from './schemas.ts'
 
 export const authenticationRoutesPlugin = fp(
   async function authenticationRoutesPlugin (app) {
     app.addSchema(authenticationError)
 
-    app.post('/login', {
+    app.post<{ Body: Credentials }>('/login', {
       schema: {
         body: credentialsBody,
         response: loginResponse
@@ -546,19 +620,19 @@ are required.
 Replace the teaching authentication entry point with the complete domain
 composition.
 
-### `plugins/app/authentication/authentication.plugin.js`
+### `plugins/app/authentication/authentication.plugin.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import {
   authenticationHookPlugin
-} from './authentication.hooks.js'
+} from './authentication.hooks.ts'
 import {
   authenticationRoutesPlugin
-} from './authentication.routes.js'
+} from './authentication.routes.ts'
 import {
   authenticationServicePlugin
-} from './authentication.service.js'
+} from './authentication.service.ts'
 
 export const authenticationPlugin = fp(
   async function authenticationPlugin (app) {
@@ -586,7 +660,7 @@ module no longer installs its own authentication handler. Update its metadata
 to record the hook-order dependency without requiring an `authenticate`
 decorator:
 
-```js
+```ts
 {
   name: 'quotes-routes',
   encapsulate: true,
@@ -607,8 +681,8 @@ The existing delete route still has the temporary role check from the Hooks
 chapter. It must now read the authenticated session instead of the removed
 `request.user` teaching value. Replace the complete route declaration with:
 
-```js
-app.delete(
+```ts
+app.delete<{ Params: { id: number } }>(
   '/quotes/:id',
   {
     schema: {
@@ -616,7 +690,7 @@ app.delete(
       response: deleteQuoteResponse
     },
     onRequest: async function (request, reply) {
-      if (!request.session.user.roles.includes('admin')) {
+      if (!request.session.user?.roles.includes('admin')) {
         return reply.code(403).send({
           message: 'Admin only'
         })
@@ -645,8 +719,8 @@ builder.
 
 Update the existing CORS options:
 
-```js
-function buildCorsOptions (app) {
+```ts
+function buildCorsOptions (app: FastifyInstance): FastifyCorsOptions {
   return {
     origin: app.config.CORS_ORIGIN,
     // New for this chapter: allow the browser to send the session cookie.
@@ -662,9 +736,9 @@ use a specific trusted origin, not an unrestricted one.
 
 ## Register authentication
 
-`app.js` still composes only infrastructure and domain entry points:
+`app.ts` still composes only infrastructure and domain entry points:
 
-```js
+```ts
 app.register(infrastructurePlugin, options)
 app.register(errorsPlugin)
 
@@ -709,11 +783,13 @@ rm cookies.txt
 
 ## Update the test fixtures
 
-Replace `test/app.js` with the complete session-aware helper:
+Replace `test/app.ts` with the complete session-aware helper:
 
-```js
-import { createApp } from '../app.js'
+```ts
+import { createApp } from '../app.ts'
 import { fileURLToPath } from 'node:url'
+import type { FastifyInstance } from 'fastify'
+import type { AppOptions } from '../app.ts'
 
 const migrationsDirectory = fileURLToPath(
   new URL('../migrations', import.meta.url)
@@ -725,7 +801,44 @@ const TEST_PASSWORD_HASH =
   '36d210eaa751723df3828efe7949867e' +
   '11ba02dd6de76bc46a34b95ed051bb1f'
 
-export function createTestApp (options = {}) {
+export interface TestApp extends FastifyInstance {
+  login: (email?: string) => Promise<string>
+}
+
+function addLoginDecorator (
+  app: FastifyInstance
+): asserts app is TestApp {
+  app.decorate('login', async function login (
+    this: FastifyInstance,
+    email = 'user@example.com'
+  ) {
+    const response = await this.inject({
+      method: 'POST',
+      url: '/login',
+      payload: {
+        email,
+        password: TEST_PASSWORD
+      }
+    })
+
+    if (response.statusCode !== 200) {
+      throw new Error(
+        `Test login failed with status ${response.statusCode}`
+      )
+    }
+
+    const setCookie = response.headers['set-cookie']
+    if (typeof setCookie !== 'string') {
+      throw new Error('Test login did not return a session cookie')
+    }
+
+    return setCookie.split(';', 1)[0]
+  })
+}
+
+export function createTestApp (
+  options: AppOptions = {}
+): TestApp {
   const app = createApp({
     ...options,
     logger: options.logger ?? false,
@@ -749,26 +862,7 @@ export function createTestApp (options = {}) {
     }
   })
 
-  app.decorate('login', async function login (
-    email = 'user@example.com'
-  ) {
-    const response = await this.inject({
-      method: 'POST',
-      url: '/login',
-      payload: {
-        email,
-        password: TEST_PASSWORD
-      }
-    })
-
-    if (response.statusCode !== 200) {
-      throw new Error(
-        `Test login failed with status ${response.statusCode}`
-      )
-    }
-
-    return response.headers['set-cookie'].split(';', 1)[0]
-  })
+  addLoginDecorator(app)
 
   app.addHook('onReady', async function () {
     await this.knex.migrate.latest({
@@ -824,16 +918,19 @@ export function createTestApp (options = {}) {
 
 The precomputed test hash avoids repeating an expensive hash operation during
 every fixture reset while still letting login verify the configured scrypt
-format. `FLUSHDB` is safe only because this Redis database is dedicated,
-disposable test infrastructure.
+format. `TestApp` keeps the `login()` helper local to test code instead of
+augmenting every Fastify instance in the project. The assertion function
+records the type refinement performed by `decorate()` without a type cast.
+`FLUSHDB` is safe only because this Redis database is dedicated, disposable
+test infrastructure.
 
 Add the Redis and session settings to the expected object in
-`test/plugins/infrastructure/env.test.js`. The test helper shown above already
+`test/plugins/infrastructure/env.test.ts`. The test helper shown above already
 provides these values explicitly.
 
 The CORS preflight test must now request and expect only `Content-Type`:
 
-```js
+```ts
 'access-control-request-headers': 'content-type'
 
 t.assert.equal(
@@ -848,18 +945,18 @@ longer uses the teaching `Authorization` header.
 ## Test authentication
 
 Replace the teaching-token tests in
-`test/plugins/app/authentication/authentication.test.js` with the session
+`test/plugins/app/authentication/authentication.test.ts` with the session
 authentication tests below:
 
-```js
-import { describe, test } from 'node:test'
+```ts
+import { describe, test, type TestContext } from 'node:test'
 import {
   TEST_PASSWORD,
   createTestApp
-} from '../../../app.js'
+} from '../../../app.ts'
 
 describe('authentication', function () {
-  test('creates a session for valid credentials', async function (t) {
+  test('creates a session for valid credentials', async function (t: TestContext) {
     const app = createTestApp()
     t.after(() => app.close())
 
@@ -897,7 +994,7 @@ describe('authentication', function () {
 
   test(
     'rejects unknown users and incorrect passwords',
-    async function (t) {
+    async function (t: TestContext) {
       const app = createTestApp()
       t.after(() => app.close())
 
@@ -925,7 +1022,7 @@ describe('authentication', function () {
     }
   )
 
-  test('validates the login password policy', async function (t) {
+  test('validates the login password policy', async function (t: TestContext) {
     const app = createTestApp()
     t.after(() => app.close())
 
@@ -952,7 +1049,7 @@ describe('authentication', function () {
 
   test(
     'loads and destroys the authenticated session',
-    async function (t) {
+    async function (t: TestContext) {
       const app = createTestApp()
       t.after(() => app.close())
       const cookie = await app.login()
@@ -988,7 +1085,7 @@ describe('authentication', function () {
     }
   )
 
-  test('shares sessions across instances', async function (t) {
+  test('shares sessions across instances', async function (t: TestContext) {
     const firstApp = createTestApp()
     const secondApp = createTestApp()
     t.after(() => Promise.all([
@@ -1021,10 +1118,10 @@ describe('authentication', function () {
 The existing quote tests now need session cookies instead of teaching headers.
 Change the helper to accept a cookie:
 
-```js
+```ts
 async function createQuote (
-  app,
-  cookie,
+  app: FastifyInstance,
+  cookie: string,
   text = 'New quote'
 ) {
   return app.inject({
@@ -1038,14 +1135,14 @@ async function createQuote (
 
 In each authenticated test, log in before the first quote request:
 
-```js
+```ts
 const cookie = await app.login()
 ```
 
 Pass `headers: { cookie }` to reads and updates. The missing-session case now
 expects:
 
-```js
+```ts
 {
   message: 'You must be authenticated to access this route.'
 }
@@ -1053,7 +1150,7 @@ expects:
 
 For the delete policy test, create both sessions:
 
-```js
+```ts
 const userCookie = await app.login()
 const adminCookie = await app.login('admin@example.com')
 ```
@@ -1064,16 +1161,16 @@ while replacing only their authentication setup.
 
 ## Test the Redis wrapper
 
-Create `test/plugins/infrastructure/redis.test.js`:
+Create `test/plugins/infrastructure/redis.test.ts`:
 
-```js
+```ts
 import { randomUUID } from 'node:crypto'
-import { test } from 'node:test'
-import { createTestApp } from '../../app.js'
+import { test, type TestContext } from 'node:test'
+import { createTestApp } from '../../app.ts'
 
 test(
   'connects, reports errors, and closes Redis',
-  async function (t) {
+  async function (t: TestContext) {
     const app = createTestApp()
     const key = `quote-vault-test-${randomUUID()}`
     t.after(() => app.close())
@@ -1105,7 +1202,7 @@ test(
   }
 )
 
-test('accepts explicit Redis options', async function (t) {
+test('accepts explicit Redis options', async function (t: TestContext) {
   const app = createTestApp({
     redis: {
       name: 'quote-vault-test-override',

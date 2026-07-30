@@ -182,9 +182,17 @@ CAN_DROP_DATABASE=0
 CAN_SEED_DATABASE=0
 ```
 
-Then extend `plugins/infrastructure/env.js`:
+Then extend `plugins/infrastructure/env.ts`:
 
-```js
+```ts
+// Add these fields to AppConfig.
+export interface AppConfig {
+  RATE_LIMIT_MAX: number
+  RATE_LIMIT_TIME_WINDOW: number
+  QUOTE_CREATE_RATE_LIMIT_MAX: number
+  QUOTE_CREATE_RATE_LIMIT_TIME_WINDOW: number
+}
+
 const schema = {
   type: 'object',
   required: [
@@ -220,9 +228,21 @@ passing startup validation.
 small contract around the existing `app.redis` client instead of creating
 another Redis connection.
 
-### `plugins/infrastructure/redis-rate-limit-store.js`
+### `plugins/infrastructure/redis-rate-limit-store.ts`
 
-```js
+```ts
+import type { RouteOptions } from 'fastify'
+import type { createClient } from 'redis'
+
+type IncrementCallback = (
+  error: Error | null,
+  result?: { current: number, ttl: number }
+) => void
+
+interface RateLimitRouteOptions extends RouteOptions {
+  routeInfo?: Pick<RouteOptions, 'method' | 'url'>
+}
+
 const INCREMENT_AND_EXPIRE = `
   local current = redis.call('INCR', KEYS[1])
 
@@ -233,26 +253,42 @@ const INCREMENT_AND_EXPIRE = `
   return { current, redis.call('PTTL', KEYS[1]) }
 `
 
-export function createRedisRateLimitStore (redis, namespace) {
+export function createRedisRateLimitStore (
+  redis: ReturnType<typeof createClient>,
+  namespace: string
+) {
   return class RedisRateLimitStore {
+    prefix: string
+
     constructor () {
       this.prefix = namespace
     }
 
-    incr (key, callback, timeWindow) {
+    incr (
+      key: string,
+      callback: IncrementCallback,
+      timeWindow: number
+    ) {
       redis.eval(INCREMENT_AND_EXPIRE, {
         keys: [this.prefix + key],
         arguments: [String(timeWindow)]
-      }).then(([current, ttl]) => {
+      }).then((result) => {
+        const [current, ttl] = result as [number, number]
         callback(null, { current, ttl })
       }, callback)
     }
 
-    child (routeOptions) {
+    child ({ routeInfo }: RateLimitRouteOptions) {
+      if (routeInfo == null) {
+        throw new TypeError(
+          'Rate-limit child options are missing route information'
+        )
+      }
+
       const store = new RedisRateLimitStore()
       store.prefix += [
-        routeOptions.routeInfo.method,
-        routeOptions.routeInfo.url,
+        routeInfo.method,
+        routeInfo.url,
         '-'
       ].join('')
       return store
@@ -270,21 +306,33 @@ implements the fixed-window policy used in this tutorial.
 
 Create an infrastructure plugin for the third-party integration.
 
-### `plugins/infrastructure/rate-limit.js`
+### `plugins/infrastructure/rate-limit.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import rateLimit from '@fastify/rate-limit'
 import {
   createRedisRateLimitStore
-} from './redis-rate-limit-store.js'
+} from './redis-rate-limit-store.ts'
+import type { FastifyInstance, FastifyRequest } from 'fastify'
 
-function buildRateLimitOptions (app) {
+export interface RateLimitOverride {
+  max?: number
+  timeWindow?: number
+  nameSpace?: string
+  skipOnError?: boolean
+}
+
+export interface RateLimitPluginOptions {
+  override?: RateLimitOverride
+}
+
+function buildRateLimitOptions (app: FastifyInstance) {
   return {
     max: app.config.RATE_LIMIT_MAX,
     timeWindow: app.config.RATE_LIMIT_TIME_WINDOW,
     nameSpace: 'quote-vault-rate-limit-',
-    keyGenerator (request) {
+    keyGenerator (request: FastifyRequest) {
       const userId = request.session.user?.id
       return userId == null ? `ip:${request.ip}` : `user:${userId}`
     },
@@ -292,9 +340,11 @@ function buildRateLimitOptions (app) {
   }
 }
 
-export const rateLimitPlugin = fp(
+export const rateLimitPlugin = fp<RateLimitPluginOptions>(
   async function rateLimitPlugin (app, options) {
-    const settings = {
+    const settings: ReturnType<typeof buildRateLimitOptions> & {
+      store?: ReturnType<typeof createRedisRateLimitStore>
+    } = {
       ...buildRateLimitOptions(app),
       ...options.override
     }
@@ -336,7 +386,16 @@ use an isolated namespace while still exercising Redis.
 
 Add the rate limiter to the infrastructure entry point after sessions:
 
-```js
+```ts
+import type {
+  RateLimitOverride
+} from './rate-limit.ts'
+
+export interface InfrastructureOptions {
+  // Existing infrastructure options.
+  rateLimit?: RateLimitOverride
+}
+
 export const infrastructurePlugin = fp(
   async function infrastructurePlugin (app, options) {
     app.register(envPlugin, { override: options.env })
@@ -354,10 +413,19 @@ export const infrastructurePlugin = fp(
 The session plugin is registered first, so its `onRequest` hook loads the
 session before the rate limiter chooses an IP or user key.
 
-### `app.js`
+### `app.ts`
 
-```js
-export function createApp (options = {}) {
+```ts
+import type { FastifyServerOptions } from 'fastify'
+import type {
+  InfrastructureOptions
+} from './plugins/infrastructure/infrastructure.plugin.ts'
+
+export interface AppOptions extends InfrastructureOptions {
+  logger?: FastifyServerOptions['logger'] | string
+}
+
+export function createApp (options: AppOptions = {}) {
   const app = fastify({
     // Existing Fastify options.
   })
@@ -390,9 +458,9 @@ route declared below it. Routes can opt out or replace part of the policy.
 
 Platform health checks should require neither a session nor a client quota.
 First add the new route to `publicRoutes` in
-`plugins/app/authentication/authentication.hooks.js`:
+`plugins/app/authentication/authentication.hooks.ts`:
 
-```js
+```ts
 const publicRoutes = new Set([
   'GET /health',
   'GET /not-protected',
@@ -404,7 +472,7 @@ const publicRoutes = new Set([
 
 Then opt the route out of rate limiting:
 
-```js
+```ts
 app.get(
   '/health',
   {
@@ -426,10 +494,10 @@ creating counters.
 Quote creation performs a database write, so apply the smaller configured
 quota to that route.
 
-### `plugins/app/quotes/quotes.routes.js`
+### `plugins/app/quotes/quotes.routes.ts`
 
-```js
-app.post(
+```ts
+app.post<{ Body: QuoteBody }>(
   '/quotes',
   {
     config: {
@@ -461,12 +529,18 @@ policy from the global configuration.
 The test helper already configures Redis, sessions, users, and the shared-state
 reset. Add the four rate-limit settings and a test namespace:
 
-### `test/app.js`
+### `test/app.ts`
 
-```js
+```ts
+import type { AppOptions } from '../app.ts'
+
 export const TEST_RATE_LIMIT_NAMESPACE = 'quote-vault-test-rate-limit-'
 
-export function createTestApp (options = {}) {
+// Keep the `TestApp` interface and `addLoginDecorator()` helper from the
+// authentication chapter.
+export function createTestApp (
+  options: AppOptions = {}
+): TestApp {
   const rateLimit = {
     nameSpace: TEST_RATE_LIMIT_NAMESPACE,
     ...options.rateLimit
@@ -486,7 +560,7 @@ export function createTestApp (options = {}) {
     }
   })
 
-  // Keep the `app.login()` test decorator from the authentication chapter.
+  addLoginDecorator(app)
 
   app.addHook('onReady', async function () {
     // Existing migration and PostgreSQL fixture setup.
@@ -504,20 +578,40 @@ PostgreSQL and Redis state. `FLUSHDB` is appropriate only for the dedicated,
 disposable test Redis database described in the authentication chapter.
 
 Also extend the expected object in
-`test/plugins/infrastructure/env.test.js` with the four new values. The test
+`test/plugins/infrastructure/env.test.ts` with the four new values. The test
 helper’s explicit environment must include them as well so every test app
 satisfies the validated startup contract.
 
 ## Test public limits
 
-Create `test/plugins/infrastructure/rate-limit.test.js`:
+Create `test/plugins/infrastructure/rate-limit.test.ts`:
 
-```js
-import { describe, test } from 'node:test'
-import { createTestApp } from '../../app.js'
+```ts
+import { describe, test, type TestContext } from 'node:test'
+import { createTestApp } from '../../app.ts'
+import {
+  createRedisRateLimitStore
+} from '../../../plugins/infrastructure/redis-rate-limit-store.ts'
 
 describe('rate limit plugin', function () {
-test('returns 429 and rate-limit headers after the quota is exhausted', async (t) => {
+test('rejects child stores without route information', async (t: TestContext) => {
+  const app = createTestApp()
+  t.after(() => app.close())
+  await app.ready()
+
+  const Store = createRedisRateLimitStore(app.redis, 'test-rate-limit-')
+  const store = new Store()
+
+  t.assert.throws(
+    () => Reflect.apply(store.child, store, [{}]),
+    {
+      name: 'TypeError',
+      message: 'Rate-limit child options are missing route information'
+    }
+  )
+})
+
+test('returns 429 and rate-limit headers after the quota is exhausted', async (t: TestContext) => {
   const app = createTestApp({
     rateLimit: {
       max: 2,
@@ -541,13 +635,15 @@ test('returns 429 and rate-limit headers after the quota is exhausted', async (t
 })
 ```
 
-This public route has no authenticated subject, so the requests use the IP
-key.
+The first test covers the adapter boundary where `@fastify/rate-limit` supplies
+route metadata to a child store. `Reflect.apply()` deliberately bypasses the
+static method contract to verify that malformed runtime input fails clearly.
+The public route has no authenticated subject, so its requests use the IP key.
 
 Add a cross-instance public check inside the same `describe` block:
 
-```js
-test('shares a public quota across instances', async function (t) {
+```ts
+test('shares a public quota across instances', async function (t: TestContext) {
   const rateLimit = {
     max: 1,
     timeWindow: 60000
@@ -572,8 +668,8 @@ test('shares a public quota across instances', async function (t) {
 
 Also prove that the health route opts out and cover its handler:
 
-```js
-test('excludes the health check', async function (t) {
+```ts
+test('excludes the health check', async function (t: TestContext) {
   const app = createTestApp({
     rateLimit: {
       max: 1,
@@ -604,8 +700,8 @@ A separate test proves that quote creation uses the session user rather than
 the shared injection IP. It reuses the `app.login()` test decorator defined in
 the Authentication chapter:
 
-```js
-test('gives authenticated users separate quotas', async (t) => {
+```ts
+test('gives authenticated users separate quotas', async (t: TestContext) => {
   const app = createTestApp({
     env: { QUOTE_CREATE_RATE_LIMIT_MAX: 1 }
   })
@@ -614,7 +710,7 @@ test('gives authenticated users separate quotas', async (t) => {
   const userCookie = await app.login()
   const adminCookie = await app.login('admin@example.com')
 
-  const createQuote = (cookie, text) => app.inject({
+  const createQuote = (cookie: string, text: string) => app.inject({
     method: 'POST',
     url: '/quotes',
     headers: { cookie },
@@ -640,8 +736,8 @@ IDs. Only the second request from the regular user is rejected.
 We also need to preserve one quota when the same authenticated user reaches two
 application instances:
 
-```js
-test('shares an authenticated quota across application instances', async (t) => {
+```ts
+test('shares an authenticated quota across application instances', async (t: TestContext) => {
   const firstApp = createTestApp({
     env: { QUOTE_CREATE_RATE_LIMIT_MAX: 1 }
   })

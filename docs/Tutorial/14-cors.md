@@ -131,11 +131,36 @@ CAN_DROP_DATABASE=0
 CAN_SEED_DATABASE=0
 ```
 
-### `plugins/infrastructure/env.js`
+### `plugins/infrastructure/env.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import fastifyEnv from '@fastify/env'
+
+export interface AppConfig {
+  HOST: string
+  PORT: number
+  CORS_ORIGIN: string
+  POSTGRES_HOST: string
+  POSTGRES_PORT: number
+  POSTGRES_USER: string
+  POSTGRES_PASSWORD: string
+  POSTGRES_DB: string
+}
+
+export type AppConfigInput = {
+  [Key in keyof AppConfig]?: AppConfig[Key] | string
+}
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    config: AppConfig
+  }
+}
+
+interface EnvPluginOptions {
+  override?: AppConfigInput
+}
 
 const schema = {
   type: 'object',
@@ -163,7 +188,7 @@ const schema = {
   }
 }
 
-export const envPlugin = fp(
+export const envPlugin = fp<EnvPluginOptions>(
   async function envPlugin (app, options) {
     await app.register(fastifyEnv, {
       confKey: 'config',
@@ -184,13 +209,19 @@ the application should not silently guess how it is meant to be used.
 CORS support comes from a third-party package, so it belongs in
 `plugins/infrastructure`.
 
-### `plugins/infrastructure/cors.js`
+### `plugins/infrastructure/cors.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import cors from '@fastify/cors'
+import type { FastifyCorsOptions } from '@fastify/cors'
+import type { FastifyInstance } from 'fastify'
 
-function buildCorsOptions (app) {
+interface CorsPluginOptions {
+  override?: FastifyCorsOptions
+}
+
+function buildCorsOptions (app: FastifyInstance): FastifyCorsOptions {
   return {
     // Only allow the frontend origin configured for this environment.
     origin: app.config.CORS_ORIGIN,
@@ -199,7 +230,7 @@ function buildCorsOptions (app) {
   }
 }
 
-export const corsPlugin = fp(
+export const corsPlugin = fp<CorsPluginOptions>(
   async function corsPlugin (app, options) {
     await app.register(cors, options.override ?? buildCorsOptions(app))
   },
@@ -225,10 +256,17 @@ endpoints such as `POST /quotes`.
 
 ## Register the plugin
 
-Add CORS to `infrastructure.plugin.js` after configuration, because its options
+Add CORS to `infrastructure.plugin.ts` after configuration, because its options
 use `app.config.CORS_ORIGIN`:
 
-```js
+```ts
+import type { FastifyCorsOptions } from '@fastify/cors'
+
+// Add this field to the existing infrastructure options.
+export interface InfrastructureOptions {
+  cors?: FastifyCorsOptions
+}
+
 export const infrastructurePlugin = fp(
   async function infrastructurePlugin (app, options) {
     app.register(envPlugin, { override: options.env })
@@ -240,7 +278,7 @@ export const infrastructurePlugin = fp(
 )
 ```
 
-`app.js` still registers only `infrastructurePlugin`. At this point, every
+`app.ts` still registers only `infrastructurePlugin`. At this point, every
 route benefits from the same CORS configuration.
 
 ## Test the behavior
@@ -250,17 +288,18 @@ instead of only describing it.
 
 The test helper now needs the new environment variable.
 
-### `test/app.js`
+### `test/app.ts`
 
-```js
-import { createApp } from '../app.js'
+```ts
+import { createApp } from '../app.ts'
 import { fileURLToPath } from 'node:url'
+import type { AppOptions } from '../app.ts'
 
 const migrationsDirectory = fileURLToPath(
   new URL('../migrations', import.meta.url)
 )
 
-export function createTestApp (options = {}) {
+export function createTestApp (options: AppOptions = {}) {
   const app = createApp({
     ...options,
     logger: options.logger ?? false,
@@ -293,14 +332,14 @@ export function createTestApp (options = {}) {
 We should also update the environment plugin test so it reflects the new
 startup contract.
 
-### `test/plugins/infrastructure/env.test.js`
+### `test/plugins/infrastructure/env.test.ts`
 
-```js
-import { describe, test } from 'node:test'
-import { createTestApp } from '../../app.js'
+```ts
+import { describe, test, type TestContext } from 'node:test'
+import { createTestApp } from '../../app.ts'
 
 describe('env plugin', () => {
-  test('loads validated configuration from the env plugin', async (t) => {
+  test('loads validated configuration from the env plugin', async (t: TestContext) => {
     const app = createTestApp({
       env: {
         HOST: '127.0.0.1',
@@ -329,14 +368,14 @@ describe('env plugin', () => {
 
 Now we can add dedicated CORS tests.
 
-### `test/plugins/infrastructure/cors.test.js`
+### `test/plugins/infrastructure/cors.test.ts`
 
-```js
-import { describe, test } from 'node:test'
-import { createTestApp } from '../../app.js'
+```ts
+import { describe, test, type TestContext } from 'node:test'
+import { createTestApp } from '../../app.ts'
 
 describe('cors plugin', () => {
-  test('adds CORS headers to regular requests from the allowed origin', async (t) => {
+  test('adds CORS headers to regular requests from the allowed origin', async (t: TestContext) => {
     const app = createTestApp()
 
     const res = await app.inject({
@@ -356,7 +395,7 @@ describe('cors plugin', () => {
     await app.close()
   })
 
-  test('answers preflight requests without going through auth', async (t) => {
+  test('answers preflight requests without going through auth', async (t: TestContext) => {
     const app = createTestApp()
 
     const res = await app.inject({
@@ -386,7 +425,7 @@ describe('cors plugin', () => {
     await app.close()
   })
 
-  test('accepts explicit CORS options', async (t) => {
+  test('accepts explicit CORS options', async (t: TestContext) => {
     const app = createTestApp({
       cors: {
         origin: 'http://example.test',

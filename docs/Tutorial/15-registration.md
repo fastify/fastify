@@ -11,10 +11,12 @@ In this chapter, we will:
 
 ## Store users and roles
 
-Create `migrations/002_create_auth_tables.js`:
+Create `migrations/002_create_auth_tables.ts`:
 
-```js
-export async function up (knex) {
+```ts
+import type { Knex } from 'knex'
+
+export async function up (knex: Knex) {
   await knex.schema.createTable('users', function (table) {
     table.increments('id').primary()
     table.string('username').notNullable()
@@ -38,7 +40,7 @@ export async function up (knex) {
   })
 }
 
-export async function down (knex) {
+export async function down (knex: Knex) {
   await knex.schema.dropTableIfExists('user_roles')
   await knex.schema.dropTableIfExists('roles')
   await knex.schema.dropTableIfExists('users')
@@ -56,9 +58,9 @@ npm run db:migrate
 
 The password domain owns its validation policy and hashing service.
 
-### `plugins/app/passwords/schemas.js`
+### `plugins/app/passwords/schemas.ts`
 
-```js
+```ts
 export const passwordProperty = {
   type: 'string',
   minLength: 12,
@@ -70,14 +72,22 @@ export const passwordProperty = {
 The pattern requires lowercase and uppercase letters, a digit, and a symbol.
 The maximum also prevents extremely large password inputs.
 
-### `plugins/app/passwords/password-manager.service.js`
+### `plugins/app/passwords/password-manager.service.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 import { promisify } from 'node:util'
+import type { BinaryLike, ScryptOptions } from 'node:crypto'
 
-const scryptAsync = promisify(scrypt)
+// Select scrypt's four-input overload and Buffer result without a type cast.
+const scryptAsync = promisify<
+  BinaryLike,
+  BinaryLike,
+  number,
+  ScryptOptions,
+  Buffer
+>(scrypt)
 
 // The cost, block-size, parallelization, and memory settings are a security and
 // performance policy. Benchmark them on the deployment hardware, monitor login
@@ -88,7 +98,7 @@ const SCRYPT_BLOCK_SIZE = 8
 const SCRYPT_PARALLELIZATION = 2
 const SCRYPT_MAX_MEMORY = 128 * SCRYPT_COST * SCRYPT_BLOCK_SIZE * 2
 
-async function deriveKey (value, salt) {
+async function deriveKey (value: string, salt: BinaryLike) {
   return scryptAsync(value, salt, SCRYPT_KEY_LENGTH, {
     cost: SCRYPT_COST,
     blockSize: SCRYPT_BLOCK_SIZE,
@@ -97,13 +107,13 @@ async function deriveKey (value, salt) {
   })
 }
 
-export async function hashPassword (value) {
+export async function hashPassword (value: string) {
   const salt = randomBytes(16)
   const key = await deriveKey(value, salt)
   return `${salt.toString('hex')}.${key.toString('hex')}`
 }
 
-async function comparePassword (value, storedHash) {
+async function comparePassword (value: string, storedHash: string) {
   const [saltHex, keyHex] = storedHash.split('.')
   const expected = Buffer.from(keyHex, 'hex')
 
@@ -121,6 +131,12 @@ const passwordManager = {
   comparePassword
 }
 
+declare module 'fastify' {
+  interface FastifyInstance {
+    passwordManager: typeof passwordManager
+  }
+}
+
 export const passwordManagerPlugin = fp(
   async function passwordManagerPlugin (app) {
     app.decorate('passwordManager', passwordManager)
@@ -135,10 +151,27 @@ receive the same stored value. The next chapter will use `comparePassword`.
 ## Build the users domain
 
 The API and sessions must never expose the stored password. Put the safe user
-schema in `plugins/app/users/schemas.js`:
+schema in `plugins/app/users/schemas.ts`:
 
-```js
+```ts
 import fp from 'fastify-plugin'
+
+export interface PublicUser {
+  id: number
+  username: string
+  email: string
+  roles: string[]
+}
+
+export interface StoredUser extends PublicUser {
+  password: string
+}
+
+export interface CreateUser {
+  username: string
+  email: string
+  password: string
+}
 
 export const userSchema = {
   $id: 'user',
@@ -164,14 +197,24 @@ export const usersSchemasPlugin = fp(
 )
 ```
 
-Create `plugins/app/users/users.repository.js`:
+Create `plugins/app/users/users.repository.ts`:
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type { FastifyInstance } from 'fastify'
+import type { CreateUser, PublicUser } from './schemas.ts'
 
-function createUsersRepository (app) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    usersRepository: ReturnType<typeof createUsersRepository>
+  }
+}
+
+function createUsersRepository (app: FastifyInstance) {
   return {
-    async create ({ username, email, password }) {
+    async create (
+      { username, email, password }: CreateUser
+    ): Promise<PublicUser | null> {
       return app.knex.transaction(async function (trx) {
         const [user] = await trx('users')
           .insert({ username, email, password }, [
@@ -221,11 +264,17 @@ the `user` and `admin` roles as application reference data.
 
 ## Build the registration domain
 
-Create `plugins/app/registration/schemas.js`. It imports `passwordProperty` so
+Create `plugins/app/registration/schemas.ts`. It imports `passwordProperty` so
 the password policy has one owner:
 
-```js
-import { passwordProperty } from '../passwords/schemas.js'
+```ts
+import { passwordProperty } from '../passwords/schemas.ts'
+
+export interface RegistrationBody {
+  username: string
+  email: string
+  password: string
+}
 
 export const registrationBody = {
   type: 'object',
@@ -263,14 +312,22 @@ export const registrationResponse = {
 
 The registration service owns normalization, hashing, and persistence.
 
-### `plugins/app/registration/registration.service.js`
+### `plugins/app/registration/registration.service.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type { FastifyInstance } from 'fastify'
+import type { RegistrationBody } from './schemas.ts'
 
-function createRegistrationService (app) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    registrationService: ReturnType<typeof createRegistrationService>
+  }
+}
+
+function createRegistrationService (app: FastifyInstance) {
   return {
-    async register ({ username, email, password }) {
+    async register ({ username, email, password }: RegistrationBody) {
       const passwordHash = await app.passwordManager.hashPassword(password)
 
       return app.usersRepository.create({
@@ -298,21 +355,22 @@ export const registrationServicePlugin = fp(
 
 The route handles only HTTP validation, status codes, and serialization.
 
-### `plugins/app/registration/registration.routes.js`
+### `plugins/app/registration/registration.routes.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import {
   registrationBody,
   registrationError,
   registrationResponse
-} from './schemas.js'
+} from './schemas.ts'
+import type { RegistrationBody } from './schemas.ts'
 
 export const registrationRoutesPlugin = fp(
   async function registrationRoutesPlugin (app) {
     app.addSchema(registrationError)
 
-    app.post('/register', {
+    app.post<{ Body: RegistrationBody }>('/register', {
       schema: {
         body: registrationBody,
         response: registrationResponse
@@ -345,14 +403,14 @@ into `409 Conflict` without knowing how users or passwords are stored.
 
 ## Compose the domain entry points
 
-Keep the internal registration details out of `app.js`.
+Keep the internal registration details out of `app.ts`.
 
-### `plugins/app/users/users.plugin.js`
+### `plugins/app/users/users.plugin.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
-import { usersSchemasPlugin } from './schemas.js'
-import { usersRepositoryPlugin } from './users.repository.js'
+import { usersSchemasPlugin } from './schemas.ts'
+import { usersRepositoryPlugin } from './users.repository.ts'
 
 export const usersPlugin = fp(
   async function usersPlugin (app) {
@@ -370,11 +428,11 @@ The repository stays inside the user domain. This entry point is not
 encapsulated because registration and authentication need its schema and
 repository.
 
-Create the password entry point in `passwords/passwords.plugin.js`:
+Create the password entry point in `passwords/passwords.plugin.ts`:
 
-```js
+```ts
 import fp from 'fastify-plugin'
-import { passwordManagerPlugin } from './password-manager.service.js'
+import { passwordManagerPlugin } from './password-manager.service.ts'
 
 export const passwordsPlugin = fp(
   async function passwordsPlugin (app) {
@@ -384,16 +442,16 @@ export const passwordsPlugin = fp(
 )
 ```
 
-Then create `registration/registration.plugin.js`:
+Then create `registration/registration.plugin.ts`:
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import {
   registrationRoutesPlugin
-} from './registration.routes.js'
+} from './registration.routes.ts'
 import {
   registrationServicePlugin
-} from './registration.service.js'
+} from './registration.service.ts'
 
 export const registrationPlugin = fp(
   async function registrationPlugin (app) {
@@ -413,11 +471,12 @@ service.
 
 The teaching authentication hook currently requires a token for every route in
 the application scope. Registration is public, so update
-`plugins/app/authentication/authentication.hooks.js` with an explicit
+`plugins/app/authentication/authentication.hooks.ts` with an explicit
 public-route policy before composing the new domains:
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type { FastifyRequest } from 'fastify'
 
 const publicRoutes = new Set([
   'GET /not-protected',
@@ -425,7 +484,7 @@ const publicRoutes = new Set([
   'POST /register'
 ])
 
-function isPublicRequest (request) {
+function isPublicRequest (request: FastifyRequest) {
   const [path] = request.url.split('?', 1)
   return publicRoutes.has(`${request.method} ${path}`)
 }
@@ -469,7 +528,7 @@ on `/register` public. Removing the query string keeps a request such as
 
 Now register all application domains in the existing application scope:
 
-```js
+```ts
 app.register(infrastructurePlugin, options)
 app.register(errorsPlugin)
 
@@ -498,11 +557,11 @@ The next chapter replaces its teaching-token checks with session
 authentication while retaining the public-route policy.
 
 The existing application behavior test now verifies an allowlisted route,
-rather than a route outside authentication. In `test/app.test.js`, rename that
+rather than a route outside authentication. In `test/app.test.ts`, rename that
 test to `allows public routes and preserves not-found handling`, and add a query
 string to its public request:
 
-```js
+```ts
 const publicRoute = await app.inject(
   '/not-protected?source=test'
 )
@@ -516,14 +575,14 @@ also covers the query-string handling in `isPublicRequest()`.
 Update the seed script to insert the `user` and `admin` roles and two sample
 users. Hash both tutorial passwords before the transaction.
 
-### `scripts/seed-database.js`
+### `scripts/seed-database.ts`
 
-```js
+```ts
 import knex from 'knex'
-import knexConfig from '../knexfile.js'
+import knexConfig from '../knexfile.ts'
 import {
   hashPassword
-} from '../plugins/app/passwords/password-manager.service.js'
+} from '../plugins/app/passwords/password-manager.service.ts'
 
 if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
   throw new Error("You can't seed the database. Set `CAN_SEED_DATABASE=1` environment variable to allow this operation.")
@@ -617,9 +676,9 @@ The repository expects the default roles to exist. Update the existing test
 helper to reset the authentication tables and insert those roles before each
 test:
 
-### `test/app.js`
+### `test/app.ts`
 
-```js
+```ts
 export const TEST_PASSWORD = 'Test-password1!'
 
 // Existing createTestApp setup.
@@ -642,17 +701,17 @@ app.addHook('onReady', async function () {
 
 Now create the registration tests:
 
-### `test/plugins/app/registration/registration.test.js`
+### `test/plugins/app/registration/registration.test.ts`
 
-```js
-import { describe, test } from 'node:test'
+```ts
+import { describe, test, type TestContext } from 'node:test'
 import {
   TEST_PASSWORD,
   createTestApp
-} from '../../../app.js'
+} from '../../../app.ts'
 
 describe('registration', () => {
-  test('registers a user with the default role', async (t) => {
+  test('registers a user with the default role', async (t: TestContext) => {
     const app = createTestApp()
     t.after(() => app.close())
 
@@ -683,7 +742,7 @@ describe('registration', () => {
     t.assert.match(storedUser.password, /^[a-f0-9]{32}\.[a-f0-9]{64}$/)
   })
 
-  test('rejects registration with an existing email', async (t) => {
+  test('rejects registration with an existing email', async (t: TestContext) => {
     const app = createTestApp()
     t.after(() => app.close())
 
@@ -714,7 +773,7 @@ describe('registration', () => {
     })
   })
 
-  test('validates the registration password policy', async (t) => {
+  test('validates the registration password policy', async (t: TestContext) => {
     const app = createTestApp()
     t.after(() => app.close())
 
@@ -737,16 +796,16 @@ This test checks the registration outcome: the database contains the expected
 salt-and-key representation instead of the submitted password. Password
 verification is a separate responsibility, so test that contract directly
 through the password manager in
-`test/plugins/app/passwords/password-manager.test.js`:
+`test/plugins/app/passwords/password-manager.test.ts`:
 
-```js
+```ts
 import fastify from 'fastify'
-import { test } from 'node:test'
+import { test, type TestContext } from 'node:test'
 import {
   passwordsPlugin
-} from '../../../../plugins/app/passwords/passwords.plugin.js'
+} from '../../../../plugins/app/passwords/passwords.plugin.ts'
 
-test('hashes and verifies passwords', async function (t) {
+test('hashes and verifies passwords', async function (t: TestContext) {
   const app = fastify()
   app.register(passwordsPlugin)
   t.after(() => app.close())

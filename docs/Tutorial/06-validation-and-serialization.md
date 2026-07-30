@@ -24,7 +24,7 @@ is friendly to V8’s optimizing compiler.
 
 **Example**
 
-```js
+```ts
 const schema = {
   body: {
     type: 'object',
@@ -51,7 +51,7 @@ When you supply a **response schema**, Fastify compiles a dedicated serializer t
 
 **Example**
 
-```js
+```ts
 const schema = {
   response: {
     200: {
@@ -71,10 +71,10 @@ use `'2xx'` or `'default'` as wildcards.
 
 ## Implementation for our application
 
-We’ll move all schemas into a `schemas.js` file, configure Ajv with safe 
+We’ll move all schemas into a `schemas.ts` file, configure Ajv with safe
 defaults, and attach schemas to all our routes.
 
-### `schemas.js`
+### `schemas.ts`
 
 We’ll define:
 
@@ -82,7 +82,23 @@ We’ll define:
 * Request body and querystring schemas
 * Response schemas for quotes and errors
 
-```js
+```ts
+export interface QuoteBody {
+  text: string;
+}
+
+export interface Quote extends QuoteBody {
+  id: number;
+}
+
+export interface IdParams {
+  id: number;
+}
+
+export interface ListQuery {
+  limit?: number;
+}
+
 // Schema for validating the ":id" route parameter
 export const idParam = {
   $id: "idParam", // Unique identifier so we can $ref this schema in other places
@@ -156,17 +172,18 @@ export const deleteQuoteResponse = {
 
 ### Server with schemas
 
-```js
-// server.js
+```ts
+// server.ts
 import fastify from 'fastify';
 import closeWithGrace from 'close-with-grace';
-import { createDb } from './db.js';
-import { createQuotesRepository } from './quotes-repository.js';
+import { createDb } from './db.ts';
+import { createQuotesRepository } from './quotes-repository.ts';
 import {
   idParam, quoteBody, listQuery,
   quoteResponse, errorMessage,
   listQuotesResponse, singleQuoteResponse, deleteQuoteResponse
-} from './schemas.js';
+} from './schemas.ts';
+import type { IdParams, ListQuery, QuoteBody } from './schemas.ts';
 
 const app = fastify({
   logger: true,
@@ -197,7 +214,7 @@ app.addSchema(idParam);
 
 
 // Routes
-app.get(
+app.get<{ Querystring: ListQuery }>(
   "/quotes",
   {
     schema: {
@@ -211,7 +228,7 @@ app.get(
   }
 );
 
-app.get(
+app.get<{ Params: IdParams }>(
   "/quotes/:id",
   {
     schema: {
@@ -229,7 +246,7 @@ app.get(
   }
 );
 
-app.post(
+app.post<{ Body: QuoteBody }>(
   "/quotes",
   {
     schema: {
@@ -245,7 +262,7 @@ app.post(
   }
 );
 
-app.put(
+app.put<{ Params: IdParams; Body: QuoteBody }>(
   "/quotes/:id",
   {
     schema: {
@@ -267,7 +284,7 @@ app.put(
   }
 );
 
-app.delete(
+app.delete<{ Params: IdParams }>(
   "/quotes/:id",
   {
     schema: {
@@ -356,7 +373,7 @@ Install the optional plugin before trying this example:
 npm install ajv-errors
 ```
 
-```js
+```ts
 import AjvErrors from 'ajv-errors';
 
 const app = fastify({
@@ -398,9 +415,9 @@ Fastify can use other validators or custom Ajv configurations via
 
 Here is a trivial compiler that **always accepts data**, no matter what:
 
-```js
+```ts
 function myAlwaysValidCompiler() {
-  return function validate(data) {
+  return function validate(data: unknown) {
     return { value: data };
   };
 }
@@ -428,9 +445,9 @@ Similarly, you can replace the response serializer.
 Here’s a naive version that just wraps everything in a JSON object 
 and ignores the declared schema:
 
-```js
-function mySerializerCompiler({ schema, method, url }) {
-  return function serialize(data) {
+```ts
+function mySerializerCompiler() {
+  return function serialize(data: unknown) {
     return JSON.stringify({
       wrapped: true,
       data,

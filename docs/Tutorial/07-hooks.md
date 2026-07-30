@@ -33,7 +33,7 @@ Hooks support two async paradigms:
 
 1. **Async/Promise**
 
-   ```js
+   ```ts
    app.addHook('onRequest', async (request, reply) => {
      // await something
    });
@@ -41,7 +41,7 @@ Hooks support two async paradigms:
 
 2. **Callback** with `done`
 
-   ```js
+   ```ts
    app.addHook('onRequest', (request, reply, done) => {
      done(); // or done(err)
    });
@@ -97,7 +97,7 @@ Sometimes you want to end a request before the route handler runs (e.g. authenti
 
 If you send a reply in a hook, the rest of the hooks and the route handler are skipped.
 
-```js
+```ts
 // Stop request if no Authorization header
 app.addHook('onRequest', async (request, reply) => {
   if (!request.headers['authorization']) {
@@ -124,16 +124,26 @@ We’ll add three hooks to *Quote Vault*:
 
 We’ll add a `close` method so we can release resources in `onClose`:
 
-```js
+```ts
+interface Document {
+  id: number;
+  [property: string]: unknown;
+}
+
+interface Collection {
+  id: number;
+  data: Map<number, Document>;
+}
+
 export function createDb() {
-  const store = new Map();
+  const store = new Map<string, Collection>();
   let started = true;
 
-  function getCollection(collection) {
+  function getCollection(collection: string) {
     if (!store.has(collection)) {
       store.set(collection, { id: 1, data: new Map() });
     }
-    return store.get(collection);
+    return store.get(collection)!;
   }
 
   return {
@@ -160,7 +170,7 @@ would copy the initial `true` value and would not reflect the change made by
 
 And the hook will be registered like this:
 
-```js
+```ts
 // Clean up fake db resources
 app.addHook('onClose', async function (instance) {
   instance.log.info('closing database');
@@ -173,7 +183,7 @@ app.addHook('onClose', async function (instance) {
 We’ll store the parsed user info on `request.user`.
 To do this optimally, we must declare the field upfront using `decorateRequest`:
 
-```js
+```ts
 app.decorateRequest('user', null);
 ```
 
@@ -191,7 +201,7 @@ to security issues and memory leaks.
 
 We can then declare the `onRequest` hook:
 
-```js
+```ts
 app.decorateRequest('user', null);
 
 app.addHook("onRequest", async function (request, reply) {
@@ -215,11 +225,23 @@ app.addHook("onRequest", async function (request, reply) {
 
 ### Hooks configuration
 
-We put all the logic into a `configureHooks` function in its own file `hooks.js`:
+We put all the logic into a `configureHooks` function in its own file `hooks.ts`:
 
-```js
-// hooks.js
-export default function configureHooks(app) {
+```ts
+// hooks.ts
+import type { FastifyInstance } from 'fastify';
+
+interface User {
+  role: 'admin' | 'user';
+}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    user: User | null;
+  }
+}
+
+export default function configureHooks(app: FastifyInstance) {
   app.addHook('onClose', async function (instance) {
     instance.log.info('closing database');
     instance.db.close();
@@ -245,11 +267,11 @@ export default function configureHooks(app) {
 }
 ```
 
-### Register in `server.js`
+### Register in `server.ts`
 
-```js
-// server.js
-import configureHooks from './hooks.js';
+```ts
+// server.ts
+import configureHooks from './hooks.ts';
 
 // after decorations
 configureHooks(app)
@@ -267,8 +289,8 @@ needs parsed or validated request data.
 
 For example, our `delete` endpoint should only be accessible to admins:
 
-```js
-app.delete(
+```ts
+app.delete<{ Params: { id: number } }>(
   "/quotes/:id",
   {
     schema: {

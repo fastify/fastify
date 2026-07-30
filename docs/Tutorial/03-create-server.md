@@ -20,18 +20,47 @@ npm init -y
 npm install fastify@5
 ```
 
-To use ESM modules as we do in this tutorial, we need to set the `type` field
-in `package.json` to `module`:
+Node.js can run TypeScript directly by removing erasable type syntax before
+executing the remaining JavaScript. It does not type-check the application or
+read `tsconfig.json` at runtime. This tutorial uses only syntax supported by
+Node.js type stripping, so it does not need a compilation step or a TypeScript
+runtime dependency.
+
+Install the Node.js type declarations for editor support:
+
+```bash
+npm install --save-dev @types/node
+```
+
+To use ESM modules as we do in this tutorial, set the `type` field in
+`package.json` to `module`:
 
 ```bash
 npm pkg set type=module
+```
+
+Create `tsconfig.json` to align editor diagnostics with Node.js type stripping:
+
+```json
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "strict": true
+  },
+  "include": ["**/*.ts"]
+}
 ```
 
 Now, we are ready to create our first Fastify server!
 
 ## Write the server code
 
-Create a new file named `server.js` in your project directory and
+Create a new file named `server.ts` in your project directory and
 open it in your favorite code editor.
 
 Fastify provides a [factory] function to create a server instance. 
@@ -39,7 +68,7 @@ This function accepts an options object to configure every aspect of the server.
 
 The simplest Fastify server can be created as follows:
 
-```js
+```ts
 import fastify from 'fastify'
 
 // Factory function
@@ -60,7 +89,7 @@ By running this code, you create a Fastify server instance with logging enabled.
 To see it in action, run the server using Node.js:
 
 ```bash
-node server.js
+node server.ts
 ```
 
 You should see a message indicating your Fastify server is running on port 3000.
@@ -90,9 +119,9 @@ package!
 npm install close-with-grace
 ```
 
-After installing the package, update your `server.js` file as follows:
+After installing the package, update your `server.ts` file as follows:
 
-```js
+```ts
 import fastify from 'fastify'
 import closeWithGrace from 'close-with-grace'
 
@@ -137,7 +166,7 @@ through the `app.close()` method.
 Let's test it out by running the server again:
 
 ```bash
-node server.js
+node server.ts
 ```
 
 You can now send a request to the `/slow` endpoint to simulate a long-running request.

@@ -115,11 +115,35 @@ CAN_DROP_DATABASE=0
 CAN_SEED_DATABASE=0
 ```
 
-### `plugins/infrastructure/env.js`
+### `plugins/infrastructure/env.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import fastifyEnv from '@fastify/env'
+
+export interface AppConfig {
+  HOST: string
+  PORT: number
+  POSTGRES_HOST: string
+  POSTGRES_PORT: number
+  POSTGRES_USER: string
+  POSTGRES_PASSWORD: string
+  POSTGRES_DB: string
+}
+
+export type AppConfigInput = {
+  [Key in keyof AppConfig]?: AppConfig[Key] | string
+}
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    config: AppConfig
+  }
+}
+
+interface EnvPluginOptions {
+  override?: AppConfigInput
+}
 
 const schema = {
   type: 'object',
@@ -143,7 +167,7 @@ const schema = {
   }
 }
 
-export const envPlugin = fp(
+export const envPlugin = fp<EnvPluginOptions>(
   async function envPlugin (app, options) {
     await app.register(fastifyEnv, {
       confKey: 'config',
@@ -189,13 +213,25 @@ infrastructure level.
 The Knex client manages a database connection pool, so it belongs in
 `plugins/infrastructure`.
 
-### `plugins/infrastructure/knex.js`
+### `plugins/infrastructure/knex.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import knex from 'knex'
+import type { FastifyInstance } from 'fastify'
+import type { Knex } from 'knex'
 
-function buildKnexConfig (app) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    knex: Knex
+  }
+}
+
+interface KnexPluginOptions {
+  override?: Knex.Config
+}
+
+function buildKnexConfig (app: FastifyInstance): Knex.Config {
   return {
     // Use the PostgreSQL driver for this tutorial.
     client: 'pg',
@@ -211,7 +247,7 @@ function buildKnexConfig (app) {
   }
 }
 
-export const knexPlugin = fp(
+export const knexPlugin = fp<KnexPluginOptions>(
   async function knexPlugin (app, options) {
     const config = options.override ?? buildKnexConfig(app)
 
@@ -236,12 +272,19 @@ stable decorator.
 
 Add Knex to the infrastructure entry point:
 
-```js
+```ts
 import fp from 'fastify-plugin'
-import { envPlugin } from './env.js'
-import { knexPlugin } from './knex.js'
+import { envPlugin } from './env.ts'
+import { knexPlugin } from './knex.ts'
+import type { Knex } from 'knex'
+import type { AppConfigInput } from './env.ts'
 
-export const infrastructurePlugin = fp(
+export interface InfrastructureOptions {
+  env?: AppConfigInput
+  knex?: Knex.Config
+}
+
+export const infrastructurePlugin = fp<InfrastructureOptions>(
   async function infrastructurePlugin (app, options) {
     app.register(envPlugin, { override: options.env })
     // New for this chapter: expose the shared database client.
@@ -255,17 +298,19 @@ export const infrastructurePlugin = fp(
 
 Now that Knex is in place, we can define the database schema as a migration.
 
-### `migrations/001_create_quotes_table.js`
+### `migrations/001_create_quotes_table.ts`
 
-```js
-export async function up (knex) {
+```ts
+import type { Knex } from 'knex'
+
+export async function up (knex: Knex) {
   await knex.schema.createTable('quotes', function (table) {
     table.increments('id').primary()
     table.text('text').notNullable()
   })
 }
 
-export async function down (knex) {
+export async function down (knex: Knex) {
   await knex.schema.dropTableIfExists('quotes')
 }
 ```
@@ -282,9 +327,9 @@ This gives us an explicit schema change history:
 Knex can read a dedicated `knexfile` to know how to connect and where the
 migrations live.
 
-### `knexfile.js`
+### `knexfile.ts`
 
-```js
+```ts
 import { fileURLToPath } from 'node:url'
 
 const migrationsDirectory = fileURLToPath(
@@ -313,10 +358,10 @@ Then we can add a script for applying migrations.
 ```json
 {
   "scripts": {
-    "db:create": "node --env-file=.env ./scripts/create-database.js",
-    "db:drop": "node --env-file=.env ./scripts/drop-database.js",
-    "db:migrate": "node --env-file=.env ./node_modules/knex/bin/cli.js migrate:latest --knexfile knexfile.js",
-    "db:seed": "node --env-file=.env ./scripts/seed-database.js"
+    "db:create": "node --env-file=.env ./scripts/create-database.ts",
+    "db:drop": "node --env-file=.env ./scripts/drop-database.ts",
+    "db:migrate": "node --env-file=.env ./scripts/migrate-database.ts",
+    "db:seed": "node --env-file=.env ./scripts/seed-database.ts"
   }
 }
 ```
@@ -330,9 +375,42 @@ We can now support the full local database lifecycle:
 
 Let’s keep those helper scripts as small as possible.
 
-### `scripts/create-database.js`
+### `scripts/migrate-database.ts`
 
-```js
+```ts
+import knex from 'knex'
+import knexConfig from '../knexfile.ts'
+
+const db = knex(knexConfig)
+
+async function migrateDatabase () {
+  try {
+    const [, migrations] = await db.migrate.latest()
+
+    if (migrations.length === 0) {
+      console.log('Database is already up to date.')
+      return
+    }
+
+    console.log(`Applied ${migrations.length} migration(s).`)
+  } finally {
+    await db.destroy()
+  }
+}
+
+migrateDatabase().catch((err) => {
+  console.error('Error applying migrations:', err)
+  process.exit(1)
+})
+```
+
+Calling Knex programmatically lets Node load the migration entry point and
+the `.ts` migration files with its built-in type stripping. No TypeScript
+loader or compiler is involved.
+
+### `scripts/create-database.ts`
+
+```ts
 import { Client } from 'pg'
 
 // This flag makes the operation opt-in instead of allowing it by default.
@@ -365,7 +443,7 @@ try {
     [databaseName]
   )
 
-  if (exists.rowCount === 0) {
+  if ((exists.rowCount ?? 0) === 0) {
     await client.query(`CREATE DATABASE "${databaseName}"`)
   }
 } finally {
@@ -379,11 +457,11 @@ allow a database identifier to be passed as a query parameter, so the script
 validates `POSTGRES_DB` before interpolating it into `CREATE DATABASE`. The drop
 script applies the same check.
 
-### `scripts/seed-database.js`
+### `scripts/seed-database.ts`
 
-```js
+```ts
 import knex from 'knex'
-import knexConfig from '../knexfile.js'
+import knexConfig from '../knexfile.ts'
 
 if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
   throw new Error("You can't seed the database. Set `CAN_SEED_DATABASE=1` environment variable to allow this operation.")
@@ -411,9 +489,9 @@ This is intentionally simple:
 * clear the table,
 * insert a few sample rows.
 
-### `scripts/drop-database.js`
+### `scripts/drop-database.ts`
 
-```js
+```ts
 import { Client } from 'pg'
 
 if (Number(process.env.CAN_DROP_DATABASE) !== 1) {
@@ -478,17 +556,17 @@ CAN_DROP_DATABASE=1 npm run db:drop
 ## Run migrations outside the application
 
 At this point, we remove the in-memory
-`plugins/app/quotes/quotes-database.service.js`.
+`plugins/app/quotes/quotes-database.service.ts`.
 The application itself should not run migrations for us.
 Migrations are an operational step that should be handled by the developers of
 the project, locally or in CI, before the server starts.
 
-Remove `quotesDatabaseServicePlugin` from `quotes.plugin.js`. The quote domain
+Remove `quotesDatabaseServicePlugin` from `quotes.plugin.ts`. The quote domain
 will keep its repository; only the resource it uses changes from an in-memory
 decoration to the inherited `app.knex` client.
 
 Delete
-`test/plugins/app/quotes/quotes-database.service.test.js`
+`test/plugins/app/quotes/quotes-database.service.test.ts`
 as well. It tests the in-memory resource that we just removed; the Knex plugin
 test later in this chapter replaces that lifecycle coverage.
 
@@ -497,22 +575,30 @@ test later in this chapter replaces that lifecycle coverage.
 The routes should not care whether data comes from a `Map` or from PostgreSQL.
 That is the reason the repository abstraction exists.
 
-### `plugins/app/quotes/quotes.repository.js`
+### `plugins/app/quotes/quotes.repository.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
+import type { FastifyInstance } from 'fastify'
+import type { Quote } from './schemas.ts'
 
-function createQuotesRepository (app) {
+declare module 'fastify' {
+  interface FastifyInstance {
+    quotesRepository: ReturnType<typeof createQuotesRepository>
+  }
+}
+
+function createQuotesRepository (app: FastifyInstance) {
   const repository = {
-    async list (limit) {
-      return app.knex('quotes')
+    async list (limit: number): Promise<Quote[]> {
+      return app.knex<Quote>('quotes')
         .select('id', 'text')
         .orderBy('id')
         .limit(limit)
     },
 
-    async get (id) {
-      const quote = await app.knex('quotes')
+    async get (id: number): Promise<Quote | null> {
+      const quote = await app.knex<Quote>('quotes')
         .select('id', 'text')
         .where({ id })
         .first()
@@ -520,13 +606,13 @@ function createQuotesRepository (app) {
       return quote ?? null
     },
 
-    async create (text) {
-      const [{ id }] = await app.knex('quotes').insert({ text }, ['id'])
+    async create (text: string): Promise<Quote | null> {
+      const [{ id }] = await app.knex<Quote>('quotes').insert({ text }, ['id'])
       return repository.get(id)
     },
 
-    async update (id, text) {
-      const affectedRows = await app.knex('quotes')
+    async update (id: number, text: string): Promise<Quote | null> {
+      const affectedRows = await app.knex<Quote>('quotes')
         .where({ id })
         .update({ text })
 
@@ -537,8 +623,8 @@ function createQuotesRepository (app) {
       return repository.get(id)
     },
 
-    async remove (id) {
-      const affectedRows = await app.knex('quotes')
+    async remove (id: number): Promise<boolean> {
+      const affectedRows = await app.knex<Quote>('quotes')
         .where({ id })
         .delete()
 
@@ -569,20 +655,28 @@ That is exactly the kind of refactoring boundary we want.
 The root composition does not import Knex or the repository directly. Their
 entry plugins own that detail.
 
-### `app.js`
+### `app.ts`
 
-```js
+```ts
 import fastify from 'fastify'
 import {
   authenticationPlugin
-} from './plugins/app/authentication/authentication.plugin.js'
-import { errorsPlugin } from './plugins/app/errors/errors.plugin.js'
-import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.js'
+} from './plugins/app/authentication/authentication.plugin.ts'
+import { errorsPlugin } from './plugins/app/errors/errors.plugin.ts'
+import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.ts'
 import {
   infrastructurePlugin
-} from './plugins/infrastructure/infrastructure.plugin.js'
+} from './plugins/infrastructure/infrastructure.plugin.ts'
+import type { FastifyServerOptions } from 'fastify'
+import type {
+  InfrastructureOptions
+} from './plugins/infrastructure/infrastructure.plugin.ts'
 
-export function createApp (options = {}) {
+export interface AppOptions extends InfrastructureOptions {
+  logger?: FastifyServerOptions['logger']
+}
+
+export function createApp (options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
     forceCloseConnections: false,
@@ -631,8 +725,8 @@ repository calls.
 
 For example:
 
-```js
-app.get(
+```ts
+app.get<{ Params: { id: number } }>(
   '/quotes/:id',
   {
     schema: {
@@ -651,7 +745,7 @@ app.get(
 )
 ```
 
-Apply the same change to every repository call in `quotes.routes.js`:
+Apply the same change to every repository call in `quotes.routes.ts`:
 
 * `await this.quotesRepository.list(limit)`
 * `await this.quotesRepository.create(request.body.text)`
@@ -668,17 +762,18 @@ Since the app now talks to a shared database container, the easiest approach is
 to run migrations in the test helper and then clear the `quotes` table whenever
 a fresh test app boots.
 
-### `test/app.js`
+### `test/app.ts`
 
-```js
-import { createApp } from '../app.js'
+```ts
+import { createApp } from '../app.ts'
 import { fileURLToPath } from 'node:url'
+import type { AppOptions } from '../app.ts'
 
 const migrationsDirectory = fileURLToPath(
   new URL('../migrations', import.meta.url)
 )
 
-export function createTestApp (options = {}) {
+export function createTestApp (options: AppOptions = {}) {
   const app = createApp({
     ...options,
     logger: options.logger ?? false,
@@ -743,20 +838,20 @@ test files and helpers out of application coverage.
 The configuration and database plugin are now executable application code, so
 they must be covered. Remove the
 `builds the application when options are omitted` test from
-`test/app.test.js`; it does not assert useful application behavior. Remove the
+`test/app.test.ts`; it does not assert useful application behavior. Remove the
 now-unused `createApp` import from that file as well. The environment plugin
 test continues to exercise the explicit configuration contract owned by our
 wrapper. Reading `process.env` when `data` is omitted is behavior provided by
 `@fastify/env` itself.
 
-Replace `test/plugins/infrastructure/env.test.js` with:
+Replace `test/plugins/infrastructure/env.test.ts` with:
 
-```js
-import { describe, test } from 'node:test'
-import { createTestApp } from '../../app.js'
+```ts
+import { describe, test, type TestContext } from 'node:test'
+import { createTestApp } from '../../app.ts'
 
 describe('env plugin', function () {
-  test('loads validated configuration', async function (t) {
+  test('loads validated configuration', async function (t: TestContext) {
     const app = createTestApp({
       env: {
         HOST: '127.0.0.1',
@@ -780,14 +875,14 @@ describe('env plugin', function () {
 })
 ```
 
-Add `test/plugins/infrastructure/knex.test.js` to prove that the explicit
+Add `test/plugins/infrastructure/knex.test.ts` to prove that the explicit
 infrastructure override is selected and can establish a database connection:
 
-```js
-import { test } from 'node:test'
-import { createApp } from '../../../app.js'
+```ts
+import { test, type TestContext } from 'node:test'
+import { createApp } from '../../../app.ts'
 
-test('accepts an explicit Knex configuration', async function (t) {
+test('accepts an explicit Knex configuration', async function (t: TestContext) {
   const app = createApp({
     env: {
       HOST: '127.0.0.1',

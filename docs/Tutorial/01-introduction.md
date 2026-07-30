@@ -12,8 +12,8 @@ verifies the resulting behavior.
 
 To follow the tutorial, you should have:
 
-* a basic understanding of JavaScript, Node.js, and HTTP,
-* Node.js 20 or later,
+* a basic understanding of TypeScript, Node.js, and HTTP,
+* Node.js 24 or later,
 * npm,
 * an HTTP client such as curl or Postman,
 * Docker with Docker Compose for PostgreSQL and Redis,

@@ -29,35 +29,51 @@ Each collection keeps its own `id` counter and `Map` of documents.
 Because our server file is starting to grow and take on too many
 responsibilities, we should start to separate concerns into different files.
 
-So let's create our db in a `db.js` file:
+So let's create our db in a `db.ts` file:
 
-```js
-// db.js
+```ts
+// db.ts
+interface Document {
+  id: number;
+  [property: string]: unknown;
+}
+
+interface Collection {
+  id: number;
+  data: Map<number, Document>;
+}
+
+declare module "fastify" {
+  interface FastifyInstance {
+    db: ReturnType<typeof createDb>;
+  }
+}
+
 export function createDb() {
-  const store = new Map();
+  const store = new Map<string, Collection>();
 
   // Private helper
-  function getCollection(collection) {
+  function getCollection(collection: string) {
     if (!store.has(collection)) {
       store.set(collection, { id: 1, data: new Map() });
     }
-    return store.get(collection);
+    return store.get(collection)!;
   }
 
   // Public API
   return {
-    getAll(collection, { limit } = {}) {
+    getAll(collection: string, { limit }: { limit?: number } = {}) {
       const { data } = getCollection(collection);
       const arr = Array.from(data.values());
       return typeof limit === "number" ? arr.slice(0, limit) : arr;
     },
 
-    getById(collection, id) {
+    getById(collection: string, id: number) {
       const { data } = getCollection(collection);
       return data.get(id) ?? null;
     },
 
-    insert(collection, entity) {
+    insert(collection: string, entity: Record<string, unknown>) {
       const bucket = getCollection(collection);
       const id = bucket.id++;
       const doc = { id, ...entity };
@@ -65,7 +81,11 @@ export function createDb() {
       return doc;
     },
 
-    update(collection, id, patch) {
+    update(
+      collection: string,
+      id: number,
+      patch: Record<string, unknown>
+    ) {
       const { data } = getCollection(collection);
       if (!data.has(id)) return null;
       const updated = { ...data.get(id), ...patch };
@@ -73,19 +93,20 @@ export function createDb() {
       return updated;
     },
 
-    delete(collection, id) {
+    delete(collection: string, id: number) {
       const { data } = getCollection(collection);
       return data.delete(id);
     },
   };
 }
+
 ```
 
 Then, import and decorate the Fastify instance:
 
-```js
-// server.js
-import { createDb } from "./db.js";
+```ts
+// server.ts
+import { createDb } from "./db.ts";
 
 app.decorate("db", createDb());
 ```
@@ -97,23 +118,31 @@ We’ll then define a repository for quotes.
 To ensure the `db` decorator is available first, we’ll declare it as a
 dependency (`decorate` signature: `decorate(name, value, [dependencies])`).
 
-```js
-// quotes-repository.js
-export function createQuotesRepository(app) {
+```ts
+// quotes-repository.ts
+import type { FastifyInstance } from "fastify";
+
+declare module "fastify" {
+  interface FastifyInstance {
+    quotesRepository: ReturnType<typeof createQuotesRepository>;
+  }
+}
+
+export function createQuotesRepository(app: FastifyInstance) {
   return {
-    list(limit) {
+    list(limit?: number) {
       return app.db.getAll("quotes", { limit });
     },
-    get(id) {
+    get(id: number) {
       return app.db.getById("quotes", id);
     },
-    create(text) {
+    create(text: string) {
       return app.db.insert("quotes", { text });
     },
-    update(id, text) {
+    update(id: number, text: string) {
       return app.db.update("quotes", id, { text });
     },
-    remove(id) {
+    remove(id: number) {
       return app.db.delete("quotes", id);
     },
   };
@@ -122,9 +151,9 @@ export function createQuotesRepository(app) {
 
 Then, import and decorate:
 
-```js
-// server.js
-import { createQuotesRepository } from "./quotes-repository.js";
+```ts
+// server.ts
+import { createQuotesRepository } from "./quotes-repository.ts";
 
 // Declare dependency on "db" so Fastify enforces 
 // decoration in the right order.
@@ -140,17 +169,17 @@ app.decorate(
 Update existing routes to call `this.quotesRepository.`. 
 Avoid arrow functions for decorators/handlers where `this` must be Fastify.
 The repository now owns the in-memory state, so remove the old `id` and
-`quotes` declarations from `server.js`.
+`quotes` declarations from `server.ts`.
 
-```js
-// server.js
-app.get("/quotes", async function (request, reply) {
+```ts
+// server.ts
+app.get<{ Querystring: { limit?: number } }>("/quotes", async function (request, reply) {
   
   const limit = Number(request.query.limit ?? 10);
   return this.quotesRepository.list(Number.isNaN(limit) ? undefined : limit);
 });
 
-app.get("/quotes/:id", async function (request, reply) {
+app.get<{ Params: { id: string } }>("/quotes/:id", async function (request, reply) {
   const id = Number(request.params.id);
   const quote = this.quotesRepository.get(id);
   if (!quote) {
@@ -160,13 +189,16 @@ app.get("/quotes/:id", async function (request, reply) {
   return quote;
 });
 
-app.post("/quotes", async function (request, reply) {
+app.post<{ Body: { text: string } }>("/quotes", async function (request, reply) {
   const quote = this.quotesRepository.create(request.body.text);
   reply.code(201);
   return quote;
 });
 
-app.put("/quotes/:id", async function (request, reply) {
+app.put<{
+  Params: { id: string };
+  Body: { text: string };
+}>("/quotes/:id", async function (request, reply) {
   const id = Number(request.params.id);
   const updated = this.quotesRepository.update(id, request.body.text);
   if (!updated) {
@@ -176,7 +208,7 @@ app.put("/quotes/:id", async function (request, reply) {
   return updated;
 });
 
-app.delete("/quotes/:id", async function (request, reply) {
+app.delete<{ Params: { id: string } }>("/quotes/:id", async function (request, reply) {
   const id = Number(request.params.id);
   const deleted = this.quotesRepository.remove(id);
   if (!deleted) {

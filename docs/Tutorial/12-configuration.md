@@ -23,11 +23,30 @@ npm i @fastify/env
 The previous chapter reserved `plugins/infrastructure` for adapters around
 third-party plugins. Configuration is its first integration.
 
-### `plugins/infrastructure/env.js`
+### `plugins/infrastructure/env.ts`
 
-```js
+```ts
 import fp from 'fastify-plugin'
 import fastifyEnv from '@fastify/env'
+
+export interface AppConfig {
+  HOST: string
+  PORT: number
+}
+
+export type AppConfigInput = {
+  [Key in keyof AppConfig]?: AppConfig[Key] | string
+}
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    config: AppConfig
+  }
+}
+
+interface EnvPluginOptions {
+  override?: AppConfigInput
+}
 
 const schema = {
   type: 'object',
@@ -38,7 +57,7 @@ const schema = {
   }
 }
 
-export const envPlugin = fp(
+export const envPlugin = fp<EnvPluginOptions>(
   async function envPlugin (app, options) {
     await app.register(fastifyEnv, {
       confKey: 'config',
@@ -62,15 +81,20 @@ Let’s unpack the important pieces:
 This gives us one clear contract for configuration:
 if the application boots, `app.config` is present and valid.
 
-### `plugins/infrastructure/infrastructure.plugin.js`
+### `plugins/infrastructure/infrastructure.plugin.ts`
 
 As with an application domain, infrastructure has one entry point:
 
-```js
+```ts
 import fp from 'fastify-plugin'
-import { envPlugin } from './env.js'
+import { envPlugin } from './env.ts'
+import type { AppConfigInput } from './env.ts'
 
-export const infrastructurePlugin = fp(
+export interface InfrastructureOptions {
+  env?: AppConfigInput
+}
+
+export const infrastructurePlugin = fp<InfrastructureOptions>(
   async function infrastructurePlugin (app, options) {
     app.register(envPlugin, { override: options.env })
   },
@@ -80,7 +104,7 @@ export const infrastructurePlugin = fp(
 
 The entry point is wrapped with `fastify-plugin` so `app.config` is visible to
 the application scope registered after it. Later infrastructure integrations
-will be added here instead of imported individually by `app.js`.
+will be added here instead of imported individually by `app.ts`.
 
 ## Loading a `.env` File
 
@@ -104,7 +128,7 @@ For example, we can define our `dev` script like this:
 ```json
 {
   "scripts": {
-    "dev": "node --watch --env-file=.env server.js"
+    "dev": "node --watch --env-file=.env server.ts"
   }
 }
 ```
@@ -129,8 +153,8 @@ Create the local file from that example:
 cp .env.example .env
 ```
 
-With this setup, `node --watch --env-file=.env server.js` loads the variables
-into `process.env` before `server.js` runs.
+With this setup, `node --watch --env-file=.env server.ts` loads the variables
+into `process.env` before `server.ts` runs.
 Then `@fastify/env` validates them and exposes the result as `app.config`.
 
 ## Register configuration first
@@ -140,20 +164,28 @@ That way, any later plugin can depend on it when needed.
 
 ## Implementation for our application
 
-### `app.js`
+### `app.ts`
 
-```js
+```ts
 import fastify from 'fastify'
 import {
   authenticationPlugin
-} from './plugins/app/authentication/authentication.plugin.js'
-import { errorsPlugin } from './plugins/app/errors/errors.plugin.js'
-import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.js'
+} from './plugins/app/authentication/authentication.plugin.ts'
+import { errorsPlugin } from './plugins/app/errors/errors.plugin.ts'
+import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.ts'
 import {
   infrastructurePlugin
-} from './plugins/infrastructure/infrastructure.plugin.js'
+} from './plugins/infrastructure/infrastructure.plugin.ts'
+import type { FastifyServerOptions } from 'fastify'
+import type {
+  InfrastructureOptions
+} from './plugins/infrastructure/infrastructure.plugin.ts'
 
-export function createApp (options = {}) {
+export interface AppOptions extends InfrastructureOptions {
+  logger?: FastifyServerOptions['logger']
+}
+
+export function createApp (options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
     forceCloseConnections: false,
@@ -198,11 +230,11 @@ instead of hardcoded values.
 Because plugin loading is asynchronous, we call `await app.ready()` before
 reading `app.config`.
 
-### `server.js`
+### `server.ts`
 
-```js
+```ts
 import closeWithGrace from 'close-with-grace'
-import { createApp } from './app.js'
+import { createApp } from './app.ts'
 
 const app = createApp({ logger: true })
 
@@ -244,12 +276,13 @@ Now we extend it to inject a stable configuration object.
 This keeps the application code close to production while still giving tests
 full control over their inputs.
 
-### `test/app.js`
+### `test/app.ts`
 
-```js
-import { createApp } from '../app.js'
+```ts
+import { createApp } from '../app.ts'
+import type { AppOptions } from '../app.ts'
 
-export function createTestApp (options = {}) {
+export function createTestApp (options: AppOptions = {}) {
   return createApp({
     ...options,
     logger: options.logger ?? false,
@@ -272,12 +305,12 @@ in `test/plugins/infrastructure`.
 
 For example:
 
-```js
-// test/plugins/infrastructure/env.test.js
-import { test } from 'node:test'
-import { createTestApp } from '../../app.js'
+```ts
+// test/plugins/infrastructure/env.test.ts
+import { test, type TestContext } from 'node:test'
+import { createTestApp } from '../../app.ts'
 
-test('loads validated configuration from the env plugin', async (t) => {
+test('loads validated configuration from the env plugin', async (t: TestContext) => {
   const app = createTestApp({
     env: {
       HOST: '127.0.0.1',
@@ -305,7 +338,7 @@ You can also verify that the server reads configuration correctly by starting it
 with a custom port:
 
 ```bash
-HOST=127.0.0.1 PORT=3001 node server.js
+HOST=127.0.0.1 PORT=3001 node server.ts
 ```
 
 Then, in another terminal:

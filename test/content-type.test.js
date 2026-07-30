@@ -161,12 +161,11 @@ describe('ContentType class', () => {
     t.assert.equal(found.mediaType, 'application/json')
     t.assert.equal(found.type, 'application')
     t.assert.equal(found.subtype, 'json')
-    t.assert.equal(found.parameters.size, 3)
+    t.assert.equal(found.parameters.size, 2)
 
     const expected = [
       ['charset', 'utf-8'],
-      ['foo', 'BaR'],
-      ['baz', 'invalid quoted string']
+      ['foo', 'BaR']
     ]
     t.assert.deepStrictEqual(
       Array.from(found.parameters.entries()),
@@ -175,7 +174,7 @@ describe('ContentType class', () => {
 
     t.assert.equal(
       found.toString(),
-      'application/json; charset="utf-8"; foo="BaR"; baz="invalid quoted string"'
+      'application/json; charset="utf-8"; foo="BaR"'
     )
   })
 })

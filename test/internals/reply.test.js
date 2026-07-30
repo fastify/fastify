@@ -652,6 +652,23 @@ test('plain string with content type should be sent unmodified', async t => {
   t.assert.deepStrictEqual(await result.text(), 'hello world!')
 })
 
+test('content type with an unterminated quoted parameter does not leak a placeholder', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    // The parameter value is missing its closing quote, so it is not a valid
+    // parameter and is dropped rather than serialized back out.
+    reply.header('content-type', 'application/json; foo="bar').send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.deepStrictEqual(res.json(), { hello: 'world' })
+})
+
 test('plain string with content type and custom serializer should be serialized', async t => {
   t.plan(3)
 

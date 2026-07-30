@@ -61,12 +61,13 @@ The password domain owns its validation policy and hashing service.
 ### `plugins/app/passwords/schemas.ts`
 
 ```ts
-export const passwordProperty = {
-  type: 'string',
+import { Type } from 'typebox'
+
+export const passwordProperty = Type.String({
   minLength: 12,
   maxLength: 128,
   pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9\\s]).+$'
-}
+})
 ```
 
 The pattern requires lowercase and uppercase letters, a digit, and a symbol.
@@ -154,14 +155,20 @@ The API and sessions must never expose the stored password. Put the safe user
 schema in `plugins/app/users/schemas.ts`:
 
 ```ts
-import fp from 'fastify-plugin'
+import { Type } from 'typebox'
+import type { Static } from 'typebox'
 
-export interface PublicUser {
-  id: number
-  username: string
-  email: string
-  roles: string[]
-}
+export const userSchema = Type.Object(
+  {
+    id: Type.Integer(),
+    username: Type.String(),
+    email: Type.String(),
+    roles: Type.Array(Type.String())
+  },
+  { additionalProperties: false }
+)
+
+export type PublicUser = Static<typeof userSchema>
 
 export interface StoredUser extends PublicUser {
   password: string
@@ -172,29 +179,6 @@ export interface CreateUser {
   email: string
   password: string
 }
-
-export const userSchema = {
-  $id: 'user',
-  type: 'object',
-  additionalProperties: false,
-  required: ['id', 'username', 'email', 'roles'],
-  properties: {
-    id: { type: 'integer' },
-    username: { type: 'string' },
-    email: { type: 'string' },
-    roles: { type: 'array', items: { type: 'string' } }
-  }
-}
-
-export const usersSchemasPlugin = fp(
-  async function usersSchemasPlugin (app) {
-    app.addSchema(userSchema)
-  },
-  {
-    // Shared because registration and authentication both reference `user#`.
-    name: 'users-schemas'
-  }
-)
 ```
 
 Create `plugins/app/users/users.repository.ts`:
@@ -268,46 +252,38 @@ Create `plugins/app/registration/schemas.ts`. It imports `passwordProperty` so
 the password policy has one owner:
 
 ```ts
+import { Type } from 'typebox'
+import type { Static } from 'typebox'
 import { passwordProperty } from '../passwords/schemas.ts'
+import { userSchema } from '../users/schemas.ts'
 
-export interface RegistrationBody {
-  username: string
-  email: string
-  password: string
-}
-
-export const registrationBody = {
-  type: 'object',
-  required: ['username', 'email', 'password'],
-  additionalProperties: false,
-  properties: {
-    username: { type: 'string', minLength: 1, maxLength: 100 },
-    email: { type: 'string', format: 'email' },
+export const registrationBody = Type.Object(
+  {
+    username: Type.String({ minLength: 1, maxLength: 100 }),
+    email: Type.String({ format: 'email' }),
     password: passwordProperty
-  }
-}
+  },
+  { additionalProperties: false }
+)
 
-export const registrationError = {
-  $id: 'registrationError',
-  type: 'object',
-  additionalProperties: false,
-  required: ['message'],
-  properties: {
-    message: { type: 'string' }
-  }
-}
+export const registrationError = Type.Object(
+  {
+    message: Type.String()
+  },
+  { additionalProperties: false }
+)
 
 export const registrationResponse = {
-  201: {
-    type: 'object',
-    additionalProperties: false,
-    required: ['user'],
-    properties: {
-      user: { $ref: 'user#' }
-    }
-  },
-  409: { $ref: 'registrationError#' }
+  201: Type.Object(
+    {
+      user: userSchema
+    },
+    { additionalProperties: false }
+  ),
+  409: registrationError
 }
+
+export type RegistrationBody = Static<typeof registrationBody>
 ```
 
 The registration service owns normalization, hashing, and persistence.
@@ -359,18 +335,17 @@ The route handles only HTTP validation, status codes, and serialization.
 
 ```ts
 import fp from 'fastify-plugin'
+import type {
+  FastifyPluginAsyncTypebox
+} from '@fastify/type-provider-typebox'
 import {
   registrationBody,
-  registrationError,
   registrationResponse
 } from './schemas.ts'
-import type { RegistrationBody } from './schemas.ts'
 
-export const registrationRoutesPlugin = fp(
+const registrationRoutes: FastifyPluginAsyncTypebox =
   async function registrationRoutesPlugin (app) {
-    app.addSchema(registrationError)
-
-    app.post<{ Body: RegistrationBody }>('/register', {
+    app.post('/register', {
       schema: {
         body: registrationBody,
         response: registrationResponse
@@ -386,11 +361,14 @@ export const registrationRoutesPlugin = fp(
       reply.code(201)
       return { user }
     })
-  },
+  }
+
+export const registrationRoutesPlugin = fp(
+  registrationRoutes,
   {
     name: 'registration-routes',
     encapsulate: true,
-    dependencies: ['registration-service', 'users-schemas'],
+    dependencies: ['registration-service'],
     decorators: {
       fastify: ['registrationService']
     }
@@ -409,12 +387,10 @@ Keep the internal registration details out of `app.ts`.
 
 ```ts
 import fp from 'fastify-plugin'
-import { usersSchemasPlugin } from './schemas.ts'
 import { usersRepositoryPlugin } from './users.repository.ts'
 
 export const usersPlugin = fp(
   async function usersPlugin (app) {
-    app.register(usersSchemasPlugin)
     app.register(usersRepositoryPlugin)
   },
   {
@@ -425,8 +401,9 @@ export const usersPlugin = fp(
 ```
 
 The repository stays inside the user domain. This entry point is not
-encapsulated because registration and authentication need its schema and
-repository.
+encapsulated because registration and authentication need its repository.
+The user schema is a regular TypeBox value, so schema modules can import and
+compose it directly.
 
 Create the password entry point in `passwords/passwords.plugin.ts`:
 

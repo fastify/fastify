@@ -606,9 +606,10 @@ function createQuotesRepository (app: FastifyInstance) {
       return quote ?? null
     },
 
-    async create (text: string): Promise<Quote | null> {
-      const [{ id }] = await app.knex<Quote>('quotes').insert({ text }, ['id'])
-      return repository.get(id)
+    async create (text: string): Promise<Quote> {
+      const [quote] = await app.knex<Quote>('quotes')
+        .insert({ text }, ['id', 'text'])
+      return quote
     },
 
     async update (id: number, text: string): Promise<Quote | null> {
@@ -726,11 +727,11 @@ repository calls.
 For example:
 
 ```ts
-app.get<{ Params: { id: number } }>(
+app.get(
   '/quotes/:id',
   {
     schema: {
-      params: { $ref: 'idParam#' },
+      params: idParam,
       response: singleQuoteResponse
     }
   },

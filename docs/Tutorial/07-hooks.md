@@ -290,14 +290,14 @@ needs parsed or validated request data.
 For example, our `delete` endpoint should only be accessible to admins:
 
 ```ts
-app.delete<{ Params: { id: number } }>(
+app.delete(
   "/quotes/:id",
   {
     schema: {
-      params: { $ref: "idParam#" },
+      params: idParam,
       response: {
         ...deleteQuoteResponse,
-        403: { $ref: "errorMessage#" }
+        403: errorMessage
       },
     },
     onRequest: async function (request, reply) {
@@ -313,7 +313,7 @@ app.delete<{ Params: { id: number } }>(
       reply.code(404);
       return { message: "Quote not found" };
     }
-    return reply.code(204).send();
+    return reply.code(204).send(null);
   }
 );
 ```

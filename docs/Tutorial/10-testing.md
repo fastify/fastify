@@ -70,7 +70,6 @@ and tests.
 
 ```ts
 import fastify from "fastify";
-import { idParam } from "./schemas.ts";
 import configureErrorHandlers from "./error-handlers.ts";
 import { dbPlugin } from "./plugins/db.ts";
 import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
@@ -98,8 +97,6 @@ export function createApp(options: AppOptions = {}) {
 
   app.register(dbPlugin);
   app.register(quotesRepositoryPlugin);
-
-  app.addSchema(idParam);
 
   app.register(protectedRoutes);
 

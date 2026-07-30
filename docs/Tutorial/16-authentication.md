@@ -374,51 +374,49 @@ preserves a user who currently has no role.
 Create `plugins/app/authentication/schemas.ts`:
 
 ```ts
+import { Type } from 'typebox'
+import type { Static } from 'typebox'
 import { passwordProperty } from '../passwords/schemas.ts'
+import { userSchema } from '../users/schemas.ts'
+import type { PublicUser } from '../users/schemas.ts'
 
-export interface Credentials {
-  email: string
-  password: string
-}
-
-export interface AuthenticatedUser {
-  id: number
-  username: string
-  email: string
-  roles: string[]
-}
-
-export const credentialsBody = {
-  type: 'object',
-  required: ['email', 'password'],
-  additionalProperties: false,
-  properties: {
-    email: { type: 'string', format: 'email' },
+export const credentialsBody = Type.Object(
+  {
+    email: Type.String({ format: 'email' }),
     password: passwordProperty
-  }
-}
+  },
+  { additionalProperties: false }
+)
 
-export const authenticationError = {
-  $id: 'authenticationError',
-  type: 'object',
-  additionalProperties: false,
-  required: ['message'],
-  properties: {
-    message: { type: 'string' }
-  }
-}
+export const authenticationError = Type.Object(
+  {
+    message: Type.String()
+  },
+  { additionalProperties: false }
+)
 
 export const loginResponse = {
-  200: {
-    type: 'object',
-    additionalProperties: false,
-    required: ['user'],
-    properties: {
-      user: { $ref: 'user#' }
-    }
-  },
-  401: { $ref: 'authenticationError#' }
+  200: Type.Object(
+    {
+      user: userSchema
+    },
+    { additionalProperties: false }
+  ),
+  401: authenticationError
 }
+
+export const meResponse = {
+  200: userSchema,
+  401: authenticationError
+}
+
+export const logoutResponse = {
+  204: Type.Null(),
+  401: authenticationError
+}
+
+export type Credentials = Static<typeof credentialsBody>
+export type AuthenticatedUser = PublicUser
 ```
 
 This tutorial reuses the password policy for login input. In an application
@@ -537,18 +535,19 @@ the session lifecycle.
 
 ```ts
 import fp from 'fastify-plugin'
+import type {
+  FastifyPluginAsyncTypebox
+} from '@fastify/type-provider-typebox'
 import {
-  authenticationError,
   credentialsBody,
-  loginResponse
+  loginResponse,
+  logoutResponse,
+  meResponse
 } from './schemas.ts'
-import type { Credentials } from './schemas.ts'
 
-export const authenticationRoutesPlugin = fp(
+const authenticationRoutes: FastifyPluginAsyncTypebox =
   async function authenticationRoutesPlugin (app) {
-    app.addSchema(authenticationError)
-
-    app.post<{ Body: Credentials }>('/login', {
+    app.post('/login', {
       schema: {
         body: credentialsBody,
         response: loginResponse
@@ -571,10 +570,7 @@ export const authenticationRoutesPlugin = fp(
 
     app.get('/me', {
       schema: {
-        response: {
-          200: { $ref: 'user#' },
-          401: { $ref: 'authenticationError#' }
-        }
+        response: meResponse
       }
     }, async function (request) {
       return request.session.user
@@ -582,24 +578,23 @@ export const authenticationRoutesPlugin = fp(
 
     app.post('/logout', {
       schema: {
-        response: {
-          204: { type: 'null' },
-          401: { $ref: 'authenticationError#' }
-        }
+        response: logoutResponse
       }
     }, async function (request, reply) {
       await request.session.destroy()
       reply.clearCookie(app.config.SESSION_COOKIE_NAME, { path: '/' })
-      return reply.code(204).send()
+      return reply.code(204).send(null)
     })
-  },
+  }
+
+export const authenticationRoutesPlugin = fp(
+  authenticationRoutes,
   {
     name: 'authentication-routes',
     encapsulate: true,
     dependencies: [
       'authentication-hook',
-      'authentication-service',
-      'users-schemas'
+      'authentication-service'
     ],
     decorators: {
       fastify: ['authenticationService']
@@ -682,11 +677,11 @@ chapter. It must now read the authenticated session instead of the removed
 `request.user` teaching value. Replace the complete route declaration with:
 
 ```ts
-app.delete<{ Params: { id: number } }>(
+app.delete(
   '/quotes/:id',
   {
     schema: {
-      params: { $ref: 'idParam#' },
+      params: idParam,
       response: deleteQuoteResponse
     },
     onRequest: async function (request, reply) {
@@ -705,7 +700,7 @@ app.delete<{ Params: { id: number } }>(
       reply.code(404)
       return { message: 'Quote not found' }
     }
-    return reply.code(204).send()
+    return reply.code(204).send(null)
   }
 )
 ```

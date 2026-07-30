@@ -16,6 +16,31 @@ Fastify solves both with a **schema-first** approach using
 you declare input and output shapes, and Fastify compiles them into
 high-performance validators and serializers that run automatically for each request.
 
+## Install TypeBox
+
+We could write JSON Schema objects by hand, but then the runtime schema and its
+TypeScript type would be separate declarations that can drift apart. TypeBox
+builds standard JSON Schema objects and lets TypeScript derive their static
+types from the same source.
+
+Install TypeBox and Fastify's TypeBox type provider:
+
+```bash
+npm install typebox @fastify/type-provider-typebox
+```
+
+`Type` is a runtime schema builder. `Static` is used only by TypeScript, so it
+must be imported with `import type` when using Node.js type stripping:
+
+```ts
+import { Type } from 'typebox'
+import type { Static } from 'typebox'
+```
+
+The Fastify type provider connects these schemas to route types. Once it is
+enabled, Fastify infers `request.body`, `request.query`, `request.params`, and
+reply payloads directly from each route's schemas.
+
 ## Validation
 
 Fastify uses [Ajv](https://ajv.js.org/) for validation.
@@ -25,12 +50,12 @@ is friendly to V8’s optimizing compiler.
 **Example**
 
 ```ts
+import { Type } from 'typebox'
+
 const schema = {
-  body: {
-    type: 'object',
-    required: ['name'],
-    properties: { name: { type: 'string' } }
-  }
+  body: Type.Object({
+    name: Type.String()
+  })
 };
 
 app.post('/hello', { schema }, async (req) => ({ hello: req.body.name }));
@@ -52,13 +77,16 @@ When you supply a **response schema**, Fastify compiles a dedicated serializer t
 **Example**
 
 ```ts
+import { Type } from 'typebox'
+
 const schema = {
   response: {
-    200: {
-      type: 'object',
-      additionalProperties: false,
-      properties: { hello: { type: 'string' } }
-    }
+    200: Type.Object(
+      {
+        hello: Type.String()
+      },
+      { additionalProperties: false }
+    )
   }
 };
 
@@ -78,97 +106,86 @@ defaults, and attach schemas to all our routes.
 
 We’ll define:
 
-* A reusable `id` params schema via `addSchema`
+* A reusable `id` params schema
 * Request body and querystring schemas
 * Response schemas for quotes and errors
 
 ```ts
-export interface QuoteBody {
-  text: string;
-}
-
-export interface Quote extends QuoteBody {
-  id: number;
-}
-
-export interface IdParams {
-  id: number;
-}
-
-export interface ListQuery {
-  limit?: number;
-}
+import { Type } from "typebox";
+import type { Static } from "typebox";
 
 // Schema for validating the ":id" route parameter
-export const idParam = {
-  $id: "idParam", // Unique identifier so we can $ref this schema in other places
-  type: "object", // The params object itself
-  properties: {
-    id: { type: "integer", minimum: 1 }, // Must be a positive integer
-  },
-  required: ["id"], // "id" must be present
-};
+export const idParam = Type.Object(
+  {
+    id: Type.Integer({ minimum: 1 }), // Must be a positive integer
+  }
+);
 
 // Schema for validating the request body when creating/updating a quote
-export const quoteBody = {
-  type: "object",
-  required: ["text"],
-  additionalProperties: false, // Only declared keys are kept
-  properties: {
-    text: { type: "string", minLength: 1 },
+export const quoteBody = Type.Object(
+  {
+    text: Type.String({ minLength: 1 }),
   },
-};
+  { additionalProperties: false } // Only declared keys are kept
+);
 
 // Schema for validating the querystring (?limit=)
-export const listQuery = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    limit: { type: "integer", minimum: 1 },
+export const listQuery = Type.Object(
+  {
+    limit: Type.Optional(Type.Integer({ minimum: 1 })),
   },
-};
+  { additionalProperties: false }
+);
 
 // Schema describing a quote entity in responses
-export const quoteResponse = {
-  $id: "quoteResponse",
-  type: "object",
-  additionalProperties: false,
-  required: ["id", "text"],
-  properties: {
-    id: { type: "integer" },
-    text: { type: "string" },
+export const quoteResponse = Type.Object(
+  {
+    id: Type.Integer(),
+    text: Type.String(),
   },
-};
+  { additionalProperties: false }
+);
 
 // Schema describing an error message in responses
-export const errorMessage = {
-  $id: "errorMessage",
-  type: "object",
-  additionalProperties: false,
-  required: ["message"],
-  properties: { message: { type: "string" } },
-};
+export const errorMessage = Type.Object(
+  {
+    message: Type.String(),
+  },
+  { additionalProperties: false }
+);
 
 // Response schema for listing multiple quotes
 export const listQuotesResponse = {
-  200: {
-    type: "array", // Array of quotes
-    items: { $ref: "quoteResponse#" }, // Each element must match quoteResponse
-  },
+  200: Type.Array(quoteResponse),
 };
 
 // Response schema for returning a single quote or an error
 export const singleQuoteResponse = {
-  "2xx": { $ref: "quoteResponse#" }, // Any 2xx response returns a quote
-  404: { $ref: "errorMessage#" }, // Not found → error message
+  "2xx": quoteResponse,
+  404: errorMessage,
 };
 
 // Response schema for delete operation
 export const deleteQuoteResponse = {
-  204: { type: "null" }, // No content on success
-  404: { $ref: "errorMessage#" }, // Not found → error message
+  204: Type.Null(),
+  404: errorMessage,
 };
+
+export type Quote = Static<typeof quoteResponse>;
+export type QuoteBody = Static<typeof quoteBody>;
+export type IdParams = Static<typeof idParam>;
+export type ListQuery = Static<typeof listQuery>;
 ```
+
+`Type.Object()` makes its properties required unless they are wrapped in
+`Type.Optional()`. The exported `Static` aliases are useful outside route
+handlers—for example, the repository can use `Quote`—while route request types
+will be inferred automatically by the provider.
+
+The response schemas compose TypeBox values directly. `app.addSchema()` and
+`Type.Ref()` are useful when an application deliberately uses Fastify's named
+schema registry. Here every schema module can import the value it needs, so
+direct composition is simpler and preserves the complete static type.
 
 ### Server with schemas
 
@@ -180,10 +197,11 @@ import { createDb } from './db.ts';
 import { createQuotesRepository } from './quotes-repository.ts';
 import {
   idParam, quoteBody, listQuery,
-  quoteResponse, errorMessage,
   listQuotesResponse, singleQuoteResponse, deleteQuoteResponse
 } from './schemas.ts';
-import type { IdParams, ListQuery, QuoteBody } from './schemas.ts';
+import type {
+  TypeBoxTypeProvider
+} from '@fastify/type-provider-typebox';
 
 const app = fastify({
   logger: true,
@@ -198,7 +216,7 @@ const app = fastify({
       removeAdditional: 'all'
     }
   }
-});
+}).withTypeProvider<TypeBoxTypeProvider>();
 
 app.decorate('db', createDb());
 app.decorate(
@@ -207,14 +225,8 @@ app.decorate(
   ['db']
 );
 
-// Shared schemas
-app.addSchema(quoteResponse);
-app.addSchema(errorMessage);
-app.addSchema(idParam);
-
-
 // Routes
-app.get<{ Querystring: ListQuery }>(
+app.get(
   "/quotes",
   {
     schema: {
@@ -228,11 +240,11 @@ app.get<{ Querystring: ListQuery }>(
   }
 );
 
-app.get<{ Params: IdParams }>(
+app.get(
   "/quotes/:id",
   {
     schema: {
-      params: { $ref: "idParam#" },
+      params: idParam,
       response: singleQuoteResponse,
     },
   },
@@ -246,7 +258,7 @@ app.get<{ Params: IdParams }>(
   }
 );
 
-app.post<{ Body: QuoteBody }>(
+app.post(
   "/quotes",
   {
     schema: {
@@ -262,11 +274,11 @@ app.post<{ Body: QuoteBody }>(
   }
 );
 
-app.put<{ Params: IdParams; Body: QuoteBody }>(
+app.put(
   "/quotes/:id",
   {
     schema: {
-      params: { $ref: "idParam#" },
+      params: idParam,
       body: quoteBody,
       response: singleQuoteResponse,
     },
@@ -284,11 +296,11 @@ app.put<{ Params: IdParams; Body: QuoteBody }>(
   }
 );
 
-app.delete<{ Params: IdParams }>(
+app.delete(
   "/quotes/:id",
   {
     schema: {
-      params: { $ref: "idParam#" },
+      params: idParam,
       response: deleteQuoteResponse,
     },
   },
@@ -298,7 +310,7 @@ app.delete<{ Params: IdParams }>(
       reply.code(404);
       return { message: "Quote not found" };
     }
-    return reply.code(204).send();
+    return reply.code(204).send(null);
   }
 );
 

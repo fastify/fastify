@@ -21,7 +21,10 @@ feature.
 Example of a simple plugin:
 
 ```ts
-import type { FastifyPluginAsync } from "fastify";
+import { Type } from "typebox";
+import type {
+  FastifyPluginAsyncTypebox
+} from "@fastify/type-provider-typebox";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -29,13 +32,21 @@ declare module "fastify" {
   }
 }
 
+const nameParam = Type.Object({
+  name: Type.String()
+});
+
 // Define plugin
-const myPlugin: FastifyPluginAsync = async function (fastify, opts) {
+const myPlugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
   fastify.decorate('greet', (name: string) => `Hello, ${name}`);
 
-  fastify.get<{ Params: { name: string } }>('/hello/:name', (req, reply) => {
-    reply.send({ message: fastify.greet(req.params.name) });
-  });
+  fastify.get(
+    '/hello/:name',
+    { schema: { params: nameParam } },
+    (req, reply) => {
+      reply.send({ message: fastify.greet(req.params.name) });
+    }
+  );
 };
 
 // Register plugin
@@ -466,30 +477,28 @@ export const authPlugin: FastifyPluginAsync = async function authPlugin(app) {
 ### Quotes routes (encapsulated)
 
 This plugin defines all `/quotes` routes. It assumes
-`app.quotesRepository` exists. It registers all schemas inside its own
-scope.
+`app.quotesRepository` exists. It imports and composes the schemas used by
+its routes.
 
 ```ts
 // routes/quotes.ts
 import fp from "fastify-plugin";
+import type {
+  FastifyPluginAsyncTypebox
+} from "@fastify/type-provider-typebox";
 import {
+  idParam,
   quoteBody,
   listQuery,
-  quoteResponse,
   errorMessage,
   listQuotesResponse,
   singleQuoteResponse,
   deleteQuoteResponse,
 } from "../schemas.ts";
-import type { IdParams, ListQuery, QuoteBody } from "../schemas.ts";
 
-export const quotesRoutesPlugin = fp(
+const quotesRoutes: FastifyPluginAsyncTypebox =
   async function quotesRoutesPlugin(app) {
-    // Shared schemas (scoped to this plugin)
-    app.addSchema(quoteResponse);
-    app.addSchema(errorMessage);
-
-    app.get<{ Querystring: ListQuery }>(
+    app.get(
       "/quotes",
       {
         schema: {
@@ -503,11 +512,11 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.get<{ Params: IdParams }>(
+    app.get(
       "/quotes/:id",
       {
         schema: {
-          params: { $ref: "idParam#" },
+          params: idParam,
           response: singleQuoteResponse,
         },
       },
@@ -521,7 +530,7 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.post<{ Body: QuoteBody }>(
+    app.post(
       "/quotes",
       {
         schema: {
@@ -537,11 +546,11 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.put<{ Params: IdParams; Body: QuoteBody }>(
+    app.put(
       "/quotes/:id",
       {
         schema: {
-          params: { $ref: "idParam#" },
+          params: idParam,
           body: quoteBody,
           response: singleQuoteResponse,
         },
@@ -559,14 +568,14 @@ export const quotesRoutesPlugin = fp(
       }
     );
 
-    app.delete<{ Params: IdParams }>(
+    app.delete(
       "/quotes/:id",
       {
         schema: {
-          params: { $ref: "idParam#" },
+          params: idParam,
           response: {
             ...deleteQuoteResponse,
-            403: { $ref: "errorMessage#" },
+            403: errorMessage,
           },
         },
         onRequest: async function (request, reply) {
@@ -581,10 +590,13 @@ export const quotesRoutesPlugin = fp(
           reply.code(404);
           return { message: "Quote not found" };
         }
-        return reply.code(204).send();
+        return reply.code(204).send(null);
       }
     );
-  },
+  }
+
+export const quotesRoutesPlugin = fp(
+  quotesRoutes,
   {
     name: "quotes-routes",
     encapsulate: true,
@@ -597,6 +609,10 @@ export const quotesRoutesPlugin = fp(
   }
 );
 ```
+
+`FastifyPluginAsyncTypebox` gives the plugin's scoped Fastify instance the
+TypeBox provider. This is why the handlers keep schema inference after the
+routes move out of the root instance and into a plugin.
 
 ### Protected routes wrapper
 
@@ -634,7 +650,6 @@ import configureErrorHandlers from "./error-handlers.ts";
 import { dbPlugin } from "./plugins/db.ts";
 import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
 import { protectedRoutes } from "./routes/protected.ts";
-import { idParam } from "./schemas.ts";
 
 const app = fastify({
   logger: true,
@@ -651,9 +666,6 @@ const app = fastify({
 // Plugins
 app.register(dbPlugin)
 app.register(quotesRepositoryPlugin)
-
-// Shared schemas
-app.addSchema(idParam);
 
 // Routes
 app.register(protectedRoutes)

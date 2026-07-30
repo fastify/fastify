@@ -497,7 +497,7 @@ quota to that route.
 ### `plugins/app/quotes/quotes.routes.ts`
 
 ```ts
-app.post<{ Body: QuoteBody }>(
+app.post(
   '/quotes',
   {
     config: {

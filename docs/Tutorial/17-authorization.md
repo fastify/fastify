@@ -31,14 +31,14 @@ authorization can safely inspect `request.session.user.roles`.
 Create `plugins/app/authorization/schemas.ts`:
 
 ```ts
-export const forbiddenResponse = {
-  type: 'object',
-  additionalProperties: false,
-  required: ['message'],
-  properties: {
-    message: { type: 'string' }
-  }
-}
+import { Type } from 'typebox'
+
+export const forbiddenResponse = Type.Object(
+  {
+    message: Type.String()
+  },
+  { additionalProperties: false }
+)
 ```
 
 The quote response schema will reuse this object for status `403`.
@@ -137,23 +137,24 @@ Import `forbiddenResponse` in `plugins/app/quotes/schemas.ts` and add it to the
 delete responses:
 
 ```ts
+import { Type } from 'typebox'
 import { forbiddenResponse } from '../authorization/schemas.ts'
 
 export const deleteQuoteResponse = {
-  204: { type: 'null' },
+  204: Type.Null(),
   403: forbiddenResponse,
-  404: { $ref: 'quoteError#' }
+  404: quoteError
 }
 ```
 
 Then add the role hook to the existing delete route:
 
 ```ts
-app.delete<{ Params: { id: number } }>(
+app.delete(
   '/quotes/:id',
   {
     schema: {
-      params: { $ref: 'idParam#' },
+      params: idParam,
       response: deleteQuoteResponse
     },
     // New for this chapter: deleting a quote requires the administrator role.
@@ -165,7 +166,7 @@ app.delete<{ Params: { id: number } }>(
       reply.code(404)
       return { message: 'Quote not found' }
     }
-    return reply.code(204).send()
+    return reply.code(204).send(null)
   }
 )
 ```

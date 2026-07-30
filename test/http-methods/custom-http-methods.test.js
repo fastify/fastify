@@ -3,7 +3,7 @@
 const http = require('node:http')
 const { test } = require('node:test')
 const Fastify = require('../../fastify')
-const { assertNoWarning } = require('../toolkit')
+const { assertNoWarning } = require('../helper')
 
 function addEcho (fastify, method) {
   fastify.route({

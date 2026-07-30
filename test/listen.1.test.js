@@ -4,7 +4,7 @@ const { networkInterfaces } = require('node:os')
 const { test, before } = require('node:test')
 const Fastify = require('..')
 const helper = require('./helper')
-const { assertNoWarning } = require('./toolkit')
+const { assertNoWarning } = require('./helper')
 
 let localhost
 let localhostForURL

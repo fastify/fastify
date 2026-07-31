@@ -392,7 +392,7 @@ function fastify (serverOptions) {
           if (forceCloseConnections === 'idle' && options.serverFactory) {
             instance.server.closeIdleConnections()
             /* istanbul ignore next: Cannot test this without Node.js core support */
-          } else if (serverHasCloseAllConnections && forceCloseConnections) {
+          } else if (serverHasCloseAllConnections && forceCloseConnections === true) {
             instance.server.closeAllConnections()
           } else if (forceCloseConnections === true) {
             for (const conn of fastify[kKeepAliveConnections]) {

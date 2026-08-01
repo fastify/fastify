@@ -218,6 +218,38 @@ test('should be able to attach validation to request', async (t) => {
   t.assert.strictEqual(response.statusCode, 400)
 })
 
+test('attached validationError exposes the same message sent by the default handler', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.post('/attached', { schema, attachValidation: true }, function (req, reply) {
+    reply.code(400).send({
+      message: req.validationError.message,
+      code: req.validationError.code,
+      statusCode: req.validationError.statusCode,
+      validationContext: req.validationError.validationContext
+    })
+  })
+
+  fastify.post('/default', { schema }, echoBody)
+
+  const payload = { hello: 'michelangelo' }
+  const attached = await fastify.inject({ method: 'POST', payload, url: '/attached' })
+  const notAttached = await fastify.inject({ method: 'POST', payload, url: '/default' })
+
+  t.assert.deepStrictEqual(attached.json(), {
+    message: "body must have required property 'name'",
+    code: 'FST_ERR_VALIDATION',
+    statusCode: 400,
+    validationContext: 'body'
+  })
+
+  t.assert.strictEqual(attached.json().message, notAttached.json().message)
+  t.assert.strictEqual(attached.statusCode, 400)
+  t.assert.strictEqual(notAttached.statusCode, 400)
+})
+
 test('should respect when attachValidation is explicitly set to false', async (t) => {
   t.plan(2)
 

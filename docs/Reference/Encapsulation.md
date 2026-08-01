@@ -140,7 +140,7 @@ update the code as follows:
 'use strict'
 
 const fastify = require('fastify')()
-const fastifyPlugin = require('fastify-plugin')
+const fp = require('fastify-plugin')
 
 fastify.decorateRequest('answer', 42)
 
@@ -161,7 +161,7 @@ fastify.register(async function publicContext (childServer) {
     }
   })
 
-  childServer.register(fastifyPlugin(grandchildContext))
+  childServer.register(fp(grandchildContext))
 
   async function grandchildContext (grandchildServer) {
     grandchildServer.decorateRequest('bar', 'bar')
@@ -200,9 +200,9 @@ contexts:
 'use strict'
 
 const fastify = require('fastify')()
-const fastifyPlugin = require('fastify-plugin')
+const fp = require('fastify-plugin')
 
-fastify.register(fastifyPlugin(async function sharedContext (childServer) {
+fastify.register(fp(async function sharedContext (childServer) {
   childServer.decorate('foo', 'foo')
 
   childServer.register(async function encapsulatedContext (grandchildServer) {

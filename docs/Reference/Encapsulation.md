@@ -192,4 +192,33 @@ curl http://127.0.0.1:8000/three
 # {"answer":42,"foo":"foo","bar":"bar"}
 ```
 
+`fastify-plugin` breaks the encapsulation of only the plugin it wraps. Any
+plugins registered inside the wrapped plugin still create new encapsulated
+contexts:
+
+```js
+'use strict'
+
+const fastify = require('fastify')()
+const fastifyPlugin = require('fastify-plugin')
+
+fastify.register(fastifyPlugin(async function sharedContext (childServer) {
+  childServer.decorate('foo', 'foo')
+
+  childServer.register(async function encapsulatedContext (grandchildServer) {
+    grandchildServer.decorate('bar', 'bar')
+  })
+}))
+
+await fastify.ready()
+
+console.log(fastify.foo) // 'foo'
+console.log(fastify.bar) // undefined
+```
+
+The `foo` decorator is available in the root context because it is added
+directly by the plugin wrapped with `fastify-plugin`. The nested `register`
+call still creates a grandchild context, so the `bar` decorator remains
+available only in that context.
+
 [fastify-plugin]: https://github.com/fastify/fastify-plugin

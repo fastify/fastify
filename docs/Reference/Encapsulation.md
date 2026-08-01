@@ -192,8 +192,8 @@ curl http://127.0.0.1:8000/three
 # {"answer":42,"foo":"foo","bar":"bar"}
 ```
 
-`fastify-plugin` breaks the encapsulation of only the plugin it wraps. Any
-plugins registered inside the wrapped plugin still create new encapsulated
+`fastify-plugin` breaks encapsulation only for the plugin it wraps. Plugins
+registered inside it without `fastify-plugin` still create new encapsulated
 contexts:
 
 ```js

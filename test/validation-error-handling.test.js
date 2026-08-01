@@ -238,14 +238,16 @@ test('attached validationError exposes the same message sent by the default hand
   const attached = await fastify.inject({ method: 'POST', payload, url: '/attached' })
   const notAttached = await fastify.inject({ method: 'POST', payload, url: '/default' })
 
-  t.assert.deepStrictEqual(attached.json(), {
+  const attachedBody = attached.json()
+
+  t.assert.deepStrictEqual(attachedBody, {
     message: "body must have required property 'name'",
     code: 'FST_ERR_VALIDATION',
     statusCode: 400,
     validationContext: 'body'
   })
 
-  t.assert.strictEqual(attached.json().message, notAttached.json().message)
+  t.assert.strictEqual(attachedBody.message, notAttached.json().message)
   t.assert.strictEqual(attached.statusCode, 400)
   t.assert.strictEqual(notAttached.statusCode, 400)
 })

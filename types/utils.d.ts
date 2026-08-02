@@ -2,10 +2,8 @@ import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 
-/** A callable type used only to inspect parameters and return values. */
 export type AnyFunction = (...args: never[]) => unknown
 
-/** An asynchronous callable type used only to classify function signatures. */
 export type AsyncFunction = (...args: never[]) => Promise<unknown>
 
 type AutocompletePrimitiveBaseType<T> =

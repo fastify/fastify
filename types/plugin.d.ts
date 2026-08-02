@@ -16,7 +16,8 @@ export type FastifyPluginCallback<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger,
+    TypeProvider>,
   opts: Options,
   done: (err?: Error) => void
 ) => void
@@ -32,7 +33,8 @@ export type FastifyPluginAsync<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger,
+    TypeProvider>,
   opts: Options
 ) => Promise<void>
 
@@ -41,4 +43,6 @@ export type FastifyPluginAsync<
  * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. Use `FastifyPluginCallback` or `FastifyPluginAsync` instead. To activate
  * plugins use `FastifyRegister`. https://fastify.dev/docs/latest/Reference/TypeScript/#register
  */
-export type FastifyPlugin<Options extends FastifyPluginOptions = Record<never, never>> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>
+export type FastifyPlugin<
+  Options extends FastifyPluginOptions = Record<never, never>
+> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>

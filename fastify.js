@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.10.0'
+const VERSION = '5.11.0'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -80,7 +80,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -823,9 +823,16 @@ function fastify (serverOptions) {
     return this
   }
 
-  function addHttpMethod (method, { hasBody = false } = {}) {
+  function addHttpMethod (method, { hasBody = false, overrideExisting = false } = {}) {
     if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
+    }
+
+    const alreadyExists = this[kSupportedHTTPMethods].bodyless.has(method) ||
+      this[kSupportedHTTPMethods].bodywith.has(method)
+
+    if (alreadyExists && !overrideExisting) {
+      FSTDEP025(method)
     }
 
     if (hasBody === true) {

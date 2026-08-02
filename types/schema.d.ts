@@ -1,6 +1,5 @@
 import { ValidatorFactory } from '@fastify/ajv-compiler'
 import { SerializerFactory } from '@fastify/fast-json-stringify-compiler'
-import { FastifyInstance } from './instance'
 import { SafePromiseLike } from './type-provider'
 /**
  * Schemas in Fastify follow the JSON-Schema standard. For this reason
@@ -51,7 +50,7 @@ export type FastifySerializerCompiler<T, Input = any> = (
 
 export interface FastifySchemaControllerOptions {
   bucket?: (parentSchemas?: unknown) => {
-    add(schema: unknown): FastifyInstance;
+    add(schema: unknown): void;
     getSchema(schemaId: string): unknown;
     getSchemas(): Record<string, unknown>;
   };

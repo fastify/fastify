@@ -34,23 +34,27 @@ export type FindMyWayVersion<RawServer extends RawServerBase> =
 type FindMyWayConfigForServer<RawServer extends RawServerBase> =
   FindMyWayConfig<FindMyWayVersion<RawServer>>
 
-export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<
+export type FastifyRouterOptions<
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
+> = Omit<
   FindMyWayConfigForServer<RawServer>,
   'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'
 > & {
   defaultRoute?: (
-    req: RawRequestDefaultExpression<RawServer>,
-    res: RawReplyDefaultExpression<RawServer>
+    req: RawRequest,
+    res: RawReply
   ) => void
   onBadUrl?: (
     path: string,
-    req: RawRequestDefaultExpression<RawServer>,
-    res: RawReplyDefaultExpression<RawServer>
+    req: RawRequest,
+    res: RawReply
   ) => void
   onMaxParamLength?: (
     path: string,
-    req: RawRequestDefaultExpression<RawServer>,
-    res: RawReplyDefaultExpression<RawServer>
+    req: RawRequest,
+    res: RawReply
   ) => void
   querystringParser?: (str: string) => { [key: string]: unknown }
 }
@@ -64,9 +68,11 @@ export interface FastifyRouteConfig {
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface { }
 
-export type RouteConstraintType = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
-  deriveConstraint<Context>(req: RawRequestDefaultExpression<RawServerDefault>, ctx?: Context, done?: (err: Error,
-    ...args: any) => any): any,
+export type RouteConstraintType<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
+> = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
+  deriveConstraint<Context>(req: RawRequest, ctx?: Context, done?: (err: Error, ...args: any) => any): any,
 }
 
 export interface RouteConstraint {

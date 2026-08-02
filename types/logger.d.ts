@@ -44,7 +44,7 @@ export interface FastifyLoggerStreamDestination {
  */
 export type ResSerializerReply<
   RawServer extends RawServerBase,
-  RawReply extends FastifyReply<RouteGenericInterface, RawServer>
+  RawReply extends { raw: RawReplyDefaultExpression<RawServer>, statusCode: number }
 > = Partial<RawReply> & Pick<RawReply, 'statusCode'>
 
 /**
@@ -52,23 +52,10 @@ export type ResSerializerReply<
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RequestForSerializer extends FastifyRequest<
-    RouteGenericInterface,
-    RawServer,
-    RawRequestDefaultExpression<RawServer>,
-    FastifySchema,
-    FastifyTypeProvider
-  > = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema,
+  RequestForSerializer extends object = FastifyRequest<RouteGenericInterface, RawServer,
+    RawRequestDefaultExpression<RawServer>, FastifySchema,
     FastifyTypeProviderDefault>,
-  ReplyForSerializer extends FastifyReply<
-    RouteGenericInterface,
-    RawServer,
-    RawRequestDefaultExpression<RawServer>,
-    RawReplyDefaultExpression<RawServer>,
-    ContextConfigDefault,
-    FastifySchema,
-    FastifyTypeProvider
-  > = FastifyReply<
+  ReplyForSerializer extends { raw: RawReplyDefaultExpression<RawServer>, statusCode: number } = FastifyReply<
     RouteGenericInterface,
     RawServer,
     RawRequestDefaultExpression<RawServer>,
@@ -105,31 +92,36 @@ export interface FastifyLoggerOptions<
   stream?: FastifyLoggerStreamDestination;
 }
 
-export interface LogControllerOptions {
-  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
+export interface LogControllerOptions<Request = FastifyRequest> {
+  disableRequestLogging?: boolean | ((req: Request) => boolean)
   requestIdLogLabel?: string
 }
 
-export declare class LogController {
-  disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
+export declare class LogController<
+  Request extends object = FastifyRequest,
+  Reply extends object = FastifyReply,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Server extends object = FastifyInstance
+> {
+  disableRequestLogging: boolean | ((req: Request) => boolean)
   requestIdLogLabel: string
 
-  constructor (options?: LogControllerOptions)
+  constructor (options?: LogControllerOptions<Request>)
 
-  isLogDisabled (request: FastifyRequest): boolean
-  incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  isLogDisabled (request: Request): boolean
+  incomingRequest (request: Request, reply: Reply, metadata?: Record<string, unknown>): void
   requestCompleted (
     error: Error | null,
-    request: FastifyRequest,
-    reply: FastifyReply,
+    request: Request,
+    reply: Reply,
     metadata?: Record<string, unknown>
   ): void
-  defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
-  serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
-  serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
+  defaultErrorLog (error: Error, request: Request, reply: Reply, metadata?: Record<string, unknown>): void
+  streamError (error: Error, request: Request, reply: Reply, metadata?: Record<string, unknown>): void
+  routeNotFound (request: Request, reply: Reply, metadata?: Record<string, unknown>): void
+  writeHeadError (error: Error, request: Request, reply: Reply, metadata?: Record<string, unknown>): void
+  serializerError (error: Error, request: Request, reply: Reply, metadata: { statusCode: number }): void
+  serviceUnavailable (logger: Logger, server: Server): void
 }
 
 export interface FastifyChildLoggerFactory<

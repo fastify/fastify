@@ -20,7 +20,16 @@ export interface ValidationFunction<Input = unknown> {
   errors?: null | ErrorObject[];
 }
 
-export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema> {
+export interface RequestRouteOptions<
+  ContextConfig = ContextConfigDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
+> {
   method: HTTPMethods | HTTPMethods[];
   // `url` can be `undefined` for instance when `request.is404` is true
   url: string | undefined;
@@ -32,7 +41,8 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   prefixTrailingSlash: string;
   config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;
   schema?: SchemaCompiler; // it is empty for 404 requests
-  handler: RouteHandlerMethod;
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+    TypeProvider, Logger>;
   version?: string;
 }
 
@@ -48,11 +58,12 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
-  ServerInstance = FastifyInstance
-// ^ Temporary Note: RequestType was moved after Logger in the historical generic
+  ServerInstance = FastifyInstance,
+  RouteOptionsView = RequestRouteOptions<ContextConfig, SchemaCompiler>
+// ^ Compatibility Note: RequestType was moved after Logger in the historical generic
 //   list and can usually be omitted because it is inferred from SchemaCompiler,
-//   RouteGeneric and TypeProvider. ServerInstance was appended later so the existing
-//   RequestType position remains compatible. Related issue #4123
+//   RouteGeneric and TypeProvider. New parameters must be appended after RequestType
+//   to preserve its existing position. Related issue #4123
 > {
   id: string;
   params: RequestType['params']; // deferred inference
@@ -99,7 +110,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
    */
   readonly protocol: 'http' | 'https';
   readonly method: string;
-  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
+  readonly routeOptions: Readonly<RouteOptionsView>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
   readonly signal: AbortSignal;
@@ -133,5 +144,7 @@ export type FastifyRequestForRoute<
   ContextConfig,
   Logger,
   ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
-  FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+  RequestRouteOptions<ContextConfig, SchemaCompiler, RawServer, RawRequest, RawReply, RouteGeneric, TypeProvider,
+    Logger>
 >

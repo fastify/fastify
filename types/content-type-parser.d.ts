@@ -1,8 +1,9 @@
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression } from './utils'
-import { FastifyRequest } from './request'
+import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, RawRequestDefaultExpression, ContextConfigDefault } from './utils'
+import { FastifyRequestForRoute } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
+import { FastifyBaseLogger } from './logger'
 
 type ContentTypeParserDoneFunction<ParsedBody = any> = (err: Error | null, body?: ParsedBody) => void
 
@@ -16,15 +17,19 @@ export type FastifyBodyParser<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  ParsedBody = any
+  ParsedBody = any,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > =
   | ((
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+    request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
+      ContextConfigDefault, Logger>,
     rawBody: RawBody,
     done: ContentTypeParserDoneFunction<ParsedBody>
   ) => void)
   | ((
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+    request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
+      ContextConfigDefault, Logger>,
     rawBody: RawBody
   ) => Promise<ParsedBody>)
 
@@ -37,14 +42,18 @@ export type FastifyContentTypeParser<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  ParsedBody = any
+  ParsedBody = any,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > =
   | ((
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+    request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
+      ContextConfigDefault, Logger>,
     payload: RawRequest
   ) => Promise<ParsedBody>)
   | ((
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+    request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
+      ContextConfigDefault, Logger>,
     payload: RawRequest,
     done: ContentTypeParserDoneFunction<ParsedBody>
   ) => void)
@@ -57,18 +66,22 @@ export interface AddContentTypeParser<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > {
   (
     contentType: string | string[] | RegExp,
     opts: {
       bodyLimit?: number;
     },
-    parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
+    parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider, any, RawReply,
+      Logger>
   ): void;
   (
     contentType: string | string[] | RegExp,
-    parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
+    parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider, any, RawReply,
+      Logger>
   ): void;
   <parseAs extends string | Buffer>(
     contentType: string | string[] | RegExp,
@@ -76,7 +89,8 @@ export interface AddContentTypeParser<
       parseAs: parseAs extends Buffer ? 'buffer' : 'string';
       bodyLimit?: number;
     },
-    parser: FastifyBodyParser<parseAs, RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
+    parser: FastifyBodyParser<parseAs, RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider, any, RawReply,
+      Logger>
   ): void;
 }
 

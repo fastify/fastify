@@ -790,7 +790,7 @@ export interface onRouteHookHandler<
   (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
-      TypeProvider> & { routePath: string; path: string; prefix: string }
+      TypeProvider, Logger> & { routePath: string; path: string; prefix: string }
   ): Promise<unknown> | void;
 }
 

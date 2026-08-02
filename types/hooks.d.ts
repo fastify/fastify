@@ -368,45 +368,18 @@ export type preSerializationMetaHookHandler<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  Return extends
-  | ReturnType<
-        preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
-          ContextConfig, SchemaCompiler, TypeProvider, Logger>
-      >
-      | ReturnType<
-        preSerializationAsyncHookHandler<
-          PreSerializationPayload,
-          RawServer,
-          RawRequest,
-          RawReply,
-          RouteGeneric,
-          ContextConfig,
-          SchemaCompiler,
-          TypeProvider,
-          Logger
-        >
-      > = ReturnType<
-    preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-      SchemaCompiler, TypeProvider, Logger>
-  >
-> =
-  Return extends ReturnType<
-    preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-      SchemaCompiler, TypeProvider, Logger>
-  >
-    ? preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-      SchemaCompiler, TypeProvider, Logger>
-    : preSerializationAsyncHookHandler<
-        PreSerializationPayload,
-        RawServer,
-        RawRequest,
-        RawReply,
-        RouteGeneric,
-        ContextConfig,
-        SchemaCompiler,
-        TypeProvider,
-        Logger
-      >
+  Return extends ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
+    RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
+    | ReturnType<preSerializationAsyncHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
+    RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
+  = ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
+    ContextConfig, SchemaCompiler, TypeProvider, Logger>>
+> = Return extends ReturnType<preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply,
+  RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>>
+  ? preSerializationHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+    SchemaCompiler, TypeProvider, Logger>
+  : preSerializationAsyncHookHandler<PreSerializationPayload, RawServer, RawRequest, RawReply, RouteGeneric,
+    ContextConfig, SchemaCompiler, TypeProvider, Logger>
 
 /**
  * You can change the payload with the `onSend` hook. It is the sixth hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.

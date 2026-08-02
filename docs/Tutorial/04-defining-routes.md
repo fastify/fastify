@@ -15,7 +15,7 @@ a very fast, framework-independent HTTP router that relies on a highly efficient
 Fastify provides multiple ways to define routes:
 
 * **Full Declaration**: Explicitly declare routes using `fastify.route`,
-  see [documentation](/docs/latest/Reference/Routes/#full-declaration).
+  see [documentation](../Reference/Routes.md#full-declaration).
 * **Shorthand Methods**: Convenient methods like `fastify.get()`,
   `fastify.post()`, `fastify.put()`, and others.
 
@@ -112,7 +112,7 @@ Let’s review a few important details from these examples.
    * If you use `reply.send()` in an async handler, make sure to `return`
      or `await` the `reply`.
 
-   > See [related documentation](/docs/latest/Reference/Routes/#async-await)
+   > See [related documentation](../Reference/Routes.md#async-await)
    > for more details.
 
    In this tutorial, we'll return the value whenever possible.
@@ -212,7 +212,7 @@ The commands below assume the first created quote has ID `1`.
 > Fastify needs to know how to parse the incoming body.
 > If you forget to set the `Content-Type` header,
 > Fastify will respond with a `415 Unsupported Media Type` error.
-> See [`FST_ERR_CTP_INVALID_MEDIA_TYPE`](/docs/latest/Reference/Errors/#fst_err_ctp_invalid_media_type).
+> See [`FST_ERR_CTP_INVALID_MEDIA_TYPE`](../Reference/Errors.md#fst_err_ctp_invalid_media_type).
 
 ```bash
 curl -X POST http://localhost:3000/quotes \

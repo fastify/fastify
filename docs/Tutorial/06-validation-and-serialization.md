@@ -422,7 +422,7 @@ in the response.
 
 You’re not locked into Ajv.
 Fastify can use other validators or custom Ajv configurations via
-[`setValidatorCompiler`](/docs/latest/Reference/Validation-and-Serialization/#using-other-validation-libraries)
+[`setValidatorCompiler`](../Reference/Validation-and-Serialization.md#using-other-validation-libraries)
 .
 
 Here is a trivial compiler that **always accepts data**, no matter what:

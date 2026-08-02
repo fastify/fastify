@@ -69,6 +69,7 @@ declare namespace fastify {
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
     https: https.ServerOptions | null
+    http2?: false
   }
 
   export type FastifyHttpOptions<
@@ -76,6 +77,7 @@ declare namespace fastify {
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
     http?: http.ServerOptions | null
+    http2?: false
   }
 
   type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server

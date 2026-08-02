@@ -23,6 +23,7 @@ import {
   FastifyTypeProviderDefault,
   ResolveFastifyReplyReturnType
 } from './type-provider'
+import { AnyFunction } from './type-helpers'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
 export interface FastifyRouteConfig {
@@ -46,7 +47,6 @@ export interface RouteConstraint {
 /**
  * Route shorthand options for the various shorthand methods
  */
-type AnyFunction = (...args: never[]) => unknown
 type RouteShorthandHook<T extends AnyFunction> = (...args: Parameters<T>) => void | Promise<unknown>
 
 export interface RouteShorthandOptions<

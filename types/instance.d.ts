@@ -38,6 +38,7 @@ import {
   FastifyTypeProviderDefault,
   SafePromiseLike
 } from './type-provider'
+import { AnyFunction } from './type-helpers'
 import {
   ContextConfigDefault,
   RawReplyDefaultExpression,
@@ -51,7 +52,6 @@ export type { FindMyWayFindResult, PrintRoutesOptions } from './instance-routing
 export type { FastifyListenOptions } from './instance-lifecycle'
 
 type ErrorHandlerResult = any | Promise<any>
-type AnyFunction = (...args: never[]) => unknown
 
 type GetterSetter<This, Value> = Value | {
   getter: (this: This) => Value,

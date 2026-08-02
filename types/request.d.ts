@@ -49,11 +49,10 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
   ServerInstance = FastifyInstance
-// ^ Temporary Note: RequestType has been re-ordered to be the last argument in
-//   the historical generic list. This generic argument is optional as it can be
-//   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
-//   arguments. ServerInstance was appended later so existing RequestType positions
-//   stay compatible. Related issue #4123
+// ^ Temporary Note: RequestType was moved after Logger in the historical generic
+//   list and can usually be omitted because it is inferred from SchemaCompiler,
+//   RouteGeneric and TypeProvider. ServerInstance was appended later so the existing
+//   RequestType position remains compatible. Related issue #4123
 > {
   id: string;
   params: RequestType['params']; // deferred inference

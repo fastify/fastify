@@ -4,7 +4,7 @@ import { FastifyBaseLogger } from './logger'
 import { FastifyRequest, FastifyRequestForRoute, RequestRouteOptions } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
-import { CallSerializerTypeProvider, FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType, SendArgs } from './type-provider'
+import { CallSerializerTypeProvider, FastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyType, ResolveFastifyRequestType, SendArgs } from './type-provider'
 import { CodeToReplyKey, ContextConfigDefault, HttpHeader, HttpKeys, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, ReplyDefault, ReplyKeysToCodes } from './utils'
 
 export interface ReplyGenericInterface {
@@ -97,11 +97,23 @@ export interface FastifyReply<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
-  RequestView = FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig,
-    Logger>,
-  ServerInstance = FastifyInstance
+  RequestView = FastifyRequest<
+    RouteGeneric,
+    RawServer,
+    RawRequest,
+    SchemaCompiler,
+    TypeProvider,
+    ContextConfig,
+    Logger,
+    ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
+    FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    RequestRouteOptions<ContextConfig, SchemaCompiler, RawServer, RawRequest, RawReply, RouteGeneric, TypeProvider,
+      Logger>
+  >,
+  ServerInstance = FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
 > {
-  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
+  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler, RawServer, RawRequest, RawReply,
+    RouteGeneric, TypeProvider, Logger>>
 
   raw: RawReply;
   elapsedTime: number;

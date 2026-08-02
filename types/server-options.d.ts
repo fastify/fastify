@@ -2,9 +2,9 @@ import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
-import { BuildCompilerFromPool, ValidatorFactory } from '@fastify/ajv-compiler'
+import { BuildCompilerFromPool } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
-import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
+import { Options as FJSOptions } from '@fastify/fast-json-stringify-compiler'
 import { ConstraintStrategy } from 'find-my-way'
 import { ConstructorAction, ProtoAction } from './content-type-parser'
 import { FastifyContextConfig } from './context'
@@ -13,7 +13,7 @@ import { FastifyBaseLogger, FastifyChildLoggerFactory, FastifyLoggerOptions, Log
 import { FastifyReplyForRoute } from './reply'
 import { FastifyRequestForRoute } from './request'
 import { FastifyRouterOptions, FindMyWayVersion, RouteGenericInterface } from './route'
-import { FastifySchema, SchemaErrorFormatter } from './schema'
+import { FastifySchema, FastifySchemaControllerOptions, SchemaErrorFormatter } from './schema'
 import { FastifyServerFactory } from './server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
@@ -55,11 +55,24 @@ export type FastifyServerOptions<
       request: FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema,
         TypeProvider, ContextConfigDefault, Logger>
     ) => boolean)
-  logController?: LogController
+  logController?: LogController<
+    FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider,
+      ContextConfigDefault, Logger>,
+    FastifyReplyForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, ContextConfigDefault, FastifySchema,
+      TypeProvider, Logger>,
+    Logger,
+    FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  >
   exposeHeadRoutes?: boolean
   onProtoPoisoning?: ProtoAction
   onConstructorPoisoning?: ConstructorAction
-  logger?: boolean | (FastifyLoggerOptions<RawServer> & PinoLoggerOptions)
+  logger?: boolean | (FastifyLoggerOptions<
+    RawServer,
+    FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider,
+      ContextConfigDefault, Logger>,
+    FastifyReplyForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, ContextConfigDefault, FastifySchema,
+      TypeProvider, Logger>
+  > & PinoLoggerOptions)
   loggerInstance?: Logger
   serializerOpts?: FJSOptions | Record<string, unknown>
   serverFactory?: FastifyServerFactory<RawServer, RawRequest, RawReply>
@@ -73,17 +86,7 @@ export type FastifyServerOptions<
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction
   querystringParser?: (input: string) => Record<string, unknown>
   constraints?: Record<string, ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>>
-  schemaController?: {
-    bucket?: (parentSchemas?: unknown) => {
-      add(schema: unknown): FastifyInstance
-      getSchema(schemaId: string): unknown
-      getSchemas(): Record<string, unknown>
-    }
-    compilersFactory?: {
-      buildValidator?: ValidatorFactory
-      buildSerializer?: SerializerFactory
-    }
-  }
+  schemaController?: FastifySchemaControllerOptions
   return503OnClosing?: boolean
   ajv?: Parameters<BuildCompilerFromPool>[1]
   frameworkErrors?: (
@@ -106,7 +109,7 @@ export type FastifyServerOptions<
   ) => void
   childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   allowErrorHandlerOverride?: boolean
-  routerOptions?: FastifyRouterOptions<RawServer>
+  routerOptions?: FastifyRouterOptions<RawServer, RawRequest, RawReply>
 }
 
 export type FastifyHttp2SecureOptions<

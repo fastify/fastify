@@ -20,7 +20,7 @@ import { preHandlerAsyncHookHandler, preHandlerHookHandler, preValidationAsyncHo
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyInstanceHooks } from './instance-hooks'
 import { FastifyRegister } from './register'
-import { FastifyReply, FastifyReplyForRoute } from './reply'
+import { FastifyReplyForRoute } from './reply'
 import { FastifyRequest, FastifyRequestForRoute } from './request'
 import {
   FastifyRouterOptions,
@@ -102,6 +102,38 @@ type DecorationMethod<This, Instance, Return = Instance> = {
   (property: string | symbol, value: null | undefined, dependencies: string[]): Return
 }
 
+type FastifyInstanceRequest<
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider
+> = FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider,
+  ContextConfigDefault, Logger>
+
+type FastifyInstanceReply<
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider
+> = FastifyReplyForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, ContextConfigDefault, FastifySchema,
+  TypeProvider, Logger>
+
+type FastifyInstanceRegistration<
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyBaseLogger,
+  TypeProvider extends FastifyTypeProvider
+> = FastifyRegister<
+  FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & SafePromiseLike<undefined>,
+  RawServer,
+  TypeProvider,
+  Logger,
+  FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+>
+
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
  */
@@ -143,14 +175,14 @@ export interface FastifyInstance<
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger,
     Provider>;
 
-  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger,
-    TypeProvider> & SafePromiseLike<undefined>>;
+  register: FastifyInstanceRegistration<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   decorate: DecorationMethod<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>
-  decorateRequest: DecorationMethod<FastifyRequest, FastifyInstance<RawServer, RawRequest, RawReply, Logger,
-    TypeProvider>>
-  decorateReply: DecorationMethod<FastifyReply, FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>
+  decorateRequest: DecorationMethod<FastifyInstanceRequest<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>
+  decorateReply: DecorationMethod<FastifyInstanceReply<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>>
   getDecorator<Value>(name: string | symbol): Value
   hasDecorator(decorator: string | symbol): boolean
   hasRequestDecorator(decorator: string | symbol): boolean
@@ -261,7 +293,8 @@ export interface FastifyInstance<
     errorFormatter: SchemaErrorFormatter
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
 
-  addContentTypeParser: AddContentTypeParser<RawServer, RawRequest, RouteGenericInterface, FastifySchema, TypeProvider>
+  addContentTypeParser: AddContentTypeParser<RawServer, RawRequest, RouteGenericInterface, FastifySchema, TypeProvider,
+    RawReply, Logger>
   hasContentTypeParser: hasContentTypeParser
   removeContentTypeParser: removeContentTypeParser
   removeAllContentTypeParsers: removeAllContentTypeParsers
@@ -314,7 +347,16 @@ export interface FastifyInstance<
   /**
    * Fastify default error handler
    */
-  errorHandler: <TError = unknown>(error: TError, request: FastifyRequest, reply: FastifyReply) => void;
+  errorHandler<
+    TError = unknown,
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+    HandlerTypeProvider extends FastifyTypeProvider = TypeProvider
+  >(error: TError,
+    request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler,
+      HandlerTypeProvider, ContextConfigDefault, Logger>,
+    reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfigDefault, SchemaCompiler,
+      HandlerTypeProvider, Logger>): void;
 
   /**
    * Set a function that will be invoked whenever an exception is thrown during the request lifecycle.

@@ -11,6 +11,7 @@
   - [Errors In Fastify](#errors-in-fastify)
     - [Errors In Input Data](#errors-in-input-data)
     - [Catching Uncaught Errors In Fastify](#catching-uncaught-errors-in-fastify)
+    - [What The Default Error Handler Sends](#what-the-default-error-handler-sends)
   - [Errors In Fastify Lifecycle Hooks And A Custom Error Handler](#errors-in-fastify-lifecycle-hooks-and-a-custom-error-handler)
   - [Fastify Error Codes](#fastify-error-codes)
     - [FST_ERR_NOT_FOUND](#fst_err_not_found)
@@ -142,10 +143,76 @@ performance. This includes:
    })`
 
 In both cases, the error will be caught safely and routed to Fastify's default
-error handler, resulting in a generic `500 Internal Server Error` response.
+error handler, resulting in a `500 Internal Server Error` response.
 
-To customize this behavior, use
-[`setErrorHandler`](./Server.md#seterrorhandler).
+#### What The Default Error Handler Sends
+The default error handler serializes the error into a JSON body with the
+`statusCode`, `error`, and `message` properties, plus `code` when the error
+carries one:
+
+```js
+app.get('/', async () => { throw new Error('kaboom') })
+```
+
+```json
+{
+  "statusCode": 500,
+  "error": "Internal Server Error",
+  "message": "kaboom"
+}
+```
+
+The `error` property is the generic HTTP status text, but **`message` is
+`error.message` verbatim**. This applies to every status code, including `500`.
+The stack trace is never included.
+
+> Security:
+> Because `message` and `code` are forwarded as-is, errors thrown by libraries
+> deeper in your application are exposed to the client. A database driver
+> error, for example, can leak schema details and query text:
+>
+> ```json
+> {
+>   "statusCode": 500,
+>   "code": "ER_BAD_FIELD_ERROR",
+>   "error": "Internal Server Error",
+>   "message": "Unknown column 'username' in 'field list'"
+> }
+> ```
+>
+> Fastify does not distinguish between development and production here. If
+> unexpected errors must not reach the client, handle this explicitly.
+
+Register a [`setErrorHandler`](./Server.md#seterrorhandler) to replace the
+message for errors you did not raise deliberately, while letting the ones you
+did pass through:
+
+```js
+app.setErrorHandler(function (error, request, reply) {
+  // Errors with a statusCode below 500 are deliberate and safe to expose,
+  // as are validation errors.
+  if (error.validation || (error.statusCode && error.statusCode < 500)) {
+    return reply.send(error)
+  }
+
+  // Anything else is unexpected: log it, but do not describe it to the client.
+  this.log.error({ err: error }, 'unhandled error')
+  reply.status(500).send({
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: 'Internal Server Error'
+  })
+})
+```
+
+The handler above is registered on the root instance, so it applies to every
+route. Error handlers are encapsulated; for how they resolve across plugin
+contexts, see
+[the next section](#errors-in-fastify-lifecycle-hooks-and-a-custom-error-handler).
+
+Note that a route-level response schema is still applied to whatever the error
+handler sends, and will reshape the payload accordingly. See
+[Serialization](./Validation-and-Serialization.md#serialization).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 

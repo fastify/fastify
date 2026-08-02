@@ -102,7 +102,7 @@ In this tutorial, we enabled logging by passing `{ logger: true }` to the
 `fastify` factory function. Fastify's logger is built on top of [Pino](https://getpino.io/),
 a very fast and low-overhead logging library.
 For a complete and detailed list of available options, refer to the
-[documentation](/docs/latest/Reference/Server/#factory).
+[documentation](../Reference/Server.md#factory).
 
 ### Graceful shutdown
 

@@ -224,7 +224,10 @@ export interface FastifyInstance<
   supportedMethods: string[]
   addHttpMethod(
     method: string,
-    methodOptions?: { hasBody: boolean }
+    methodOptions?: {
+      hasBody?: boolean
+      overrideExisting?: boolean
+    }
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   printRoutes(opts?: PrintRoutesOptions): string
 

@@ -22,8 +22,7 @@ import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPlugin
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
-import { FastifyRouterOptions } from './types/router-options'
-import { RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
+import { FastifyRouterOptions, RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/server-factory'
 import {
@@ -71,12 +70,11 @@ declare namespace fastify {
     FastifyReply, // './types/reply'
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
-    FastifyRouterOptions, // './types/router-options'
     FastifyLoggerOptions, FastifyBaseLogger, FastifyChildLoggerFactory, FastifyLoggerInstance, FastifyLogFn,
     LogLevel, // './types/logger'
     FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions,
-    RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
+    RouteShorthandOptionsWithHandler, RouteGenericInterface, FastifyRouterOptions, // './types/route'
     FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'
     FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser,
     ProtoAction, ConstructorAction, // './types/content-type-parser'

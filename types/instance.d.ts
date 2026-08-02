@@ -19,12 +19,19 @@ import {
 import { preHandlerAsyncHookHandler, preHandlerHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyInstanceHooks } from './instance-hooks'
-import { FindMyWayFindResult, PrintRoutesOptions } from './instance-routing'
 import { FastifyRegister } from './register'
 import { FastifyReply, FastifyReplyForRoute } from './reply'
 import { FastifyRequest, FastifyRequestForRoute } from './request'
-import { FastifyRouterOptions, FindMyWayVersion } from './router-options'
-import { RouteGenericInterface, RouteHandlerMethod, RouteOptions, RouteShorthandMethod } from './route'
+import {
+  FastifyRouterOptions,
+  FindMyWayFindResult,
+  FindMyWayVersion,
+  PrintRoutesOptions,
+  RouteGenericInterface,
+  RouteHandlerMethod,
+  RouteOptions,
+  RouteShorthandMethod
+} from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
@@ -46,8 +53,7 @@ import {
   RawServerDefault
 } from './utils'
 
-export type { FindMyWayVersion } from './router-options'
-export type { FindMyWayFindResult, PrintRoutesOptions } from './instance-routing'
+export type { FindMyWayFindResult, FindMyWayVersion, PrintRoutesOptions } from './route'
 
 export interface FastifyListenOptions {
   /** Default to `0` (picks the first available open port). */

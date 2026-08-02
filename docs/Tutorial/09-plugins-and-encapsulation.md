@@ -13,10 +13,12 @@ Plugins solve this.
 
 ## Definition
 
-Plugins are cohesive, reusable functions that extend a Fastify
-application. A plugin receives a scoped Fastify instance. Inside that
-scope it can add routes, decorators, hooks, and any other Fastify
-feature.
+Plugins are cohesive, reusable functions that extend a Fastify application.
+A plugin receives a Fastify instance and uses it to add routes, decorators,
+hooks, and other Fastify features.
+
+Registering a plugin normally creates a new encapsulation context. The next
+section explains how that context controls visibility.
 
 Example of a simple plugin:
 

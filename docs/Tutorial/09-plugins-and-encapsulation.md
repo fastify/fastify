@@ -385,13 +385,27 @@ npm i fastify-plugin
 
 ### DB plugin
 
-This plugin exposes `app.db` to the rest of the application and closes
-the connection on shutdown.
+The database implementation and its Fastify integration belong together.
+Move the existing file into `plugins/`:
+
+```bash
+mkdir -p plugins
+mv db.ts plugins/db.ts
+```
+
+Keep the existing database types, `FastifyInstance` augmentation, and
+`createDb()` function in that file. Add the `fastify-plugin` import at the top:
 
 ```ts
 // plugins/db.ts
 import fp from "fastify-plugin";
-import { createDb } from "../db.ts";
+```
+
+Then append the plugin below `createDb()`. It exposes `app.db` to the rest of
+the application and closes the resource on shutdown:
+
+```ts
+// plugins/db.ts
 
 export const dbPlugin = fp(
   async function dbPlugin(app) {
@@ -408,13 +422,25 @@ export const dbPlugin = fp(
 
 ### Quotes repository plugin
 
-This plugin needs the database. It exposes
-`app.quotesRepository` so route plugins can query it.
+Move the existing repository implementation into `plugins/` as well:
+
+```bash
+mv quotes-repository.ts plugins/quotes-repo.ts
+```
+
+Keep its `FastifyInstance` import and augmentation together with
+`createQuotesRepository()`. Add the new import at the top:
 
 ```ts
 // plugins/quotes-repo.ts
 import fp from 'fastify-plugin';
-import { createQuotesRepository } from '../quotes-repository.ts';
+```
+
+Then append the plugin below `createQuotesRepository()`. It requires the
+database decoration and exposes `app.quotesRepository` to route plugins:
+
+```ts
+// plugins/quotes-repo.ts
 
 export const quotesRepositoryPlugin = fp(
   async function quotesRepo(app) {

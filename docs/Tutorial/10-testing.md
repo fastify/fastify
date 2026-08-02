@@ -76,7 +76,7 @@ import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
 import { protectedRoutes } from "./routes/protected.ts";
 import type { FastifyServerOptions } from "fastify";
 
-interface AppOptions {
+export interface AppOptions {
   logger?: FastifyServerOptions["logger"];
 }
 

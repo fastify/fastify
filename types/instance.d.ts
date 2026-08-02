@@ -44,8 +44,8 @@ import {
   FastifyTypeProviderDefault,
   SafePromiseLike
 } from './type-provider'
-import { AnyFunction } from './type-helpers'
 import {
+  AnyFunction,
   ContextConfigDefault,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,

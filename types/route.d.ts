@@ -24,8 +24,7 @@ import {
   FastifyTypeProviderDefault,
   ResolveFastifyReplyReturnType
 } from './type-provider'
-import { AnyFunction } from './type-helpers'
-import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { AnyFunction, ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
 // Router configuration
 

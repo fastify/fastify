@@ -303,7 +303,7 @@ export default fastifyPlugin(dbConnector)
 ```js
 // CommonJs
 /**
- * @type {import('fastify-plugin').FastifyPlugin}
+ * @type {import('fastify-plugin').FastifyPluginAsync}
  */
 const fastifyPlugin = require('fastify-plugin')
 

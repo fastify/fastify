@@ -10,7 +10,6 @@ import fastify, {
   FastifyError,
   FastifyErrorCodes,
   FastifyInstance,
-  FastifyPlugin,
   FastifyPluginAsync,
   FastifyPluginCallback,
   InjectOptions,
@@ -322,7 +321,6 @@ fastify().then(fastifyInstance => expect(fastifyInstance).type.toBeAssignableTo<
 
 expect<FastifyPluginAsync>().type.toBeAssignableFrom(async () => { })
 expect<FastifyPluginCallback>().type.toBeAssignableFrom(() => { })
-expect<FastifyPlugin>().type.toBeAssignableFrom(() => { })
 
 const ajvErrorObject: AjvErrorObject = {
   keyword: '',

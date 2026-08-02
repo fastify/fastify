@@ -219,6 +219,6 @@ console.log(fastify.bar) // undefined
 The `foo` decorator is available in the root context because it is added
 directly by the plugin wrapped with `fastify-plugin`. The nested `register`
 call still creates a grandchild context, so the `bar` decorator remains
-available only in that context.
+available only in that context and its children.
 
 [fastify-plugin]: https://github.com/fastify/fastify-plugin

@@ -5,7 +5,7 @@ const Fastify = require('../..')
 const https = require('node:https')
 const dns = require('node:dns').promises
 const { buildCertificate } = require('../build-certificate')
-const { Agent } = require('undici')
+const { Agent, fetch } = require('undici')
 
 async function setup () {
   await buildCertificate()

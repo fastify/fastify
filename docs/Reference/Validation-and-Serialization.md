@@ -628,6 +628,17 @@ This pattern ensures validators work correctly with both sync and async
 `preValidation` hooks, preventing unhandled promise rejections that can crash
 an application.
 
+> [!IMPORTANT]
+> The `{ value, error }` result convention applies to **synchronous** validator
+> compilers only. An **asynchronous** validator (a compiler that returns a
+> promise, including an [`$async` Ajv schema](https://ajv.js.org/guide/async-validation.html))
+> is treated as pass/fail only: its resolved value is not unwrapped as
+> `{ value, error }`. An async schema resolves with the validated data itself, so
+> unwrapping it would let a payload that carries `value` or `error` keys replace
+> the request part or inject a validation error. An async validator must signal
+> failure by rejecting (throwing), and it cannot coerce the request part through
+> a resolved `value`.
+
 ##### .statusCode property
 
 All validation errors have a `.statusCode` property set to `400`, ensuring the
@@ -876,14 +887,25 @@ with the following payload:
 
 To handle errors inside the route, specify the `attachValidation` option. If
 there is a validation error, the `validationError` property of the request will
-contain the `Error` object with the raw validation result as shown below:
+contain the same `Error` object Fastify would have sent on its own, so no
+message has to be rebuilt from the raw validation result:
+
+- `message` is the formatted message, identical to the one in the response
+  payload above (for example `body must have required property 'name'`). It is
+  produced by [`schemaErrorFormatter`](#schemaerrorformatter), so a custom
+  formatter is reflected here too.
+- `validation` is the raw validation result, as returned by the validator.
+- `validationContext` is the part of the request that failed validation
+  (`body`, `params`, `querystring` or `headers`).
+- `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
 
 ```js
 const fastify = Fastify()
 
 fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
   if (req.validationError) {
-    // `req.validationError.validation` contains the raw validation error
+    // `req.validationError.message` is the formatted message
+    // `req.validationError.validation` contains the raw validation result
     reply.code(400).send(req.validationError)
   }
 })

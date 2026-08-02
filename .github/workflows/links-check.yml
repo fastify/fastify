@@ -57,7 +57,9 @@ jobs:
         uses: JustinBeckwith/linkinator-action@7b6b0bc671f6264e1a8daa4488a5bd91ce61dcd4 # 2.4.2
         with:
           paths: ${{ steps.changed-md.outputs.files }}
+          serverRoot: ${{ github.workspace }}
           retry: true
           redirects: error
           verbosity: error
           linksToSkip: "https://github.com/orgs/fastify/.*,https://github.com/fastify/fastify/security/advisories/new"
+          statusCodes: '{"403":"warn"}'

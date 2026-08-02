@@ -3,7 +3,6 @@
 const { test, describe } = require('node:test')
 const Fastify = require('../fastify')
 const fp = require('fastify-plugin')
-const fakeTimer = require('@sinonjs/fake-timers')
 const { FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER } = require('../lib/errors')
 
 test('pluginTimeout', (t, testDone) => {
@@ -46,12 +45,14 @@ test('pluginTimeout - named function', (t, testDone) => {
 
 test('pluginTimeout default', (t, testDone) => {
   t.plan(5)
-  const clock = fakeTimer.install({ shouldClearNativeTimers: true })
+  t.mock.timers.enable({
+    apis: ['setTimeout', 'Date']
+  })
 
   const fastify = Fastify()
   fastify.register(function (app, opts, done) {
     // default time elapsed without calling done
-    clock.tick(10000)
+    t.mock.timers.tick(10000)
   })
 
   fastify.ready((err) => {
@@ -64,7 +65,7 @@ test('pluginTimeout default', (t, testDone) => {
     testDone()
   })
 
-  t.after(clock.uninstall)
+  t.after(() => t.mock.timers.reset())
 })
 
 test('plugin metadata - version', (t, testDone) => {

@@ -215,6 +215,8 @@ function invalidSchemaErrorFormatter (err: Error) {
 server.setSchemaErrorFormatter(invalidSchemaErrorFormatter)
 
 expect(server.addHttpMethod('SEARCH', { hasBody: true })).type.toBe<FastifyInstance>()
+expect(server.addHttpMethod('GET', { overrideExisting: true })).type.toBe<FastifyInstance>()
+expect(server.addHttpMethod('POST', { hasBody: true, overrideExisting: true })).type.toBe<FastifyInstance>()
 
 // test listen opts objects
 const options: FastifyListenOptions = {}
@@ -312,13 +314,11 @@ type InitialConfig = Readonly<{
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,
   ignoreTrailingSlash?: boolean,
   ignoreDuplicateSlashes?: boolean,
-  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
   maxParamLength?: number,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   pluginTimeout?: number,
   requestIdHeader?: string | false,
-  requestIdLogLabel?: string,
   http2SessionTimeout?: number,
   useSemicolonDelimiter?: boolean,
   routerOptions?: FastifyRouterOptions<RawServerDefault>
@@ -326,9 +326,10 @@ type InitialConfig = Readonly<{
 
 expect(fastify().initialConfig).type.toBe<InitialConfig>()
 
-expect<FastifyRouterOptions<RawServerDefault>>().type.toBeAssignableTo<
-  FindMyWayConfig<FindMyWayVersion<RawServerDefault>>
->()
+// TODO: we accept wider types than find-my-way and it cannot be assign to a restricted types
+// expect<FastifyRouterOptions<RawServerDefault>>().type.toBeAssignableTo<
+//   FindMyWayConfig<FindMyWayVersion<RawServerDefault>>
+// >()
 
 fastify({
   routerOptions: {

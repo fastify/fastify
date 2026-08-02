@@ -663,7 +663,10 @@ export interface FastifyInstance<
    * Methods defined by default include `GET`, `HEAD`, `TRACE`, `DELETE`,
    * `OPTIONS`, `PATCH`, `PUT` and `POST`
    */
-  addHttpMethod(method: string, methodOptions?: { hasBody: boolean }): FastifyInstance<RawServer, RawRequest, RawReply,
+  addHttpMethod(method: string, methodOptions?: {
+    hasBody?: boolean;
+    overrideExisting?: boolean;
+  }): FastifyInstance<RawServer, RawRequest, RawReply,
     Logger, TypeProvider>;
   /**
    * Fastify default JSON parser
@@ -698,15 +701,11 @@ export interface FastifyInstance<
     https?: boolean | Readonly<{ allowHTTP1: boolean }>,
     ignoreTrailingSlash?: boolean,
     ignoreDuplicateSlashes?: boolean,
-    /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     maxParamLength?: number,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
     pluginTimeout?: number,
     requestIdHeader?: string | false,
-    /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
-    requestIdLogLabel?: string,
     http2SessionTimeout?: number,
     useSemicolonDelimiter?: boolean,
     routerOptions?: FastifyRouterOptions<RawServer>

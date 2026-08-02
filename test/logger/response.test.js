@@ -7,7 +7,7 @@ const split = require('split2')
 const pino = require('pino')
 
 const Fastify = require('../../fastify')
-const { partialDeepStrictEqual } = require('../toolkit')
+const { partialDeepStrictEqual } = require('../helper')
 const { on } = stream
 
 t.test('response serialization', { timeout: 60000 }, async (t) => {

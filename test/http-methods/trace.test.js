@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const fastify = require('../../fastify')()
-fastify.addHttpMethod('TRACE')
+fastify.addHttpMethod('TRACE', { overrideExisting: true })
 
 test('shorthand - trace', t => {
   t.plan(1)

@@ -39,10 +39,8 @@ import { FastifyBaseLogger } from './logger'
 import { RouteGenericInterface } from './route'
 import { FastifySchema } from './schema'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { AnyFunction, AsyncFunction } from './type-helpers'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
-
-type AnyFunction = (...args: never[]) => unknown
-type AsyncFunction = (...args: never[]) => Promise<unknown>
 
 type SelectHookHandler<Fn, CallbackHandler, AsyncHandler> =
   Fn extends unknown ? (Fn extends AsyncFunction ? AsyncHandler : CallbackHandler) : Fn

@@ -1,5 +1,6 @@
+import * as http from 'node:http'
 import { FastifyError } from '@fastify/error'
-import { ConstraintStrategy } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy, FindResult, HTTPVersion } from 'find-my-way'
 import { FastifyContextConfig } from './context'
 import {
   onErrorHookHandler,
@@ -25,6 +26,37 @@ import {
 } from './type-provider'
 import { AnyFunction } from './type-helpers'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+
+// Router configuration
+
+export type FindMyWayVersion<RawServer extends RawServerBase> =
+  RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+
+type FindMyWayConfigForServer<RawServer extends RawServerBase> =
+  FindMyWayConfig<FindMyWayVersion<RawServer>>
+
+export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<
+  FindMyWayConfigForServer<RawServer>,
+  'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'
+> & {
+  defaultRoute?: (
+    req: RawRequestDefaultExpression<RawServer>,
+    res: RawReplyDefaultExpression<RawServer>
+  ) => void
+  onBadUrl?: (
+    path: string,
+    req: RawRequestDefaultExpression<RawServer>,
+    res: RawReplyDefaultExpression<RawServer>
+  ) => void
+  onMaxParamLength?: (
+    path: string,
+    req: RawRequestDefaultExpression<RawServer>,
+    res: RawReplyDefaultExpression<RawServer>
+  ) => void
+  querystringParser?: (str: string) => { [key: string]: unknown }
+}
+
+// Route definitions
 
 export interface FastifyRouteConfig {
   url: string;
@@ -262,3 +294,16 @@ export type DefaultRoute<Request, Reply> = (
   req: Request,
   res: Reply,
 ) => void
+
+// Router inspection
+
+export interface PrintRoutesOptions {
+  method?: HTTPMethods
+  includeMeta?: boolean | (string | symbol)[]
+  commonPrefix?: boolean
+  includeHooks?: boolean
+}
+
+/** Result returned by Fastify's configured find-my-way router. */
+export type FindMyWayFindResult<RawServer extends RawServerBase> =
+  FindResult<FindMyWayVersion<RawServer>>

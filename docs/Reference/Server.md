@@ -390,8 +390,8 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
-> **Deprecated:** Use the [`logController`](#log-controller) option with
-> `disableRequestLogging` or `isLogDisabled` override instead.
+> **Deprecated:** Use the [`logController`](#factory-log-controller)
+> option with `disableRequestLogging` or `isLogDisabled` override instead.
 > This top-level option will be removed in `fastify@6`.
 
 + Default: `false`
@@ -407,6 +407,8 @@ and returns a boolean. This allows for conditional request logging based on the
 request properties (e.g., URL, headers, decorations).
 
 ```js
+const { LogController } = require('fastify')
+
 // Deprecated
 const fastify = require('fastify')({
   logger: true,
@@ -418,11 +420,11 @@ const fastify = require('fastify')({
 // Recommended: use logController instead
 const fastify = require('fastify')({
   logger: true,
-  logController: {
+  logController: new LogController({
     disableRequestLogging: (request) => {
       return request.url === '/health' || request.url === '/ready'
     }
-  }
+  })
 })
 ```
 
@@ -567,7 +569,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -578,8 +580,6 @@ the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
 Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
-
-+ Default: `false`
 
 ```js
 const fastify = require('fastify')({
@@ -596,8 +596,9 @@ const fastify = require('fastify')({
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
 
-> **Deprecated:** Use the [`logController`](#log-controller) option with
-> `requestIdLogLabel` instead. This top-level option will be removed in `fastify@6`.
+> **Deprecated:** Use the [`logController`](#factory-log-controller)
+> option with `requestIdLogLabel` instead. This top-level option will be
+> removed in `fastify@6`.
 
 + Default: `'reqId'`
 
@@ -1702,9 +1703,16 @@ Fake HTTP injection (for testing purposes)
 <a id="addHttpMethod"></a>
 
 Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
-`PATCH`, `PUT` and `POST` HTTP methods by default.
+`PATCH`, `PUT`, `POST` and `QUERY` HTTP methods by default.
 The `addHttpMethod` method allows to add any non standard HTTP
 methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
+
+The method accepts an optional configuration object:
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| `hasBody` | `boolean` | `false` | Whether the method accepts a request body. |
+| `overrideExisting` | `boolean` | `false` | Whether to explicitly override an existing method. |
 
 ```js
 // Add a new HTTP method called 'MKCOL' that supports a request body
@@ -1724,8 +1732,17 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
-> ⚠ Warning:
-> `addHttpMethod` overrides existing methods.
+Calling `addHttpMethod` for an existing method overrides its body behavior.
+
+```js
+fastify.addHttpMethod('GET', {
+  hasBody: true,
+  overrideExisting: true
+})
+```
+
+In Fastify v5, omitting `overrideExisting: true` emits `FSTDEP025`; in Fastify
+v6, it will throw an error.
 
 #### addSchema
 <a id="add-schema"></a>

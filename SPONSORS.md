@@ -18,6 +18,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 - [Val Town](https://www.val.town/)
 - [atagon GmbH](https://github.com/atagon-GmbH)
 - [Photon](https://github.com/photon-hq)
+- [N-iX](https://www.n-ix.com/)
 
 ## Tier 2
 

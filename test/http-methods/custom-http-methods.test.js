@@ -112,3 +112,64 @@ test('addHttpMethod rejects fake http method', t => {
   const fastify = Fastify()
   t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
 })
+
+test('addHttpMethod warns when overriding an existing method', (t, done) => {
+  const fastify = Fastify()
+  const onWarning = warning => {
+    t.assert.strictEqual(warning.name, 'FastifyDeprecation')
+    t.assert.strictEqual(warning.code, 'FSTDEP025')
+    done()
+  }
+  process.once('warning', onWarning)
+
+  t.after(() => {
+    fastify.close()
+    process.removeListener('warning', onWarning)
+  })
+
+  fastify.addHttpMethod('GET', { hasBody: true })
+})
+
+test('addHttpMethod does not warn when overriding an existing method explicitly', t => {
+  const doNotWarn = () => {
+    t.assert.fail('should not warn')
+  }
+  process.on('warning', doNotWarn)
+
+  const fastify = Fastify()
+  t.after(() => {
+    fastify.close()
+    process.removeListener('warning', doNotWarn)
+  })
+
+  fastify.addHttpMethod('POST', { overrideExisting: true })
+})
+
+test('addHttpMethod can change an existing method body behavior', async t => {
+  const fastify = Fastify()
+
+  fastify.addHttpMethod('GET', {
+    hasBody: true,
+    overrideExisting: true
+  })
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    exposeHeadRoute: false,
+    schema: {
+      body: {
+        type: 'object'
+      }
+    },
+    handler: async request => request.body
+  })
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    payload: { hello: 'world' }
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+})

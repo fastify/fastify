@@ -9,7 +9,8 @@ test('fastify.all should add all the methods to the same url', async t => {
   const requirePayload = [
     'POST',
     'PUT',
-    'PATCH'
+    'PATCH',
+    'QUERY'
   ]
 
   const supportedMethods = fastify.supportedMethods

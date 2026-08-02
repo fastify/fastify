@@ -91,6 +91,8 @@
 
     - [FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT](#fst_err_route_handler_timeout_option_not_int)
     - [FST_ERR_ROUTE_REWRITE_NOT_STR](#fst_err_route_rewrite_not_str)
+    - [FST_ERR_ROUTE_MISSING_CONTENT_TYPE](#fst_err_route_missing_content_type)
+    - [FST_ERR_ROUTE_MISSING_CONTENT](#fst_err_route_missing_content)
     - [FST_ERR_REOPENED_CLOSE_SERVER](#fst_err_reopened_close_server)
     - [FST_ERR_REOPENED_SERVER](#fst_err_reopened_server)
     - [FST_ERR_PLUGIN_VERSION_MISMATCH](#fst_err_plugin_version_mismatch)
@@ -369,6 +371,8 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_handler_timeout">FST_ERR_HANDLER_TIMEOUT</a> | Request timed out. | Increase the `handlerTimeout` option or optimize the handler. | - |
 | <a id="fst_err_route_handler_timeout_option_not_int">FST_ERR_ROUTE_HANDLER_TIMEOUT_OPTION_NOT_INT</a> | `handlerTimeout` option must be a positive integer. | Use a positive integer for the `handlerTimeout` option. | - |
 | <a id="fst_err_route_rewrite_not_str">FST_ERR_ROUTE_REWRITE_NOT_STR</a> | `rewriteUrl` needs to be of type `string`. | Use a string for the `rewriteUrl`. | [#4554](https://github.com/fastify/fastify/pull/4554) |
+| <a id="fst_err_route_missing_content_type">FST_ERR_ROUTE_MISSING_CONTENT_TYPE</a> | `Content-Type` header is required for the request. | Send request with `Content-Type` header. | [#6832](https://github.com/fastify/fastify/pull/6832) |
+| <a id="fst_err_route_missing_content">FST_ERR_ROUTE_MISSING_CONTENT</a> | Body is required for the request. | Send request with payload. | [#6832](https://github.com/fastify/fastify/pull/6832) |
 | <a id="fst_err_reopened_close_server">FST_ERR_REOPENED_CLOSE_SERVER</a> | Fastify has already been closed and cannot be reopened. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |
 | <a id="fst_err_reopened_server">FST_ERR_REOPENED_SERVER</a> | Fastify is already listening. | - | [#2415](https://github.com/fastify/fastify/pull/2415) |
 | <a id="fst_err_plugin_version_mismatch">FST_ERR_PLUGIN_VERSION_MISMATCH</a> | Installed Fastify plugin mismatched expected version. | Use a compatible version of the plugin. | [#2549](https://github.com/fastify/fastify/pull/2549) |

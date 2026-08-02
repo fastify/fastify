@@ -77,6 +77,8 @@ expect(errorCodes.FST_ERR_ROUTE_METHOD_NOT_SUPPORTED).type.toBeAssignableTo<Fast
 expect(errorCodes.FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_REWRITE_NOT_STR).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_ROUTE_MISSING_CONTENT_TYPE).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_ROUTE_MISSING_CONTENT).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_REOPENED_CLOSE_SERVER).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_REOPENED_SERVER).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_INSTANCE_ALREADY_LISTENING).type.toBeAssignableTo<FastifyErrorConstructor>()

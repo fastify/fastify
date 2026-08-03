@@ -704,3 +704,42 @@ test('preClose execution order', (t, done) => {
     })
   })
 })
+
+test('does not destroy connections with in-flight requests (forceCloseConnections - idle)', { skip: noSupport }, async t => {
+  const fastify = Fastify({ forceCloseConnections: 'idle' })
+
+  fastify.get('/', async () => {
+    // the server starts closing while this request is still being served
+    fastify.close()
+    await sleep(200)
+    return { hello: 'world' }
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const client = new Client('http://localhost:' + fastify.server.address().port)
+  t.after(() => client.close())
+
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
+})
+
+test('does not destroy connections with in-flight requests (default options)', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', async () => {
+    fastify.close()
+    await sleep(200)
+    return { hello: 'world' }
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const client = new Client('http://localhost:' + fastify.server.address().port)
+  t.after(() => client.close())
+
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
+})

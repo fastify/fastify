@@ -434,6 +434,36 @@ test('remove all trailers', (t, testDone) => {
   })
 })
 
+test('remove some trailers should keep trailer mode for the remaining ones', (t, testDone) => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function () {
+      t.assert.fail('removed trailer should not be called')
+    })
+    reply.removeTrailer('ETag')
+    reply.trailer('Content-MD5', function (reply, payload, done) {
+      done(null, 'custom-md5')
+    })
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.trailer, 'content-md5')
+    t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+    t.assert.strictEqual(res.headers['content-length'], undefined)
+    t.assert.strictEqual(res.trailers['content-md5'], 'custom-md5')
+    testDone()
+  })
+})
+
 test('remove all trailers should behave like no trailers were registered', (t, testDone) => {
   t.plan(6)
 

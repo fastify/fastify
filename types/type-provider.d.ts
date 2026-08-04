@@ -7,9 +7,9 @@ import { HttpKeys, RecordKeysToLowercase } from './utils'
 // -----------------------------------------------------------------------------------------------
 
 export interface FastifyTypeProvider {
-  readonly schema: unknown,
-  readonly validator: unknown,
-  readonly serializer: unknown,
+  readonly schema: unknown;
+  readonly validator: unknown;
+  readonly serializer: unknown;
 }
 
 export interface FastifyTypeProviderDefault extends FastifyTypeProvider {}
@@ -59,10 +59,10 @@ type ResolveRequestBody<
 
 // The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
 export interface FastifyRequestType<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {
-  params: Params,
-  query: Querystring,
-  headers: Headers,
-  body: Body
+  params: Params;
+  query: Querystring;
+  headers: Headers;
+  body: Body;
 }
 
 // Resolves the FastifyRequest generic parameters
@@ -71,10 +71,10 @@ export interface ResolveFastifyRequestType<
   SchemaCompiler extends FastifySchema,
   RouteGeneric extends RouteGenericInterface
 > extends FastifyRequestType {
-  params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>,
-  query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>,
-  headers: RecordKeysToLowercase<ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>>,
-  body: ResolveRequestBody<TypeProvider, SchemaCompiler, RouteGeneric>
+  params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>;
+  query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>;
+  headers: RecordKeysToLowercase<ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>>;
+  body: ResolveRequestBody<TypeProvider, SchemaCompiler, RouteGeneric>;
 }
 
 // -----------------------------------------------------------------------------------------------

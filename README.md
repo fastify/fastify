@@ -212,8 +212,8 @@ second average
 | -                  |                            |              |               |
 | `http.Server`      | 16.14.2	                  | &#10007;     | 74,513        |
 
-These benchmarks were taken using https://github.com/fastify/benchmarks. This is a
-synthetic "hello world" benchmark that aims to evaluate the framework overhead.
+These benchmarks were taken using https://github.com/fastify/benchmarks. This is
+a synthetic "hello world" benchmark that aims to evaluate the framework overhead.
 The overhead that each framework has on your application depends on your
 application. You should __always__ benchmark if performance matters to you.
 

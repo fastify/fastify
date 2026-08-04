@@ -3,6 +3,7 @@ import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
 import Ajv, { ErrorObject as AjvErrorObject } from 'ajv'
+import pino from 'pino'
 import { expect } from 'tstyche'
 import fastify, {
   ConnectionError,
@@ -184,6 +185,10 @@ const customLogger = {
   debug: () => { },
   child: () => customLogger
 }
+const pinoLogger = pino()
+const pinoLoggerServer: FastifyInstance = fastify({ loggerInstance: pinoLogger })
+
+expect(pinoLoggerServer).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ logger: customLogger })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
 >()

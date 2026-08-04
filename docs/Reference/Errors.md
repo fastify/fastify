@@ -164,7 +164,10 @@ app.get('/', async () => { throw new Error('kaboom') })
 
 The `error` property is the generic HTTP status text, but **`message` is
 `error.message` verbatim**. This applies to every status code, including `500`.
-The stack trace is never included.
+Fastify's built-in error serializer emits only these four properties, so the
+stack trace is not part of the default payload — but a route-level response
+schema replaces that serializer, and one that declares a `stack` property will
+serialize it.
 
 > Security:
 > Because `message` and `code` are forwarded as-is, errors thrown by libraries
@@ -189,8 +192,10 @@ did pass through:
 
 ```js
 app.setErrorHandler(function (error, request, reply) {
-  // Errors with a statusCode below 500 are deliberate and safe to expose,
-  // as are validation errors.
+  // Errors with a statusCode below 500 were raised deliberately by this
+  // application, as were validation errors. A status code below 500 is not on
+  // its own a guarantee that the message is safe to expose — narrow this
+  // condition if any of yours are not.
   if (error.validation || (error.statusCode && error.statusCode < 500)) {
     return reply.send(error)
   }
@@ -211,7 +216,8 @@ contexts, see
 [the next section](#errors-in-fastify-lifecycle-hooks-and-a-custom-error-handler).
 
 Note that a route-level response schema is still applied to whatever the error
-handler sends, and will reshape the payload accordingly. See
+handler sends, and will reshape the payload accordingly — including properties
+the built-in error serializer would have omitted, such as `stack`. See
 [Serialization](./Validation-and-Serialization.md#serialization).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler

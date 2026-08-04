@@ -27,9 +27,9 @@ import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawReques
 
 export interface PrintRoutesOptions {
   method?: HTTPMethods;
-  includeMeta?: boolean | (string | symbol)[]
-  commonPrefix?: boolean
-  includeHooks?: boolean
+  includeMeta?: boolean | (string | symbol)[];
+  commonPrefix?: boolean;
+  includeHooks?: boolean;
 }
 
 type AsyncFunction = (...args: any) => Promise<any>
@@ -91,8 +91,8 @@ type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.
 type FindMyWayFindResult<RawServer extends RawServerBase> = FindResult<FindMyWayVersion<RawServer>>
 
 type GetterSetter<This, T> = T | {
-  getter: (this: This) => T,
-  setter?: (this: This, value: T) => void
+  getter: (this: This) => T;
+  setter?: (this: This, value: T) => void;
 }
 
 type DecorationMethod<This, Return = This> = {
@@ -130,7 +130,7 @@ export interface FastifyInstance<
   version: string;
   log: Logger;
   listeningOrigin: string;
-  addresses(): AddressInfo[]
+  addresses(): AddressInfo[];
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger,
     Provider>;
 
@@ -475,8 +475,9 @@ export interface FastifyInstance<
   addHook<
     Fn extends
     onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
-    | onListenAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
-    = onListenHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+    | onListenAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider> = onListenHookHandler<
+      RawServer, RawRequest, RawReply, Logger, TypeProvider
+    >
   >(
     name: 'onListen',
     hook: Fn extends unknown ? Fn extends AsyncFunction ? onListenAsyncHookHandler : onListenHookHandler : Fn,
@@ -543,7 +544,7 @@ export interface FastifyInstance<
     },
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
    * Fastify default error handler
@@ -648,15 +649,15 @@ export interface FastifyInstance<
   /**
    * Remove an existing content type parser
    */
-  removeContentTypeParser: removeContentTypeParser
+  removeContentTypeParser: removeContentTypeParser;
   /**
    * Remove all content type parsers, including the default ones
    */
-  removeAllContentTypeParsers: removeAllContentTypeParsers
+  removeAllContentTypeParsers: removeAllContentTypeParsers;
   /**
    * Returns an array of strings containing the list of supported HTTP methods
    */
-  supportedMethods: string[]
+  supportedMethods: string[];
   /**
    * Add a non-standard HTTP method
    *
@@ -691,27 +692,27 @@ export interface FastifyInstance<
    *  Frozen read-only object registering the initial options passed down by the user to the fastify instance
    */
   initialConfig: Readonly<{
-    connectionTimeout?: number,
-    keepAliveTimeout?: number,
-    forceCloseConnections?: boolean,
-    bodyLimit?: number,
-    caseSensitive?: boolean,
-    allowUnsafeRegex?: boolean,
-    http2?: boolean,
-    https?: boolean | Readonly<{ allowHTTP1: boolean }>,
-    ignoreTrailingSlash?: boolean,
-    ignoreDuplicateSlashes?: boolean,
+    connectionTimeout?: number;
+    keepAliveTimeout?: number;
+    forceCloseConnections?: boolean;
+    bodyLimit?: number;
+    caseSensitive?: boolean;
+    allowUnsafeRegex?: boolean;
+    http2?: boolean;
+    https?: boolean | Readonly<{ allowHTTP1: boolean }>;
+    ignoreTrailingSlash?: boolean;
+    ignoreDuplicateSlashes?: boolean;
     /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
-    maxParamLength?: number,
-    onProtoPoisoning?: ProtoAction,
-    onConstructorPoisoning?: ConstructorAction,
-    pluginTimeout?: number,
-    requestIdHeader?: string | false,
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean);
+    maxParamLength?: number;
+    onProtoPoisoning?: ProtoAction;
+    onConstructorPoisoning?: ConstructorAction;
+    pluginTimeout?: number;
+    requestIdHeader?: string | false;
     /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
-    requestIdLogLabel?: string,
-    http2SessionTimeout?: number,
-    useSemicolonDelimiter?: boolean,
-    routerOptions?: FastifyRouterOptions<RawServer>
-  }>
+    requestIdLogLabel?: string;
+    http2SessionTimeout?: number;
+    useSemicolonDelimiter?: boolean;
+    routerOptions?: FastifyRouterOptions<RawServer>;
+  }>;
 }

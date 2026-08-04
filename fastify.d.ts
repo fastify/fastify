@@ -51,33 +51,33 @@ declare namespace fastify {
     Server extends http2.Http2SecureServer,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
-    http2: true,
-    https: http2.SecureServerOptions,
-    http2SessionTimeout?: number
+    http2: true;
+    https: http2.SecureServerOptions;
+    http2SessionTimeout?: number;
   }
 
   export type FastifyHttp2Options<
     Server extends http2.Http2Server,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
-    http2: true,
-    http2SessionTimeout?: number
+    http2: true;
+    http2SessionTimeout?: number;
   }
 
   export type FastifyHttpsOptions<
     Server extends https.Server,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
-    https: https.ServerOptions | null
-    http2?: false
+    https: https.ServerOptions | null;
+    http2?: false;
   }
 
   export type FastifyHttpOptions<
     Server extends http.Server,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
-    http?: http.ServerOptions | null
-    http2?: false
+    http?: http.ServerOptions | null;
+    http2?: false;
   }
 
   type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server
@@ -86,12 +86,12 @@ declare namespace fastify {
   type FindMyWayConfigForServer<RawServer extends RawServerBase> = FindMyWayConfig<FindMyWayVersion<RawServer>>
 
   export interface ConnectionError extends Error {
-    code: string,
-    bytesParsed: number,
+    code: string;
+    bytesParsed: number;
     rawPacket: {
-      type: string,
-      data: number[]
-    }
+      type: string;
+      data: number[];
+    };
   }
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
@@ -100,18 +100,18 @@ declare namespace fastify {
     defaultRoute?: (
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
-    ) => void,
+    ) => void;
     onBadUrl?: (
       path: string,
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
-    ) => void,
+    ) => void;
     onMaxParamLength?: (
       path: string,
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
-    ) => void,
-    querystringParser?: (str: string) => { [key: string]: unknown }
+    ) => void;
+    querystringParser?: (str: string) => { [key: string]: unknown };
   }
 
   /**
@@ -121,39 +121,39 @@ declare namespace fastify {
     RawServer extends RawServerBase = RawServerDefault,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = {
-    ignoreTrailingSlash?: boolean,
-    ignoreDuplicateSlashes?: boolean,
-    connectionTimeout?: number,
-    keepAliveTimeout?: number,
-    maxRequestsPerSocket?: number,
-    forceCloseConnections?: boolean | 'idle',
-    requestTimeout?: number,
-    pluginTimeout?: number,
-    bodyLimit?: number,
-    handlerTimeout?: number,
-    maxParamLength?: number,
+    ignoreTrailingSlash?: boolean;
+    ignoreDuplicateSlashes?: boolean;
+    connectionTimeout?: number;
+    keepAliveTimeout?: number;
+    maxRequestsPerSocket?: number;
+    forceCloseConnections?: boolean | 'idle';
+    requestTimeout?: number;
+    pluginTimeout?: number;
+    bodyLimit?: number;
+    handlerTimeout?: number;
+    maxParamLength?: number;
     /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
-    logController?: LogControllerClass,
-    exposeHeadRoutes?: boolean,
-    onProtoPoisoning?: ProtoAction,
-    onConstructorPoisoning?: ConstructorAction,
-    logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions,
-    loggerInstance?: Logger
-    serializerOpts?: FJSOptions | Record<string, unknown>,
-    serverFactory?: FastifyServerFactory<RawServer>,
-    caseSensitive?: boolean,
-    allowUnsafeRegex?: boolean,
-    requestIdHeader?: string | false,
+    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean);
+    logController?: LogControllerClass;
+    exposeHeadRoutes?: boolean;
+    onProtoPoisoning?: ProtoAction;
+    onConstructorPoisoning?: ConstructorAction;
+    logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions;
+    loggerInstance?: Logger;
+    serializerOpts?: FJSOptions | Record<string, unknown>;
+    serverFactory?: FastifyServerFactory<RawServer>;
+    caseSensitive?: boolean;
+    allowUnsafeRegex?: boolean;
+    requestIdHeader?: string | false;
     /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
     requestIdLogLabel?: string;
-    useSemicolonDelimiter?: boolean,
-    genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
-    trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
-    querystringParser?: (str: string) => { [key: string]: unknown },
+    useSemicolonDelimiter?: boolean;
+    genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string;
+    trustProxy?: boolean | string | string[] | number | TrustProxyFunction;
+    querystringParser?: (str: string) => { [key: string]: unknown };
     constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
-    },
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>;
+    };
     schemaController?: {
       bucket?: (parentSchemas?: unknown) => {
         add(schema: unknown): FastifyInstance;
@@ -165,8 +165,8 @@ declare namespace fastify {
         buildSerializer?: SerializerFactory;
       };
     };
-    return503OnClosing?: boolean,
-    ajv?: Parameters<BuildCompilerFromPool>[1],
+    return503OnClosing?: boolean;
+    ajv?: Parameters<BuildCompilerFromPool>[1];
     frameworkErrors?: <
       RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
       TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
@@ -189,7 +189,7 @@ declare namespace fastify {
         SchemaCompiler,
         TypeProvider
       >
-    ) => void,
+    ) => void;
     rewriteUrl?: (
       // The RawRequestDefaultExpression, RawReplyDefaultExpression, and FastifyTypeProviderDefault parameters
       // should be narrowed further but those generic parameters are not passed to this FastifyServerOptions type
@@ -201,15 +201,15 @@ declare namespace fastify {
         FastifyTypeProviderDefault
       >,
       req: RawRequestDefaultExpression<RawServer>
-    ) => string,
-    schemaErrorFormatter?: SchemaErrorFormatter,
+    ) => string;
+    schemaErrorFormatter?: SchemaErrorFormatter;
     /**
      * listener to error events emitted by client connections
      */
-    clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
-    childLoggerFactory?: FastifyChildLoggerFactory,
-    allowErrorHandlerOverride?: boolean
-    routerOptions?: FastifyRouterOptions<RawServer>,
+    clientErrorHandler?: (error: ConnectionError, socket: Socket) => void;
+    childLoggerFactory?: FastifyChildLoggerFactory;
+    allowErrorHandlerOverride?: boolean;
+    routerOptions?: FastifyRouterOptions<RawServer>;
   }
 
   /**

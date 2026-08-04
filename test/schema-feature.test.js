@@ -1463,8 +1463,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', (t, tes
 function addRandomRoute (server) {
   server.post(`/${Math.random()}`,
     { schema: { body: { type: 'object' } } },
-    (req, reply) => reply.send()
-  )
+    (req, reply) => reply.send())
 }
 
 test('Add schema order should not break the startup', (t, testDone) => {

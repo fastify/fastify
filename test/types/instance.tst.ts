@@ -304,26 +304,26 @@ server.setChildLoggerFactory(childLoggerFactory)
 server.setChildLoggerFactory(server.childLoggerFactory)
 
 type InitialConfig = Readonly<{
-  connectionTimeout?: number,
-  keepAliveTimeout?: number,
-  bodyLimit?: number,
-  caseSensitive?: boolean,
-  allowUnsafeRegex?: boolean,
-  forceCloseConnections?: boolean,
-  http2?: boolean,
-  https?: boolean | Readonly<{ allowHTTP1: boolean }>,
-  ignoreTrailingSlash?: boolean,
-  ignoreDuplicateSlashes?: boolean,
-  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
-  maxParamLength?: number,
-  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
-  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
-  pluginTimeout?: number,
-  requestIdHeader?: string | false,
-  requestIdLogLabel?: string,
-  http2SessionTimeout?: number,
-  useSemicolonDelimiter?: boolean,
-  routerOptions?: FastifyRouterOptions<RawServerDefault>
+  connectionTimeout?: number;
+  keepAliveTimeout?: number;
+  bodyLimit?: number;
+  caseSensitive?: boolean;
+  allowUnsafeRegex?: boolean;
+  forceCloseConnections?: boolean;
+  http2?: boolean;
+  https?: boolean | Readonly<{ allowHTTP1: boolean }>;
+  ignoreTrailingSlash?: boolean;
+  ignoreDuplicateSlashes?: boolean;
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean);
+  maxParamLength?: number;
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore';
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore';
+  pluginTimeout?: number;
+  requestIdHeader?: string | false;
+  requestIdLogLabel?: string;
+  http2SessionTimeout?: number;
+  useSemicolonDelimiter?: boolean;
+  routerOptions?: FastifyRouterOptions<RawServerDefault>;
 }>
 
 expect(fastify().initialConfig).type.toBe<InitialConfig>()
@@ -431,21 +431,21 @@ server.decorate<string>('test', {
 
 declare module '../../fastify' {
   interface FastifyInstance {
-    typedTestProperty: boolean
-    typedTestPropertyGetterSetter: string
-    typedTestMethod(x: string): string
+    typedTestProperty: boolean;
+    typedTestPropertyGetterSetter: string;
+    typedTestMethod(x: string): string;
   }
 
   interface FastifyRequest {
-    typedTestRequestProperty: boolean
-    typedTestRequestPropertyGetterSetter: string
-    typedTestRequestMethod(x: string): string
+    typedTestRequestProperty: boolean;
+    typedTestRequestPropertyGetterSetter: string;
+    typedTestRequestMethod(x: string): string;
   }
 
   interface FastifyReply {
-    typedTestReplyProperty: boolean
-    typedTestReplyPropertyGetterSetter: string
-    typedTestReplyMethod(x: string): string
+    typedTestReplyProperty: boolean;
+    typedTestReplyPropertyGetterSetter: string;
+    typedTestReplyMethod(x: string): string;
   }
 }
 

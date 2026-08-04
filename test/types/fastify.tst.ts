@@ -10,7 +10,6 @@ import fastify, {
   FastifyError,
   FastifyErrorCodes,
   FastifyInstance,
-  FastifyPlugin,
   FastifyPluginAsync,
   FastifyPluginCallback,
   InjectOptions,
@@ -68,6 +67,17 @@ expect(fastify({ schemaController: {} })).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
 >()
+
+expect(fastify({ http2: false })).type.toBe<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>()
+
+expect(fastify({ https: {}, http2: false })).type.toBe<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>()
+
 expect(
   fastify({
     schemaController: {
@@ -311,7 +321,6 @@ fastify().then(fastifyInstance => expect(fastifyInstance).type.toBeAssignableTo<
 
 expect<FastifyPluginAsync>().type.toBeAssignableFrom(async () => { })
 expect<FastifyPluginCallback>().type.toBeAssignableFrom(() => { })
-expect<FastifyPlugin>().type.toBeAssignableFrom(() => { })
 
 const ajvErrorObject: AjvErrorObject = {
   keyword: '',

@@ -1334,14 +1334,6 @@ Interface method definition used within the
 Interface method definition used within the
 [`fastify.register()`][FastifyRegister] method.
 
-##### fastify.FastifyPlugin< [Options][FastifyPluginOptions]>
-[src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L29)
-
-Interface method definition used within the
-[`fastify.register()`][FastifyRegister] method. Document deprecated in favor of
-`FastifyPluginCallback` and `FastifyPluginAsync` since general `FastifyPlugin`
-doesn't properly infer types for async functions.
-
 ##### fastify.FastifyPluginOptions
 [src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L31)
 
@@ -1358,8 +1350,6 @@ extends FastifyPluginOptions`) so they can be passed to the register method.
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
 ##### fastify.FastifyRegister(plugin: [FastifyPluginAsync][FastifyPluginAsync], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
-##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
-[src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
 
 This type interface specifies the type for the
 [`fastify.register()`](./Server.md#register) method. The type interface returns
@@ -1368,8 +1358,7 @@ a function signature with an underlying generic `Options` which is defaulted to
 FastifyPlugin parameter when calling this function so there is no need to
 specify the underlying generic. The options parameter is the intersection of the
 plugin's options and two additional optional properties: `prefix: string` and
-`logLevel`: [LogLevel][LogLevel]. `FastifyPlugin` is deprecated use
-`FastifyPluginCallback` and `FastifyPluginAsync` instead.
+`logLevel`: [LogLevel][LogLevel].
 
 Below is an example of the options inference in action:
 
@@ -1713,8 +1702,6 @@ database.
 [FastifyInstance]: #fastifyfastifyinstance
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric
-[FastifyPlugin]:
-    #fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
 [FastifyPluginCallback]: #fastifyfastifyplugincallbackoptions
 [FastifyPluginAsync]: #fastifyfastifypluginasyncoptions
 [FastifyPluginOptions]: #fastifyfastifypluginoptions

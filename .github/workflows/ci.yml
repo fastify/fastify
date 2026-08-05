@@ -62,7 +62,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20, 22, 24, 26]
+        node-version: [24, 26]
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
@@ -165,7 +165,7 @@ jobs:
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true

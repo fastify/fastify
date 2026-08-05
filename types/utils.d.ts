@@ -2,6 +2,10 @@ import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 
+export type AnyFunction = (...args: never[]) => unknown
+
+export type AsyncFunction = (...args: never[]) => Promise<unknown>
+
 type AutocompletePrimitiveBaseType<T> =
   T extends string ? string :
     T extends number ? number :

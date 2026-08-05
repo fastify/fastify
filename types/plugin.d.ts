@@ -14,10 +14,11 @@ export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Instance extends object = FastifyInstance<Server, RawRequestDefaultExpression<Server>,
+    RawReplyDefaultExpression<Server>, Logger, TypeProvider>
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger,
-    TypeProvider>,
+  instance: Instance,
   opts: Options,
   done: (err?: Error) => void
 ) => void
@@ -31,10 +32,11 @@ export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Logger extends FastifyBaseLogger = FastifyBaseLogger
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+  Instance extends object = FastifyInstance<Server, RawRequestDefaultExpression<Server>,
+    RawReplyDefaultExpression<Server>, Logger, TypeProvider>
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger,
-    TypeProvider>,
+  instance: Instance,
   opts: Options
 ) => Promise<void>
 

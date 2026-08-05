@@ -17,10 +17,12 @@ import fastify, {
   preCloseAsyncHookHandler,
   preCloseHookHandler
 } from '../../fastify.js'
-import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks.js'
+import { ApplicationHookAsyncLookup, DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, preHandlerAsyncHookHandler } from '../../types/hooks.js'
 import { FastifyRouteConfig, RouteGenericInterface } from '../../types/route.js'
 
 const server = fastify()
+
+expect<ApplicationHookAsyncLookup<'onRoute'>>().type.toBe<never>()
 
 // Test payload generic pass through for preSerialization and onSend
 

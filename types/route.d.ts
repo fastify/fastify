@@ -1,5 +1,6 @@
+import * as http from 'node:http'
 import { FastifyError } from '@fastify/error'
-import { ConstraintStrategy } from 'find-my-way'
+import { Config as FindMyWayConfig, ConstraintStrategy, FindResult, HTTPVersion } from 'find-my-way'
 import { FastifyContextConfig } from './context'
 import {
   onErrorHookHandler,
@@ -15,15 +16,50 @@ import {
 } from './hooks'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
-import { FastifyReply, ReplyGenericInterface } from './reply'
-import { FastifyRequest, RequestGenericInterface } from './request'
+import { FastifyReplyForRoute, ReplyGenericInterface } from './reply'
+import { FastifyRequestForRoute, RequestGenericInterface } from './request'
 import { FastifySchema, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorFormatter } from './schema'
 import {
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
   ResolveFastifyReplyReturnType
 } from './type-provider'
-import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { AnyFunction, ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+
+// Router configuration
+
+export type FindMyWayVersion<RawServer extends RawServerBase> =
+  RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+
+type FindMyWayConfigForServer<RawServer extends RawServerBase> =
+  FindMyWayConfig<FindMyWayVersion<RawServer>>
+
+export type FastifyRouterOptions<
+  RawServer extends RawServerBase,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
+> = Omit<
+  FindMyWayConfigForServer<RawServer>,
+  'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'
+> & {
+  defaultRoute?: (
+    req: RawRequest,
+    res: RawReply
+  ) => void
+  onBadUrl?: (
+    path: string,
+    req: RawRequest,
+    res: RawReply
+  ) => void
+  onMaxParamLength?: (
+    path: string,
+    req: RawRequest,
+    res: RawReply
+  ) => void
+  querystringParser?: (str: string) => { [key: string]: unknown }
+}
+
+// Route definitions
 
 export interface FastifyRouteConfig {
   url: string;
@@ -32,9 +68,11 @@ export interface FastifyRouteConfig {
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface { }
 
-export type RouteConstraintType = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
-  deriveConstraint<Context>(req: RawRequestDefaultExpression<RawServerDefault>, ctx?: Context, done?: (err: Error,
-    ...args: any) => any): any,
+export type RouteConstraintType<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
+> = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
+  deriveConstraint<Context>(req: RawRequest, ctx?: Context, done?: (err: Error, ...args: any) => any): any,
 }
 
 export interface RouteConstraint {
@@ -46,7 +84,7 @@ export interface RouteConstraint {
 /**
  * Route shorthand options for the various shorthand methods
  */
-type RouteShorthandHook<T extends (...args: any) => any> = (...args: Parameters<T>) => void | Promise<unknown>
+type RouteShorthandHook<T extends AnyFunction> = (...args: Parameters<T>) => void | Promise<unknown>
 
 export interface RouteShorthandOptions<
   RawServer extends RawServerBase = RawServerDefault,
@@ -73,55 +111,81 @@ export interface RouteShorthandOptions<
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     error: FastifyError,
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, NoInfer<SchemaCompiler>, TypeProvider, ContextConfig,
-      Logger>,
-    reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, NoInfer<SchemaCompiler>,
-      TypeProvider>
+    request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, NoInfer<SchemaCompiler>,
+      TypeProvider, ContextConfig, Logger>,
+    reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, NoInfer<SchemaCompiler>,
+      TypeProvider, Logger>
   ) => void;
   childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   schemaErrorFormatter?: SchemaErrorFormatter;
 
   // hooks
-  onRequest?: RouteShorthandHook<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+  onRequest?:
     | RouteShorthandHook<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  preParsing?: RouteShorthandHook<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
+  preParsing?:
     | RouteShorthandHook<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  preValidation?: RouteShorthandHook<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric,
-    ContextConfig, NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
+  preValidation?:
     | RouteShorthandHook<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  preHandler?: RouteShorthandHook<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<
+        preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInfer<SchemaCompiler>,
+          TypeProvider, Logger>
+      >[];
+  preHandler?:
     | RouteShorthandHook<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  preSerialization?: RouteShorthandHook<preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply,
-    RouteGeneric, ContextConfig, NoInfer<SchemaCompiler>, TypeProvider, Logger>>
-    | RouteShorthandHook<preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric,
-    ContextConfig, NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  onSend?: RouteShorthandHook<onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>
-    | RouteShorthandHook<onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  onResponse?: RouteShorthandHook<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
+  preSerialization?:
+    | RouteShorthandHook<
+        preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+          NoInfer<SchemaCompiler>, TypeProvider, Logger>
+      >
+      | RouteShorthandHook<
+        preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+          NoInfer<SchemaCompiler>, TypeProvider, Logger>
+      >[];
+  onSend?:
+    | RouteShorthandHook<
+        onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+          NoInfer<SchemaCompiler>, TypeProvider, Logger>
+      >
+      | RouteShorthandHook<
+        onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+          NoInfer<SchemaCompiler>, TypeProvider, Logger>
+      >[];
+  onResponse?:
     | RouteShorthandHook<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  onTimeout?: RouteShorthandHook<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
+  onTimeout?:
     | RouteShorthandHook<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  onError?: RouteShorthandHook<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    FastifyError, NoInfer<SchemaCompiler>, TypeProvider, Logger>>
-    | RouteShorthandHook<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
-  onRequestAbort?: RouteShorthandHook<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric,
-    ContextConfig, NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
+  onError?:
+    | RouteShorthandHook<
+        onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError,
+          NoInfer<SchemaCompiler>, TypeProvider, Logger>
+      >
+      | RouteShorthandHook<
+        onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifyError,
+          NoInfer<SchemaCompiler>, TypeProvider, Logger>
+      >[];
+  onRequestAbort?:
     | RouteShorthandHook<onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
-    NoInfer<SchemaCompiler>, TypeProvider, Logger>>[];
+      NoInfer<SchemaCompiler>, TypeProvider, Logger>>
+      | RouteShorthandHook<
+        onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, NoInfer<SchemaCompiler>,
+          TypeProvider, Logger>
+      >[];
 }
 /**
  * Route handler method declaration.
@@ -137,9 +201,11 @@ export type RouteHandlerMethod<
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
-  reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>
-  // This return type used to be a generic type argument. Due to TypeScript's inference of return types, this rendered returns unchecked.
+  request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
+    ContextConfig, Logger>,
+  reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
+    TypeProvider, Logger>
+// This return type used to be a generic type argument. Due to TypeScript's inference of return types, this rendered returns unchecked.
 ) => ResolveFastifyReplyReturnType<TypeProvider, SchemaCompiler, RouteGeneric>
 
 /**
@@ -223,11 +289,26 @@ export type RouteHandler<
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
-  reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler, TypeProvider>
+  request: FastifyRequestForRoute<RouteGeneric, RawServer, RawRequest, RawReply, SchemaCompiler, TypeProvider,
+    ContextConfig, Logger>,
+  reply: FastifyReplyForRoute<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, SchemaCompiler,
+    TypeProvider, Logger>
 ) => RouteGeneric['Reply'] | void | Promise<RouteGeneric['Reply'] | void>
 
 export type DefaultRoute<Request, Reply> = (
   req: Request,
   res: Reply,
 ) => void
+
+// Router inspection
+
+export interface PrintRoutesOptions {
+  method?: HTTPMethods
+  includeMeta?: boolean | (string | symbol)[]
+  commonPrefix?: boolean
+  includeHooks?: boolean
+}
+
+/** Result returned by Fastify's configured find-my-way router. */
+export type FindMyWayFindResult<RawServer extends RawServerBase> =
+  FindResult<FindMyWayVersion<RawServer>>

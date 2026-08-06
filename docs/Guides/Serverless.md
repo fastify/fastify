@@ -276,15 +276,21 @@ fastify.addHook('onResponse', async (request, reply) => {
 
 `request.routeOptions.url` is the route pattern, so `/users/123` and
 `/users/456` are grouped under `/users/:id`. With Fastify's logger enabled, the
-fields are emitted as structured log fields. In Cloud Logging, create a
-log-based metric or filter on `jsonPayload.route` to get per-route request
-counts, latency, and error rates.
+fields are emitted as structured log fields, as described in the [Cloud
+Logging structured logging documentation](https://cloud.google.com/logging/docs/structured-logging)
+and the [Cloud Functions logging guide](https://cloud.google.com/functions/docs/monitoring/logging).
+In Cloud Logging, create a [log-based
+metric](https://cloud.google.com/logging/docs/logs-based-metrics) or filter on
+`jsonPayload.route` to get per-route request counts, latency, and error rates.
 
 The same hook works when deploying through Firebase Functions with `onRequest`.
 
 ### References
 - [Google Cloud Functions - Node.js Quickstart
   ](https://docs.cloud.google.com/run/docs/quickstarts/functions/deploy-functions-gcloud)
+- [Cloud Logging - Structured Logging](https://cloud.google.com/logging/docs/structured-logging)
+- [Cloud Logging - Log-based Metrics](https://cloud.google.com/logging/docs/logs-based-metrics)
+- [Cloud Functions - Logging](https://cloud.google.com/functions/docs/monitoring/logging)
 
 ## Google Firebase Functions
 

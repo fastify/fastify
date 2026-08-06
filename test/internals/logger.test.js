@@ -277,6 +277,19 @@ test('defaultErrorLog should log error for 5xx errors', t => {
   logController.defaultErrorLog(err, request, reply)
 })
 
+test('routeNotFound should not log when logging is disabled', t => {
+  t.plan(1)
+  const logController = new LogController({ disableRequestLogging: request => request.skipLogging })
+  const request = {
+    skipLogging: true,
+    log: {
+      info: () => { t.assert.fail('info should not be called') }
+    }
+  }
+  logController.routeNotFound(request, {})
+  t.assert.ok(true, 'logger was not called')
+})
+
 test('writeHeadError should not log when logging is disabled (boolean)', t => {
   t.plan(1)
   const logController = new LogController({ disableRequestLogging: true })

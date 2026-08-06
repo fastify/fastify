@@ -73,6 +73,7 @@ expect(errorCodes.FST_ERR_ROUTE_DUPLICATED_HANDLER).type.toBeAssignableTo<Fastif
 expect(errorCodes.FST_ERR_ROUTE_HANDLER_NOT_FN).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_MISSING_HANDLER).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_METHOD_INVALID).type.toBeAssignableTo<FastifyErrorConstructor>()
+expect(errorCodes.FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_METHOD_NOT_SUPPORTED).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED).type.toBeAssignableTo<FastifyErrorConstructor>()
 expect(errorCodes.FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT).type.toBeAssignableTo<FastifyErrorConstructor>()

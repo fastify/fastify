@@ -8,7 +8,6 @@
     - [FSTWRN001](#FSTWRN001)
     - [FSTWRN003](#FSTWRN003)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
-    - [FSTDEP025](#FSTDEP025)
 
 ## Warnings
 
@@ -42,6 +41,7 @@ Disabling warnings is not recommended and may cause unexpected behavior.
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTWRN001">FSTWRN001</a> | The specified schema for a route is missing. This may indicate the schema is not well specified. | Check the schema for the route. | [#4647](https://github.com/fastify/fastify/pull/4647) |
 | <a id="FSTWRN003">FSTWRN003</a> | The `%s` plugin mixes async and callback styles, which may lead to unhandled rejections. | Do not mix async and callback style. | [#6011](https://github.com/fastify/fastify/pull/6011) |
+
 ### Fastify Deprecation Codes
 
 Deprecation codes are supported by the Node.js CLI options:
@@ -50,7 +50,8 @@ Deprecation codes are supported by the Node.js CLI options:
 - [--throw-deprecation](https://nodejs.org/api/cli.html#throw-deprecation)
 - [--trace-deprecation](https://nodejs.org/api/cli.html#trace-deprecation)
 
+There are currently no active deprecation codes because the APIs deprecated in
+Fastify v5 have been removed in Fastify v6.
 
 | Code | Description | How to solve | Discussion |
 | ---- | ----------- | ------------ | ---------- |
-| <a id="FSTDEP025">FSTDEP025</a> | Calling `addHttpMethod` for an existing HTTP method without `{ overrideExisting: true }` is deprecated. | Pass `{ overrideExisting: true }` to make the override explicit. | [#6879](https://github.com/fastify/fastify/pull/6879) |

@@ -1227,15 +1227,14 @@ fastify.get('/dev', async (request, reply) => {
 ### `allowErrorHandlerOverride`
 <a id="allow-error-handler-override"></a>
 
-* **Default:** `true`
-
-> ⚠ Warning:
-> This option will be set to `false` by default
-> in the next major release.
+* **Default:** `false`
 
 When set to `false`, it prevents `setErrorHandler` from being called
 multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
+
+Set this option to `true` to allow an error handler to be overridden within
+the same scope.
 
 #### Example of incorrect usage:
 

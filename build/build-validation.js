@@ -44,7 +44,7 @@ const defaultInitOptions = {
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
   useSemicolonDelimiter: false,
-  allowErrorHandlerOverride: true, // TODO: set to false in v6
+  allowErrorHandlerOverride: false,
   routerOptions: {
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,

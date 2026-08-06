@@ -409,6 +409,11 @@ fastify.addHook('preHandler', async (request, reply) => {
 
 You can hook into the application-lifecycle as well.
 
+Some application hooks expose the associated Fastify instance through the `this`
+context, while others receive it explicitly as an `instance` argument. When a
+hook relies on the `this` context, use a regular `function` declaration instead
+of an arrow function, because arrow functions do not bind their own `this`.
+
 - [onReady](#onready)
 - [onListen](#onlisten)
 - [onClose](#onclose)

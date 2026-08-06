@@ -87,6 +87,48 @@ test('The schema should be accessible by id via getSchema', (t, testDone) => {
   })
 })
 
+test('addSchema should skip processing a schema from the same schema store', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({ $id: 'id', type: 'object' })
+  const schema = fastify.getSchema('id')
+
+  fastify.addSchema(schema)
+
+  t.assert.strictEqual(fastify.getSchema('id'), schema)
+})
+
+test('addSchema should skip processing an inherited schema', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({ $id: 'id', type: 'object' })
+  fastify.register(async instance => {
+    const schema = instance.getSchema('id')
+
+    instance.addSchema(schema)
+
+    t.assert.strictEqual(instance.getSchema('id'), schema)
+  })
+
+  await fastify.ready()
+})
+
+test('addSchema should process a schema from another schema store', t => {
+  t.plan(2)
+  const first = Fastify()
+  const second = Fastify()
+
+  first.addSchema({ $id: 'id', type: 'object' })
+  const schema = first.getSchema('id')
+
+  second.addSchema(schema)
+
+  t.assert.deepStrictEqual(second.getSchema('id'), schema)
+  t.assert.notStrictEqual(second.getSchema('id'), schema)
+})
+
 test('Get validatorCompiler after setValidatorCompiler', (t, testDone) => {
   t.plan(2)
   const myCompiler = () => { }

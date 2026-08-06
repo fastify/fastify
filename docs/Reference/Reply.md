@@ -271,7 +271,7 @@ as soon as possible.
 > in the error, you can turn on `debug` level logging.
 
 ```js
-reply.trailer('server-timing', function() {
+reply.trailer('server-timing', async function () {
   return 'db;dur=53, app;dur=47.2'
 })
 
@@ -304,7 +304,7 @@ Returns a boolean indicating if the specified trailer has been set.
 
 Remove the value of a previously set trailer.
 ```js
-reply.trailer('server-timing', function() {
+reply.trailer('server-timing', async function () {
   return 'db;dur=53, app;dur=47.2'
 })
 reply.removeTrailer('server-timing')

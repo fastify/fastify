@@ -68,6 +68,17 @@ expect(fastify({ schemaController: {} })).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
 >()
+
+expect(fastify({ http2: false })).type.toBe<
+  FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
+>()
+
+expect(fastify({ https: {}, http2: false })).type.toBe<
+  FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> &
+  SafePromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>
+>()
+
 expect(
   fastify({
     schemaController: {

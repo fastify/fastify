@@ -11,7 +11,6 @@
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP022](#FSTDEP022)
     - [FSTDEP023](#FSTDEP023)
-    - [FSTDEP024](#FSTDEP024)
     - [FSTDEP025](#FSTDEP025)
 
 ## Warnings
@@ -60,5 +59,4 @@ Deprecation codes are supported by the Node.js CLI options:
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTDEP022">FSTDEP022</a> | You are trying to access the deprecated router options on top option properties. | Use `options.routerOptions`. | [#5985](https://github.com/fastify/fastify/pull/5985)
 | <a id="FSTDEP023">FSTDEP023</a> | `disableRequestLogging` top-level option is deprecated. | Pass a `LogController` instance via the `logController` option with `disableRequestLogging` in its constructor instead. |
-| <a id="FSTDEP024">FSTDEP024</a> | `requestIdLogLabel` top-level option is deprecated. | Pass a `LogController` instance via the `logController` option with `requestIdLogLabel` in its constructor instead. |
 | <a id="FSTDEP025">FSTDEP025</a> | Calling `addHttpMethod` for an existing HTTP method without `{ overrideExisting: true }` is deprecated. | Pass `{ overrideExisting: true }` to make the override explicit. | [#6879](https://github.com/fastify/fastify/pull/6879) |

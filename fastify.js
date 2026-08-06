@@ -80,7 +80,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTDEP023, FSTDEP025 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -881,9 +881,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
-  if (options.requestIdLogLabel !== undefined) {
-    FSTDEP024()
-  }
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   if (options.disableRequestLogging !== undefined) {
     FSTDEP023()

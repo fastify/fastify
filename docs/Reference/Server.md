@@ -22,7 +22,6 @@ describes the properties available in that options object.
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
-  - [`disableRequestLogging`](#disablerequestlogging)
   - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
@@ -386,71 +385,6 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 
   const fastify = require('fastify')({ loggerInstance: customLogger });
   ```
-
-### `disableRequestLogging`
-<a id="factory-disable-request-logging"></a>
-
-> **Deprecated:** Use the [`logController`](#factory-log-controller)
-> option with `disableRequestLogging` or `isLogDisabled` override instead.
-> This top-level option will be removed in `fastify@6`.
-
-+ Default: `false`
-
-When logging is enabled, Fastify will issue an `info` level log
-message when a request is received and when the response for that request has
-been sent. By setting this option to `true`, these log messages will be
-disabled. This allows for more flexible request start and end logging by
-attaching custom `onRequest` and `onResponse` hooks.
-
-This option can also be a function that receives the Fastify request object
-and returns a boolean. This allows for conditional request logging based on the
-request properties (e.g., URL, headers, decorations).
-
-```js
-const { LogController } = require('fastify')
-
-// Deprecated
-const fastify = require('fastify')({
-  logger: true,
-  disableRequestLogging: (request) => {
-    return request.url === '/health' || request.url === '/ready'
-  }
-})
-
-// Recommended: use logController instead
-const fastify = require('fastify')({
-  logger: true,
-  logController: new LogController({
-    disableRequestLogging: (request) => {
-      return request.url === '/health' || request.url === '/ready'
-    }
-  })
-})
-```
-
-The other log entries that will be disabled are:
-- an error log written by the default `onResponse` hook on reply callback errors
-- the error and info logs written by the `defaultErrorHandler`
-on error management
-- the info log written by the `fourOhFour` handler when a
-non existent route is requested
-
-Other log messages emitted by Fastify will stay enabled,
-like deprecation warnings and messages
-emitted when requests are received while the server is closing.
-
-```js
-// Examples of hooks to replicate the disabled functionality.
-fastify.addHook('onRequest', (req, reply, done) => {
-  req.log.info({ url: req.raw.url, id: req.id }, 'received request')
-  done()
-})
-
-fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.raw.originalUrl, statusCode: reply.raw.statusCode }, 'request completed')
-  done()
-})
-```
 
 ### `logController`
 <a id="factory-log-controller"></a>
@@ -2445,7 +2379,6 @@ The properties that can currently be exposed are:
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)
-- disableRequestLogging
 - onProtoPoisoning
 - onConstructorPoisoning
 - pluginTimeout

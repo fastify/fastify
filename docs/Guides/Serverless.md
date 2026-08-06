@@ -256,6 +256,32 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 {"message":"Hello Fastify!"}
 ```
 
+#### Per-route logging
+
+Google Cloud Functions exposes one entry point for your Fastify instance, so
+the dashboard may show all HTTP traffic under that function. Instead of
+deploying one function per endpoint, keep the single Fastify instance and emit
+a structured log line after each request with the matched route:
+
+```js
+fastify.addHook('onResponse', async (request, reply) => {
+  request.log.info({
+    route: request.routeOptions.url,
+    method: request.method,
+    statusCode: reply.statusCode,
+    responseTime: reply.elapsedTime
+  }, 'request completed')
+})
+```
+
+`request.routeOptions.url` is the route pattern, so `/users/123` and
+`/users/456` are grouped under `/users/:id`. With Fastify's logger enabled, the
+fields are emitted as structured log fields. In Cloud Logging, create a
+log-based metric or filter on `jsonPayload.route` to get per-route request
+counts, latency, and error rates.
+
+The same hook works when deploying through Firebase Functions with `onRequest`.
+
 ### References
 - [Google Cloud Functions - Node.js Quickstart
   ](https://docs.cloud.google.com/run/docs/quickstarts/functions/deploy-functions-gcloud)

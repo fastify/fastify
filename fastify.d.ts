@@ -131,8 +131,6 @@ declare namespace fastify {
     bodyLimit?: number,
     handlerTimeout?: number,
     maxParamLength?: number,
-    /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     logController?: LogControllerClass,
     exposeHeadRoutes?: boolean,
     onProtoPoisoning?: ProtoAction,

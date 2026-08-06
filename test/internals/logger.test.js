@@ -369,7 +369,7 @@ test('createLogController should use LogController instance directly', t => {
 
 test('createLogController should create default when no instance provided', t => {
   t.plan(2)
-  const dispatcher = createLogController({ disableRequestLogging: false, requestIdLogLabel: 'reqId' })
+  const dispatcher = createLogController({ requestIdLogLabel: 'reqId' })
   t.assert.ok(dispatcher instanceof LogController)
   t.assert.strictEqual(dispatcher.requestIdLogLabel, 'reqId')
 })
@@ -377,20 +377,20 @@ test('createLogController should create default when no instance provided', t =>
 test('createLogController should throw on invalid type', t => {
   t.plan(1)
   t.assert.throws(() => {
-    createLogController({ disableRequestLogging: false, logController: 'bad' })
+    createLogController({ logController: 'bad' })
   }, { code: 'FST_ERR_LOG_INVALID_LOG_CONTROLLER' })
 })
 
 test('createLogController should throw when plain object is provided', t => {
   t.plan(1)
   t.assert.throws(() => {
-    createLogController({ disableRequestLogging: false, logController: { incomingRequest: () => { } } })
+    createLogController({ logController: { incomingRequest: () => { } } })
   }, { code: 'FST_ERR_LOG_INVALID_LOG_CONTROLLER' })
 })
 
 test('createLogController should accept null', t => {
   t.plan(1)
-  const logController = createLogController({ disableRequestLogging: false, logController: null })
+  const logController = createLogController({ logController: null })
   t.assert.ok(logController)
 })
 

@@ -211,11 +211,6 @@ declare namespace fastify {
     routerOptions?: FastifyRouterOptions<RawServer>,
   }
 
-  /**
-   * @deprecated use {@link FastifySchemaValidationError}
-   */
-  export type ValidationResult = FastifySchemaValidationError
-
   /* Export additional types */
   export type {
     LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'

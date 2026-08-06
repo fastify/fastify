@@ -1548,9 +1548,9 @@ FastifyError is a custom error object that includes status code and validation
 results.
 
 It extends the Node.js `Error` type, and adds two additional, optional
-properties: `statusCode: number` and `validation: ValidationResult[]`.
+properties: `statusCode: number` and `validation: FastifySchemaValidationError[]`.
 
-##### fastify.ValidationResult
+##### fastify.FastifySchemaValidationError
 
 [src](https://github.com/fastify/fastify/blob/main/fastify.d.ts#L184)
 

@@ -1732,7 +1732,8 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
-Calling `addHttpMethod` for an existing method overrides its body behavior.
+Calling `addHttpMethod` for an existing method requires `overrideExisting: true`
+and overrides its body behavior.
 
 ```js
 fastify.addHttpMethod('GET', {
@@ -1741,8 +1742,8 @@ fastify.addHttpMethod('GET', {
 })
 ```
 
-In Fastify v5, omitting `overrideExisting: true` emits `FSTDEP025`; in Fastify
-v6, it will throw an error.
+Omitting `overrideExisting: true` when the method already exists throws
+`FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED`.
 
 #### addSchema
 <a id="add-schema"></a>

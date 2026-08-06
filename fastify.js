@@ -76,11 +76,12 @@ const {
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
   FST_ERR_ERROR_HANDLER_ALREADY_SET,
-  FST_ERR_ROUTE_METHOD_INVALID
+  FST_ERR_ROUTE_METHOD_INVALID,
+  FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTDEP023, FSTDEP024 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -832,7 +833,7 @@ function fastify (serverOptions) {
       this[kSupportedHTTPMethods].bodywith.has(method)
 
     if (alreadyExists && !overrideExisting) {
-      FSTDEP025(method)
+      throw new FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED(method)
     }
 
     if (hasBody === true) {

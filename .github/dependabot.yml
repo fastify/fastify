@@ -3,10 +3,10 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore"
+      include: "scope"
+      prefix: "ci"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     cooldown:
       default-days: 7
     allow:
@@ -14,14 +14,18 @@ updates:
         update-types:
           - "version-update:semver-major"
     open-pull-requests-limit: 10
+    groups:
+      fastify-owned:
+        patterns:
+          - "fastify/*"
 
   - package-ecosystem: "npm"
     directory: "/"
     commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore"
+      include: "scope"
+      prefix: "build"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     cooldown:
       default-days: 7
     versioning-strategy: "increase-if-necessary"

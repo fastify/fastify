@@ -352,6 +352,40 @@ Final step is to export the Fastify app instance to Firebase's own
 exports.app = onRequest(fastifyApp)
 ```
 
+### Function-level visibility in Google Cloud
+
+Firebase deploys each `onRequest()` export as one Google Cloud Function.
+Fastify routes registered inside that handler are still routed by Fastify, but
+they do not appear as separate functions in the Google Cloud console. For
+example, the `exports.app` example above appears as a single function named
+`app`, even if the Fastify instance registers many routes.
+
+If you need function-level logs or metrics per endpoint, export one Firebase
+function for each endpoint you want to track and forward those requests to the
+same Fastify instance. The wrapper can rewrite the URL before Fastify receives
+the request:
+
+```js
+const routeToFastify = async (request, reply, url) => {
+  const search = new URL(request.url, 'http://localhost').search
+  request.url = `${url}${search}`
+  return fastifyApp(request, reply)
+}
+
+exports.getUsers = onRequest((request, reply) => {
+  return routeToFastify(request, reply, '/api/v1/users')
+})
+
+exports.createUser = onRequest((request, reply) => {
+  return routeToFastify(request, reply, '/api/v1/users')
+})
+```
+
+With this pattern, Google Cloud reports `getUsers` and `createUser` as
+separate deployed functions, while Fastify still handles the route logic. Use
+this only when you need per-function visibility; otherwise, exporting a single
+Fastify function is simpler and keeps deployment configuration smaller.
+
 ### Local test
 
 Install the Firebase tools functions so you can use the CLI:

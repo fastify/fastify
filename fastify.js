@@ -57,7 +57,6 @@ const {
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
-const PonyPromise = require('./lib/promise')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -528,7 +527,7 @@ function fastify (serverOptions) {
     // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
     // as well as a flow control mechanism to chain cbs and further
     // promises
-    this[kState].readyResolver = PonyPromise.withResolvers()
+    this[kState].readyResolver = Promise.withResolvers()
 
     if (!cb) {
       return this[kState].readyResolver.promise

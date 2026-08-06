@@ -319,7 +319,6 @@ type InitialConfig = Readonly<{
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   pluginTimeout?: number,
   requestIdHeader?: string | false,
-  requestIdLogLabel?: string,
   http2SessionTimeout?: number,
   useSemicolonDelimiter?: boolean,
   routerOptions?: FastifyRouterOptions<RawServerDefault>

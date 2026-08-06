@@ -40,7 +40,6 @@ test('without options passed to Fastify, initialConfig should expose default val
     onConstructorPoisoning: 'error',
     pluginTimeout: 10000,
     requestIdHeader: false,
-    requestIdLogLabel: 'reqId',
     http2SessionTimeout: 72000,
     exposeHeadRoutes: true,
     routerOptions: {
@@ -298,7 +297,6 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       onConstructorPoisoning: 'error',
       pluginTimeout: 10000,
       requestIdHeader: false,
-      requestIdLogLabel: 'reqId',
       http2SessionTimeout: 72000,
       exposeHeadRoutes: true,
       routerOptions: {

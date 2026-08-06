@@ -10,7 +10,7 @@ import { ConstraintStrategy, Config as FindMyWayConfig, HTTPVersion } from 'find
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
-import { FastifyContextConfig, FastifyReplyContext, FastifyRequestContext } from './types/context'
+import { FastifyContextConfig } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, RequestPayload } from './types/hooks'
 import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './types/instance'
@@ -224,7 +224,7 @@ declare namespace fastify {
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
     FastifyLoggerOptions, FastifyBaseLogger, FastifyLogFn, LogLevel, // './types/logger'
-    FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
+    FastifyContextConfig, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions,
     RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
     FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'

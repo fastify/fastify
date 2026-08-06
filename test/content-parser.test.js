@@ -723,6 +723,125 @@ test('invalid content-type error message should not contain format placeholder',
   })
 })
 
+test('RegExp parser can recover an invalid content-type', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.addContentTypeParser(
+    /^application\/json,application\/json$/,
+    { parseAs: 'string' },
+    fastify.getDefaultJsonParser('error', 'error')
+  )
+  fastify.post('/', request => request.body)
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json,application/json'
+    },
+    payload: JSON.stringify({ recovered: true })
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { recovered: true })
+})
+
+test('invalid content-type recovery is encapsulated', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.register((instance, _options, done) => {
+    instance.addContentTypeParser(
+      /^application\/json,application\/json$/,
+      { parseAs: 'string' },
+      instance.getDefaultJsonParser('error', 'error')
+    )
+    instance.post('/recover', request => request.body)
+    done()
+  })
+  fastify.post('/strict', request => request.body)
+
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json,application/json'
+    },
+    payload: JSON.stringify({ recovered: true })
+  }
+  const recoveredResponse = await fastify.inject({
+    ...requestOptions,
+    url: '/recover'
+  })
+  const strictResponse = await fastify.inject({
+    ...requestOptions,
+    url: '/strict'
+  })
+
+  t.assert.strictEqual(recoveredResponse.statusCode, 200)
+  t.assert.deepStrictEqual(recoveredResponse.json(), { recovered: true })
+  t.assert.strictEqual(strictResponse.statusCode, 415)
+  t.assert.strictEqual(
+    strictResponse.json().code,
+    'FST_ERR_CTP_INVALID_MEDIA_TYPE'
+  )
+})
+
+test('catch-all parser does not recover an invalid content-type', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.addContentTypeParser('*', { parseAs: 'string' }, (_request, body, done) => {
+    done(null, body)
+  })
+  fastify.post('/', request => request.body)
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json,application/json'
+    },
+    payload: JSON.stringify({ recovered: false })
+  })
+
+  t.assert.strictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+})
+
+test('invalid content-type on a missing route remains unsupported', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/missing',
+    headers: {
+      'content-type': 'application/json,application/json'
+    },
+    payload: '{}'
+  })
+
+  t.assert.strictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+})
+
+test('valid unsupported content-type on a missing route remains not found', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/missing',
+    headers: {
+      'content-type': 'application/unsupported'
+    },
+    payload: 'body'
+  })
+
+  t.assert.strictEqual(response.statusCode, 404)
+})
+
 test('content-type fail when not a valid type', async t => {
   t.plan(1)
 

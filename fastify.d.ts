@@ -19,7 +19,6 @@ import {
   FastifyChildLoggerFactory,
   LogController as LogControllerClass,
   FastifyLogFn,
-  FastifyLoggerInstance,
   FastifyLoggerOptions,
   LogLevel,
   PinoLoggerOptions
@@ -224,7 +223,7 @@ declare namespace fastify {
     FastifyReply, // './types/reply'
     FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
-    FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
+    FastifyLoggerOptions, FastifyBaseLogger, FastifyLogFn, LogLevel, // './types/logger'
     FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions,
     RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'

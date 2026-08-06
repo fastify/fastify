@@ -29,12 +29,15 @@ Content type parsers are encapsulated in the scope in which they are declared
 webhook route inside its own plugin means the custom parser applies only to
 that scope, and every other route keeps the default JSON parsing.
 
-The parser uses the `parseAs: 'buffer'` option so Fastify collects the body
-into a `Buffer` and enforces the body limit for you. Instead of parsing that
-buffer, the parser returns it unchanged, so `request.body` is the raw bytes.
-Only `application/json` is overridden here, so requests sent with another
-content type keep the parser they inherit from the parent scope; confirm your
-provider sends JSON.
+The parser uses the `parseAs: 'buffer'` option (this is already the default;
+it is kept here to make the intent explicit) so Fastify collects the body into
+a `Buffer` and enforces the body limit for you. Instead of parsing that buffer,
+the parser returns it unchanged, so `request.body` is the raw bytes. Because
+`request.body` is a `Buffer` rather than a parsed object, do not attach a JSON
+body schema to this route: `schema.body` validation would run against the
+`Buffer` and reject it. Only `application/json` is overridden here, so requests
+sent with another content type keep the parser they inherit from the parent
+scope; confirm your provider sends JSON.
 
 ```js
 const crypto = require('node:crypto')
@@ -42,10 +45,26 @@ const Fastify = require('fastify')
 
 const app = Fastify()
 
+// Compare with a constant-time function to avoid leaking timing
+// information. `crypto.timingSafeEqual` requires two buffers of equal
+// length, so guard the length before calling it. The signature header may
+// be absent or, on duplicate headers, an array, so normalize it to a
+// string first.
+function verify (signature, expected) {
+  const value = Array.isArray(signature) ? signature[0] : signature
+  const provided = Buffer.from(value ?? '', 'utf8')
+  const computed = Buffer.from(expected, 'utf8')
+
+  return (
+    provided.length === computed.length &&
+    crypto.timingSafeEqual(provided, computed)
+  )
+}
+
 // The webhook route lives in its own encapsulated plugin, so this parser
 // does not affect JSON parsing anywhere else in the application.
-app.register(async function webhookRoutes (webhooks) {
-  webhooks.addContentTypeParser(
+app.register(async function webhookRoutes (instance) {
+  instance.addContentTypeParser(
     'application/json',
     { parseAs: 'buffer' },
     (request, body, done) => {
@@ -55,7 +74,7 @@ app.register(async function webhookRoutes (webhooks) {
     }
   )
 
-  webhooks.post('/webhooks/provider', (request, reply) => {
+  instance.post('/webhooks/provider', (request, reply) => {
     const rawBody = request.body // a Buffer
     const signature = request.headers['x-signature']
 
@@ -92,22 +111,8 @@ app.listen({ port: 3000 }).catch((err) => {
 })
 ```
 
-The handler calls a `verify` helper. Keep it in the same module, and compare
-with a constant-time function to avoid leaking timing information.
-`crypto.timingSafeEqual` requires two buffers of equal length, so guard the
-length before calling it.
-
-```js
-function verify (signature, expected) {
-  const provided = Buffer.from(signature ?? '', 'utf8')
-  const computed = Buffer.from(expected, 'utf8')
-
-  return (
-    provided.length === computed.length &&
-    crypto.timingSafeEqual(provided, computed)
-  )
-}
-```
+The handler calls the `verify` helper defined above, which compares the
+signatures in constant time. Keep it in the same module as the route.
 
 Each provider documents its own exact signature format. Stripe and Svix, for
 example, sign a payload that combines a timestamp with the body, and GitHub
@@ -135,7 +140,9 @@ built from the same bytes so Fastify can parse the body as usual. Set
 `Content-Length` header. Unlike the buffer parser, this hook collects the
 whole payload before Fastify checks the body limit on the returned stream, so
 add your own size guard to avoid buffering an unbounded request. The example
-below rejects anything larger than the configured `bodyLimit`.
+below reads `request.routeOptions.bodyLimit`, the effective limit for the
+route (the per-route override if set, otherwise the global one), and rejects
+anything larger.
 
 ```js
 const crypto = require('node:crypto')
@@ -144,26 +151,33 @@ const Fastify = require('fastify')
 
 const app = Fastify()
 
-app.register(async function webhookRoutes (webhooks) {
-  webhooks.decorateRequest('rawBody', null)
+app.register(async function webhookRoutes (instance) {
+  instance.decorateRequest('rawBody', null)
 
-  webhooks.addHook('preParsing', (request, reply, payload, done) => {
-    const limit = request.server.initialConfig.bodyLimit
+  instance.addHook('preParsing', (request, reply, payload, done) => {
+    const limit = request.routeOptions.bodyLimit
     const chunks = []
     let size = 0
+    let aborted = false
 
+    // `aborted` guards against calling `done` more than once: `destroy`
+    // and a same-tick `end` could otherwise both settle the hook.
     payload.on('data', (chunk) => {
+      if (aborted) return
       size += chunk.length
       if (size > limit) {
+        aborted = true
+        payload.destroy()
         const error = new Error('Request body is too large')
         error.statusCode = 413
-        payload.destroy(error)
+        done(error)
         return
       }
       chunks.push(chunk)
     })
 
     payload.on('end', () => {
+      if (aborted) return
       const rawBody = Buffer.concat(chunks)
       request.rawBody = rawBody
 
@@ -172,10 +186,14 @@ app.register(async function webhookRoutes (webhooks) {
       done(null, stream)
     })
 
-    payload.on('error', done)
+    payload.on('error', (err) => {
+      if (aborted) return
+      aborted = true
+      done(err)
+    })
   })
 
-  webhooks.post('/webhooks/provider', (request, reply) => {
+  instance.post('/webhooks/provider', (request, reply) => {
     // request.body is the parsed JSON; request.rawBody is the Buffer.
     const expected = crypto
       .createHmac('sha256', process.env.WEBHOOK_SECRET)

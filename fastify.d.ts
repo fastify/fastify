@@ -17,9 +17,9 @@ import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './typ
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
-  LogController as LogControllerClass,
   FastifyLogFn,
   FastifyLoggerOptions,
+  LogController as LogControllerClass,
   LogLevel,
   PinoLoggerOptions
 } from './types/logger'
@@ -95,7 +95,10 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
-  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'> & {
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser' | 'constraints'> & {
+    constraints?: {
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
+    },
     defaultRoute?: (
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
@@ -141,18 +144,11 @@ declare namespace fastify {
     loggerInstance?: Logger
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
-    caseSensitive?: boolean,
-    allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
     /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
     requestIdLogLabel?: string;
-    useSemicolonDelimiter?: boolean,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
-    querystringParser?: (str: string) => { [key: string]: unknown },
-    constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
-    },
     schemaController?: {
       bucket?: (parentSchemas?: unknown) => {
         add(schema: unknown): FastifyInstance;

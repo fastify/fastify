@@ -79,7 +79,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
+const { FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -770,10 +770,8 @@ function fastify (serverOptions) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
-    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+    if (this[kErrorHandlerAlreadySet] && !options.allowErrorHandlerOverride) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
-    } else if (this[kErrorHandlerAlreadySet]) {
-      FSTWRN004()
     }
 
     this[kErrorHandlerAlreadySet] = true

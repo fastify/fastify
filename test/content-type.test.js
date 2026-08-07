@@ -96,6 +96,89 @@ describe('ContentType class', () => {
     t.assert.equal(found.isValid, false)
   })
 
+  test('recovers invalid parameter syntax', (t) => {
+    const recoveredContentTypes = [
+      {
+        input: 'application/json; charset=utf-8,application/json',
+        mediaType: 'application/json',
+        parameters: [['charset', 'utf-8,application/json']],
+        serialized: 'application/json; charset="utf-8,application/json"'
+      },
+      {
+        input: 'application/json; charset=utf-8,text/plain',
+        mediaType: 'application/json',
+        parameters: [['charset', 'utf-8,text/plain']],
+        serialized: 'application/json; charset="utf-8,text/plain"'
+      },
+      {
+        input: 'text/plain; charset=utf-8,application/json',
+        mediaType: 'text/plain',
+        parameters: [['charset', 'utf-8,application/json']],
+        serialized: 'text/plain; charset="utf-8,application/json"'
+      },
+      {
+        input: 'application/json; charset=utf-8,evil',
+        mediaType: 'application/json',
+        parameters: [['charset', 'utf-8,evil']],
+        serialized: 'application/json; charset="utf-8,evil"'
+      },
+      {
+        input: 'application/json; charset=utf-8 garbage',
+        mediaType: 'application/json',
+        parameters: [['charset', 'utf-8 garbage']],
+        serialized: 'application/json; charset="utf-8 garbage"'
+      },
+      {
+        input: 'application/json; @@@',
+        mediaType: 'application/json',
+        parameters: [],
+        serialized: 'application/json'
+      },
+      {
+        input: 'application/json; foo=@@@',
+        mediaType: 'application/json',
+        parameters: [['foo', '@@@']],
+        serialized: 'application/json; foo="@@@"'
+      },
+      {
+        input: 'application/json; foo',
+        mediaType: 'application/json',
+        parameters: [],
+        serialized: 'application/json'
+      },
+      {
+        input: 'application/json; =bar',
+        mediaType: 'application/json',
+        parameters: [],
+        serialized: 'application/json'
+      },
+      {
+        input: 'application/json; foo=bar baz',
+        mediaType: 'application/json',
+        parameters: [['foo', 'bar baz']],
+        serialized: 'application/json; foo="bar baz"'
+      },
+      {
+        input: 'application/json; foo=bar; @@@',
+        mediaType: 'application/json',
+        parameters: [['foo', 'bar']],
+        serialized: 'application/json; foo="bar"'
+      }
+    ]
+
+    for (const expected of recoveredContentTypes) {
+      const found = new ContentType(expected.input)
+      t.assert.equal(found.isValid, true, expected.input)
+      t.assert.equal(found.mediaType, expected.mediaType, expected.input)
+      t.assert.deepStrictEqual(
+        Array.from(found.parameters.entries()),
+        expected.parameters,
+        expected.input
+      )
+      t.assert.equal(found.toString(), expected.serialized, expected.input)
+    }
+  })
+
   test('subtype with multiple fields validates as incorrect', (t) => {
     let found = new ContentType('application/json whatever')
     t.assert.equal(found.isValid, false)
@@ -132,7 +215,7 @@ describe('ContentType class', () => {
   })
 
   test('returns a media type instance with parameters', (t) => {
-    const found = new ContentType('Application/JSON ; charset=utf-8; foo=BaR;baz=" 42"')
+    const found = new ContentType('Application/JSON ; CHARSET=utf-8; foo=BaR;baz=" 42"')
     t.assert.equal(found.isEmpty, false)
     t.assert.equal(found.mediaType, 'application/json')
     t.assert.equal(found.type, 'application')
@@ -155,17 +238,19 @@ describe('ContentType class', () => {
     )
   })
 
-  test('skips invalid quoted string parameters', (t) => {
+  test('recovers unterminated quoted string parameters', (t) => {
     const found = new ContentType('Application/JSON ; charset=utf-8; foo=BaR;baz=" 42')
+    t.assert.equal(found.isValid, true)
     t.assert.equal(found.isEmpty, false)
     t.assert.equal(found.mediaType, 'application/json')
     t.assert.equal(found.type, 'application')
     t.assert.equal(found.subtype, 'json')
-    t.assert.equal(found.parameters.size, 2)
+    t.assert.equal(found.parameters.size, 3)
 
     const expected = [
       ['charset', 'utf-8'],
-      ['foo', 'BaR']
+      ['foo', 'BaR'],
+      ['baz', ' 42']
     ]
     t.assert.deepStrictEqual(
       Array.from(found.parameters.entries()),
@@ -174,7 +259,7 @@ describe('ContentType class', () => {
 
     t.assert.equal(
       found.toString(),
-      'application/json; charset="utf-8"; foo="BaR"'
+      'application/json; charset="utf-8"; foo="BaR"; baz=" 42"'
     )
   })
 

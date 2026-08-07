@@ -79,7 +79,7 @@ const {
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
+const { FSTWRN004, FSTDEP024, FSTDEP025 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
@@ -884,9 +884,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
     FSTDEP024()
   }
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  if (options.disableRequestLogging !== undefined) {
-    FSTDEP023()
-  }
 
   const ajvOptions = Object.assign({
     customOptions: {},

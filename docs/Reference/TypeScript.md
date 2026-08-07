@@ -1416,39 +1416,6 @@ Union type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
 
 ---
 
-#### Context
-
-The context type definition is similar to the other highly dynamic pieces of the
-type system. Route context is available in the route handler method.
-
-##### fastify.FastifyRequestContext
-
-[src](https://github.com/fastify/fastify/blob/main/types/context.d.ts#L11)
-
-An interface with a single required property `config` that is set by default to
-`unknown`. Can be specified either using a generic or an overload.
-
-This type definition is potentially incomplete. If you are using it and can
-provide more details on how to improve the definition, we strongly encourage you
-to open an issue in the main
-[fastify/fastify](https://github.com/fastify/fastify) repository. Thank you in
-advanced!
-
-##### fastify.FastifyReplyContext
-
-[src](https://github.com/fastify/fastify/blob/main/types/context.d.ts#L11)
-
-An interface with a single required property `config` that is set by default to
-`unknown`. Can be specified either using a generic or an overload.
-
-This type definition is potentially incomplete. If you are using it and can
-provide more details on how to improve the definition, we strongly encourage you
-to open an issue in the main
-[fastify/fastify](https://github.com/fastify/fastify) repository. Thank you in
-advanced!
-
----
-
 #### Routing
 
 One of the core principles in Fastify is its routing capabilities. Most of the

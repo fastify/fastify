@@ -144,8 +144,6 @@ declare namespace fastify {
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
     requestIdHeader?: string | false,
-    /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
-    requestIdLogLabel?: string;
     useSemicolonDelimiter?: boolean,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,

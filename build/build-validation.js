@@ -40,7 +40,6 @@ const defaultInitOptions = {
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
   requestIdHeader: false,
-  requestIdLogLabel: 'reqId', // TODO: remove it in v6
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
   useSemicolonDelimiter: false,
@@ -107,7 +106,6 @@ const schema = {
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
     requestIdHeader: { anyOf: [{ type: 'boolean' }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
-    requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
     useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },

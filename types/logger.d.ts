@@ -84,7 +84,7 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: Partial<RawReply> & Pick<RawReply, 'statusCode'>) => {
+    res?: (res: Partial<RawReply>) => {
       statusCode?: string | number;
       [key: string]: unknown;
     };

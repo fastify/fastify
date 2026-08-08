@@ -45,6 +45,11 @@ parsed.
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
+Invalid `Content-Type` values are rejected unless they match a registered
+`RegExp` parser. This allows an application to recover known malformed values
+without weakening Fastify's default validation. String and catch-all parsers
+do not recover invalid values.
+
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {

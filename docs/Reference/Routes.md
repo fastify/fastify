@@ -120,7 +120,10 @@ fastify.route(options)
   [`handlerTimeout`](./Server.md#factory-handler-timeout). Must be a positive
   integer. When the timeout fires, `request.signal` is aborted and a 503 error
   is sent through the error handler (which can be customized per-route).
-* `logLevel`: set log level for this route. See below.
+* `logLevel`: set the logger threshold for this route. See below.
+* `requestLogLevel`: set the log level for the automatic `incoming request` and
+  successful `request completed` records. Defaults to `info`. Records remain
+  subject to the route logger's `logLevel` threshold.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
@@ -550,6 +553,25 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
   reply.send({ hello: 'world' })
 })
 ```
+`logLevel` sets the minimum enabled level for the route logger. It does not
+change the level assigned to Fastify's automatic request lifecycle records. Use
+`requestLogLevel` to change the level of the automatic `incoming request` and
+successful `request completed` records. The selected level must also be enabled
+by the route logger's `logLevel` threshold:
+
+```js
+fastify.get('/health', {
+  logLevel: 'debug',
+  requestLogLevel: 'debug'
+}, (request, reply) => {
+  reply.send({ status: 'ok' })
+})
+```
+
+Errors continue to use their severity selected by Fastify. Set
+`requestLogLevel: 'silent'` to suppress only the routine incoming and completed
+records for a route.
+
 *Remember that the custom log level applies only to routes, not to the global
 Fastify Logger, accessible with `fastify.log`.*
 

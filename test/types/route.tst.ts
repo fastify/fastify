@@ -58,6 +58,17 @@ const asyncPreHandler = async (request: FastifyRequest) => {
 
 fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
 
+fastify().get('/', { requestLogLevel: 'debug' }, async (request) => {
+  expect(request.routeOptions.requestLogLevel).type.toBe<string>()
+})
+
+expect(fastify().route).type.not.toBeCallableWith({
+  method: 'GET',
+  url: '/',
+  requestLogLevel: 'invalid',
+  handler: routeHandler
+})
+
 fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: true } },

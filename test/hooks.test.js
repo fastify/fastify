@@ -576,18 +576,20 @@ test('onRoute hook should pass correct route with custom prefix', (t, testDone) 
 })
 
 test('onRoute hook should pass correct route with custom options', (t, testDone) => {
-  t.plan(6)
+  t.plan(7)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/foo')
       t.assert.strictEqual(route.logLevel, 'info')
+      t.assert.strictEqual(route.requestLogLevel, 'debug')
       t.assert.strictEqual(route.bodyLimit, 100)
       t.assert.ok(typeof route.logSerializers.test === 'function')
     })
     instance.get('/foo', {
       logLevel: 'info',
+      requestLogLevel: 'debug',
       bodyLimit: 100,
       logSerializers: {
         test: value => value

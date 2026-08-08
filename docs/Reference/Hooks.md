@@ -575,6 +575,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.routePath // the URL of the route without the prefix
   routeOptions.bodyLimit
   routeOptions.logLevel
+  routeOptions.requestLogLevel
   routeOptions.logSerializers
   routeOptions.prefix
 })

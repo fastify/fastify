@@ -951,7 +951,7 @@ function defaultBuildPrettyMeta (route) {
   // return a shallow copy of route's sanitized context
 
   const cleanKeys = {}
-  const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
+  const allowedProps = ['errorHandler', 'logLevel', 'requestLogLevel', 'logSerializers']
 
   allowedProps.concat(supportedHooks).forEach(k => {
     cleanKeys[k] = route.store[k]

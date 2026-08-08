@@ -85,7 +85,9 @@ Request is a core Fastify object containing the following fields:
   - `handler` - The handler for this route.
   - `attachValidation` - Attach `validationError` to request (if there is
     a schema defined).
-  - `logLevel` - Log level defined for this route.
+  - `logLevel` - Logger threshold defined for this route.
+  - `requestLogLevel` - Log level for the automatic incoming request and
+    successful request completed records.
   - `schema` - The JSON schemas definition for this route.
   - `version` - A semver compatible string that defines the version of the endpoint.
   - `exposeHeadRoute` - Creates a sibling HEAD route for any GET routes.
@@ -148,6 +150,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.routeOptions.url)
   console.log(request.routeOptions.attachValidation)
   console.log(request.routeOptions.logLevel)
+  console.log(request.routeOptions.requestLogLevel)
   console.log(request.routeOptions.version)
   console.log(request.routeOptions.exposeHeadRoute)
   console.log(request.routeOptions.prefixTrailingSlash)

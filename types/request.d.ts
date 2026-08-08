@@ -28,6 +28,7 @@ export interface RequestRouteOptions<ContextConfig = ContextConfigDefault, Schem
   handlerTimeout: number;
   attachValidation: boolean;
   logLevel: string;
+  requestLogLevel: string;
   exposeHeadRoute: boolean;
   prefixTrailingSlash: string;
   config: FastifyContextConfig & FastifyRouteConfig & ContextConfig;

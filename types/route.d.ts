@@ -67,6 +67,7 @@ export interface RouteShorthandOptions<
   bodyLimit?: number;
   handlerTimeout?: number;
   logLevel?: LogLevel;
+  requestLogLevel?: LogLevel;
   config?: FastifyContextConfig & ContextConfig;
   constraints?: RouteConstraint,
   prefixTrailingSlash?: 'slash' | 'no-slash' | 'both';

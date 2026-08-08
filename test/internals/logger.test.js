@@ -210,6 +210,21 @@ test('requestCompleted should log error when err is present', t => {
   logController.requestCompleted(err, request, reply)
 })
 
+test('requestCompleted should keep error severity when requestLogLevel is lower', t => {
+  t.plan(1)
+  const logController = new LogController({ disableRequestLogging: false })
+  const err = new Error('test')
+  const log = {
+    debug: () => { t.assert.fail('debug should not be called for errors') },
+    error: (data, msg) => {
+      t.assert.strictEqual(msg, 'request errored')
+    }
+  }
+  const request = { routeOptions: { requestLogLevel: 'debug' } }
+  const reply = { request, log, elapsedTime: 42 }
+  logController.requestCompleted(err, request, reply)
+})
+
 test('requestCompleted should log info when no error', t => {
   t.plan(1)
   const logController = new LogController({ disableRequestLogging: false })

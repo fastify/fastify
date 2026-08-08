@@ -5,8 +5,10 @@ import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider
 import { FastifySchema } from './schema'
 
 /**
- * Structural result returned by a content-type header parser. Fastify uses this
- * representation for request validation, body parser lookup, and schema selection.
+ * Structural result returned by a content-type header parser. This mirrors the
+ * `ContentType` implementation in `lib/content-type.js`; keep both synchronized.
+ * Fastify uses this representation for request validation, body parser lookup, and
+ * schema selection.
  */
 export interface FastifyParsedContentType {
   readonly isEmpty: boolean;

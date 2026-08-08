@@ -307,8 +307,9 @@ to the size of the stream the hook returns (i.e. the size of "decoded" body).
 + Default: `undefined`
 
 Creates the function Fastify uses to parse and canonicalize incoming
-`Content-Type` header values. The factory receives Fastify's default parser so
-a custom implementation can delegate ordinary values:
+`Content-Type` header values. The default parser is implemented in
+[`lib/content-type.js`](../../lib/content-type.js). The factory receives this
+parser so a custom implementation can delegate ordinary values:
 
 ```js
 const fastify = Fastify({
@@ -324,11 +325,13 @@ const fastify = Fastify({
 ```
 
 The returned function must return an object with `isValid`, `isEmpty`,
-`mediaType`, `type`, `subtype`, `parameters`, and `toString()`. Fastify uses
-that result for request rejection, `request.mediaType`, body parser selection,
-and per-content-type schema selection. A custom implementation must therefore
-canonicalize values unambiguously and must not mark untrusted input as valid
-unless its body parser and validation semantics are known.
+`mediaType`, `type`, `subtype`, `parameters`, and `toString()`. TypeScript
+implementations can implement the exported
+[`FastifyParsedContentType`](../../types/content-type-parser.d.ts) interface.
+Fastify uses that result for request rejection, `request.mediaType`, body parser
+selection, and per-content-type schema selection. A custom implementation must
+therefore canonicalize values unambiguously and must not mark untrusted input as
+valid unless its body parser and validation semantics are known.
 
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>

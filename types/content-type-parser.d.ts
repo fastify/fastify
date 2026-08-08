@@ -4,6 +4,22 @@ import { RouteGenericInterface } from './route'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
+export interface FastifyParsedContentType {
+  readonly isEmpty: boolean;
+  readonly isValid: boolean;
+  readonly mediaType: string;
+  readonly type: string;
+  readonly subtype: string;
+  readonly parameters: ReadonlyMap<string, string>;
+  toString(): string;
+}
+
+export type FastifyContentTypeHeaderParser = (headerValue: string) => FastifyParsedContentType
+
+export type FastifyContentTypeParserFactory = (
+  defaultParser: FastifyContentTypeHeaderParser
+) => FastifyContentTypeHeaderParser
+
 type ContentTypeParserDoneFunction = (err: Error | null, body?: any) => void
 
 /**

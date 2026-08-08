@@ -302,6 +302,35 @@ reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
+### `contentTypeParserFactory`
+<a id="factory-content-type-parser-factory"></a>
+
++ Default: `undefined`
+
+Creates the function Fastify uses to parse and canonicalize incoming
+`Content-Type` header values. The factory receives Fastify's default parser so
+a custom implementation can delegate ordinary values:
+
+```js
+const fastify = Fastify({
+  contentTypeParserFactory (defaultParser) {
+    return function parseContentType (headerValue) {
+      if (headerValue === 'application/json,application/json') {
+        return defaultParser('application/json')
+      }
+      return defaultParser(headerValue)
+    }
+  }
+})
+```
+
+The returned function must return an object with `isValid`, `isEmpty`,
+`mediaType`, `type`, `subtype`, `parameters`, and `toString()`. Fastify uses
+that result for request rejection, `request.mediaType`, body parser selection,
+and per-content-type schema selection. A custom implementation must therefore
+canonicalize values unambiguously and must not mark untrusted input as valid
+unless its body parser and validation semantics are known.
+
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>
 

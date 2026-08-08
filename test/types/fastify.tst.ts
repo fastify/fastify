@@ -358,5 +358,11 @@ fastify({ allowUnsafeRegex: true })
 fastify({ allowUnsafeRegex: false })
 expect(fastify).type.not.toBeCallableWith({ allowUnsafeRegex: 'invalid' })
 
+fastify({
+  contentTypeParserFactory: defaultParser => headerValue => defaultParser(headerValue)
+})
+expect(fastify).type.not.toBeCallableWith({ contentTypeParserFactory: 'invalid' })
+expect(fastify).type.not.toBeCallableWith({ contentTypeParserFactory: () => 'invalid' })
+
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

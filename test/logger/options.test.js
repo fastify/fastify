@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on, once } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(21)
+  t.plan(22)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -534,7 +534,28 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       fastify.get('/health', { requestLogLevel: 'invalid' }, () => {})
     }, {
       code: 'FST_ERR_ROUTE_LOG_LEVEL_INVALID',
-      message: "Log level for 'GET:/health' route must be a valid logger level. Received: 'invalid'"
+      message: "Route option 'requestLogLevel' for 'GET:/health' must be a valid logger level. Received: 'invalid'"
+    })
+  })
+
+  await t.test('Should throw when request log level is unsupported by a custom logger', async (t) => {
+    const loggerInstance = {
+      fatal () {},
+      error () {},
+      warn () {},
+      info () {},
+      debug () {},
+      trace () {},
+      child () { return loggerInstance }
+    }
+    const fastify = Fastify({ loggerInstance })
+    t.after(() => fastify.close())
+
+    t.assert.throws(() => {
+      fastify.get('/health', { requestLogLevel: 'invalid' }, () => {})
+    }, {
+      code: 'FST_ERR_ROUTE_LOG_LEVEL_INVALID',
+      message: "Route option 'requestLogLevel' for 'GET:/health' must be a valid logger level. Received: 'invalid'"
     })
   })
 
@@ -555,7 +576,7 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.ok(err)
       t.assert.strictEqual(err.code, 'FST_ERR_ROUTE_LOG_LEVEL_INVALID')
       t.assert.strictEqual(err.statusCode, 500)
-      t.assert.strictEqual(err.message, "Log level for 'GET:/log' route must be a valid logger level. Received: 'invalid'")
+      t.assert.strictEqual(err.message, "Route option 'logLevel' for 'GET:/log' must be a valid logger level. Received: 'invalid'")
     }
   })
 

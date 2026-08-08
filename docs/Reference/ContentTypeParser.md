@@ -52,7 +52,7 @@ parsed.
 > By default, Fastify validates the request's `Content-Type` header before
 > selecting a body parser. String, `RegExp`, and [catch-all](#catch-all) parsers
 > therefore will never handle an invalid header. The
-> [`strictContentTypeValidation`](./Server.md#factory-strict-content-type-validation)
+> [`strictContentTypeHeaderValidation`](./Server.md#factory-strict-content-type-header-validation)
 > server option can disable this gate as a compatibility escape hatch. RegExp
 > and catch-all parsers then match the raw invalid header value, while
 > `request.mediaType` remains undefined.

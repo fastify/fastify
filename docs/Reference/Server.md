@@ -300,8 +300,8 @@ reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
-### `strictContentTypeValidation`
-<a id="factory-strict-content-type-validation"></a>
+### `strictContentTypeHeaderValidation`
+<a id="factory-strict-content-type-header-validation"></a>
 
 + Default: `true`
 

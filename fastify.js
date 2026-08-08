@@ -167,7 +167,7 @@ function fastify (serverOptions) {
       options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
       (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning),
-      options.contentTypeParserFactory
+      options.contentTypeHeaderParserFactory
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
@@ -864,8 +864,8 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
     options = Object.assign({}, options)
   }
 
-  if (options.contentTypeParserFactory !== undefined && typeof options.contentTypeParserFactory !== 'function') {
-    throw new TypeError(`contentTypeParserFactory option should be a function, instead got '${typeof options.contentTypeParserFactory}'`)
+  if (options.contentTypeHeaderParserFactory !== undefined && typeof options.contentTypeHeaderParserFactory !== 'function') {
+    throw new TypeError(`contentTypeHeaderParserFactory option should be a function, instead got '${typeof options.contentTypeHeaderParserFactory}'`)
   }
 
   if (

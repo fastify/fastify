@@ -9,7 +9,7 @@ import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-str
 import { ConstraintStrategy, Config as FindMyWayConfig, HTTPVersion } from 'find-my-way'
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
-import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeHeaderParser, FastifyContentTypeParser, FastifyContentTypeParserFactory, FastifyParsedContentType, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
+import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeHeaderParser, FastifyContentTypeParser, FastifyContentTypeHeaderParserFactory, FastifyParsedContentType, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
 import { FastifyContextConfig, FastifyReplyContext, FastifyRequestContext } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, RequestPayload } from './types/hooks'
@@ -144,7 +144,7 @@ declare namespace fastify {
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
-    contentTypeParserFactory?: FastifyContentTypeParserFactory,
+    contentTypeHeaderParserFactory?: FastifyContentTypeHeaderParserFactory,
     requestIdHeader?: string | false,
     /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
     requestIdLogLabel?: string;
@@ -231,7 +231,7 @@ declare namespace fastify {
     RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
     FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'
     FastifyBodyParser, FastifyContentTypeParser, FastifyContentTypeHeaderParser,
-    FastifyContentTypeParserFactory, FastifyParsedContentType, AddContentTypeParser,
+    FastifyContentTypeHeaderParserFactory, FastifyParsedContentType, AddContentTypeParser,
     hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, // './types/content-type-parser'
     FastifyError, // '@fastify/error'
     FastifySchema, FastifySchemaValidationError, FastifySchemaCompiler, FastifySerializerCompiler, // './types/schema'

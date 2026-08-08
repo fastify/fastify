@@ -18,6 +18,7 @@ describes the properties available in that options object.
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
   - [`bodyLimit`](#bodylimit)
+  - [`contentTypeHeaderParserFactory`](#contenttypeheaderparserfactory)
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
@@ -302,8 +303,8 @@ reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
-### `contentTypeParserFactory`
-<a id="factory-content-type-parser-factory"></a>
+### `contentTypeHeaderParserFactory`
+<a id="factory-content-type-header-parser-factory"></a>
 
 + Default: `undefined`
 
@@ -313,7 +314,7 @@ a custom implementation can delegate ordinary values:
 
 ```js
 const fastify = Fastify({
-  contentTypeParserFactory (defaultParser) {
+  contentTypeHeaderParserFactory (defaultParser) {
     return function parseContentType (headerValue) {
       if (headerValue === 'application/json,application/json') {
         return defaultParser('application/json')

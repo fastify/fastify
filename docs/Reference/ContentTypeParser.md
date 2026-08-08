@@ -69,10 +69,10 @@ fastify.addHook('onRequest', async function repairContentType (request) {
 })
 ```
 
-Keep recovery rules narrow. Broad recovery can select the wrong body parser or
-undermine the guarantees of per-content-type validation with
-`schema.body.content`. Reject malformed values that the application cannot
-repair unambiguously.
+Keep recovery rules narrow. Replacing a malformed value with the wrong media
+type can select a different body parser and, when using `schema.body.content`,
+route the request body through a different validation schema. Reject malformed
+values that the application cannot repair unambiguously.
 
 The `request.mediaType` property parses and caches the current header value.
 Therefore, repair `request.headers['content-type']` before accessing

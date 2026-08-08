@@ -167,7 +167,7 @@ function fastify (serverOptions) {
       options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
       (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning),
-      options.strictContentTypeValidation
+      options.strictContentTypeHeaderValidation
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),

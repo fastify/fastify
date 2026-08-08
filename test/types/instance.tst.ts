@@ -309,7 +309,7 @@ type InitialConfig = Readonly<{
   bodyLimit?: number,
   caseSensitive?: boolean,
   allowUnsafeRegex?: boolean,
-  strictContentTypeValidation?: boolean,
+  strictContentTypeHeaderValidation?: boolean,
   forceCloseConnections?: boolean,
   http2?: boolean,
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,

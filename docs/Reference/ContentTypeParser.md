@@ -45,6 +45,10 @@ parsed.
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
+The [`contentTypeParserFactory`](./Server.md#factory-content-type-parser-factory)
+server option customizes how Fastify validates and canonicalizes header values
+before selecting one of these body parsers.
+
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {

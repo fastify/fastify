@@ -287,7 +287,7 @@ The same hook works when deploying through Firebase Functions with `onRequest`.
 
 ### References
 - [Google Cloud Functions - Node.js Quickstart
-  ](https://docs.cloud.google.com/run/docs/quickstarts/functions/deploy-functions-gcloud)
+  ](https://cloud.google.com/run/docs/quickstarts/functions/deploy-functions-gcloud)
 - [Cloud Logging - Structured Logging](https://cloud.google.com/logging/docs/structured-logging)
 - [Cloud Logging - Log-based Metrics](https://cloud.google.com/logging/docs/logs-based-metrics)
 - [Cloud Functions - Logging](https://cloud.google.com/functions/docs/monitoring/logging)

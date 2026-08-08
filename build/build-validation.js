@@ -30,12 +30,7 @@ const defaultInitOptions = {
   requestTimeout: 0, // no limit
   handlerTimeout: 0, // no timeout (disabled by default)
   bodyLimit: 1024 * 1024, // 1 MiB
-  caseSensitive: true,
-  allowUnsafeRegex: false,
   disableRequestLogging: false, // TODO: remove it in v6
-  ignoreTrailingSlash: false,
-  ignoreDuplicateSlashes: false,
-  maxParamLength: 100,
   onProtoPoisoning: 'error',
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
@@ -43,13 +38,13 @@ const defaultInitOptions = {
   requestIdLogLabel: 'reqId', // TODO: remove it in v6
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
-  useSemicolonDelimiter: false,
   allowErrorHandlerOverride: false,
   routerOptions: {
+    allowUnsafeRegex: false,
+    caseSensitive: true,
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,
     maxParamLength: 100,
-    allowUnsafeRegex: false,
     useSemicolonDelimiter: false
   }
 }
@@ -75,8 +70,6 @@ const schema = {
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
     handlerTimeout: { type: 'integer', default: defaultInitOptions.handlerTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
-    caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
-    allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.allowUnsafeRegex },
     http2: { type: 'boolean' },
     https: {
       if: {
@@ -102,7 +95,6 @@ const schema = {
     disableRequestLogging: {
       default: false
     },
-    maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
@@ -110,30 +102,30 @@ const schema = {
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
-    useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.useSemicolonDelimiter },
     routerOptions: {
       type: 'object',
-      additionalProperties: true,
+      additionalProperties: false,
       properties: {
+        allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.routerOptions.allowUnsafeRegex },
+        caseSensitive: { type: 'boolean', default: defaultInitOptions.routerOptions.caseSensitive },
+        constraints: {
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            required: ['name', 'storage', 'validate', 'deriveConstraint'],
+            additionalProperties: true,
+            properties: {
+              name: { type: 'string' },
+              storage: {},
+              validate: {},
+              deriveConstraint: {}
+            }
+          }
+        },
         ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
         ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },
         maxParamLength: { type: 'integer', default: defaultInitOptions.routerOptions.maxParamLength },
-        allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.routerOptions.allowUnsafeRegex },
         useSemicolonDelimiter: { type: 'boolean', default: defaultInitOptions.routerOptions.useSemicolonDelimiter }
-      }
-    },
-    constraints: {
-      type: 'object',
-      additionalProperties: {
-        type: 'object',
-        required: ['name', 'storage', 'validate', 'deriveConstraint'],
-        additionalProperties: true,
-        properties: {
-          name: { type: 'string' },
-          storage: {},
-          validate: {},
-          deriveConstraint: {}
-        }
       }
     }
   }

@@ -861,13 +861,10 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   }
 
   if (
-    (options.querystringParser && typeof options.querystringParser !== 'function') ||
-    (
-      options.routerOptions?.querystringParser &&
+    options.routerOptions?.querystringParser &&
       typeof options.routerOptions.querystringParser !== 'function'
-    )
   ) {
-    throw new FST_ERR_QSP_NOT_FN(typeof (options.querystringParser ?? options.routerOptions.querystringParser))
+    throw new FST_ERR_QSP_NOT_FN(typeof options.routerOptions.querystringParser)
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
@@ -915,6 +912,13 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
+  options.routerOptions = buildRouterOptions(options, {
+    buildPrettyMeta: defaultBuildPrettyMeta,
+    defaultRoute,
+    onBadUrl,
+    onMaxParamLength
+  })
+
   const initialConfig = getSecuredInitialConfig(options)
 
   // exposeHeadRoutes have its default set from the validator
@@ -922,18 +926,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
-
-  options.routerOptions = buildRouterOptions(options, {
-    defaultRoute,
-    onBadUrl,
-    onMaxParamLength,
-    ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
-    ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
-    maxParamLength: defaultInitOptions.maxParamLength,
-    allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
-    buildPrettyMeta: defaultBuildPrettyMeta,
-    useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
-  })
 
   return {
     options,

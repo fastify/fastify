@@ -1,8 +1,8 @@
+import Ajv, { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
-import Ajv, { ErrorObject as AjvErrorObject } from 'ajv'
 import { expect } from 'tstyche'
 import fastify, {
   ConnectionError,
@@ -187,7 +187,7 @@ expect(fastify({ logger: customLogger })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
 >()
 expect(fastify({ serverFactory: () => http.createServer() })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ caseSensitive: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ routerOptions: { caseSensitive: true } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ requestIdHeader: 'request-id' })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ requestIdHeader: false })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
@@ -197,45 +197,46 @@ expect(fastify({
   }
 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ trustProxy: true })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ querystringParser: () => ({ foo: 'bar' }) })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ querystringParser: () => ({ foo: ['bar', 'fuzz'] }) })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ constraints: {} })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ routerOptions: { querystringParser: () => ({ foo: 'bar' }) } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ routerOptions: { querystringParser: () => ({ foo: { bar: 'fuzz' } }) } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ routerOptions: { querystringParser: () => ({ foo: ['bar', 'fuzz'] }) } })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ routerOptions: { constraints: {} } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
-  constraints: {
-    version: {
-      name: 'version',
-      storage: () => ({
-        get: () => () => { },
-        set: () => { },
-        del: () => { },
-        empty: () => { }
-      }),
-      validate () { },
-      deriveConstraint: () => 'foo'
-    },
-    host: {
-      name: 'host',
-      storage: () => ({
-        get: () => () => { },
-        set: () => { },
-        del: () => { },
-        empty: () => { }
-      }),
-      validate () { },
-      deriveConstraint: () => 'foo'
-    },
-    withObjectValue: {
-      name: 'withObjectValue',
-      storage: () => ({
-        get: () => () => { },
-        set: () => { },
-        del: () => { },
-        empty: () => { }
-      }),
-      validate () { },
-      deriveConstraint: () => { }
-
+  routerOptions: {
+    constraints: {
+      version: {
+        name: 'version',
+        storage: () => ({
+          get: () => () => { },
+          set: () => { },
+          del: () => { },
+          empty: () => { }
+        }),
+        validate () { },
+        deriveConstraint: () => 'foo'
+      },
+      host: {
+        name: 'host',
+        storage: () => ({
+          get: () => () => { },
+          set: () => { },
+          del: () => { },
+          empty: () => { }
+        }),
+        validate () { },
+        deriveConstraint: () => 'foo'
+      },
+      withObjectValue: {
+        name: 'withObjectValue',
+        storage: () => ({
+          get: () => () => { },
+          set: () => { },
+          del: () => { },
+          empty: () => { }
+        }),
+        validate () { },
+        deriveConstraint: () => { }
+      }
     }
   }
 })).type.toBeAssignableTo<FastifyInstance>()
@@ -352,9 +353,9 @@ expect<RouteGenericInterface['Reply']>().type.toBe<unknown>()
 // ErrorCodes
 expect(fastify.errorCodes).type.toBe<FastifyErrorCodes>()
 
-fastify({ allowUnsafeRegex: true })
-fastify({ allowUnsafeRegex: false })
-expect(fastify).type.not.toBeCallableWith({ allowUnsafeRegex: 'invalid' })
+fastify({ routerOptions: { allowUnsafeRegex: true } })
+fastify({ routerOptions: { allowUnsafeRegex: false } })
+expect(fastify).type.not.toBeCallableWith({ routerOptions: { allowUnsafeRegex: 'invalid' } })
 
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

@@ -675,7 +675,12 @@ test('onRoute hook should be called once when prefixTrailingSlash', (t, testDone
   let onRouteCalled = 0
   let routePatched = 0
 
-  const fastify = Fastify({ ignoreTrailingSlash: false, exposeHeadRoutes: false })
+  const fastify = Fastify({
+    exposeHeadRoutes: false,
+    routerOptions: {
+      ignoreTrailingSlash: false
+    }
+  })
 
   // a plugin that patches route options, similar to fastify-compress
   fastify.register(fp(function myPlugin (instance, opts, next) {

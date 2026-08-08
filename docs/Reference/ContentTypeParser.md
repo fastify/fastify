@@ -66,6 +66,10 @@ parsed.
 > media type can select a different body parser or `schema.body.content`
 > validation schema. Rewrite the header before accessing `request.mediaType`,
 > which parses and caches the current value.
+>
+>The [`contentTypeParserFactory`](./Server.md#factory-content-type-parser-factory)
+>server option customizes how Fastify validates and canonicalizes header values
+>before selecting one of these body parsers.
 
 ### Usage
 ```js

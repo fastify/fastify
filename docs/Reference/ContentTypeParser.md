@@ -5,7 +5,9 @@ Fastify natively supports `'application/json'` and `'text/plain'` content types
 with a default charset of `utf-8`. These default parsers can be changed or
 removed.
 
-Unsupported content types will throw an `FST_ERR_CTP_INVALID_MEDIA_TYPE` error.
+Unsupported or syntactically invalid content types will throw an
+[`FST_ERR_CTP_INVALID_MEDIA_TYPE`](./Errors.md#fst_err_ctp_invalid_media_type)
+error.
 
 To support other content types, use the `addContentTypeParser` API or an
 existing [plugin](https://fastify.dev/ecosystem/).
@@ -48,10 +50,9 @@ parsed.
 ### Invalid content types
 
 Fastify validates the request's `Content-Type` header before selecting a body
-parser. A syntactically invalid value produces a `415` response with the
-`FST_ERR_CTP_INVALID_MEDIA_TYPE` error code. Parsers registered with a string,
-a `RegExp`, or the [catch-all](#catch-all) value are not considered when the
-header is invalid.
+parser ([implementation](https://github.com/fastify/fastify/blob/main/lib/handle-request.js#L77-L87)).
+Therefore, parsers registered with a string, a `RegExp`, or the
+[catch-all](#catch-all) value are not considered when the header is invalid.
 
 If a client you cannot control sends a known malformed value, an `onRequest`
 hook can replace that exact value with an unambiguous valid media type before

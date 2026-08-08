@@ -13,7 +13,7 @@ function recoverMalformedJson (defaultParser) {
 
 test('custom content-type parser canonicalizes requests consistently', async t => {
   const fastify = Fastify({
-    contentTypeParserFactory: recoverMalformedJson
+    contentTypeHeaderParserFactory: recoverMalformedJson
   })
   t.after(() => fastify.close())
 
@@ -65,7 +65,7 @@ test('custom content-type parser canonicalizes requests consistently', async t =
 
 test('custom content-type parser delegates ordinary invalid values', async t => {
   const fastify = Fastify({
-    contentTypeParserFactory: recoverMalformedJson
+    contentTypeHeaderParserFactory: recoverMalformedJson
   })
   t.after(() => fastify.close())
   fastify.post('/', () => 'unreachable')
@@ -81,16 +81,16 @@ test('custom content-type parser delegates ordinary invalid values', async t => 
   t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })
 
-test('contentTypeParserFactory must be a function', t => {
+test('contentTypeHeaderParserFactory must be a function', t => {
   t.assert.throws(
-    () => Fastify({ contentTypeParserFactory: 'invalid' }),
-    new TypeError("contentTypeParserFactory option should be a function, instead got 'string'")
+    () => Fastify({ contentTypeHeaderParserFactory: 'invalid' }),
+    new TypeError("contentTypeHeaderParserFactory option should be a function, instead got 'string'")
   )
 })
 
-test('contentTypeParserFactory must return a function', t => {
+test('contentTypeHeaderParserFactory must return a function', t => {
   t.assert.throws(
-    () => Fastify({ contentTypeParserFactory: () => 'invalid' }),
-    new TypeError('contentTypeParserFactory must return a function')
+    () => Fastify({ contentTypeHeaderParserFactory: () => 'invalid' }),
+    new TypeError('contentTypeHeaderParserFactory must return a function')
   )
 })

@@ -47,7 +47,7 @@ parsed.
 
 By default, syntactically invalid `Content-Type` values are rejected before
 string, RegExp, or catch-all parser selection. The
-[`strictContentTypeValidation`](./Server.md#factory-strict-content-type-validation)
+[`strictContentTypeHeaderValidation`](./Server.md#factory-strict-content-type-header-validation)
 server option can disable this gate as a compatibility escape hatch. RegExp
 and catch-all parsers then match the raw invalid header value, while
 `request.mediaType` remains undefined.

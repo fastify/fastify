@@ -36,7 +36,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     requestTimeout: 0,
     handlerTimeout: 0,
     bodyLimit: 1024 * 1024,
-    strictContentTypeValidation: true,
+    strictContentTypeHeaderValidation: true,
     onProtoPoisoning: 'error',
     onConstructorPoisoning: 'error',
     pluginTimeout: 10000,
@@ -95,7 +95,7 @@ test('Fastify.initialConfig should expose all options', t => {
     bodyLimit: 1049600,
     onProtoPoisoning: 'remove',
     serverFactory,
-    strictContentTypeValidation: false,
+    strictContentTypeHeaderValidation: false,
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
     genReqId: function (req) {
@@ -127,7 +127,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.assert.strictEqual(fastify.initialConfig.keepAliveTimeout, 72000)
   t.assert.strictEqual(fastify.initialConfig.bodyLimit, 1049600)
   t.assert.strictEqual(fastify.initialConfig.onProtoPoisoning, 'remove')
-  t.assert.strictEqual(fastify.initialConfig.strictContentTypeValidation, false)
+  t.assert.strictEqual(fastify.initialConfig.strictContentTypeHeaderValidation, false)
   t.assert.strictEqual(fastify.initialConfig.requestIdHeader, 'request-id-alt')
   t.assert.strictEqual(fastify.initialConfig.pluginTimeout, 20000)
 
@@ -296,7 +296,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       requestTimeout: 0,
       handlerTimeout: 0,
       bodyLimit: 1024 * 1024,
-      strictContentTypeValidation: true,
+      strictContentTypeHeaderValidation: true,
       onProtoPoisoning: 'error',
       onConstructorPoisoning: 'error',
       pluginTimeout: 10000,

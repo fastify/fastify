@@ -753,8 +753,8 @@ test('invalid content-type error message should not contain format placeholder',
   })
 })
 
-test('strict content-type validation can be disabled explicitly', async t => {
-  const fastify = Fastify({ strictContentTypeValidation: false })
+test('strict content-type header validation can be disabled explicitly', async t => {
+  const fastify = Fastify({ strictContentTypeHeaderValidation: false })
   t.after(() => fastify.close())
 
   fastify.register((instance, _options, done) => {
@@ -793,8 +793,8 @@ test('strict content-type validation can be disabled explicitly', async t => {
   t.assert.deepStrictEqual(response.json(), { recovered: true })
 })
 
-test('disabled strict validation allows catch-all parser recovery', async t => {
-  const fastify = Fastify({ strictContentTypeValidation: false })
+test('disabled strict header validation allows catch-all parser recovery', async t => {
+  const fastify = Fastify({ strictContentTypeHeaderValidation: false })
   t.after(() => fastify.close())
 
   fastify.addContentTypeParser('*', { parseAs: 'string' }, (_request, body, done) => {
@@ -815,8 +815,8 @@ test('disabled strict validation allows catch-all parser recovery', async t => {
   t.assert.strictEqual(response.body, 'recovered')
 })
 
-test('disabled strict validation still requires an explicit parser', async t => {
-  const fastify = Fastify({ strictContentTypeValidation: false })
+test('disabled strict header validation still requires an explicit parser', async t => {
+  const fastify = Fastify({ strictContentTypeHeaderValidation: false })
   t.after(() => fastify.close())
   fastify.post('/', () => 'ok')
 

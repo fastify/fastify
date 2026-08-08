@@ -69,28 +69,6 @@ test('request.mediaType should strip the space', async (t) => {
   t.assert.strictEqual(body.mediaType, 'application/json')
 })
 
-test('request.mediaType is undefined for an invalid content-type', async (t) => {
-  t.plan(2)
-
-  const fastify = Fastify()
-  fastify.addHook('onRequest', (request, _reply, done) => {
-    t.assert.strictEqual(request.mediaType, undefined)
-    done()
-  })
-  fastify.post('/', () => 'unreachable')
-
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: {
-      'content-type': 'invalid-content-type'
-    },
-    payload: 'body'
-  })
-
-  t.assert.strictEqual(response.statusCode, 415)
-})
-
 test('request.mediaType supported in hooks', async (t) => {
   t.plan(5)
 

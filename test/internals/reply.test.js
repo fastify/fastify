@@ -1971,3 +1971,108 @@ test('reply.send should not treat charset= inside a quoted parameter value as an
     'application/json; name="a=b;charset=fake"; charset=utf-8'
   )
 })
+
+test('reply.send(promise) resolves the promise and sends its value', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Promise.resolve({ hello: 'world' }))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+})
+
+test('reply.send(promise) sends the rejection reason as an error', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Promise.reject(new Error('kaboom')))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 500)
+})
+
+test('returning reply.send(promise) from a sync handler sends the resolved value', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    return reply.send(Promise.resolve('asd'))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'asd')
+})
+
+test('reply.send(promise) inside an async handler sends the resolved value', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', async function (req, reply) {
+    reply.send(Promise.resolve('asd'))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'asd')
+})
+
+test('calling reply.send(promise) twice sends the payload that settles first', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Promise.resolve('one'))
+    reply.send(Promise.resolve('two'))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'one')
+})
+
+test('calling reply.send(promise) twice is settle-ordered, not call-ordered', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const wait = (ms, value) => new Promise(resolve => setTimeout(() => resolve(value), ms))
+
+  fastify.get('/', function (req, reply) {
+    reply.send(wait(200, 'one'))
+    reply.send(wait(1, 'two'))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.statusCode, 200)
+  // The payload is not known until the promise settles, so the faster one wins
+  // even though it was passed to send() second.
+  t.assert.strictEqual(response.body, 'two')
+})
+
+test('a promise rejecting after the reply was sent is logged, not left unhandled', async t => {
+  t.plan(2)
+  const lines = []
+  const fastify = Fastify({
+    logger: { level: 'warn', stream: { write (line) { lines.push(JSON.parse(line)) } } }
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send('immediate')
+    reply.send(Promise.reject(new Error('late boom')))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.body, 'immediate')
+
+  // Give the dropped promise a chance to reject.
+  await new Promise(resolve => setImmediate(resolve))
+  t.assert.ok(
+    lines.some(line => line.err && line.err.message === 'late boom'),
+    'the rejection of the ignored payload is reported'
+  )
+})

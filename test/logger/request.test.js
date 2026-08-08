@@ -9,7 +9,7 @@ const Fastify = require('../../fastify')
 const helper = require('../helper')
 const { on } = stream
 const { request } = require('./logger-test-utils')
-const { partialDeepStrictEqual } = require('../toolkit')
+const { partialDeepStrictEqual } = require('../helper')
 
 t.test('request', { timeout: 60000 }, async (t) => {
   let localhost

@@ -45,6 +45,37 @@ parsed.
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
+### Invalid content types
+
+Fastify validates the request's `Content-Type` header before selecting a body
+parser. A syntactically invalid value produces a `415` response with the
+`FST_ERR_CTP_INVALID_MEDIA_TYPE` error code. Parsers registered with a string,
+a `RegExp`, or the [catch-all](#catch-all) value are not considered when the
+header is invalid.
+
+If a client you cannot control sends a known malformed value, an `onRequest`
+hook can replace that exact value with an unambiguous valid media type before
+Fastify validates it:
+
+```js
+fastify.addHook('onRequest', async function repairContentType (request) {
+  const contentType = request.headers['content-type']
+
+  if (contentType === 'application/json,application/json') {
+    request.headers['content-type'] = 'application/json'
+  }
+})
+```
+
+Keep recovery rules narrow. Broad recovery can select the wrong body parser or
+undermine the guarantees of per-content-type validation with
+`schema.body.content`. Reject malformed values that the application cannot
+repair unambiguously.
+
+The `request.mediaType` property parses and caches the current header value.
+Therefore, repair `request.headers['content-type']` before accessing
+`request.mediaType` in an `onRequest` hook.
+
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {

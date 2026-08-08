@@ -96,7 +96,7 @@ test('Fastify.initialConfig should expose all options', t => {
     serverFactory,
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
-    contentTypeParserFactory: defaultParser => defaultParser,
+    contentTypeHeaderParserFactory: defaultParser => defaultParser,
     genReqId: function (req) {
       return reqId++
     },
@@ -134,7 +134,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.assert.strictEqual(fastify.initialConfig.trustProxy, undefined)
   t.assert.strictEqual(fastify.initialConfig.genReqId, undefined)
   t.assert.strictEqual(fastify.initialConfig.childLoggerFactory, undefined)
-  t.assert.strictEqual(fastify.initialConfig.contentTypeParserFactory, undefined)
+  t.assert.strictEqual(fastify.initialConfig.contentTypeHeaderParserFactory, undefined)
   t.assert.strictEqual(fastify.initialConfig.logger, undefined)
   t.assert.strictEqual(fastify.initialConfig.trustProxy, undefined)
 

@@ -778,10 +778,7 @@ test('strict content-type validation can be disabled explicitly', async t => {
           }
         }
       }
-    }, request => ({
-      body: request.body,
-      mediaType: request.mediaType
-    }))
+    }, request => request.body)
     done()
   })
 
@@ -795,9 +792,7 @@ test('strict content-type validation can be disabled explicitly', async t => {
   })
 
   t.assert.strictEqual(response.statusCode, 200)
-  t.assert.deepStrictEqual(response.json(), {
-    body: { recovered: true }
-  })
+  t.assert.deepStrictEqual(response.json(), { recovered: true })
 })
 
 test('disabled strict validation allows catch-all parser recovery', async t => {

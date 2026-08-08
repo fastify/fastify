@@ -12,6 +12,7 @@ import fastify, {
   FastifyInstance,
   FastifyPluginAsync,
   FastifyPluginCallback,
+  FastifyParsedContentType,
   InjectOptions,
   LightMyRequestCallback,
   LightMyRequestChain,
@@ -356,8 +357,25 @@ fastify({ routerOptions: { allowUnsafeRegex: true } })
 fastify({ routerOptions: { allowUnsafeRegex: false } })
 expect(fastify).type.not.toBeCallableWith({ routerOptions: { allowUnsafeRegex: 'invalid' } })
 
+class CustomParsedContentType implements FastifyParsedContentType {
+  readonly isEmpty = false
+  readonly isValid = true
+  readonly mediaType = 'application/custom'
+  readonly type = 'application'
+  readonly subtype = 'custom'
+  readonly parameters = new Map<string, string>()
+
+  toString () {
+    return this.mediaType
+  }
+}
+
 fastify({
-  contentTypeHeaderParserFactory: defaultParser => headerValue => defaultParser(headerValue)
+  contentTypeHeaderParserFactory: defaultParser => headerValue => {
+    return headerValue === 'application/custom'
+      ? new CustomParsedContentType()
+      : defaultParser(headerValue)
+  }
 })
 expect(fastify).type.not.toBeCallableWith({ contentTypeHeaderParserFactory: 'invalid' })
 expect(fastify).type.not.toBeCallableWith({ contentTypeHeaderParserFactory: () => 'invalid' })

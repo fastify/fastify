@@ -142,6 +142,7 @@ declare namespace fastify {
     loggerInstance?: Logger
     serializerOpts?: FJSOptions | Record<string, unknown>,
     serverFactory?: FastifyServerFactory<RawServer>,
+    strictContentTypeValidation?: boolean,
     requestIdHeader?: string | false,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
     trustProxy?: boolean | string | string[] | TrustProxyFunction,

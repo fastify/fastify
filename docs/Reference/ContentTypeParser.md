@@ -49,10 +49,16 @@ parsed.
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
 > ℹ️ Note:
-> Fastify validates the request's `Content-Type` header before selecting a body
-> parser. String, `RegExp`, and [catch-all](#catch-all) parsers therefore will
-> never handle an invalid header. An `onRequest` hook can rewrite a malformed
-> header prior to validation:
+> By default, Fastify validates the request's `Content-Type` header before
+> selecting a body parser. String, `RegExp`, and [catch-all](#catch-all) parsers
+> therefore will never handle an invalid header. The
+> [`strictContentTypeValidation`](./Server.md#factory-strict-content-type-validation)
+> server option can disable this gate as a compatibility escape hatch. RegExp
+> and catch-all parsers then match the raw invalid header value, while
+> `request.mediaType` remains undefined.
+>
+> With the default validation enabled, an `onRequest` hook can rewrite a
+> malformed header prior to validation:
 >
 > ```js
 > fastify.addHook('onRequest', async function rewriteContentType (request) {

@@ -32,6 +32,7 @@ const defaultInitOptions = {
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   allowUnsafeRegex: false,
+  strictContentTypeValidation: true,
   disableRequestLogging: false, // TODO: remove it in v6
   ignoreTrailingSlash: false,
   ignoreDuplicateSlashes: false,
@@ -77,6 +78,7 @@ const schema = {
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
     allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.allowUnsafeRegex },
+    strictContentTypeValidation: { type: 'boolean', default: defaultInitOptions.strictContentTypeValidation },
     http2: { type: 'boolean' },
     https: {
       if: {

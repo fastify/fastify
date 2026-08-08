@@ -358,5 +358,9 @@ fastify({ allowUnsafeRegex: true })
 fastify({ allowUnsafeRegex: false })
 expect(fastify).type.not.toBeCallableWith({ allowUnsafeRegex: 'invalid' })
 
+fastify({ strictContentTypeValidation: true })
+fastify({ strictContentTypeValidation: false })
+expect(fastify).type.not.toBeCallableWith({ strictContentTypeValidation: 'invalid' })
+
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

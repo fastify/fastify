@@ -563,6 +563,45 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
   completion.patience.then(testDone)
 })
 
+test('returns canonical routeOptions.url for prefixTrailingSlash: "both" prefix root route', async t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    ignoreTrailingSlash: false
+  })
+  t.after(() => { fastify.close() })
+
+  fastify.register(async function (fastify) {
+    fastify.get('/', {
+      prefixTrailingSlash: 'both'
+    }, async request => {
+      return { routeUrl: request.routeOptions.url }
+    })
+
+    fastify.get('/bar/', async request => {
+      return { routeUrl: request.routeOptions.url }
+    })
+  }, { prefix: '/prefix' })
+
+  const prefix = await fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  })
+  t.assert.deepStrictEqual(prefix.json(), { routeUrl: '/prefix' })
+
+  const prefixWithSlash = await fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  })
+  t.assert.deepStrictEqual(prefixWithSlash.json(), { routeUrl: '/prefix' })
+
+  const nestedWithSlash = await fastify.inject({
+    method: 'GET',
+    url: '/prefix/bar/'
+  })
+  t.assert.deepStrictEqual(nestedWithSlash.json(), { routeUrl: '/prefix/bar/' })
+})
+
 test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({

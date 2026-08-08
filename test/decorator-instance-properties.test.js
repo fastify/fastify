@@ -61,3 +61,52 @@ test('decorateRequest still works for non-built-in names', (t, done) => {
     done()
   })
 })
+
+test('decorateRequest accepts built-in request properties as dependencies', t => {
+  t.plan(6)
+  const fastify = Fastify()
+  for (const name of ['id', 'params', 'raw', 'query', 'log', 'body']) {
+    t.assert.doesNotThrow(() => fastify.decorateRequest(`uses_${name}`, null, [name]))
+  }
+})
+
+test('decorateReply accepts built-in reply properties as dependencies', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  for (const name of ['raw', 'request', 'log']) {
+    t.assert.doesNotThrow(() => fastify.decorateReply(`uses_${name}`, null, [name]))
+  }
+})
+
+test('decorateRequest accepts built-in properties as dependencies inside a plugin', (t, done) => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.register(async (instance) => {
+    instance.decorateRequest('scopedExtra', null, ['body'])
+    t.assert.equal(instance.hasRequestDecorator('scopedExtra'), true)
+  })
+  fastify.ready((err) => {
+    t.assert.ifError(err)
+    done()
+  })
+})
+
+test('decorateRequest accepts built-in properties mixed with user decorators as dependencies', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.decorateRequest('userProp', null)
+  t.assert.doesNotThrow(() => fastify.decorateRequest('mixed', null, ['userProp', 'body']))
+})
+
+test('decorateRequest still throws FST_ERR_DEC_MISSING_DEPENDENCY for unknown dependencies', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.assert.throws(
+    () => fastify.decorateRequest('withUnknown', null, ['nonExistent']),
+    (err) => err.code === 'FST_ERR_DEC_MISSING_DEPENDENCY'
+  )
+  t.assert.throws(
+    () => fastify.decorateReply('withUnknown', null, ['body']),
+    (err) => err.code === 'FST_ERR_DEC_MISSING_DEPENDENCY'
+  )
+})

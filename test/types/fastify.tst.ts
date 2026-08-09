@@ -126,8 +126,6 @@ expect(fastify({ pluginTimeout: 1000 })).type.toBeAssignableTo<FastifyInstance>(
 expect(fastify({ bodyLimit: 100 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ handlerTimeout: 5000 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ maxParamLength: 100 })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ disableRequestLogging: true })).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({ disableRequestLogging: (req) => req.url?.includes('/health') ?? false })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ requestIdLogLabel: 'request-id' })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ onProtoPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ onConstructorPoisoning: 'error' })).type.toBeAssignableTo<FastifyInstance>()

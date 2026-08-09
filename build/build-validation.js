@@ -30,7 +30,6 @@ const defaultInitOptions = {
   requestTimeout: 0, // no limit
   handlerTimeout: 0, // no timeout (disabled by default)
   bodyLimit: 1024 * 1024, // 1 MiB
-  disableRequestLogging: false, // TODO: remove it in v6
   onProtoPoisoning: 'error',
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
@@ -92,9 +91,6 @@ const schema = {
     },
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
-    disableRequestLogging: {
-      default: false
-    },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },

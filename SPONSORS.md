@@ -19,6 +19,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 - [atagon GmbH](https://github.com/atagon-GmbH)
 - [Photon](https://github.com/photon-hq)
 - [N-iX](https://www.n-ix.com/)
+- [TestMu AI](https://www.testmuai.com/?utm_medium=sponsor&utm_source=fastify)
 
 ## Tier 2
 

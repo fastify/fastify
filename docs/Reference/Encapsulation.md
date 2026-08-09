@@ -140,7 +140,7 @@ update the code as follows:
 'use strict'
 
 const fastify = require('fastify')()
-const fastifyPlugin = require('fastify-plugin')
+const fp = require('fastify-plugin')
 
 fastify.decorateRequest('answer', 42)
 
@@ -161,7 +161,7 @@ fastify.register(async function publicContext (childServer) {
     }
   })
 
-  childServer.register(fastifyPlugin(grandchildContext))
+  childServer.register(fp(grandchildContext))
 
   async function grandchildContext (grandchildServer) {
     grandchildServer.decorateRequest('bar', 'bar')
@@ -191,5 +191,34 @@ curl http://127.0.0.1:8000/two
 curl http://127.0.0.1:8000/three
 # {"answer":42,"foo":"foo","bar":"bar"}
 ```
+
+`fastify-plugin` breaks encapsulation only for the plugin it wraps. Plugins
+registered inside it without `fastify-plugin` still create new encapsulated
+contexts:
+
+```js
+'use strict'
+
+const fastify = require('fastify')()
+const fp = require('fastify-plugin')
+
+fastify.register(fp(async function sharedContext (childServer) {
+  childServer.decorate('foo', 'foo')
+
+  childServer.register(async function encapsulatedContext (grandchildServer) {
+    grandchildServer.decorate('bar', 'bar')
+  })
+}))
+
+await fastify.ready()
+
+console.log(fastify.foo) // 'foo'
+console.log(fastify.bar) // undefined
+```
+
+The `foo` decorator is available in the root context because it is added
+directly by the plugin wrapped with `fastify-plugin`. The nested `register`
+call still creates a grandchild context, so the `bar` decorator remains
+available only in that context and its children.
 
 [fastify-plugin]: https://github.com/fastify/fastify-plugin

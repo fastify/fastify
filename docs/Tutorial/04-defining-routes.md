@@ -31,6 +31,9 @@ The route methods below use a TypeScript generic to describe the request data
 available to each handler. For example, `Querystring` types `request.query`,
 while `Params` and `Body` type `request.params` and `request.body`.
 
+These types only inform TypeScript, they do not validate or coerce incoming
+HTTP data. We will add runtime validation later in the tutorial.
+
 We will write these types explicitly for now so the relationship is visible.
 Later, we will use TypeBox and a Fastify type provider to derive the request
 types from the validation schemas, avoiding the need to declare the same shape
@@ -46,8 +49,8 @@ interface Quote {
 let id = 1;
 const quotes: Quote[] = [];
 
-app.get<{ Querystring: { limit?: number } }>("/quotes", async (request, reply) => {
-  const { limit = 10 } = request.query; // [1]
+app.get<{ Querystring: { limit?: string } }>("/quotes", async (request, reply) => {
+  const limit = Number(request.query.limit ?? 10); // [1]
   return quotes.slice(0, limit);
 });
 
@@ -119,13 +122,16 @@ Let’s review a few important details from these examples.
 
 ### Let's create all our routes now
 
+Keep the `Quote`, `id`, and `quotes` declarations from the first example.
+Replace the three route declarations with the complete set below:
+
 ```ts
 /**
  * GET /quotes
  * Returns a list of quotes, limited by the `limit` query parameter.
  * Default limit is 10.
  */
-app.get<{ Querystring: { limit?: number } }>("/quotes", async (request, reply) => {
+app.get<{ Querystring: { limit?: string } }>("/quotes", async (request, reply) => {
   const limit = Number(request.query.limit ?? 10);
   return quotes.slice(0, limit);
 });

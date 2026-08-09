@@ -382,7 +382,7 @@ test('createLogController should use LogController instance directly', t => {
 
 test('createLogController should create default when no instance provided', t => {
   t.plan(2)
-  const dispatcher = createLogController({ requestIdLogLabel: 'reqId' })
+  const dispatcher = createLogController({})
   t.assert.ok(dispatcher instanceof LogController)
   t.assert.strictEqual(dispatcher.requestIdLogLabel, 'reqId')
 })

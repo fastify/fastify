@@ -25,7 +25,6 @@ describes the properties available in that options object.
   - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
-  - [`requestIdLogLabel`](#requestidloglabel)
   - [`genReqId`](#genreqid)
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
@@ -526,17 +525,6 @@ const fastify = require('fastify')({
 > Enabling this allows any callers to set `reqId` to a
 > value of their choosing.
 > No validation is performed on `requestIdHeader`.
-
-### `requestIdLogLabel`
-<a id="factory-request-id-log-label"></a>
-
-> **Deprecated:** Use the [`logController`](#factory-log-controller)
-> option with `requestIdLogLabel` instead. This top-level option will be
-> removed in `fastify@6`.
-
-+ Default: `'reqId'`
-
-Defines the label used for the request identifier when logging the request.
 
 ### `genReqId`
 <a id="factory-gen-request-id"></a>
@@ -2383,7 +2371,6 @@ The properties that can currently be exposed are:
 - onConstructorPoisoning
 - pluginTimeout
 - requestIdHeader
-- requestIdLogLabel
 - http2SessionTimeout
 - routerOptions
   - allowUnsafeRegex

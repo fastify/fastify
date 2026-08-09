@@ -14,7 +14,7 @@ const { partialDeepStrictEqual } = require('../toolkit')
 t.test('request', { timeout: 60000 }, async (t) => {
   let localhost
 
-  t.plan(7)
+  t.plan(6)
   t.before(async function () {
     [localhost] = await helper.getLoopbackHost()
   })
@@ -172,41 +172,6 @@ t.test('request', { timeout: 60000 }, async (t) => {
       const response = await fastify.inject({ method: 'GET', url: '/two' })
       const body = await response.json()
       t.assert.strictEqual(body.id, 'foo')
-    }
-
-    for await (const [line] of on(stream, 'data')) {
-      t.assert.ok(partialDeepStrictEqual(line, matches.shift()))
-      if (matches.length === 0) break
-    }
-  })
-
-  await t.test('The request id log label can be changed', async (t) => {
-    const REQUEST_ID = '42'
-    const matches = [
-      { traceId: REQUEST_ID, msg: 'incoming request' },
-      { traceId: REQUEST_ID, msg: 'some log message' },
-      { traceId: REQUEST_ID, msg: 'request completed' }
-    ]
-    t.plan(matches.length + 2)
-
-    const stream = split(JSON.parse)
-    const fastify = Fastify({
-      logger: { stream, level: 'info' },
-      requestIdHeader: 'my-custom-request-id',
-      requestIdLogLabel: 'traceId'
-    })
-    t.after(() => fastify.close())
-
-    fastify.get('/one', (req, reply) => {
-      t.assert.strictEqual(req.id, REQUEST_ID)
-      req.log.info('some log message')
-      reply.send({ id: req.id })
-    })
-
-    {
-      const response = await fastify.inject({ method: 'GET', url: '/one', headers: { 'my-custom-request-id': REQUEST_ID } })
-      const body = await response.json()
-      t.assert.strictEqual(body.id, REQUEST_ID)
     }
 
     for await (const [line] of on(stream, 'data')) {

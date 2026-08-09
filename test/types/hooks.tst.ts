@@ -240,6 +240,17 @@ server.addHook('onClose', async function (instance) {
   expect(instance).type.toBe<FastifyInstance>()
 })
 
+// Support disposable objects as onClose hooks
+const asyncDisposableResource: AsyncDisposable = {
+  [Symbol.asyncDispose]: async () => {}
+}
+expect(server.addHook('onClose', asyncDisposableResource)).type.toBe<FastifyInstance>()
+
+const disposableResource: Disposable = {
+  [Symbol.dispose]: () => {}
+}
+expect(server.addHook('onClose', disposableResource)).type.toBe<FastifyInstance>()
+
 // Use case to monitor any regression on issue #3620
 // ref.: https://github.com/fastify/fastify/issues/3620
 const customTypedHook: preHandlerAsyncHookHandler<

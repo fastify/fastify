@@ -84,6 +84,7 @@
     - [FST_ERR_ROUTE_HANDLER_NOT_FN](#fst_err_route_handler_not_fn)
     - [FST_ERR_ROUTE_MISSING_HANDLER](#fst_err_route_missing_handler)
     - [FST_ERR_ROUTE_METHOD_INVALID](#fst_err_route_method_invalid)
+    - [FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED](#fst_err_route_method_already_supported)
     - [FST_ERR_ROUTE_METHOD_NOT_SUPPORTED](#fst_err_route_method_not_supported)
     - [FST_ERR_ROUTE_LOG_LEVEL_INVALID](#fst_err_route_log_level_invalid)
     - [FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED](#fst_err_route_body_validation_schema_not_supported)
@@ -437,6 +438,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_route_handler_not_fn">FST_ERR_ROUTE_HANDLER_NOT_FN</a> | Handler for the route must be a function. | Use a function for the handler. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_missing_handler">FST_ERR_ROUTE_MISSING_HANDLER</a> | Missing handler function for the route. | Add a handler function. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_method_invalid">FST_ERR_ROUTE_METHOD_INVALID</a> | Method is not a valid value. | Use a valid value for the method. | [#4750](https://github.com/fastify/fastify/pull/4750) |
+| <a id="fst_err_route_method_already_supported">FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED</a> | The HTTP method is already supported. | Pass `{ overrideExisting: true }` to explicitly override it. | [#6909](https://github.com/fastify/fastify/pull/6909) |
 | <a id="fst_err_route_method_not_supported">FST_ERR_ROUTE_METHOD_NOT_SUPPORTED</a> | Method is not supported for the route. | Use a supported method. | [#4554](https://github.com/fastify/fastify/pull/4554) |
 | <a id="fst_err_route_log_level_invalid">FST_ERR_ROUTE_LOG_LEVEL_INVALID</a> | `logLevel` must match a configured logger level. | Use one of the configured logger levels for the route. | [#6523](https://github.com/fastify/fastify/pull/6523) |
 | <a id="fst_err_route_body_validation_schema_not_supported">FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED</a> | Body validation schema route is not supported. | Use a different different method for the route. | [#4554](https://github.com/fastify/fastify/pull/4554) |

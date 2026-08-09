@@ -6,7 +6,7 @@ import { AddressInfo } from 'node:net'
 import { FastifyRouterOptions } from '../fastify'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
-import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
+import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
@@ -703,6 +703,7 @@ export interface FastifyInstance<
     ignoreDuplicateSlashes?: boolean,
     /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
     disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
+    requestLogLevel?: LogLevel,
     maxParamLength?: number,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,

@@ -122,8 +122,9 @@ fastify.route(options)
   is sent through the error handler (which can be customized per-route).
 * `logLevel`: set the logger threshold for this route. See below.
 * `requestLogLevel`: set the log level for the automatic `incoming request` and
-  successful `request completed` records. Defaults to `info`. Records remain
-  subject to the route logger's `logLevel` threshold.
+  successful `request completed` records. Overrides the plugin or server-level
+  default, which defaults to `info`. Records remain subject to the route
+  logger's `logLevel` threshold.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
@@ -568,9 +569,18 @@ fastify.get('/health', {
 })
 ```
 
-Errors continue to use their severity selected by Fastify. Set
-`requestLogLevel: 'silent'` to suppress only the routine incoming and completed
-records for a route.
+The default can also be configured for the server or an encapsulated plugin:
+
+```js
+const fastify = require('fastify')({ requestLogLevel: 'warn' })
+
+fastify.register(routes, { requestLogLevel: 'debug' })
+```
+
+A route-level value takes precedence over the plugin default, which takes
+precedence over the server default. Errors continue to use their severity
+selected by Fastify. Set `requestLogLevel: 'silent'` to suppress only the
+routine incoming and completed records for a route or scope.
 
 *Remember that the custom log level applies only to routes, not to the global
 Fastify Logger, accessible with `fastify.log`.*

@@ -39,6 +39,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     caseSensitive: true,
     allowUnsafeRegex: false,
     disableRequestLogging: false,
+    requestLogLevel: 'info',
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,
     maxParamLength: 100,
@@ -56,7 +57,7 @@ test('without options passed to Fastify, initialConfig should expose default val
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(22)
+  t.plan(23)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -99,6 +100,7 @@ test('Fastify.initialConfig should expose all options', t => {
     caseSensitive: true,
     allowUnsafeRegex: false,
     requestIdHeader: 'request-id-alt',
+    requestLogLevel: 'debug',
     pluginTimeout: 20000,
     useSemicolonDelimiter: false,
     querystringParser: str => str,
@@ -128,6 +130,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.assert.strictEqual(fastify.initialConfig.useSemicolonDelimiter, false)
   t.assert.strictEqual(fastify.initialConfig.allowUnsafeRegex, false)
   t.assert.strictEqual(fastify.initialConfig.requestIdHeader, 'request-id-alt')
+  t.assert.strictEqual(fastify.initialConfig.requestLogLevel, 'debug')
   t.assert.strictEqual(fastify.initialConfig.pluginTimeout, 20000)
   t.assert.ok(fastify.initialConfig.constraints.version)
 
@@ -279,6 +282,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       caseSensitive: true,
       allowUnsafeRegex: false,
       disableRequestLogging: false,
+      requestLogLevel: 'info',
       ignoreTrailingSlash: true,
       ignoreDuplicateSlashes: false,
       maxParamLength: 100,

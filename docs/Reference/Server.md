@@ -22,6 +22,7 @@ describes the properties available in that options object.
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
+  - [`requestLogLevel`](#requestloglevel)
   - [`disableRequestLogging`](#disablerequestlogging)
   - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
@@ -387,6 +388,28 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
   const fastify = require('fastify')({ loggerInstance: customLogger });
   ```
 
+### `requestLogLevel`
+<a id="factory-request-log-level"></a>
+
++ Default: `'info'`
+
+Sets the default log level for the automatic `incoming request` and successful
+`request completed` records. A route-level
+[`requestLogLevel`](./Routes.md#custom-log-level) overrides this value. The
+selected level remains subject to the route logger's `logLevel` threshold.
+
+Set this option to `'silent'` to suppress the two routine records by default
+without suppressing Fastify's automatic error records. Encapsulated plugins can
+also set `requestLogLevel` in their registration options to override the
+default for routes in that plugin scope.
+
+```js
+const fastify = require('fastify')({
+  logger: { level: 'debug' },
+  requestLogLevel: 'debug'
+})
+```
+
 ### `disableRequestLogging`
 <a id="factory-disable-request-logging"></a>
 
@@ -398,7 +421,7 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
 
 When logging is enabled, Fastify will issue an `info` level log
 message when a request is received and when the response for that request has
-been sent. The level can be changed for individual routes with
+been sent. The default or individual route level can be changed with
 [`requestLogLevel`](./Routes.md#custom-log-level). By setting this option to
 `true`, these log messages will be disabled. This allows for more flexible
 request start and end logging by attaching custom `onRequest` and `onResponse`
@@ -2449,6 +2472,7 @@ The properties that can currently be exposed are:
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)
 - disableRequestLogging
+- requestLogLevel
 - onProtoPoisoning
 - onConstructorPoisoning
 - pluginTimeout

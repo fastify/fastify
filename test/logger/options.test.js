@@ -10,7 +10,7 @@ const Fastify = require('../../fastify')
 const { on, once } = stream
 
 t.test('logger options', { timeout: 60000 }, async (t) => {
-  t.plan(22)
+  t.plan(25)
 
   await t.test('logger can be silenced', (t) => {
     t.plan(17)
@@ -477,6 +477,70 @@ t.test('logger options', { timeout: 60000 }, async (t) => {
       t.assert.deepEqual(line.msg, lines.shift())
       if (lines.length === 0) break
     }
+  })
+
+  await t.test('Should set a default request log level for the server', async (t) => {
+    const stream = split(JSON.parse)
+    const loggerInstance = pino({ level: 'debug' }, stream)
+    const fastify = Fastify({ loggerInstance, requestLogLevel: 'debug' })
+    t.after(() => fastify.close())
+
+    fastify.get('/health', (request, reply) => {
+      t.assert.strictEqual(request.routeOptions.requestLogLevel, 'debug')
+      reply.send({ status: 'ok' })
+    })
+
+    const response = await fastify.inject({ method: 'GET', url: '/health' })
+    t.assert.strictEqual(response.statusCode, 200)
+
+    const logs = []
+    for await (const [line] of on(stream, 'data')) {
+      logs.push(line)
+      if (logs.length === 2) break
+    }
+
+    t.assert.deepStrictEqual(logs.map(({ level, msg }) => ({ level, msg })), [
+      { level: 20, msg: 'incoming request' },
+      { level: 20, msg: 'request completed' }
+    ])
+  })
+
+  await t.test('Should encapsulate request log level defaults and allow route overrides', async (t) => {
+    const fastify = Fastify({ requestLogLevel: 'warn' })
+    t.after(() => fastify.close())
+
+    fastify.get('/root', (request, reply) => {
+      t.assert.strictEqual(request.routeOptions.requestLogLevel, 'warn')
+      reply.send()
+    })
+
+    fastify.register((instance, opts, done) => {
+      instance.get('/plugin', (request, reply) => {
+        t.assert.strictEqual(request.routeOptions.requestLogLevel, 'debug')
+        reply.send()
+      })
+      instance.get('/override', { requestLogLevel: 'trace' }, (request, reply) => {
+        t.assert.strictEqual(request.routeOptions.requestLogLevel, 'trace')
+        reply.send()
+      })
+      done()
+    }, { requestLogLevel: 'debug' })
+
+    await fastify.inject('/root')
+    await fastify.inject('/plugin')
+    await fastify.inject('/override')
+  })
+
+  await t.test('Should reject an invalid default request log level when registering a route', async (t) => {
+    const fastify = Fastify({ logger: true, requestLogLevel: 'invalid' })
+    t.after(() => fastify.close())
+
+    t.assert.throws(() => {
+      fastify.get('/health', () => {})
+    }, {
+      code: 'FST_ERR_ROUTE_LOG_LEVEL_INVALID',
+      message: "Route option 'requestLogLevel' for 'GET:/health' must be a valid logger level. Received: 'invalid'"
+    })
   })
 
   await t.test('Should set a custom request log level for a specific route', async (t) => {

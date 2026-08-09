@@ -37,6 +37,8 @@ expect(fastify()).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>
 >()
+expect(fastify({ requestLogLevel: 'debug' })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify).type.not.toBeCallableWith({ requestLogLevel: 'invalid' })
 expect(fastify({})).type.toBe<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> &
   SafePromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>

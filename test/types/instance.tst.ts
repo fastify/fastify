@@ -15,7 +15,7 @@ import fastify, {
 } from '../../fastify.js'
 import { HookHandlerDoneFunction } from '../../types/hooks.js'
 import { FindMyWayVersion } from '../../types/instance.js'
-import { Bindings, ChildLoggerOptions } from '../../types/logger.js'
+import { Bindings, ChildLoggerOptions, LogLevel } from '../../types/logger.js'
 import { FastifyReply } from '../../types/reply.js'
 import { FastifyRequest } from '../../types/request.js'
 import { FastifySchemaCompiler, FastifySchemaControllerOptions, FastifySerializerCompiler } from '../../types/schema.js'
@@ -315,6 +315,7 @@ type InitialConfig = Readonly<{
   ignoreTrailingSlash?: boolean,
   ignoreDuplicateSlashes?: boolean,
   disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
+  requestLogLevel?: LogLevel,
   maxParamLength?: number,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',

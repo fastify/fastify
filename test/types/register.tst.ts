@@ -32,12 +32,13 @@ interface TestOptions extends FastifyPluginOptions {
 // Type validation
 expect(fastify().register).type.not.toBeCallableWith(testPluginOptsAsync, { prefix: 1 })
 expect(fastify().register).type.not.toBeCallableWith(testPluginOptsAsync, { logLevel: () => ({}) })
+expect(fastify().register).type.not.toBeCallableWith(testPluginOptsAsync, { requestLogLevel: 'invalid' })
 expect(fastify().register).type.not.toBeCallableWith(testPluginOptsAsync, { logSerializers: () => ({}) })
 expect(fastify().register).type.not.toBeCallableWith({})
 
 expect(
   fastify().register(
-    testPluginOptsAsync, { prefix: '/example', logLevel: 'info', logSerializers: { key: (value: any) => `${value}` } }
+    testPluginOptsAsync, { prefix: '/example', logLevel: 'info', requestLogLevel: 'debug', logSerializers: { key: (value: any) => `${value}` } }
   )
 ).type.toBeAssignableTo<FastifyInstance>()
 

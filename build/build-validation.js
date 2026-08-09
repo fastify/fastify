@@ -33,6 +33,7 @@ const defaultInitOptions = {
   caseSensitive: true,
   allowUnsafeRegex: false,
   disableRequestLogging: false, // TODO: remove it in v6
+  requestLogLevel: 'info',
   ignoreTrailingSlash: false,
   ignoreDuplicateSlashes: false,
   maxParamLength: 100,
@@ -102,6 +103,7 @@ const schema = {
     disableRequestLogging: {
       default: false
     },
+    requestLogLevel: { type: 'string', default: defaultInitOptions.requestLogLevel },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },

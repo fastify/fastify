@@ -7,6 +7,7 @@ import { FastifyBaseLogger, FastifyTypeProvider, RawServerDefault } from '../fas
 export interface RegisterOptions {
   prefix?: string;
   logLevel?: LogLevel;
+  requestLogLevel?: LogLevel;
   logSerializers?: Record<string, (value: any) => string>;
 }
 

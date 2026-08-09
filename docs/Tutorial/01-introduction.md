@@ -48,12 +48,6 @@ Finally, we implement the application features:
 * and ways to evolve explicit plugin composition with automatic discovery or
   an architecture framework.
 
-The tutorial combines official Fastify plugins, independent libraries, and
-application code written specifically for Quote Vault. Fastify provides the
-plugin model and lifecycle; it does not restrict how application features are
-implemented.
-
 By the end, you will have a tested and documented Fastify application and a
-practical model for deciding where routes, hooks, domain behavior, and
-infrastructure belong, as well as when a larger application may benefit from
-additional architectural conventions.
+practical model for deciding where routes, hooks, domain, and
+infrastructure belong.

@@ -17,14 +17,12 @@ Next, initialize a new npm project and install the latest version of Fastify:
 
 ```bash
 npm init -y
-npm install fastify@5
+npm install fastify
 ```
 
-Node.js can run TypeScript directly by removing erasable type syntax before
-executing the remaining JavaScript. It does not type-check the application or
-read `tsconfig.json` at runtime. This tutorial uses only syntax supported by
-Node.js type stripping, so it does not need a compilation step or a TypeScript
-runtime dependency.
+We will run `.ts` files directly with Node.js 24. Node strips the TypeScript
+syntax used in this tutorial at runtime, but it does not type-check the
+application or read `tsconfig.json`.
 
 Install the Node.js type declarations for editor support:
 
@@ -63,7 +61,7 @@ Now, we are ready to create our first Fastify server!
 Create a new file named `server.ts` in your project directory and
 open it in your favorite code editor.
 
-Fastify provides a [factory] function to create a server instance. 
+Fastify provides a factory function to create a server instance.
 This function accepts an options object to configure every aspect of the server.
 
 The simplest Fastify server can be created as follows:
@@ -95,7 +93,7 @@ node server.ts
 You should see a message indicating your Fastify server is running on port 3000.
 
 To verify, open your browser and navigate to `http://localhost:3000/`.
-If everything is set up correctly, the greeting message should appear!
+If everything is set up correctly, the greeting message should appear.
 Congratulations on creating your first Fastify server 🎉!
 
 In this tutorial, we enabled logging by passing `{ logger: true }` to the
@@ -113,7 +111,7 @@ are completed before the server stops.
 
 To implement graceful shutdowns in our Fastify server,
 we can use the [`close-with-grace`](https://github.com/mcollina/close-with-grace)
-package!
+package.
 
 ```bash
 npm install close-with-grace
@@ -188,6 +186,3 @@ We also learned how to implement graceful shutdowns to ensure that our server
 can handle termination signals properly.
 Now that we have a running server, we can move on to adding more features like routes,
 plugins, and hooks in the next chapters!
-
-
-[factory]: https://en.wikipedia.org/wiki/Factory_method_pattern

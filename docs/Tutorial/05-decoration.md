@@ -14,8 +14,8 @@ Later in this tutorial, we’ll explore alternative dependency patterns.
 
 Decorators give you a straightforward way to attach capabilities to Fastify. 
 Defining these capabilities up front also lets  **V8** optimize memory 
-usage by stabilizing the shape of server, request, and reply objects before 
-they’re instantiated and used.
+usage by stabilizing the shape of the instance, request, and reply objects
+before they’re instantiated and used.
 
 Read more about object-shape handling in JS engines
 [in this article](https://mathiasbynens.be/notes/shapes-ics#shapes).
@@ -30,6 +30,13 @@ Because our server file is starting to grow and take on too many
 responsibilities, we should start to separate concerns into different files.
 
 So let's create our db in a `db.ts` file:
+
+Fastify decorators are added at runtime, so TypeScript cannot infer their
+properties from `decorate()`. Module augmentation extends the
+`FastifyInstance`, `FastifyRequest`, or `FastifyReply` interface with those
+properties. This is the usual approach when accessing decorators directly.
+Fastify also provides [`getDecorator<T>()`](https://fastify.dev/docs/latest/Reference/Decorators/#getdecoratorname)
+as a scoped alternative.
 
 ```ts
 // db.ts
@@ -87,8 +94,9 @@ export function createDb() {
       patch: Record<string, unknown>
     ) {
       const { data } = getCollection(collection);
-      if (!data.has(id)) return null;
-      const updated = { ...data.get(id), ...patch };
+      const current = data.get(id);
+      if (current === undefined) return null;
+      const updated = { ...current, ...patch, id };
       data.set(id, updated);
       return updated;
     },
@@ -166,15 +174,16 @@ app.decorate(
 
 ## Using the Repository in Routes
 
-Update existing routes to call `this.quotesRepository.`. 
-Avoid arrow functions for decorators/handlers where `this` must be Fastify.
+Update existing routes to call `this.quotesRepository`.
+Fastify binds a route handler's `this` value to the instance that owns the
+route. Arrow functions capture `this` from the surrounding scope instead, so
+use regular functions when a handler accesses an instance decorator this way.
 The repository now owns the in-memory state, so remove the old `id` and
 `quotes` declarations from `server.ts`.
 
 ```ts
 // server.ts
-app.get<{ Querystring: { limit?: number } }>("/quotes", async function (request, reply) {
-  
+app.get<{ Querystring: { limit?: string } }>("/quotes", async function (request, reply) {
   const limit = Number(request.query.limit ?? 10);
   return this.quotesRepository.list(Number.isNaN(limit) ? undefined : limit);
 });
@@ -218,6 +227,19 @@ app.delete<{ Params: { id: string } }>("/quotes/:id", async function (request, r
   return reply.code(204).send();
 });
 ```
+
+## Verify the refactor
+
+If the server from the previous chapter is still running, stop it with
+`Ctrl+C`. Start the updated application:
+
+```bash
+node server.ts
+```
+
+Repeat the curl commands from [Testing Routes](04-defining-routes.md#testing-routes).
+The responses should remain the same now that the database decorator and
+repository own the in-memory state.
 
 ## When to Decorate (short take)
 

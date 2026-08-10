@@ -21,6 +21,7 @@ const {
   kRequestAcceptVersion,
   kReplySerializerDefault,
   kContentTypeParser,
+  kContentTypeSerializer,
   kReply,
   kRequest,
   kFourOhFour,
@@ -43,6 +44,7 @@ const Request = require('./lib/request')
 const Context = require('./lib/context.js')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
+const ContentType = require('./lib/content-type.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogController, LogController } = require('./lib/logger-factory')
@@ -163,6 +165,7 @@ function fastify (serverOptions) {
     [kErrorHandlerAlreadySet]: false,
     [kChildLoggerFactory]: options.childLoggerFactory || defaultChildLoggerFactory,
     [kReplySerializerDefault]: null,
+    [kContentTypeSerializer]: Object.create(null),
     [kContentTypeParser]: new ContentTypeParser(
       options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
@@ -235,6 +238,7 @@ function fastify (serverOptions) {
     setSerializerCompiler,
     setSchemaController,
     setReplySerializer,
+    addContentTypeSerializer,
     setSchemaErrorFormatter,
     // set generated request id
     setGenReqId,
@@ -760,6 +764,26 @@ function fastify (serverOptions) {
     throwIfAlreadyStarted('Cannot call "setReplySerializer"!')
 
     this[kReplySerializerDefault] = replySerializer
+    return this
+  }
+
+  function addContentTypeSerializer (contentType, serializer) {
+    throwIfAlreadyStarted('Cannot call "addContentTypeSerializer"!')
+
+    const parsedContentType = typeof contentType === 'string' ? ContentType.from(contentType) : null
+    if (!parsedContentType?.isValid) {
+      throw new errorCodes.FST_ERR_CTS_INVALID_TYPE()
+    }
+    if (typeof serializer !== 'function') {
+      throw new errorCodes.FST_ERR_CTS_INVALID_HANDLER()
+    }
+
+    const normalizedContentType = parsedContentType.toString()
+    if (Object.hasOwn(this[kContentTypeSerializer], normalizedContentType)) {
+      throw new errorCodes.FST_ERR_CTS_ALREADY_PRESENT(normalizedContentType)
+    }
+
+    this[kContentTypeSerializer][normalizedContentType] = serializer
     return this
   }
 

@@ -144,6 +144,7 @@ declare namespace fastify {
     serverFactory?: FastifyServerFactory<RawServer>,
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
+    strictContentTypeHeaderValidation?: boolean,
     requestIdHeader?: string | false,
     /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
     requestIdLogLabel?: string;

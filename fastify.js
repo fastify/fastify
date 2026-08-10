@@ -166,7 +166,8 @@ function fastify (serverOptions) {
     [kContentTypeParser]: new ContentTypeParser(
       options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning),
+      options.strictContentTypeHeaderValidation
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),

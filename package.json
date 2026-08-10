@@ -167,7 +167,7 @@
   ],
   "devDependencies": {
     "@jsumners/line-reporter": "^1.0.1",
-    "@sinonjs/fake-timers": "^11.2.2",
+    "@sinonjs/fake-timers": "^15.0.0",
     "@stylistic/eslint-plugin": "^5.1.0",
     "@stylistic/eslint-plugin-js": "^4.1.0",
     "@types/node": "^26.0.1",

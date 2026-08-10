@@ -46,7 +46,10 @@ test('pluginTimeout - named function', (t, testDone) => {
 
 test('pluginTimeout default', (t, testDone) => {
   t.plan(5)
-  const clock = fakeTimer.install({ shouldClearNativeTimers: true })
+  const clock = fakeTimer.install({
+    shouldClearNativeTimers: true,
+    toFake: ['setTimeout', 'clearTimeout', 'Date']
+  })
 
   const fastify = Fastify()
   fastify.register(function (app, opts, done) {

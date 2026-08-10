@@ -1971,3 +1971,27 @@ test('reply.send should not treat charset= inside a quoted parameter value as an
     'application/json; name="a=b;charset=fake"; charset=utf-8'
   )
 })
+
+test('a promise rejecting after the reply was sent is logged, not left unhandled', async t => {
+  t.plan(2)
+  const lines = []
+  const fastify = Fastify({
+    logger: { level: 'warn', stream: { write (line) { lines.push(JSON.parse(line)) } } }
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send('immediate')
+    // The reply is already sent, so this payload is dropped. Its rejection
+    // must still be observed rather than escaping as an unhandled rejection.
+    reply.send(Promise.reject(new Error('late boom')))
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(response.body, 'immediate')
+
+  await new Promise(resolve => setImmediate(resolve))
+  t.assert.ok(
+    lines.some(line => line.err && line.err.message === 'late boom'),
+    'the rejection of the dropped payload is reported'
+  )
+})

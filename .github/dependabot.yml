@@ -44,6 +44,8 @@ updates:
       # Production dependencies with breaking changes
       dependencies:
         dependency-type: "production"
+        patterns:
+          - "*"
       # ESLint related dependencies
       dev-dependencies-eslint:
         patterns:
@@ -61,3 +63,8 @@ updates:
         patterns:
           - "ajv"
           - "ajv-*"
+      # Catch-all development dependencies
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"

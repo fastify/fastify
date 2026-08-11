@@ -113,36 +113,31 @@ test('addHttpMethod rejects fake http method', t => {
   t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
 })
 
-test('addHttpMethod warns when overriding an existing method', (t, done) => {
+test('addHttpMethod rejects an implicit override of an existing method', t => {
   const fastify = Fastify()
-  const onWarning = warning => {
-    t.assert.strictEqual(warning.name, 'FastifyDeprecation')
-    t.assert.strictEqual(warning.code, 'FSTDEP025')
-    done()
-  }
-  process.once('warning', onWarning)
 
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', onWarning)
   })
 
-  fastify.addHttpMethod('GET', { hasBody: true })
+  t.assert.throws(
+    () => fastify.addHttpMethod('GET', { hasBody: true }),
+    {
+      code: 'FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED',
+      message: 'Method "GET" is already supported. Use `overrideExisting: true` to override it.'
+    }
+  )
 })
 
-test('addHttpMethod does not warn when overriding an existing method explicitly', t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not warn')
-  }
-  process.on('warning', doNotWarn)
-
+test('addHttpMethod allows an explicit override of an existing method', t => {
   const fastify = Fastify()
   t.after(() => {
     fastify.close()
-    process.removeListener('warning', doNotWarn)
   })
 
-  fastify.addHttpMethod('POST', { overrideExisting: true })
+  t.assert.doesNotThrow(() => {
+    fastify.addHttpMethod('POST', { overrideExisting: true })
+  })
 })
 
 test('addHttpMethod can change an existing method body behavior', async t => {

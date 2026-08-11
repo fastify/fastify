@@ -40,9 +40,7 @@ test('Regular request', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -94,9 +92,7 @@ test('Request with undefined config', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -155,9 +151,7 @@ test('Regular request - hostname from authority', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -198,9 +192,7 @@ test('Regular request - host header has precedence over authority', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -240,9 +232,7 @@ test('Request with trust proxy', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      }
+      [kOptions]: {}
     }
   })
 
@@ -317,9 +307,7 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -360,9 +348,7 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -463,9 +449,7 @@ test('Request with undefined socket', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })

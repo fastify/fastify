@@ -17,9 +17,9 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [20, 22, 24, 26]
+        node-version: [24, 26]
         os: [ubuntu-latest]
-        pnpm-version: [8]
+        pnpm-version: [10, 11]
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -53,7 +53,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [22, 24, 26]
+        node-version: [24, 26]
         os: [ubuntu-latest]
 
     steps:

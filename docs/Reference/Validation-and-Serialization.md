@@ -872,14 +872,15 @@ fastify.post('/', {
 }, handler)
 
 fastify.setErrorHandler(function (error, request, reply) {
-  reply.code(400).send({ code: 'CUSTOM_ERROR', message: 'Unknown custom error' })
+  reply.code(400).send({ code: 'CUSTOM_ERROR', message: 'Unknown custom error', details: 'invalid body' })
 })
 ```
 
 A request with an invalid body responds `400` with
 `{"code":"APP_ERROR","message":"Unknown custom error"}`: the `const` keyword
-replaced `CUSTOM_ERROR`. Properties the schema does not list are dropped in the
-same silent way, unless it allows additional properties.
+replaced `CUSTOM_ERROR`, and `details` was dropped because the schema does not
+list it. Properties absent from the schema are removed in this same silent way,
+unless it allows additional properties.
 
 When the payload cannot be serialized at all — a `required` property is missing,
 or a value cannot be converted to the declared type — serialization throws and
@@ -907,7 +908,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-[`setReplySerializer`](./Server.md#setreplyserializer) does the same for every
+[`setReplySerializer`](./Server.md#set-reply-serializer) does the same for every
 reply in a scope and takes precedence over the response schema. Declaring no
 schema for a status code also leaves that status's payload untouched.
 

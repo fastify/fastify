@@ -493,6 +493,14 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
+  * Triggered when fastify.close() is invoked to stop the server. Accepts a disposable object with Symbol.asyncDispose or Symbol.dispose.
+  */
+  addHook(
+    name: 'onClose',
+    hook: AsyncDisposable | Disposable,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need to cancel some state to allow the server to close successfully.
   */
   addHook<

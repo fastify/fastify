@@ -743,3 +743,85 @@ test('does not destroy connections with in-flight requests (default options)', a
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
 })
+
+test('addHook onClose with Symbol.asyncDispose', { skip: !('asyncDispose' in Symbol) }, async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  let disposed = false
+  const resource = {
+    [Symbol.asyncDispose]: async () => { disposed = true }
+  }
+
+  fastify.addHook('onClose', resource)
+
+  await fastify.listen({ port: 0 })
+  await fastify.close()
+
+  t.assert.strictEqual(disposed, true)
+})
+
+test('addHook onClose with Symbol.dispose', { skip: !('dispose' in Symbol) }, async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  let disposed = false
+  const resource = {
+    [Symbol.dispose]: () => { disposed = true }
+  }
+
+  fastify.addHook('onClose', resource)
+
+  await fastify.listen({ port: 0 })
+  await fastify.close()
+
+  t.assert.strictEqual(disposed, true)
+})
+
+test('addHook onClose with Symbol.asyncDispose preferred over Symbol.dispose', { skip: !('asyncDispose' in Symbol) }, async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  let asyncDisposed = false
+  let syncDisposed = false
+  const resource = {
+    [Symbol.asyncDispose]: async () => { asyncDisposed = true },
+    [Symbol.dispose]: () => { syncDisposed = true }
+  }
+
+  fastify.addHook('onClose', resource)
+
+  await fastify.listen({ port: 0 })
+  await fastify.close()
+
+  t.assert.strictEqual(asyncDisposed, true)
+  t.assert.strictEqual(syncDisposed, false)
+})
+
+test('addHook onClose with non-disposable object throws', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  t.assert.throws(() => {
+    fastify.addHook('onClose', { foo: 'bar' })
+  }, (err) => err.code === 'FST_ERR_HOOK_INVALID_HANDLER')
+})
+
+test('addHook onClose with disposable inside register', { skip: !('asyncDispose' in Symbol) }, async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  let disposed = false
+  fastify.register(function (instance, opts, done) {
+    const resource = {
+      [Symbol.asyncDispose]: async () => { disposed = true }
+    }
+    instance.addHook('onClose', resource)
+    done()
+  })
+
+  await fastify.listen({ port: 0 })
+  await fastify.close()
+
+  t.assert.strictEqual(disposed, true)
+})

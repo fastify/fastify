@@ -600,7 +600,17 @@ function fastify (serverOptions) {
     }
 
     if (name === 'onClose') {
-      this.onClose(fn.bind(this))
+      if (typeof fn !== 'function') {
+        if (typeof fn[Symbol.asyncDispose] === 'function') {
+          this.onClose(() => fn[Symbol.asyncDispose]())
+        } else if (typeof fn[Symbol.dispose] === 'function') {
+          this.onClose(() => fn[Symbol.dispose]())
+        } else {
+          throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, Object.prototype.toString.call(fn))
+        }
+      } else {
+        this.onClose(fn.bind(this))
+      }
     } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
       this[kHooks].add(name, fn)
     } else {

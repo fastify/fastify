@@ -142,7 +142,8 @@ whole payload before Fastify checks the body limit on the returned stream, so
 add your own size guard to avoid buffering an unbounded request. The example
 below reads `request.routeOptions.bodyLimit`, the effective limit for the
 route (the per-route override if set, otherwise the global one), and rejects
-anything larger.
+anything larger. The handler reuses the same `verify` helper defined in the
+first recipe; keep it in the same module.
 
 ```js
 const crypto = require('node:crypto')

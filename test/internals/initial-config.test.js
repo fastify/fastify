@@ -56,7 +56,7 @@ test('without options passed to Fastify, initialConfig should expose default val
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(22)
+  t.plan(23)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -101,6 +101,7 @@ test('Fastify.initialConfig should expose all options', t => {
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
     useSemicolonDelimiter: false,
+    contentTypeHeaderParserFactory: defaultParser => defaultParser,
     querystringParser: str => str,
     genReqId: function (req) {
       return reqId++
@@ -137,6 +138,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.assert.strictEqual(fastify.initialConfig.genReqId, undefined)
   t.assert.strictEqual(fastify.initialConfig.childLoggerFactory, undefined)
   t.assert.strictEqual(fastify.initialConfig.querystringParser, undefined)
+  t.assert.strictEqual(fastify.initialConfig.contentTypeHeaderParserFactory, undefined)
   t.assert.strictEqual(fastify.initialConfig.logger, undefined)
   t.assert.strictEqual(fastify.initialConfig.trustProxy, undefined)
 })

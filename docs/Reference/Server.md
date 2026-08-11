@@ -18,6 +18,7 @@ describes the properties available in that options object.
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
   - [`bodyLimit`](#bodylimit)
+  - [`contentTypeHeaderParserFactory`](#contenttypeheaderparserfactory)
   - [`onProtoPoisoning`](#onprotopoisoning)
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
@@ -301,6 +302,38 @@ The default body reader sends [`FST_ERR_CTP_BODY_TOO_LARGE`](./Errors.md#fst_err
 reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
+
+### `contentTypeHeaderParserFactory`
+<a id="factory-content-type-header-parser-factory"></a>
+
++ Default: `undefined`
+
+Creates the function Fastify uses to parse and canonicalize incoming
+`Content-Type` header values. The default parser is implemented in
+[`lib/content-type.js`](../../lib/content-type.js). The factory receives this
+parser so a custom implementation can delegate ordinary values:
+
+```js
+const fastify = Fastify({
+  contentTypeHeaderParserFactory (defaultParser) {
+    return function parseContentType (headerValue) {
+      if (headerValue === 'application/json,application/json') {
+        return defaultParser('application/json')
+      }
+      return defaultParser(headerValue)
+    }
+  }
+})
+```
+
+The returned function must return an object with `isValid`, `isEmpty`,
+`mediaType`, `type`, `subtype`, `parameters`, and `toString()`. TypeScript
+implementations can implement the exported
+[`FastifyParsedContentType`](../../types/content-type-parser.d.ts) interface.
+Fastify uses that result for request rejection, `request.mediaType`, body parser
+selection, and per-content-type schema selection. A custom implementation must
+therefore canonicalize values unambiguously and must not mark untrusted input as
+valid unless its body parser and validation semantics are known.
 
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>

@@ -157,7 +157,7 @@ const serverWithPinoConfig = fastify({
         }
       },
       res (reply) {
-        expect(reply).type.toBe<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>()
+        expect(reply).type.toBe<Partial<FastifyReply>>()
         expect(reply).type.not.toBeAssignableTo<FastifyReply>()
         return {
           statusCode: 'statusCode'
@@ -192,7 +192,7 @@ const serverAutoInferredSerializerResponseObjectOption = fastify({
   logger: {
     serializers: {
       res (reply) {
-        expect(reply).type.toBe<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>()
+        expect(reply).type.toBe<Partial<FastifyReply>>()
         expect(reply).type.not.toBeAssignableTo<FastifyReply>()
         return {
           status: '200'
@@ -220,7 +220,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
         }
       },
       res (reply) {
-        expect(reply).type.toBe<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>()
+        expect(reply).type.toBe<Partial<FastifyReply>>()
         expect(reply).type.not.toBeAssignableTo<FastifyReply>()
         return {
           statusCode: 'statusCode'

@@ -769,3 +769,31 @@ test('content-type fail when not a valid type', async t => {
     t.assert.equal(error.message, 'The content type should be a string or a RegExp')
   }
 })
+
+test('contentTypeParser should match a content type registered with a quoted-pair', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  // `\"` is a quoted-pair, so the `boundary` parameter value is `a"b`.
+  const contentType = 'application/x-custom; boundary="a\\"b"'
+
+  fastify.addContentTypeParser(contentType, { parseAs: 'string' }, function (request, body, done) {
+    done(null, body.toUpperCase())
+  })
+
+  fastify.post('/', (request, reply) => {
+    reply.send(request.body)
+  })
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': contentType },
+    payload: 'hello'
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.body, 'HELLO')
+})

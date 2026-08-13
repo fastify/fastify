@@ -142,8 +142,8 @@ whole payload before Fastify checks the body limit on the returned stream, so
 add your own size guard to avoid buffering an unbounded request. The example
 below reads `request.routeOptions.bodyLimit`, the effective limit for the
 route (the per-route override if set, otherwise the global one), and rejects
-anything larger. The handler reuses the same `verify` helper defined in the
-first recipe; keep it in the same module.
+anything larger. The handler uses the same constant-time `verify` helper as the
+buffer parser recipe, repeated here so this example runs on its own.
 
 ```js
 const crypto = require('node:crypto')
@@ -151,6 +151,20 @@ const { Readable } = require('node:stream')
 const Fastify = require('fastify')
 
 const app = Fastify()
+
+// Same constant-time comparison as the buffer parser recipe: guard the
+// length before `crypto.timingSafeEqual`, and normalize a missing or
+// array-valued signature header to a string first.
+function verify (signature, expected) {
+  const value = Array.isArray(signature) ? signature[0] : signature
+  const provided = Buffer.from(value ?? '', 'utf8')
+  const computed = Buffer.from(expected, 'utf8')
+
+  return (
+    provided.length === computed.length &&
+    crypto.timingSafeEqual(provided, computed)
+  )
+}
 
 app.register(async function webhookRoutes (instance) {
   instance.decorateRequest('rawBody', null)
@@ -217,8 +231,10 @@ app.listen({ port: 3000 }).catch((err) => {
 ```
 
 This variant keeps `request.body` as parsed JSON and adds `request.rawBody`
-alongside it. The buffer parser recipe is lighter when the handler does not
-need the parsed object as well.
+alongside it. Because `request.body` stays the parsed object, a JSON
+`schema.body` still validates normally here, unlike the buffer parser recipe.
+The buffer parser recipe is lighter when the handler does not need the parsed
+object as well.
 
 Note the ordering: this variant runs the normal JSON parser before your
 handler, so a malformed or unsigned body produces a parse error (400) before

@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 test('Prefix options should add a prefix for all the routes inside a register / 1', (t, testDone) => {
   t.plan(6)

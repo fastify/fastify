@@ -29,10 +29,11 @@ Content type parsers are encapsulated in the scope in which they are declared
 webhook route inside its own plugin means the custom parser applies only to
 that scope, and every other route keeps the default JSON parsing.
 
-The parser uses the `parseAs: 'buffer'` option (this is already the default;
-it is kept here to make the intent explicit) so Fastify collects the body into
-a `Buffer` and enforces the body limit for you. Instead of parsing that buffer,
-the parser returns it unchanged, so `request.body` is the raw bytes. Because
+The parser passes the `parseAs: 'buffer'` option so Fastify collects the body
+into a `Buffer` and enforces the body limit for you. This option is required:
+without it the parser receives the raw request stream, not a `Buffer`. Instead
+of parsing that buffer, the parser returns it unchanged, so `request.body` is
+the raw bytes. Because
 `request.body` is a `Buffer` rather than a parsed object, do not attach a JSON
 body schema to this route: `schema.body` validation would run against the
 `Buffer` and reject it. If you need both the raw bytes and a validated JSON

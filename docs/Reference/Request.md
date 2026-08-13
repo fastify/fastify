@@ -72,10 +72,6 @@ Request is a core Fastify object containing the following fields:
   for cooperative cancellation. On timeout, `signal.reason` is the
   `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
   `AbortError`. Check `signal.reason.code` to distinguish the two cases.
-- `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
-  internal object. Do not use or modify it directly. It is useful to access one
-  special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
   - `handlerTimeout` - The handler timeout configured for this route.

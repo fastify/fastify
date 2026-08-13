@@ -9,7 +9,7 @@ const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 const proxyquire = require('proxyquire')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 test('Ajv plugins array parameter', (t, testDone) => {
   t.plan(3)

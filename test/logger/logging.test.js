@@ -11,7 +11,7 @@ const { LogController } = require('../../lib/log-controller')
 const helper = require('../helper')
 const { once, on } = stream
 const { request } = require('./logger-test-utils')
-const { partialDeepStrictEqual } = require('../toolkit')
+const { partialDeepStrictEqual } = require('../helper')
 
 t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost

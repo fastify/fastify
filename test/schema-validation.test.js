@@ -5,7 +5,7 @@ const Fastify = require('..')
 
 const AJV = require('ajv')
 const Schema = require('fluent-json-schema')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 const { kRequestContentType } = require('../lib/symbols')
 
 const customSchemaCompilers = {

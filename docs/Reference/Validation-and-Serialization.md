@@ -843,16 +843,15 @@ fastify.get('/user', {
 #### Response schemas and error replies
 <a id="error-handler-serialization"></a>
 
-A response schema is selected by status code, with no distinction between
-success and error replies. A payload sent from a handler registered with
-[`setErrorHandler`](./Server.md#seterrorhandler), or from the default error
-handler, is therefore serialized by the route's `response[400]`,
-`response['4xx']` or `response.default` schema, exactly like a payload sent
-from the route handler.
+There is no separate schema for error responses. A payload sent from a
+[`setErrorHandler`](./Server.md#seterrorhandler) handler, or from the default
+error handler, is serialized by the route's response schema for its status code
+(`response[400]`, `response['4xx']` or `response.default`), just like a route
+handler's payload.
 
-Because serialization is not validation, the schema reshapes the payload to fit
-instead of rejecting it. Here the `code` the error handler chose never reaches
-the client:
+Serialization is not validation, so the schema reshapes the payload to fit
+rather than rejecting it. Here the error handler's `code` never reaches the
+client:
 
 ```js
 const appErrorSchema = {
@@ -876,27 +875,25 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-A request with an invalid body responds `400` with
-`{"code":"APP_ERROR","message":"Unknown custom error"}`: the `const` keyword
-replaced `CUSTOM_ERROR`, and `details` was dropped because the schema does not
-list it. Properties absent from the schema are removed in this same silent way,
-unless it allows additional properties.
+The request responds `400` with
+`{"code":"APP_ERROR","message":"Unknown custom error"}`: `const` replaced
+`CUSTOM_ERROR`, and `details` was dropped as an unlisted property. Unless the
+schema allows additional properties, any property it omits is dropped this way.
 
-When the payload cannot be serialized at all — a `required` property is missing,
-or a value cannot be converted to the declared type — serialization throws and
-the reply re-enters the error path, which may answer `500` with the code
-`FST_ERR_FAILED_ERROR_SERIALIZATION`.
+If the payload cannot be serialized, for example when a `required` property is
+missing, serialization throws and the reply re-enters the error path, which may
+answer `500` with `FST_ERR_FAILED_ERROR_SERIALIZATION`.
 
 > ⚠ Warning:
 > An error handler that never sets a status code leaves the reply at `200`, so
-> the route's *success* schema serializes the error payload. Always set the
-> status code explicitly in an error handler.
+> the route's success schema serializes the error payload. Always set the
+> status code explicitly.
 
-To send exactly what the error handler produced, bypass the schema with
-[`reply.serializer()`](./Reply.md#serializerfunc), or send an already-serialized
-string, which is never passed to a response schema. Set the content type in
-both cases: `reply.serializer()` leaves it unset, and a string payload defaults
-to `text/plain`.
+To send the payload untouched, bypass the schema with
+[`reply.serializer()`](./Reply.md#serializerfunc) or send an already-serialized
+string, which no response schema is applied to. Set the content type in both
+cases: `reply.serializer()` leaves it unset, and a string defaults to
+`text/plain`.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
@@ -909,8 +906,8 @@ fastify.setErrorHandler(function (error, request, reply) {
 ```
 
 [`setReplySerializer`](./Server.md#set-reply-serializer) does the same for every
-reply in a scope and takes precedence over the response schema. Declaring no
-schema for a status code also leaves that status's payload untouched.
+reply in its scope and takes precedence over the response schema. A status code
+with no declared schema is left untouched.
 
 ### Error Handling
 When schema validation fails for a request, Fastify will automatically return a

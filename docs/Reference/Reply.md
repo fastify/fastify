@@ -6,6 +6,7 @@
   - [.code(statusCode)](#codestatuscode)
   - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
+  - [.mediaType](#mediatype)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
   - [.headers(object)](#headersobject)
@@ -51,6 +52,7 @@ object that exposes the following functions and properties:
 - `.statusCode` - Read and set the HTTP status code.
 - `.elapsedTime` - Returns the amount of time passed
 since the request was received by Fastify.
+- `.mediaType` - The media type extracted from `Content-Type` header.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -127,6 +129,18 @@ This property reads and sets the HTTP status code. It is an alias for
 ```js
 if (reply.statusCode >= 299) {
   reply.statusCode = 500
+}
+```
+### .mediaType
+<a id="mediatype"></a>
+
+Returns the media type extracted from `Content-Type` header. When `Content-Type`
+header is missing, it will return `undefined`.
+
+```js
+if (reply.mediaType === 'image/gif') {
+  const versionBuffer = new Uint8Array(reply.payload, 3, 3)
+  reply.header('x-gif-version', new TextDecoder().decode(versionBuffer))
 }
 ```
 

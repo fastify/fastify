@@ -34,7 +34,7 @@ const doGet = async function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(15)
+  t.plan(16)
   const response = { res: 'res' }
   const context = {
     config: { onSend: [] },
@@ -49,6 +49,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.assert.strictEqual(typeof reply[kReplyErrorHandlerCalled], 'boolean')
   t.assert.strictEqual(typeof reply.send, 'function')
   t.assert.strictEqual(typeof reply.code, 'function')
+  t.assert.strictEqual(typeof reply.mediaType, 'string')
   t.assert.strictEqual(typeof reply.status, 'function')
   t.assert.strictEqual(typeof reply.header, 'function')
   t.assert.strictEqual(typeof reply.serialize, 'function')

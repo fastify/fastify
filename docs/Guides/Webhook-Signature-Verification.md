@@ -35,9 +35,11 @@ a `Buffer` and enforces the body limit for you. Instead of parsing that buffer,
 the parser returns it unchanged, so `request.body` is the raw bytes. Because
 `request.body` is a `Buffer` rather than a parsed object, do not attach a JSON
 body schema to this route: `schema.body` validation would run against the
-`Buffer` and reject it. Only `application/json` is overridden here, so requests
-sent with another content type keep the parser they inherit from the parent
-scope; confirm your provider sends JSON.
+`Buffer` and reject it. If you need both the raw bytes and a validated JSON
+body, use the [preParsing variant](#variant-a-preparsing-hook) below, which
+keeps `request.body` parsed. Only `application/json` is overridden here, so
+requests sent with another content type keep the parser they inherit from the
+parent scope; confirm your provider sends JSON.
 
 ```js
 const crypto = require('node:crypto')

@@ -190,7 +190,51 @@ test('Different schema per content type', (t, testDone) => {
   completion.patience.then(testDone)
 })
 
-test('Skip validation if no schema for content type', (t, testDone) => {
+test('415 when multiple content types are declared and request does not match', (t, testDone) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.addContentTypeParser('application/octet-stream', {
+    parseAs: 'buffer'
+  }, async function (_, payload) {
+    return payload
+  })
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': {
+            schema: schemaArtist
+          },
+          'application/octet-stream': {
+            schema: {}
+          }
+          // No schema for 'text/plain'
+        }
+      }
+    }
+  }, async function (req, reply) {
+    return reply.send(req.body)
+  })
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: 'AAAAAAAA'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 415)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 415,
+      code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE',
+      error: 'Unsupported Media Type',
+      message: 'Unsupported Media Type'
+    })
+    testDone()
+  })
+})
+
+test('Reject if no schema for content type', (t, testDone) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -215,13 +259,18 @@ test('Skip validation if no schema for content type', (t, testDone) => {
     body: 'AAAAAAAA'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
-    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.statusCode, 415)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 415,
+      code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE',
+      error: 'Unsupported Media Type',
+      message: 'Unsupported Media Type'
+    })
     testDone()
   })
 })
 
-test('Skip validation if no content type schemas', (t, testDone) => {
+test('Reject if no content type schemas', (t, testDone) => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -243,8 +292,13 @@ test('Skip validation if no content type schemas', (t, testDone) => {
     body: 'AAAAAAAA'
   }, (err, res) => {
     t.assert.ifError(err)
-    t.assert.deepStrictEqual(res.payload, 'AAAAAAAA')
-    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.statusCode, 415)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 415,
+      code: 'FST_ERR_CTP_INVALID_MEDIA_TYPE',
+      error: 'Unsupported Media Type',
+      message: 'Unsupported Media Type'
+    })
     testDone()
   })
 })
@@ -1351,7 +1405,7 @@ test('Custom validator builder override by custom validator compiler in child in
   t.assert.strictEqual(two.statusCode, 200)
 })
 
-test('Schema validation when no content type is provided', async t => {
+test('415 when no content type is provided', async t => {
   // this case should not be happened in normal use-case,
   // it is added for the completeness of code branch
   const fastify = Fastify()
@@ -1389,7 +1443,8 @@ test('Schema validation when no content type is provided', async t => {
     },
     body: { invalid: 'string' }
   })
-  t.assert.strictEqual(invalid.statusCode, 200)
+  t.assert.strictEqual(invalid.statusCode, 415)
+  t.assert.strictEqual(invalid.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })
 
 test('Schema validation will not be bypass by different content type', async t => {

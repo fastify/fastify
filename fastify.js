@@ -601,7 +601,7 @@ function fastify (serverOptions) {
 
     if (name === 'onClose') {
       this.onClose(fn.bind(this))
-    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute' || name === 'preClose') {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {

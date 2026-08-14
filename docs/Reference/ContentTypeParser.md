@@ -167,10 +167,6 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 })
 ```
 
-> ℹ️ Note:
-> `function(req, done)` and `async function(req)` are
-> still supported but deprecated.
-
 #### Body Parser
 The request body can be parsed in two ways. First, add a custom content type
 parser and handle the request stream. Or second, use the `parseAs` option in the

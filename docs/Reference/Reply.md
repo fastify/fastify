@@ -638,9 +638,6 @@ invocation of `reply.send()` once the handler promise resolve should be skipped.
 By calling `reply.hijack()`, an application claims full responsibility for the
 low-level request and response. Moreover, hooks will not be invoked.
 
-*Modifying the `.sent` property directly is deprecated. Please use the
-aforementioned `.hijack()` method to achieve the same effect.*
-
 ### .hijack()
 <a name="hijack"></a>
 

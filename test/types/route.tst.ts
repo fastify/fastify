@@ -574,3 +574,17 @@ expect(fastify().route({
     expect(req.routeOptions.method).type.toBeAssignableTo<string | Array<string>>()
   }
 })).type.toBe<FastifyInstance>()
+
+// RouteShorthandOptions: logSerializers is a supported per-route option (#6818)
+expect(fastify().route({
+  url: '/',
+  method: 'get',
+  logSerializers: { key: (value: any) => `${value}` },
+  handler: routeHandlerWithReturnValue
+})).type.toBe<FastifyInstance>()
+
+expect(fastify().get('/log-serializers', {
+  logSerializers: {
+    reqId: (value: any) => String(value)
+  }
+}, routeHandlerWithReturnValue)).type.toBe<FastifyInstance>()

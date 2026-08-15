@@ -964,3 +964,53 @@ test('calls onRoute only once when prefixing', async t => {
 
   t.assert.deepStrictEqual(onRouteCalled, 1)
 })
+
+test('routeOptions.url should not have a trailing slash for the auto-registered prefix route (#4424)', (t, testDone) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, done) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ route: req.routeOptions.url })
+    })
+
+    done()
+  }, { prefix: '/foo' })
+
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'GET',
+    url: '/foo'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/foo' })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'GET',
+    url: '/foo/'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/foo' })
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
+})
+
+test('routeOptions.url keeps the trailing slash for an explicitly registered trailing-slash route', (t, testDone) => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/foo/', (req, reply) => {
+    reply.send({ route: req.routeOptions.url })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/foo/'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { route: '/foo/' })
+    testDone()
+  })
+})

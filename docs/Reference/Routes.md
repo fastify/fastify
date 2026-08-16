@@ -102,7 +102,7 @@ fastify.route(options)
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`:
+* `serializerCompiler({ schema, method, url, httpStatus, contentType })`:
   function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.
@@ -327,6 +327,19 @@ Having a route with multiple parameters may negatively affect performance.
 Prefer a single parameter approach, especially on routes that are on the hot
 path of your application. For more details, see
 [find-my-way](https://github.com/delvedor/find-my-way).
+
+> ⚠️ Security:
+> Fastify (via find-my-way) percent-decodes route parameters and wildcards
+> before they reach your handler. Encoded separators in a segment are
+> decoded in the parameter value: for a route `/download/:file`, a request
+> to `/download/..%2fsecret.txt` yields
+> `request.params.file === '../secret.txt'`. Parameters are untrusted
+> input. Do not pass them to `path.join`, `fs` APIs, template engines, or
+> redirects without validation or path containment. To serve files from a
+> directory root, use
+> [`@fastify/static`](https://github.com/fastify/fastify-static) instead of
+> joining `request.params` into a filesystem path yourself. See also
+> [Request](./Request.md).
 
 To include a colon in a path without declaring a parameter, use a double colon.
 For example:

@@ -1,6 +1,6 @@
 <div align="center"> <a href="https://fastify.dev/">
     <img
-      src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg"
+      src="https://raw.githubusercontent.com/fastify/graphics/HEAD/fastify-landscape-outlined.svg"
       width="650"
       height="auto"
     />
@@ -15,7 +15,7 @@ CI](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml/
 [![Web
 site](https://github.com/fastify/fastify/actions/workflows/website.yml/badge.svg?branch=main)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/7585/badge)](https://bestpractices.coreinfrastructure.org/projects/7585)
+[![CII Best Practices](https://www.bestpractices.dev/projects/7585/badge)](https://www.bestpractices.dev/en/projects/7585/passing)
 
 </div>
 
@@ -27,7 +27,7 @@ version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs
 downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![Security Responsible
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/fastify/fastify/blob/main/SECURITY.md)
-[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
+[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.com/invite/fastify)
 [![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod&color=blue)](https://gitpod.io/#https://github.com/fastify/fastify)
 [![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/fastify)](https://github.com/sponsors/fastify#sponsors)
 
@@ -46,8 +46,8 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-The `main` branch refers to the Fastify `v5` release.
-Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v4`.
+The `main` branch refers to the Fastify `v6` release.
+Check out the [`5.x` branch](https://github.com/fastify/fastify/tree/5.x) for `v5`.
 
 ### Table of Contents
 
@@ -73,7 +73,7 @@ mkdir my-app
 cd my-app
 ```
 
-Generate a fastify project with `npm init`:
+Generate a Fastify project with `npm init`:
 
 ```sh
 npm init fastify
@@ -121,7 +121,7 @@ import Fastify from 'fastify'
 const fastify = Fastify({
   logger: true
 })
-// CommonJs
+// CommonJS
 const fastify = require('fastify')({
   logger: true
 })
@@ -147,7 +147,7 @@ import Fastify from 'fastify'
 const fastify = Fastify({
   logger: true
 })
-// CommonJs
+// CommonJS
 const fastify = require('fastify')({
   logger: true
 })
@@ -181,7 +181,7 @@ If you learn best by reading code, explore the official [demo](https://github.co
 ### Core features
 
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
-  frameworks in town, depending on the code complexity we can serve up to 76+
+  frameworks in town, depending on the code complexity we can serve more than 76
   thousand requests per second.
 - **Extensible:** Fastify is fully extensible via its hooks, plugins, and
   decorators.
@@ -189,7 +189,7 @@ If you learn best by reading code, explore the official [demo](https://github.co
   Schema](https://json-schema.org/) to validate your routes and serialize your
   outputs. Internally Fastify compiles the schema in a highly performant
   function.
-- **Logging:** logs are extremely important but are costly; we chose the best
+- **Logging:** logs are extremely important, but are costly; we chose the best
   logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
 - **Developer friendly:** the framework is built to be very expressive and help
   developers in their daily use without sacrificing performance and
@@ -212,8 +212,8 @@ second average
 | -                  |                            |              |               |
 | `http.Server`      | 16.14.2	                  | &#10007;     | 74,513        |
 
-These benchmarks taken using https://github.com/fastify/benchmarks. This is a
-synthetic "hello world" benchmark that aims to evaluate the framework overhead.
+These benchmarks were taken using https://github.com/fastify/benchmarks. This is
+a synthetic "hello world" benchmark that aims to evaluate the framework overhead.
 The overhead that each framework has on your application depends on your
 application. You should __always__ benchmark if performance matters to you.
 
@@ -253,8 +253,8 @@ application. You should __always__ benchmark if performance matters to you.
   plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad
   set of real working examples.
-- [Discord](https://discord.gg/D3FZYPy) - Join our discord server and chat with
-  the maintainers.
+- [Discord](https://discord.com/invite/D3FZYPy) - Join our discord server and
+  chat with the maintainers.
 
 ## Support
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
@@ -312,7 +312,7 @@ listed in alphabetical order.
 * [__KaKa Ng__](https://github.com/climba03003),
   <https://www.npmjs.com/~climba03003>
 * [__Luis Orbaiceta__](https://github.com/luisorbaiceta),
-  <https://x.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
+  <https://www.npmjs.com/~luisorbaiceta>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://x.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm),
@@ -383,7 +383,7 @@ active contributor's group.
 ## Hosted by
 
 [<img
-src="https://github.com/openjs-foundation/artwork/blob/main/openjs_foundation/openjs_foundation-logo-horizontal-color.png?raw=true"
+src="https://raw.githubusercontent.com/openjs-foundation/artwork/main/openjs_foundation/openjs_foundation-logo-horizontal-color.png"
 width="250px;"/>](https://openjsf.org/projects)
 
 We are an [At-Large
@@ -401,9 +401,6 @@ page where we accept and manage financial contributions.
 This project is kindly sponsored by:
 - [NearForm](https://nearform.com)
 - [Platformatic](https://platformatic.dev)
-
-Past Sponsors:
-- [LetzDoIt](https://www.letzdoitapp.com/)
 
 This list includes all companies that support one or more team members
 in maintaining this project.

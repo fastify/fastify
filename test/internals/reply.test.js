@@ -5,6 +5,7 @@ const http = require('node:http')
 const NotFound = require('http-errors').NotFound
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
+const { LogController } = require('../../lib/log-controller')
 const Fastify = require('../..')
 const { Readable, Writable } = require('node:stream')
 const {
@@ -13,7 +14,8 @@ const {
   kReplySerializer,
   kReplyIsError,
   kReplySerializerDefault,
-  kRouteContext
+  kRouteContext,
+  kLogController
 } = require('../../lib/symbols')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -32,7 +34,7 @@ const doGet = async function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(15)
+  t.plan(16)
   const response = { res: 'res' }
   const context = {
     config: { onSend: [] },
@@ -47,6 +49,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.assert.strictEqual(typeof reply[kReplyErrorHandlerCalled], 'boolean')
   t.assert.strictEqual(typeof reply.send, 'function')
   t.assert.strictEqual(typeof reply.code, 'function')
+  t.assert.strictEqual(typeof reply.mediaType, 'undefined')
   t.assert.strictEqual(typeof reply.status, 'function')
   t.assert.strictEqual(typeof reply.header, 'function')
   t.assert.strictEqual(typeof reply.serialize, 'function')
@@ -85,7 +88,14 @@ test('reply.send will logStream error and destroy the stream', t => {
     warn: () => { }
   }
 
-  const reply = new Reply(response, { [kRouteContext]: { onSend: null } }, log)
+  const fakeRequest = {
+    [kRouteContext]: {
+      onSend: null,
+      server: { [kLogController]: new LogController() }
+    }
+  }
+
+  const reply = new Reply(response, fakeRequest, log)
   reply.send(payload)
   payload.destroy(new Error('stream error'))
 
@@ -764,7 +774,7 @@ test('non-string with custom json\'s content-type SHOULD be serialized as json',
 
   const result = await fetch(fastifyServer)
   t.assert.ok(result.ok)
-  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version=2; charset=utf-8')
+  t.assert.strictEqual(result.headers.get('content-type'), 'application/json; version="2"; charset=utf-8')
   t.assert.deepStrictEqual(await result.text(), JSON.stringify({ key: 'hello world!' }))
 })
 
@@ -1105,6 +1115,80 @@ test('reply.removeHeader can remove the value', async t => {
   await fetch(`${fastifyServer}/headers`)
 })
 
+test('reply.removeHeader removes raw headers', async t => {
+  t.plan(9)
+
+  const fastify = require('../../')()
+
+  t.after(() => fastify.close())
+
+  fastify.get('/headers', function (req, reply) {
+    reply.raw.setHeader('X-Foo', 'raw')
+    t.assert.strictEqual(reply.getHeader('x-foo'), 'raw')
+    t.assert.strictEqual(reply.getHeaders()['x-foo'], 'raw')
+    t.assert.strictEqual(reply.hasHeader('x-foo'), true)
+
+    t.assert.strictEqual(reply.removeHeader('x-FoO'), reply)
+    t.assert.strictEqual(reply.getHeader('x-foo'), undefined)
+    t.assert.strictEqual(Object.hasOwn(reply.getHeaders(), 'x-foo'), false)
+    t.assert.strictEqual(reply.hasHeader('x-foo'), false)
+    t.assert.strictEqual(reply.removeHeader('X-FOO'), reply)
+
+    reply.send()
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const response = await fetch(`${fastifyServer}/headers`)
+  t.assert.strictEqual(response.headers.get('x-foo'), null)
+})
+
+test('reply.removeHeader removes layered headers', async t => {
+  t.plan(7)
+
+  const fastify = require('../../')()
+
+  t.after(() => fastify.close())
+
+  fastify.get('/headers', function (req, reply) {
+    reply.raw.setHeader('x-foo', 'raw')
+    reply.header('x-foo', 'fastify')
+    t.assert.strictEqual(reply.getHeader('x-foo'), 'fastify')
+    t.assert.strictEqual(reply.getHeaders()['x-foo'], 'fastify')
+
+    t.assert.strictEqual(reply.removeHeader('x-foo'), reply)
+    t.assert.strictEqual(reply.getHeader('x-foo'), undefined)
+    t.assert.strictEqual(Object.hasOwn(reply.getHeaders(), 'x-foo'), false)
+    t.assert.strictEqual(reply.hasHeader('x-foo'), false)
+
+    reply.send()
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const response = await fetch(`${fastifyServer}/headers`)
+  t.assert.strictEqual(response.headers.get('x-foo'), null)
+})
+
+test('reply.removeHeader does not throw after headers are sent', async t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  t.after(() => fastify.close())
+
+  fastify.get('/headers', function (req, reply) {
+    reply.hijack()
+    reply.raw.setHeader('x-foo', 'raw')
+    reply.raw.flushHeaders()
+    t.assert.strictEqual(reply.raw.headersSent, true)
+    t.assert.doesNotThrow(() => reply.removeHeader('x-foo'))
+    reply.raw.end()
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const response = await fetch(`${fastifyServer}/headers`)
+  t.assert.strictEqual(response.headers.get('x-foo'), 'raw')
+})
+
 test('reply.header can reset the value', async t => {
   t.plan(1)
 
@@ -1149,7 +1233,7 @@ test('reply.hasHeader computes raw and fastify headers', async t => {
 })
 
 test('Reply should handle JSON content type with a charset', async t => {
-  t.plan(8)
+  t.plan(10)
 
   const fastify = require('../../')()
 
@@ -1199,6 +1283,18 @@ test('Reply should handle JSON content type with a charset', async t => {
       .send({ hello: 'world' })
   })
 
+  fastify.get('/upper-charset', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; CHARSET=utf-8')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/random-case', function (req, reply) {
+    reply
+      .header('content-type', 'ApPlIcAtIoN/JsOn; ChArSeT=utf-8')
+      .send({ hello: 'world' })
+  })
+
   {
     const res = await fastify.inject('/default')
     t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
@@ -1231,6 +1327,16 @@ test('Reply should handle JSON content type with a charset', async t => {
   {
     const res = await fastify.inject('/type-utf32')
     t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-32')
+  }
+
+  {
+    const res = await fastify.inject('/upper-charset')
+    t.assert.strictEqual(res.headers['content-type'], 'application/json; CHARSET=utf-8')
+  }
+
+  {
+    const res = await fastify.inject('/random-case')
+    t.assert.strictEqual(res.headers['content-type'], 'ApPlIcAtIoN/JsOn; ChArSeT=utf-8')
   }
 
   {
@@ -1594,7 +1700,7 @@ test('cannot set the replySerializer when the server is running', (t, done) => {
       fastify.setReplySerializer(() => { })
       t.assert.fail('this serializer should not be setup')
     } catch (e) {
-      t.assert.strictEqual(e.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
+      t.assert.strictEqual(e.code, 'FST_ERR_INSTANCE_ALREADY_STARTED')
     } finally {
       done()
     }
@@ -1917,4 +2023,26 @@ test('Uint8Array view of ArrayBuffer returns correct byteLength', (t, done) => {
       done()
     })
   })
+})
+
+test('reply.send should not treat charset= inside a quoted parameter value as an already-declared charset', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', function (req, reply) {
+    // A quoted parameter value that happens to contain the substring
+    // `charset=` is opaque content of that value, not a real charset
+    // parameter, so reply.send must still append `; charset=utf-8`.
+    reply.header('content-type', 'application/json; name="a=b;charset=fake"')
+    reply.send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(
+    res.headers['content-type'],
+    'application/json; name="a=b;charset=fake"; charset=utf-8'
+  )
 })

@@ -2,7 +2,7 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 test('Prefix options should add a prefix for all the routes inside a register / 1', (t, testDone) => {
   t.plan(6)
@@ -241,6 +241,40 @@ test('Prefix with trailing /', (t, testDone) => {
   completion.patience.then(testDone)
 })
 
+test('Prefix with trailing / and nested prefix without leading /', (t, testDone) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, done) {
+    fastify.register(function (fastify, opts, done) {
+      fastify.get('/route', (req, reply) => {
+        reply.send({ hello: 'world' })
+      })
+      done()
+    }, { prefix: 'inner' })
+    done()
+  }, { prefix: '/v1/' })
+
+  const completion = waitForCb({ steps: 2 })
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/inner/route'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.deepStrictEqual(JSON.parse(res.payload), { hello: 'world' })
+    completion.stepIn()
+  })
+  fastify.inject({
+    method: 'GET',
+    url: '/v1//inner/route'
+  }, (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    completion.stepIn()
+  })
+  completion.patience.then(testDone)
+})
+
 test('Prefix works multiple levels deep', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify()
@@ -425,7 +459,9 @@ test('prefix "/prefix/" does not match "/prefix" with a / route', (t, testDone) 
 test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: true
+    routerOptions: {
+      ignoreTrailingSlash: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -459,7 +495,9 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
 test('matches both /prefix and /prefix/ with a / route - ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreDuplicateSlashes: true
+    routerOptions: {
+      ignoreDuplicateSlashes: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -493,7 +531,9 @@ test('matches both /prefix and /prefix/ with a / route - ignoreDuplicateSlashes:
 test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: false
+    routerOptions: {
+      ignoreTrailingSlash: false
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -564,7 +604,9 @@ test('reports the canonical route url for hidden prefix trailing slash route', a
 test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreDuplicateSlashes: false
+    routerOptions: {
+      ignoreDuplicateSlashes: false
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -603,8 +645,10 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
 test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true, ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: true,
-    ignoreDuplicateSlashes: true
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      ignoreDuplicateSlashes: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -638,8 +682,10 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
 test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true, ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: true,
-    ignoreDuplicateSlashes: false
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      ignoreDuplicateSlashes: false
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -673,7 +719,9 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
 test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "both" (default), ignoreTrailingSlash: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
-    ignoreTrailingSlash: true
+    routerOptions: {
+      ignoreTrailingSlash: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -705,7 +753,9 @@ test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "
 test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
-    ignoreDuplicateSlashes: true
+    routerOptions: {
+      ignoreDuplicateSlashes: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -733,8 +783,10 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
 test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: true, ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
-    ignoreTrailingSlash: true,
-    ignoreDuplicateSlashes: true
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      ignoreDuplicateSlashes: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -762,8 +814,10 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
 test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreDuplicateSlashes: true', (t, testDone) => {
   t.plan(2)
   const fastify = Fastify({
-    ignoreTrailingSlash: true,
-    ignoreDuplicateSlashes: true
+    routerOptions: {
+      ignoreTrailingSlash: true,
+      ignoreDuplicateSlashes: true
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -791,7 +845,9 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
 test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreTrailingSlash: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: false
+    routerOptions: {
+      ignoreTrailingSlash: false
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -830,7 +886,9 @@ test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ig
 test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreDuplicateSlashes: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreDuplicateSlashes: false
+    routerOptions: {
+      ignoreDuplicateSlashes: false
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -869,7 +927,9 @@ test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ig
 test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", ignoreTrailingSlash: false', (t, testDone) => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: false
+    routerOptions: {
+      ignoreTrailingSlash: false
+    }
   })
 
   fastify.register(function (fastify, opts, done) {
@@ -908,7 +968,9 @@ test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", igno
 test('calls onRoute only once when prefixing', async t => {
   t.plan(1)
   const fastify = Fastify({
-    ignoreTrailingSlash: false,
+    routerOptions: {
+      ignoreTrailingSlash: false
+    },
     exposeHeadRoutes: false
   })
 

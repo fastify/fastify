@@ -15,7 +15,7 @@ fill in the gaps. Just make sure to read our
 [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 file before getting started to make sure things go smoothly!
 
-> The documentation in this section covers Fastify version 3.x typings
+> The documentation in this section covers Fastify typings
 
 > Plugins may or may not include typings. See [Plugins](#plugins) for more
 > information. We encourage users to send pull requests to improve typings
@@ -90,7 +90,7 @@ in a blank http Fastify server.
    🏓
 
 🎉 You now have a working Typescript Fastify server! This example demonstrates
-the simplicity of the version 3.x type system. By default, the type system
+the simplicity of the type system. By default, the type system
 assumes you are using an `http` server. The later examples will demonstrate how
 to create more complex servers such as `https` and `http2`, how to specify route
 schemas, and more!
@@ -545,9 +545,9 @@ Fastify Plugin in a TypeScript Project.
    }
 
    // export plugin using fastify-plugin
-   export default fp(myPluginCallback, '3.x')
+   export default fp(myPluginCallback)
    // or
-   // export default fp(myPluginAsync, '3.x')
+   // export default fp(myPluginAsync)
    ```
 6. Run `npm run build` to compile the plugin code and produce both a JavaScript
    source file and a type definition file.
@@ -595,7 +595,6 @@ your plugin.
    }
 
    module.exports = fp(myPlugin, {
-     fastify: '5.x',
      name: 'my-plugin' // this is used by fastify-plugin to derive the property name
    })
    ```
@@ -658,8 +657,8 @@ unfortunate limitation of using TypeScript and is unavoidable as of right now.
 
 However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in
-  [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin
-  are actually being loaded.
+  [ESLint](https://eslint.org/docs/latest/rules/no-unused-vars) and any
+  imported plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
@@ -828,7 +827,7 @@ fastify.addHook('preHandler', async (req, reply) => {
 ## Code Completion In Vanilla JavaScript
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.
-[Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by
+[Intellisense](https://code.visualstudio.com/docs/editing/intellisense)) by
 following the [TypeScript JSDoc
 Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
 
@@ -843,8 +842,7 @@ module.exports = async function (fastify, { optionA, optionB }) {
 
 ## API Type System Documentation
 
-This section is a detailed account of all the types available to you in Fastify
-version 3.x
+This section is a detailed account of all the types available to you in Fastify.
 
 All `http`, `https`, and `http2` types are inferred from `@types/node`
 
@@ -1336,14 +1334,6 @@ Interface method definition used within the
 Interface method definition used within the
 [`fastify.register()`][FastifyRegister] method.
 
-##### fastify.FastifyPlugin< [Options][FastifyPluginOptions]>
-[src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L29)
-
-Interface method definition used within the
-[`fastify.register()`][FastifyRegister] method. Document deprecated in favor of
-`FastifyPluginCallback` and `FastifyPluginAsync` since general `FastifyPlugin`
-doesn't properly infer types for async functions.
-
 ##### fastify.FastifyPluginOptions
 [src](https://github.com/fastify/fastify/blob/main/types/plugin.d.ts#L31)
 
@@ -1360,8 +1350,6 @@ extends FastifyPluginOptions`) so they can be passed to the register method.
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
 ##### fastify.FastifyRegister(plugin: [FastifyPluginAsync][FastifyPluginAsync], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
-##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
-[src](https://github.com/fastify/fastify/blob/main/types/register.d.ts#L9)
 
 This type interface specifies the type for the
 [`fastify.register()`](./Server.md#register) method. The type interface returns
@@ -1370,8 +1358,7 @@ a function signature with an underlying generic `Options` which is defaulted to
 FastifyPlugin parameter when calling this function so there is no need to
 specify the underlying generic. The options parameter is the intersection of the
 plugin's options and two additional optional properties: `prefix: string` and
-`logLevel`: [LogLevel][LogLevel]. `FastifyPlugin` is deprecated use
-`FastifyPluginCallback` and `FastifyPluginAsync` instead.
+`logLevel`: [LogLevel][LogLevel].
 
 Below is an example of the options inference in action:
 
@@ -1426,39 +1413,6 @@ FastifyLoggerOptions object.
 [src](https://github.com/fastify/fastify/blob/main/types/logger.d.ts#L12)
 
 Union type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
-
----
-
-#### Context
-
-The context type definition is similar to the other highly dynamic pieces of the
-type system. Route context is available in the route handler method.
-
-##### fastify.FastifyRequestContext
-
-[src](https://github.com/fastify/fastify/blob/main/types/context.d.ts#L11)
-
-An interface with a single required property `config` that is set by default to
-`unknown`. Can be specified either using a generic or an overload.
-
-This type definition is potentially incomplete. If you are using it and can
-provide more details on how to improve the definition, we strongly encourage you
-to open an issue in the main
-[fastify/fastify](https://github.com/fastify/fastify) repository. Thank you in
-advanced!
-
-##### fastify.FastifyReplyContext
-
-[src](https://github.com/fastify/fastify/blob/main/types/context.d.ts#L11)
-
-An interface with a single required property `config` that is set by default to
-`unknown`. Can be specified either using a generic or an overload.
-
-This type definition is potentially incomplete. If you are using it and can
-provide more details on how to improve the definition, we strongly encourage you
-to open an issue in the main
-[fastify/fastify](https://github.com/fastify/fastify) repository. Thank you in
-advanced!
 
 ---
 
@@ -1561,9 +1515,9 @@ FastifyError is a custom error object that includes status code and validation
 results.
 
 It extends the Node.js `Error` type, and adds two additional, optional
-properties: `statusCode: number` and `validation: ValidationResult[]`.
+properties: `statusCode: number` and `validation: FastifySchemaValidationError[]`.
 
-##### fastify.ValidationResult
+##### fastify.FastifySchemaValidationError
 
 [src](https://github.com/fastify/fastify/blob/main/fastify.d.ts#L184)
 
@@ -1715,8 +1669,6 @@ database.
 [FastifyInstance]: #fastifyfastifyinstance
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric
-[FastifyPlugin]:
-    #fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
 [FastifyPluginCallback]: #fastifyfastifyplugincallbackoptions
 [FastifyPluginAsync]: #fastifyfastifypluginasyncoptions
 [FastifyPluginOptions]: #fastifyfastifypluginoptions

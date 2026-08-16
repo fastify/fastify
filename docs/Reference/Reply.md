@@ -6,6 +6,7 @@
   - [.code(statusCode)](#codestatuscode)
   - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
+  - [.mediaType](#mediatype)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
   - [.headers(object)](#headersobject)
@@ -51,6 +52,7 @@ object that exposes the following functions and properties:
 - `.statusCode` - Read and set the HTTP status code.
 - `.elapsedTime` - Returns the amount of time passed
 since the request was received by Fastify.
+- `.mediaType` - The media type extracted from `Content-Type` header.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -127,6 +129,18 @@ This property reads and sets the HTTP status code. It is an alias for
 ```js
 if (reply.statusCode >= 299) {
   reply.statusCode = 500
+}
+```
+### .mediaType
+<a id="mediatype"></a>
+
+Returns the media type extracted from `Content-Type` header. When `Content-Type`
+header is missing, it will return `undefined`.
+
+```js
+if (reply.mediaType === 'image/gif') {
+  const versionBuffer = new Uint8Array(reply.payload, 3, 3)
+  reply.header('x-gif-version', new TextDecoder().decode(versionBuffer))
 }
 ```
 
@@ -219,7 +233,7 @@ reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
 ```
 
 ### .removeHeader(key)
-<a id="getHeader"></a>
+<a id="removeHeader"></a>
 
 Remove the value of a previously set header.
 ```js
@@ -271,7 +285,7 @@ as soon as possible.
 > in the error, you can turn on `debug` level logging.
 
 ```js
-reply.trailer('server-timing', function() {
+reply.trailer('server-timing', async function () {
   return 'db;dur=53, app;dur=47.2'
 })
 
@@ -304,7 +318,7 @@ Returns a boolean indicating if the specified trailer has been set.
 
 Remove the value of a previously set trailer.
 ```js
-reply.trailer('server-timing', function() {
+reply.trailer('server-timing', async function () {
   return 'db;dur=53, app;dur=47.2'
 })
 reply.removeTrailer('server-timing')
@@ -624,9 +638,6 @@ invocation of `reply.send()` once the handler promise resolve should be skipped.
 By calling `reply.hijack()`, an application claims full responsibility for the
 low-level request and response. Moreover, hooks will not be invoked.
 
-*Modifying the `.sent` property directly is deprecated. Please use the
-aforementioned `.hijack()` method to achieve the same effect.*
-
 ### .hijack()
 <a name="hijack"></a>
 
@@ -704,6 +715,11 @@ If you are sending a stream and you have not set a `'Content-Type'` header,
 
 As noted above, streams are considered to be pre-serialized, so they will be
 sent unmodified without response validation.
+
+When sending streams over HTTP/2, Fastify does not change the chunks emitted by
+the stream. If a stream can emit very large chunks, split them in your
+application code, for example by using `fs.createReadStream()` or a transform
+stream that emits smaller chunks.
 
 See special note about error handling for streams in
 [`setErrorHandler`](./Server.md#seterrorhandler).

@@ -40,9 +40,7 @@ test('Regular request', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -94,9 +92,7 @@ test('Request with undefined config', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -155,9 +151,7 @@ test('Regular request - hostname from authority', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -198,9 +192,7 @@ test('Regular request - host header has precedence over authority', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -240,9 +232,7 @@ test('Request with trust proxy', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      }
+      [kOptions]: {}
     }
   })
 
@@ -317,9 +307,7 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -331,10 +319,10 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
 })
 
 test('Request with trust proxy - no x-forwarded-host header and fallback to authority', t => {
-  t.plan(2)
+  t.plan(3)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
-    ':authority': 'authority'
+    ':authority': 'authority:4321'
   }
   const req = {
     method: 'GET',
@@ -360,9 +348,7 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })
@@ -370,15 +356,16 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log', context)
   t.assert.ok(request instanceof TpRequest)
-  t.assert.strictEqual(request.host, 'authority')
+  t.assert.strictEqual(request.host, 'authority:4321')
+  t.assert.strictEqual(request.port, 4321)
 })
 
 test('Request with trust proxy - x-forwarded-host header has precedence over host', t => {
-  t.plan(2)
+  t.plan(4)
   const headers = {
     'x-forwarded-for': ' 2.2.2.2, 1.1.1.1',
-    'x-forwarded-host': 'fastify.test',
-    host: 'hostname'
+    'x-forwarded-host': 'fastify.test:1234',
+    host: 'hostname:5678'
   }
   const req = {
     method: 'GET',
@@ -390,7 +377,9 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.assert.ok(request instanceof TpRequest)
-  t.assert.strictEqual(request.host, 'fastify.test')
+  t.assert.strictEqual(request.host, 'fastify.test:1234')
+  t.assert.strictEqual(request.hostname, 'fastify.test')
+  t.assert.strictEqual(request.port, 1234)
 })
 
 test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
@@ -460,9 +449,7 @@ test('Request with undefined socket', t => {
     server: {
       [kReply]: {},
       [kRequest]: Request,
-      [kOptions]: {
-        requestIdLogLabel: 'reqId'
-      },
+      [kOptions]: {},
       server: {}
     }
   })

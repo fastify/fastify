@@ -13,7 +13,7 @@ This guide is for anyone who loves to build with Fastify or wants to contribute
 to our documentation. You do not need to be an expert in writing technical
 documentation. This guide is here to help you.
 
-Visit the [contribute](https://fastify.dev/contribute) page on our website or
+Visit the [contribute](https://fastify.dev/contribute/) page on our website or
 read the
 [CONTRIBUTING.md](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 file on GitHub to join our Open Source folks.

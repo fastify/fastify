@@ -9,31 +9,52 @@ Request is a core Fastify object containing the following fields:
 - `body` - The request payload, see [Content-Type Parser](./ContentTypeParser.md)
   for details on what request payloads Fastify natively parses and how to support
   other content types.
-- `params` - The params matching the URL.
+- `params` - The params matching the URL. Values are percent-decoded
+  (for example `%20` becomes a space, and `%2f` becomes `/`). Decoded
+  values may contain `.`, `..`, `/`, or other characters; treat them as
+  untrusted input. See the security note below and
+  [Routes - Url building](./Routes.md#url-building).
 - [`headers`](#headers) - The headers getter and setter.
 - `raw` - The incoming HTTP request from Node core.
 - `server` - The Fastify server instance, scoped to the current
   [encapsulation context](./Encapsulation.md).
 - `id` - The request ID.
 - `log` - The logger instance of the incoming request.
-- `ip` - The IP address of the incoming request.
-- `ips` - An array of the IP addresses, ordered from closest to furthest, in the
-  `X-Forwarded-For` header of the incoming request (only when the
-  [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled).
+- `ip` - The IP address of the incoming request. This value is taken from
+  `socket.remoteAddress` (or from `X-Forwarded-For` when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+- `ips` - An array of IP addresses, ordered from closest to furthest, from
+  `X-Forwarded-For` (only when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
 - `host` - The host of the incoming request (derived from `X-Forwarded-Host`
-  header when the [`trustProxy`](./Server.md#factory-trust-proxy) option is
-  enabled). For HTTP/2 compatibility, it returns `:authority` if no host header
-  exists. The host header may return an empty string if `requireHostHeader` is
-  `false`, not provided with HTTP/1.0, or removed by schema validation.
-  ⚠ Security: this value comes from client-controlled headers; only trust it
-  when you control proxy behavior and have validated or allow-listed hosts.
-  No additional validation is performed beyond RFC parsing (see
-  [RFC 9110, section 7.2](https://www.rfc-editor.org/rfc/rfc9110#section-7.2) and
-  [RFC 3986, section 3.2.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2.2)).
-- `hostname` - The hostname derived from the `host` property of the incoming request.
-- `port` - The port from the `host` property, which may refer to the port the
+  when [`trustProxy`](./Server.md#factory-trust-proxy) is enabled). For HTTP/2
+  compatibility, it returns `:authority` if no host header exists. The host
+  header may return an empty string if `requireHostHeader` is `false`, not
+  provided with HTTP/1.0, or removed by schema validation.
+- `hostname` - The hostname parsed from `request.host`.
+- `port` - The port parsed from `request.host`, which may refer to the port the
   server is listening on.
-- `protocol` - The protocol of the incoming request (`https` or `http`).
+- `protocol` - The protocol of the incoming request (`https` or `http`). This
+  value comes from `socket.encrypted` (or `X-Forwarded-Proto` when
+  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+
+> ⚠️ Security:
+> `request.params`, `request.query`, `request.headers`, and `request.body`
+> are untrusted network input. Route parameter values are percent-decoded
+> before your handler runs, so a segment like `..%2ffile` becomes `../file`
+> in `request.params`. Do not use parameter values as filesystem paths,
+> template names, or redirect targets without validating or containing
+> them. Prefer [`@fastify/static`](https://github.com/fastify/fastify-static)
+> (or `reply.sendFile`) when serving files from a root directory.
+>
+> `request.ip`, `request.ips`, `request.host`, `request.hostname`,
+> `request.port`, and `request.protocol` come from request metadata
+> (socket and/or forwarding headers) and should also be treated as
+> untrusted input. Fastify does not perform security validation for
+> business logic. If these values are used in security-sensitive decisions,
+> they must be validated explicitly (for example: trusted proxy
+> configuration, allow-lists, strict parsing, and normalization).
+
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
@@ -51,10 +72,6 @@ Request is a core Fastify object containing the following fields:
   for cooperative cancellation. On timeout, `signal.reason` is the
   `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
   `AbortError`. Check `signal.reason.code` to distinguish the two cases.
-- `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
-  internal object. Do not use or modify it directly. It is useful to access one
-  special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
   - `handlerTimeout` - The handler timeout configured for this route.
@@ -78,9 +95,9 @@ Request is a core Fastify object containing the following fields:
   default (or customized) `ValidationCompiler`. The optional `httpPart` is
   forwarded to the `ValidationCompiler` if provided, defaults to `null`.
 - [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
-  Validates the input using the specified schema and returns the serialized
-  payload. If `httpPart` is provided, the function uses the serializer for
-  that HTTP Status Code. Defaults to `null`.
+  Validates the input using the specified schema or HTTP part and returns
+  `true` if the input is valid, `false` otherwise. If `httpPart` is provided,
+  the function uses the validator for that HTTP part. Defaults to `null`.
 
 ### Headers
 
@@ -123,14 +140,14 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.url)
   console.log(request.routeOptions.method)
   console.log(request.routeOptions.bodyLimit)
-  console.log(request.routeOptions.method)
+  console.log(request.routeOptions.handlerTimeout)
   console.log(request.routeOptions.url)
   console.log(request.routeOptions.attachValidation)
   console.log(request.routeOptions.logLevel)
   console.log(request.routeOptions.version)
   console.log(request.routeOptions.exposeHeadRoute)
   console.log(request.routeOptions.prefixTrailingSlash)
-  console.log(request.routeOptions.logLevel)
+  console.log(request.routeOptions.config)
   request.log.info('some info')
 })
 ```

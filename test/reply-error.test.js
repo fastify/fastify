@@ -575,7 +575,7 @@ test('allow re-thrown error to default error handler when route handler is async
 })
 
 // Issue 2078 https://github.com/fastify/fastify/issues/2078
-// Supported error code list: http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+// Supported error code list: https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 const invalidErrorCodes = [
   undefined,
   null,
@@ -812,4 +812,39 @@ test('pipe stream inside error handler should not cause error', (t, testDone) =>
     t.assert.deepStrictEqual(JSON.parse(res.payload), json)
     testDone()
   })
+})
+
+test('should catch error when setting invalid header on async preSerializeation hook', async (t) => {
+  t.plan(2)
+
+  const app = Fastify()
+  app.addHook('preSerialization', async (_, reply) => {
+    reply.header('X-Invalid', '\n')
+  })
+  app.addHook('onError', function (request, reply, err, done) {
+    // onError will run twice, since it execute preSerialization hook twice
+    // requires to fallback to root error handler
+    t.assert.ok(err)
+    done()
+  })
+  app.get('/', async () => ({ ok: true }))
+  await app.inject({ method: 'GET', path: '/' })
+})
+
+test('should catch error when setting invalid header on async onSend hook', async (t) => {
+  t.plan(2)
+
+  const app = Fastify()
+  app.addHook('onSend', async (_, reply, payload) => {
+    reply.header('X-Invalid', '\n')
+    return payload
+  })
+  app.addHook('onError', function (request, reply, err, done) {
+    // onError will run twice, since it execute onSend hook twice
+    // requires to fallback to root error handler
+    t.assert.ok(err)
+    done()
+  })
+  app.get('/', async () => ({ ok: true }))
+  await app.inject({ method: 'GET', path: '/' })
 })

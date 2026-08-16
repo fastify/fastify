@@ -28,32 +28,45 @@ export interface FastifyBaseLogger extends Pick<BaseLogger, 'level' | 'info' | '
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
 
-// TODO delete FastifyLoggerInstance in the next major release. It seems that it is enough to have only FastifyBaseLogger.
-/**
- * @deprecated Use FastifyBaseLogger instead
- */
-export type FastifyLoggerInstance = FastifyBaseLogger
-
 export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
 }
-
-// TODO: once node 18 is EOL, this type can be replaced with plain FastifyReply.
-/**
- * Specialized reply type used for the `res` log serializer, since only `statusCode` is passed in certain cases.
- */
-export type ResSerializerReply<
-  RawServer extends RawServerBase,
-  RawReply extends FastifyReply<RouteGenericInterface, RawServer>
-> = Partial<RawReply> & Pick<RawReply, 'statusCode'>
 
 /**
  * Fastify Custom Logger options.
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProvider> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
-  RawReply extends FastifyReply<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>
+  RawRequest extends FastifyRequest<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    FastifySchema,
+    FastifyTypeProvider
+  > = FastifyRequest<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >,
+  RawReply extends FastifyReply<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    RawReplyDefaultExpression<RawServer>,
+    ContextConfigDefault,
+    FastifySchema,
+    FastifyTypeProvider
+  > = FastifyReply<
+    RouteGenericInterface,
+    RawServer,
+    RawRequestDefaultExpression<RawServer>,
+    RawReplyDefaultExpression<RawServer>,
+    ContextConfigDefault,
+    FastifySchema,
+    FastifyTypeProviderDefault
+  >
 > {
   serializers?: {
     req?: (req: RawRequest) => {
@@ -71,7 +84,7 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: ResSerializerReply<RawServer, RawReply>) => {
+    res?: (res: Partial<RawReply>) => {
       statusCode?: string | number;
       [key: string]: unknown;
     };
@@ -80,6 +93,33 @@ export interface FastifyLoggerOptions<
   file?: string;
   genReqId?: (req: RawRequest) => string;
   stream?: FastifyLoggerStreamDestination;
+}
+
+export interface LogControllerOptions {
+  disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel?: string
+}
+
+export declare class LogController {
+  disableRequestLogging: boolean | ((req: FastifyRequest) => boolean)
+  requestIdLogLabel: string
+
+  constructor (options?: LogControllerOptions)
+
+  isLogDisabled (request: FastifyRequest): boolean
+  incomingRequest (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  requestCompleted (
+    error: Error | null | undefined,
+    request: FastifyRequest,
+    reply: FastifyReply,
+    metadata?: Record<string, unknown>
+  ): void
+  defaultErrorLog (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  streamError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
+  serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
+  serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
 }
 
 export interface FastifyChildLoggerFactory<

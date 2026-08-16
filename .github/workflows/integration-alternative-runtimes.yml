@@ -27,14 +27,14 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         runtime: [nsolid]
-        node-version: [20]
-        pnpm-version: [8]
+        node-version: [24]
+        pnpm-version: [11]
         include:
-          - nsolid-version: 5
-            node-version: 20
+          - nsolid-version: 6
+            node-version: 24
             runtime: nsolid
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 

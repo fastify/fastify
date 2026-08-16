@@ -300,6 +300,12 @@ Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
 
+> ⚠ Important:
+> Fastify uses a custom [AJV configuration][1] such as `coerceTypes: 'array'`.
+> Evaluate its behavior and verify if it meets the project requirements.
+
+[1]: https://github.com/fastify/ajv-compiler?tab=readme-ov-file#ajv-configuration
+
 The Ajv default configuration in Fastify supports coercing array parameters in
 `querystring`. Example:
 
@@ -583,6 +589,11 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
+Fastify supports different JSON Schema validators via
+`setValidatorCompiler`. Community plugins that integrate alternative JSON
+Schema validators are listed on the
+[Ecosystem](https://fastify.dev/docs/latest/Guides/Ecosystem/) page.
+
 ##### Custom Validator Best Practices
 
 When implementing custom validators, follow these patterns to ensure compatibility
@@ -865,14 +876,25 @@ with the following payload:
 
 To handle errors inside the route, specify the `attachValidation` option. If
 there is a validation error, the `validationError` property of the request will
-contain the `Error` object with the raw validation result as shown below:
+contain the same `Error` object Fastify would have sent on its own, so no
+message has to be rebuilt from the raw validation result:
+
+- `message` is the formatted message, identical to the one in the response
+  payload above (for example `body must have required property 'name'`). It is
+  produced by [`schemaErrorFormatter`](#schemaerrorformatter), so a custom
+  formatter is reflected here too.
+- `validation` is the raw validation result, as returned by the validator.
+- `validationContext` is the part of the request that failed validation
+  (`body`, `params`, `querystring` or `headers`).
+- `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
 
 ```js
 const fastify = Fastify()
 
 fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
   if (req.validationError) {
-    // `req.validationError.validation` contains the raw validation error
+    // `req.validationError.message` is the formatted message
+    // `req.validationError.validation` contains the raw validation result
     reply.code(400).send(req.validationError)
   }
 })
@@ -920,8 +942,10 @@ For custom error responses in the schema, see
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 
-> Install version 1.0.1 of `ajv-errors`, as later versions are not compatible
-> with AJV v6 (the version shipped by Fastify v3).
+> Fastify v5 uses AJV v8 and requires a compatible `ajv-errors` version.
+> Fastify v3 requires `ajv-errors@1.0.1`, which supports AJV v6.
+> See the [AJV compiler versions table](https://github.com/fastify/ajv-compiler/#versions)
+> for the AJV version used by each Fastify release.
 
 Below is an example showing how to add **custom error messages for each
 property** of a schema by supplying custom AJV options. Inline comments in the

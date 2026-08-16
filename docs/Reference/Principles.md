@@ -3,8 +3,8 @@
 Every decision in the Fastify framework and its official plugins is guided by
 the following technical principles:
 
-1. “Zero” overhead in production
-2. “Good” developer experience
+1. "Zero" overhead in production
+2. "Good" developer experience
 3. Works great for small & big projects alike
 4. Easy to migrate to microservices (or even serverless) and back
 5. Security & data validation

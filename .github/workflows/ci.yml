@@ -30,10 +30,9 @@ permissions:
 
 jobs:
   quality-check:
-    uses: fastify/workflows/.github/workflows/nested-quality.yml@v6
+    uses: fastify/workflows/.github/workflows/nested-quality.yml@ef591e2186785d5ab36b9fe6a79c7ce2f1d94e57 # v7.0.0
     permissions:
       contents: read
-    secrets: inherit
     with:
       license-check: true
       lint: true
@@ -63,16 +62,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20, 22, 24]
+        node-version: [24, 26]
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
@@ -95,12 +94,12 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
       - name: Use Custom Node.js Version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ github.event.inputs.nodejs-version }}
           cache: 'npm'
@@ -115,7 +114,7 @@ jobs:
         run: |
           npm run unit
 
-  test-typescript:
+  test-types:
     needs:
       - quality-check
       - coverage-nix
@@ -125,11 +124,11 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '20'
           cache: 'npm'
@@ -140,9 +139,9 @@ jobs:
         run: |
           npm install --ignore-scripts
 
-      - name: Run typescript tests
+      - name: Run type tests
         run: |
-          npm run test:typescript
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
@@ -160,13 +159,13 @@ jobs:
         pino-version: ['^9', '^10']
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package.json
           check-latest: true
@@ -183,26 +182,26 @@ jobs:
         run: |
           npm run unit
 
-      - name: Run typescript tests
+      - name: Run type tests
         run: |
-          npm run test:typescript
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
   package:
     needs:
-      - test-typescript
+      - test-types
       - test-unit
       - test-pino-compat
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Use Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 'lts/*'
           cache: 'npm'
@@ -230,7 +229,7 @@ jobs:
         github.event.pull_request.head.repo.full_name == github.repository &&
         github.event.pull_request.user.login == 'dependabot[bot]'
     needs:
-      - test-typescript
+      - test-types
       - test-unit
       - package
     runs-on: ubuntu-latest
@@ -238,6 +237,6 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: fastify/github-action-merge-dependabot@v3
+      - uses: fastify/github-action-merge-dependabot@73ec4cbb5e56df5591eae286972d5b2201ffe90f # v3.15.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

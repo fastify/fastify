@@ -447,7 +447,7 @@ served until we have everything ready. And there's more: we fail **FAST** and
 have the possibility of giving the customer meaningful information, like how
 long they should wait before retrying the request. Going even further, by
 issuing a [`503` status
-code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503) we're
+code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/503) we're
 signaling to our infrastructure components (namely load balancers) that we're
 still not ready to take incoming requests and they should redirect traffic to
 other instances, if available. Additionally, we are providing a `Retry-After`

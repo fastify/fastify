@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 90
+const expectedErrors = 95
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -710,6 +710,16 @@ test('FST_ERR_ROUTE_METHOD_INVALID', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED('GET')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED')
+  t.assert.strictEqual(error.message, 'Method "GET" is already supported. Use `overrideExisting: true` to override it.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
+})
+
 test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_METHOD_NOT_SUPPORTED()
@@ -770,6 +780,26 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_ROUTE_MISSING_CONTENT_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT_TYPE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT_TYPE')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a 'Content-Type' header.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_ROUTE_MISSING_CONTENT', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a request body.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
   t.plan(5)
   const error = new errors.FST_ERR_REOPENED_CLOSE_SERVER()
@@ -785,16 +815,16 @@ test('FST_ERR_REOPENED_SERVER', t => {
   const error = new errors.FST_ERR_REOPENED_SERVER()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REOPENED_SERVER')
-  t.assert.strictEqual(error.message, 'Fastify is already listening')
+  t.assert.strictEqual(error.message, 'Fastify is already started')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_INSTANCE_ALREADY_LISTENING', t => {
+test('FST_ERR_INSTANCE_ALREADY_STARTED', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_INSTANCE_ALREADY_LISTENING()
+  const error = new errors.FST_ERR_INSTANCE_ALREADY_STARTED()
   t.assert.strictEqual(error.name, 'FastifyError')
-  t.assert.strictEqual(error.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
+  t.assert.strictEqual(error.code, 'FST_ERR_INSTANCE_ALREADY_STARTED')
   t.assert.strictEqual(error.message, 'Fastify instance is already listening. %s')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
@@ -828,6 +858,16 @@ test('FST_ERR_PLUGIN_INVALID_ASYNC_HANDLER', t => {
   t.assert.strictEqual(error.message, 'The easter-egg plugin being registered mixes async and callback styles. Async plugin should not mix async and callback style.')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof TypeError)
+})
+
+test('FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED('my-dep', 'my-plugin')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_PLUGIN_DEPENDENCY_NOT_REGISTERED')
+  t.assert.strictEqual(error.message, "The dependency 'my-dep' of plugin 'my-plugin' is not registered")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
 })
 
 test('FST_ERR_PLUGIN_CALLBACK_NOT_FN', t => {

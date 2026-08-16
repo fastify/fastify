@@ -146,7 +146,7 @@ declaration](../Reference/Routes.md) docs).
 ```js
 // ESM
 import Fastify from 'fastify'
-import firstRoute from './our-first-route.js'
+import routes from './our-first-routes.js'
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
  */
@@ -154,7 +154,7 @@ const fastify = Fastify({
   logger: true
 })
 
-fastify.register(firstRoute)
+fastify.register(routes)
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -174,7 +174,7 @@ const fastify = require('fastify')({
   logger: true
 })
 
-fastify.register(require('./our-first-route'))
+fastify.register(require('./our-first-routes'))
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -187,7 +187,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 
 ```js
-// our-first-route.js
+// our-first-routes.js
 
 /**
  * Encapsulates the routes
@@ -236,7 +236,7 @@ npm i fastify-plugin @fastify/mongodb
 // ESM
 import Fastify from 'fastify'
 import dbConnector from './our-db-connector.js'
-import firstRoute from './our-first-route.js'
+import routes from './our-first-routes.js'
 
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
@@ -245,7 +245,7 @@ const fastify = Fastify({
   logger: true
 })
 fastify.register(dbConnector)
-fastify.register(firstRoute)
+fastify.register(routes)
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -266,7 +266,7 @@ const fastify = require('fastify')({
 })
 
 fastify.register(require('./our-db-connector'))
-fastify.register(require('./our-first-route'))
+fastify.register(require('./our-first-routes'))
 
 fastify.listen({ port: 3000 }, function (err, address) {
   if (err) {
@@ -303,7 +303,7 @@ export default fastifyPlugin(dbConnector)
 ```js
 // CommonJs
 /**
- * @type {import('fastify-plugin').FastifyPlugin}
+ * @type {import('fastify-plugin').FastifyPluginAsync}
  */
 const fastifyPlugin = require('fastify-plugin')
 
@@ -325,7 +325,7 @@ module.exports = fastifyPlugin(dbConnector)
 
 ```
 
-**our-first-route.js**
+**our-first-routes.js**
 ```js
 /**
  * A plugin that provide encapsulated routes
@@ -605,10 +605,10 @@ npm start
 
 - Slides
   - [Take your HTTP server to ludicrous
-    speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed)
+    speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed/)
     by [@mcollina](https://github.com/mcollina)
   - [What if I told you that HTTP can be
-    fast](https://delvedor.github.io/What-if-I-told-you-that-HTTP-can-be-fast)
+    fast](https://delvedor.dev/What-if-I-told-you-that-HTTP-can-be-fast/)
     by [@delvedor](https://github.com/delvedor)
 
 - Videos
@@ -616,5 +616,5 @@ npm start
     speed](https://www.youtube.com/watch?v=5z46jJZNe8k) by
     [@mcollina](https://github.com/mcollina)
   - [What if I told you that HTTP can be
-    fast](https://www.webexpo.net/prague2017/talk/what-if-i-told-you-that-http-can-be-fast/)
+    fast](https://web.archive.org/web/20251006142253/https://www.webexpo.net/prague2017/talk/what-if-i-told-you-that-http-can-be-fast/)
     by [@delvedor](https://github.com/delvedor)

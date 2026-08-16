@@ -507,7 +507,7 @@ section of our documentation!
 
 If you want to see some real-world examples, check out:
 - [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
-  rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
+  rendering (*ejs, pug, handlebars*) plugin support for Fastify.
 - [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
   MongoDB connection plugin, with this you can share the same MongoDB connection
   pool in every part of your server.

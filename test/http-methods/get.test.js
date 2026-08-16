@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('node:test')
-const { Client } = require('undici')
+const { Client, fetch } = require('undici')
 const fastify = require('../../fastify')()
 
 const schema = {

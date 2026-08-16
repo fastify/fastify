@@ -127,7 +127,6 @@ Some description [inline link](https://github.com/a/b).
 describe('checkGitHubRepo', () => {
   let originalDispatcher
   let mockAgent
-  let originalFetch
   let originalSetTimeout
 
   beforeEach(() => {
@@ -136,12 +135,10 @@ describe('checkGitHubRepo', () => {
     mockAgent = new MockAgent()
     mockAgent.disableNetConnect()
     setGlobalDispatcher(mockAgent)
-    originalFetch = global.fetch
     originalSetTimeout = global.setTimeout
   })
 
   afterEach(async () => {
-    global.fetch = originalFetch
     global.setTimeout = originalSetTimeout
     setGlobalDispatcher(originalDispatcher)
     await mockAgent.close()
@@ -180,16 +177,9 @@ describe('checkGitHubRepo', () => {
 
   it('returns invalid status for malformed owner or repository names', async () => {
     const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
-    let called = false
-
-    global.fetch = async () => {
-      called = true
-      return { status: 200 }
-    }
 
     const result = await checkGitHubRepo('owner/evil', 'repo', 1)
 
-    assert.strictEqual(called, false)
     assert.strictEqual(result.exists, false)
     assert.strictEqual(result.status, 'invalid')
     assert.strictEqual(result.error, 'Invalid GitHub repository identifier')
@@ -199,17 +189,17 @@ describe('checkGitHubRepo', () => {
     const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
     let attempts = 0
 
-    global.setTimeout = (fn) => {
-      fn()
-      return 0
-    }
+    global.setTimeout = (fn) => { fn(); return 0 }
 
-    global.fetch = async () => {
-      attempts++
-      return {
-        status: attempts === 1 ? 403 : 200
-      }
-    }
+    const mockPool = mockAgent.get('https://api.github.com')
+    mockPool.intercept({
+      path: '/repos/owner/repo',
+      method: 'HEAD'
+    }).reply(() => { attempts++; return { statusCode: 403 } })
+    mockPool.intercept({
+      path: '/repos/owner/repo',
+      method: 'HEAD'
+    }).reply(() => { attempts++; return { statusCode: 200 } })
 
     const result = await checkGitHubRepo('owner', 'repo', 1)
 
@@ -221,23 +211,25 @@ describe('checkGitHubRepo', () => {
   it('adds authorization header when GITHUB_TOKEN is set', async () => {
     process.env.GITHUB_TOKEN = 'my-token'
     const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
-    let authorization
 
-    global.fetch = async (url, options) => {
-      authorization = options.headers.Authorization
-      return {
-        status: 200
+    const mockPool = mockAgent.get('https://api.github.com')
+    mockPool.intercept({
+      path: '/repos/owner/repo',
+      method: 'HEAD',
+      headers: {
+        authorization: 'token my-token'
       }
-    }
+    }).reply(200)
 
     const result = await checkGitHubRepo('owner', 'repo')
 
-    assert.strictEqual(authorization, 'token my-token')
     assert.strictEqual(result.exists, true)
+    assert.strictEqual(result.status, 200)
   })
 
   it('handles network errors', async () => {
     const { checkGitHubRepo } = loadValidateEcosystemLinksModule()
+
     const mockPool = mockAgent.get('https://api.github.com')
     mockPool.intercept({
       path: '/repos/owner/repo',
@@ -254,37 +246,41 @@ describe('checkGitHubRepo', () => {
 
 describe('validateAllLinks', () => {
   let originalReadFileSync
-  let originalFetch
   let originalSetTimeout
   let originalConsoleLog
   let originalStdoutWrite
+  let mockAgent
+  let originalDispatcher
 
   beforeEach(() => {
     originalReadFileSync = fs.readFileSync
-    originalFetch = global.fetch
     originalSetTimeout = global.setTimeout
     originalConsoleLog = console.log
     originalStdoutWrite = process.stdout.write
+    originalDispatcher = getGlobalDispatcher()
+
+    mockAgent = new MockAgent()
+    mockAgent.disableNetConnect()
+    setGlobalDispatcher(mockAgent)
 
     console.log = () => {}
     process.stdout.write = () => true
 
-    global.setTimeout = (fn) => {
-      fn()
-      return 0
-    }
+    global.setTimeout = (fn) => { fn(); return 0 }
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     fs.readFileSync = originalReadFileSync
-    global.fetch = originalFetch
     global.setTimeout = originalSetTimeout
     console.log = originalConsoleLog
     process.stdout.write = originalStdoutWrite
+    setGlobalDispatcher(originalDispatcher)
+    await mockAgent.close()
   })
 
   it('validates links, deduplicates repositories and groups inaccessible links', async () => {
     const { validateAllLinks } = loadValidateEcosystemLinksModule()
+    let requests = 0
 
     fs.readFileSync = () => `
 - [repo one](https://github.com/owner/repo)
@@ -292,21 +288,15 @@ describe('validateAllLinks', () => {
 - [repo two](https://github.com/another/project)
 `
 
-    let requests = 0
-    global.fetch = async (url) => {
-      requests++
-      const pathname = new URL(url).pathname
-
-      if (pathname === '/repos/owner/repo') {
-        return { status: 404 }
-      }
-
-      if (pathname === '/repos/another/project') {
-        return { status: 200 }
-      }
-
-      throw new Error(`Unexpected url: ${url}`)
-    }
+    const mockPool = mockAgent.get('https://api.github.com')
+    mockPool.intercept({
+      path: '/repos/owner/repo',
+      method: 'HEAD'
+    }).reply(() => { requests++; return { statusCode: 404 } })
+    mockPool.intercept({
+      path: '/repos/another/project',
+      method: 'HEAD'
+    }).reply(() => { requests++; return { statusCode: 200 } })
 
     const result = await validateAllLinks()
 
@@ -324,15 +314,8 @@ describe('validateAllLinks', () => {
 
     fs.readFileSync = () => '# Ecosystem\nNo links here.'
 
-    let requests = 0
-    global.fetch = async () => {
-      requests++
-      return { status: 200 }
-    }
-
     const result = await validateAllLinks()
 
-    assert.strictEqual(requests, 0)
     assert.strictEqual(result.notFound.length, 0)
     assert.strictEqual(result.found.length, 0)
   })

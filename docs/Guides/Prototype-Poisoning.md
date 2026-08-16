@@ -232,7 +232,7 @@ itself), it is much harder getting it fixed.
 
 The first question people ask once a security issue is found is if there is
 going to be a CVE published. A CVE — Common Vulnerabilities and Exposures — is a
-[database](https://cve.mitre.org/) of known security issues. It is a critical
+[database](https://www.cve.org/) of known security issues. It is a critical
 component of web security. The benefit of publishing a CVE is that it
 immediately triggers alarms and informs and often breaks automated builds until
 the issue is resolved.
@@ -376,8 +376,8 @@ source maintainers.
 Because this work is important, I decided to try and make it not just
 financially sustainable but to grow and expand it. There is so much to improve.
 This is exactly what motivates me to implement the new [commercial licensing
-plan](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898)
+plan](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898?gi=b54e9a75bac6)
 coming in March. You can read more about it
-[here](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898).
+[here](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898?gi=b54e9a75bac6).
 
 

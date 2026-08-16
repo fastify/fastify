@@ -272,9 +272,6 @@ expect(childParent.child).type.not.toBeCallableWith()
 
 expect(childParent.child).type.not.toBeCallableWith({}, { nonExist: true })
 
-// `LogController.requestCompleted` is invoked with `undefined` on the successful
-// response path (the `'finish'` event emits no argument), as well as with an
-// `Error` on the error path, so its `error` parameter must accept both alongside `null`.
 const logController = new LogController()
 expect(logController.requestCompleted).type.toBeCallableWith(undefined, {} as FastifyRequest, {} as FastifyReply)
 expect(logController.requestCompleted).type.toBeCallableWith(null, {} as FastifyRequest, {} as FastifyReply)

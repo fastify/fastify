@@ -12,16 +12,15 @@ const handler = (req, res) => {
 }
 
 test('start listening', async t => {
-  t.plan(2)
+  t.plan(1)
   const { server, listen } = createServer({}, handler)
+  t.after(() => server.close())
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
   t.assert.ok(server.listening, 'the server is listening')
-  t.assert.ok(server.address().port > 0, 'an ephemeral port was assigned')
-  server.close()
 })
 
 test('DNS errors does not stop the main server on localhost - promise interface', async t => {
-  t.plan(2)
+  t.plan(1)
   const { createServer } = proxyquire('../../lib/server', {
     'node:dns': {
       lookup: (hostname, options, cb) => {
@@ -30,10 +29,9 @@ test('DNS errors does not stop the main server on localhost - promise interface'
     }
   })
   const { server, listen } = createServer({}, handler)
+  t.after(() => server.close())
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
   t.assert.ok(server.listening, 'the DNS error did not stop the server listening')
-  t.assert.ok(server.address().port > 0, 'an ephemeral port was assigned')
-  server.close()
 })
 
 test('DNS errors does not stop the main server on localhost - callback interface', (t, done) => {

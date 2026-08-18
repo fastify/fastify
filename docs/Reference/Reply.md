@@ -325,6 +325,23 @@ to `302` (if status code is not already set by calling `code`).
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
 > result in a 500 `TypeError` response.
 
+> ⚠️ Security:
+> Encoding alone does **not** prevent open redirects. Neither `encodeURI`
+> nor `encodeurl` escapes `/`, so a caller-supplied target such as
+> `//evil.com` or `/\evil.com` survives encoding and is resolved by the
+> browser as a new host (a protocol-relative, authority-opening
+> reference). When `dest` can be influenced by request input
+> (`req.query`, `req.body`, `req.params`, cookies, or headers), validate
+> that the resolved target is same-origin or on an explicit allowlist
+> instead of relying on encoding:
+>
+> ```js
+> const target = new URL(dest, 'https://your-site.example')
+> if (target.origin !== 'https://your-site.example') {
+>   return reply.code(400).send()
+> }
+> ```
+
 Example (no `reply.code()` call) sets status code to `302` and redirects to
 `/home`
 ```js

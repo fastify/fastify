@@ -197,7 +197,7 @@ app.setErrorHandler(function (error, request, reply) {
   // application, as were validation errors. A status code below 500 is not on
   // its own a guarantee that the message is safe to expose — narrow this
   // condition if any of yours are not.
-  if (error.validation || (error.statusCode && error.statusCode < 500)) {
+  if (error[Symbol.for('fastify.validation')] || (error.statusCode && error.statusCode < 500)) {
     return reply.send(error)
   }
 

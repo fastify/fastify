@@ -4,6 +4,7 @@ const { test } = require('node:test')
 const fp = require('fastify-plugin')
 const { spyWarning } = require('process-warning')
 const Fastify = require('..')
+const { kErrorValidation, kErrorValidationContext } = Fastify
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
@@ -1144,8 +1145,8 @@ test('Validation context in validation result', (t, testDone) => {
   // custom error handler to expose validation context in response, so we can test it later
   fastify.setErrorHandler((err, request, reply) => {
     t.assert.strictEqual(err instanceof Error, true)
-    t.assert.ok(err.validation, 'detailed errors')
-    t.assert.strictEqual(err.validationContext, 'body')
+    t.assert.ok(err[kErrorValidation], 'detailed errors')
+    t.assert.strictEqual(err[kErrorValidationContext], 'body')
     reply.code(400).send()
   })
   fastify.post('/', {

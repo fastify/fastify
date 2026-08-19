@@ -4,6 +4,8 @@ const { describe, test } = require('node:test')
 const Joi = require('joi')
 const Fastify = require('..')
 
+const { kErrorValidation, kErrorValidationContext } = Fastify
+
 const schema = {
   body: {
     type: 'object',
@@ -73,7 +75,7 @@ test('should be able to use setErrorHandler specify custom validation error', as
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    if (error.validation) {
+    if (error[kErrorValidation]) {
       reply.status(422).send(new Error('validation failed'))
     }
   })
@@ -143,7 +145,7 @@ test('error inside custom error handler should have validationContext', async (t
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.assert.strictEqual(error.validationContext, 'body')
+    t.assert.strictEqual(error[kErrorValidationContext], 'body')
     reply.status(500).send(error)
   })
 
@@ -177,7 +179,7 @@ test('error inside custom error handler should have validationContext if specifi
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.assert.strictEqual(error.validationContext, 'customContext')
+    t.assert.strictEqual(error[kErrorValidationContext], 'customContext')
     reply.status(500).send(error)
   })
 
@@ -197,7 +199,7 @@ test('should be able to attach validation to request', async (t) => {
   const fastify = Fastify()
 
   fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
-    reply.code(400).send(req.validationError.validation)
+    reply.code(400).send(req.validationError[kErrorValidation])
   })
 
   const response = await fastify.inject({
@@ -228,7 +230,7 @@ test('attached validationError exposes the same message sent by the default hand
       message: req.validationError.message,
       code: req.validationError.code,
       statusCode: req.validationError.statusCode,
-      validationContext: req.validationError.validationContext
+      validationContext: req.validationError[kErrorValidationContext]
     })
   })
 
@@ -259,7 +261,7 @@ test('should respect when attachValidation is explicitly set to false', async (t
 
   fastify.post('/', { schema, attachValidation: false }, function (req, reply) {
     t.assert.fail('should not be here')
-    reply.code(200).send(req.validationError.validation)
+    reply.code(200).send(req.validationError[kErrorValidation])
   })
 
   const response = await fastify.inject({
@@ -290,7 +292,7 @@ test('Attached validation error should take precedence over setErrorHandler', as
 
   fastify.setErrorHandler(function (error, request, reply) {
     t.assert.fail('should not be here')
-    if (error.validation) {
+    if (error[kErrorValidation]) {
       reply.status(422).send(new Error('validation failed'))
     }
   })
@@ -931,4 +933,38 @@ describe('sync and async must work in the same way', () => {
     t.assert.strictEqual(response.statusCode, 500)
     t.assert.deepStrictEqual(response.json(), { error: 'Custom validation failed' })
   })
+})
+
+test('validation errors expose details via symbols without polluting the error object', async (t) => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.post('/', { schema }, function (req, reply) {
+    t.assert.fail('should not be here')
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    t.assert.strictEqual(error[kErrorValidationContext], 'body')
+    t.assert.deepStrictEqual(error[kErrorValidation], [{
+      keyword: 'required',
+      instancePath: '',
+      schemaPath: '#/required',
+      params: { missingProperty: 'name' },
+      message: "must have required property 'name'"
+    }])
+    t.assert.strictEqual('validation' in error, false)
+    t.assert.strictEqual('validationContext' in error, false)
+    t.assert.strictEqual('serialization' in error, false)
+    reply.status(400).send(error)
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    payload: { hello: 'michelangelo' },
+    url: '/'
+  })
+
+  t.assert.strictEqual(response.statusCode, 400)
 })

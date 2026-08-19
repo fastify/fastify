@@ -34,7 +34,10 @@ const {
   kGenReqId,
   kErrorHandlerAlreadySet,
   kHandlerTimeout,
-  kLogController
+  kLogController,
+  kErrorValidation,
+  kErrorValidationContext,
+  kErrorSerialization
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -1004,6 +1007,9 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  */
 module.exports = fastify
 module.exports.errorCodes = errorCodes
+module.exports.kErrorValidation = kErrorValidation
+module.exports.kErrorValidationContext = kErrorValidationContext
+module.exports.kErrorSerialization = kErrorSerialization
 module.exports.LogController = LogController
 module.exports.fastify = fastify
 module.exports.default = fastify

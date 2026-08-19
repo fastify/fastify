@@ -2,6 +2,7 @@ import { expect } from 'tstyche'
 import fastify, {
   ContextConfigDefault,
   FastifyContextConfig,
+  FastifyError,
   FastifyLogFn,
   FastifySchema,
   FastifyTypeProviderDefault,
@@ -88,7 +89,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expect(request.log).type.toBe<FastifyBaseLogger>()
   expect(request.socket).type.toBe<RawRequestDefaultExpression['socket']>()
   expect(request.signal).type.toBe<AbortSignal>()
-  expect(request.validationError).type.toBe<Error & { validation: any; validationContext: string } | undefined>()
+  expect(request.validationError).type.toBe<FastifyError | undefined>()
   expect(request.server).type.toBe<FastifyInstance>()
   expect(request.getValidationFunction).type.toBeAssignableTo<
     (httpPart: HTTPRequestPart) => ExpectedGetValidationFunction | undefined

@@ -3,6 +3,7 @@
 const { test } = require('node:test')
 const localize = require('ajv-i18n')
 const Fastify = require('..')
+const { kErrorValidation } = Fastify
 
 test('Example - URI $id', (t, done) => {
   t.plan(1)
@@ -628,9 +629,9 @@ test('should return localized error messages with ajv-i18n', (t, done) => {
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    if (error.validation) {
-      localize.ru(error.validation)
-      reply.status(400).send(error.validation)
+    if (error[kErrorValidation]) {
+      localize.ru(error[kErrorValidation])
+      reply.status(400).send(error[kErrorValidation])
       return
     }
     reply.send(error)

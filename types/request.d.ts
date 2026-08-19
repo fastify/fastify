@@ -1,4 +1,5 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
+import { FastifyError } from '@fastify/error'
 import { FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger } from './logger'
@@ -65,7 +66,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   body: RequestType['body'];
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
-  validationError?: Error & { validation: any; validationContext: string };
+  validationError?: FastifyError;
 
   /**
    * Derived from request socket metadata or forwarding headers.

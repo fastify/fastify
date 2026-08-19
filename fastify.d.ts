@@ -144,7 +144,7 @@ declare namespace fastify {
     serverFactory?: FastifyServerFactory<RawServer>,
     requestIdHeader?: string | false,
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string,
-    trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
+    trustProxy?: boolean | string | string[] | TrustProxyFunction,
     schemaController?: {
       bucket?: (parentSchemas?: unknown) => {
         add(schema: unknown): FastifyInstance;

@@ -5,7 +5,10 @@ Fastify natively supports `'application/json'` and `'text/plain'` content types
 with a default charset of `utf-8`. These default parsers can be changed or
 removed.
 
-Unsupported content types will throw an `FST_ERR_CTP_INVALID_MEDIA_TYPE` error.
+Unsupported or syntactically invalid content types result in a `415 Unsupported
+Media Type` response with an
+[`FST_ERR_CTP_INVALID_MEDIA_TYPE`](./Errors.md#fst_err_ctp_invalid_media_type)
+error.
 
 To support other content types, use the `addContentTypeParser` API or an
 existing [plugin](https://fastify.dev/ecosystem/).
@@ -44,6 +47,36 @@ parsed.
 > in those requests **not being validated**. Ensure every content type matched
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
+
+### Invalid content types
+
+Fastify validates the request's `Content-Type` header before selecting a body
+parser ([implementation](https://github.com/fastify/fastify/blob/main/lib/handle-request.js#L77-L87)).
+Therefore, parsers registered with a string, a `RegExp`, or the
+[catch-all](#catch-all) value are not considered when the header is invalid.
+
+If a client you cannot control sends a known malformed value, an `onRequest`
+hook can replace that exact value with an unambiguous valid media type before
+Fastify validates it:
+
+```js
+fastify.addHook('onRequest', async function repairContentType (request) {
+  const contentType = request.headers['content-type']
+
+  if (contentType === 'application/json,application/json') {
+    request.headers['content-type'] = 'application/json'
+  }
+})
+```
+
+Keep recovery rules narrow. Replacing a malformed value with the wrong media
+type can select a different body parser and, when using `schema.body.content`,
+route the request body through a different validation schema. Reject malformed
+values that the application cannot repair unambiguously.
+
+The `request.mediaType` property parses and caches the current header value.
+Therefore, repair `request.headers['content-type']` before accessing
+`request.mediaType` in an `onRequest` hook.
 
 ### Usage
 ```js

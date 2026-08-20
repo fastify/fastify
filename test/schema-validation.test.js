@@ -1593,6 +1593,90 @@ test('Schema validation will not be bypass by different content type', async t =
   t.assert.strictEqual(found.status, 415)
   t.assert.strictEqual((await found.json()).code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })
+
+test('mixed-case schema.body.content key is canonicalized and selected', async t => {
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'Application/JSON': {
+            schema: {
+              type: 'object',
+              properties: {
+                role: { type: 'string' }
+              },
+              required: ['role'],
+              additionalProperties: false
+            }
+          }
+        }
+      }
+    }
+  }, async (req) => req.body)
+
+  // Invalid body must be rejected even though the schema key is not lowercase.
+  const invalid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'Content-Type': 'Application/JSON' },
+    body: { foo: 'bar' }
+  })
+  t.assert.strictEqual(invalid.statusCode, 400)
+  t.assert.strictEqual(invalid.json().code, 'FST_ERR_VALIDATION')
+
+  const valid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'Content-Type': 'application/json' },
+    body: { role: 'admin' }
+  })
+  t.assert.strictEqual(valid.statusCode, 200)
+  t.assert.deepStrictEqual(valid.json(), { role: 'admin' })
+})
+
+test('duplicate case-equivalent schema.body.content keys are rejected', async t => {
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': { schema: { type: 'object' } },
+          'Application/JSON': { schema: { type: 'object' } }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.assert.match(err.message, /Duplicate case-equivalent content schema for 'application\/json'/)
+    return true
+  })
+})
+
+test('invalid schema.body.content key is rejected', async t => {
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          foo: { schema: { type: 'object' } }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.assert.match(err.message, /Invalid content type 'foo' in schema\.content/)
+    return true
+  })
+})
+
 test('coercion of empty string to null with nullable types', async t => {
   const assert = require('node:assert')
   const fastify = Fastify()

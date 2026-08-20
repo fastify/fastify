@@ -68,6 +68,8 @@
     - [FST_ERR_SCH_MISSING_ID](#fst_err_sch_missing_id)
     - [FST_ERR_SCH_ALREADY_PRESENT](#fst_err_sch_already_present)
     - [FST_ERR_SCH_CONTENT_MISSING_SCHEMA](#fst_err_sch_content_missing_schema)
+    - [FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE](#fst_err_sch_content_invalid_content_type)
+    - [FST_ERR_SCH_CONTENT_DUPLICATE](#fst_err_sch_content_duplicate)
     - [FST_ERR_SCH_DUPLICATE](#fst_err_sch_duplicate)
     - [FST_ERR_SCH_VALIDATION_BUILD](#fst_err_sch_validation_build)
     - [FST_ERR_SCH_SERIALIZATION_BUILD](#fst_err_sch_serialization_build)
@@ -422,6 +424,8 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_sch_missing_id">FST_ERR_SCH_MISSING_ID</a> | The schema provided does not have `$id` property. | Add a `$id` property. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_sch_already_present">FST_ERR_SCH_ALREADY_PRESENT</a> | A schema with the same `$id` already exists. | Use a different `$id`. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_sch_content_missing_schema">FST_ERR_SCH_CONTENT_MISSING_SCHEMA</a> | A schema is missing for the corresponding content type. | Add a schema. | [#4264](https://github.com/fastify/fastify/pull/4264) |
+| <a id="fst_err_sch_content_invalid_content_type">FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE</a> | An invalid content type is used as a `schema.content` key. | Use a valid `type/subtype` media type. | [#6972](https://github.com/fastify/fastify/pull/6972) |
+| <a id="fst_err_sch_content_duplicate">FST_ERR_SCH_CONTENT_DUPLICATE</a> | Two case-equivalent content schemas are declared for the same media type. | Remove one of the duplicate keys. | [#6972](https://github.com/fastify/fastify/pull/6972) |
 | <a id="fst_err_sch_duplicate">FST_ERR_SCH_DUPLICATE</a> | Schema with the same attribute already present! | Use a different attribute. | [#1954](https://github.com/fastify/fastify/pull/1954) |
 | <a id="fst_err_sch_validation_build">FST_ERR_SCH_VALIDATION_BUILD</a> | The JSON schema provided for validation to a route is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |
 | <a id="fst_err_sch_serialization_build">FST_ERR_SCH_SERIALIZATION_BUILD</a> | The JSON schema provided for serialization of a route response is not valid. | Fix the JSON schema. | [#2023](https://github.com/fastify/fastify/pull/2023) |

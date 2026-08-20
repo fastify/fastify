@@ -2046,3 +2046,25 @@ test('reply.send should not treat charset= inside a quoted parameter value as an
     'application/json; name="a=b;charset=fake"; charset=utf-8'
   )
 })
+
+test('reply.send should keep a quoted-pair escaped when it appends the default charset', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', function (req, reply) {
+    // The quoted-pairs make `"` part of the parameter value. They must survive
+    // the round trip through the content-type serializer, otherwise the
+    // response carries a malformed header the application never set.
+    reply.header('content-type', 'application/json; foo="a\\"; charset=iso-8859-1; x=\\"b"')
+    reply.send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(
+    res.headers['content-type'],
+    'application/json; foo="a\\"; charset=iso-8859-1; x=\\"b"; charset=utf-8'
+  )
+})

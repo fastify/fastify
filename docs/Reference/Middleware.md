@@ -73,3 +73,6 @@ Fastify offers native alternatives to commonly used middleware, such as
 [`cors`](https://github.com/expressjs/cors), and
 [`@fastify/static`](https://github.com/fastify/fastify-static) for
 [`serve-static`](https://github.com/expressjs/serve-static).
+
+For a broader mapping of Express patterns to Fastify, see the
+[Migrating from Express](../Guides/Migration-From-Express.md) guide.

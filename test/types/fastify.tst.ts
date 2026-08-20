@@ -13,6 +13,8 @@ import fastify, {
   FastifyPluginAsync,
   FastifyPluginCallback,
   InjectOptions,
+  kErrorValidation,
+  kErrorValidationContext,
   LightMyRequestCallback,
   LightMyRequestChain,
   LightMyRequestResponse,
@@ -337,11 +339,11 @@ expect<AjvErrorObject>().type.not.toBeAssignableFrom({
   message: ''
 })
 
-expect<FastifyError['validation']>().type.toBeAssignableFrom([ajvErrorObject])
-expect<FastifyError['validationContext']>().type.toBeAssignableFrom('body')
-expect<FastifyError['validationContext']>().type.toBeAssignableFrom('headers')
-expect<FastifyError['validationContext']>().type.toBeAssignableFrom('params')
-expect<FastifyError['validationContext']>().type.toBeAssignableFrom('querystring')
+expect<FastifyError[typeof kErrorValidation]>().type.toBeAssignableFrom([ajvErrorObject])
+expect<FastifyError[typeof kErrorValidationContext]>().type.toBeAssignableFrom('body')
+expect<FastifyError[typeof kErrorValidationContext]>().type.toBeAssignableFrom('headers')
+expect<FastifyError[typeof kErrorValidationContext]>().type.toBeAssignableFrom('params')
+expect<FastifyError[typeof kErrorValidationContext]>().type.toBeAssignableFrom('querystring')
 
 expect<RouteGenericInterface['Body']>().type.toBe<unknown>()
 expect<RouteGenericInterface['Headers']>().type.toBe<unknown>()

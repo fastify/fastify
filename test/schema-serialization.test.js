@@ -5,6 +5,8 @@ const Fastify = require('..')
 const ContentType = require('../lib/content-type')
 const { waitForCb } = require('./helper')
 
+const { kErrorSerialization } = Fastify
+
 const echoBody = (req, reply) => { reply.send(req.body) }
 
 test('basic test', (t, testDone) => {
@@ -1141,7 +1143,7 @@ test('Errors in serializer send to errorHandler', async t => {
     message: '"name" is required!'
   })
   t.assert.ok(savedError, 'error presents')
-  t.assert.ok(savedError.serialization, 'Serialization sign presents')
+  t.assert.ok(savedError[kErrorSerialization], 'Serialization sign presents')
 })
 
 test('capital X', (t, testDone) => {

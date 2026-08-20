@@ -3,6 +3,7 @@
 const { test, describe } = require('node:test')
 const net = require('node:net')
 const Fastify = require('..')
+const { kErrorValidation } = Fastify
 const statusCodes = require('node:http').STATUS_CODES
 const split = require('split2')
 const fs = require('node:fs')
@@ -339,7 +340,7 @@ test('invalid schema - ajv', (t, testDone) => {
   })
 
   fastify.setErrorHandler((err, request, reply) => {
-    t.assert.ok(Array.isArray(err.validation))
+    t.assert.ok(Array.isArray(err[kErrorValidation]))
     reply.code(400).send('error')
   })
 

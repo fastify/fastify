@@ -33,17 +33,13 @@ import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serve
 import { FastifyTypeProvider, FastifyTypeProviderDefault, SafePromiseLike } from './types/type-provider'
 import { ContextConfigDefault, HTTPMethods, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './types/utils'
 
-declare module '@fastify/error' {
-  interface FastifyError {
-    validationContext?: SchemaErrorDataVar;
-    validation?: FastifySchemaValidationError[];
-  }
-}
-
 type Fastify = typeof fastify
 
 declare namespace fastify {
   export const errorCodes: FastifyErrorCodes
+  export const kErrorValidation: unique symbol
+  export const kErrorValidationContext: unique symbol
+  export const kErrorSerialization: unique symbol
   export { LogControllerClass as LogController }
 
   export type FastifyHttp2SecureOptions<
@@ -242,6 +238,14 @@ declare namespace fastify {
   // default export
   // import plugin from 'plugin'
   export { fastify as default }
+}
+
+declare module '@fastify/error' {
+  interface FastifyError {
+    [fastify.kErrorValidation]?: FastifySchemaValidationError[];
+    [fastify.kErrorValidationContext]?: SchemaErrorDataVar;
+    [fastify.kErrorSerialization]?: unknown;
+  }
 }
 
 /**

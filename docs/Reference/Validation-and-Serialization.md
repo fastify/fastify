@@ -655,13 +655,15 @@ To circumvent this issue, there are two main options:
    returns errors in the same structure and format as `ajv`.
 2. Use a custom `errorHandler` to intercept and format custom validation errors.
 
-Fastify adds two properties to all validation errors to help write a custom
-`errorHandler`:
+Fastify adds two well-known properties to all validation errors to help write a
+custom `errorHandler`. They are stored under global symbols so they can never
+clash with user-defined properties on the error object:
 
-* `validation`: the content of the `error` property of the object returned by
-  the validation function (returned by the custom `schemaCompiler`)
-* `validationContext`: the context (body, params, query, headers) where the
-  validation error occurred
+* `Symbol.for('fastify.validation')`: the content of the `error` property of
+  the object returned by the validation function (returned by the custom
+  `schemaCompiler`)
+* `Symbol.for('fastify.validationContext')`: the context (body, params, query,
+  headers) where the validation error occurred
 
 A contrived example of such a custom `errorHandler` handling validation errors
 is shown below:
@@ -671,7 +673,8 @@ const errorHandler = (error, request, reply) => {
   const statusCode = error.statusCode
   let response
 
-  const { validation, validationContext } = error
+  const validation = error[Symbol.for('fastify.validation')]
+  const validationContext = error[Symbol.for('fastify.validationContext')]
 
   // check if we have a validation error
   if (validation) {
@@ -883,9 +886,11 @@ message has to be rebuilt from the raw validation result:
   payload above (for example `body must have required property 'name'`). It is
   produced by [`schemaErrorFormatter`](#schemaerrorformatter), so a custom
   formatter is reflected here too.
-- `validation` is the raw validation result, as returned by the validator.
+- `validation` is the raw validation result, as returned by the validator,
+  available as `error[Symbol.for('fastify.validation')]`.
 - `validationContext` is the part of the request that failed validation
-  (`body`, `params`, `querystring` or `headers`).
+  (`body`, `params`, `querystring` or `headers`), available as
+  `error[Symbol.for('fastify.validationContext')]`.
 - `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
 
 ```js

@@ -436,6 +436,21 @@ expect(fastify().route({
   handler: routeHandler
 })).type.toBe<FastifyInstance>()
 
+// `path` is an alias for `url` (#6012)
+expect(fastify().route({
+  path: '/',
+  method: 'GET',
+  handler: routeHandler
+})).type.toBe<FastifyInstance>()
+
+// both `url` and `path` can be provided, `url` wins at runtime
+expect(fastify().route({
+  url: '/',
+  path: '/ignored',
+  method: 'GET',
+  handler: routeHandler
+})).type.toBe<FastifyInstance>()
+
 expect(fastify().route({
   url: '/',
   method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS

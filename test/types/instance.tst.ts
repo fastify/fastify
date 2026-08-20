@@ -29,7 +29,7 @@ expect(server.addSchema({ schemas: [] })).type.toBe<FastifyInstance>()
 expect(server.pluginName).type.toBe<string>()
 
 expect(server.getSchemas()).type.toBe<Record<string, unknown>>()
-expect(server.addresses()).type.toBe<AddressInfo[]>()
+expect(server.addresses()).type.toBe<Array<AddressInfo | string>>()
 expect(server.getSchema('SchemaId')).type.toBe<unknown>()
 expect(server.printRoutes()).type.toBe<string>()
 expect(server.printPlugins()).type.toBe<string>()

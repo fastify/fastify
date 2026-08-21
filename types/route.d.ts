@@ -34,13 +34,13 @@ export interface RouteGenericInterface extends RequestGenericInterface, ReplyGen
 
 export type RouteConstraintType = Omit<ConstraintStrategy<any>, 'deriveConstraint'> & {
   deriveConstraint<Context>(req: RawRequestDefaultExpression<RawServerDefault>, ctx?: Context, done?: (err: Error,
-    ...args: any) => any): any,
+    ...args: any) => any): any;
 }
 
 export interface RouteConstraint {
-  version?: string
-  host?: RegExp | string
-  [name: string]: unknown
+  version?: string;
+  host?: RegExp | string;
+  [name: string]: unknown;
 }
 
 /**
@@ -58,7 +58,7 @@ export interface RouteShorthandOptions<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   Logger extends FastifyBaseLogger = FastifyBaseLogger
 > {
-  schema?: SchemaCompiler, // originally FastifySchema
+  schema?: SchemaCompiler; // originally FastifySchema
   attachValidation?: boolean;
   exposeHeadRoute?: boolean;
 
@@ -68,7 +68,7 @@ export interface RouteShorthandOptions<
   handlerTimeout?: number;
   logLevel?: LogLevel;
   config?: FastifyContextConfig & ContextConfig;
-  constraints?: RouteConstraint,
+  constraints?: RouteConstraint;
   prefixTrailingSlash?: 'slash' | 'no-slash' | 'both';
   errorHandler?: (
     this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,

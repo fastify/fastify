@@ -22,11 +22,9 @@ describes the properties available in that options object.
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
-  - [`disableRequestLogging`](#disablerequestlogging)
   - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
-  - [`requestIdLogLabel`](#requestidloglabel)
   - [`genReqId`](#genreqid)
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
@@ -387,71 +385,6 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
   const fastify = require('fastify')({ loggerInstance: customLogger });
   ```
 
-### `disableRequestLogging`
-<a id="factory-disable-request-logging"></a>
-
-> **Deprecated:** Use the [`logController`](#factory-log-controller)
-> option with `disableRequestLogging` or `isLogDisabled` override instead.
-> This top-level option will be removed in `fastify@6`.
-
-+ Default: `false`
-
-When logging is enabled, Fastify will issue an `info` level log
-message when a request is received and when the response for that request has
-been sent. By setting this option to `true`, these log messages will be
-disabled. This allows for more flexible request start and end logging by
-attaching custom `onRequest` and `onResponse` hooks.
-
-This option can also be a function that receives the Fastify request object
-and returns a boolean. This allows for conditional request logging based on the
-request properties (e.g., URL, headers, decorations).
-
-```js
-const { LogController } = require('fastify')
-
-// Deprecated
-const fastify = require('fastify')({
-  logger: true,
-  disableRequestLogging: (request) => {
-    return request.url === '/health' || request.url === '/ready'
-  }
-})
-
-// Recommended: use logController instead
-const fastify = require('fastify')({
-  logger: true,
-  logController: new LogController({
-    disableRequestLogging: (request) => {
-      return request.url === '/health' || request.url === '/ready'
-    }
-  })
-})
-```
-
-The other log entries that will be disabled are:
-- an error log written by the default `onResponse` hook on reply callback errors
-- the error and info logs written by the `defaultErrorHandler`
-on error management
-- the info log written by the `fourOhFour` handler when a
-non existent route is requested
-
-Other log messages emitted by Fastify will stay enabled,
-like deprecation warnings and messages
-emitted when requests are received while the server is closing.
-
-```js
-// Examples of hooks to replicate the disabled functionality.
-fastify.addHook('onRequest', (req, reply, done) => {
-  req.log.info({ url: req.raw.url, id: req.id }, 'received request')
-  done()
-})
-
-fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.raw.originalUrl, statusCode: reply.raw.statusCode }, 'request completed')
-  done()
-})
-```
-
 ### `logController`
 <a id="factory-log-controller"></a>
 
@@ -593,17 +526,6 @@ const fastify = require('fastify')({
 > value of their choosing.
 > No validation is performed on `requestIdHeader`.
 
-### `requestIdLogLabel`
-<a id="factory-request-id-log-label"></a>
-
-> **Deprecated:** Use the [`logController`](#factory-log-controller)
-> option with `requestIdLogLabel` instead. This top-level option will be
-> removed in `fastify@6`.
-
-+ Default: `'reqId'`
-
-Defines the label used for the request identifier when logging the request.
-
 ### `genReqId`
 <a id="factory-gen-request-id"></a>
 
@@ -638,11 +560,14 @@ const fastify = require('fastify')({
 + `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
-+ `number`: Trust the nth hop from the front-facing proxy server as the client.
++ `number`: Hop-count-only trust is disabled because it cannot validate the
+  immediate peer and lets direct clients spoof `X-Forwarded-*` values. Use an
+  IP/CIDR string, array, or custom function that validates the proxy address
+  instead.
 + `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
-      return address === '1.2.3.4' || hop === 1
+      return address === '1.2.3.4' && hop === 0
     }
     ```
 
@@ -664,7 +589,9 @@ You may access the `ip`, `ips`, `host` and `protocol` values on the
 > These values are derived from socket/forwarding metadata and must be treated
 > as untrusted input unless your proxy chain is explicitly trusted and
 > validated. Do not use them directly for authorization or other
-> security-sensitive decisions without explicit validation.
+> security-sensitive decisions without explicit validation. Custom trust
+> functions must validate the `address` argument; hop-count-only checks such as
+> `hop < 1` are unsafe when the Fastify origin can be reached directly.
 
 ```js
 fastify.get('/', (request, reply) => {
@@ -1227,15 +1154,14 @@ fastify.get('/dev', async (request, reply) => {
 ### `allowErrorHandlerOverride`
 <a id="allow-error-handler-override"></a>
 
-* **Default:** `true`
-
-> ⚠ Warning:
-> This option will be set to `false` by default
-> in the next major release.
+* **Default:** `false`
 
 When set to `false`, it prevents `setErrorHandler` from being called
 multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
+
+Set this option to `true` to allow an error handler to be overridden within
+the same scope.
 
 #### Example of incorrect usage:
 
@@ -1732,7 +1658,8 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
-Calling `addHttpMethod` for an existing method overrides its body behavior.
+Calling `addHttpMethod` for an existing method requires `overrideExisting: true`
+and overrides its body behavior.
 
 ```js
 fastify.addHttpMethod('GET', {
@@ -1741,8 +1668,8 @@ fastify.addHttpMethod('GET', {
 })
 ```
 
-In Fastify v5, omitting `overrideExisting: true` emits `FSTDEP025`; in Fastify
-v6, it will throw an error.
+Omitting `overrideExisting: true` when the method already exists throws
+`FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED`.
 
 #### addSchema
 <a id="add-schema"></a>
@@ -2446,12 +2373,10 @@ The properties that can currently be exposed are:
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)
-- disableRequestLogging
 - onProtoPoisoning
 - onConstructorPoisoning
 - pluginTimeout
 - requestIdHeader
-- requestIdLogLabel
 - http2SessionTimeout
 - routerOptions
   - allowUnsafeRegex

@@ -46,8 +46,8 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-The `main` branch refers to the Fastify `v5` release.
-Check out the [`4.x` branch](https://github.com/fastify/fastify/tree/4.x) for `v4`.
+The `main` branch refers to the Fastify `v6` release.
+Check out the [`5.x` branch](https://github.com/fastify/fastify/tree/5.x) for `v5`.
 
 ### Table of Contents
 
@@ -73,7 +73,7 @@ mkdir my-app
 cd my-app
 ```
 
-Generate a fastify project with `npm init`:
+Generate a Fastify project with `npm init`:
 
 ```sh
 npm init fastify
@@ -121,7 +121,7 @@ import Fastify from 'fastify'
 const fastify = Fastify({
   logger: true
 })
-// CommonJs
+// CommonJS
 const fastify = require('fastify')({
   logger: true
 })
@@ -147,7 +147,7 @@ import Fastify from 'fastify'
 const fastify = Fastify({
   logger: true
 })
-// CommonJs
+// CommonJS
 const fastify = require('fastify')({
   logger: true
 })
@@ -181,7 +181,7 @@ If you learn best by reading code, explore the official [demo](https://github.co
 ### Core features
 
 - **Highly performant:** as far as we know, Fastify is one of the fastest web
-  frameworks in town, depending on the code complexity we can serve up to 76+
+  frameworks in town, depending on the code complexity we can serve more than 76
   thousand requests per second.
 - **Extensible:** Fastify is fully extensible via its hooks, plugins, and
   decorators.
@@ -189,7 +189,7 @@ If you learn best by reading code, explore the official [demo](https://github.co
   Schema](https://json-schema.org/) to validate your routes and serialize your
   outputs. Internally Fastify compiles the schema in a highly performant
   function.
-- **Logging:** logs are extremely important but are costly; we chose the best
+- **Logging:** logs are extremely important, but are costly; we chose the best
   logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
 - **Developer friendly:** the framework is built to be very expressive and help
   developers in their daily use without sacrificing performance and
@@ -212,8 +212,8 @@ second average
 | -                  |                            |              |               |
 | `http.Server`      | 16.14.2	                  | &#10007;     | 74,513        |
 
-These benchmarks taken using https://github.com/fastify/benchmarks. This is a
-synthetic "hello world" benchmark that aims to evaluate the framework overhead.
+These benchmarks were taken using https://github.com/fastify/benchmarks. This is
+a synthetic "hello world" benchmark that aims to evaluate the framework overhead.
 The overhead that each framework has on your application depends on your
 application. You should __always__ benchmark if performance matters to you.
 

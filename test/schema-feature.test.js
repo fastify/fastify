@@ -1,13 +1,14 @@
 'use strict'
 
 const { test } = require('node:test')
-const Fastify = require('..')
 const fp = require('fastify-plugin')
+const { spyWarning } = require('process-warning')
+const Fastify = require('..')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
 const { FSTWRN001 } = require('../lib/warnings')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
@@ -320,18 +321,10 @@ test('Should not change the input schemas', (t, testDone) => {
 
 test('Should emit warning if the schema headers is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -346,24 +339,18 @@ test('Should emit warning if the schema headers is undefined', (t, testDone) => 
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['headers', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit warning if the schema body is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -378,24 +365,18 @@ test('Should emit warning if the schema body is undefined', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['body', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit warning if the schema query is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -410,24 +391,18 @@ test('Should emit warning if the schema query is undefined', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['querystring', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit warning if the schema params is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -442,31 +417,18 @@ test('Should emit warning if the schema params is undefined', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['params', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit a warning for every route with undefined schema', (t, testDone) => {
-  t.plan(16)
+  t.plan(9)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  let runs = 0
-  const expectedWarningEmitted = [0, 1, 2, 3]
-  // It emits 4 warnings:
-  // - 2 - GET and HEAD for /undefinedParams/:id
-  // - 2 - GET and HEAD for /undefinedBody/:id
-  // => 3 x 4 assertions = 12 assertions
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-    t.assert.strictEqual(runs++, expectedWarningEmitted.shift())
-  }
-
-  process.on('warning', onWarning)
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.get('/undefinedParams/:id', {
     handler: echoParams,
@@ -496,6 +458,15 @@ test('Should emit a warning for every route with undefined schema', (t, testDone
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    // fastify.inject run in series
+    // last callback recieve all warnings at once
+    // GET /undefinedParams/123
+    t.assert.deepStrictEqual(spyData.calls[0], { arguments: ['params', 'GET', '/undefinedParams/:id'], result: true })
+    t.assert.deepStrictEqual(spyData.calls[1], { arguments: ['params', 'HEAD', '/undefinedParams/:id'], result: true })
+    // GET /undefinedBody/123
+    t.assert.deepStrictEqual(spyData.calls[2], { arguments: ['body', 'GET', '/undefinedBody/:id'], result: true })
+    t.assert.deepStrictEqual(spyData.calls[3], { arguments: ['body', 'HEAD', '/undefinedBody/:id'], result: true })
+    t.assert.strictEqual(spyData.callCount(), 4)
     testDone()
   })
 })

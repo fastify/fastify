@@ -10,8 +10,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
 const { connect } = require('node:net')
-const { sleep } = require('./helper')
-const { waitForCb } = require('./toolkit.js')
+const { sleep, waitForCb } = require('./helper')
 const { fetch } = require('undici')
 
 process.removeAllListeners('warning')
@@ -675,7 +674,12 @@ test('onRoute hook should be called once when prefixTrailingSlash', (t, testDone
   let onRouteCalled = 0
   let routePatched = 0
 
-  const fastify = Fastify({ ignoreTrailingSlash: false, exposeHeadRoutes: false })
+  const fastify = Fastify({
+    exposeHeadRoutes: false,
+    routerOptions: {
+      ignoreTrailingSlash: false
+    }
+  })
 
   // a plugin that patches route options, similar to fastify-compress
   fastify.register(fp(function myPlugin (instance, opts, next) {

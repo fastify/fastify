@@ -10,21 +10,20 @@ import { ConstraintStrategy, Config as FindMyWayConfig, HTTPVersion } from 'find
 import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, Response as LightMyRequestResponse } from 'light-my-request'
 
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction } from './types/content-type-parser'
-import { FastifyContextConfig, FastifyReplyContext, FastifyRequestContext } from './types/context'
+import { FastifyContextConfig } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
 import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, RequestPayload } from './types/hooks'
 import { FastifyInstance, FastifyListenOptions, PrintRoutesOptions } from './types/instance'
 import {
   FastifyBaseLogger,
   FastifyChildLoggerFactory,
-  LogController as LogControllerClass,
   FastifyLogFn,
-  FastifyLoggerInstance,
   FastifyLoggerOptions,
+  LogController as LogControllerClass,
   LogLevel,
   PinoLoggerOptions
 } from './types/logger'
-import { FastifyPlugin, FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './types/plugin'
+import { FastifyPluginAsync, FastifyPluginCallback, FastifyPluginOptions } from './types/plugin'
 import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
@@ -96,7 +95,10 @@ declare namespace fastify {
 
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
-  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'> & {
+  export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser' | 'constraints'> & {
+    constraints?: {
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
+    },
     defaultRoute?: (
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>
@@ -132,8 +134,6 @@ declare namespace fastify {
     bodyLimit?: number;
     handlerTimeout?: number;
     maxParamLength?: number;
-    /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean);
     logController?: LogControllerClass;
     exposeHeadRoutes?: boolean;
     onProtoPoisoning?: ProtoAction;
@@ -142,18 +142,9 @@ declare namespace fastify {
     loggerInstance?: Logger;
     serializerOpts?: FJSOptions | Record<string, unknown>;
     serverFactory?: FastifyServerFactory<RawServer>;
-    caseSensitive?: boolean;
-    allowUnsafeRegex?: boolean;
     requestIdHeader?: string | false;
-    /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
-    requestIdLogLabel?: string;
-    useSemicolonDelimiter?: boolean;
     genReqId?: (req: RawRequestDefaultExpression<RawServer>) => string;
-    trustProxy?: boolean | string | string[] | number | TrustProxyFunction;
-    querystringParser?: (str: string) => { [key: string]: unknown };
-    constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>;
-    };
+    trustProxy?: boolean | string | string[] | TrustProxyFunction;
     schemaController?: {
       bucket?: (parentSchemas?: unknown) => {
         add(schema: unknown): FastifyInstance;
@@ -212,20 +203,15 @@ declare namespace fastify {
     routerOptions?: FastifyRouterOptions<RawServer>;
   }
 
-  /**
-   * @deprecated use {@link FastifySchemaValidationError}
-   */
-  export type ValidationResult = FastifySchemaValidationError
-
   /* Export additional types */
   export type {
     LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'
     FastifyRequest, RequestGenericInterface, // './types/request'
     FastifyReply, // './types/reply'
-    FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
+    FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, // './types/plugin'
     FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
-    FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
-    FastifyRequestContext, FastifyContextConfig, FastifyReplyContext, // './types/context'
+    FastifyLoggerOptions, FastifyBaseLogger, FastifyLogFn, LogLevel, // './types/logger'
+    FastifyContextConfig, // './types/context'
     RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions,
     RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
     FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'

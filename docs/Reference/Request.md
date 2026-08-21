@@ -9,7 +9,11 @@ Request is a core Fastify object containing the following fields:
 - `body` - The request payload, see [Content-Type Parser](./ContentTypeParser.md)
   for details on what request payloads Fastify natively parses and how to support
   other content types.
-- `params` - The params matching the URL.
+- `params` - The params matching the URL. Values are percent-decoded
+  (for example `%20` becomes a space, and `%2f` becomes `/`). Decoded
+  values may contain `.`, `..`, `/`, or other characters; treat them as
+  untrusted input. See the security note below and
+  [Routes - Url building](./Routes.md#url-building).
 - [`headers`](#headers) - The headers getter and setter.
 - `raw` - The incoming HTTP request from Node core.
 - `server` - The Fastify server instance, scoped to the current
@@ -35,13 +39,21 @@ Request is a core Fastify object containing the following fields:
   [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
 
 > ⚠️ Security:
+> `request.params`, `request.query`, `request.headers`, and `request.body`
+> are untrusted network input. Route parameter values are percent-decoded
+> before your handler runs, so a segment like `..%2ffile` becomes `../file`
+> in `request.params`. Do not use parameter values as filesystem paths,
+> template names, or redirect targets without validating or containing
+> them. Prefer [`@fastify/static`](https://github.com/fastify/fastify-static)
+> (or `reply.sendFile`) when serving files from a root directory.
+>
 > `request.ip`, `request.ips`, `request.host`, `request.hostname`,
 > `request.port`, and `request.protocol` come from request metadata
-> (socket and/or forwarding headers) and should be treated as untrusted input.
-> Fastify does not perform security validation for business logic.
-> If these values are used in security-sensitive decisions, they must
-> be validated explicitly (for example: trusted proxy configuration,
-> allow-lists, strict parsing, and normalization).
+> (socket and/or forwarding headers) and should also be treated as
+> untrusted input. Fastify does not perform security validation for
+> business logic. If these values are used in security-sensitive decisions,
+> they must be validated explicitly (for example: trusted proxy
+> configuration, allow-lists, strict parsing, and normalization).
 
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
@@ -60,10 +72,6 @@ Request is a core Fastify object containing the following fields:
   for cooperative cancellation. On timeout, `signal.reason` is the
   `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
   `AbortError`. Check `signal.reason.code` to distinguish the two cases.
-- `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
-  internal object. Do not use or modify it directly. It is useful to access one
-  special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
   - `handlerTimeout` - The handler timeout configured for this route.

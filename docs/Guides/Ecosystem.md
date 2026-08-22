@@ -226,6 +226,8 @@ section.
 - [`@pompelmi/fastify-plugin`](https://github.com/pompelmi/pompelmi/tree/main/packages/fastify-plugin)
   In-process file upload scanning for Fastify with MIME/magic-byte
   validation, ZIP bomb protection, size limits, and optional YARA.
+- [`@punkish/fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3)
+  Plugin for better-sqlite3.
 - [`@pybot/fastify-autoload`](https://github.com/kunal097/fastify-autoload)
   Plugin to generate routes automatically with valid json content
 - [`@scalar/fastify-api-reference`](https://github.com/scalar/scalar/tree/main/integrations/fastify)
@@ -309,8 +311,6 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
-- [`@punkish/fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3)
-  Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify

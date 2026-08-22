@@ -309,7 +309,7 @@ section.
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/beliven-it/fastify-bcrypt) A Bcrypt hash
   generator & checker.
-- [`fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3)
+- [`@punkish/fastify-better-sqlite3`](https://github.com/punkish/fastify-better-sqlite3)
   Plugin for better-sqlite3.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
   routes to the console, so you definitely know which endpoints are available.
@@ -698,9 +698,6 @@ middlewares into Fastify plugins
   [uws](https://github.com/uNetworking/uWebSockets).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser)
   Parse XML payload / request body into JS / JSON object.
-- [`http-wizard`](https://github.com/flodlc/http-wizard)
-  Exports a typescript API client for your Fastify API and ensures fullstack type
-  safety for your project.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
   An [i18next](https://www.i18next.com) based i18n (internationalization)
   middleware to be used with Node.js web frameworks like Express or Fastify and

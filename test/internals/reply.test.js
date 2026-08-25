@@ -1426,6 +1426,28 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', asy
   t.assert.deepStrictEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
 })
 
+test('reply.header preserves and merges set-cookie previously set on raw response', async t => {
+  t.plan(5)
+
+  const fastify = require('../../')()
+  t.after(() => fastify.close())
+
+  fastify.get('/raw-cookie', function (req, reply) {
+    reply.raw.setHeader('set-cookie', 'raw_cookie=1')
+    reply.header('set-cookie', 'fastify_cookie=2')
+    t.assert.deepStrictEqual(reply.getHeader('set-cookie'), ['raw_cookie=1', 'fastify_cookie=2'])
+    reply.send({})
+  })
+
+  const response = await fastify.inject('/raw-cookie')
+  t.assert.ok(response.headers['set-cookie'])
+  t.assert.deepStrictEqual(response.headers['set-cookie'], ['raw_cookie=1', 'fastify_cookie=2'])
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const result = await fetch(`${fastifyServer}/raw-cookie`)
+  t.assert.deepStrictEqual(result.headers.getSetCookie(), ['raw_cookie=1', 'fastify_cookie=2'])
+})
+
 test('should throw when trying to modify the reply.sent property', (t, done) => {
   t.plan(3)
   const fastify = Fastify()

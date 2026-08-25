@@ -1448,6 +1448,28 @@ test('reply.header preserves and merges set-cookie previously set on raw respons
   t.assert.deepStrictEqual(result.headers.getSetCookie(), ['raw_cookie=1', 'fastify_cookie=2'])
 })
 
+test('reply.header preserves and merges multiple set-cookie array previously set on raw response', async t => {
+  t.plan(5)
+
+  const fastify = require('../../')()
+  t.after(() => fastify.close())
+
+  fastify.get('/raw-cookie-array', function (req, reply) {
+    reply.raw.setHeader('set-cookie', ['raw_cookie_1=1', 'raw_cookie_2=2'])
+    reply.header('set-cookie', ['fastify_cookie_3=3', 'fastify_cookie_4=4'])
+    t.assert.deepStrictEqual(reply.getHeader('set-cookie'), ['raw_cookie_1=1', 'raw_cookie_2=2', 'fastify_cookie_3=3', 'fastify_cookie_4=4'])
+    reply.send({})
+  })
+
+  const response = await fastify.inject('/raw-cookie-array')
+  t.assert.ok(response.headers['set-cookie'])
+  t.assert.deepStrictEqual(response.headers['set-cookie'], ['raw_cookie_1=1', 'raw_cookie_2=2', 'fastify_cookie_3=3', 'fastify_cookie_4=4'])
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  const result = await fetch(`${fastifyServer}/raw-cookie-array`)
+  t.assert.deepStrictEqual(result.headers.getSetCookie(), ['raw_cookie_1=1', 'raw_cookie_2=2', 'fastify_cookie_3=3', 'fastify_cookie_4=4'])
+})
+
 test('should throw when trying to modify the reply.sent property', (t, done) => {
   t.plan(3)
   const fastify = Fastify()

@@ -42,6 +42,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     requestIdHeader: false,
     http2SessionTimeout: 72000,
     exposeHeadRoutes: true,
+    lazySchemaCompilation: false,
     routerOptions: {
       allowUnsafeRegex: false,
       caseSensitive: true,
@@ -299,6 +300,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       requestIdHeader: false,
       http2SessionTimeout: 72000,
       exposeHeadRoutes: true,
+      lazySchemaCompilation: false,
       routerOptions: {
         allowUnsafeRegex: false,
         caseSensitive: true,

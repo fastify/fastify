@@ -905,6 +905,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
+  options.lazySchemaCompilation = options.lazySchemaCompilation ?? defaultInitOptions.lazySchemaCompilation
 
   options.routerOptions = buildRouterOptions(options, {
     buildPrettyMeta: defaultBuildPrettyMeta,

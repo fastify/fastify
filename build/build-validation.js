@@ -37,6 +37,7 @@ const defaultInitOptions = {
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true,
   allowErrorHandlerOverride: false,
+  lazySchemaCompilation: false,
   routerOptions: {
     allowUnsafeRegex: false,
     caseSensitive: true,
@@ -96,6 +97,7 @@ const schema = {
     requestIdHeader: { anyOf: [{ type: 'boolean' }, { type: 'string' }], default: defaultInitOptions.requestIdHeader },
     http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
     exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes },
+    lazySchemaCompilation: { type: 'boolean', default: defaultInitOptions.lazySchemaCompilation },
     routerOptions: {
       type: 'object',
       additionalProperties: false,

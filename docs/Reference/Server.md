@@ -29,6 +29,7 @@ describes the properties available in that options object.
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
   - [`exposeHeadRoutes`](#exposeheadroutes)
+  - [`lazySchemaCompilation`](#lazyschemacompilation)
   - [`return503OnClosing`](#return503onclosing)
   - [`ajv`](#ajv)
   - [`serializerOpts`](#serializeropts)
@@ -659,6 +660,55 @@ const fastify = require('fastify')({
 Automatically creates a sibling `HEAD` route for each `GET` route defined. If
 you want a custom `HEAD` handler without disabling this option, make sure to
 define it before the `GET` route.
+
+### `lazySchemaCompilation`
+<a id="lazySchemaCompilation"></a>
+
++ Default: `false`
+
+By default Fastify compiles the validation functions (`body`, `querystring`,
+`params`, `headers`) and the response serializers of every route with a
+`schema` while the route is registered, so all the compilation work happens
+before [`ready`](#ready) resolves. The generated functions are kept for the
+whole life of the process, whether the route is ever hit or not.
+
+When set to `true`, the compilation of each route is deferred to the first
+request that reaches that route: validators and serializers are compiled right
+before the validation step of that request (or earlier, if a hook calls
+[`request.getValidationFunction`](./Request.md) or
+[`reply.getSerializationFunction`](./Reply.md#getserializationfunction) before
+it). Once compiled, the functions are cached on the route exactly as in the
+default mode, so only the first request of each route pays the compilation
+cost. Routes that are never hit are never compiled.
+
+This lowers startup time and memory for applications that register many routes
+with schemas and use only a subset of them per process (for example generated
+CRUD APIs, or API gateways that proxy a large OpenAPI document). The trade-off
+is that a schema which cannot be compiled is no longer reported by `ready()`:
+the error (`FST_ERR_SCH_VALIDATION_BUILD` or `FST_ERR_SCH_SERIALIZATION_BUILD`)
+is raised by the first request of that route, which then fails with a 500.
+Keep the default in development or in test suites, where failing fast on a
+broken schema is more valuable than the startup time.
+
+```js
+const fastify = Fastify({ lazySchemaCompilation: true })
+
+fastify.get('/items/:id', {
+  schema: {
+    params: { type: 'object', properties: { id: { type: 'integer' } } },
+    response: { 200: { type: 'object', properties: { id: { type: 'integer' } } } }
+  }
+}, async (request) => ({ id: request.params.id }))
+
+await fastify.ready() // no validator or serializer compiled yet
+await fastify.inject('/items/1') // compiles validators and serializers of this route, then caches them
+```
+
+The option applies to the default compilers and to compilers set with
+[`setValidatorCompiler`](#setvalidatorcompiler),
+[`setSerializerCompiler`](#setserializercompiler) or the route level
+`validatorCompiler` / `serializerCompiler` options alike: the compiler is
+simply invoked later.
 
 ### `return503OnClosing`
 <a id="factory-return-503-on-closing"></a>

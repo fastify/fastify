@@ -579,7 +579,7 @@ test('reports the canonical route url for hidden prefix trailing slash route', a
 
   const onRouteUrls = []
 
-  fastify.addHook('onRoute', routeOptions => {
+  fastify.addHook('onRoute', (instance, routeOptions) => {
     onRouteUrls.push(routeOptions.url)
   })
 

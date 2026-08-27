@@ -355,13 +355,13 @@ test('onRoute hook should be called / 2', (t, testDone) => {
   let firstHandler = 0
   let secondHandler = 0
   const fastify = Fastify({ exposeHeadRoutes: false })
-  fastify.addHook('onRoute', (route) => {
+  fastify.addHook('onRoute', (instance, route) => {
     t.assert.ok('should pass')
     firstHandler++
   })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', (route) => {
+    instance.addHook('onRoute', (instance, route) => {
       t.assert.ok('should pass')
       secondHandler++
     })
@@ -389,12 +389,12 @@ test('onRoute hook should be called / 3', (t, testDone) => {
     reply.send()
   }
 
-  fastify.addHook('onRoute', (route) => {
+  fastify.addHook('onRoute', (instance, route) => {
     t.assert.ok('should pass')
   })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', (route) => {
+    instance.addHook('onRoute', (instance, route) => {
       t.assert.ok('should pass')
     })
     instance.get('/a', handler)
@@ -489,16 +489,17 @@ test('onRoute hook should be called (encapsulation support) / 6', (t, testDone) 
 })
 
 test('onRoute should keep the context', (t, testDone) => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.decorate('test', true)
     instance.addHook('onRoute', onRoute)
     t.assert.ok(instance.prototype === fastify.prototype)
 
-    function onRoute (route) {
+    function onRoute (hookInstance, route) {
       t.assert.ok(this.test)
       t.assert.strictEqual(this, instance)
+      t.assert.strictEqual(hookInstance, instance)
     }
 
     instance.get('/', opts, function (req, reply) {
@@ -517,7 +518,7 @@ test('onRoute should keep the context', (t, testDone) => {
 test('onRoute hook should pass correct route', (t, testDone) => {
   t.plan(9)
   const fastify = Fastify({ exposeHeadRoutes: false })
-  fastify.addHook('onRoute', (route) => {
+  fastify.addHook('onRoute', (instance, route) => {
     t.assert.strictEqual(route.method, 'GET')
     t.assert.strictEqual(route.url, '/')
     t.assert.strictEqual(route.path, '/')
@@ -525,7 +526,7 @@ test('onRoute hook should pass correct route', (t, testDone) => {
   })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', (route) => {
+    instance.addHook('onRoute', (instance, route) => {
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/')
       t.assert.strictEqual(route.path, '/')
@@ -546,7 +547,7 @@ test('onRoute hook should pass correct route', (t, testDone) => {
 test('onRoute hook should pass correct route with custom prefix', (t, testDone) => {
   t.plan(11)
   const fastify = Fastify({ exposeHeadRoutes: false })
-  fastify.addHook('onRoute', function (route) {
+  fastify.addHook('onRoute', function (instance, route) {
     t.assert.strictEqual(route.method, 'GET')
     t.assert.strictEqual(route.url, '/v1/foo')
     t.assert.strictEqual(route.path, '/v1/foo')
@@ -555,7 +556,7 @@ test('onRoute hook should pass correct route with custom prefix', (t, testDone) 
   })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', function (route) {
+    instance.addHook('onRoute', function (instance, route) {
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/v1/foo')
       t.assert.strictEqual(route.path, '/v1/foo')
@@ -578,7 +579,7 @@ test('onRoute hook should pass correct route with custom options', (t, testDone)
   t.plan(6)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', function (route) {
+    instance.addHook('onRoute', function (instance, route) {
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/foo')
       t.assert.strictEqual(route.logLevel, 'info')
@@ -607,7 +608,7 @@ test('onRoute hook should receive any route option', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', function (route) {
+    instance.addHook('onRoute', function (instance, route) {
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/foo')
       t.assert.strictEqual(route.routePath, '/foo')
@@ -629,7 +630,7 @@ test('onRoute hook should preserve system route configuration', (t, testDone) =>
   t.plan(5)
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', function (route) {
+    instance.addHook('onRoute', function (instance, route) {
       t.assert.strictEqual(route.method, 'GET')
       t.assert.strictEqual(route.url, '/foo')
       t.assert.strictEqual(route.routePath, '/foo')
@@ -654,7 +655,7 @@ test('onRoute hook should preserve handler function in options of shorthand rout
 
   const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', function (route) {
+    instance.addHook('onRoute', function (instance, route) {
       t.assert.strictEqual(route.handler, handler)
     })
     instance.get('/foo', { handler })
@@ -687,7 +688,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', (t, testDone
       routePatched++
     }
 
-    instance.addHook('onRoute', function (routeOptions) {
+    instance.addHook('onRoute', function (instance, routeOptions) {
       onRouteCalled++
       patchTheRoute(routeOptions)
     })
@@ -723,7 +724,7 @@ test('onRoute hook should able to change the route url', async t => {
   t.after(() => { fastify.close() })
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', (route) => {
+    instance.addHook('onRoute', (instance, route) => {
       t.assert.strictEqual(route.url, '/foo')
       route.url = encodeURI(route.url)
     })
@@ -779,7 +780,7 @@ test('onRoute hook with many prefix', (t, testDone) => {
   ]
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('onRoute', ({ routePath, prefix, url }) => {
+    instance.addHook('onRoute', (instance, { routePath, prefix, url }) => {
       t.assert.deepStrictEqual({ routePath, prefix, url }, onRouteChecks.pop())
     })
     instance.route({ method: 'GET', url: '/aPath', handler })
@@ -3017,11 +3018,11 @@ test('onRegister hook should be called / 1', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', function (instance, opts, done) {
+  fastify.addHook('onRegister', function (instance, newInstance, options) {
     t.assert.ok(this.addHook)
-    t.assert.ok(instance.addHook)
-    t.assert.deepStrictEqual(opts, pluginOpts)
-    t.assert.ok(!done)
+    t.assert.strictEqual(instance, fastify)
+    t.assert.ok(newInstance.addHook)
+    t.assert.deepStrictEqual(options, pluginOpts)
   })
 
   const pluginOpts = { prefix: 'hello', custom: 'world' }
@@ -3039,9 +3040,9 @@ test('onRegister hook should be called / 2', (t, testDone) => {
   t.plan(7)
   const fastify = Fastify()
 
-  fastify.addHook('onRegister', function (instance) {
+  fastify.addHook('onRegister', function (instance, newInstance) {
     t.assert.ok(this.addHook)
-    t.assert.ok(instance.addHook)
+    t.assert.ok(newInstance.addHook)
   })
 
   fastify.register((instance, opts, done) => {
@@ -3067,8 +3068,8 @@ test('onRegister hook should be called / 3', (t, testDone) => {
 
   fastify.decorate('data', [])
 
-  fastify.addHook('onRegister', instance => {
-    instance.data = instance.data.slice()
+  fastify.addHook('onRegister', (instance, newInstance) => {
+    newInstance.data = newInstance.data.slice()
   })
 
   fastify.register((instance, opts, done) => {
@@ -3102,7 +3103,7 @@ test('onRegister hook should be called (encapsulation)', (t, testDone) => {
   }
   plugin[Symbol.for('skip-override')] = true
 
-  fastify.addHook('onRegister', (instance, opts) => {
+  fastify.addHook('onRegister', (instance, newInstance, options) => {
     t.assert.fail('This should not be called')
   })
 
@@ -3344,7 +3345,7 @@ test('registering invalid hooks should throw an error', async t => {
   })
 
   t.assert.throws(() => {
-    fastify.addHook('onRoute', (routeOptions) => {
+    fastify.addHook('onRoute', (instance, routeOptions) => {
       routeOptions.onSend = [undefined]
     })
 

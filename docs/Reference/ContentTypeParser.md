@@ -48,35 +48,24 @@ parsed.
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
-### Invalid content types
-
-Fastify validates the request's `Content-Type` header before selecting a body
-parser ([implementation](https://github.com/fastify/fastify/blob/main/lib/handle-request.js#L77-L87)).
-Therefore, parsers registered with a string, a `RegExp`, or the
-[catch-all](#catch-all) value are not considered when the header is invalid.
-
-If a client you cannot control sends a known malformed value, an `onRequest`
-hook can replace that exact value with an unambiguous valid media type before
-Fastify validates it:
-
-```js
-fastify.addHook('onRequest', async function repairContentType (request) {
-  const contentType = request.headers['content-type']
-
-  if (contentType === 'application/json,application/json') {
-    request.headers['content-type'] = 'application/json'
-  }
-})
-```
-
-Keep recovery rules narrow. Replacing a malformed value with the wrong media
-type can select a different body parser and, when using `schema.body.content`,
-route the request body through a different validation schema. Reject malformed
-values that the application cannot repair unambiguously.
-
-The `request.mediaType` property parses and caches the current header value.
-Therefore, repair `request.headers['content-type']` before accessing
-`request.mediaType` in an `onRequest` hook.
+> ℹ️ Note:
+> Fastify validates the request's `Content-Type` header before selecting a body
+> parser. String, `RegExp`, and [catch-all](#catch-all) parsers therefore cannot
+> handle an invalid header. An `onRequest` hook can repair an exact malformed
+> value from a client outside the application's control:
+>
+> ```js
+> fastify.addHook('onRequest', async function repairContentType (request) {
+>   if (request.headers['content-type'] === 'application/json,application/json') {
+>     request.headers['content-type'] = 'application/json'
+>   }
+> })
+> ```
+>
+> Apply only unambiguous repairs and reject other malformed values. A wrong
+> media type can select a different body parser or `schema.body.content`
+> validation schema. Repair the header before accessing `request.mediaType`,
+> which parses and caches the current value.
 
 ### Usage
 ```js

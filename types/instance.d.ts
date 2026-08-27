@@ -218,10 +218,10 @@ export interface FastifyInstance<
   >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
 
   findRoute<
-    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     SchemaCompiler extends FastifySchema = FastifySchema
-  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): Omit<FindMyWayFindResult<RawServer>, 'store'>;
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfigDefault, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'> & { cloneRouteConfig?: boolean }): Omit<FindMyWayFindResult<RawServer>, 'store'> & { config?: ContextConfig };
 
   // addHook: overloads
 

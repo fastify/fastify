@@ -300,7 +300,6 @@ reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
-
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>
 

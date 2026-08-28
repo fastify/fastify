@@ -63,7 +63,7 @@ function getResponseSchema () {
 }
 
 test('Reply#compileSerializationSchema', async t => {
-  t.plan(4)
+  t.plan(5)
 
   await t.test('Should return a serialization function', async t => {
     const fastify = Fastify()
@@ -201,6 +201,39 @@ test('Reply#compileSerializationSchema', async t => {
       })
     }
   )
+
+  await t.test('Should compile a new serialize fn when the metadata changes', async t => {
+    const fastify = Fastify()
+    const compiled = []
+
+    t.plan(3)
+
+    const schemaObj = getDefaultSchema()
+
+    const custom = ({ httpStatus, contentType }) => {
+      compiled.push({ httpStatus, contentType })
+      return input => JSON.stringify(input)
+    }
+
+    fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
+      const first = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+      const second = reply.compileSerializationSchema(schemaObj, '201', 'application/vnd.example+json')
+
+      t.assert.notStrictEqual(first, second)
+      t.assert.deepStrictEqual(compiled, [
+        { httpStatus: '200', contentType: 'application/json' },
+        { httpStatus: '201', contentType: 'application/vnd.example+json' }
+      ])
+      t.assert.strictEqual(reply.compileSerializationSchema(schemaObj, '200', 'application/json'), first)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 
   await t.test('Should build a WeakMap for cache when called', async t => {
     const fastify = Fastify()

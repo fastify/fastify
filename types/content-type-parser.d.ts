@@ -13,7 +13,7 @@ import { FastifySchema } from './schema'
 export interface FastifyParsedContentType {
   readonly isEmpty: boolean;
   readonly isValid: boolean;
-  readonly mediaType: string;
+  readonly mediaType: string | undefined;
   readonly type: string;
   readonly subtype: string;
   readonly parameters: ReadonlyMap<string, string>;

@@ -20,11 +20,12 @@ export interface FastifyParsedContentType {
   toString(): string;
 }
 
-export type FastifyContentTypeHeaderParser = (headerValue: string) => FastifyParsedContentType
+export type FastifyDefaultContentTypeHeaderParser = (headerValue: string) => FastifyParsedContentType
 
-export type FastifyContentTypeHeaderParserFactory = (
-  defaultParser: FastifyContentTypeHeaderParser
-) => FastifyContentTypeHeaderParser
+export type FastifyContentTypeHeaderParser = (
+  headerValue: string,
+  defaultParser: FastifyDefaultContentTypeHeaderParser
+) => FastifyParsedContentType
 
 type ContentTypeParserDoneFunction = (err: Error | null, body?: any) => void
 

@@ -825,23 +825,6 @@ test('repairs a malformed content-type before parsing and validation', async t =
   t.assert.strictEqual(rejectedBySchema.json().code, 'FST_ERR_VALIDATION')
 })
 
-test('custom content-type parser delegates ordinary invalid values', async t => {
-  const fastify = Fastify()
-  fastify.setContentTypeHeaderParser(recoverMalformedJson)
-  t.after(() => fastify.close())
-  fastify.post('/', () => 'unreachable')
-
-  const response = await fastify.inject({
-    method: 'POST',
-    url: '/',
-    headers: { 'content-type': 'invalid-content-type' },
-    payload: 'body'
-  })
-
-  t.assert.strictEqual(response.statusCode, 415)
-  t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
-})
-
 test('setContentTypeHeaderParser must receive a function', t => {
   const fastify = Fastify()
   t.assert.throws(

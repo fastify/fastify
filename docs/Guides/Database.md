@@ -110,7 +110,7 @@ To opt-in to this behavior, register the client like so:
 
 ```javascript
 fastify.register(require('@fastify/redis'), {
-  client: redis,
+  client: fastify.redis,
   closeClient: true
 })
 ```

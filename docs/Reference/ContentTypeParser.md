@@ -51,8 +51,8 @@ parsed.
 > ℹ️ Note:
 > Fastify validates the request's `Content-Type` header before selecting a body
 > parser. String, `RegExp`, and [catch-all](#catch-all) parsers therefore cannot
-> handle an invalid header. An `onRequest` hook can repair an exact malformed
-> value from a client outside the application's control:
+> handle an invalid header. An `onRequest` hook can rewrite a malformed
+> header prior to validation:
 >
 > ```js
 > fastify.addHook('onRequest', async function repairContentType (request) {

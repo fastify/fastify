@@ -55,16 +55,16 @@ parsed.
 > header prior to validation:
 >
 > ```js
-> fastify.addHook('onRequest', async function repairContentType (request) {
+> fastify.addHook('onRequest', async function rewriteContentType (request) {
 >   if (request.headers['content-type'] === 'application/json,application/json') {
 >     request.headers['content-type'] = 'application/json'
 >   }
 > })
 > ```
 >
-> Apply only unambiguous repairs and reject other malformed values. A wrong
+> Apply only unambiguous rewrites and reject other malformed values. An invalid
 > media type can select a different body parser or `schema.body.content`
-> validation schema. Repair the header before accessing `request.mediaType`,
+> validation schema. Rewrite the header before accessing `request.mediaType`,
 > which parses and caches the current value.
 
 ### Usage

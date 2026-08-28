@@ -774,7 +774,7 @@ function recoverMalformedJson (headerValue, defaultParser) {
   return defaultParser(headerValue === malformedJson ? 'application/json' : headerValue)
 }
 
-test('custom content-type parser canonicalizes requests consistently', async t => {
+test('repairs a malformed content-type before parsing and validation', async t => {
   const fastify = Fastify()
   fastify.setContentTypeHeaderParser(recoverMalformedJson)
   t.after(() => fastify.close())

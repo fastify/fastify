@@ -825,14 +825,13 @@ describe('onRegister async arity', () => {
   test('rejects an async handler with a fourth argument', t => {
     const fastify = Fastify()
 
-    try {
-      fastify.addHook('onRegister', async (instance, newInstance, options, done) => {
-        t.assert.fail('should have not be called')
-      })
-    } catch (e) {
-      t.assert.strictEqual(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
-      t.assert.strictEqual(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
-    }
+    t.assert.throws(
+      () => fastify.addHook('onRegister', async (instance, newInstance, options, done) => {}),
+      {
+        code: 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER',
+        message: 'Async function has too many arguments. Async hooks should not use the \'done\' argument.'
+      }
+    )
   })
 })
 

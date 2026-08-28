@@ -45,9 +45,32 @@ parsed.
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
 
-The [`contentTypeHeaderParserFactory`](./Server.md#contenttypeheaderparserfactory)
-server option customizes how Fastify validates and canonicalizes header values
-before selecting one of these body parsers.
+### `setContentTypeHeaderParser`
+
+This method sets the function Fastify uses to parse and canonicalize incoming
+`Content-Type` header values. The function receives the header value and the
+default parser, allowing ordinary values to be delegated:
+
+```js
+fastify.setContentTypeHeaderParser(function (headerValue, defaultParser) {
+  if (headerValue === 'application/json,application/json') {
+    return defaultParser('application/json')
+  }
+  return defaultParser(headerValue)
+})
+```
+
+The function must return an object with `isValid`, `isEmpty`, `mediaType`,
+`type`, `subtype`, `parameters`, and `toString()`. TypeScript implementations
+can implement the exported
+[`FastifyParsedContentType`](../../types/content-type-parser.d.ts) interface.
+Fastify uses that result for request rejection, `request.mediaType`, body parser
+selection, and per-content-type schema selection. A custom implementation must
+therefore canonicalize values unambiguously and must not mark untrusted input as
+valid unless its body parser and validation semantics are known.
+
+This method is encapsulated. A parser set in a plugin applies to that plugin and
+its descendants without affecting the parent or sibling scopes.
 
 ### Usage
 ```js

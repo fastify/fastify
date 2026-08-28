@@ -770,16 +770,13 @@ test('content-type fail when not a valid type', async t => {
 
 const malformedJson = 'application/json,application/json'
 
-function recoverMalformedJson (defaultParser) {
-  return function parseContentType (headerValue) {
-    return defaultParser(headerValue === malformedJson ? 'application/json' : headerValue)
-  }
+function recoverMalformedJson (headerValue, defaultParser) {
+  return defaultParser(headerValue === malformedJson ? 'application/json' : headerValue)
 }
 
 test('custom content-type parser canonicalizes requests consistently', async t => {
-  const fastify = Fastify({
-    contentTypeHeaderParserFactory: recoverMalformedJson
-  })
+  const fastify = Fastify()
+  fastify.setContentTypeHeaderParser(recoverMalformedJson)
   t.after(() => fastify.close())
 
   fastify.register((instance, _options, done) => {
@@ -829,9 +826,8 @@ test('custom content-type parser canonicalizes requests consistently', async t =
 })
 
 test('custom content-type parser delegates ordinary invalid values', async t => {
-  const fastify = Fastify({
-    contentTypeHeaderParserFactory: recoverMalformedJson
-  })
+  const fastify = Fastify()
+  fastify.setContentTypeHeaderParser(recoverMalformedJson)
   t.after(() => fastify.close())
   fastify.post('/', () => 'unreachable')
 
@@ -846,16 +842,66 @@ test('custom content-type parser delegates ordinary invalid values', async t => 
   t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
 })
 
-test('contentTypeHeaderParserFactory must be a function', t => {
+test('setContentTypeHeaderParser must receive a function', t => {
+  const fastify = Fastify()
   t.assert.throws(
-    () => Fastify({ contentTypeHeaderParserFactory: 'invalid' }),
-    new TypeError("contentTypeHeaderParserFactory option should be a function, instead got 'string'")
+    () => fastify.setContentTypeHeaderParser('invalid'),
+    new TypeError('Content type header parser must be a function')
   )
 })
 
-test('contentTypeHeaderParserFactory must return a function', t => {
+test('setContentTypeHeaderParser is encapsulated', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.post('/parent', request => request.mediaType)
+
+  fastify.register(async function customizedScope (instance) {
+    const result = instance.setContentTypeHeaderParser(recoverMalformedJson)
+    t.assert.strictEqual(result, instance)
+
+    instance.post('/custom', request => request.mediaType)
+    instance.register(async function childScope (child) {
+      child.post('/child', request => request.mediaType)
+    })
+  })
+
+  fastify.register(async function siblingScope (instance) {
+    instance.post('/sibling', request => request.mediaType)
+  })
+
+  await fastify.ready()
+
+  for (const url of ['/custom', '/child']) {
+    const response = await fastify.inject({
+      method: 'POST',
+      url,
+      headers: { 'content-type': malformedJson },
+      payload: '{}'
+    })
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.payload, 'application/json')
+  }
+
+  for (const url of ['/parent', '/sibling']) {
+    const response = await fastify.inject({
+      method: 'POST',
+      url,
+      headers: { 'content-type': malformedJson },
+      payload: '{}'
+    })
+    t.assert.strictEqual(response.statusCode, 415)
+  }
+})
+
+test('setContentTypeHeaderParser cannot be called after start', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  await fastify.listen({ port: 0 })
+
   t.assert.throws(
-    () => Fastify({ contentTypeHeaderParserFactory: () => 'invalid' }),
-    new TypeError('contentTypeHeaderParserFactory must return a function')
+    () => fastify.setContentTypeHeaderParser(recoverMalformedJson),
+    (error) => error.code === 'FST_ERR_INSTANCE_ALREADY_STARTED' &&
+      error.message.includes('Cannot call "setContentTypeHeaderParser"!')
   )
 })

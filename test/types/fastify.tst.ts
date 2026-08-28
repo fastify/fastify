@@ -370,15 +370,13 @@ class CustomParsedContentType implements FastifyParsedContentType {
   }
 }
 
-fastify({
-  contentTypeHeaderParserFactory: defaultParser => headerValue => {
-    return headerValue === 'application/custom'
-      ? new CustomParsedContentType()
-      : defaultParser(headerValue)
-  }
+fastify().setContentTypeHeaderParser((headerValue, defaultParser) => {
+  return headerValue === 'application/custom'
+    ? new CustomParsedContentType()
+    : defaultParser(headerValue)
 })
-expect(fastify).type.not.toBeCallableWith({ contentTypeHeaderParserFactory: 'invalid' })
-expect(fastify).type.not.toBeCallableWith({ contentTypeHeaderParserFactory: () => 'invalid' })
+expect(fastify().setContentTypeHeaderParser).type.not.toBeCallableWith('invalid')
+expect(fastify().setContentTypeHeaderParser).type.not.toBeCallableWith(() => 'invalid')
 
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

@@ -4,7 +4,7 @@ import { InjectOptions, CallbackFunc as LightMyRequestCallback, Chain as LightMy
 import * as http from 'node:http'
 import { AddressInfo } from 'node:net'
 import { FastifyRouterOptions } from '../fastify'
-import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
+import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, FastifyContentTypeHeaderParser, ProtoAction, getDefaultJsonParser, hasContentTypeParser, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { ApplicationHook, HookAsyncLookup, HookLookup, LifecycleHook, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onListenAsyncHookHandler, onListenHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preCloseAsyncHookHandler, preCloseHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyRegister } from './register'
@@ -639,6 +639,11 @@ export interface FastifyInstance<
   * Set the schema error formatter for all routes.
   */
   setSchemaErrorFormatter(errorFormatter: SchemaErrorFormatter): FastifyInstance<RawServer, RawRequest, RawReply,
+    Logger, TypeProvider>;
+  /**
+   * Set the parser used to validate and canonicalize Content-Type header values.
+   */
+  setContentTypeHeaderParser(parser: FastifyContentTypeHeaderParser): FastifyInstance<RawServer, RawRequest, RawReply,
     Logger, TypeProvider>;
   /**
    * Add a content type parser

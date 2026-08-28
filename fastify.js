@@ -918,6 +918,9 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
+  // lazySchemaCompilation is read from the validated config so that coercible
+  // values ('true', 1) behave like the boolean they were validated into
+  options.lazySchemaCompilation = initialConfig.lazySchemaCompilation
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout

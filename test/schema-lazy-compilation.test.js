@@ -273,3 +273,44 @@ test('lazy mode: a request failing before validation still reports the broken re
   t.assert.deepStrictEqual(first.json(), second.json())
   t.assert.strictEqual(first.json().error, 'Internal Server Error')
 })
+
+test('lazy mode: a cached build failure is reported by every later lookup, even on a request that never reaches validation', async t => {
+  t.plan(8)
+  const broken = { response: { 200: { type: 'object', properties: { a: { type: 'not-a-type' } } } } }
+  const fastify = Fastify({ lazySchemaCompilation: true })
+  fastify.post('/broken', { schema: broken }, async () => ({}))
+  // the public lookup helpers, called before the validation step, must report the
+  // build error on the request that triggers it and on every request after it
+  fastify.post('/lookup', {
+    schema: broken,
+    onRequest: async (request, reply) => {
+      t.assert.throws(() => reply.getSerializationFunction(200), { code: 'FST_ERR_SCH_SERIALIZATION_BUILD' })
+    }
+  }, async () => ({}))
+  await fastify.ready()
+  const malformed = { method: 'POST', url: '/broken', payload: '{not json', headers: { 'content-type': 'application/json' } }
+  const first = await fastify.inject(malformed)
+  t.assert.strictEqual(first.statusCode, 500)
+  t.assert.strictEqual(first.json().code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+  // the second malformed request also fails before validation: the serializer
+  // lookup in the error reply must surface the cached build error, not the parse error
+  const second = await fastify.inject(malformed)
+  t.assert.strictEqual(second.statusCode, 500)
+  t.assert.strictEqual(second.json().code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+  t.assert.deepStrictEqual(first.json(), second.json())
+  await fastify.inject({ method: 'POST', url: '/lookup', payload: {} })
+  const lookup = await fastify.inject({ method: 'POST', url: '/lookup', payload: {} })
+  t.assert.strictEqual(lookup.json().code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+})
+
+test('lazySchemaCompilation accepts the coercible values the config validator accepts', async t => {
+  t.plan(4)
+  for (const value of ['true', 1]) {
+    const fastify = Fastify({ lazySchemaCompilation: value })
+    const broken = { body: { type: 'object', properties: { a: { type: 'not-a-type' } } } }
+    fastify.post('/broken', { schema: broken }, async () => ({}))
+    t.assert.strictEqual(fastify.initialConfig.lazySchemaCompilation, true)
+    // eager compilation would reject ready(): the coerced value must reach the route code
+    await t.assert.doesNotReject(fastify.ready())
+  }
+})

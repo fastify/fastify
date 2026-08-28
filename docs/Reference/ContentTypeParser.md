@@ -5,8 +5,8 @@ Fastify natively supports `'application/json'` and `'text/plain'` content types
 with a default charset of `utf-8`. These default parsers can be changed or
 removed.
 
-Unsupported or syntactically invalid content types result in a `415 Unsupported
-Media Type` response with an
+Unsupported or [syntactically invalid](https://httpwg.org/specs/rfc9110.html#media.type)
+content types result in a `415 Unsupported Media Type` response with an
 [`FST_ERR_CTP_INVALID_MEDIA_TYPE`](./Errors.md#fst_err_ctp_invalid_media_type)
 error.
 

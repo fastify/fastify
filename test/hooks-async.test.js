@@ -813,6 +813,29 @@ describe('Should log a warning if is an async function with `done`', () => {
   })
 })
 
+describe('onRegister async arity', () => {
+  test('accepts an async handler with the three hook arguments', t => {
+    const fastify = Fastify()
+
+    t.assert.doesNotThrow(() => {
+      fastify.addHook('onRegister', async (instance, newInstance, options) => {})
+    })
+  })
+
+  test('rejects an async handler with a fourth argument', t => {
+    const fastify = Fastify()
+
+    try {
+      fastify.addHook('onRegister', async (instance, newInstance, options, done) => {
+        t.assert.fail('should have not be called')
+      })
+    } catch (e) {
+      t.assert.strictEqual(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.assert.strictEqual(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    }
+  })
+})
+
 test('early termination, onRequest async', async t => {
   const app = Fastify()
 

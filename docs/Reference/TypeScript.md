@@ -1622,16 +1622,20 @@ supported.
 
 [src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L174)
 
-Triggered when a new route is registered. Listeners are passed a routeOptions
-object as the sole parameter. The interface is synchronous, and, as such, the
-listener does not get passed a callback
+Triggered when a new route is registered. Listeners are passed the encapsulated
+Fastify instance the route is being registered on as the first parameter, and a
+routeOptions object as the second one. The interface is synchronous, and, as
+such, the listener does not get passed a callback
 
 ##### fastify.onRegisterHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(instance: [FastifyInstance][FastifyInstance], newInstance: [FastifyInstance][FastifyInstance], options: [FastifyRegisterOptions][FastifyRegisterOptions]): Promise\<unknown\> | void
 
 [src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L191)
 
 Triggered when a new plugin is registered and a new encapsulation context is
-created. The hook will be executed before the registered code.
+created. The hook will be executed before the registered code. Listeners are
+passed the instance the plugin is being registered on as the first parameter,
+the newly created encapsulated instance as the second one, and the registration
+options as the third one.
 
 This hook can be useful if you are developing a plugin that needs to know when a
 plugin context is formed, and you want to operate in that specific context.

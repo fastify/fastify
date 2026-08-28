@@ -391,6 +391,8 @@ By calling this function using a provided `schema` or `httpStatus`,
 and the optional `contentType`, it will return a `serialization` function
 that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
+When a `schema` is given, the function compiled first for that schema is
+returned, regardless of the `httpStatus` and `contentType` it was compiled with.
 
 This heavily depends of the `schema#responses` attached to the route, or
 the serialization functions compiled by using `compileSerializationSchema`.
@@ -435,6 +437,8 @@ a `WeakMap` for reducing compilation calls.
 The optional parameters `httpStatus` and `contentType`, if provided,
 are forwarded directly to the `SerializerCompiler`, so it can be used
 to compile the serialization function if a custom `SerializerCompiler` is used.
+They are part of the cache key too, so the same `schema` compiled with
+different values gets its own serialization function.
 
 This heavily depends of the `schema#responses` attached to the route, or
 the serialization functions compiled by using `compileSerializationSchema`.

@@ -206,7 +206,7 @@ test('Reply#compileSerializationSchema', async t => {
     const fastify = Fastify()
     const compiled = []
 
-    t.plan(3)
+    t.plan(4)
 
     const schemaObj = getDefaultSchema()
 
@@ -217,12 +217,15 @@ test('Reply#compileSerializationSchema', async t => {
 
     fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
       const first = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
-      const second = reply.compileSerializationSchema(schemaObj, '201', 'application/vnd.example+json')
+      const second = reply.compileSerializationSchema(schemaObj, '201', 'application/json')
+      const third = reply.compileSerializationSchema(schemaObj, '200', 'application/vnd.example+json')
 
       t.assert.notStrictEqual(first, second)
+      t.assert.notStrictEqual(first, third)
       t.assert.deepStrictEqual(compiled, [
         { httpStatus: '200', contentType: 'application/json' },
-        { httpStatus: '201', contentType: 'application/vnd.example+json' }
+        { httpStatus: '201', contentType: 'application/json' },
+        { httpStatus: '200', contentType: 'application/vnd.example+json' }
       ])
       t.assert.strictEqual(reply.compileSerializationSchema(schemaObj, '200', 'application/json'), first)
 

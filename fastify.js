@@ -182,8 +182,7 @@ function fastify (serverOptions) {
     [kContentTypeParser]: new ContentTypeParser(
       options.bodyLimit,
       (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
-      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning),
-      options.contentTypeHeaderParserFactory
+      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
@@ -256,6 +255,7 @@ function fastify (serverOptions) {
     // set generated request id
     setGenReqId,
     // custom parsers
+    setContentTypeHeaderParser,
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
     getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
@@ -758,6 +758,12 @@ function fastify (serverOptions) {
     return this
   }
 
+  function setContentTypeHeaderParser (parser) {
+    throwIfAlreadyStarted('Cannot call "setContentTypeHeaderParser"!')
+    this[kContentTypeParser].setParser(parser)
+    return this
+  }
+
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler"!')
     this[kSchemaController].setValidatorCompiler(validatorCompiler)
@@ -893,10 +899,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   } else {
     // Shallow copy options object to prevent mutations outside of this function
     options = Object.assign({}, options)
-  }
-
-  if (options.contentTypeHeaderParserFactory !== undefined && typeof options.contentTypeHeaderParserFactory !== 'function') {
-    throw new TypeError(`contentTypeHeaderParserFactory option should be a function, instead got '${typeof options.contentTypeHeaderParserFactory}'`)
   }
 
   if (

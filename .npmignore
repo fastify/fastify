@@ -16,8 +16,14 @@ EXPENSE_POLICY.md
 *.log
 
 # AI files
+# Keep in sync with the "Agents files" section of .gitignore: .npmignore
+# replaces .gitignore for packing, so these have to be repeated here.
 .claude/
 CLAUDE.md
+AGENTS.md
+.agents/
+.agent
+.pi/
 
 # test certification
 test/https/fastify.cert

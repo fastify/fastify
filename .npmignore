@@ -18,6 +18,7 @@ EXPENSE_POLICY.md
 # AI files
 .claude/
 CLAUDE.md
+.pi/
 
 # test certification
 test/https/fastify.cert

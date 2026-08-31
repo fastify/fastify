@@ -753,6 +753,86 @@ test('invalid content-type error message should not contain format placeholder',
   })
 })
 
+test('strict content-type header validation can be disabled explicitly', async t => {
+  const fastify = Fastify({ strictContentTypeHeaderValidation: false })
+  t.after(() => fastify.close())
+
+  fastify.register((instance, _options, done) => {
+    instance.addContentTypeParser(
+      /^application\/json,application\/json$/,
+      { parseAs: 'string' },
+      instance.getDefaultJsonParser('error', 'error')
+    )
+    instance.post('/', {
+      schema: {
+        body: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['requiredProperty']
+              }
+            }
+          }
+        }
+      }
+    }, request => request.body)
+    done()
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json,application/json'
+    },
+    payload: JSON.stringify({ recovered: true })
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { recovered: true })
+})
+
+test('disabled strict header validation allows catch-all parser recovery', async t => {
+  const fastify = Fastify({ strictContentTypeHeaderValidation: false })
+  t.after(() => fastify.close())
+
+  fastify.addContentTypeParser('*', { parseAs: 'string' }, (_request, body, done) => {
+    done(null, body)
+  })
+  fastify.post('/', request => request.body)
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'invalid-content-type'
+    },
+    payload: 'recovered'
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'recovered')
+})
+
+test('disabled strict header validation still requires an explicit parser', async t => {
+  const fastify = Fastify({ strictContentTypeHeaderValidation: false })
+  t.after(() => fastify.close())
+  fastify.post('/', () => 'ok')
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: {
+      'content-type': 'application/json,application/json'
+    },
+    payload: '{}'
+  })
+
+  t.assert.strictEqual(response.statusCode, 415)
+  t.assert.strictEqual(response.json().code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
+})
+
 test('content-type fail when not a valid type', async t => {
   t.plan(1)
 

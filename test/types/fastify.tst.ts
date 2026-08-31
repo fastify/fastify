@@ -356,5 +356,9 @@ fastify({ routerOptions: { allowUnsafeRegex: true } })
 fastify({ routerOptions: { allowUnsafeRegex: false } })
 expect(fastify).type.not.toBeCallableWith({ routerOptions: { allowUnsafeRegex: 'invalid' } })
 
+fastify({ strictContentTypeHeaderValidation: true })
+fastify({ strictContentTypeHeaderValidation: false })
+expect(fastify).type.not.toBeCallableWith({ strictContentTypeHeaderValidation: 'invalid' })
+
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

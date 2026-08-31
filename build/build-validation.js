@@ -30,6 +30,7 @@ const defaultInitOptions = {
   requestTimeout: 0, // no limit
   handlerTimeout: 0, // no timeout (disabled by default)
   bodyLimit: 1024 * 1024, // 1 MiB
+  strictContentTypeHeaderValidation: true,
   onProtoPoisoning: 'error',
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
@@ -68,6 +69,7 @@ const schema = {
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
     handlerTimeout: { type: 'integer', default: defaultInitOptions.handlerTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
+    strictContentTypeHeaderValidation: { type: 'boolean', default: defaultInitOptions.strictContentTypeHeaderValidation },
     http2: { type: 'boolean' },
     https: {
       if: {

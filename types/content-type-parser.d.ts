@@ -4,6 +4,29 @@ import { RouteGenericInterface } from './route'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
+/**
+ * Structural result returned by a content-type header parser. This mirrors the
+ * `ContentType` implementation in `lib/content-type.js`; keep both synchronized.
+ * Fastify uses this representation for request validation, body parser lookup, and
+ * schema selection.
+ */
+export interface FastifyParsedContentType {
+  readonly isEmpty: boolean;
+  readonly isValid: boolean;
+  readonly mediaType: string | undefined;
+  readonly type: string;
+  readonly subtype: string;
+  readonly parameters: ReadonlyMap<string, string>;
+  toString(): string;
+}
+
+export type FastifyDefaultContentTypeHeaderParser = (headerValue: string) => FastifyParsedContentType
+
+export type FastifyContentTypeHeaderParser = (
+  headerValue: string,
+  defaultParser: FastifyDefaultContentTypeHeaderParser
+) => FastifyParsedContentType
+
 type ContentTypeParserDoneFunction = (err: Error | null, body?: any) => void
 
 /**

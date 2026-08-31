@@ -767,3 +767,124 @@ test('content-type fail when not a valid type', async t => {
     t.assert.equal(error.message, 'The content type should be a string or a RegExp')
   }
 })
+
+const malformedJson = 'application/json,application/json'
+
+function recoverMalformedJson (headerValue, defaultParser) {
+  return defaultParser(headerValue === malformedJson ? 'application/json' : headerValue)
+}
+
+test('repairs a malformed content-type before parsing and validation', async t => {
+  const fastify = Fastify()
+  fastify.setContentTypeHeaderParser(recoverMalformedJson)
+  t.after(() => fastify.close())
+
+  fastify.register((instance, _options, done) => {
+    instance.post('/', {
+      schema: {
+        body: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['foo'],
+                properties: {
+                  foo: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }, request => ({
+      body: request.body,
+      mediaType: request.mediaType
+    }))
+    done()
+  })
+
+  const accepted = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': malformedJson },
+    payload: JSON.stringify({ foo: 'bar' })
+  })
+  t.assert.strictEqual(accepted.statusCode, 200)
+  t.assert.deepStrictEqual(accepted.json(), {
+    body: { foo: 'bar' },
+    mediaType: 'application/json'
+  })
+
+  const rejectedBySchema = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': malformedJson },
+    payload: JSON.stringify({ bar: 'baz' })
+  })
+  t.assert.strictEqual(rejectedBySchema.statusCode, 400)
+  t.assert.strictEqual(rejectedBySchema.json().code, 'FST_ERR_VALIDATION')
+})
+
+test('setContentTypeHeaderParser must receive a function', t => {
+  const fastify = Fastify()
+  t.assert.throws(
+    () => fastify.setContentTypeHeaderParser('invalid'),
+    new TypeError('Content type header parser must be a function')
+  )
+})
+
+test('setContentTypeHeaderParser is encapsulated', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.post('/parent', request => request.mediaType)
+
+  fastify.register(async function customizedScope (instance) {
+    const result = instance.setContentTypeHeaderParser(recoverMalformedJson)
+    t.assert.strictEqual(result, instance)
+
+    instance.post('/custom', request => request.mediaType)
+    instance.register(async function childScope (child) {
+      child.post('/child', request => request.mediaType)
+    })
+  })
+
+  fastify.register(async function siblingScope (instance) {
+    instance.post('/sibling', request => request.mediaType)
+  })
+
+  await fastify.ready()
+
+  for (const url of ['/custom', '/child']) {
+    const response = await fastify.inject({
+      method: 'POST',
+      url,
+      headers: { 'content-type': malformedJson },
+      payload: '{}'
+    })
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.payload, 'application/json')
+  }
+
+  for (const url of ['/parent', '/sibling']) {
+    const response = await fastify.inject({
+      method: 'POST',
+      url,
+      headers: { 'content-type': malformedJson },
+      payload: '{}'
+    })
+    t.assert.strictEqual(response.statusCode, 415)
+  }
+})
+
+test('setContentTypeHeaderParser cannot be called after start', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  await fastify.listen({ port: 0 })
+
+  t.assert.throws(
+    () => fastify.setContentTypeHeaderParser(recoverMalformedJson),
+    (error) => error.code === 'FST_ERR_INSTANCE_ALREADY_STARTED' &&
+      error.message.includes('Cannot call "setContentTypeHeaderParser"!')
+  )
+})

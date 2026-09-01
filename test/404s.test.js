@@ -1628,9 +1628,8 @@ test('onSend option for setNotFoundHandler should be called when callNotFound an
   t.plan(4)
   const fastify = Fastify()
 
-  // Register the route before the not-found handler so that the route's
-  // preReady callback snapshots the not-found context before its lifecycle
-  // hooks are populated.
+  // Register the route before the not-found handler so its 404 context is
+  // linked before the not-found lifecycle hooks are populated during preReady.
   fastify.post('/', function (req, reply) {
     t.assert.strictEqual(reply.callNotFound(), reply)
   })

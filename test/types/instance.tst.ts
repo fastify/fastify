@@ -13,7 +13,7 @@ import fastify, {
   RawServerDefault,
   RouteGenericInterface
 } from '../../fastify.js'
-import { HookHandlerDoneFunction } from '../../types/hooks.js'
+import { DoneFuncWithErrOrRes, HookHandlerDoneFunction } from '../../types/hooks.js'
 import { FindMyWayVersion } from '../../types/instance.js'
 import { Bindings, ChildLoggerOptions } from '../../types/logger.js'
 import { FastifyReply } from '../../types/reply.js'
@@ -143,14 +143,32 @@ async function notFoundpreValidationAsyncHandler (
   request: FastifyRequest,
   reply: FastifyReply
 ) { }
+function notFoundOnSendHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  payload: unknown,
+  done: DoneFuncWithErrOrRes
+) { done(null, payload) }
+async function notFoundOnSendAsyncHandler (
+  request: FastifyRequest,
+  reply: FastifyReply,
+  payload: unknown
+) { }
 
 server.setNotFoundHandler(notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ onSend: notFoundOnSendHandler }, notFoundHandler)
+server.setNotFoundHandler({ onSend: notFoundOnSendAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ onSend: [notFoundOnSendHandler, notFoundOnSendAsyncHandler] }, notFoundHandler)
 server.setNotFoundHandler(
-  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  {
+    preHandler: notFoundpreHandlerHandler,
+    preValidation: notFoundpreValidationHandler,
+    onSend: notFoundOnSendHandler
+  },
   notFoundHandler
 )
 
@@ -159,8 +177,14 @@ server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundAsy
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler({ onSend: notFoundOnSendHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler({ onSend: notFoundOnSendAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler(
-  { preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler },
+  {
+    preHandler: notFoundpreHandlerHandler,
+    preValidation: notFoundpreValidationHandler,
+    onSend: notFoundOnSendHandler
+  },
   notFoundAsyncHandler
 )
 

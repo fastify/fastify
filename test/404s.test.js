@@ -1655,6 +1655,43 @@ test('onSend option for setNotFoundHandler should be called when callNotFound an
   })
 })
 
+test('onSend option for setNotFoundHandler runs alongside the calling route\'s own onSend hooks when callNotFound', (t, done) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler({
+    onSend: (req, reply, payload, done) => {
+      const body = JSON.parse(payload)
+      body.option = true
+      done(null, JSON.stringify(body))
+    }
+  }, function (req, reply) {
+    reply.code(404).send({})
+  })
+
+  fastify.register(function (instance, opts, done) {
+    instance.addHook('onSend', (req, reply, payload, done) => {
+      const body = JSON.parse(payload)
+      body.caller = true
+      done(null, JSON.stringify(body))
+    })
+
+    instance.get('/', function (req, reply) {
+      t.assert.strictEqual(reply.callNotFound(), reply)
+    })
+
+    done()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    const payload = JSON.parse(res.payload)
+    t.assert.deepStrictEqual(payload, { option: true, caller: true })
+    done()
+  })
+})
+
 test('reply.notFound invoked the notFound handler', (t, done) => {
   t.plan(3)
 

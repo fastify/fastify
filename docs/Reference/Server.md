@@ -1860,14 +1860,19 @@ lifecycle](./Lifecycle.md#lifecycle) for unexisting URLs.
 Badly formatted URLs are sent to the [`onBadUrl`](#onbadurl)
 handler instead.
 
-You can also register [`preValidation`](./Hooks.md#route-hooks) and
-[`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
+You can also register [`preValidation`](./Hooks.md#route-hooks),
+[`preHandler`](./Hooks.md#route-hooks), and [`onSend`](./Hooks.md#route-hooks)
+hooks for the 404 handler.
 
 > ℹ️ Note:
 > The `preValidation` hook registered using this method will run for a
 > route that Fastify does not recognize and **not** when a route handler manually
 > calls [`reply.callNotFound`](./Reply.md#call-not-found). In which case, only
-> preHandler will be run.
+> `preHandler` is run explicitly. Hooks that are part of the normal response
+> pipeline (`preSerialization`, `onSend`, `onError`, `onResponse`) still run
+> either way; an `onSend` hook registered here runs together with, not
+> instead of, any `onSend` hooks already registered on the calling route's
+> own scope.
 
 
 ```js

@@ -32,7 +32,7 @@ fastify.route(options)
 <a id="options"></a>
 
 * `method`: currently it supports `GET`, `HEAD`, `TRACE`, `DELETE`,
-  `OPTIONS`, `PATCH`, `PUT` and `POST`. To accept more methods,
+  `OPTIONS`, `PATCH`, `PUT`, `POST` and `QUERY`. To accept more methods,
   the [`addHttpMethod`](./Server.md#addHttpMethod) must be used.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
@@ -41,7 +41,7 @@ fastify.route(options)
   [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, PATCH,
-    TRACE, SEARCH, PROPFIND, PROPPATCH or LOCK method.
+    TRACE, SEARCH, PROPFIND, PROPPATCH, LOCK or QUERY method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -197,6 +197,10 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 `fastify.options(path, [options], handler)`
 
 `fastify.patch(path, [options], handler)`
+
+`fastify.query(path, [options], handler)`
+
+> The `QUERY` method (RFC 10008) requires a `Content-Type` header.
 
 Example:
 ```js

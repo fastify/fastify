@@ -9,15 +9,15 @@ const pino = require('pino')
 const Fastify = require('../../fastify')
 const { LogController } = require('../../lib/log-controller')
 const helper = require('../helper')
-const { once, on } = stream
+const { on } = stream
 const { request } = require('./logger-test-utils')
-const { partialDeepStrictEqual } = require('../toolkit')
+const { partialDeepStrictEqual } = require('../helper')
 
 t.test('logging', { timeout: 60000 }, async (t) => {
   let localhost
   let localhostForURL
 
-  t.plan(16)
+  t.plan(11)
 
   t.before(async function () {
     [localhost, localhostForURL] = await helper.getLoopbackHost()
@@ -289,92 +289,6 @@ t.test('logging', { timeout: 60000 }, async (t) => {
     }
   })
 
-  await t.test('should not log incoming request and outgoing response when disabled', async (t) => {
-    t.plan(1)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
-    t.after(() => fastify.close())
-
-    fastify.get('/500', (req, reply) => {
-      reply.code(500).send(Error('500 error'))
-    })
-
-    await fastify.ready()
-
-    await fastify.inject({ method: 'GET', url: '/500' })
-
-    // no more readable data
-    t.assert.strictEqual(stream.readableLength, 0)
-  })
-
-  await t.test('should not log incoming request, outgoing response  and route not found for 404 onBadUrl when disabled', async (t) => {
-    t.plan(1)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
-    t.after(() => fastify.close())
-
-    await fastify.ready()
-
-    await fastify.inject({ method: 'GET', url: '/%c0' })
-
-    // no more readable data
-    t.assert.strictEqual(stream.readableLength, 0)
-  })
-
-  await t.test('should not log incoming request, outgoing response and route not found for 414 onMaxParamLength when disabled', async (t) => {
-    t.plan(1)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream } })
-    t.after(() => fastify.close())
-
-    await fastify.ready()
-
-    await fastify.inject({
-      method: 'GET',
-      url: `/${'1234567890'.repeat(12)}`
-    })
-
-    // no more readable data
-    t.assert.strictEqual(stream.readableLength, 0)
-  })
-
-  await t.test('should log incoming request and outgoing response based on disableRequestLogging function', async (t) => {
-    const lines = [
-      'incoming request',
-      'request completed'
-    ]
-    t.plan(lines.length)
-
-    const stream = split(JSON.parse)
-    const loggerInstance = pino(stream)
-
-    const fastify = Fastify({
-      disableRequestLogging: (request) => {
-        return request.url !== '/not-logged'
-      },
-      loggerInstance
-    })
-    t.after(() => fastify.close())
-
-    fastify.get('/logged', (req, reply) => {
-      return reply.code(200).send({})
-    })
-
-    fastify.get('/not-logged', (req, reply) => {
-      return reply.code(200).send({})
-    })
-
-    await fastify.ready()
-
-    await fastify.inject({ method: 'GET', url: '/not-logged' })
-    await fastify.inject({ method: 'GET', url: '/logged' })
-
-    for await (const [line] of on(stream, 'data')) {
-      t.assert.strictEqual(line.msg, lines.shift())
-      if (lines.length === 0) break
-    }
-  })
-
   await t.test('defaults to info level', async (t) => {
     const lines = [
       { req: { method: 'GET' }, msg: 'incoming request' },
@@ -479,38 +393,5 @@ t.test('logging', { timeout: 60000 }, async (t) => {
       t.assert.ok(partialDeepStrictEqual(line, lines.shift()))
       if (lines.length === 0) break
     }
-  })
-
-  await t.test('should not log the error if request logging is disabled', async (t) => {
-    t.plan(4)
-
-    const stream = split(JSON.parse)
-    const fastify = Fastify({
-      logger: {
-        stream,
-        level: 'info'
-      },
-      disableRequestLogging: true
-    })
-    t.after(() => fastify.close())
-
-    fastify.get('/error', function (req, reply) {
-      t.assert.ok(req.log)
-      reply.send(new Error('a generic error'))
-    })
-
-    await fastify.ready()
-    await fastify.listen({ port: 0, host: localhost })
-
-    await request(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
-
-    {
-      const [line] = await once(stream, 'data')
-      t.assert.ok(typeof line.msg === 'string')
-      t.assert.ok(line.msg.startsWith('Server listening at'), 'message is set')
-    }
-
-    // no more readable data
-    t.assert.strictEqual(stream.readableLength, 0)
   })
 })

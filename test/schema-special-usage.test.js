@@ -939,6 +939,60 @@ test('Supports async AJV validation', (t, testDone) => {
   completion.patience.then(testDone)
 })
 
+// @see https://github.com/fastify/fastify/security/advisories/GHSA-667r-xxjv-c9mm
+test('async validation result must not replace the request body (value collision)', async (t) => {
+  const fastify = Fastify()
+  fastify.post('/', {
+    schema: {
+      body: {
+        $async: true,
+        type: 'object',
+        additionalProperties: true,
+        properties: { hello: { type: 'string' } }
+      }
+    },
+    handler: async (request) => request.body
+  })
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ hello: 'world', value: { hello: 'evil' } })
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  // The validated body must be preserved; a `value` key must NOT replace it.
+  t.assert.deepStrictEqual(res.json(), { hello: 'world', value: { hello: 'evil' } })
+})
+
+// @see https://github.com/fastify/fastify/security/advisories/GHSA-667r-xxjv-c9mm
+test('async validation result must not be treated as an error (error collision)', async (t) => {
+  const fastify = Fastify()
+  fastify.post('/', {
+    schema: {
+      body: {
+        $async: true,
+        type: 'object',
+        additionalProperties: true,
+        properties: { hello: { type: 'string' } }
+      }
+    },
+    handler: async (request) => request.body
+  })
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ hello: 'world', error: 'boom' })
+  })
+
+  // An `error` key in the payload must NOT be treated as a validation failure.
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.deepStrictEqual(res.json(), { hello: 'world', error: 'boom' })
+})
+
 test('Check all the async AJV validation paths', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,

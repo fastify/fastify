@@ -8,6 +8,9 @@
     - [FSTWRN001](#FSTWRN001)
     - [FSTWRN003](#FSTWRN003)
     - [FSTWRN004](#FSTWRN004)
+  - [Fastify Security Codes](#fastify-security-codes)
+    - [FSTSEC001](#FSTSEC001)
+    - [FSTSEC002](#FSTSEC002)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP022](#FSTDEP022)
     - [FSTDEP023](#FSTDEP023)
@@ -47,6 +50,14 @@ Disabling warnings is not recommended and may cause unexpected behavior.
 | <a id="FSTWRN001">FSTWRN001</a> | The specified schema for a route is missing. This may indicate the schema is not well specified. | Check the schema for the route. | [#4647](https://github.com/fastify/fastify/pull/4647) |
 | <a id="FSTWRN003">FSTWRN003</a> | The `%s` plugin mixes async and callback styles, which may lead to unhandled rejections. | Do not mix async and callback style. | [#6011](https://github.com/fastify/fastify/pull/6011) |
 | <a id="FSTWRN004">FSTWRN004</a> | An `errorHandler` is being overridden in the same scope, which can lead to subtle bugs. | Avoid calling `setErrorHandler` more than once in the same scope. For more information, see [Server documentation](https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride). | [#6104](https://github.com/fastify/fastify/pull/6104) |
+
+### Fastify Security Codes
+
+| Code | Description | How to solve | Discussion |
+| ---- | ----------- | ------------ | ---------- |
+| <a id="FSTSEC001">FSTSEC001</a> | A `RegExp` Content-Type is used that may be vulnerable to a CORS bypass, because it does not anchor the essence MIME type. | Start the `RegExp` with `^` or include `;?` so the essence MIME type is detected correctly. | [#4450](https://github.com/fastify/fastify/pull/4450) |
+| <a id="FSTSEC002">FSTSEC002</a> | A headers schema references an external `$ref` (a schema registered with `addSchema`) that is not reached by header case normalization. Header names in the referenced schema keep their original case and do not match the lowercased request headers, so case-insensitive assertions such as `required` and `dependencies` may not apply. | Inline the header schema instead of referencing it with an external `$ref`. | - |
+
 ### Fastify Deprecation Codes
 
 Deprecation codes are supported by the Node.js CLI options:

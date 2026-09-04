@@ -1920,3 +1920,76 @@ test('inline and local $ref header schemas do not emit FSTSEC002', async t => {
 
   t.assert.strictEqual(spyData.callCount(), 0)
 })
+
+test('header schema normalization traverses dependent schema keywords', async t => {
+  const fastify = Fastify({
+    ajv: { customOptions: { strictSchema: false } }
+  })
+
+  fastify.get('/', {
+    schema: {
+      headers: {
+        type: 'object',
+        dependentSchemas: {
+          'X-Admin': {
+            properties: { 'X-Admin-Token': { type: 'string' } }
+          }
+        },
+        dependentRequired: {
+          'X-Admin': ['X-Admin-Token']
+        }
+      }
+    }
+  }, async () => ({ ok: true }))
+
+  await fastify.ready()
+  t.assert.ok(true)
+})
+
+test('header schema normalization preserves malformed keyword values for validation errors', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: null,
+        required: null,
+        dependencies: null,
+        dependentSchemas: null,
+        dependentRequired: null,
+        definitions: null
+      }
+    }
+  }, async () => ({ ok: true }))
+
+  await t.assert.rejects(fastify.ready())
+})
+
+test('header schema detects an external $ref nested in an array', async t => {
+  const spyData = spyWarning(FSTSEC002)
+  t.after(spyData.restore)
+
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: 'http://example.com/nested-admin-headers',
+    type: 'object',
+    properties: { 'X-Admin': { type: 'string' } }
+  })
+  fastify.post('/', {
+    schema: {
+      headers: {
+        allOf: [{ $ref: 'http://example.com/nested-admin-headers#' }]
+      }
+    }
+  }, async () => ({ ok: true }))
+
+  await fastify.ready()
+
+  t.assert.strictEqual(spyData.callCount(), 1)
+  t.assert.deepStrictEqual(spyData.calls[0].arguments, [
+    'POST',
+    '/',
+    'http://example.com/nested-admin-headers#'
+  ])
+})

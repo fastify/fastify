@@ -993,6 +993,33 @@ test('async validation result must not be treated as an error (error collision)'
   t.assert.deepStrictEqual(res.json(), { hello: 'world', error: 'boom' })
 })
 
+test('async custom validator resolving false uses its validation errors', async t => {
+  const fastify = Fastify()
+  fastify.setValidatorCompiler(() => {
+    const validate = () => Promise.resolve(false)
+    validate.errors = [{
+      instancePath: '',
+      schemaPath: '#/custom',
+      keyword: 'custom',
+      params: {},
+      message: 'must pass custom validation'
+    }]
+    return validate
+  })
+  fastify.post('/', {
+    schema: { body: { type: 'object' } }
+  }, async () => ({ ok: true }))
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {}
+  })
+
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(res.json().code, 'FST_ERR_VALIDATION')
+})
+
 test('Check all the async AJV validation paths', async (t) => {
   const fastify = Fastify({
     exposeHeadRoutes: false,

@@ -540,6 +540,11 @@ export interface FastifyInstance<
         SchemaCompiler, TypeProvider> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric,
         ContextConfig, SchemaCompiler, TypeProvider>[] | preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply,
         RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
+      onSend?: onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
+        TypeProvider> | onSendAsyncHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
+        SchemaCompiler, TypeProvider> | onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric,
+        ContextConfig, SchemaCompiler, TypeProvider>[] | onSendAsyncHookHandler<unknown, RawServer, RawRequest,
+        RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
     },
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
       TypeProvider, Logger>

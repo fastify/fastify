@@ -364,8 +364,11 @@ reply.code(303).redirect('/home', 302)
 ### .callNotFound()
 <a id="call-not-found"></a>
 
-Invokes the custom not found handler. Note that it will only call `preHandler`
-hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
+Invokes the custom not found handler. Note that of the hooks specified in
+[`setNotFoundHandler`](./Server.md#set-not-found-handler), only `preHandler`
+is run explicitly; `preValidation` is skipped. `onSend` still runs as part of
+the normal response pipeline, alongside any `onSend` hooks already registered
+on the calling route's own scope.
 
 ```js
 reply.callNotFound()

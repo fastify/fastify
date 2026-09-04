@@ -1594,6 +1594,104 @@ test('preHandler option for setNotFoundHandler', async t => {
   })
 })
 
+test('onSend option for setNotFoundHandler should be called when callNotFound', (t, done) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler({
+    onSend: (req, reply, payload, done) => {
+      t.assert.ok(true, 'onSend option called')
+      done(null, payload)
+    }
+  }, function (req, reply) {
+    reply.code(404).send(req.body)
+  })
+
+  fastify.post('/', function (req, reply) {
+    t.assert.strictEqual(reply.callNotFound(), reply)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    const payload = JSON.parse(res.payload)
+    t.assert.deepStrictEqual(payload, { hello: 'world' })
+    done()
+  })
+})
+
+// https://github.com/fastify/fastify/security/advisories/GHSA-gm8r-x7h4-fm5r
+test('onSend option for setNotFoundHandler should be called when callNotFound and the route is registered first', (t, done) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  // Register the route before the not-found handler so its 404 context is
+  // linked before the not-found lifecycle hooks are populated during preReady.
+  fastify.post('/', function (req, reply) {
+    t.assert.strictEqual(reply.callNotFound(), reply)
+  })
+
+  fastify.setNotFoundHandler({
+    onSend: (req, reply, payload, done) => {
+      t.assert.ok(true, 'onSend option called')
+      done(null, payload)
+    }
+  }, function (req, reply) {
+    reply.code(404).send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.assert.ifError(err)
+    const payload = JSON.parse(res.payload)
+    t.assert.deepStrictEqual(payload, { hello: 'world' })
+    done()
+  })
+})
+
+test('onSend option for setNotFoundHandler runs alongside the calling route\'s own onSend hooks when callNotFound', (t, done) => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler({
+    onSend: (req, reply, payload, done) => {
+      const body = JSON.parse(payload)
+      body.option = true
+      done(null, JSON.stringify(body))
+    }
+  }, function (req, reply) {
+    reply.code(404).send({})
+  })
+
+  fastify.register(function (instance, opts, done) {
+    instance.addHook('onSend', (req, reply, payload, done) => {
+      const body = JSON.parse(payload)
+      body.caller = true
+      done(null, JSON.stringify(body))
+    })
+
+    instance.get('/', function (req, reply) {
+      t.assert.strictEqual(reply.callNotFound(), reply)
+    })
+
+    done()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 404)
+    const payload = JSON.parse(res.payload)
+    t.assert.deepStrictEqual(payload, { option: true, caller: true })
+    done()
+  })
+})
+
 test('reply.notFound invoked the notFound handler', (t, done) => {
   t.plan(3)
 

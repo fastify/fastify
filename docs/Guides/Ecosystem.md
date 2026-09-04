@@ -282,6 +282,8 @@ section.
   plugin to authenticate HTTP requests based on API key and signature
 - [`fastify-appwrite`](https://github.com/maniecodes/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
+- [`fastify-arktype`](https://github.com/BlairCurrey/fastify-arktype) ArkType
+  type provider with validation and @fastify/swagger OpenAPI generation.
 - [`fastify-asyncforge`](https://github.com/mcollina/fastify-asyncforge) Plugin
   to access Fastify instance, logger, request and reply from Node.js [Async
   Local Storage](https://nodejs.org/api/async_context.html#class-asynclocalstorage).

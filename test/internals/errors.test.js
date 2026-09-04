@@ -5,7 +5,7 @@ const errors = require('../../lib/errors')
 const { readFileSync } = require('node:fs')
 const { resolve } = require('node:path')
 
-const expectedErrors = 95
+const expectedErrors = 97
 
 test(`should expose ${expectedErrors} errors`, t => {
   t.plan(1)
@@ -556,6 +556,26 @@ test('FST_ERR_SCH_DUPLICATE', t => {
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_SCH_DUPLICATE')
   t.assert.strictEqual(error.message, "Schema with '%s' already present!")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE')
+  t.assert.strictEqual(error.message, "Invalid content type '%s' in schema.content")
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof Error)
+})
+
+test('FST_ERR_SCH_CONTENT_DUPLICATE', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_SCH_CONTENT_DUPLICATE()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_SCH_CONTENT_DUPLICATE')
+  t.assert.strictEqual(error.message, "Duplicate case-equivalent content schema for '%s'")
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })

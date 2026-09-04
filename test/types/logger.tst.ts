@@ -10,6 +10,7 @@ import fastify, {
   FastifyRequest,
   LogLevel
 } from '../../fastify.js'
+import { LogController } from '../../types/logger.js'
 
 expect(fastify().log).type.toBe<FastifyBaseLogger>()
 
@@ -270,3 +271,8 @@ expect(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serialize
 expect(childParent.child).type.not.toBeCallableWith()
 
 expect(childParent.child).type.not.toBeCallableWith({}, { nonExist: true })
+
+const logController = new LogController()
+expect(logController.requestCompleted).type.toBeCallableWith(undefined, {} as FastifyRequest, {} as FastifyReply)
+expect(logController.requestCompleted).type.toBeCallableWith(null, {} as FastifyRequest, {} as FastifyReply)
+expect(logController.requestCompleted).type.toBeCallableWith(new Error(), {} as FastifyRequest, {} as FastifyReply)

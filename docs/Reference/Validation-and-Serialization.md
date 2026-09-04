@@ -628,6 +628,17 @@ This pattern ensures validators work correctly with both sync and async
 `preValidation` hooks, preventing unhandled promise rejections that can crash
 an application.
 
+> [!IMPORTANT]
+> The `{ value, error }` result convention applies to **synchronous** validator
+> compilers only. An **asynchronous** validator (a compiler that returns a
+> promise, including an [`$async` Ajv schema](https://ajv.js.org/guide/async-validation.html))
+> is treated as pass/fail only: its resolved value is not unwrapped as
+> `{ value, error }`. An async schema resolves with the validated data itself, so
+> unwrapping it would let a payload that carries `value` or `error` keys replace
+> the request part or inject a validation error. An async validator must signal
+> failure by rejecting (throwing), and it cannot coerce the request part through
+> a resolved `value`.
+
 ##### .statusCode property
 
 All validation errors have a `.statusCode` property set to `400`, ensuring the

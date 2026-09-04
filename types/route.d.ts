@@ -46,7 +46,9 @@ export interface RouteConstraint {
 /**
  * Route shorthand options for the various shorthand methods
  */
-type RouteShorthandHook<T extends (...args: any) => any> = (...args: Parameters<T>) => void | Promise<unknown>
+type RouteShorthandHook<T extends (this: any, ...args: any) => any> = T extends (this: infer C, ...args: infer A) => any
+  ? (this: C, ...args: A) => void | Promise<unknown>
+  : never
 
 export interface RouteShorthandOptions<
   RawServer extends RawServerBase = RawServerDefault,

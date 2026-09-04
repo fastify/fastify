@@ -5,6 +5,7 @@ const net = require('node:net')
 const Fastify = require('..')
 const { Readable } = require('node:stream')
 const { kTimeoutTimer, kOnAbort } = require('../lib/symbols')
+const { setTimeout: sleep } = require('node:timers/promises')
 
 // --- Option validation ---
 
@@ -97,7 +98,7 @@ test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT', async t => {
   const fastify = Fastify()
 
   fastify.get('/', { handlerTimeout: 50 }, async () => {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await sleep(500)
     return 'too late'
   })
 
@@ -126,7 +127,7 @@ test('route-level handlerTimeout overrides server default', async t => {
   const fastify = Fastify({ handlerTimeout: 5000 })
 
   fastify.get('/slow', { handlerTimeout: 50 }, async () => {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await sleep(500)
     return 'too late'
   })
 
@@ -167,7 +168,7 @@ test('request.signal aborts when timeout fires with reason', async t => {
     request.signal.addEventListener('abort', () => {
       signalReason = request.signal.reason
     })
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await sleep(500)
     return 'too late'
   })
 
@@ -210,7 +211,7 @@ test('reply.hijack() clears timeout timer', async t => {
   fastify.get('/', { handlerTimeout: 100 }, async (request, reply) => {
     reply.hijack()
     // Write after the original timeout would have fired
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await sleep(200)
     reply.raw.writeHead(200, { 'Content-Type': 'text/plain' })
     reply.raw.end('hijacked response')
   })
@@ -236,7 +237,7 @@ test('route-level errorHandler receives FST_ERR_HANDLER_TIMEOUT', async t => {
       reply.code(504).send({ custom: 'timeout' })
     }
   }, async () => {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await sleep(500)
     return 'too late'
   })
 
@@ -328,6 +329,54 @@ test('client disconnect aborts request.signal', async t => {
   t.assert.strictEqual(signalAborted, true)
 })
 
+test('does not abort when request body stream closes', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.post('/', { handlerTimeout: 1000 }, async (request) => {
+    t.assert.strictEqual(request.signal.aborted, false)
+    await sleep(0, undefined, { signal: request.signal })
+    return 'ok'
+  })
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const { port } = fastify.server.address()
+  const res = await fetch(`http://127.0.0.1:${port}/`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ test: true })
+  })
+
+  t.assert.strictEqual(res.status, 200)
+})
+
+test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT for POST with body', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.post('/', { handlerTimeout: 50 }, async () => {
+    await sleep(500)
+    return 'too late'
+  })
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const { port } = fastify.server.address()
+  const res = await fetch(`http://127.0.0.1:${port}/`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ test: true })
+  })
+
+  t.assert.strictEqual(res.status, 503)
+  const payload = await res.json()
+  t.assert.strictEqual(payload.code, 'FST_ERR_HANDLER_TIMEOUT')
+})
+
 // --- Race: handler completes just as timeout fires ---
 
 test('no double-send when handler completes near timeout boundary', async t => {
@@ -336,7 +385,7 @@ test('no double-send when handler completes near timeout boundary', async t => {
 
   fastify.get('/', { handlerTimeout: 50 }, async (request, reply) => {
     // Respond just before timeout
-    await new Promise(resolve => setTimeout(resolve, 40))
+    await sleep(40)
     reply.send({ ok: true })
     return reply
   })
@@ -357,7 +406,7 @@ test('routes inherit server-level handlerTimeout', async t => {
   fastify.get('/', async (request) => {
     // Verify the signal is present (inherited from server default)
     t.assert.ok(request.signal instanceof AbortSignal)
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await sleep(500)
     return 'too late'
   })
 

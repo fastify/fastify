@@ -20,7 +20,7 @@ test('onListen should not be processed when .ready() is called', (t, testDone) =
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.fail()
     done()
   })
@@ -37,12 +37,12 @@ test('localhost onListen should be called in order', (t, testDone) => {
   t.after(() => fastify.close())
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st called in root')
     done()
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 2, '2nd called in root')
     done()
   })
@@ -94,19 +94,19 @@ test('localhost onListen sync should log errors as warnings and continue /1', as
     }
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st call')
     t.assert.ok('called in root')
     done()
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 2, '2nd call')
     t.assert.ok('called onListen error')
     throw new Error('FAIL ON LISTEN')
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 3, '3rd call')
     t.assert.ok('onListen hooks continue after error')
     done()
@@ -138,19 +138,19 @@ test('localhost onListen sync should log errors as warnings and continue /2', (t
     }
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st call')
     t.assert.ok('called in root')
     done()
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 2, '2nd call')
     t.assert.ok('called onListen error')
     done(new Error('FAIL ON LISTEN'))
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 3, '3rd call')
     t.assert.ok('onListen hooks continue after error')
     done()
@@ -205,7 +205,7 @@ test('localhost Register onListen hook after a plugin inside a plugin', (t, test
   t.after(() => fastify.close())
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -213,12 +213,12 @@ test('localhost Register onListen hook after a plugin inside a plugin', (t, test
   }))
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
 
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -285,14 +285,14 @@ test('localhost onListen encapsulation should be called in order', async t => {
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   await fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
+    childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
@@ -325,7 +325,7 @@ test('localhost onListen encapsulation with only nested hook', async t => {
 
   await fastify.register(async (child) => {
     await child.register(async (child2) => {
-      child2.addHook('onListen', function (done) {
+      child2.addHook('onListen', function (instance, done) {
         t.assert.ok()
         done()
       })
@@ -345,14 +345,14 @@ test('localhost onListen peer encapsulations with only nested hooks', async t =>
 
   await fastify.register(async (child) => {
     await child.register(async (child2) => {
-      child2.addHook('onListen', function (done) {
+      child2.addHook('onListen', function (instance, done) {
         t.assert.ok()
         done()
       })
     })
 
     await child.register(async (child2) => {
-      child2.addHook('onListen', function (done) {
+      child2.addHook('onListen', function (instance, done) {
         t.assert.ok()
         done()
       })
@@ -385,14 +385,14 @@ test('localhost onListen encapsulation should be called in order and should log 
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
+    childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
@@ -419,12 +419,12 @@ test('non-localhost onListen should be called in order', { skip: isIPv6Missing }
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st called in root')
     done()
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 2, '2nd called in root')
     done()
   })
@@ -473,7 +473,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', {
   })
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1)
     done()
   })
@@ -483,7 +483,7 @@ test('non-localhost sync onListen should log errors as warnings and continue', {
     throw new Error('FAIL ON LISTEN')
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 3, 'should still run')
     done()
   })
@@ -541,7 +541,7 @@ test('non-localhost Register onListen hook after a plugin inside a plugin', { sk
   t.after(() => fastify.close())
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -549,12 +549,12 @@ test('non-localhost Register onListen hook after a plugin inside a plugin', { sk
   }))
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
 
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -621,14 +621,14 @@ test('non-localhost onListen encapsulation should be called in order', { skip: i
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
+    childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
@@ -666,7 +666,7 @@ test('non-localhost onListen encapsulation should be called in order and should 
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
 
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
@@ -674,7 +674,7 @@ test('non-localhost onListen encapsulation should be called in order and should 
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
+    childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
@@ -699,12 +699,12 @@ test('onListen localhost should work in order with callback', (t, testDone) => {
   t.after(() => fastify.close())
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st called in root')
     done()
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 2, '2nd called in root')
     done()
   })
@@ -757,7 +757,7 @@ test('onListen localhost sync with callback should log errors as warnings and co
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st called in root')
     done()
   })
@@ -767,7 +767,7 @@ test('onListen localhost sync with callback should log errors as warnings and co
     throw new Error('FAIL ON LISTEN')
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 3, '1st called in root')
     done()
   })
@@ -825,7 +825,7 @@ test('Register onListen hook localhost with callback after a plugin inside a plu
   t.after(() => fastify.close())
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -833,12 +833,12 @@ test('Register onListen hook localhost with callback after a plugin inside a plu
   }))
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
 
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -860,14 +860,14 @@ test('onListen localhost with callback encapsulation should be called in order',
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
+    childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
@@ -892,12 +892,12 @@ test('onListen non-localhost should work in order with callback in sync', { skip
   t.after(() => fastify.close())
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, '1st called in root')
     done()
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 2, '2nd called in root')
     done()
   })
@@ -951,7 +951,7 @@ test('onListen non-localhost sync with callback should log errors as warnings an
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1)
     t.assert.ok('1st called in root')
     done()
@@ -962,7 +962,7 @@ test('onListen non-localhost sync with callback should log errors as warnings an
     throw new Error('FAIL ON LISTEN')
   })
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 3)
     t.assert.ok('3rd called in root')
     done()
@@ -1024,7 +1024,7 @@ test('Register onListen hook non-localhost with callback after a plugin inside a
   t.after(() => fastify.close())
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -1032,12 +1032,12 @@ test('Register onListen hook non-localhost with callback after a plugin inside a
   }))
 
   fastify.register(fp(function (instance, opts, done) {
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
 
-    instance.addHook('onListen', function (done) {
+    instance.addHook('onListen', function (instance, done) {
       t.assert.ok('called')
       done()
     })
@@ -1059,14 +1059,14 @@ test('onListen non-localhost with callback encapsulation should be called in ord
 
   let order = 0
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(++order, 1, 'called in root')
     t.assert.strictEqual(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   fastify.register(async (childOne, o) => {
-    childOne.addHook('onListen', function (done) {
+    childOne.addHook('onListen', function (instance, done) {
       t.assert.strictEqual(++order, 2, 'called in childOne')
       t.assert.strictEqual(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
@@ -1131,7 +1131,7 @@ test('onListen hooks do not block /1', (t, testDone) => {
   const fastify = Fastify()
   t.after(() => fastify.close())
 
-  fastify.addHook('onListen', function (done) {
+  fastify.addHook('onListen', function (instance, done) {
     t.assert.strictEqual(fastify[kState].listening, true)
     done()
   })

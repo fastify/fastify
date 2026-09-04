@@ -207,7 +207,16 @@ export interface RouteOptions<
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
   TypeProvider, Logger> {
   method: HTTPMethods | HTTPMethods[];
-  url: string;
+  /**
+   * Route path. Aliased by {@link RouteOptions.path}. Provide either `url` or
+   * `path`, at least one of them must be defined.
+   */
+  url?: string;
+  /**
+   * Route path. Alias for {@link RouteOptions.url}. Provide either `url` or
+   * `path`, at least one of them must be defined.
+   */
+  path?: string;
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>;
 }

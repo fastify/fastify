@@ -63,7 +63,7 @@ function getResponseSchema () {
 }
 
 test('Reply#compileSerializationSchema', async t => {
-  t.plan(4)
+  t.plan(5)
 
   await t.test('Should return a serialization function', async t => {
     const fastify = Fastify()
@@ -214,6 +214,29 @@ test('Reply#compileSerializationSchema', async t => {
       t.assert.strictEqual(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
       t.assert.ok(reply[kRouteContext][kReplyCacheSerializeFns] instanceof WeakMap)
       t.assert.strictEqual(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  await t.test('Should pass undefined metadata when it is not provided', async t => {
+    const fastify = Fastify()
+    const serializerCompiler = ({ httpStatus, contentType }) => {
+      t.assert.strictEqual(httpStatus, undefined)
+      t.assert.strictEqual(contentType, undefined)
+
+      return JSON.stringify
+    }
+
+    t.plan(2)
+
+    fastify.get('/', { serializerCompiler }, (req, reply) => {
+      reply.compileSerializationSchema(getDefaultSchema())
 
       reply.send({ hello: 'world' })
     })

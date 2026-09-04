@@ -185,3 +185,39 @@ test('findRoute should not expose store', t => {
   })
   t.assert.strictEqual(route.store, undefined)
 })
+
+test('findRoute with cloneRouteConfig should return cloned route config', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.get('/artists/:artistId', {
+    config: {
+      custom: 'value',
+      nested: { foo: 'bar' }
+    },
+    handler: (req, reply) => reply.send('ok')
+  })
+
+  const routeWithoutConfig = fastify.findRoute({
+    method: 'GET',
+    url: '/artists/:artistId'
+  })
+  t.assert.strictEqual(routeWithoutConfig.config, undefined)
+
+  const routeWithConfig = fastify.findRoute({
+    method: 'GET',
+    url: '/artists/:artistId',
+    cloneRouteConfig: true
+  })
+  t.assert.deepStrictEqual(routeWithConfig.config.custom, 'value')
+  t.assert.deepStrictEqual(routeWithConfig.config.nested, { foo: 'bar' })
+
+  // Ensure modifying cloned config does not mutate original route context
+  routeWithConfig.config.custom = 'mutated'
+  const secondFind = fastify.findRoute({
+    method: 'GET',
+    url: '/artists/:artistId',
+    cloneRouteConfig: true
+  })
+  t.assert.deepStrictEqual(secondFind.config.custom, 'value')
+})

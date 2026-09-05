@@ -1956,6 +1956,13 @@ if (statusCode >= 500) {
 > Avoid calling setErrorHandler multiple times in the same scope.
 > See [`allowErrorHandlerOverride`](#allowerrorhandleroverride).
 
+> ℹ️ Note:
+> When the error handler sends a JSON object or array, the route's
+> `schema.response` serializes it just like a route handler's payload. There is
+> no separate schema for error responses, and serialization is not validation,
+> so the schema may rewrite values and drop properties the handler emitted. See
+> [Response schemas and error replies](./Validation-and-Serialization.md#error-handler-serialization).
+
 ##### Custom error handler for stream replies
 <a id="set-error-handler-stream-replies"></a>
 

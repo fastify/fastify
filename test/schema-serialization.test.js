@@ -995,6 +995,185 @@ test('The schema changes the default error handler output', async t => {
   t.assert.deepStrictEqual(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
 })
 
+// see https://github.com/fastify/fastify/issues/4881 for discussion
+test('The route response schema also serializes a custom error handler payload (#4881)', async t => {
+  t.plan(4)
+
+  const bodySchema = {
+    type: 'object',
+    required: ['a'],
+    properties: { a: { type: 'string' } }
+  }
+
+  const appErrorSchema = {
+    type: 'object',
+    required: ['code', 'message'],
+    properties: {
+      code: { type: 'string', const: 'APP_ERROR' },
+      message: { type: 'string' }
+    }
+  }
+
+  const post = (fastify, url) => fastify.inject({ method: 'POST', url, payload: {} })
+
+  await t.test('the schema rewrites and prunes what the error handler sent', async t => {
+    t.plan(8)
+
+    const fastify = Fastify()
+    t.after(() => { fastify.close() })
+
+    for (const url of ['/sent', '/returned']) {
+      fastify.post(url, { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
+    }
+
+    fastify.post('/4xx', { schema: { body: bodySchema, response: { '4xx': appErrorSchema } } }, echoBody)
+
+    fastify.setErrorHandler(function (_error, request, reply) {
+      reply.code(400)
+      if (request.url === '/returned') {
+        return { code: 'CUSTOM_ERROR', message: 'via return', details: { field: 'a' } }
+      }
+      reply.send({ code: 'CUSTOM_ERROR', message: request.url, details: { field: 'a' } })
+    })
+
+    let res = await post(fastify, '/sent')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: '/sent' })
+
+    res = await post(fastify, '/returned')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: 'via return' })
+
+    res = await post(fastify, '/4xx')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: '/4xx' })
+
+    const asyncFastify = Fastify()
+    t.after(() => { asyncFastify.close() })
+
+    asyncFastify.post('/', { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
+    asyncFastify.setErrorHandler(async function (_error, request, reply) {
+      reply.code(400)
+      return { code: 'CUSTOM_ERROR', message: 'from async', details: { field: 'a' } }
+    })
+
+    res = await post(asyncFastify, '/')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: 'from async' })
+  })
+
+  await t.test('a payload the schema cannot serialize fails the reply', async t => {
+    t.plan(4)
+
+    const fastify = Fastify()
+    t.after(() => { fastify.close() })
+
+    fastify.post('/twice', { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
+
+    fastify.post('/once', {
+      schema: {
+        body: bodySchema,
+        response: {
+          400: { type: 'object', required: ['message'], properties: { message: { type: 'string' } } }
+        }
+      }
+    }, echoBody)
+
+    fastify.setErrorHandler(function (_error, request, reply) {
+      reply.code(400).send(request.url === '/twice' ? { code: 'CUSTOM_ERROR' } : {})
+    })
+
+    let res = await post(fastify, '/twice')
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.json().code, 'FST_ERR_FAILED_ERROR_SERIALIZATION')
+
+    res = await post(fastify, '/once')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.match(res.json().message, /required/)
+  })
+
+  await t.test('an error handler that never sets a status code replies 200', async t => {
+    t.plan(4)
+
+    const fastify = Fastify()
+    t.after(() => { fastify.close() })
+
+    fastify.post('/bare', { schema: { body: bodySchema } }, echoBody)
+
+    fastify.post('/success-schema', {
+      schema: {
+        body: bodySchema,
+        response: {
+          200: { type: 'object', properties: { code: { type: 'string', const: 'OK_SHAPE' } } }
+        }
+      }
+    }, echoBody)
+
+    fastify.setErrorHandler(function (_error, request, reply) {
+      reply.send({ code: 'CUSTOM_ERROR', message: request.url, details: { field: 'a' } })
+    })
+
+    let res = await post(fastify, '/bare')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { code: 'CUSTOM_ERROR', message: '/bare', details: { field: 'a' } })
+
+    res = await post(fastify, '/success-schema')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { code: 'OK_SHAPE' })
+  })
+
+  await t.test('bypassing the schema preserves the payload', async t => {
+    t.plan(8)
+
+    const errorPayload = { code: 'CUSTOM_ERROR', message: 'Unknown custom error', details: { field: 'a' } }
+
+    const fastify = Fastify()
+    t.after(() => { fastify.close() })
+
+    for (const url of ['/serializer', '/string', '/control']) {
+      fastify.post(url, { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
+    }
+
+    fastify.setErrorHandler(function (_error, request, reply) {
+      reply.code(400).type('application/json')
+      if (request.url === '/serializer') {
+        reply.serializer(JSON.stringify).send(errorPayload)
+        return
+      }
+      if (request.url === '/control') {
+        reply.send(errorPayload)
+        return
+      }
+      reply.send(JSON.stringify(errorPayload))
+    })
+
+    let res = await post(fastify, '/control')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: 'Unknown custom error' })
+
+    res = await post(fastify, '/serializer')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), errorPayload)
+
+    res = await post(fastify, '/string')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), errorPayload)
+
+    const wrapped = Fastify()
+    t.after(() => { wrapped.close() })
+
+    wrapped.setReplySerializer(payload => JSON.stringify(payload))
+    wrapped.post('/', { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
+    wrapped.setErrorHandler(function (_error, request, reply) {
+      reply.code(400).send(errorPayload)
+    })
+
+    res = await post(wrapped, '/')
+    t.assert.strictEqual(res.statusCode, 400)
+    t.assert.deepStrictEqual(res.json(), errorPayload)
+  })
+})
+
 test('do not crash if status code serializer errors', async t => {
   const fastify = Fastify()
 

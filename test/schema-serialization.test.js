@@ -995,9 +995,6 @@ test('The schema changes the default error handler output', async t => {
   t.assert.deepStrictEqual(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
 })
 
-// The response serializer is selected by status code, with no error-vs-success
-// distinction, so a route's `schema.response` also serializes what a custom
-// error handler emits
 // see https://github.com/fastify/fastify/issues/4881 for discussion
 test('The route response schema also serializes a custom error handler payload (#4881)', async t => {
   t.plan(4)
@@ -1017,8 +1014,6 @@ test('The route response schema also serializes a custom error handler payload (
     }
   }
 
-  // every payload carries an unlisted `details` property, so a reply that still
-  // contains it proves the response schema did not run
   const post = (fastify, url) => fastify.inject({ method: 'POST', url, payload: {} })
 
   await t.test('the schema rewrites and prunes what the error handler sent', async t => {
@@ -1031,25 +1026,20 @@ test('The route response schema also serializes a custom error handler payload (
       fastify.post(url, { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
     }
 
-    // a wildcard key matches an error status code just as an exact one does
     fastify.post('/4xx', { schema: { body: bodySchema, response: { '4xx': appErrorSchema } } }, echoBody)
 
     fastify.setErrorHandler(function (_error, request, reply) {
       reply.code(400)
-      // the returned payload carries a marker the sent one cannot produce, so
-      // this pins the return path rather than falling through to `reply.send`
       if (request.url === '/returned') {
         return { code: 'CUSTOM_ERROR', message: 'via return', details: { field: 'a' } }
       }
       reply.send({ code: 'CUSTOM_ERROR', message: request.url, details: { field: 'a' } })
     })
 
-    // `const` rewrites the code the handler chose and `details` is dropped
     let res = await post(fastify, '/sent')
     t.assert.strictEqual(res.statusCode, 400)
     t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: '/sent' })
 
-    // returning the payload instead of sending it takes the same path
     res = await post(fastify, '/returned')
     t.assert.strictEqual(res.statusCode, 400)
     t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: 'via return' })
@@ -1058,7 +1048,6 @@ test('The route response schema also serializes a custom error handler payload (
     t.assert.strictEqual(res.statusCode, 400)
     t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: '/4xx' })
 
-    // an async handler resolves through a different branch, same outcome
     const asyncFastify = Fastify()
     t.after(() => { asyncFastify.close() })
 
@@ -1079,11 +1068,8 @@ test('The route response schema also serializes a custom error handler payload (
     const fastify = Fastify()
     t.after(() => { fastify.close() })
 
-    // the retry serializes Fastify's own error object, which has no `code`
-    // either, so serialization fails a second time
     fastify.post('/twice', { schema: { body: bodySchema, response: { 400: appErrorSchema } } }, echoBody)
 
-    // here the retry succeeds, because the error object does carry `message`
     fastify.post('/once', {
       schema: {
         body: bodySchema,
@@ -1114,7 +1100,6 @@ test('The route response schema also serializes a custom error handler payload (
 
     fastify.post('/bare', { schema: { body: bodySchema } }, echoBody)
 
-    // the success schema, not an error schema, serializes the error payload
     fastify.post('/success-schema', {
       schema: {
         body: bodySchema,
@@ -1162,7 +1147,6 @@ test('The route response schema also serializes a custom error handler payload (
       reply.send(JSON.stringify(errorPayload))
     })
 
-    // the control proves the same schema does reshape this payload when it runs
     let res = await post(fastify, '/control')
     t.assert.strictEqual(res.statusCode, 400)
     t.assert.deepStrictEqual(res.json(), { code: 'APP_ERROR', message: 'Unknown custom error' })
@@ -1171,12 +1155,10 @@ test('The route response schema also serializes a custom error handler payload (
     t.assert.strictEqual(res.statusCode, 400)
     t.assert.deepStrictEqual(res.json(), errorPayload)
 
-    // a string is never handed to a response schema
     res = await post(fastify, '/string')
     t.assert.strictEqual(res.statusCode, 400)
     t.assert.deepStrictEqual(res.json(), errorPayload)
 
-    // a scope-wide reply serializer takes precedence over the response schema
     const wrapped = Fastify()
     t.after(() => { wrapped.close() })
 

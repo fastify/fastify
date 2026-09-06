@@ -1,9 +1,11 @@
 'use strict'
 
 const { test } = require('node:test')
+const { spyWarning } = require('process-warning')
 const Fastify = require('..')
 const keys = require('../lib/symbols')
 const { FST_ERR_CTP_ALREADY_PRESENT, FST_ERR_CTP_INVALID_TYPE, FST_ERR_CTP_INVALID_MEDIA_TYPE } = require('../lib/errors')
+const { FSTSEC001 } = require('../lib/warnings')
 
 const first = function (req, payload, done) {}
 const second = function (req, payload, done) {}
@@ -488,41 +490,37 @@ test('Safeguard against content-type spoofing - string', async t => {
 })
 
 test('Warning against improper content-type - regexp', async t => {
-  await t.test('improper regex - text plain', (t, done) => {
+  await t.test('improper regex - text plain', async (t) => {
     t.plan(2)
-    const fastify = Fastify()
+    const spyData = spyWarning(FSTSEC001)
+    t.after(spyData.restore)
 
-    process.on('warning', onWarning)
-    function onWarning (warning) {
-      t.assert.strictEqual(warning.name, 'FastifySecurity')
-      t.assert.strictEqual(warning.code, 'FSTSEC001')
-      done()
-    }
-    t.after(() => process.removeListener('warning', onWarning))
+    const fastify = Fastify()
 
     fastify.removeAllContentTypeParsers()
     fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
       done(null, body)
     })
+
+    await fastify.ready()
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['text\\/plain'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
   })
 
-  await t.test('improper regex - application json', (t, done) => {
+  await t.test('improper regex - application json', async (t) => {
     t.plan(2)
+    const spyData = spyWarning(FSTSEC001)
+    t.after(spyData.restore)
     const fastify = Fastify()
-
-    process.on('warning', onWarning)
-    function onWarning (warning) {
-      t.assert.strictEqual(warning.name, 'FastifySecurity')
-      t.assert.strictEqual(warning.code, 'FSTSEC001')
-      done()
-    }
-    t.after(() => process.removeListener('warning', onWarning))
 
     fastify.removeAllContentTypeParsers()
 
     fastify.addContentTypeParser(/application\/json/, function (request, body, done) {
       done(null, body)
     })
+
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['application\\/json'], result: true }])
+    t.assert.deepEqual(spyData.callCount(), 1)
   })
 })
 

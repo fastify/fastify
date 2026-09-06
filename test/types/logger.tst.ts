@@ -10,7 +10,7 @@ import fastify, {
   FastifyRequest,
   LogLevel
 } from '../../fastify.js'
-import { ResSerializerReply } from '../../types/logger.js'
+import { LogController } from '../../types/logger.js'
 
 expect(fastify().log).type.toBe<FastifyBaseLogger>()
 
@@ -158,8 +158,7 @@ const serverWithPinoConfig = fastify({
         }
       },
       res (reply) {
-        expect(reply).type.toBe<ResSerializerReply<Server, FastifyReply>>()
-        expect(reply).type.toBeAssignableTo<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>()
+        expect(reply).type.toBe<Partial<FastifyReply>>()
         expect(reply).type.not.toBeAssignableTo<FastifyReply>()
         return {
           statusCode: 'statusCode'
@@ -194,8 +193,7 @@ const serverAutoInferredSerializerResponseObjectOption = fastify({
   logger: {
     serializers: {
       res (reply) {
-        expect(reply).type.toBe<ResSerializerReply<Server, FastifyReply>>()
-        expect(reply).type.toBeAssignableTo<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>()
+        expect(reply).type.toBe<Partial<FastifyReply>>()
         expect(reply).type.not.toBeAssignableTo<FastifyReply>()
         return {
           status: '200'
@@ -223,8 +221,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
         }
       },
       res (reply) {
-        expect(reply).type.toBe<ResSerializerReply<Server, FastifyReply>>()
-        expect(reply).type.toBeAssignableTo<Partial<FastifyReply> & Pick<FastifyReply, 'statusCode'>>()
+        expect(reply).type.toBe<Partial<FastifyReply>>()
         expect(reply).type.not.toBeAssignableTo<FastifyReply>()
         return {
           statusCode: 'statusCode'
@@ -274,3 +271,8 @@ expect(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serialize
 expect(childParent.child).type.not.toBeCallableWith()
 
 expect(childParent.child).type.not.toBeCallableWith({}, { nonExist: true })
+
+const logController = new LogController()
+expect(logController.requestCompleted).type.toBeCallableWith(undefined, {} as FastifyRequest, {} as FastifyReply)
+expect(logController.requestCompleted).type.toBeCallableWith(null, {} as FastifyRequest, {} as FastifyReply)
+expect(logController.requestCompleted).type.toBeCallableWith(new Error(), {} as FastifyRequest, {} as FastifyReply)

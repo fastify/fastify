@@ -7,7 +7,9 @@ test('case insensitive', async (t) => {
   t.plan(3)
 
   const fastify = Fastify({
-    caseSensitive: false
+    routerOptions: {
+      caseSensitive: false
+    }
   })
   t.after(() => fastify.close())
 
@@ -30,7 +32,9 @@ test('case insensitive inject', async t => {
   t.plan(2)
 
   const fastify = Fastify({
-    caseSensitive: false
+    routerOptions: {
+      caseSensitive: false
+    }
   })
   t.after(() => fastify.close())
 
@@ -55,7 +59,9 @@ test('case insensitive (parametric)', async (t) => {
   t.plan(4)
 
   const fastify = Fastify({
-    caseSensitive: false
+    routerOptions: {
+      caseSensitive: false
+    }
   })
   t.after(() => fastify.close())
 
@@ -81,7 +87,9 @@ test('case insensitive (wildcard)', async (t) => {
   t.plan(4)
 
   const fastify = Fastify({
-    caseSensitive: false
+    routerOptions: {
+      caseSensitive: false
+    }
   })
   t.after(() => fastify.close())
 

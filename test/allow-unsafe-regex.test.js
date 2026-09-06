@@ -7,7 +7,9 @@ test('allow unsafe regex', async t => {
   t.plan(2)
 
   const fastify = Fastify({
-    allowUnsafeRegex: false
+    routerOptions: {
+      allowUnsafeRegex: false
+    }
   })
   t.after(() => fastify.close())
 
@@ -26,7 +28,9 @@ test('allow unsafe regex not match', async t => {
   t.plan(1)
 
   const fastify = Fastify({
-    allowUnsafeRegex: false
+    routerOptions: {
+      allowUnsafeRegex: false
+    }
   })
   t.after(() => fastify.close())
 
@@ -44,7 +48,9 @@ test('allow unsafe regex not safe', (t, done) => {
   t.plan(1)
 
   const fastify = Fastify({
-    allowUnsafeRegex: false
+    routerOptions: {
+      allowUnsafeRegex: false
+    }
   })
   t.after(() => fastify.close())
 
@@ -74,7 +80,9 @@ test('allow unsafe regex allow unsafe', async t => {
   t.plan(3)
 
   const fastify = Fastify({
-    allowUnsafeRegex: true
+    routerOptions: {
+      allowUnsafeRegex: true
+    }
   })
   t.after(() => fastify.close())
 

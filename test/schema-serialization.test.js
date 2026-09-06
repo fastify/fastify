@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 const ContentType = require('../lib/content-type')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 const echoBody = (req, reply) => { reply.send(req.body) }
 

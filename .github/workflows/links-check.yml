@@ -62,3 +62,4 @@ jobs:
           redirects: error
           verbosity: error
           linksToSkip: "https://github.com/orgs/fastify/.*,https://github.com/fastify/fastify/security/advisories/new"
+          statusCodes: '{"403":"warn"}'

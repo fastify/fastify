@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 const { spyWarning } = require('process-warning')
-const { FSTWRN001 } = require('../lib/warnings')
+const { FSTWRN001, FSTSEC002 } = require('../lib/warnings')
 const { AjvCompiler } = require('@fastify/ajv-compiler')
 const { SerializerSelector } = require('@fastify/fast-json-stringify-compiler')
 
@@ -313,4 +313,68 @@ test('lazySchemaCompilation accepts the coercible values the config validator ac
     // eager compilation would reject ready(): the coerced value must reach the route code
     await t.assert.doesNotReject(fastify.ready())
   }
+})
+
+test('lazy mode: boolean false request schemas are compiled at the first request and reject it', async t => {
+  t.plan(6)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+  let validator = 0
+  const fastify = Fastify({
+    lazySchemaCompilation: true,
+    exposeHeadRoutes: false,
+    schemaController: {
+      compilersFactory: {
+        buildValidator (externalSchemas, ajvOptions) {
+          const compile = AjvCompiler()(externalSchemas, ajvOptions)
+          return function (opts) { validator++; return compile(opts) }
+        }
+      }
+    }
+  })
+  let executed = false
+  fastify.post('/body', { schema: { body: false } }, async () => { executed = true; return {} })
+  fastify.get('/headers', { schema: { headers: false } }, async () => { executed = true; return {} })
+  await fastify.ready()
+  // a boolean is a schema: no FSTWRN001, and nothing is compiled before the first request
+  t.assert.strictEqual(spyData.callCount(), 0)
+  t.assert.strictEqual(validator, 0)
+  const body = await fastify.inject({ method: 'POST', url: '/body', payload: {} })
+  t.assert.strictEqual(body.statusCode, 400)
+  const headers = await fastify.inject('/headers')
+  t.assert.strictEqual(headers.statusCode, 400)
+  t.assert.strictEqual(validator, 2)
+  t.assert.strictEqual(executed, false)
+})
+
+test('lazy mode: header names are case-normalized when the route is compiled', async t => {
+  t.plan(2)
+  const fastify = Fastify({ lazySchemaCompilation: true })
+  fastify.get('/trace', {
+    schema: { headers: { type: 'object', required: ['X-Trace'], properties: { 'X-Trace': { type: 'string' } } } }
+  }, async () => ({}))
+  await fastify.ready()
+  const missing = await fastify.inject('/trace')
+  t.assert.strictEqual(missing.statusCode, 400)
+  const present = await fastify.inject({ url: '/trace', headers: { 'x-trace': '1' } })
+  t.assert.strictEqual(present.statusCode, 200)
+})
+
+test('lazy mode: FSTSEC002 for an external header $ref is still emitted at registration', async t => {
+  t.plan(3)
+  const spyData = spyWarning(FSTSEC002)
+  t.after(spyData.restore)
+  const fastify = Fastify({ lazySchemaCompilation: true })
+  fastify.addSchema({
+    $id: 'http://example.com/lazy-headers',
+    type: 'object',
+    properties: { 'X-Admin': { type: 'string' } }
+  })
+  fastify.post('/warn', { schema: { headers: { $ref: 'http://example.com/lazy-headers#' } } }, async () => ({}))
+  await fastify.ready()
+  t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['POST', '/warn', 'http://example.com/lazy-headers#'], result: true }])
+  const res = await fastify.inject({ method: 'POST', url: '/warn', payload: {} })
+  t.assert.strictEqual(res.statusCode, 200)
+  // compiling the route at the first request does not warn a second time
+  t.assert.strictEqual(spyData.callCount(), 1)
 })

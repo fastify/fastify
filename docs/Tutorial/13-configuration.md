@@ -128,7 +128,9 @@ For example, we can define our `dev` script like this:
 ```json
 {
   "scripts": {
-    "dev": "node --watch --env-file=.env server.ts"
+    "start": "node server.ts",
+    "dev": "node --watch --env-file=.env server.ts",
+    "test": "borp --coverage --check-coverage"
   }
 }
 ```
@@ -157,6 +159,13 @@ With this setup, `node --watch --env-file=.env server.ts` loads the variables
 into `process.env` before `server.ts` runs.
 Then `@fastify/env` validates them and exposes the result as `app.config`.
 
+The logger keeps the `info` threshold from the Logging and monitoring chapter.
+Fastify creates its logger before infrastructure plugins load, so the
+`@fastify/env` plugin cannot configure that initial threshold in this
+architecture. The terminal-formatting decision remains separate: interactive
+stdout uses `pino-pretty`, while redirected stdout remains newline-delimited
+JSON.
+
 ## Register configuration first
 
 Configuration should be available before the rest of the application boots.
@@ -168,26 +177,29 @@ That way, any later plugin can depend on it when needed.
 
 ```ts
 import fastify from 'fastify'
+import type { FastifyServerOptions } from 'fastify'
 import {
   authenticationPlugin
 } from './plugins/app/authentication/authentication.plugin.ts'
 import { errorsPlugin } from './plugins/app/errors/errors.plugin.ts'
 import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.ts'
+import { healthResponse } from './plugins/app/quotes/schemas.ts'
 import {
   infrastructurePlugin
 } from './plugins/infrastructure/infrastructure.plugin.ts'
-import type { FastifyServerOptions } from 'fastify'
 import type {
   InfrastructureOptions
 } from './plugins/infrastructure/infrastructure.plugin.ts'
 
 export interface AppOptions extends InfrastructureOptions {
   logger?: FastifyServerOptions['logger']
+  logController?: FastifyServerOptions['logController']
 }
 
 export function createApp (options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
+    logController: options.logController,
     forceCloseConnections: false,
     ajv: {
       customOptions: {
@@ -204,6 +216,19 @@ export function createApp (options: AppOptions = {}) {
     app.register(authenticationPlugin)
     app.register(quotesPlugin)
   })
+
+  // Keep operational health checks outside the authenticated application scope.
+  app.get(
+    '/health',
+    {
+      schema: {
+        response: healthResponse
+      }
+    },
+    async function () {
+      return { status: 'ok' as const }
+    }
+  )
 
   app.get('/throw', async function () {
     throw new Error('💥 Kaboom!')
@@ -232,10 +257,40 @@ reading `app.config`.
 ### `server.ts`
 
 ```ts
+import { LogController } from 'fastify'
+import type { FastifyServerOptions } from 'fastify'
 import closeWithGrace from 'close-with-grace'
 import { createApp } from './app.ts'
 
-const app = createApp({ logger: true })
+const logger: FastifyServerOptions['logger'] = {
+  level: 'info',
+  redact: [
+    'req.headers.authorization',
+    'req.headers.cookie',
+    'authorization',
+    'cookie',
+    'password'
+  ],
+  ...(process.stdout.isTTY
+    ? {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'HH:MM:ss Z'
+          }
+        }
+      }
+    : {})
+}
+
+const logController = new LogController({
+  disableRequestLogging: (request) => {
+    return request.method === 'GET' && request.routeOptions.url === '/health'
+  }
+})
+
+const app = createApp({ logger, logController })
 
 closeWithGrace(
   { delay: 15_000 },
@@ -245,6 +300,7 @@ closeWithGrace(
     }
 
     await app.close()
+    app.log.info('Server closed gracefully')
   }
 )
 

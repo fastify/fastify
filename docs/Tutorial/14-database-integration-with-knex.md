@@ -37,7 +37,11 @@ library to get started.
 
 ```bash
 npm i knex pg
+npm i -D @types/pg
 ```
+
+The PostgreSQL driver needs the separate `@types/pg` package for the strict
+TypeScript checks used by this project.
 
 ## Start PostgreSQL with Docker Compose
 
@@ -256,6 +260,7 @@ export const knexPlugin = fp<KnexPluginOptions>(
 
     app.addHook('onClose', async function (instance) {
       // Close the connection pool during shutdown.
+      instance.log.info('closing database')
       await instance.knex.destroy()
     })
   },
@@ -421,7 +426,7 @@ if (Number(process.env.CAN_CREATE_DATABASE) !== 1) {
 
 const databaseName = process.env.POSTGRES_DB
 
-if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(databaseName)) {
+if (databaseName == null || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(databaseName)) {
   throw new Error('POSTGRES_DB must be a valid PostgreSQL identifier.')
 }
 
@@ -500,7 +505,7 @@ if (Number(process.env.CAN_DROP_DATABASE) !== 1) {
 
 const databaseName = process.env.POSTGRES_DB
 
-if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(databaseName)) {
+if (databaseName == null || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(databaseName)) {
   throw new Error('POSTGRES_DB must be a valid PostgreSQL identifier.')
 }
 
@@ -660,26 +665,29 @@ entry plugins own that detail.
 
 ```ts
 import fastify from 'fastify'
+import type { FastifyServerOptions } from 'fastify'
 import {
   authenticationPlugin
 } from './plugins/app/authentication/authentication.plugin.ts'
 import { errorsPlugin } from './plugins/app/errors/errors.plugin.ts'
 import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.ts'
+import { healthResponse } from './plugins/app/quotes/schemas.ts'
 import {
   infrastructurePlugin
 } from './plugins/infrastructure/infrastructure.plugin.ts'
-import type { FastifyServerOptions } from 'fastify'
 import type {
   InfrastructureOptions
 } from './plugins/infrastructure/infrastructure.plugin.ts'
 
 export interface AppOptions extends InfrastructureOptions {
   logger?: FastifyServerOptions['logger']
+  logController?: FastifyServerOptions['logController']
 }
 
 export function createApp (options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
+    logController: options.logController,
     forceCloseConnections: false,
     ajv: {
       customOptions: {
@@ -696,6 +704,19 @@ export function createApp (options: AppOptions = {}) {
     app.register(authenticationPlugin)
     app.register(quotesPlugin)
   })
+
+  // Keep operational health checks outside the authenticated application scope.
+  app.get(
+    '/health',
+    {
+      schema: {
+        response: healthResponse
+      }
+    },
+    async function () {
+      return { status: 'ok' as const }
+    }
+  )
 
   app.get('/throw', async function () {
     throw new Error('💥 Kaboom!')
@@ -977,14 +998,18 @@ curl -X POST http://127.0.0.1:3000/quotes \
   -d '{"text":"Persistence matters"}'
 ```
 
-Read it back:
+The response contains the new quote's `id`. If you ran the seed command above
+on a fresh database, that ID is `4`. Assign the returned value, then read that
+specific quote back:
 
 ```bash
-curl http://127.0.0.1:3000/quotes/1 \
+QUOTE_ID=4
+curl http://127.0.0.1:3000/quotes/$QUOTE_ID \
   -H 'authorization: Bearer user'
 ```
 
-Stop the server, start it again, and repeat the `GET`.
+If your `POST` returned another ID, use that value instead. Stop the server,
+start it again, and repeat the `GET` with the same `QUOTE_ID`.
 If the quote is still there, the application is now persisting data in
 PostgreSQL.
 

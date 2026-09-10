@@ -412,6 +412,24 @@ You can hook into the application-lifecycle as well.
 - [onRoute](#onroute)
 - [onRegister](#onregister)
 
+Application hooks are invoked with `this` bound to the Fastify instance they
+belong to. The callback arguments are not consistent across all application
+hooks, so the following table summarizes the context and arguments for each
+hook:
+
+| Hook | `this` | Callback arguments |
+| --- | --- | --- |
+| `onReady` | Fastify instance | `done` (callback style) |
+| `onListen` | Fastify instance | `done` (callback style) |
+| `onClose` | Fastify instance | `instance`, `done` (callback style) |
+| `preClose` | Fastify instance | `done` (callback style) |
+| `onRoute` | Fastify instance | `routeOptions` |
+| `onRegister` | Fastify instance | `instance`, `opts` |
+
+For asynchronous hooks, omit `done` and return a promise instead. Use a
+regular `function` rather than an arrow function when you need to access the
+hook's `this` value; arrow functions do not have their own `this` binding.
+
 ### onReady
 Triggered before the server starts listening for requests and when `.ready()` is
 invoked. It cannot change the routes or add new hooks. Registered hook functions
@@ -478,13 +496,15 @@ The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
 ```js
 // callback style
-fastify.addHook('onClose', (instance, done) => {
+fastify.addHook('onClose', function (instance, done) {
+  // `this` and `instance` refer to the associated Fastify instance.
   // Some code
   done()
 })
 
 // or async/await style
-fastify.addHook('onClose', async (instance) => {
+fastify.addHook('onClose', async function (instance) {
+  // `this` and `instance` refer to the associated Fastify instance.
   // Some async code
   await closeDatabaseConnections()
 })
@@ -647,7 +667,8 @@ fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 }, { prefix: '/hello' })
 
-fastify.addHook('onRegister', (instance, opts) => {
+fastify.addHook('onRegister', function (instance, opts) {
+  // `this` and `instance` refer to the newly created encapsulation context.
   // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated

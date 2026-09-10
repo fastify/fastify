@@ -70,21 +70,23 @@ and tests.
 
 ```ts
 import fastify from "fastify";
+import type { FastifyServerOptions } from "fastify";
 import configureErrorHandlers from "./error-handlers.ts";
 import { dbPlugin } from "./plugins/db.ts";
 import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
 import { protectedRoutes } from "./routes/protected.ts";
-import type { FastifyServerOptions } from "fastify";
+import { healthResponse } from "./schemas.ts";
 
 export interface AppOptions {
   logger?: FastifyServerOptions["logger"];
+  logController?: FastifyServerOptions["logController"];
 }
 
-// This factory also allows to customize
-// configuration.
+// This factory also allows us to customize configuration for tests.
 export function createApp(options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
+    logController: options.logController,
     forceCloseConnections: false,
     ajv: {
       customOptions: {
@@ -99,7 +101,17 @@ export function createApp(options: AppOptions = {}) {
 
   app.register(protectedRoutes);
 
-  configureErrorHandlers(app);
+  app.get(
+    "/health",
+    {
+      schema: {
+        response: healthResponse,
+      },
+    },
+    async function () {
+      return { status: "ok" as const };
+    }
+  );
 
   app.get("/throw", async function () {
     throw new Error("💥 Kaboom!");
@@ -109,21 +121,54 @@ export function createApp(options: AppOptions = {}) {
     return { ok: true };
   });
 
+  configureErrorHandlers(app);
+
   return app;
 }
 ```
 
 Fastify already disables logging when `logger` is `undefined`. The factory only
-forwards an explicit logger choice; `server.ts` enables logging with `true`,
-while the test helper uses `false` unless a test supplies another value.
+forwards explicit logger and `LogController` choices. `server.ts` supplies the
+configuration from the Logging and monitoring chapter, while the test helper
+uses `false` unless a test supplies another value.
 
 ### server.ts
 
 ```ts
+import { LogController } from "fastify";
+import type { FastifyServerOptions } from "fastify";
 import closeWithGrace from "close-with-grace";
 import { createApp } from "./app.ts";
 
-const app = createApp({ logger: true });
+const logger: FastifyServerOptions["logger"] = {
+  level: "info",
+  redact: [
+    "req.headers.authorization",
+    "req.headers.cookie",
+    "authorization",
+    "cookie",
+    "password",
+  ],
+  ...(process.stdout.isTTY
+    ? {
+        transport: {
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "HH:MM:ss Z",
+          },
+        },
+      }
+    : {}),
+};
+
+const logController = new LogController({
+  disableRequestLogging: (request) => {
+    return request.method === "GET" && request.routeOptions.url === "/health";
+  },
+});
+
+const app = createApp({ logger, logController });
 
 closeWithGrace(
   { delay: 15_000 },
@@ -132,6 +177,7 @@ closeWithGrace(
       app.log.error(err);
     }
     await app.close();
+    app.log.info("Server closed gracefully");
   }
 );
 
@@ -172,11 +218,12 @@ Reaching 100% coverage requires us to exercise success, failure, and lifecycle
 branches. Those checks should still be grouped by the behavior they describe,
 rather than collected in one coverage-only suite.
 
-We will create four test files:
+We will create five test files:
 
 * `test/auth.test.ts` covers the teaching authentication hook.
 * `test/quotes.test.ts` covers validation, serialization, and quote CRUD.
 * `test/app.test.ts` covers public routes and global error handling.
+* `test/logging.test.ts` covers structured logs, redaction, and health logging.
 * `test/plugins/db.test.ts` covers the database plugin lifecycle.
 
 Each test creates a fresh Fastify instance and closes it afterward.
@@ -230,8 +277,8 @@ Create a helper for the repeated quote setup, then cover every quote route:
 
 ```ts
 import { describe, test, type TestContext } from "node:test";
-import { createTestApp } from "./app.ts";
 import type { FastifyInstance } from "fastify";
+import { createTestApp } from "./app.ts";
 
 const userHeaders = { authorization: "Bearer user" };
 const adminHeaders = { authorization: "Bearer admin" };
@@ -416,13 +463,9 @@ describe("application behavior", () => {
     t.assert.equal(res.statusCode, 200);
   });
 
-  test("logs and hides internal errors", async (t: TestContext) => {
-    const app = createTestApp({ logger: "silent" });
+  test("hides internal errors", async (t: TestContext) => {
+    const app = createTestApp();
     t.after(() => app.close());
-
-    // Native Node.js test runner utility:
-    // https://nodejs.org/api/test.html#mockmethodobject-methodname-implementation-options
-    const { mock: errorMock } = t.mock.method(app.log, "error");
 
     const res = await app.inject("/throw");
 
@@ -430,18 +473,145 @@ describe("application behavior", () => {
     t.assert.deepStrictEqual(res.json(), {
       message: "Internal Server Error",
     });
-    t.assert.equal(errorMock.calls.length, 1);
-
-    const [logObject, logMessage] =
-      errorMock.calls[0].arguments;
-
-    t.assert.equal(logMessage, "Unhandled error occurred");
-    t.assert.ok(logObject.err instanceof Error);
-    t.assert.equal(logObject.request.url, "/throw");
-    t.assert.equal(logObject.request.method, "GET");
   });
 });
 ```
+
+### `test/logging.test.ts`
+
+Most tests keep logging disabled. These focused tests instead give Fastify a
+writable stream, parse its newline-delimited JSON, and assert stable fields
+rather than entire records. They do not depend on `pino-pretty` or volatile
+timestamps, process IDs, hostnames, and response times.
+
+```ts
+import { Writable } from "node:stream";
+import { LogController } from "fastify";
+import { test, type TestContext } from "node:test";
+import { createTestApp } from "./app.ts";
+
+interface LogRecord {
+  level: number;
+  reqId?: string;
+  quoteId?: number;
+  msg?: string;
+  authorization?: string;
+  cookie?: string;
+  password?: string;
+}
+
+function captureLogs() {
+  let output = "";
+  const stream = new Writable({
+    write(chunk, _encoding, callback) {
+      output += chunk.toString();
+      callback();
+    },
+  });
+
+  return {
+    stream,
+    raw() {
+      return output;
+    },
+    records() {
+      return output
+        .trim()
+        .split("\n")
+        .filter(Boolean)
+        .map((line) => JSON.parse(line) as LogRecord);
+    },
+  };
+}
+
+function createHealthLogController() {
+  return new LogController({
+    disableRequestLogging: (request) => {
+      return request.method === "GET" && request.routeOptions.url === "/health";
+    },
+  });
+}
+
+test("correlates quote logs and redacts sensitive values", async (t: TestContext) => {
+  const logs = captureLogs();
+  const app = createTestApp({
+    logger: {
+      level: "info",
+      redact: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        "authorization",
+        "cookie",
+        "password",
+      ],
+      stream: logs.stream,
+    },
+    logController: createHealthLogController(),
+  });
+  t.after(() => app.close());
+
+  const authorization = "Bearer user";
+  const cookie = "session=secret-cookie";
+  const password = "secret-password";
+  const text = "request bodies stay out of logs";
+
+  app.log.info(
+    { authorization, cookie, password },
+    "redaction check"
+  );
+
+  const response = await app.inject({
+    method: "POST",
+    url: "/quotes",
+    headers: { authorization, cookie },
+    payload: { text, password },
+  });
+
+  t.assert.equal(response.statusCode, 201);
+
+  const rawLogs = logs.raw();
+  t.assert.doesNotMatch(rawLogs, /Bearer user/);
+  t.assert.doesNotMatch(rawLogs, /session=secret-cookie/);
+  t.assert.doesNotMatch(rawLogs, /secret-password/);
+  t.assert.doesNotMatch(rawLogs, /request bodies stay out of logs/);
+
+  const records = logs.records();
+  const redaction = records.find((record) => record.msg === "redaction check");
+  const incoming = records.find((record) => record.msg === "incoming request");
+  const created = records.find((record) => record.msg === "quote created");
+  const completed = records.find((record) => record.msg === "request completed");
+
+  t.assert.equal(redaction?.authorization, "[Redacted]");
+  t.assert.equal(redaction?.cookie, "[Redacted]");
+  t.assert.equal(redaction?.password, "[Redacted]");
+  t.assert.equal(created?.level, 30);
+  t.assert.equal(created?.quoteId, 1);
+  t.assert.equal(typeof created?.reqId, "string");
+  t.assert.equal(created?.reqId, incoming?.reqId);
+  t.assert.equal(created?.reqId, completed?.reqId);
+});
+
+test("keeps health public and suppresses its request logs", async (t: TestContext) => {
+  const logs = captureLogs();
+  const app = createTestApp({
+    logger: { level: "info", stream: logs.stream },
+    logController: createHealthLogController(),
+  });
+  t.after(() => app.close());
+
+  const response = await app.inject("/health?source=load-balancer");
+
+  t.assert.equal(response.statusCode, 200);
+  t.assert.deepStrictEqual(response.json(), { status: "ok" });
+  t.assert.deepStrictEqual(logs.records(), []);
+});
+```
+
+The first test confirms that the application event shares its request ID with
+Fastify's incoming and completion records. It also verifies configured
+redaction and checks that authorization, cookie, password, and request-body
+values are absent. The second test covers the health response schema,
+authentication bypass, and exact-route request-log suppression.
 
 ### `test/plugins/db.test.ts`
 

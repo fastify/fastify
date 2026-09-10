@@ -2,22 +2,27 @@
 
 Congratulations on completing the Quote Vault tutorial. This is a big step.
 
-You have learned more than how to define routes with Fastify. Along the way,
-you worked with important Node.js concepts, application architecture,
-validation, testing, databases, shared infrastructure, authentication,
-authorization, security, and operational concerns.
+You have built much more than a simple application. Along the way, you worked
+with important Node.js concepts, application architecture, validation,
+testing, databases, shared infrastructure, authentication, authorization,
+security, and operational concerns.
 
 You now have a solid foundation for building Fastify applications. Keep
 experimenting with Quote Vault, adapt it to your own ideas, and continue
 exploring the Fastify ecosystem.
 
-## Continue with system design
+## Continue with production concerns
 
-One essential topic remains beyond the scope of this tutorial: how an
-application scales. System design is rarely covered in introductory tutorials,
-but it is an important part of learning web development. Continue your journey
-with resources about capacity, bottlenecks, caching, distributed state,
-observability, and failure handling.
+Building features is only one part of running an application in production.
+You will also encounter operational and infrastructure concerns such as
+capacity planning, deployment, observability, resilience, backups, and how the
+application behaves under load or during a failure. These topics are rarely
+covered in introductory tutorials, but they are an important part of learning
+web development.
+
+General system design courses are a useful next step. They can help you reason
+about bottlenecks, caching, queues, distributed state, horizontal scaling, and
+the tradeoffs involved in operating a reliable application.
 
 For Node.js applications in particular, Platformatic publishes material based
 on its experience running and scaling Node.js in production. These resources

@@ -1,4 +1,4 @@
-# Congratulations
+# Congratulations 🎉
 
 Congratulations on completing the Quote Vault tutorial. This is a big step.
 

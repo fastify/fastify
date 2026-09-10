@@ -156,7 +156,7 @@ HTTP/1.1 400 Bad Request
 This expected client error is logged at `info` with the message
 `request rejected`, not at `error`.
 
-* **Explicit 404 response from a route**:
+* **Matched-route resource miss**:
 
 ```bash
 curl -i http://localhost:3000/quotes/999 \
@@ -170,9 +170,11 @@ HTTP/1.1 404 Not Found
 { "message": "Quote not found" }
 ```
 
-This route sets a 404 response directly, so it does not invoke the error or
-not-found handler. Fastify's automatic request records still capture the 404
-status at `info`.
+The request matches `/quotes/:id`, whose route handler sets a 404 response
+directly when the quote does not exist. It therefore does not invoke the error
+or not-found handler. Fastify's automatic request records still capture this
+expected application outcome at `info`. In contrast, the unknown route above
+invokes the not-found handler and logs `resource not found` at `warn`.
 
 ## Fastify error codes
 

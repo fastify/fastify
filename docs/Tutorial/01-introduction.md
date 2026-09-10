@@ -27,6 +27,7 @@ The first chapters introduce Fastify's core:
 * decorating Fastify instances,
 * validating input and serializing responses with JSON Schema,
 * choosing and scoping lifecycle hooks,
+* using structured logs and health checks for monitoring,
 * handling errors and unknown routes,
 * using plugins and encapsulation,
 * and testing with `node:test` through `borp`, `fastify.inject()`, and coverage.

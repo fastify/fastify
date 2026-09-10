@@ -147,8 +147,8 @@ QUOTE_CREATE_RATE_LIMIT_TIME_WINDOW=60000
 ```
 
 Both windows are in milliseconds, so `60000` means one minute. The global
-policy allows 100 requests per route and minute. Quote creation has a stricter
-default of ten because it performs a database write.
+policy allows 100 requests per minute across the routes that use it. Quote
+creation has a stricter default of ten because it performs a database write.
 
 Apply the same additions to the example file.
 
@@ -369,9 +369,9 @@ keys separate from the session keys added in the authentication chapter.
 
 The `session` dependency is important for both boot order and request hook
 order. The session plugin registers its `onRequest` hook first, so it loads the
-session before the rate limiter calls `keyGenerator`. The application
-authentication hook runs afterward. Public requests still have a session
-object, but no `session.user`, so they use the IP fallback.
+session before the rate limiter calls `keyGenerator`. The quote domain
+authentication hook also runs after session loading. Public requests still
+have a session object, but no `session.user`, so they use the IP fallback.
 
 `skipOnError: false` makes a Redis error reject the request instead of silently
 skipping the check. This is a fail-closed policy: Quote Vault prefers an
@@ -422,7 +422,8 @@ import type {
 } from './plugins/infrastructure/infrastructure.plugin.ts'
 
 export interface AppOptions extends InfrastructureOptions {
-  logger?: FastifyServerOptions['logger'] | string
+  logger?: FastifyServerOptions['logger']
+  logController?: FastifyServerOptions['logController']
 }
 
 export function createApp (options: AppOptions = {}) {
@@ -457,20 +458,7 @@ route declared below it. Routes can opt out or replace part of the policy.
 ## Exclude the health check
 
 Platform health checks should require neither a session nor a client quota.
-First add the new route to `publicRoutes` in
-`plugins/app/authentication/authentication.hooks.ts`:
-
-```ts
-const publicRoutes = new Set([
-  'GET /health',
-  'GET /not-protected',
-  'GET /throw',
-  'POST /login',
-  'POST /register'
-])
-```
-
-Then opt the route out of rate limiting:
+Opt the route out of rate limiting:
 
 ```ts
 app.get(
@@ -478,10 +466,13 @@ app.get(
   {
     config: {
       rateLimit: false
+    },
+    schema: {
+      response: healthResponse
     }
   },
   async function () {
-    return { status: 'ok' }
+    return { status: 'ok' as const }
   }
 )
 ```

@@ -95,7 +95,9 @@ Incoming Request
 
 Sometimes you want to end a request before the route handler runs (e.g. authentication).
 
-If you send a reply in a hook, the rest of the hooks and the route handler are skipped.
+If you send a reply in a hook, the remaining request-processing hooks and the
+route handler are skipped. Response hooks such as `onSend` and `onResponse`
+still run for the early response.
 
 ```ts
 // Stop request if no Authorization header
@@ -106,11 +108,14 @@ app.addHook('onRequest', async (request, reply) => {
 });
 ```
 
-> **Rule of thumb:** Do the work **as early as possible.**
-> In the example above, the `Authorization` header is required and checked in 
+> **Rule of thumb:** Choose the earliest hook that has the data you need.
+> In the example above, the `Authorization` header is required and checked in
 > `onRequest` instead of `preHandler`.
 > That way, Fastify doesn’t waste time parsing the body and validating data 
 > before rejecting the request.
+
+Because body parsing happens later in the lifecycle, `request.body` is always
+`undefined` in `onRequest`. Use a later hook when a check needs the body.
 
 ## Implementation for our application
 
@@ -267,6 +272,32 @@ export default function configureHooks(app: FastifyInstance) {
 }
 ```
 
+### Add authentication response schemas
+
+The authentication hook can now return `401 Unauthorized` from every quote
+route. Add that response to the shared schemas in `schemas.ts` so those replies
+keep the strict response serialization introduced in the previous chapter:
+
+```ts
+// schemas.ts
+export const listQuotesResponse = {
+  200: Type.Array(quoteResponse),
+  401: errorMessage,
+};
+
+export const singleQuoteResponse = {
+  "2xx": quoteResponse,
+  401: errorMessage,
+  404: errorMessage,
+};
+
+export const deleteQuoteResponse = {
+  204: Type.Null(),
+  401: errorMessage,
+  404: errorMessage,
+};
+```
+
 ### Register in `server.ts`
 
 ```ts
@@ -313,12 +344,20 @@ app.delete(
       reply.code(404);
       return { message: "Quote not found" };
     }
-    return reply.code(204).send(null);
+    reply.code(204);
+    return null;
   }
 );
 ```
 
 ## Testing hooks
+
+If the server from the previous chapter is still running, stop it with
+`Ctrl+C`. Start the updated application:
+
+```bash
+node server.ts
+```
 
 Here are a few focused requests to confirm that hooks work as expected:
 
@@ -360,7 +399,7 @@ Expected: `403 Forbidden` – only admins can delete.
 Create a quote first so there is a known ID to delete:
 
 ```bash
-curl -i http://localhost:3000/quotes \
+curl -i -X POST http://localhost:3000/quotes \
   -H "Authorization: Bearer admin" \
   -H "Content-Type: application/json" \
   -d '{"text":"Hooks can stop work early"}'
@@ -373,3 +412,7 @@ curl -i -X DELETE http://localhost:3000/quotes/1 \
 
 Expected: `204 No Content` – quote successfully deleted. If the create request
 returned another ID, use that ID in the delete URL.
+
+Finally, stop the server with `Ctrl+C`. The `onClose` hook runs during graceful
+shutdown, so the logs should include `closing database` before
+`Server closed gracefully`.

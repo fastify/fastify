@@ -425,14 +425,14 @@ export const listQuotesResponse = {
 export const singleQuoteResponse = {
   '2xx': quoteResponse,
   401: authenticationError,
-  404: quoteError
+  404: errorMessage
 }
 
 export const deleteQuoteResponse = {
   204: Type.Null(),
   401: authenticationError,
   403: forbiddenResponse,
-  404: quoteError
+  404: errorMessage
 }
 ```
 
@@ -508,5 +508,4 @@ administrator session and expires the browser cookie.
 Quote Vault now publishes an OpenAPI document and an interactive Swagger UI
 from the schemas already used at runtime.
 
-The final chapter compares ways to preserve clear application boundaries as a
-Fastify codebase and its team grow.
+This completes the Quote Vault tutorial application.

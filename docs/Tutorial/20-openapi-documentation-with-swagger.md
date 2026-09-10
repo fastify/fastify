@@ -473,7 +473,7 @@ read, create, and update operations from the same page.
 
 The regular user cannot delete a quote. Trying `DELETE /quotes/:id` with this
 session returns `403 Forbidden`, as required by the authorization policy from
-chapter 17.
+chapter 18.
 
 To verify deletion, first execute `POST /logout`, then log in again with the
 seeded administrator:

@@ -866,10 +866,7 @@ function addLoginDecorator (
       )
     }
 
-    const setCookie = response.headers['set-cookie']
-    if (typeof setCookie !== 'string') {
-      throw new Error('Test login did not return a session cookie')
-    }
+    const setCookie = response.headers['set-cookie'] as string
 
     return setCookie.split(';', 1)[0]
   })
@@ -1023,7 +1020,7 @@ describe('authentication', function () {
         roles: ['admin', 'user']
       }
     })
-    const setCookie = response.headers['set-cookie']?.toString() ?? ''
+    const setCookie = response.headers['set-cookie'] as string
     t.assert.match(
       setCookie,
       /HttpOnly/
@@ -1117,8 +1114,7 @@ describe('authentication', function () {
         headers: { cookie }
       })
       t.assert.equal(logout.statusCode, 204)
-      const clearedCookie =
-        logout.headers['set-cookie']?.toString() ?? ''
+      const clearedCookie = logout.headers['set-cookie'] as string
       t.assert.match(
         clearedCookie,
         /Max-Age=0/

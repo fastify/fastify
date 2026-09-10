@@ -685,7 +685,6 @@ const app = fastify({
   ajv: {
     customOptions: {
       allErrors: false,
-      coerceTypes: "array",
       removeAdditional: "all",
     },
   },

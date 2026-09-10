@@ -344,7 +344,6 @@ export function createApp (options: AppOptions = {}) {
     ajv: {
       customOptions: {
         allErrors: false,
-        coerceTypes: 'array',
         removeAdditional: 'all'
       }
     }

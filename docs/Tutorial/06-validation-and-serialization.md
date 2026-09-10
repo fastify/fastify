@@ -179,13 +179,107 @@ export type ListQuery = Static<typeof listQuery>;
 
 `Type.Object()` makes its properties required unless they are wrapped in
 `Type.Optional()`. The exported `Static` aliases are useful outside route
-handlers—for example, the repository can use `Quote`—while route request types
+handlers—for example, the repository can use `Quote` while route request types
 will be inferred automatically by the provider.
 
 The response schemas compose TypeBox values directly. `app.addSchema()` and
 `Type.Ref()` are useful when an application deliberately uses Fastify's named
 schema registry. Here every schema module can import the value it needs, so
 direct composition is simpler and preserves the complete static type.
+
+### Connect the repository to the response type
+
+The response schemas also let the type provider check what each route returns.
+Our generic document database currently returns `Document`, whose additional
+properties are `unknown`. TypeScript therefore cannot know that a document from
+the `quotes` collection has the `text` required by `quoteResponse`.
+
+The in-memory database uses string collection names and has no schema of its
+own. Add a generic document type to its read and update operations so a
+repository can declare the collection type it owns:
+
+```ts
+// db.ts, inside the object returned by createDb()
+getAll<T extends { id: number } = Document>(
+  collection: string,
+  { limit }: { limit?: number } = {}
+) {
+  const { data } = getCollection(collection);
+  const arr = Array.from(data.values()) as T[];
+  return typeof limit === "number" ? arr.slice(0, limit) : arr;
+},
+
+getById<T extends { id: number } = Document>(
+  collection: string,
+  id: number
+) {
+  const { data } = getCollection(collection);
+  return (data.get(id) as T | undefined) ?? null;
+},
+
+insert<T extends Record<string, unknown>>(
+  collection: string,
+  entity: T
+) {
+  const bucket = getCollection(collection);
+  const id = bucket.id++;
+  const doc = { id, ...entity };
+  bucket.data.set(id, doc);
+  return doc;
+},
+
+update<T extends { id: number } = Document>(
+  collection: string,
+  id: number,
+  patch: Partial<Omit<T, "id">>
+) {
+  const { data } = getCollection(collection);
+  const current = data.get(id);
+  if (current === undefined) return null;
+  const updated = { ...current, ...patch, id } as T;
+  data.set(id, updated);
+  return updated;
+},
+```
+
+The type assertion stays inside this tutorial database, at the boundary where
+a collection name is associated with its document type. The quotes repository
+can now make that association explicitly:
+
+```ts
+// quotes-repository.ts
+import type { FastifyInstance } from "fastify";
+import type { Quote } from "./schemas.ts";
+
+declare module "fastify" {
+  interface FastifyInstance {
+    quotesRepository: ReturnType<typeof createQuotesRepository>;
+  }
+}
+
+export function createQuotesRepository(app: FastifyInstance) {
+  return {
+    list(limit?: number) {
+      return app.db.getAll<Quote>("quotes", { limit });
+    },
+    get(id: number) {
+      return app.db.getById<Quote>("quotes", id);
+    },
+    create(text: string) {
+      return app.db.insert("quotes", { text });
+    },
+    update(id: number, text: string) {
+      return app.db.update<Quote>("quotes", id, { text });
+    },
+    remove(id: number) {
+      return app.db.delete("quotes", id);
+    },
+  };
+}
+```
+
+A production database adapter should expose types based on its own schema or
+query definitions rather than rely on a caller-supplied generic type.
 
 ### Server with schemas
 
@@ -210,8 +304,6 @@ const app = fastify({
     customOptions: {
       // Explicitly disable allErrors to avoid CVE-2020-8192 risk
       allErrors: false,
-      // Coerce types: e.g., "42" (string) -> 42 (integer)
-      coerceTypes: 'array',
       // Remove properties not in schema
       removeAdditional: 'all'
     }
@@ -310,7 +402,8 @@ app.delete(
       reply.code(404);
       return { message: "Quote not found" };
     }
-    return reply.code(204).send(null);
+    reply.code(204);
+    return null;
   }
 );
 
@@ -322,17 +415,22 @@ closeWithGrace(
     }
 
     await app.close();
+    app.log.info('Server closed gracefully');
   }
 );
 
 // Start the server
 try {
-  await app.listen({ port: 3000 });
+  await app.listen({ host: '0.0.0.0', port: 3000 });
 } catch (err) {
   app.log.error(err);
   process.exit(1);
 }
 ```
+
+The `204` response schema is `Type.Null()`, so the delete handler returns
+`null` after setting the status. Fastify sends no response body for a
+`204 No Content` response.
 
 ### Quick mapping reminder
 
@@ -342,6 +440,13 @@ try {
 * `headers`: HTTP request headers
 
 ## Testing schemas
+
+If the server from the previous chapter is still running, stop it with
+`Ctrl+C`. Start the updated application:
+
+```bash
+node server.ts
+```
 
 Here are a few focused requests to confirm validation and serialization:
 

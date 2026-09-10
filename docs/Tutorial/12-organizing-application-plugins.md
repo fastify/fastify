@@ -279,8 +279,10 @@ export const quotesRepositoryPlugin = fp(
 )
 ```
 
-Register quote schemas in `quotes.routes.ts`, next to the routes that consume
-them. The repository remains responsible only for persistence.
+Import the schemas in `quotes.routes.ts`, next to the routes that consume them.
+The repository remains responsible only for persistence. The existing health
+response schema moves with this schema module and keeps the same public
+contract.
 
 The route plugin depends on the shared authentication hook and the quote
 repository. Update those names while keeping the route context encapsulated:
@@ -322,24 +324,28 @@ export const errorsPlugin = fp(
 
 ## Compose domains in `app.ts`
 
-The root now imports domain entry points instead of their internal parts:
+The root now imports domain entry points for application composition. It also
+imports the existing health response schema for its root operational route:
 
 ```ts
 import fastify from 'fastify'
+import type { FastifyServerOptions } from 'fastify'
 import {
   authenticationPlugin
 } from './plugins/app/authentication/authentication.plugin.ts'
 import { errorsPlugin } from './plugins/app/errors/errors.plugin.ts'
 import { quotesPlugin } from './plugins/app/quotes/quotes.plugin.ts'
-import type { FastifyServerOptions } from 'fastify'
+import { healthResponse } from './plugins/app/quotes/schemas.ts'
 
 export interface AppOptions {
   logger?: FastifyServerOptions['logger']
+  logController?: FastifyServerOptions['logController']
 }
 
 export function createApp (options: AppOptions = {}) {
   const app = fastify({
     logger: options.logger,
+    logController: options.logController,
     forceCloseConnections: false,
     ajv: {
       customOptions: {
@@ -356,6 +362,19 @@ export function createApp (options: AppOptions = {}) {
     app.register(quotesPlugin)
   })
 
+  // Keep operational health checks outside the authenticated application scope.
+  app.get(
+    '/health',
+    {
+      schema: {
+        response: healthResponse
+      }
+    },
+    async function () {
+      return { status: 'ok' as const }
+    }
+  )
+
   app.get('/throw', async function () {
     throw new Error('💥 Kaboom!')
   })
@@ -369,7 +388,9 @@ export function createApp (options: AppOptions = {}) {
 ```
 
 The application scope remains encapsulated, so its authentication hook does
-not leak to `/not-protected`. Inside that scope, the `authentication` domain is
+not leak to `/health` or `/not-protected`. The health endpoint therefore stays
+public and retains the `LogController` request-log policy passed through
+`createApp()`. Inside the application scope, the `authentication` domain is
 registered before the `quotes` domain that depends on it.
 
 ## Organize tests by domain

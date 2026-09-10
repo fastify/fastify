@@ -3,7 +3,8 @@
 Currently, we rely entirely on Fastify’s defaults when things go wrong.
 
 This is convenient for development, but in production we need more control:
-* Customize **500 errors** without leaking stack traces to the client.
+
+* Customize **500 errors** without leaking internal details to the client.
 * Provide user-friendly messages for **validation errors**.
 * Centralize error logging and monitoring.
 * Control the response for **404 not found** requests.
@@ -23,27 +24,17 @@ import type { FastifyError, FastifyInstance } from "fastify";
 
 export default function configureErrorHandlers(app: FastifyInstance) {
   app.setErrorHandler((err: FastifyError, request, reply) => {
-    // [1] 500 errors are logged in detail
-    app.log.error(
-      {
-        err,
-        request: {
-          method: request.method,
-          url: request.url,
-          query: request.query,
-          params: request.params,
-        },
-      },
-      "Unhandled error occurred"
-    );
-
     const statusCode = err.statusCode ?? 500;
 
-    let message = "Internal Server Error";
-    // [2] but never revealed to users.
-    if (statusCode < 500) {
-      message = err.message;
+    if (statusCode >= 500) {
+      request.log.error({ err }, "request failed");
+    } else {
+      request.log.info({ err }, "request rejected");
     }
+
+    const message = statusCode >= 500
+      ? "Internal Server Error"
+      : err.message;
 
     reply.code(statusCode);
 
@@ -51,17 +42,7 @@ export default function configureErrorHandlers(app: FastifyInstance) {
   });
 
   app.setNotFoundHandler((request, reply) => {
-    request.log.warn(
-      {
-        request: {
-          method: request.method,
-          url: request.url,
-          query: request.query,
-          params: request.params,
-        },
-      },
-      "Resource not found"
-    );
+    request.log.warn("resource not found");
 
     reply.code(404);
 
@@ -69,6 +50,20 @@ export default function configureErrorHandlers(app: FastifyInstance) {
   });
 }
 ```
+
+The request logger keeps the request ID on each application log. Fastify's
+automatic incoming-request record already contains the serialized request, so
+we do not repeat the method, URL, query, or parameters here.
+
+Expected client errors, including validation failures, use the `info` level.
+Unexpected server errors use `error`, with the original error under Pino's
+structured `err` field. Unknown routes use `warn` because they can reveal a
+broken link or a client calling an outdated endpoint.
+
+Registering a custom error handler replaces Fastify's default error handler,
+including its error log. Logging once inside our handler therefore avoids a
+duplicate error record. A custom not-found handler similarly replaces
+Fastify's default not-found response and log.
 
 ## Using the error handlers
 
@@ -78,7 +73,7 @@ Register the handlers in `server.ts`:
 // server.ts
 import configureErrorHandlers from "./error-handlers.ts";
 
-// after hooks and routes
+// After hooks and routes
 configureErrorHandlers(app);
 ```
 
@@ -110,11 +105,23 @@ HTTP/1.1 500 Internal Server Error
 { "message": "Internal Server Error" }
 ```
 
-Logs will contain:
+The error log contains these stable fields:
 
+```json
+{
+  "level": 50,
+  "reqId": "req-1",
+  "err": {
+    "type": "Error",
+    "message": "💥 Kaboom!",
+    "stack": "..."
+  },
+  "msg": "request failed"
+}
 ```
-Unhandled error occurred err=... request={method:"GET", url:"/throw"} 
-```
+
+The changing process fields and request ID will differ, but the `error` level
+(`50`), `reqId`, structured `err`, and stable `msg` fields remain consistent.
 
 * **Unknown route**:
 
@@ -146,6 +153,27 @@ HTTP/1.1 400 Bad Request
 { "message": "body must have required property 'text'" }
 ```
 
+This expected client error is logged at `info` with the message
+`request rejected`, not at `error`.
+
+* **Explicit 404 response from a route**:
+
+```bash
+curl -i http://localhost:3000/quotes/999 \
+  -H "Authorization: Bearer admin"
+```
+
+Expected:
+
+```
+HTTP/1.1 404 Not Found
+{ "message": "Quote not found" }
+```
+
+This route sets a 404 response directly, so it does not invoke the error or
+not-found handler. Fastify's automatic request records still capture the 404
+status at `info`.
+
 ## Fastify error codes
 
 Internally, Fastify defines its own error codes
@@ -159,12 +187,14 @@ import { errorCodes } from "fastify";
 
 app.setErrorHandler((err, request, reply) => {
   if (err instanceof errorCodes.FST_ERR_BAD_STATUS_CODE) {
-    app.log.error("Invalid status code sent:", err);
+    request.log.error({ err }, "invalid status code sent");
     return reply.code(500).send({ message: "Internal Server Error" });
   }
 
   // fallback to normal behavior
-  return reply.code(err.statusCode ?? 500).send({ message: err.message });
+  const statusCode = err.statusCode ?? 500;
+  const message = statusCode >= 500 ? "Internal Server Error" : err.message;
+  return reply.code(statusCode).send({ message });
 });
 ```
 
@@ -173,14 +203,14 @@ app.setErrorHandler((err, request, reply) => {
 The Fastify team also maintains
 [`@fastify/error`](https://github.com/fastify/fastify-error).
 
-This package makes it easy to define **structured errors** with a 
-code, message, and optional status code. The main advantage 
-is **consistency**: instead of throwing plain `Error` 
+This package makes it easy to define **structured errors** with a
+code, message, and optional status code. The main advantage
+is **consistency**: instead of throwing plain `Error`
 objects, you define reusable error types with clear codes.
 
 That way:
 
 * Your global error handler can reliably distinguish between different error scenarios.
 * Other systems or services can consume your API and handle errors predictably.
-* Client Browsers and mobile apps can implement smarter UX by reacting to 
+* Web browsers and mobile apps can implement smarter UX by reacting to
   specific error codes.

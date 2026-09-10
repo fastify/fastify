@@ -28,11 +28,6 @@ Install with pnpm:
 pnpm add fastify 
 ```
 
-Install with bun:
-```sh
-bun add fastify 
-```
-
 ### Your first server
 <a id="first-server"></a>
 

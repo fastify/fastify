@@ -23,7 +23,7 @@ The corresponding HTTP responses are:
 * `401 Unauthorized` when valid authentication is missing,
 * `403 Forbidden` when an authenticated user lacks permission.
 
-The application authentication hook runs before route-level authorization, so
+The quote domain authentication hook runs before route-level authorization, so
 authorization can safely inspect `request.session.user.roles`.
 
 ## Define the forbidden response
@@ -100,8 +100,8 @@ any one of them.
 
 The role check only reads the user already loaded from the session. Running it
 in `onRequest` rejects a forbidden request before body parsing and validation.
-The application authentication `onRequest` hook runs first, so authorization
-can safely inspect `request.session.user`.
+The quote domain registers `app.authenticationRequestHook` first, so
+authorization can safely inspect `request.session.user`.
 
 The dependency records an important assumption: authorization only runs after
 authentication has made a trusted user available.
@@ -204,7 +204,8 @@ export const quotesPlugin = fp(
 )
 ```
 
-Authentication remains an `onRequest` hook for every quote route.
+Authentication remains an `onRequest` hook for every quote route in the
+encapsulated quote domain.
 Authorization adds another `onRequest` hook only on the operation that needs
 the stronger policy.
 

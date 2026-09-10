@@ -5,7 +5,10 @@ Fastify natively supports `'application/json'` and `'text/plain'` content types
 with a default charset of `utf-8`. These default parsers can be changed or
 removed.
 
-Unsupported content types will throw an `FST_ERR_CTP_INVALID_MEDIA_TYPE` error.
+Unsupported or [syntactically invalid](https://httpwg.org/specs/rfc9110.html#media.type)
+content types result in a `415 Unsupported Media Type` response with an
+[`FST_ERR_CTP_INVALID_MEDIA_TYPE`](./Errors.md#fst_err_ctp_invalid_media_type)
+error.
 
 To support other content types, use the `addContentTypeParser` API or an
 existing [plugin](https://fastify.dev/ecosystem/).
@@ -44,6 +47,25 @@ parsed.
 > in those requests **not being validated**. Ensure every content type matched
 > by the regex has a corresponding entry in the schema's `content` map. See
 > [Validation and Serialization](./Validation-and-Serialization.md) for details.
+
+> ℹ️ Note:
+> Fastify validates the request's `Content-Type` header before selecting a body
+> parser. String, `RegExp`, and [catch-all](#catch-all) parsers therefore will
+> never handle an invalid header. An `onRequest` hook can rewrite a malformed
+> header prior to validation:
+>
+> ```js
+> fastify.addHook('onRequest', async function rewriteContentType (request) {
+>   if (request.headers['content-type'] === 'application/json,application/json') {
+>     request.headers['content-type'] = 'application/json'
+>   }
+> })
+> ```
+>
+> Apply only unambiguous rewrites and reject other malformed values. An invalid
+> media type can select a different body parser or `schema.body.content`
+> validation schema. Rewrite the header before accessing `request.mediaType`,
+> which parses and caches the current value.
 
 ### Usage
 ```js

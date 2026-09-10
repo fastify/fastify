@@ -508,4 +508,30 @@ administrator session and expires the browser cookie.
 Quote Vault now publishes an OpenAPI document and an interactive Swagger UI
 from the schemas already used at runtime.
 
-This completes the Quote Vault tutorial application.
+## Congratulations
+
+Congratulations on completing the Quote Vault tutorial. This is a big step.
+You have learned more than how to define routes with Fastify. Along the way,
+you worked with important Node.js concepts, application architecture,
+validation, testing, databases, shared infrastructure, authentication,
+authorization, security, and operational concerns.
+
+One essential topic remains beyond the scope of this tutorial: how an
+application scales. System design is rarely covered in introductory tutorials,
+but it is an important part of learning web development. Continue your journey
+with resources about capacity, bottlenecks, caching, distributed state,
+observability, and failure handling.
+
+For Node.js applications in particular, Platformatic publishes material based
+on its experience running and scaling Node.js in production. These resources
+are useful places to continue learning:
+
+* [Platformatic resources](https://platformatic.dev/resources), including
+  reports, playbooks, and guides about production Node.js systems
+* [Platformatic Blog](https://blog.platformatic.dev/), with technical articles
+  about Node.js performance, architecture, and scaling
+* [Backend Cafe](https://backend.cafe/), with further articles about backend
+  development and Node.js
+
+This completes the Quote Vault tutorial application. You now have a solid
+foundation on which to keep building.

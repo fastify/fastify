@@ -218,12 +218,11 @@ Reaching 100% coverage requires us to exercise success, failure, and lifecycle
 branches. Those checks should still be grouped by the behavior they describe,
 rather than collected in one coverage-only suite.
 
-We will create five test files:
+We will create four test files:
 
 * `test/auth.test.ts` covers the teaching authentication hook.
 * `test/quotes.test.ts` covers validation, serialization, and quote CRUD.
 * `test/app.test.ts` covers public routes and global error handling.
-* `test/logging.test.ts` covers structured logs, redaction, and health logging.
 * `test/plugins/db.test.ts` covers the database plugin lifecycle.
 
 Each test creates a fresh Fastify instance and closes it afterward.
@@ -440,15 +439,18 @@ import { createApp } from "../app.ts";
 import { createTestApp } from "./app.ts";
 
 describe("application behavior", () => {
-  test("keeps public and not-found routes outside authentication", async (t: TestContext) => {
+  test("keeps public, health, and not-found routes outside authentication", async (t: TestContext) => {
     const app = createTestApp();
     t.after(() => app.close());
 
     const publicRoute = await app.inject("/not-protected");
+    const health = await app.inject("/health?source=test");
     const missing = await app.inject("/does-not-exist");
 
     t.assert.equal(publicRoute.statusCode, 200);
     t.assert.deepStrictEqual(publicRoute.json(), { ok: true });
+    t.assert.equal(health.statusCode, 200);
+    t.assert.deepStrictEqual(health.json(), { status: "ok" });
     t.assert.equal(missing.statusCode, 404);
     t.assert.deepStrictEqual(missing.json(), {
       message: "This is not the route you are looking for!",
@@ -476,142 +478,6 @@ describe("application behavior", () => {
   });
 });
 ```
-
-### `test/logging.test.ts`
-
-Most tests keep logging disabled. These focused tests instead give Fastify a
-writable stream, parse its newline-delimited JSON, and assert stable fields
-rather than entire records. They do not depend on `pino-pretty` or volatile
-timestamps, process IDs, hostnames, and response times.
-
-```ts
-import { Writable } from "node:stream";
-import { LogController } from "fastify";
-import { test, type TestContext } from "node:test";
-import { createTestApp } from "./app.ts";
-
-interface LogRecord {
-  level: number;
-  reqId?: string;
-  quoteId?: number;
-  msg?: string;
-  authorization?: string;
-  cookie?: string;
-  password?: string;
-}
-
-function captureLogs() {
-  let output = "";
-  const stream = new Writable({
-    write(chunk, _encoding, callback) {
-      output += chunk.toString();
-      callback();
-    },
-  });
-
-  return {
-    stream,
-    raw() {
-      return output;
-    },
-    records() {
-      return output
-        .trim()
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => JSON.parse(line) as LogRecord);
-    },
-  };
-}
-
-function createHealthLogController() {
-  return new LogController({
-    disableRequestLogging: (request) => {
-      return request.method === "GET" && request.routeOptions.url === "/health";
-    },
-  });
-}
-
-test("correlates quote logs and redacts sensitive values", async (t: TestContext) => {
-  const logs = captureLogs();
-  const app = createTestApp({
-    logger: {
-      level: "info",
-      redact: [
-        "req.headers.authorization",
-        "req.headers.cookie",
-        "authorization",
-        "cookie",
-        "password",
-      ],
-      stream: logs.stream,
-    },
-    logController: createHealthLogController(),
-  });
-  t.after(() => app.close());
-
-  const authorization = "Bearer user";
-  const cookie = "session=secret-cookie";
-  const password = "secret-password";
-  const text = "request bodies stay out of logs";
-
-  app.log.info(
-    { authorization, cookie, password },
-    "redaction check"
-  );
-
-  const response = await app.inject({
-    method: "POST",
-    url: "/quotes",
-    headers: { authorization, cookie },
-    payload: { text, password },
-  });
-
-  t.assert.equal(response.statusCode, 201);
-
-  const rawLogs = logs.raw();
-  t.assert.doesNotMatch(rawLogs, /Bearer user/);
-  t.assert.doesNotMatch(rawLogs, /session=secret-cookie/);
-  t.assert.doesNotMatch(rawLogs, /secret-password/);
-  t.assert.doesNotMatch(rawLogs, /request bodies stay out of logs/);
-
-  const records = logs.records();
-  const redaction = records.find((record) => record.msg === "redaction check");
-  const incoming = records.find((record) => record.msg === "incoming request");
-  const created = records.find((record) => record.msg === "quote created");
-  const completed = records.find((record) => record.msg === "request completed");
-
-  t.assert.equal(redaction?.authorization, "[Redacted]");
-  t.assert.equal(redaction?.cookie, "[Redacted]");
-  t.assert.equal(redaction?.password, "[Redacted]");
-  t.assert.equal(created?.level, 30);
-  t.assert.equal(created?.quoteId, 1);
-  t.assert.equal(typeof created?.reqId, "string");
-  t.assert.equal(created?.reqId, incoming?.reqId);
-  t.assert.equal(created?.reqId, completed?.reqId);
-});
-
-test("keeps health public and suppresses its request logs", async (t: TestContext) => {
-  const logs = captureLogs();
-  const app = createTestApp({
-    logger: { level: "info", stream: logs.stream },
-    logController: createHealthLogController(),
-  });
-  t.after(() => app.close());
-
-  const response = await app.inject("/health?source=load-balancer");
-
-  t.assert.equal(response.statusCode, 200);
-  t.assert.deepStrictEqual(response.json(), { status: "ok" });
-  t.assert.deepStrictEqual(logs.records(), []);
-});
-```
-
-The first test confirms that the application event shares its request ID with
-Fastify's incoming and completion records. It also verifies configured
-redaction and checks that authorization, cookie, password, and request-body
-values are absent. The second test covers the health response schema,
-authentication bypass, and exact-route request-log suppression.
 
 ### `test/plugins/db.test.ts`
 

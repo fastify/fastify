@@ -7,7 +7,7 @@ limit overhead.
 For example, how can we apply hooks and error handlers to only a subset of
 routes? How do we expose a decorator to only one part of the application?
 Right now everything is defined on the top-level instance, which is
-inefficient and not safe.
+harder to scope and maintain as the application grows.
 
 Plugins solve this.
 
@@ -436,7 +436,11 @@ Keep its `FastifyInstance` import and augmentation together with
 ```ts
 // plugins/quotes-repo.ts
 import fp from 'fastify-plugin';
+import type { Quote } from '../schemas.ts';
 ```
+
+The schema import gains `../` because the repository is now inside the
+`plugins/` directory.
 
 Then append the plugin below `createQuotesRepository()`. It requires the
 database decoration and exposes `app.quotesRepository` to route plugins:
@@ -495,6 +499,9 @@ export const authPlugin: FastifyPluginAsync = async function authPlugin(app) {
   });
 };
 ```
+
+The authentication hook and database shutdown hook have now moved into their
+own plugins, so the original root `hooks.ts` file is no longer needed.
 
 > Security note:
 > This plugin is a teaching fake.
@@ -568,6 +575,7 @@ const quotesRoutes: FastifyPluginAsyncTypebox =
       },
       function (request, reply) {
         const quote = this.quotesRepository.create(request.body.text);
+        request.log.info({ quoteId: quote.id }, "quote created");
         const demo = { ...quote, secret: "do-not-leak" };
         reply.code(201);
         return demo;
@@ -618,7 +626,8 @@ const quotesRoutes: FastifyPluginAsyncTypebox =
           reply.code(404);
           return { message: "Quote not found" };
         }
-        return reply.code(204).send(null);
+        reply.code(204);
+        return null;
       }
     );
   }
@@ -668,34 +677,83 @@ async function protectedRoutes(app) {
 
 ### Server assembly
 
-Finally we assemble the server. We load infrastructure plugins first,
-then the protected routes, then set up error handling, then start.
+Finally we assemble the server. We retain the logger, health route, and
+graceful shutdown behavior from the previous chapters. We load infrastructure
+plugins first, then the protected routes, then set up error handling, then
+start.
 
 ```ts
-import fastify from "fastify";
+import fastify, { LogController } from "fastify";
+import type { FastifyServerOptions } from "fastify";
 import closeWithGrace from "close-with-grace";
 import configureErrorHandlers from "./error-handlers.ts";
 import { dbPlugin } from "./plugins/db.ts";
 import { quotesRepositoryPlugin } from "./plugins/quotes-repo.ts";
 import { protectedRoutes } from "./routes/protected.ts";
+import { healthResponse } from "./schemas.ts";
+
+const logger: FastifyServerOptions["logger"] = {
+  level: "info",
+  redact: [
+    "req.headers.authorization",
+    "req.headers.cookie",
+    "authorization",
+    "cookie",
+    "password",
+  ],
+  ...(process.stdout.isTTY
+    ? {
+        transport: {
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "HH:MM:ss Z",
+          },
+        },
+      }
+    : {}),
+};
+
+const logController = new LogController({
+  disableRequestLogging: (request) => {
+    return request.method === "GET" && request.routeOptions.url === "/health";
+  },
+});
 
 const app = fastify({
-  logger: true,
+  logger,
+  logController,
+  // Allow in-flight requests to finish after app.close() starts.
   forceCloseConnections: false,
   ajv: {
     customOptions: {
+      // Explicitly disable allErrors to avoid CVE-2020-8192 risk
       allErrors: false,
+      // Remove properties not in schema
       removeAdditional: "all",
     },
   },
 });
 
 // Plugins
-app.register(dbPlugin)
-app.register(quotesRepositoryPlugin)
+app.register(dbPlugin);
+app.register(quotesRepositoryPlugin);
 
-// Routes
-app.register(protectedRoutes)
+// Protected routes
+app.register(protectedRoutes);
+
+// Public operational route
+app.get(
+  "/health",
+  {
+    schema: {
+      response: healthResponse,
+    },
+  },
+  async function () {
+    return { status: "ok" as const };
+  }
+);
 
 // Testing error handler
 app.get("/throw", async function () {
@@ -704,11 +762,11 @@ app.get("/throw", async function () {
 
 // Ensure `protectedRoutes` doesn't leak in root.
 app.get("/not-protected", async function () {
-  return { ok: true }
+  return { ok: true };
 });
 
 // Root error handlers
-configureErrorHandlers(app)
+configureErrorHandlers(app);
 
 closeWithGrace(
   { delay: 15_000 },
@@ -718,11 +776,12 @@ closeWithGrace(
     }
 
     await app.close();
+    app.log.info("Server closed gracefully");
   }
 );
 
 try {
-  await app.listen({ port: 3000 });
+  await app.listen({ host: "0.0.0.0", port: 3000 });
 } catch (err) {
   app.log.error(err);
   process.exit(1);

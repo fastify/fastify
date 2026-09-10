@@ -465,9 +465,12 @@ describe("application behavior", () => {
     t.assert.equal(res.statusCode, 200);
   });
 
-  test("hides internal errors", async (t: TestContext) => {
-    const app = createTestApp();
+  test("logs and hides internal errors", async (t: TestContext) => {
+    const app = createTestApp({ logger: { level: "silent" } });
     t.after(() => app.close());
+
+    t.mock.method(app.log, "child", () => app.log);
+    const { mock: errorMock } = t.mock.method(app.log, "error");
 
     const res = await app.inject("/throw");
 
@@ -475,9 +478,24 @@ describe("application behavior", () => {
     t.assert.deepStrictEqual(res.json(), {
       message: "Internal Server Error",
     });
+    t.assert.equal(errorMock.calls.length, 1);
+
+    const [logObject, logMessage] = errorMock.calls[0].arguments;
+
+    t.assert.equal(logMessage, "request failed");
+    t.assert.ok(
+      typeof logObject === "object" && logObject !== null && "err" in logObject
+    );
+    t.assert.ok(logObject.err instanceof Error);
   });
 });
 ```
+
+Fastify normally creates a child logger for each request. In the error test,
+the first native mock returns the application logger for that child, which lets
+the second native mock spy on `app.log.error` without producing log output.
+The assertions still verify the stable message and structured `err` binding
+used by the request error handler.
 
 ### `test/plugins/db.test.ts`
 

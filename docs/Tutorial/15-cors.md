@@ -329,6 +329,22 @@ export function createTestApp (options: AppOptions = {}) {
 }
 ```
 
+The Knex plugin test from the previous chapter calls `createApp` directly.
+Add the required origin to its `env` option as well:
+
+```ts
+env: {
+  HOST: '127.0.0.1',
+  PORT: 3000,
+  CORS_ORIGIN: 'http://127.0.0.1:5173',
+  POSTGRES_HOST: '127.0.0.1',
+  POSTGRES_PORT: 5432,
+  POSTGRES_USER: 'postgres',
+  POSTGRES_PASSWORD: 'postgres',
+  POSTGRES_DB: 'quote_vault'
+}
+```
+
 We should also update the environment plugin test so it reflects the new
 startup contract.
 

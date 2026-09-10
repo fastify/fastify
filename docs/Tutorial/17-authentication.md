@@ -17,6 +17,12 @@ After login, the server sends a random session identifier in a signed cookie.
 The browser returns that cookie on later requests. User data remains in the
 server-side session store; the cookie contains only the identifier.
 
+Cookie sessions are a natural fit for browser-based user flows. For
+machine-to-machine clients, bearer access tokens in the `Authorization` header
+are more common because those clients do not rely on a browser cookie jar. Both
+are credentials and must be protected with HTTPS; bearer-token design is
+outside this tutorial.
+
 Signing detects a modified identifier. It does not encrypt the cookie or
 protect a stolen cookie, so production traffic must use HTTPS.
 
@@ -34,11 +40,10 @@ Redis client.
 
 ## Install the dependencies
 
-Install the cookie and session plugins, the Redis session store, and the
-official Redis client:
+Install the cookie and session plugins and the official Redis client:
 
 ```bash
-npm i @fastify/cookie @fastify/session connect-redis redis
+npm i @fastify/cookie @fastify/session redis
 ```
 
 ## Add Redis to local infrastructure
@@ -238,7 +243,6 @@ Create `plugins/infrastructure/session.ts`:
 ```ts
 import fastifyCookie from '@fastify/cookie'
 import fastifySession from '@fastify/session'
-import { RedisStore } from 'connect-redis'
 import fp from 'fastify-plugin'
 import type { FastifySessionOptions } from '@fastify/session'
 import type { FastifyInstance } from 'fastify'
@@ -256,14 +260,47 @@ interface SessionPluginOptions {
   override?: Partial<FastifySessionOptions>
 }
 
+type SessionStore = NonNullable<FastifySessionOptions['store']>
+
+function createRedisSessionStore (app: FastifyInstance): SessionStore {
+  return {
+    set (sessionId, session, callback) {
+      void app.redis.set(
+        `${SESSION_KEY_PREFIX}${sessionId}`,
+        JSON.stringify(session),
+        {
+          expiration: {
+            type: 'PX',
+            value: app.config.SESSION_MAX_AGE
+          }
+        }
+      ).then(() => callback(), callback)
+    },
+
+    get (sessionId, callback) {
+      void app.redis.get(`${SESSION_KEY_PREFIX}${sessionId}`).then(
+        (value) => callback(
+          null,
+          value == null ? null : JSON.parse(value)
+        ),
+        callback
+      )
+    },
+
+    destroy (sessionId, callback) {
+      void app.redis.del(`${SESSION_KEY_PREFIX}${sessionId}`).then(
+        () => callback(),
+        callback
+      )
+    }
+  }
+}
+
 function buildSessionOptions (app: FastifyInstance): FastifySessionOptions {
   return {
     secret: app.config.SESSION_COOKIE_SECRET,
     cookieName: app.config.SESSION_COOKIE_NAME,
-    store: new RedisStore({
-      client: app.redis,
-      prefix: SESSION_KEY_PREFIX
-    }),
+    store: createRedisSessionStore(app),
     saveUninitialized: false,
     rolling: true,
     cookie: {
@@ -290,8 +327,10 @@ export const sessionPlugin = fp<SessionPluginOptions>(
 )
 ```
 
-`connect-redis` implements the store contract expected by `@fastify/session`.
-It serializes session data and expires each Redis key with the session.
+The small adapter implements the `set`, `get`, and `destroy` contract expected
+by `@fastify/session`. It serializes session data and expires each Redis key
+with the configured maximum age. Rolling sessions write the active session
+again and renew that expiration.
 
 `httpOnly`, `sameSite`, and `secure` reduce cookie exposure.
 `saveUninitialized: false` avoids storing sessions for visitors who never log
@@ -445,7 +484,7 @@ declare module 'fastify' {
 
 function createAuthenticationService (app: FastifyInstance) {
   return {
-    async authenticate ({ email, password }: Credentials) {
+    async verifyCredentials ({ email, password }: Credentials) {
       const user = await app.usersRepository.findByEmail(email.toLowerCase())
       const passwordMatches = await app.passwordManager.comparePassword(
         password,
@@ -481,33 +520,25 @@ export const authenticationServicePlugin = fp(
 )
 ```
 
-Register the reusable session check as an application-wide hook.
+Expose the reusable session check as an `authenticationRequestHook` decorator.
 
 ### `plugins/app/authentication/authentication.hooks.ts`
 
 ```ts
 import fp from 'fastify-plugin'
-import type { FastifyRequest } from 'fastify'
+import type { onRequestHookHandler } from 'fastify'
 
-const publicRoutes = new Set([
-  'GET /not-protected',
-  'GET /throw',
-  'POST /login',
-  'POST /register'
-])
-
-function isPublicRequest (request: FastifyRequest) {
-  const [path] = request.url.split('?', 1)
-  return publicRoutes.has(`${request.method} ${path}`)
+declare module 'fastify' {
+  interface FastifyInstance {
+    authenticationRequestHook: onRequestHookHandler
+  }
 }
 
 export const authenticationHookPlugin = fp(
   async function authenticationHookPlugin (app) {
-    app.addHook(
-      'onRequest',
-      async function authenticationHook (request, reply) {
-        if (isPublicRequest(request)) return
-
+    app.decorate(
+      'authenticationRequestHook',
+      async function authenticationRequestHook (request, reply) {
         if (request.session.user == null) {
           return reply.code(401).send({
             message: 'You must be authenticated to access this route.'
@@ -523,10 +554,12 @@ export const authenticationHookPlugin = fp(
 )
 ```
 
-Session authentication needs only the user loaded by the session plugin, so
-`onRequest` runs before Fastify parses a body or validates input. An
-unauthorized request is rejected without doing that unnecessary work. A policy
-that needs parsed or validated request data must use a later hook instead.
+The decorator makes authentication available without applying it globally.
+Protected routes and domains opt in, while public routes need no allowlist.
+It is used as an `onRequest` hook because session authentication needs only the
+user loaded by the session plugin. An unauthorized request is rejected before
+Fastify parses a body or validates input. A policy that needs parsed or
+validated request data must use a later hook instead.
 
 Finally, the route module translates HTTP input into service calls and manages
 the session lifecycle.
@@ -553,7 +586,9 @@ const authenticationRoutes: FastifyPluginAsyncTypebox =
         response: loginResponse
       }
     }, async function (request, reply) {
-      const user = await this.authenticationService.authenticate(request.body)
+      const user = await this.authenticationService.verifyCredentials(
+        request.body
+      )
 
       if (user == null) {
         reply.code(401)
@@ -571,7 +606,8 @@ const authenticationRoutes: FastifyPluginAsyncTypebox =
     app.get('/me', {
       schema: {
         response: meResponse
-      }
+      },
+      onRequest: app.authenticationRequestHook
     }, async function (request) {
       return request.session.user
     })
@@ -579,7 +615,8 @@ const authenticationRoutes: FastifyPluginAsyncTypebox =
     app.post('/logout', {
       schema: {
         response: logoutResponse
-      }
+      },
+      onRequest: app.authenticationRequestHook
     }, async function (request, reply) {
       await request.session.destroy()
       reply.clearCookie(app.config.SESSION_COOKIE_NAME, { path: '/' })
@@ -597,7 +634,7 @@ export const authenticationRoutesPlugin = fp(
       'authentication-service'
     ],
     decorators: {
-      fastify: ['authenticationService']
+      fastify: ['authenticationRequestHook', 'authenticationService']
     }
   }
 )
@@ -637,23 +674,31 @@ export const authenticationPlugin = fp(
   },
   {
     name: 'authentication',
-    // Shared so the application scope inherits the authentication hook.
+    // Shared so application domains can use the authentication decorator.
     dependencies: ['passwords', 'session', 'users']
   }
 )
 ```
 
-Authentication is shared so its `onRequest` hook applies to the route domains
-registered after it. Its entry point still keeps the service, hook, and routes
-together.
+Authentication is shared so application domains can use its decorator. Its
+entry point still keeps the service, reusable hook, and routes together.
 
 ## Protect the quote domain
 
-The application-wide hook protects quote routes automatically because they are
-registered after authentication and are not in `publicRoutes`. The quote route
-module no longer installs its own authentication handler. Update its metadata
-to record the hook-order dependency without requiring an `authenticate`
-decorator:
+Protect the complete quote route domain by installing the reusable handler once
+inside its encapsulated route plugin:
+
+```ts
+const quotesRoutes: FastifyPluginAsyncTypebox =
+  async function quotesRoutesPlugin (app) {
+    app.addHook('onRequest', app.authenticationRequestHook)
+
+    // Existing quote routes.
+  }
+```
+
+Also update its metadata to require the decorator and record the plugin-order
+dependency:
 
 ```ts
 {
@@ -664,13 +709,13 @@ decorator:
     'quotes-repository'
   ],
   decorators: {
-    fastify: ['quotesRepository']
+    fastify: ['authenticationRequestHook', 'quotesRepository']
   }
 }
 ```
 
-`/register`, `/login`, and the other listed routes pass through the same hook
-but are allowed to continue without a session.
+The hook is encapsulated with the quote routes, so `/register`, `/login`, and
+other public routes do not need exceptions.
 
 The existing delete route still has the temporary role check from the Hooks
 chapter. It must now read the authenticated session instead of the removed
@@ -705,7 +750,7 @@ app.delete(
 )
 ```
 
-The global authentication hook runs before this route-level hook. An
+The quote domain's authentication hook runs before this route-level hook. An
 unauthenticated request is rejected before the role check reads the session.
 The next chapter replaces this inline policy with the reusable authorization
 builder.
@@ -740,17 +785,16 @@ app.register(errorsPlugin)
 app.register(async function application (app) {
   app.register(usersPlugin)
   app.register(passwordsPlugin)
-  // Register the application-wide policy before route domains.
+  // Register authentication before route domains that use its decorator.
   app.register(authenticationPlugin)
-  // Registration remains public through the hook's explicit allowlist.
   app.register(registrationPlugin)
   app.register(quotesPlugin)
 })
 ```
 
 This keeps the application boundary introduced in the registration chapter.
-Only the authentication implementation and its public-route list change here;
-the shared services and route domains remain in the same scope.
+Only the authentication implementation changes here; the shared services and
+route domains remain in the same scope.
 
 ## Verify shared sessions
 
@@ -924,6 +968,11 @@ Add the Redis and session settings to the expected object in
 `test/plugins/infrastructure/env.test.ts`. The test helper shown above already
 provides these values explicitly.
 
+Update `test/plugins/infrastructure/knex.test.ts` to import `createTestApp` from
+`../../app.ts` and use it in place of `createApp`. The shared helper now owns
+all test infrastructure configuration while the test remains focused on its
+explicit Knex options.
+
 The CORS preflight test must now request and expect only `Content-Type`:
 
 ```ts
@@ -974,16 +1023,17 @@ describe('authentication', function () {
         roles: ['admin', 'user']
       }
     })
+    const setCookie = response.headers['set-cookie']?.toString() ?? ''
     t.assert.match(
-      response.headers['set-cookie'],
+      setCookie,
       /HttpOnly/
     )
     t.assert.match(
-      response.headers['set-cookie'],
+      setCookie,
       /SameSite=Lax/
     )
     t.assert.doesNotMatch(
-      response.headers['set-cookie'],
+      setCookie,
       /Secure/
     )
   })
@@ -1067,8 +1117,10 @@ describe('authentication', function () {
         headers: { cookie }
       })
       t.assert.equal(logout.statusCode, 204)
+      const clearedCookie =
+        logout.headers['set-cookie']?.toString() ?? ''
       t.assert.match(
-        logout.headers['set-cookie'],
+        clearedCookie,
         /Max-Age=0/
       )
 

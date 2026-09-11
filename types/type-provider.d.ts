@@ -138,14 +138,19 @@ export type SafePromiseLike<T> = PromiseLike<T> & { __linterBrands: 'SafePromise
 // SendArgs
 // -----------------------------------------------------------------------------------------------
 
+export type FastifyReplyPreSerializedPayload =
+  | ArrayBufferView
+  | { pipe: (...args: any[]) => unknown }
+  | { getReader: (...args: any[]) => unknown }
+
 /**
  * Determines whether the send() payload parameter should be required or optional.
  * - When ReplyType is unknown (default/unspecified), payload is optional
  * - When ReplyType is undefined or void, payload is optional (returning undefined is valid)
- * - Otherwise, payload is required
+ * - Otherwise, payload is required and also accepts pre-serialized payloads
  */
 export type SendArgs<ReplyType> = unknown extends ReplyType
   ? [payload?: ReplyType]
   : [ReplyType] extends [undefined | void]
       ? [payload?: ReplyType]
-      : [payload: ReplyType]
+      : [payload: ReplyType | FastifyReplyPreSerializedPayload]

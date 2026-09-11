@@ -78,7 +78,7 @@ export interface RouteShorthandOptions<
     reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, NoInfer<SchemaCompiler>,
       TypeProvider>
   ) => void;
-  childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, FastifyBaseLogger, TypeProvider>;
   schemaErrorFormatter?: SchemaErrorFormatter;
 
   // hooks

@@ -953,7 +953,7 @@ For custom error responses in the schema, see
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 
-> Fastify v5 uses AJV v8 and requires a compatible `ajv-errors` version.
+> Fastify v5 uses AJV v8 and requires a compatible `ajv-errors` version -- use `ajv-errors@^3`, which supports AJV v8.
 > Fastify v3 requires `ajv-errors@1.0.1`, which supports AJV v6.
 > See the [AJV compiler versions table](https://github.com/fastify/ajv-compiler/#versions)
 > for the AJV version used by each Fastify release.

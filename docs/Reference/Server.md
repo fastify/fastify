@@ -1346,6 +1346,10 @@ fastify.listen({ port: 3000, host: '0.0.0.0' }, (err, address) => {
 })
 ```
 
+Like Node.js core, `handle` takes precedence over `port`, which takes precedence
+over `path`; the options that lose out are ignored. `host` is only used when
+listening on a `port`.
+
 If the `port` is omitted (or is set to zero), a random available port is
 automatically chosen (available via `fastify.server.address().port`).
 

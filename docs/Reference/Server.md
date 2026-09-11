@@ -1421,19 +1421,23 @@ if (routeExists === false) {
 
 Method to retrieve a route already registered to the internal router. It
 expects an object as the payload. `url` and `method` are mandatory fields. It
-is possible to also specify `constraints`.
+is possible to also specify `constraints` and `cloneRouteConfig`.
 The method returns a route object or `null` if the route cannot be found.
+
+When `cloneRouteConfig: true` is passed, the returned route object includes a deeply cloned `config` object of the route.
 
 ```js
 const route = fastify.findRoute({
   url: '/artists/:artistId',
   method: 'GET',
-  constraints: { version: '1.0.0' } // optional
+  constraints: { version: '1.0.0' }, // optional
+  cloneRouteConfig: true // optional
 })
 
 if (route !== null) {
   // perform some route checks
   console.log(route.params)   // `{artistId: ':artistId'}`
+  console.log(route.config)   // `{custom: 'value', url: '/artists/:artistId', method: 'GET'}`
 }
 ```
 

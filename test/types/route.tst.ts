@@ -1,10 +1,10 @@
 import { FastifyError } from '@fastify/error'
 import * as http from 'node:http'
 import { expect } from 'tstyche'
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
+import fastify, { FastifyContextConfig, FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
 import { RequestPayload } from '../../types/hooks.js'
 import { FindMyWayFindResult } from '../../types/instance.js'
-import { HTTPMethods, RawServerDefault } from '../../types/utils.js'
+import { ContextConfigDefault, HTTPMethods, RawServerDefault } from '../../types/utils.js'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -537,7 +537,23 @@ expect(
     url: '/',
     method: 'get'
   })
-).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>()
+).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'> & { config?: ContextConfigDefault }>()
+
+expect(
+  fastify().findRoute({
+    url: '/',
+    method: 'get',
+    cloneRouteConfig: true
+  })
+).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'> & { config?: ContextConfigDefault }>()
+
+expect(
+  fastify().findRoute<FastifyContextConfig>({
+    url: '/',
+    method: 'get',
+    cloneRouteConfig: true
+  })
+).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'> & { config?: FastifyContextConfig }>()
 
 // we should not expose store
 expect(fastify().findRoute({

@@ -200,6 +200,11 @@ declare namespace fastify {
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void,
     childLoggerFactory?: FastifyChildLoggerFactory,
     allowErrorHandlerOverride?: boolean
+    /**
+     * Defer the compilation of route validators and serializers to the first request that needs them.
+     * Reduces startup time and memory for applications with many routes; schema errors surface at first request.
+     */
+    lazySchemaCompilation?: boolean
     routerOptions?: FastifyRouterOptions<RawServer>,
   }
 

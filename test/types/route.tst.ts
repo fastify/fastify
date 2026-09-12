@@ -1,7 +1,7 @@
 import { FastifyError } from '@fastify/error'
 import * as http from 'node:http'
 import { expect } from 'tstyche'
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod, RouteOptions, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from '../../fastify.js'
 import { RequestPayload } from '../../types/hooks.js'
 import { FindMyWayFindResult } from '../../types/instance.js'
 import { HTTPMethods, RawServerDefault } from '../../types/utils.js'
@@ -574,3 +574,53 @@ expect(fastify().route({
     expect(req.routeOptions.method).type.toBeAssignableTo<string | Array<string>>()
   }
 })).type.toBe<FastifyInstance>()
+
+const fullShorthandOptions: RouteShorthandOptions = {
+  schema: {},
+  attachValidation: true,
+  exposeHeadRoute: true,
+  validatorCompiler: () => () => true,
+  serializerCompiler: () => () => '',
+  schemaErrorFormatter: (errors, dataVar) => new Error(''),
+  bodyLimit: 1024,
+  handlerTimeout: 5000,
+  logLevel: 'info',
+  logSerializers: {
+    user: (value: any) => `user: ${value}`
+  },
+  config: { foo: 'bar', bar: 100 },
+  constraints: { version: '1.0.0', host: 'example.com' },
+  prefixTrailingSlash: 'both',
+  errorHandler: (error, request, reply) => {
+    reply.send(error)
+  },
+  childLoggerFactory: (logger, bindings, opts) => logger.child(bindings, opts),
+  onRequest: (req, reply, done) => { done() },
+  preParsing: (req, reply, payload, done) => { done() },
+  preValidation: (req, reply, done) => { done() },
+  preHandler: (req, reply, done) => { done() },
+  preSerialization: (req, reply, payload, done) => { done() },
+  onSend: (req, reply, payload, done) => { done() },
+  onResponse: (req, reply, done) => { done() },
+  onTimeout: (req, reply, done) => { done() },
+  onError: (req, reply, error, done) => { done() },
+  onRequestAbort: (req, done) => { done() }
+}
+
+expect(fastify().get('/', fullShorthandOptions, routeHandler)).type.toBe<FastifyInstance>()
+
+const fullShorthandOptionsWithHandler: RouteShorthandOptionsWithHandler = {
+  ...fullShorthandOptions,
+  handler: routeHandler
+}
+
+expect(fastify().get('/', fullShorthandOptionsWithHandler)).type.toBe<FastifyInstance>()
+
+const fullRouteOptions: RouteOptions = {
+  method: 'GET',
+  url: '/',
+  ...fullShorthandOptions,
+  handler: routeHandler
+}
+
+expect(fastify().route(fullRouteOptions)).type.toBe<FastifyInstance>()

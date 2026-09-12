@@ -612,6 +612,78 @@ invalidErrorCodes.forEach((invalidCode) => {
   })
 })
 
+const outOfRangeStatusCodes = [
+  600,
+  69420,
+  '600'
+]
+outOfRangeStatusCodes.forEach((invalidCode) => {
+  test(`default error handler replies 500 when an async handler throws an error with out-of-range statusCode ${invalidCode}`, async (t) => {
+    t.plan(2)
+    const fastify = Fastify()
+    t.after(() => fastify.close())
+
+    fastify.get('/', async () => {
+      const err = new Error('winter is coming')
+      err.statusCode = invalidCode
+      throw err
+    })
+
+    const res = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.json().statusCode, 500)
+  })
+
+  test(`default error handler replies 500 when a sync handler throws an error with out-of-range statusCode ${invalidCode}`, async (t) => {
+    t.plan(2)
+    const fastify = Fastify()
+    t.after(() => fastify.close())
+
+    fastify.get('/', () => {
+      const err = new Error('winter is coming')
+      err.statusCode = invalidCode
+      throw err
+    })
+
+    const res = await fastify.inject({ method: 'GET', url: '/' })
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.strictEqual(res.json().statusCode, 500)
+  })
+})
+
+test('default error handler replies 500 when an async handler throws an error with out-of-range status', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', async () => {
+    const err = new Error('winter is coming')
+    err.status = 600
+    throw err
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(res.json().statusCode, 500)
+})
+
+test('an out-of-range error statusCode does not override the status code set by the handler', async (t) => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.get('/', async (request, reply) => {
+    reply.code(503)
+    const err = new Error('winter is coming')
+    err.statusCode = 600
+    throw err
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(res.statusCode, 503)
+  t.assert.strictEqual(res.json().statusCode, 503)
+})
+
 test('error handler is triggered when a string is thrown from sync handler', (t, testDone) => {
   t.plan(3)
 

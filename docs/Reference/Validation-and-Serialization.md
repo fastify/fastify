@@ -264,10 +264,16 @@ fastify.post('/the/url', {
 >
 > Schema selection uses an exact match on the request's
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
-> (for example, `application/json`). If a parser is registered with a regular
-> expression (for example, `/^application\/.*json$/`), the parser can accept
-> more content types than the `content` map covers. Requests in that gap are
-> parsed but **not validated**.
+> (for example, `application/json`). Because media type tokens are
+> case-insensitive, `content` keys are normalized to their lowercase essence
+> media type at route registration: a key like `Application/JSON` is equivalent
+> to `application/json`. Declaring two case-equivalent keys (for example
+> `application/json` and `Application/JSON`) is rejected at startup with
+> `FST_ERR_SCH_CONTENT_DUPLICATE`, and a key that is not a valid `type/subtype`
+> media type is rejected with `FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE`. If a
+> parser is registered with a regular expression (for example,
+> `/^application\/.*json$/`), the parser can accept more content types than the
+> `content` map covers. Requests in that gap are parsed but **not validated**.
 >
 > Ensure every content type accepted by the parser has a corresponding key in
 > the `content` map, or use a catch-all body schema without `content` when

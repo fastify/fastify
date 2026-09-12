@@ -229,5 +229,5 @@ export type RouteHandler<
 
 export type DefaultRoute<Request, Reply> = (
   req: Request,
-  res: Reply,
+  res: Reply
 ) => void

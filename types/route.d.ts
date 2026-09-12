@@ -80,6 +80,8 @@ export interface RouteShorthandOptions<
   ) => void;
   childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   schemaErrorFormatter?: SchemaErrorFormatter;
+  logSerializers?: Record<string, (value: any) => string>;
+  return503OnClosing?: boolean;
 
   // hooks
   onRequest?: RouteShorthandHook<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig,
@@ -207,7 +209,8 @@ export interface RouteOptions<
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
   TypeProvider, Logger> {
   method: HTTPMethods | HTTPMethods[];
-  url: string;
+  url?: string;
+  path?: string;
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler,
     TypeProvider, Logger>;
 }

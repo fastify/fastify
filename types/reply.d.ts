@@ -40,7 +40,7 @@ export interface FastifyReply<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
-  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
+  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>;
 
   raw: RawReply;
   elapsedTime: number;

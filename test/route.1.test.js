@@ -34,8 +34,7 @@ test('route', async t => {
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
         }
-      })
-    )
+      }))
 
     await fastify.listen({ port: 0 })
     t.after(() => { fastify.close() })
@@ -57,8 +56,7 @@ test('route', async t => {
         handler: function (req, reply) {
           reply.send({ hello: 'world' })
         }
-      })
-    )
+      }))
 
     await fastify.listen({ port: 0 })
     t.after(() => { fastify.close() })

@@ -52,8 +52,8 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
     (
       key: string,
       fn: ((reply: FastifyReply, payload: string | Buffer | null) => Promise<string>) |
-      ((reply: FastifyReply, payload: string | Buffer | null,
-        done: (err: Error | null, value?: string) => void) => void)
+        ((reply: FastifyReply, payload: string | Buffer | null,
+          done: (err: Error | null, value?: string) => void) => void)
     ) => FastifyReply
   >()
   expect(reply.hasTrailer).type.toBe<(key: string) => boolean>()
@@ -85,7 +85,7 @@ interface ReplyPayload {
 }
 
 interface ReplyArrayPayload {
-  Reply: string[]
+  Reply: string[];
 }
 
 interface ReplyUnion {
@@ -93,24 +93,24 @@ interface ReplyUnion {
     success: boolean;
   } | {
     error: string;
-  }
+  };
 }
 
 interface ReplyHttpCodes {
   Reply: {
-    '1xx': number,
-    200: 'abc',
-    201: boolean,
-    300: { foo: string },
-  }
+    '1xx': number;
+    200: 'abc';
+    201: boolean;
+    300: { foo: string };
+  };
 }
 
 interface InvalidReplyHttpCodes {
   Reply: {
-    '1xx': number,
-    200: string,
-    999: boolean,
-  }
+    '1xx': number;
+    200: string;
+    999: boolean;
+  };
 }
 
 interface ReplyVoid {
@@ -129,7 +129,7 @@ interface ReplyHttpCodesWithNoContent {
   Reply: {
     201: { id: string };
     204: undefined;
-  }
+  };
 }
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {

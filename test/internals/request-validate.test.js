@@ -381,8 +381,7 @@ test('#getValidationFunction', async subtest => {
             case 4:
               t.assert.ok(req.getValidationFunction('querystring'))
               t.assert.ok(req.getValidationFunction('querystring')({ foo: 'bar' }))
-              t.assert.ok(!req.getValidationFunction('querystring')({ foo: 'not-bar' })
-              )
+              t.assert.ok(!req.getValidationFunction('querystring')({ foo: 'not-bar' }))
               break
             case 5:
               t.assert.strictEqual(
@@ -1014,8 +1013,7 @@ test('Nested Context', async subtest => {
                     )
                     t.assert.ok(req.getValidationFunction('body'))
                     t.assert.ok(req.getValidationFunction('body')({ hello: 'world' }))
-                    t.assert.ok(!req.getValidationFunction('body')({ world: 'hello' })
-                    )
+                    t.assert.ok(!req.getValidationFunction('body')({ world: 'hello' }))
                     break
                   case 2:
                     headerValidation = req.getValidationFunction('headers')
@@ -1035,8 +1033,7 @@ test('Nested Context', async subtest => {
                     )
                     t.assert.ok(!req.getValidationFunction('querystring')({
                       foo: 'not-bar'
-                    })
-                    )
+                    }))
                     break
                   case 5:
                     t.assert.strictEqual(

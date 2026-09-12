@@ -97,7 +97,7 @@ expect(serverWithHttp2.register(async (instance: ServerWithHttp2) => {
 })).type.toBeAssignableTo<ServerWithHttp2>()
 
 // With Type Provider
-type TestTypeProvider = { schema: 'test', validator: 'test', serializer: 'test' }
+type TestTypeProvider = { schema: 'test'; validator: 'test'; serializer: 'test' }
 const serverWithTypeProvider = fastify().withTypeProvider<TestTypeProvider>()
 type ServerWithTypeProvider = FastifyInstance<
   Server,

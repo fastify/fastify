@@ -209,6 +209,47 @@ describe('ContentType class', () => {
     t.assert.equal(found.isValid, true)
     t.assert.equal(found.parameters.get('name'), 'he said "hi"')
   })
+
+  test('re-escapes a DQUOTE when serializing a parameter value', (t) => {
+    // The value is stored unescaped, so serializing it back into a
+    // quoted-string has to restore the quoted-pair. Otherwise the emitted
+    // header terminates the value early and grows extra parameters.
+    const found = new ContentType('application/json; name="he said \\"hi\\""')
+    t.assert.equal(found.parameters.get('name'), 'he said "hi"')
+    t.assert.equal(
+      found.toString(),
+      'application/json; name="he said \\"hi\\""'
+    )
+
+    const reparsed = new ContentType(found.toString())
+    t.assert.equal(reparsed.parameters.size, 1)
+    t.assert.equal(reparsed.parameters.get('name'), 'he said "hi"')
+  })
+
+  test('re-escapes a backslash when serializing a parameter value', (t) => {
+    const found = new ContentType('application/json; name="a\\\\b"')
+    t.assert.equal(found.parameters.get('name'), 'a\\b')
+    t.assert.equal(
+      found.toString(),
+      'application/json; name="a\\\\b"'
+    )
+
+    const reparsed = new ContentType(found.toString())
+    t.assert.equal(reparsed.parameters.get('name'), 'a\\b')
+  })
+
+  test('does not smuggle parameters out of a quoted value when serializing', (t) => {
+    // A quoted-pair lets a single parameter value carry `"` and `;` octets.
+    // Serializing without escaping them would turn one parameter into three.
+    const found = new ContentType('application/json; foo="a\\"; charset=iso-8859-1; x=\\"b"')
+    t.assert.equal(found.parameters.size, 1)
+    t.assert.equal(found.parameters.get('foo'), 'a"; charset=iso-8859-1; x="b')
+
+    const reparsed = new ContentType(found.toString())
+    t.assert.equal(reparsed.parameters.size, 1)
+    t.assert.equal(reparsed.parameters.has('charset'), false)
+    t.assert.equal(reparsed.parameters.get('foo'), 'a"; charset=iso-8859-1; x="b')
+  })
 })
 
 describe('ContentType class cache', () => {

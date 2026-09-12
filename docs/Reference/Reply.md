@@ -860,8 +860,8 @@ You can add custom properties to the Error object, such as `headers`, that will
 be used to enhance the HTTP response.
 
 > ℹ️ Note:
-> If you are passing an error to `send` and the statusCode is less than
-> 400, Fastify will automatically set it at 500.
+> If you are passing an error to `send` and the statusCode is outside the
+> 400-599 range, Fastify will automatically set it at 500.
 
 Tip: you can simplify errors by using the
 [`http-errors`](https://www.npmjs.com/package/http-errors) module or

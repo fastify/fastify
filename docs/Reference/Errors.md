@@ -238,7 +238,10 @@ encapsulated, so a `setErrorHandler` call within a plugin will limit the error
 handler to that plugin's context.
 
 The root error handler is Fastify's generic error handler. This error handler
-will use the headers and status code in the `Error` object, if they exist. The
+will use the headers and status code in the `Error` object, if they exist. Only
+status codes within the 400-599 range are honored: any other value is ignored,
+and the reply keeps the status code previously set on it if that is within
+400-599, or falls back to `500`. The
 headers and status code will not be automatically set if a custom error handler
 is provided.
 

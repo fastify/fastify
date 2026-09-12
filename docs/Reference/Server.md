@@ -1916,8 +1916,8 @@ The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different error handlers. *async-await* is
 supported as well.
 
-If the error `statusCode` is less than 400, Fastify will automatically
-set it to 500 before calling the error handler.
+If the error `statusCode` is outside the 400-599 range, Fastify will
+automatically set it to 500 before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
 - exceptions thrown in an `onResponse` hook because the response has already been

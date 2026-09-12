@@ -12,13 +12,15 @@ const handler = (req, res) => {
 }
 
 test('start listening', async t => {
+  t.plan(1)
   const { server, listen } = createServer({}, handler)
+  t.after(() => server.close())
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
-  server.close()
-  t.assert.ok(true, 'server started')
+  t.assert.ok(server.listening, 'the server is listening')
 })
 
 test('DNS errors does not stop the main server on localhost - promise interface', async t => {
+  t.plan(1)
   const { createServer } = proxyquire('../../lib/server', {
     'node:dns': {
       lookup: (hostname, options, cb) => {
@@ -27,9 +29,9 @@ test('DNS errors does not stop the main server on localhost - promise interface'
     }
   })
   const { server, listen } = createServer({}, handler)
+  t.after(() => server.close())
   await listen.call(Fastify(), { port: 0, host: 'localhost' })
-  server.close()
-  t.assert.ok(true, 'server started')
+  t.assert.ok(server.listening, 'the DNS error did not stop the server listening')
 })
 
 test('DNS errors does not stop the main server on localhost - callback interface', (t, done) => {

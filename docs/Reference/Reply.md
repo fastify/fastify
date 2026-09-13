@@ -861,7 +861,8 @@ be used to enhance the HTTP response.
 
 > ℹ️ Note:
 > If you are passing an error to `send` and the statusCode is outside the
-> 400-599 range, Fastify will automatically set it at 500.
+> 400-599 range, Fastify will ignore it, keeping a valid status code
+> already set on the reply or falling back to 500.
 
 Tip: you can simplify errors by using the
 [`http-errors`](https://www.npmjs.com/package/http-errors) module or

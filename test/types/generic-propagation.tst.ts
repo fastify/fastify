@@ -97,11 +97,6 @@ const configuredApp = fastify<
     expect(request).type.toBe<CustomRawRequest>()
     return 'request-id'
   },
-  disableRequestLogging (request) {
-    expect(request.log).type.toBe<CustomLogger>()
-    expect(request.server).type.toBe<CustomApp>()
-    return false
-  },
   routerOptions: {
     defaultRoute (request, reply) {
       expect(request).type.toBe<CustomRawRequest>()

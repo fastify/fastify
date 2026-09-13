@@ -5,14 +5,13 @@ import { Socket } from 'node:net'
 import { BuildCompilerFromPool } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
 import { Options as FJSOptions } from '@fastify/fast-json-stringify-compiler'
-import { ConstraintStrategy } from 'find-my-way'
 import { ConstructorAction, ProtoAction } from './content-type-parser'
 import { FastifyContextConfig } from './context'
 import { FastifyInstance } from './instance'
 import { FastifyBaseLogger, FastifyChildLoggerFactory, FastifyLoggerOptions, LogController, PinoLoggerOptions } from './logger'
 import { FastifyReplyForRoute } from './reply'
 import { FastifyRequestForRoute } from './request'
-import { FastifyRouterOptions, FindMyWayVersion, RouteGenericInterface } from './route'
+import { FastifyRouterOptions, RouteGenericInterface } from './route'
 import { FastifySchema, FastifySchemaControllerOptions, SchemaErrorFormatter } from './schema'
 import { FastifyServerFactory } from './server-factory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
@@ -48,13 +47,6 @@ export type FastifyServerOptions<
   bodyLimit?: number
   handlerTimeout?: number
   maxParamLength?: number
-  /** @deprecated Use `logController.disableRequestLogging` or `isLogDisabled`. */
-  disableRequestLogging?:
-    | boolean
-    | ((
-      request: FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema,
-        TypeProvider, ContextConfigDefault, Logger>
-    ) => boolean)
   logController?: LogController<
     FastifyRequestForRoute<RouteGenericInterface, RawServer, RawRequest, RawReply, FastifySchema, TypeProvider,
       ContextConfigDefault, Logger>,
@@ -76,16 +68,9 @@ export type FastifyServerOptions<
   loggerInstance?: Logger
   serializerOpts?: FJSOptions | Record<string, unknown>
   serverFactory?: FastifyServerFactory<RawServer, RawRequest, RawReply>
-  caseSensitive?: boolean
-  allowUnsafeRegex?: boolean
   requestIdHeader?: string | false
-  /** @deprecated Use `logController.requestIdLogLabel` instead. */
-  requestIdLogLabel?: string
-  useSemicolonDelimiter?: boolean
   genReqId?: (request: RawRequest) => string
-  trustProxy?: boolean | string | string[] | number | TrustProxyFunction
-  querystringParser?: (input: string) => Record<string, unknown>
-  constraints?: Record<string, ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>>
+  trustProxy?: boolean | string | string[] | TrustProxyFunction
   schemaController?: FastifySchemaControllerOptions
   return503OnClosing?: boolean
   ajv?: Parameters<BuildCompilerFromPool>[1]

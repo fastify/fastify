@@ -21,7 +21,7 @@ import { FastifyBaseLogger, FastifyChildLoggerFactory } from './logger'
 import { FastifyInstanceHooks } from './instance-hooks'
 import { FastifyRegister } from './register'
 import { FastifyReplyForRoute } from './reply'
-import { FastifyRequest, FastifyRequestForRoute } from './request'
+import { FastifyRequestForRoute } from './request'
 import {
   FastifyRouterOptions,
   FindMyWayFindResult,
@@ -428,15 +428,11 @@ export interface FastifyInstance<
     https?: boolean | Readonly<{ allowHTTP1: boolean }>,
     ignoreTrailingSlash?: boolean,
     ignoreDuplicateSlashes?: boolean,
-    /** @deprecated Use the `logController` option with `disableRequestLogging` or `isLogDisabled` override instead. Will be removed in `fastify@6`. */
-    disableRequestLogging?: boolean | ((req: FastifyRequest) => boolean),
     maxParamLength?: number,
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
     pluginTimeout?: number,
     requestIdHeader?: string | false,
-    /** @deprecated Use the `logController` option with `requestIdLogLabel` instead. Will be removed in `fastify@6`. */
-    requestIdLogLabel?: string,
     http2SessionTimeout?: number,
     useSemicolonDelimiter?: boolean,
     routerOptions?: FastifyRouterOptions<RawServer>

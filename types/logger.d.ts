@@ -66,7 +66,7 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: Partial<ReplyForSerializer> & Pick<ReplyForSerializer, 'statusCode'>) => {
+    res?: (res: Partial<ReplyForSerializer>) => {
       statusCode?: string | number;
       [key: string]: unknown;
     };

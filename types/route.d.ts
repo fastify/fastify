@@ -40,8 +40,9 @@ export type FastifyRouterOptions<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = Omit<
   FindMyWayConfigForServer<RawServer>,
-  'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'
+  'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser' | 'constraints'
 > & {
+  constraints?: Record<string, ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>>
   defaultRoute?: (
     req: RawRequest,
     res: RawReply

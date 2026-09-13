@@ -14,6 +14,11 @@ import fastify, {
 import { LogController } from '../../types/logger.js'
 import { RouteConstraintType } from '../../types/route.js'
 
+// TODO: Distribute these assertions across the existing type-test files that cover
+// each API's generic propagation. They are intentionally kept together for #6855
+// so the declaration refactor does not remove existing coverage and remains easier
+// and safer to review.
+
 interface CustomRawRequest extends http.IncomingMessage {
   customRequest: true
 }

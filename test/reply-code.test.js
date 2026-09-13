@@ -117,126 +117,74 @@ test('code should handle 204', (t, done) => {
   })
 })
 
-test('code should handle 205', (t, done) => {
-  t.plan(13)
+// RFC 9110 §15.3.6 (205) and §15.4.5 (304): neither response may carry a body.
+// A 205 additionally needs an explicit zero length, because Node treats only
+// 1xx, 204 and 304 as bodyless and would otherwise fall back to chunked
+// encoding, emitting a "0\r\n\r\n" terminator on the wire.
+for (const [statusCode, expectedContentLength] of [
+  [205, '0'],
+  [304, undefined]
+]) {
+  test(`code should handle ${statusCode}`, (t, done) => {
+    t.plan(13)
 
-  const fastify = Fastify()
+    const fastify = Fastify()
 
-  fastify.get('/205', function (request, reply) {
-    reply.status(205)
-    return null
-  })
-
-  fastify.get('/undefined/205', function (request, reply) {
-    reply.status(205).send({ message: 'hello' })
-  })
-
-  fastify.get('/stream/205', function (request, reply) {
-    const stream = new Readable({
-      read () {
-        this.push(null)
-      }
+    fastify.get(`/${statusCode}`, function (request, reply) {
+      reply.status(statusCode)
+      return null
     })
-    stream.on('end', () => {
-      t.assert.ok('stream ended')
+
+    fastify.get(`/undefined/${statusCode}`, function (request, reply) {
+      reply.status(statusCode).send({ message: 'hello' })
     })
-    reply.status(205).send(stream)
-  })
 
-  // RFC 9110 §15.3.6: a server MUST NOT generate content in a 205 response.
-  // An explicit zero length is required because Node treats only 1xx, 204 and
-  // 304 as bodyless and would otherwise fall back to chunked encoding, which
-  // emits a "0\r\n\r\n" terminator on the wire.
-  fastify.inject({
-    method: 'GET',
-    url: '/205'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 205)
-    t.assert.strictEqual(res.payload, '')
-    t.assert.strictEqual(res.headers['content-length'], '0')
-  })
+    fastify.get(`/stream/${statusCode}`, function (request, reply) {
+      const stream = new Readable({
+        read () {
+          this.push(null)
+        }
+      })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/undefined/205'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 205)
-    t.assert.strictEqual(res.payload, '')
-    t.assert.strictEqual(res.headers['content-length'], '0')
-  })
+      stream.on('end', () => {
+        t.assert.ok('stream ended')
+      })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/stream/205'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 205)
-    t.assert.strictEqual(res.payload, '')
-    t.assert.strictEqual(res.headers['content-length'], '0')
-    done()
-  })
-})
-
-test('code should handle 304', (t, done) => {
-  t.plan(13)
-
-  const fastify = Fastify()
-
-  fastify.get('/304', function (request, reply) {
-    reply.status(304)
-    return null
-  })
-
-  fastify.get('/undefined/304', function (request, reply) {
-    reply.status(304).send({ message: 'hello' })
-  })
-
-  fastify.get('/stream/304', function (request, reply) {
-    const stream = new Readable({
-      read () {
-        this.push(null)
-      }
+      reply.status(statusCode).send(stream)
     })
-    stream.on('end', () => {
-      t.assert.ok('stream ended')
+
+    fastify.inject({
+      method: 'GET',
+      url: `/${statusCode}`
+    }, (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, statusCode)
+      t.assert.strictEqual(res.payload, '')
+      t.assert.strictEqual(res.headers['content-length'], expectedContentLength)
     })
-    reply.status(304).send(stream)
-  })
 
-  // RFC 9110 §15.4.5: a 304 response cannot contain a message body.
-  fastify.inject({
-    method: 'GET',
-    url: '/304'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 304)
-    t.assert.strictEqual(res.payload, '')
-    t.assert.strictEqual(res.headers['content-length'], undefined)
-  })
+    fastify.inject({
+      method: 'GET',
+      url: `/undefined/${statusCode}`
+    }, (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, statusCode)
+      t.assert.strictEqual(res.payload, '')
+      t.assert.strictEqual(res.headers['content-length'], expectedContentLength)
+    })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/undefined/304'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 304)
-    t.assert.strictEqual(res.payload, '')
-    t.assert.strictEqual(res.headers['content-length'], undefined)
+    fastify.inject({
+      method: 'GET',
+      url: `/stream/${statusCode}`
+    }, (error, res) => {
+      t.assert.ifError(error)
+      t.assert.strictEqual(res.statusCode, statusCode)
+      t.assert.strictEqual(res.payload, '')
+      t.assert.strictEqual(res.headers['content-length'], expectedContentLength)
+      done()
+    })
   })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/stream/304'
-  }, (error, res) => {
-    t.assert.ifError(error)
-    t.assert.strictEqual(res.statusCode, 304)
-    t.assert.strictEqual(res.payload, '')
-    t.assert.strictEqual(res.headers['content-length'], undefined)
-    done()
-  })
-})
+}
 
 test('code should handle onSend hook on 204', (t, done) => {
   t.plan(5)

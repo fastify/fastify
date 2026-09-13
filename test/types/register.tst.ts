@@ -84,13 +84,13 @@ expect(serverWithHttp2.register(testPluginWithHttp2Async, testOptions)).type.toB
 expect(serverWithHttp2.register(testPluginWithHttp2WithType)).type.toBeAssignableTo<ServerWithHttp2>()
 expect(serverWithHttp2.register(testPluginWithHttp2WithTypeAsync)).type.toBeAssignableTo<ServerWithHttp2>()
 expect(serverWithHttp2.register((instance) => {
-  expect(instance).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<ServerWithHttp2>()
 })).type.toBeAssignableTo<ServerWithHttp2>()
 expect(serverWithHttp2.register((instance: ServerWithHttp2) => {
   expect(instance).type.toBe<ServerWithHttp2>()
 })).type.toBeAssignableTo<ServerWithHttp2>()
 expect(serverWithHttp2.register(async (instance) => {
-  expect(instance).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<ServerWithHttp2>()
 })).type.toBeAssignableTo<ServerWithHttp2>()
 expect(serverWithHttp2.register(async (instance: ServerWithHttp2) => {
   expect(instance).type.toBe<ServerWithHttp2>()
@@ -142,13 +142,13 @@ expect(serverWithTypeProvider.register(testPluginWithTypeProviderWithType))
 expect(serverWithTypeProvider.register(testPluginWithTypeProviderWithTypeAsync))
   .type.toBeAssignableTo<ServerWithTypeProvider>()
 expect(serverWithTypeProvider.register((instance) => {
-  expect(instance).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<ServerWithTypeProvider>()
 })).type.toBeAssignableTo<ServerWithTypeProvider>()
 expect(serverWithTypeProvider.register((instance: ServerWithTypeProvider) => {
   expect(instance).type.toBe<ServerWithTypeProvider>()
 })).type.toBeAssignableTo<ServerWithTypeProvider>()
 expect(serverWithTypeProvider.register(async (instance) => {
-  expect(instance).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<ServerWithTypeProvider>()
 })).type.toBeAssignableTo<ServerWithTypeProvider>()
 expect(serverWithTypeProvider.register(async (instance: ServerWithTypeProvider) => {
   expect(instance).type.toBe<ServerWithTypeProvider>()
@@ -225,7 +225,7 @@ expect(
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(
   serverWithTypeProviderAndLogger.register((instance) => {
-    expect(instance).type.toBe<FastifyInstance>()
+    expect(instance).type.toBe<ServerWithTypeProviderAndLogger>()
   })
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(
@@ -235,7 +235,7 @@ expect(
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(
   serverWithTypeProviderAndLogger.register(async (instance) => {
-    expect(instance).type.toBe<FastifyInstance>()
+    expect(instance).type.toBe<ServerWithTypeProviderAndLogger>()
   })
 ).type.toBeAssignableTo<ServerWithTypeProviderAndLogger>()
 expect(

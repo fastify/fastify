@@ -15,9 +15,9 @@ import { LogController } from '../../types/logger.js'
 import { RouteConstraintType } from '../../types/route.js'
 
 // TODO: Distribute these assertions across the existing type-test files that cover
-// each API's generic propagation. They are intentionally kept together for #6855
-// so the declaration refactor does not remove existing coverage and remains easier
-// and safer to review.
+// each API's generic propagation in a follow-up. Do not modify those existing test
+// files in #6855: keeping this coverage separate makes the declaration refactor
+// easier and safer to review.
 
 interface CustomRawRequest extends http.IncomingMessage {
   customRequest: true

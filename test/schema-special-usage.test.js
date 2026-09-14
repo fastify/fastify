@@ -754,7 +754,8 @@ test('The default schema compilers should not be called when overwritten by the 
           200: { type: 'object' }
         }
       }
-    }, () => { })
+    },
+    () => { })
 
   await fastify.ready()
 })

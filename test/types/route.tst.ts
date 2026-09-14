@@ -78,9 +78,25 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
   'options' | 'query' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
   'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
 
-  ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'QUERY', 'PROPFIND',
-  'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
-].forEach(method => {
+  ;['DELETE',
+  'GET',
+  'HEAD',
+  'PATCH',
+  'POST',
+  'PUT',
+  'OPTIONS',
+  'QUERY',
+  'PROPFIND',
+  'PROPPATCH',
+  'MKCOL',
+  'COPY',
+  'MOVE',
+  'LOCK',
+  'UNLOCK',
+  'TRACE',
+  'SEARCH',
+  'MKCALENDAR',
+  'REPORT'].forEach(method => {
   // route method
   expect(fastify().route({
     method: method as HTTPMethods,
@@ -111,7 +127,7 @@ type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put'
   interface ParamsInterface { prop: boolean }
   interface HeadersInterface { prop: string }
   interface RouteSpecificContextConfigType {
-    extra: boolean
+    extra: boolean;
   }
   interface RouteGeneric {
     Body: BodyInterface;

@@ -134,8 +134,7 @@ test('Reply#compileSerializationSchema', async t => {
       ])
 
       t.assert.strictEqual(counter, 4)
-    }
-  )
+    })
 
   await t.test('Should use the custom serializer compiler for the route',
     async t => {
@@ -199,8 +198,7 @@ test('Reply#compileSerializationSchema', async t => {
         path: '/user',
         method: 'GET'
       })
-    }
-  )
+    })
 
   await t.test('Should build a WeakMap for cache when called', async t => {
     const fastify = Fastify()
@@ -338,8 +336,7 @@ test('Reply#getSerializationFunction', async t => {
         fastify.inject('/1'),
         fastify.inject('/2')
       ])
-    }
-  )
+    })
 
   await t.test('Should retrieve the serialization function from the cached one',
     async t => {
@@ -407,8 +404,7 @@ test('Reply#getSerializationFunction', async t => {
         fastify.inject('/1'),
         fastify.inject('/2')
       ])
-    }
-  )
+    })
 
   await t.test('Should not instantiate a WeakMap if it is not needed', async t => {
     const fastify = Fastify()

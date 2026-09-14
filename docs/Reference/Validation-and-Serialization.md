@@ -250,7 +250,7 @@ fastify.post('/the/url', {
         'text/plain': {
           schema: { type: 'string' }
         }
-        // Other content types will not be validated
+        // Other content types are rejected with a 415 Unsupported Media Type
       }
     }
   }
@@ -258,16 +258,19 @@ fastify.post('/the/url', {
 ```
 
 > ⚠ Warning:
-> When using [custom content type parsers](./ContentTypeParser.md), the parsed
-> body is validated **only** when the request content type matches a key in the
-> schema `content` map.
+> When the request `Content-Type` does not match any key in the schema
+> `content` map, Fastify rejects the request with a
+> `415 Unsupported Media Type` error (`FST_ERR_CTP_INVALID_MEDIA_TYPE`).
+> This also applies when using [custom content type parsers](./ContentTypeParser.md):
+> the parsed body is validated **only** when the request content type matches a
+> key in the schema `content` map.
 >
 > Schema selection uses an exact match on the request's
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > (for example, `application/json`). If a parser is registered with a regular
 > expression (for example, `/^application\/.*json$/`), the parser can accept
 > more content types than the `content` map covers. Requests in that gap are
-> parsed but **not validated**.
+> parsed but then **rejected with 415**.
 >
 > Ensure every content type accepted by the parser has a corresponding key in
 > the `content` map, or use a catch-all body schema without `content` when
@@ -286,7 +289,7 @@ fastify.post('/the/url', {
 >         'application/json': {
 >           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
 >         },
->         // Without this entry, application/yaml requests will NOT be validated
+>         // Without this entry, application/yaml requests are rejected with 415
 >         'application/yaml': {
 >           schema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] }
 >         }

@@ -277,12 +277,11 @@ requires heavy resources to be sent after the `data`, for example,
 as soon as possible.
 
 > ℹ️ Note:
-> The header `Transfer-Encoding: chunked` will be added once you use
-> the trailer. It is a hard requirement for using trailer in Node.js.
-> `Content-Length` is omitted when trailers are used, because a sender
-> MUST NOT send both headers together.
 
-> ℹ️ Note:
+> For HTTP/1 responses, the header `Transfer-Encoding: chunked` will be added
+> once you use a trailer. HTTP/2 does not use chunked transfer encoding and
+> sends trailers using its native trailing headers support.
+>
 > Trailers are omitted for `1xx`, `204`, `205`, and `304` responses. Those
 > status codes cannot contain a message body or trailers
 > ([RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html)).

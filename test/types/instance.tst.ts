@@ -19,6 +19,7 @@ import { Bindings, ChildLoggerOptions } from '../../types/logger.js'
 import { FastifyReply } from '../../types/reply.js'
 import { FastifyRequest } from '../../types/request.js'
 import { FastifySchemaCompiler, FastifySchemaControllerOptions, FastifySerializerCompiler } from '../../types/schema.js'
+import { FastifyReplyPreSerializedPayload } from '../../types/type-provider.js'
 
 const server = fastify()
 
@@ -88,12 +89,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expect(error).type.toBe<CustomError>()
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | FastifyReplyPreSerializedPayload]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expect(error).type.toBe<CustomError>()
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | FastifyReplyPreSerializedPayload]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {

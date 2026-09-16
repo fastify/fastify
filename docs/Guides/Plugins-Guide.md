@@ -322,7 +322,7 @@ fastify.register((instance, opts, done) => {
     done()
   }
 
-  instance.addHook('onRoute', (routeOptions) => {
+  instance.addHook('onRoute', (instance, routeOptions) => {
     if (routeOptions.config && routeOptions.config.useUtil === true) {
       // set or add our handler to the route preHandler hook
       if (!routeOptions.preHandler) {

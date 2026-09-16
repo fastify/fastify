@@ -628,7 +628,7 @@ test('preClose callback', (t, done) => {
   }
   fastify.addHook('preClose', preClose)
 
-  function preClose (done) {
+  function preClose (instance, done) {
     t.assert.ok(typeof this === typeof fastify)
     preCloseCalled = true
     done()
@@ -709,7 +709,7 @@ test('preClose execution order', (t, done) => {
     done()
   }
 
-  fastify.addHook('preClose', (done) => {
+  fastify.addHook('preClose', (instance, done) => {
     setTimeout(function () {
       order.push(1)
       done()
@@ -721,7 +721,7 @@ test('preClose execution order', (t, done) => {
     order.push(2)
   })
 
-  fastify.addHook('preClose', (done) => {
+  fastify.addHook('preClose', (instance, done) => {
     setTimeout(function () {
       order.push(3)
       done()

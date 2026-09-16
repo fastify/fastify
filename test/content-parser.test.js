@@ -46,6 +46,16 @@ test('hasContentTypeParser', async t => {
       FST_ERR_CTP_INVALID_TYPE
     )
   })
+
+  await t.test('should know about the catch-all parser', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    t.assert.ok(!fastify.hasContentTypeParser('*'))
+
+    fastify.addContentTypeParser('*', first)
+    t.assert.ok(fastify.hasContentTypeParser('*'))
+  })
 })
 
 test('getParser', async t => {

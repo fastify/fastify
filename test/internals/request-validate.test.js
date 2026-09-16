@@ -45,7 +45,7 @@ const requestSchema = {
 }
 
 test('#compileValidationSchema', async subtest => {
-  subtest.plan(7)
+  subtest.plan(8)
 
   await subtest.test('Should return a function - Route without schema', async t => {
     const fastify = Fastify()
@@ -233,6 +233,44 @@ test('#compileValidationSchema', async subtest => {
   )
 
   await subtest.test(
+    'Should compile a new validate fn when the httpPart changes',
+    async t => {
+      const fastify = Fastify()
+      const compiledParts = []
+      const custom = ({ httpPart }) => {
+        compiledParts.push(httpPart)
+        if (httpPart === 'headers') {
+          return input => input.role === 'admin'
+        }
+        return input => input === 'fixed-value'
+      }
+
+      t.plan(7)
+
+      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+        const first = req.compileValidationSchema(defaultSchema, 'headers')
+        const second = req.compileValidationSchema(defaultSchema, 'querystring')
+        const fromCache = req.compileValidationSchema(defaultSchema, 'headers')
+
+        t.assert.notStrictEqual(first, second)
+        t.assert.strictEqual(first, fromCache)
+        t.assert.deepStrictEqual(compiledParts, ['headers', 'querystring'])
+        t.assert.ok(first({ role: 'admin' }))
+        t.assert.ok(!first({ role: 'user' }))
+        t.assert.ok(second('fixed-value'))
+        t.assert.ok(!second('other-value'))
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
     'Should instantiate a WeakMap when executed for first time',
     async t => {
       const fastify = Fastify()
@@ -258,7 +296,7 @@ test('#compileValidationSchema', async subtest => {
 })
 
 test('#getValidationFunction', async subtest => {
-  subtest.plan(6)
+  subtest.plan(7)
 
   await subtest.test('Should return a validation function', async t => {
     const fastify = Fastify()
@@ -441,10 +479,40 @@ test('#getValidationFunction', async subtest => {
       method: 'GET'
     })
   })
+
+  await subtest.test('Should return the first compiled function when reading by schema', async t => {
+    const fastify = Fastify()
+    const compiledParts = []
+    const custom = ({ httpPart }) => {
+      compiledParts.push(httpPart)
+      if (httpPart === 'headers') {
+        return input => input.role === 'admin'
+      }
+      return input => false
+    }
+
+    t.plan(3)
+
+    fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      const first = req.compileValidationSchema(defaultSchema, 'headers')
+      req.compileValidationSchema(defaultSchema, 'querystring')
+
+      t.assert.strictEqual(req.getValidationFunction(defaultSchema), first)
+      t.assert.deepStrictEqual(compiledParts, ['headers', 'querystring'])
+      t.assert.ok(req.getValidationFunction(defaultSchema)({ role: 'admin' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('#validate', async subtest => {
-  subtest.plan(7)
+  subtest.plan(8)
 
   await subtest.test(
     'Should return true/false if input valid - Route without schema',
@@ -501,6 +569,41 @@ test('#validate', async subtest => {
         t.assert.ok(ok)
         t.assert.ok(ok2)
         t.assert.strictEqual(called, 2)
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
+    'Should use the validator compiled for the requested part',
+    async t => {
+      const fastify = Fastify()
+      const compiledParts = []
+      const custom = ({ httpPart }) => {
+        compiledParts.push(httpPart)
+        if (httpPart === 'headers') {
+          return input => input.role === 'admin'
+        }
+        return input => input === 'fixed-value'
+      }
+
+      t.plan(4)
+
+      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+        const headersOk = req.validateInput({ role: 'admin' }, defaultSchema, 'headers')
+        const queryOk = req.validateInput('fixed-value', defaultSchema, 'querystring')
+        const headersAgain = req.validateInput({ role: 'admin' }, defaultSchema, 'headers')
+
+        t.assert.ok(headersOk)
+        t.assert.ok(queryOk)
+        t.assert.ok(headersAgain)
+        t.assert.deepStrictEqual(compiledParts, ['headers', 'querystring'])
 
         reply.send({ hello: 'world' })
       })

@@ -551,6 +551,24 @@ expect(fastify().route({
   handler: routeHandlerWithReturnValue
 })).type.toBe<FastifyInstance>()
 
+expect(fastify().get('/', {
+  logSerializers: {
+    foo: (value: any) => JSON.stringify(value),
+  },
+  return503OnClosing: true,
+}, async () => 'test')).type.toBe<FastifyInstance>()
+
+expect(fastify().route({
+  method: 'GET',
+  url: '/route-options',
+  path: '/route-options',
+  logSerializers: {
+    bar: (value: any) => String(value),
+  },
+  return503OnClosing: false,
+  handler: async () => 'test',
+})).type.toBe<FastifyInstance>()
+
 expect(fastify().route({
   url: '/',
   method: ['put', 'patch'],

@@ -173,6 +173,11 @@ Sets a response header. If the value is omitted or undefined, it is coerced to
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid characters
 > will result in a 500 `TypeError` response.
 
+For HTTP/2 responses, Fastify removes connection-specific headers that the
+protocol forbids. This includes `connection`, `http2-settings`, `keep-alive`,
+`proxy-connection`, `transfer-encoding`, and `upgrade`. The `te` header is
+removed unless its value is `trailers`.
+
 For more information, see
 [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_response_setheader_name_value).
 
@@ -282,8 +287,9 @@ as soon as possible.
 > sends trailers using its native trailing headers support.
 
 > ℹ️ Note:
-> Any error passed to `done` callback will be ignored. If you are interested
-> in the error, you can turn on `debug` level logging.
+> Invalid trailer names are rejected when they are registered. Errors thrown or
+> passed to `done`, and invalid trailer values, are ignored when the trailer is
+> generated. Enable `debug` level logging to inspect those errors.
 
 ```js
 reply.trailer('server-timing', async function () {
@@ -817,8 +823,9 @@ fastify.get('/streams', function (request, reply) {
 
 `Response` allows to manage the reply payload, status code and
 headers in one place. The payload provided inside `Response` is
-considered to be pre-serialized, so they will be sent unmodified
-without response validation.
+considered to be pre-serialized, so it will be sent unmodified
+without response validation. On HTTP/2, connection-specific headers are removed
+as described in [`.header(key, value)`](#headerkey-value).
 
 Please be aware when using `Response`, the status code and headers
 will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.

@@ -378,3 +378,30 @@ test('lazy mode: FSTSEC002 for an external header $ref is still emitted at regis
   // compiling the route at the first request does not warn a second time
   t.assert.strictEqual(spyData.callCount(), 1)
 })
+
+test('lazy mode: concurrent first requests to the same route compile each schema once', async t => {
+  const concurrency = 50
+  t.plan(4)
+  const { fastify, calls } = build({ lazySchemaCompilation: true }, true)
+  // Holds every request before the validation step until all of them are in
+  // flight, so the deferred build runs while the other requests are pending.
+  let entered = 0
+  let releaseAll
+  const allEntered = new Promise(resolve => { releaseAll = resolve })
+  fastify.addHook('preValidation', async () => {
+    entered++
+    if (entered === concurrency) releaseAll()
+    await allEntered
+  })
+  await fastify.ready()
+
+  const responses = await Promise.all(Array.from({ length: concurrency }, (_, i) =>
+    fastify.inject({ method: 'POST', url: `/items/${i}`, payload: { name: 'a' } })
+  ))
+
+  t.assert.strictEqual(entered, concurrency)
+  t.assert.deepStrictEqual(responses.map(res => res.statusCode), Array(concurrency).fill(200))
+  // the same counts as a single request to this route
+  t.assert.strictEqual(calls.validator, 4)
+  t.assert.strictEqual(calls.serializer, 1)
+})

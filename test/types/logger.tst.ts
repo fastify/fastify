@@ -4,6 +4,8 @@ import P from 'pino'
 import { expect } from 'tstyche'
 import fastify, {
   FastifyBaseLogger,
+  FastifyInstance,
+  FastifyPluginCallback,
   FastifyError,
   FastifyLogFn,
   FastifyReply,
@@ -276,3 +278,25 @@ const logController = new LogController()
 expect(logController.requestCompleted).type.toBeCallableWith(undefined, {} as FastifyRequest, {} as FastifyReply)
 expect(logController.requestCompleted).type.toBeCallableWith(null, {} as FastifyRequest, {} as FastifyReply)
 expect(logController.requestCompleted).type.toBeCallableWith(new Error(), {} as FastifyRequest, {} as FastifyReply)
+
+// https://github.com/fastify/fastify/issues/4960
+// An instance built with a custom Logger must stay assignable to an
+// instance typed with the default FastifyBaseLogger generic.
+expect(serverWithLoggerInstance).type.toBeAssignableTo<FastifyInstance>()
+expect(serverWithPino).type.toBeAssignableTo<FastifyInstance>()
+expect(serverWithCustomLogger).type.toBeAssignableTo<FastifyInstance>()
+
+// The same applies when the instance flows into code typed against the
+// default generics, e.g. plugins or helpers receiving FastifyInstance.
+function takesDefaultInstance (instance: FastifyInstance): void {
+  expect(instance.log).type.toBe<FastifyBaseLogger>()
+}
+
+takesDefaultInstance(serverWithLoggerInstance)
+
+const defaultGenericPlugin: FastifyPluginCallback = function (instance) {
+  expect(instance.log).type.toBe<FastifyBaseLogger>()
+}
+
+serverWithLoggerInstance.register(defaultGenericPlugin)
+serverWithPino.register(defaultGenericPlugin)

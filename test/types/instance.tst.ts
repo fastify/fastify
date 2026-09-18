@@ -88,12 +88,12 @@ interface ReplyPayload {
 // typed sync error handler
 server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expect(error).type.toBe<CustomError>()
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | PromiseLike<ReplyPayload['Reply']>]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler send
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expect(error).type.toBe<CustomError>()
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | PromiseLike<ReplyPayload['Reply']>]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 })
 // typed async error handler return
 server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {

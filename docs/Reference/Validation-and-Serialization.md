@@ -851,6 +851,75 @@ fastify.get('/user', {
 *To set a custom serializer in a specific part of the code, use
 [`reply.serializer(...)`](./Reply.md#serializerfunc).*
 
+#### Response schemas and error replies
+<a id="error-handler-serialization"></a>
+
+There is no separate schema for error responses. A payload sent from a
+[`setErrorHandler`](./Server.md#seterrorhandler) handler, or from the default
+error handler, is serialized by the route's response schema for its status code
+(`response[400]`, `response['4xx']` or `response.default`), just like a route
+handler's payload.
+
+Serialization is not validation, so the schema reshapes the payload to fit
+rather than rejecting it. Here the error handler's `code` never reaches the
+client:
+
+```js
+const appErrorSchema = {
+  type: 'object',
+  required: ['code', 'message'],
+  properties: {
+    code: { type: 'string', const: 'APP_ERROR' },
+    message: { type: 'string' }
+  }
+}
+
+fastify.post('/', {
+  schema: {
+    body: { type: 'object', required: ['a'], properties: { a: { type: 'string' } } },
+    response: { 400: appErrorSchema }
+  }
+}, handler)
+
+fastify.setErrorHandler(function (error, request, reply) {
+  reply.code(400).send({ code: 'CUSTOM_ERROR', message: 'Unknown custom error', details: 'invalid body' })
+})
+```
+
+The request responds `400` with
+`{"code":"APP_ERROR","message":"Unknown custom error"}`: `const` replaced
+`CUSTOM_ERROR`, and `details` was dropped as an unlisted property. Unless the
+schema allows additional properties, any property it omits is dropped this way.
+
+If the payload cannot be serialized, for example when a `required` property is
+missing, serialization throws and the reply re-enters the error path, which may
+answer `500` with `FST_ERR_FAILED_ERROR_SERIALIZATION`.
+
+> ⚠ Warning:
+> An error handler that never sets a status code leaves the reply at `200`, so
+> the route's success schema serializes the error payload. Always set the
+> status code explicitly.
+
+To send the payload untouched, bypass the schema with
+[`reply.serializer()`](./Reply.md#serializerfunc) or send an already-serialized
+string, which no response schema is applied to. Set the content type in both
+cases: `reply.serializer()` leaves it unset, and a string defaults to
+`text/plain`.
+
+```js
+fastify.setErrorHandler(function (error, request, reply) {
+  reply
+    .code(400)
+    .type('application/json')
+    .serializer(JSON.stringify)
+    .send({ code: 'CUSTOM_ERROR', message: 'Unknown custom error' })
+})
+```
+
+[`setReplySerializer`](./Server.md#set-reply-serializer) does the same for every
+reply in its scope and takes precedence over the response schema. A status code
+with no declared schema is left untouched.
+
 ### Error Handling
 When schema validation fails for a request, Fastify will automatically return a
 status 400 response including the result from the validator in the payload. For

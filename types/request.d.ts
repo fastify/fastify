@@ -16,7 +16,7 @@ export interface RequestGenericInterface {
 }
 
 export interface ValidationFunction {
-  (input: any): boolean
+  (input: any): boolean;
   errors?: null | ErrorObject[];
 }
 
@@ -96,17 +96,17 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
    */
   readonly protocol: 'http' | 'https';
   readonly method: string;
-  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>
+  readonly routeOptions: Readonly<RequestRouteOptions<ContextConfig, SchemaCompiler>>;
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
   readonly signal: AbortSignal;
   readonly mediaType: string | undefined;
 
-  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined
-  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined
-  compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction
-  validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean
-  validateInput(input: any, httpPart?: HTTPRequestPart): boolean
+  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction | undefined;
+  getValidationFunction(schema: { [key: string]: any }): ValidationFunction | undefined;
+  compileValidationSchema(schema: { [key: string]: any }, httpPart?: HTTPRequestPart): ValidationFunction;
+  validateInput(input: any, schema: { [key: string]: any }, httpPart?: HTTPRequestPart): boolean;
+  validateInput(input: any, httpPart?: HTTPRequestPart): boolean;
   getDecorator<T>(name: string | symbol): T;
   setDecorator<T = unknown>(name: string | symbol, value: T): void;
 }

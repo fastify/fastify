@@ -25,7 +25,8 @@ request](./Request.md) object, accessible via `request.body`.
 > property to validate per content type, only content types listed in the schema
 > will be validated. If you add a custom content type parser but do not include
 > its content type in the body schema's `content` property, the incoming data
-> will be parsed but **not validated**.
+> will be parsed but then rejected with a
+> `415 Unsupported Media Type` error.
 
 Note that for `GET` and `HEAD` requests, the payload is never parsed. For
 `OPTIONS` and `DELETE` requests, the payload is parsed only if a valid

@@ -62,6 +62,45 @@ test('throws when route with empty url', async t => {
   }
 })
 
+test('supports path alias for url in route declaration', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.route({
+    method: 'GET',
+    path: '/alias',
+    handler: (req, res) => {
+      res.send('hi!')
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/alias'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+})
+
+test('url takes precedence over path in route declaration', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.route({
+    method: 'GET',
+    url: '/url',
+    path: '/path',
+    handler: (req, res) => {
+      res.send('hi!')
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'GET',
+    url: '/url'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+})
+
 test('throws when route with empty url in shorthand declaration', async t => {
   t.plan(1)
 

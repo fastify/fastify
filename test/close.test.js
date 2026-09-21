@@ -665,6 +665,40 @@ test('preClose async', async t => {
   await fastify.close()
 })
 
+test('preClose runs exactly once with a child plugin', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  let count = 0
+
+  fastify.register(async (child) => {
+    child.get('/x', async () => 'ok')
+  })
+  fastify.addHook('preClose', async () => { count++ })
+
+  await fastify.ready()
+  await fastify.close()
+
+  t.assert.strictEqual(count, 1)
+})
+
+test('preClose runs exactly once with nested child plugins', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  let count = 0
+
+  fastify.register(async (child) => {
+    child.register(async (grandchild) => {
+      grandchild.get('/y', async () => 'ok')
+    })
+  })
+  fastify.addHook('preClose', async () => { count++ })
+
+  await fastify.ready()
+  await fastify.close()
+
+  t.assert.strictEqual(count, 1)
+})
+
 test('preClose execution order', (t, done) => {
   t.plan(4)
   const fastify = Fastify()

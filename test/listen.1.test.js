@@ -4,6 +4,7 @@ const { networkInterfaces } = require('node:os')
 const { test, before } = require('node:test')
 const Fastify = require('..')
 const helper = require('./helper')
+const { assertNoWarning } = require('./helper')
 
 let localhost
 let localhostForURL
@@ -13,33 +14,22 @@ before(async function () {
 })
 
 test('listen works without arguments', async t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
+
   await fastify.listen()
   const address = fastify.server.address()
   t.assert.strictEqual(address.address, localhost)
   t.assert.ok(address.port > 0)
+  await fastify.close()
 })
 
 test('Async/await listen with arguments', async t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
+
   const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
   const address = fastify.server.address()
   const { protocol, hostname, port, pathname } = new URL(addr)
@@ -55,39 +45,27 @@ test('Async/await listen with arguments', async t => {
     family: 'IPv4',
     port: address.port
   })
+  await fastify.close()
 })
 
 test('listen accepts a callback', (t, done) => {
   t.plan(2)
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
+
   fastify.listen({ port: 0 }, (err) => {
     t.assert.ifError(err)
     t.assert.strictEqual(fastify.server.address().address, localhost)
-    done()
+    fastify.close(done)
   })
 })
 
 test('listen accepts options and a callback', (t, done) => {
   t.plan(1)
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
   fastify.listen({
     port: 0,
     host: 'localhost',
@@ -98,7 +76,7 @@ test('listen accepts options and a callback', (t, done) => {
     ipv6Only: false
   }, (err) => {
     t.assert.ifError(err)
-    done()
+    fastify.close(done)
   })
 })
 
@@ -118,37 +96,24 @@ test('listen after Promise.resolve()', (t, done) => {
 })
 
 test('listen works with undefined host', async t => {
-  const doNotWarn = () => {
-    t.assert.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => fastify.close())
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
   await fastify.listen({ host: undefined, port: 0 })
   const address = fastify.server.address()
   t.assert.strictEqual(address.address, localhost)
   t.assert.ok(address.port > 0)
+  await fastify.close()
 })
 
 test('listen works with null host', async t => {
-  const doNotWarn = () => {
-    t.fail('should not be deprecated')
-  }
-  process.on('warning', doNotWarn)
+  assertNoWarning(t)
 
   const fastify = Fastify()
-  t.after(() => fastify.close())
-  t.after(() => {
-    fastify.close()
-    process.removeListener('warning', doNotWarn)
-  })
+
   await fastify.listen({ host: null, port: 0 })
   const address = fastify.server.address()
   t.assert.strictEqual(address.address, localhost)
   t.assert.ok(address.port > 0)
+  await fastify.close()
 })

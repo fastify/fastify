@@ -1,13 +1,14 @@
 'use strict'
 
 const { test } = require('node:test')
-const Fastify = require('..')
 const fp = require('fastify-plugin')
+const { spyWarning } = require('process-warning')
+const Fastify = require('..')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
 const { FSTWRN001 } = require('../lib/warnings')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
@@ -320,18 +321,10 @@ test('Should not change the input schemas', (t, testDone) => {
 
 test('Should emit warning if the schema headers is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -346,24 +339,18 @@ test('Should emit warning if the schema headers is undefined', (t, testDone) => 
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['headers', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit warning if the schema body is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -378,24 +365,18 @@ test('Should emit warning if the schema body is undefined', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['body', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit warning if the schema query is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -410,24 +391,18 @@ test('Should emit warning if the schema query is undefined', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['querystring', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit warning if the schema params is undefined', (t, testDone) => {
   t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-  }
-
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.post('/:id', {
     handler: echoParams,
@@ -442,31 +417,18 @@ test('Should emit warning if the schema params is undefined', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['params', 'POST', '/:id'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
     testDone()
   })
 })
 
 test('Should emit a warning for every route with undefined schema', (t, testDone) => {
-  t.plan(16)
+  t.plan(9)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
   const fastify = Fastify()
-
-  let runs = 0
-  const expectedWarningEmitted = [0, 1, 2, 3]
-  // It emits 4 warnings:
-  // - 2 - GET and HEAD for /undefinedParams/:id
-  // - 2 - GET and HEAD for /undefinedBody/:id
-  // => 3 x 4 assertions = 12 assertions
-  function onWarning (warning) {
-    t.assert.strictEqual(warning.name, 'FastifyWarning')
-    t.assert.strictEqual(warning.code, FSTWRN001.code)
-    t.assert.strictEqual(runs++, expectedWarningEmitted.shift())
-  }
-
-  process.on('warning', onWarning)
-  t.after(() => {
-    process.removeListener('warning', onWarning)
-    FSTWRN001.emitted = false
-  })
 
   fastify.get('/undefinedParams/:id', {
     handler: echoParams,
@@ -496,8 +458,175 @@ test('Should emit a warning for every route with undefined schema', (t, testDone
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
+    // fastify.inject run in series
+    // last callback recieve all warnings at once
+    // GET /undefinedParams/123
+    t.assert.deepStrictEqual(spyData.calls[0], { arguments: ['params', 'GET', '/undefinedParams/:id'], result: true })
+    t.assert.deepStrictEqual(spyData.calls[1], { arguments: ['params', 'HEAD', '/undefinedParams/:id'], result: true })
+    // GET /undefinedBody/123
+    t.assert.deepStrictEqual(spyData.calls[2], { arguments: ['body', 'GET', '/undefinedBody/:id'], result: true })
+    t.assert.deepStrictEqual(spyData.calls[3], { arguments: ['body', 'HEAD', '/undefinedBody/:id'], result: true })
+    t.assert.strictEqual(spyData.callCount(), 4)
     testDone()
   })
+})
+
+test('Default validator compiler is initialized for a route whose only schema is false', async (t) => {
+  t.plan(2)
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  fastify.post('/body', {
+    handler: echoBody,
+    schema: {
+      body: false
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/body',
+    payload: {}
+  })
+
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.ok(fastify.validatorCompiler, 'validator compiler is initialized')
+})
+
+test('Boolean false request schemas reject every request and no handler executes', async (t) => {
+  t.plan(5)
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  let bodyExecuted = false
+  let qsExecuted = false
+  let paramsExecuted = false
+  let headersExecuted = false
+
+  fastify.post('/body', {
+    handler: async () => { bodyExecuted = true; return { protectedActionExecuted: true } },
+    schema: { body: false }
+  })
+  fastify.get('/querystring', {
+    handler: async () => { qsExecuted = true; return { protectedActionExecuted: true } },
+    schema: { querystring: false }
+  })
+  fastify.post('/params/:id', {
+    handler: async () => { paramsExecuted = true; return { protectedActionExecuted: true } },
+    schema: { params: false }
+  })
+  fastify.post('/headers', {
+    handler: async () => { headersExecuted = true; return { protectedActionExecuted: true } },
+    schema: { headers: false }
+  })
+
+  const r1 = await fastify.inject({ method: 'POST', url: '/body', payload: {} })
+  t.assert.strictEqual(r1.statusCode, 400)
+  const r2 = await fastify.inject({ method: 'GET', url: '/querystring' })
+  t.assert.strictEqual(r2.statusCode, 400)
+  const r3 = await fastify.inject({ method: 'POST', url: '/params/1' })
+  t.assert.strictEqual(r3.statusCode, 400)
+  const r4 = await fastify.inject({ method: 'POST', url: '/headers' })
+  t.assert.strictEqual(r4.statusCode, 400)
+
+  t.assert.deepStrictEqual({
+    bodyExecuted,
+    qsExecuted,
+    paramsExecuted,
+    headersExecuted
+  }, {
+    bodyExecuted: false,
+    qsExecuted: false,
+    paramsExecuted: false,
+    headersExecuted: false
+  })
+})
+
+test('Custom validator compiler receives the literal boolean false schema', async (t) => {
+  t.plan(3)
+  const received = []
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  fastify.post('/body', {
+    handler: async () => ({ ok: true }),
+    schema: { body: false },
+    validatorCompiler: ({ schema, httpPart }) => {
+      received.push({ schema, httpPart })
+      return () => { throw new Error('should not validate') }
+    }
+  })
+
+  await fastify.ready()
+  t.assert.strictEqual(received.length, 1)
+  t.assert.strictEqual(received[0].schema, false)
+  t.assert.strictEqual(received[0].httpPart, 'body')
+})
+
+test('FSTWRN001 is emitted only for explicitly undefined schemas, not boolean false', async (t) => {
+  t.plan(4)
+  const spyData = spyWarning(FSTWRN001)
+  t.after(spyData.restore)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  fastify.post('/false-body', {
+    handler: async () => ({ ok: true }),
+    schema: { body: false }
+  })
+  fastify.post('/undefined-body', {
+    handler: async () => ({ ok: true }),
+    schema: { body: undefined }
+  })
+
+  await fastify.ready()
+  t.assert.strictEqual(spyData.callCount(), 1)
+  t.assert.deepStrictEqual(spyData.calls[0], { arguments: ['body', 'POST', '/undefined-body'], result: true })
+
+  const r1 = await fastify.inject({ method: 'POST', url: '/false-body', payload: {} })
+  t.assert.strictEqual(r1.statusCode, 400)
+  const r2 = await fastify.inject({ method: 'POST', url: '/undefined-body', payload: {} })
+  t.assert.strictEqual(r2.statusCode, 200)
+})
+
+test('Invalid null schema fails closed during schema compilation', async (t) => {
+  t.plan(3)
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  let handlerExecuted = false
+  fastify.post('/null-body', {
+    handler: async () => { handlerExecuted = true; return { ok: true } },
+    schema: { body: null }
+  })
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    return true
+  })
+  t.assert.strictEqual(handlerExecuted, false)
+})
+
+test('Boolean false request schema via the query alias rejects every request', async (t) => {
+  const fastify = Fastify()
+  let handlerExecuted = false
+
+  // `query` is a documented alias for `querystring`; a deny-all `false` must be
+  // aliased and enforced just like the canonical key.
+  fastify.get('/', {
+    handler: async () => { handlerExecuted = true; return { protectedActionExecuted: true } },
+    schema: { query: false }
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/?x=1' })
+
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(handlerExecuted, false)
+})
+
+test('Setting both query and querystring still throws (boolean false included)', async (t) => {
+  const fastify = Fastify()
+  fastify.get('/', {
+    handler: async () => ({ ok: true }),
+    schema: { query: false, querystring: false }
+  })
+  await t.assert.rejects(fastify.ready())
 })
 
 test('First level $ref', (t, testDone) => {

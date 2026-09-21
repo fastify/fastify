@@ -7,7 +7,7 @@ const resolve = require('node:path').resolve
 const zlib = require('node:zlib')
 const pipeline = require('node:stream').pipeline
 const Fastify = require('..')
-const { waitForCb } = require('./toolkit')
+const { waitForCb } = require('./helper')
 
 test('onSend hook stream', t => {
   t.plan(4)

@@ -46,18 +46,22 @@ describe('ContentType class', () => {
   test('returns empty instance for empty value', (t) => {
     let found = new ContentType('')
     t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.mediaType, undefined)
 
     found = new ContentType('undefined')
     t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.mediaType, undefined)
 
     found = new ContentType()
     t.assert.equal(found.isEmpty, true)
+    t.assert.equal(found.mediaType, undefined)
   })
 
   test('indicates media type is not correct format', (t) => {
     let found = new ContentType('foo')
     t.assert.equal(found.isEmpty, true)
     t.assert.equal(found.isValid, false)
+    t.assert.equal(found.mediaType, undefined)
 
     found = new ContentType('foo /bar')
     t.assert.equal(found.isEmpty, true)

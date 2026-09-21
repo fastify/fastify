@@ -4,6 +4,7 @@ const stream = require('node:stream')
 const { ReadableStream } = require('node:stream/web')
 const { test } = require('node:test')
 const Fastify = require('..')
+const { assertNoWarning } = require('./helper')
 
 test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
   t.plan(1)
@@ -281,6 +282,8 @@ test('route onSend can be function or array of functions', async t => {
 })
 
 test('no warning for exposeHeadRoute', async t => {
+  assertNoWarning(t)
+
   const fastify = Fastify()
 
   fastify.route({
@@ -292,15 +295,5 @@ test('no warning for exposeHeadRoute', async t => {
     }
   })
 
-  const listener = (w) => {
-    t.assert.fail('no warning')
-  }
-
-  process.on('warning', listener)
-
-  await fastify.listen({ port: 0 })
-
-  process.removeListener('warning', listener)
-
-  await fastify.close()
+  await fastify.ready()
 })

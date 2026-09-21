@@ -10,8 +10,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
 const { connect } = require('node:net')
-const { sleep } = require('./helper')
-const { waitForCb } = require('./toolkit.js')
+const { sleep, waitForCb } = require('./helper')
 const { fetch } = require('undici')
 
 process.removeAllListeners('warning')

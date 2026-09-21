@@ -14,7 +14,7 @@ const helper = require('../helper')
 const { FST_ERR_LOG_INVALID_LOGGER } = require('../../lib/errors')
 const { once, on } = stream
 const { createTempFile, request } = require('./logger-test-utils')
-const { partialDeepStrictEqual } = require('../toolkit')
+const { partialDeepStrictEqual } = require('../helper')
 
 t.test('logger instantiation', { timeout: 60000 }, async (t) => {
   let localhost

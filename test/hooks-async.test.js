@@ -4,8 +4,7 @@ const { Readable } = require('node:stream')
 const { test, describe } = require('node:test')
 const Fastify = require('../fastify')
 const fs = require('node:fs')
-const { sleep } = require('./helper')
-const { waitForCb } = require('./toolkit')
+const { sleep, waitForCb } = require('./helper')
 
 process.removeAllListeners('warning')
 

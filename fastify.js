@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '6.0.0-alpha.0'
+const VERSION = '6.0.0-alpha.4'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -600,7 +600,7 @@ function fastify (serverOptions) {
 
     if (name === 'onClose') {
       this.onClose(fn.bind(this))
-    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute' || name === 'preClose') {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {

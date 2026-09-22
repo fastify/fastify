@@ -345,6 +345,7 @@ test('Cannot be reopened the closed server has listen callback', async t => {
 
 const server = http.createServer()
 const noSupport = typeof server.closeAllConnections !== 'function'
+const noIdleSupport = typeof server.closeIdleConnections !== 'function'
 
 test('shutsdown while keep-alive connections are active (non-async, native)', { skip: noSupport }, (t, done) => {
   t.plan(5)
@@ -776,4 +777,82 @@ test('does not destroy connections with in-flight requests (default options)', a
   const response = await client.request({ path: '/', method: 'GET' })
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
+})
+
+// Regression tests for https://github.com/fastify/fastify/issues/7044
+//
+// Before the fix, close() on a standard (non-serverFactory) server with
+// forceCloseConnections: 'idle' (or the default, which resolves to 'idle')
+// would NOT call closeIdleConnections(), so server.close() had to wait for
+// the full keepAliveTimeout (up to 72 s) before the promise resolved.
+// After the fix, closeIdleConnections() is called unconditionally whenever
+// forceCloseConnections === 'idle', so close() resolves in milliseconds.
+
+test('close() resolves promptly when an idle keep-alive connection is open (forceCloseConnections: \'idle\')', { skip: noIdleSupport }, async t => {
+  // Use a very long keepAliveTimeout so the test would hang for minutes
+  // without the fix: close() would block until the timeout expired.
+  const KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000 // 5 minutes
+
+  const fastify = Fastify({ forceCloseConnections: 'idle' })
+
+  fastify.server.keepAliveTimeout = KEEP_ALIVE_TIMEOUT
+
+  fastify.get('/', async () => ({ hello: 'world' }))
+
+  await fastify.listen({ port: 0 })
+
+  const client = new Client('http://localhost:' + fastify.server.address().port, {
+    keepAliveTimeout: KEEP_ALIVE_TIMEOUT
+  })
+  t.after(() => client.close())
+
+  // Make a complete request so the connection enters idle keep-alive state.
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  await response.body.dump()
+
+  // close() must resolve well within the keepAliveTimeout (we use 3 s).
+  // Without closeIdleConnections() being called, this would take KEEP_ALIVE_TIMEOUT ms.
+  const start = Date.now()
+  await fastify.close()
+  const elapsed = Date.now() - start
+
+  t.assert.ok(
+    elapsed < 5000,
+    `close() should resolve within 5 s but took ${elapsed} ms (issue #7044 regression)`
+  )
+})
+
+test('close() resolves promptly when an idle keep-alive connection is open (default options)', { skip: noIdleSupport }, async t => {
+  // Same scenario with no forceCloseConnections option at all.
+  // On Node.js >= 18.2 the option auto-resolves to 'idle', so the fix
+  // must also apply on the default code path.
+  const KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000 // 5 minutes
+
+  const fastify = Fastify() // no forceCloseConnections — defaults to 'idle'
+
+  fastify.server.keepAliveTimeout = KEEP_ALIVE_TIMEOUT
+
+  fastify.get('/', async () => ({ hello: 'world' }))
+
+  await fastify.listen({ port: 0 })
+
+  const client = new Client('http://localhost:' + fastify.server.address().port, {
+    keepAliveTimeout: KEEP_ALIVE_TIMEOUT
+  })
+  t.after(() => client.close())
+
+  // Complete the request so the socket is now idle.
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  await response.body.dump()
+
+  const start = Date.now()
+  await fastify.close()
+  const elapsed = Date.now() - start
+
+  t.assert.ok(
+    elapsed < 5000,
+    `close() should resolve within 5 s but took ${elapsed} ms (issue #7044 regression)`
+  )
 })

@@ -295,6 +295,69 @@ test('request.routeOptions.handlerTimeout reflects server default', async t => {
 
 // --- Client disconnect aborts signal ---
 
+test('request close aborts signal when raw request is aborted', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  let capturedRequest
+
+  fastify.get('/', { handlerTimeout: 5000 }, async request => {
+    capturedRequest = request
+    request.raw.aborted = true
+    request.raw.emit('close')
+    return 'ok'
+  })
+
+  const response = await fastify.inject({ method: 'GET', url: '/' })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(capturedRequest.signal.aborted, true)
+  t.assert.strictEqual(capturedRequest[kTimeoutTimer], null)
+})
+
+test('client disconnect while request body is incomplete aborts request.signal', { timeout: 3000 }, async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ handlerTimeout: 5000 })
+  let capturedRequest
+  let enterRequest
+  let signalAborted
+  const requestEntered = new Promise(resolve => { enterRequest = resolve })
+  const aborted = new Promise(resolve => { signalAborted = resolve })
+
+  fastify.addHook('onRequest', async request => {
+    capturedRequest = request
+    request.signal.addEventListener('abort', signalAborted, { once: true })
+    enterRequest()
+  })
+
+  fastify.post('/', async () => 'should not reach')
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const { port } = fastify.server.address()
+  const client = net.connect(port, '127.0.0.1')
+  client.on('error', () => {})
+  t.after(() => client.destroy())
+
+  client.write([
+    'POST / HTTP/1.1',
+    'Host: localhost',
+    'Content-Type: application/json',
+    'Content-Length: 10',
+    '',
+    '{}'
+  ].join('\r\n'))
+
+  await requestEntered
+  client.destroy()
+  await aborted
+
+  t.assert.strictEqual(capturedRequest.signal.aborted, true)
+  t.assert.strictEqual(capturedRequest[kTimeoutTimer], null)
+})
+
 test('client disconnect aborts request.signal', async t => {
   t.plan(1)
 

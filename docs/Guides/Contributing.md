@@ -70,18 +70,14 @@ guide, do one of the following:
   issue first. That way, other people can weigh in on the discussion before you
   do any work.
 
-<!--
-TODO: add link to a style guide, when we have one, here as in
-https://github.com/github/opensource.guide/blob/2868efbf0c14aec821909c19e210c3603a4a7805/CONTRIBUTING.md#style-guide
--->
 
 ## Setting Up Your Environment
 <a id="contributing-environment"></a>
 
-Please adhere to the project's code and documentation style. Some popular tools
-that automatically "correct" code and documentation do not follow a style that
-conforms to this project's styles. Notably, this project uses
-[StandardJS](https://standardjs.com) for code formatting.
+Please adhere to the project's code and [documentation](./Style-Guide.md)
+style. Some popular tools that automatically "correct" code and documentation
+do not follow a style that conforms to this project's styles. Notably, this
+project uses [StandardJS](https://standardjs.com) for code formatting.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/fastify/fastify)
 

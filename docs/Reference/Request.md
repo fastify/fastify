@@ -122,6 +122,14 @@ to headers on `not found` routes.
 > Schema validation may mutate the `request.headers` and
 > `request.raw.headers` objects, causing the headers to become empty.
 
+> ℹ️ Note:
+> The setter is additive, so it cannot be used to *remove* a header, and a
+> `headers` schema validator's synchronous `{ value }` result is applied through
+> this same setter. `request.headers` is therefore the incoming request's
+> headers (plus any additive values), not a sanitized or authoritative view. If
+> your application needs an allow-listed header subset, build and consume it
+> explicitly from the validated data or from `request.raw.headers`.
+
 ```js
 fastify.post('/:params', options, function (request, reply) {
   console.log(request.body)

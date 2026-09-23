@@ -342,7 +342,6 @@ listed in alphabetical order.
   <https://www.npmjs.com/~climba03003>
 * [__Maksim Sinik__](https://github.com/fox1t),
   <https://x.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
-* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm),
   <https://x.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Antonio Tripodi__](https://github.com/Tony133), <https://www.npmjs.com/~tony133>
@@ -377,6 +376,7 @@ active contributor's group.
   <https://x.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Salman Mitha__](https://github.com/salmanm),
   <https://www.npmjs.com/~salmanm>
+* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Nathan Woltman__](https://github.com/nwoltman),
   <https://x.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 

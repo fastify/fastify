@@ -353,6 +353,49 @@ test('does not abort when request body stream closes', async t => {
   t.assert.strictEqual(res.status, 200)
 })
 
+test('client disconnect after request body completes aborts request.signal', { timeout: 3000 }, async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ handlerTimeout: 5000 })
+  let capturedRequest
+  let enterHandler
+  let signalAborted
+  const handlerEntered = new Promise(resolve => { enterHandler = resolve })
+  const aborted = new Promise(resolve => { signalAborted = resolve })
+
+  fastify.post('/', async request => {
+    capturedRequest = request
+    request.signal.addEventListener('abort', signalAborted, { once: true })
+    enterHandler()
+    await aborted
+    return 'client is already gone'
+  })
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const { port } = fastify.server.address()
+  const client = net.connect(port, '127.0.0.1')
+  client.on('error', () => {})
+  t.after(() => client.destroy())
+
+  client.write([
+    'POST / HTTP/1.1',
+    'Host: localhost',
+    'Content-Type: application/json',
+    'Content-Length: 2',
+    '',
+    '{}'
+  ].join('\r\n'))
+
+  await handlerEntered
+  client.destroy()
+  await aborted
+
+  t.assert.strictEqual(capturedRequest.signal.aborted, true)
+  t.assert.strictEqual(capturedRequest[kTimeoutTimer], null)
+})
+
 test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT for POST with body', async t => {
   t.plan(2)
   const fastify = Fastify()

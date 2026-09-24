@@ -437,8 +437,9 @@ a `WeakMap` for reducing compilation calls.
 The optional parameters `httpStatus` and `contentType`, if provided,
 are forwarded directly to the `SerializerCompiler`, so it can be used
 to compile the serialization function if a custom `SerializerCompiler` is used.
-They are part of the cache key too, so the same `schema` compiled with
-different values gets its own serialization function.
+With a custom `SerializerCompiler` they are part of the cache key too, so the
+same `schema` compiled with different values gets its own serialization
+function. The default compiler ignores them and compiles each `schema` once.
 
 This heavily depends of the `schema#responses` attached to the route, or
 the serialization functions compiled by using `compileSerializationSchema`.

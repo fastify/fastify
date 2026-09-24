@@ -35,3 +35,34 @@ test('reply.send(web ReadableStream) throws if locked', async t => {
     }
   )
 })
+
+test('explicit HEAD reply.send(web ReadableStream) throws if locked', async t => {
+  t.plan(4)
+
+  const app = Fastify()
+  after(() => app.close())
+
+  let errorCode
+  app.setErrorHandler((err, req, reply) => {
+    errorCode = err.code
+    reply.send(err)
+  })
+
+  app.route({
+    method: 'HEAD',
+    url: '/',
+    handler: (req, reply) => {
+      const rs = new ReadableStream({
+        start (controller) { controller.enqueue(new TextEncoder().encode('hi')); controller.close() }
+      })
+      rs.getReader()
+      t.assert.strictEqual(rs.locked, true, 'stream is locked')
+      reply.send(rs)
+    }
+  })
+
+  const res = await app.inject({ method: 'HEAD', url: '/' })
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(errorCode, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
+  t.assert.strictEqual(res.body, '')
+})

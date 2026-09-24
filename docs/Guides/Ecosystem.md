@@ -679,6 +679,9 @@ middlewares into Fastify plugins
   request's `user-agent` header.
 - [`fastify-uws`](https://github.com/geut/fastify-uws) A Fastify plugin to
   use the web server [uWebSockets.js](https://github.com/uNetworking/uWebSockets.js).
+- [`fastify-verify-plugin-version`](https://github.com/riya-kaurav/fastify-verify-plugin-version)
+  Checks whether a plugin's required Fastify version matches the running
+  Fastify version, without registering it or catching an error.
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on

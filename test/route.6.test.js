@@ -237,6 +237,117 @@ test('HEAD route should respect custom onSend handlers', async t => {
   t.assert.strictEqual(counter, 2)
 })
 
+test('HEAD route should handle a payload cleared by an onSend hook', async t => {
+  t.plan(6)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  // An onSend hook is allowed to clear the payload by replacing it with null.
+  fastify.addHook('onSend', (req, reply, payload, done) => {
+    done(null, null)
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/json',
+    handler: (req, reply) => {
+      reply.send({ here: 'is Johnny' })
+    }
+  })
+
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/json'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-length'], '0')
+  t.assert.strictEqual(res.body, '')
+
+  // the HEAD route reports what the GET route reports
+  res = await fastify.inject({
+    method: 'GET',
+    url: '/json'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-length'], '0')
+  t.assert.strictEqual(res.body, '')
+})
+
+test('HEAD route sends no content-length for a status that carries none', async t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.route({
+    method: 'GET',
+    path: '/empty',
+    handler: (req, reply) => {
+      reply.code(204).send()
+    }
+  })
+
+  let res = await fastify.inject({ method: 'HEAD', url: '/empty' })
+  t.assert.strictEqual(res.statusCode, 204)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+
+  // the HEAD route reports what the GET route reports
+  res = await fastify.inject({ method: 'GET', url: '/empty' })
+  t.assert.strictEqual(res.statusCode, 204)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+})
+
+test('HEAD route should handle a conditional onSend hook that clears the payload', async t => {
+  t.plan(10)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.addHook('onSend', (req, reply, payload, done) => {
+    if (req.headers['if-none-match'] === '"v1"') {
+      reply.code(304)
+      done(null, null)
+      return
+    }
+    done(null, payload)
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/resource',
+    handler: (req, reply) => {
+      reply.header('etag', '"v1"')
+      reply.send({ here: 'is Johnny' })
+    }
+  })
+
+  let res = await fastify.inject({
+    method: 'HEAD',
+    url: '/resource'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers.etag, '"v1"')
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(res.headers['content-length'], '20')
+
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/resource',
+    headers: { 'if-none-match': '"v1"' }
+  })
+  t.assert.strictEqual(res.statusCode, 304)
+  t.assert.strictEqual(res.headers.etag, '"v1"')
+  t.assert.strictEqual(res.body, '')
+  // a 304 carries no content-length, and the GET route it reports on sends none
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+
+  res = await fastify.inject({
+    method: 'GET',
+    url: '/resource',
+    headers: { 'if-none-match': '"v1"' }
+  })
+  t.assert.strictEqual(res.statusCode, 304)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+})
+
 test('route onSend can be function or array of functions', async t => {
   t.plan(10)
   const counters = { single: 0, multiple: 0 }

@@ -92,7 +92,8 @@ async function handleResults (scriptLibs, results) {
         { data: 'Status', header: true },
         { data: 'Section', header: true },
         { data: 'Module', header: true },
-        { data: 'Details', header: true }],
+        { data: 'Details', header: true }
+      ],
       ...failures.map((failure) => [
         '❌',
         failure.grouping,

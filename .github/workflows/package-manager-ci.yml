@@ -69,7 +69,11 @@ jobs:
 
       - name: Install with yarn
         run: |
-          curl -o- -L https://yarnpkg.com/install.sh | bash
+          # Verify the installer checksum before executing it, so CI never
+          # runs unpinned mutable remote code from yarnpkg.com.
+          curl -fsSL https://yarnpkg.com/install.sh -o "$RUNNER_TEMP/yarn-install.sh"
+          printf '%s  %s\n' '90798f6ad4c931e58afd7c6b8a2120bd5480022f298c4bb6a521755ccf297a42' "$RUNNER_TEMP/yarn-install.sh" | sha256sum -c --quiet
+          bash "$RUNNER_TEMP/yarn-install.sh"
           yarn install --ignore-engines --ignore-scripts
 
       - run: yarn

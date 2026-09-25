@@ -712,3 +712,56 @@ test('Reply#serializeInput', async t => {
     })
   })
 })
+
+// Regression tests for #6987 and #6988
+
+test('compileSerializationSchema passes undefined (not null) for omitted httpStatus and contentType (#6988)', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setSerializerCompiler(({ httpStatus, contentType }) => {
+    t.assert.strictEqual(httpStatus, undefined, 'httpStatus should be undefined when omitted')
+    t.assert.strictEqual(contentType, undefined, 'contentType should be undefined when omitted')
+    return JSON.stringify
+  })
+
+  fastify.get('/', (_req, reply) => {
+    reply.compileSerializationSchema({ type: 'object' })
+    reply.send({ ok: true })
+  })
+
+  const res = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(res.statusCode, 200)
+})
+
+test('compileSerializationSchema returns distinct serializers for different metadata on the same schema object (#6987)', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  const compiled = []
+
+  fastify.setSerializerCompiler(({ httpStatus, contentType }) => {
+    compiled.push({ httpStatus, contentType })
+    return data => JSON.stringify({ httpStatus, contentType, data })
+  })
+
+  fastify.get('/', (_req, reply) => {
+    const schema = { type: 'object' }
+    const first = reply.compileSerializationSchema(schema, '200', 'application/json')
+    const second = reply.compileSerializationSchema(schema, '201', 'application/vnd.example+json')
+
+    t.assert.notStrictEqual(first, second, 'different metadata should produce different serializers')
+    t.assert.strictEqual(compiled.length, 2, 'compiler should be invoked once per unique metadata tuple')
+
+    const r1 = JSON.parse(first({ value: 1 }))
+    const r2 = JSON.parse(second({ value: 2 }))
+
+    t.assert.strictEqual(r1.httpStatus, '200')
+    t.assert.strictEqual(r2.httpStatus, '201')
+
+    reply.send({ ok: true })
+  })
+
+  await fastify.inject({ method: 'GET', url: '/' })
+})

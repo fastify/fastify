@@ -166,3 +166,23 @@ test('reply.mediaType should match case-insensitive content-type set via raw.set
   })
   t.assert.strictEqual(response.body, 'text/html')
 })
+
+test('reply.mediaType should prioritize reply.type over raw.setHeader', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', (request, reply) => {
+    reply.raw.setHeader('content-type', 'application/xml')
+    reply.type('application/json')
+    t.assert.strictEqual(reply.mediaType, 'application/json')
+    reply.send({ mediaType: reply.mediaType })
+  })
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+  const body = await response.json()
+  t.assert.strictEqual(body.mediaType, 'application/json')
+})

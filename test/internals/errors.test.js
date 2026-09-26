@@ -151,53 +151,58 @@ test('FST_ERR_CTP_INVALID_PARSE_TYPE', t => {
 })
 
 test('FST_ERR_CTP_BODY_TOO_LARGE', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_CTP_BODY_TOO_LARGE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_BODY_TOO_LARGE')
   t.assert.strictEqual(error.message, 'Request body is too large')
   t.assert.strictEqual(error.statusCode, 413)
   t.assert.ok(error instanceof RangeError)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_CTP_INVALID_MEDIA_TYPE', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_CTP_INVALID_MEDIA_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_MEDIA_TYPE')
   t.assert.strictEqual(error.message, 'Unsupported Media Type')
   t.assert.strictEqual(error.statusCode, 415)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_CTP_INVALID_CONTENT_LENGTH', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_CTP_INVALID_CONTENT_LENGTH()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_CONTENT_LENGTH')
   t.assert.strictEqual(error.message, 'Request body size did not match Content-Length')
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof RangeError)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_CTP_EMPTY_JSON_BODY', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_CTP_EMPTY_JSON_BODY()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_EMPTY_JSON_BODY')
   t.assert.strictEqual(error.message, "Body cannot be empty when content-type is set to 'application/json'")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_CTP_INVALID_JSON_BODY', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_CTP_INVALID_JSON_BODY()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_CTP_INVALID_JSON_BODY')
   t.assert.strictEqual(error.message, "Body is not valid JSON but content-type is set to 'application/json'")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_CTP_INSTANCE_ALREADY_STARTED', t => {
@@ -621,23 +626,25 @@ test('FST_ERR_DUPLICATED_ROUTE', t => {
 })
 
 test('FST_ERR_BAD_URL', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_BAD_URL()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_BAD_URL')
   t.assert.strictEqual(error.message, "'%s' is not a valid url component")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_MAX_PARAM_LENGTH', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_MAX_PARAM_LENGTH()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_MAX_PARAM_LENGTH')
   t.assert.strictEqual(error.message, "'%s' is exceeding the max param length")
   t.assert.strictEqual(error.statusCode, 414)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_ASYNC_CONSTRAINT', t => {
@@ -781,23 +788,25 @@ test('FST_ERR_ROUTE_REWRITE_NOT_STR', t => {
 })
 
 test('FST_ERR_ROUTE_MISSING_CONTENT_TYPE', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT_TYPE()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT_TYPE')
   t.assert.strictEqual(error.message, "Method '%s' must provide a 'Content-Type' header.")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_ROUTE_MISSING_CONTENT', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT')
   t.assert.strictEqual(error.message, "Method '%s' must provide a request body.")
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
@@ -921,13 +930,14 @@ test('FST_ERR_PLUGIN_TIMEOUT', t => {
 })
 
 test('FST_ERR_VALIDATION', t => {
-  t.plan(5)
+  t.plan(6)
   const error = new errors.FST_ERR_VALIDATION()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_VALIDATION')
   t.assert.strictEqual(error.message, '%s')
   t.assert.strictEqual(error.statusCode, 400)
   t.assert.ok(error instanceof Error)
+  t.assert.strictEqual(error.stack, undefined)
 })
 
 test('FST_ERR_LISTEN_OPTIONS_INVALID', t => {

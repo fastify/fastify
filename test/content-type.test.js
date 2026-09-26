@@ -42,6 +42,28 @@ test('should remove content-type for setErrorHandler', async t => {
   t.assert.strictEqual(body, JSON.stringify({ foo: 'bar' }))
 })
 
+test('should use a content-type set on the raw response', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.get('/string', (req, reply) => {
+    reply.raw.setHeader('content-type', 'text/html')
+    reply.send('<p>hello</p>')
+  })
+  fastify.get('/json', (req, reply) => {
+    reply.raw.setHeader('content-type', 'application/vnd.api+json')
+    reply.send({ hello: 'world' })
+  })
+
+  const string = await fastify.inject('/string')
+  t.assert.strictEqual(string.headers['content-type'], 'text/html')
+  t.assert.strictEqual(string.body, '<p>hello</p>')
+
+  const json = await fastify.inject('/json')
+  t.assert.strictEqual(json.headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.assert.deepStrictEqual(json.json(), { hello: 'world' })
+})
+
 describe('ContentType class', () => {
   test('returns empty instance for empty value', (t) => {
     let found = new ContentType('')

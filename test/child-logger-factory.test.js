@@ -126,3 +126,28 @@ test('should throw error if invalid logger is returned', (t, done) => {
     }, { code: 'FST_ERR_LOG_INVALID_LOGGER' })
   })
 })
+
+test('request child loggers only receive a level when the route sets one', async t => {
+  t.plan(3)
+
+  const fastify = Fastify({ logger: { level: 'info', stream: { write () {} } } })
+  const levels = []
+  fastify.setChildLoggerFactory(function (logger, bindings, opts) {
+    // an empty level would make pino reset the level of every request child
+    levels.push(Object.hasOwn(opts, 'level') ? opts.level : 'inherited')
+    return logger.child(bindings, opts)
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send(req.log.level)
+  })
+  fastify.get('/warn', { logLevel: 'warn' }, (req, reply) => {
+    reply.send(req.log.level)
+  })
+
+  t.after(() => fastify.close())
+
+  t.assert.strictEqual((await fastify.inject('/')).body, 'info')
+  t.assert.strictEqual((await fastify.inject('/warn')).body, 'warn')
+  t.assert.deepStrictEqual(levels, ['inherited', 'warn'])
+})

@@ -126,3 +126,32 @@ test('should throw error if invalid logger is returned', (t, done) => {
     }, { code: 'FST_ERR_LOG_INVALID_LOGGER' })
   })
 })
+
+test('request child loggers inherit the level without resetting it', async t => {
+  t.plan(4)
+
+  const fastify = Fastify({ logger: { level: 'info', stream: { write () {} } } })
+  const levels = []
+  fastify.setChildLoggerFactory(function (logger, bindings, opts) {
+    levels.push(opts.level)
+    return logger.child(bindings, opts)
+  })
+
+  let levelChanges = 0
+  fastify.log.on('level-change', () => { levelChanges++ })
+
+  fastify.get('/', (req, reply) => {
+    reply.send(req.log.level)
+  })
+  fastify.get('/warn', { logLevel: 'warn' }, (req, reply) => {
+    reply.send(req.log.level)
+  })
+
+  t.after(() => fastify.close())
+
+  t.assert.strictEqual((await fastify.inject('/')).body, 'info')
+  t.assert.strictEqual((await fastify.inject('/warn')).body, 'warn')
+  t.assert.deepStrictEqual(levels, [undefined, 'warn'])
+  // only the route with its own level needs to change it
+  t.assert.strictEqual(levelChanges, 1)
+})

@@ -259,7 +259,7 @@ function fastify (serverOptions) {
     server,
     addresses: function () {
       /* istanbul ignore next */
-      const binded = this[kServerBindings].map(b => b.address())
+      const binded = this[kServerBindings].map(b => b.server.address())
       binded.push(this.server.address())
       return binded.filter(adr => adr)
     },
@@ -415,12 +415,15 @@ function fastify (serverOptions) {
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
           instance.server.close(function (err) {
-            /* c8 ignore next 6 */
-            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
-              done(null)
-            } else {
-              done()
-            }
+            const secondaryClosePromises = fastify[kServerBindings].map(binding => binding.closePromise)
+            Promise.all(secondaryClosePromises).then(() => {
+              /* c8 ignore next 6 */
+              if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
+                done(null)
+              } else {
+                done()
+              }
+            })
           })
         } else {
           process.nextTick(done, null)

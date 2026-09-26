@@ -742,4 +742,6 @@ middlewares into Fastify plugins
   Fastify plugin for Vite with Hot-module Replacement.
 - [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
   File-based routing for Fastify applications using Vite.
+- [`flowrakis-taler_fastify-plugin`](https://open.code.flowrakis.eu/flowrakis/flowrakis-taler_fastify-plugin)
+  batteries included REST API for [GNU Taler](https://www.taler.net/en/), a privacy-preserving, open-source electronic payment system  
 

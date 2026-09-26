@@ -165,6 +165,8 @@ fastify.post('/:params', options, function (request, reply) {
 By calling this function with a provided `schema` or `httpPart`, it returns a
 `validation` function to validate diverse inputs. It returns `undefined` if no
 serialization function is found using the provided inputs.
+When a `schema` is given, the function compiled first for that schema is
+returned, regardless of the `httpPart` it was compiled with.
 
 This function has an `errors` property. Errors encountered during the last
 validation are assigned to `errors`.
@@ -204,6 +206,8 @@ is used to cache this, reducing compilation calls.
 The optional parameter `httpPart`, if provided, is forwarded to the
 `ValidationCompiler`, allowing it to compile the validation function if a custom
 `ValidationCompiler` is provided for the route.
+It is part of the cache key too, so the same `schema` compiled with
+different `httpPart` values gets its own validation function.
 
 This function has an `errors` property. Errors encountered during the last
 validation are assigned to `errors`.

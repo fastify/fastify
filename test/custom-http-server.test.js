@@ -63,7 +63,7 @@ async function setup () {
     )
   })
 
-  test('Should not make an extra closeIdleConnections call for native servers', async t => {
+  test('Should call closeIdleConnections once on close for native servers', async t => {
     const fastify = Fastify({
       forceCloseConnections: 'idle'
     })
@@ -77,10 +77,12 @@ async function setup () {
 
     await fastify.close()
 
+    // Fastify now explicitly calls closeIdleConnections() on every server
+    // (not just custom ones), so native servers should see exactly one call.
     t.assert.strictEqual(called, 1)
   })
 
-  test('Should preserve the extra closeIdleConnections call for custom servers', async t => {
+  test('Should call closeIdleConnections twice for custom servers (explicit + server.close internal)', async t => {
     let called = 0
     const fastify = Fastify({
       forceCloseConnections: 'idle',
@@ -98,6 +100,8 @@ async function setup () {
     await fastify.listen({ port: 0 })
     await fastify.close()
 
+    // Custom servers get closeIdleConnections() called once explicitly by Fastify
+    // and once internally by Node's server.close(). Total: 2.
     t.assert.strictEqual(called, 2)
   })
 

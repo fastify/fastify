@@ -387,10 +387,8 @@ function fastify (serverOptions) {
 
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
         if (fastify[kState].listening) {
-          /* istanbul ignore next: Cannot test this without Node.js core support */
-          if (forceCloseConnections === 'idle' && options.serverFactory) {
+          if (forceCloseConnections === 'idle') {
             instance.server.closeIdleConnections()
-            /* istanbul ignore next: Cannot test this without Node.js core support */
           } else if (serverHasCloseAllConnections && forceCloseConnections === true) {
             instance.server.closeAllConnections()
           } else if (forceCloseConnections === true) {

@@ -135,6 +135,20 @@ developer is responsible for ensuring errors are handled properly.
 Most errors result from unexpected input data, so it is recommended to
 [validate input data against a JSON schema](./Validation-and-Serialization.md).
 
+Errors that Fastify creates when it rejects an invalid request, such as a
+failed schema validation or a malformed body, do not have a stack trace, as it
+would only point at Fastify internals. These are
+[`FST_ERR_VALIDATION`](#fst_err_validation),
+[`FST_ERR_CTP_BODY_TOO_LARGE`](#fst_err_ctp_body_too_large),
+[`FST_ERR_CTP_INVALID_MEDIA_TYPE`](#fst_err_ctp_invalid_media_type),
+[`FST_ERR_CTP_INVALID_CONTENT_LENGTH`](#fst_err_ctp_invalid_content_length),
+[`FST_ERR_CTP_EMPTY_JSON_BODY`](#fst_err_ctp_empty_json_body),
+[`FST_ERR_CTP_INVALID_JSON_BODY`](#fst_err_ctp_invalid_json_body),
+[`FST_ERR_BAD_URL`](#fst_err_bad_url),
+[`FST_ERR_MAX_PARAM_LENGTH`](#fst_err_max_param_length),
+[`FST_ERR_ROUTE_MISSING_CONTENT_TYPE`](#fst_err_route_missing_content_type)
+and [`FST_ERR_ROUTE_MISSING_CONTENT`](#fst_err_route_missing_content).
+
 #### Catching Uncaught Errors In Fastify
 Fastify tries to catch as many uncaught errors as possible without hindering
 performance. This includes:

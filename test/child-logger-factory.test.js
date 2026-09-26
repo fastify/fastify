@@ -127,18 +127,16 @@ test('should throw error if invalid logger is returned', (t, done) => {
   })
 })
 
-test('request child loggers inherit the level without resetting it', async t => {
-  t.plan(4)
+test('request child loggers only receive a level when the route sets one', async t => {
+  t.plan(3)
 
   const fastify = Fastify({ logger: { level: 'info', stream: { write () {} } } })
   const levels = []
   fastify.setChildLoggerFactory(function (logger, bindings, opts) {
-    levels.push(opts.level)
+    // an empty level would make pino reset the level of every request child
+    levels.push(Object.hasOwn(opts, 'level') ? opts.level : 'inherited')
     return logger.child(bindings, opts)
   })
-
-  let levelChanges = 0
-  fastify.log.on('level-change', () => { levelChanges++ })
 
   fastify.get('/', (req, reply) => {
     reply.send(req.log.level)
@@ -151,7 +149,5 @@ test('request child loggers inherit the level without resetting it', async t => 
 
   t.assert.strictEqual((await fastify.inject('/')).body, 'info')
   t.assert.strictEqual((await fastify.inject('/warn')).body, 'warn')
-  t.assert.deepStrictEqual(levels, [undefined, 'warn'])
-  // only the route with its own level needs to change it
-  t.assert.strictEqual(levelChanges, 1)
+  t.assert.deepStrictEqual(levels, ['inherited', 'warn'])
 })

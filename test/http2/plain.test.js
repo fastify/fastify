@@ -2,6 +2,7 @@
 
 const { test } = require('node:test')
 const http2 = require('node:http2')
+const { Readable } = require('node:stream')
 const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
@@ -111,6 +112,139 @@ test('http2 response trailers do not use transfer-encoding', async t => {
   t.assert.strictEqual(response.headers.trailer, 'x-checksum')
   t.assert.strictEqual(response.body, 'hello')
   t.assert.strictEqual(response.trailers['x-checksum'], 'abc')
+})
+
+test('http2 removes invalid connection-specific response headers', async t => {
+  const invalidHeaders = [
+    ['connection', 'trailers'],
+    ['http2-settings', 'setting'],
+    ['keep-alive', 'timeout=5'],
+    ['proxy-connection', 'keep-alive'],
+    ['te', 'gzip'],
+    ['transfer-encoding', 'chunked'],
+    ['upgrade', 'websocket']
+  ]
+  const modes = ['header', 'response', 'stream']
+  const fastify = Fastify({ http2: true })
+
+  fastify.get('/:mode/:index', async (request, reply) => {
+    const [header, value] = invalidHeaders[request.params.index]
+
+    if (request.params.mode === 'response') {
+      return new Response('hello', { headers: { [header]: value } })
+    }
+
+    if (request.params.mode === 'stream') {
+      reply.raw.setHeader(header, value)
+      return Readable.from('hello')
+    }
+
+    reply.header(header, value)
+    return 'hello'
+  })
+
+  fastify.get('/valid-te', async (request, reply) => {
+    reply.header('te', 'trailers')
+    return 'hello'
+  })
+
+  fastify.get('/error', async () => {
+    const error = new Error('boom')
+    error.headers = { 'keep-alive': 'timeout=5' }
+    throw error
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+
+  const client = http2.connect(`http://127.0.0.1:${fastify.server.address().port}`)
+  t.after(() => {
+    client.close()
+    return fastify.close()
+  })
+
+  async function sendRequest (path) {
+    return new Promise((resolve, reject) => {
+      const request = client.request({
+        [http2.constants.HTTP2_HEADER_METHOD]: http2.constants.HTTP2_METHOD_GET,
+        [http2.constants.HTTP2_HEADER_PATH]: path
+      })
+      const result = { body: '' }
+
+      request.setEncoding('utf8')
+      request.on('response', headers => {
+        result.headers = headers
+      })
+      request.on('data', chunk => {
+        result.body += chunk
+      })
+      request.on('error', reject)
+      request.on('end', () => resolve(result))
+      request.end()
+    })
+  }
+
+  for (const mode of modes) {
+    for (let index = 0; index < invalidHeaders.length; index++) {
+      const [header] = invalidHeaders[index]
+      const response = await sendRequest(`/${mode}/${index}`)
+
+      t.assert.strictEqual(response.headers[':status'], 200)
+      t.assert.strictEqual(response.headers[header], undefined)
+      t.assert.strictEqual(response.body, 'hello')
+    }
+  }
+
+  const validTeResponse = await sendRequest('/valid-te')
+  t.assert.strictEqual(validTeResponse.headers.te, 'trailers')
+  t.assert.strictEqual(validTeResponse.body, 'hello')
+
+  const errorResponse = await sendRequest('/error')
+  t.assert.strictEqual(errorResponse.headers[':status'], 500)
+  t.assert.strictEqual(errorResponse.headers['keep-alive'], undefined)
+  t.assert.strictEqual(JSON.parse(errorResponse.body).message, 'boom')
+})
+
+test('http2 removes invalid Response headers before handling a consumed body', async t => {
+  const fastify = Fastify({ http2: true })
+
+  fastify.get('/', async () => {
+    const response = new Response('hello', {
+      headers: { 'keep-alive': 'timeout=5' }
+    })
+    await response.text()
+    return response
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+
+  const client = http2.connect(`http://127.0.0.1:${fastify.server.address().port}`)
+  t.after(() => {
+    client.close()
+    return fastify.close()
+  })
+
+  const response = await new Promise((resolve, reject) => {
+    const request = client.request({
+      [http2.constants.HTTP2_HEADER_METHOD]: http2.constants.HTTP2_METHOD_GET,
+      [http2.constants.HTTP2_HEADER_PATH]: '/'
+    })
+    const result = { body: '' }
+
+    request.setEncoding('utf8')
+    request.on('response', headers => {
+      result.headers = headers
+    })
+    request.on('data', chunk => {
+      result.body += chunk
+    })
+    request.on('error', reject)
+    request.on('end', () => resolve(result))
+    request.end()
+  })
+
+  t.assert.strictEqual(response.headers[':status'], 500)
+  t.assert.strictEqual(response.headers['keep-alive'], undefined)
+  t.assert.strictEqual(JSON.parse(response.body).code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
 })
 
 test('http2 large non-stream replies are sent completely', async t => {

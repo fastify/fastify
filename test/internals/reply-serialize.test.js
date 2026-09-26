@@ -63,7 +63,7 @@ function getResponseSchema () {
 }
 
 test('Reply#compileSerializationSchema', async t => {
-  t.plan(4)
+  t.plan(6)
 
   await t.test('Should return a serialization function', async t => {
     const fastify = Fastify()
@@ -223,6 +223,64 @@ test('Reply#compileSerializationSchema', async t => {
       method: 'GET'
     })
   })
+
+  await t.test('Should pass undefined for omitted optional httpStatus and contentType',
+    async t => {
+      const fastify = Fastify()
+      t.plan(3)
+
+      const schemaObj = getDefaultSchema()
+
+      fastify.get('/', {
+        serializerCompiler: ({ schema, httpStatus, contentType }) => {
+          t.assert.strictEqual(schema, schemaObj)
+          t.assert.strictEqual(httpStatus, undefined)
+          t.assert.strictEqual(contentType, undefined)
+          return JSON.stringify
+        }
+      }, (req, reply) => {
+        reply.compileSerializationSchema(schemaObj)
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject('/')
+    }
+  )
+
+  await t.test('Should recompile and cache serializers when httpStatus or contentType changes for the same schema',
+    async t => {
+      const fastify = Fastify()
+      t.plan(7)
+
+      const schemaObj = getDefaultSchema()
+      const calls = []
+
+      fastify.get('/', {
+        serializerCompiler: ({ httpStatus, contentType }) => {
+          calls.push({ httpStatus, contentType })
+          return (input) => JSON.stringify({ httpStatus, contentType, ...input })
+        }
+      }, (req, reply) => {
+        const first = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+        const firstCached = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+        const second = reply.compileSerializationSchema(schemaObj, '201', 'application/vnd.example+json')
+        const third = reply.compileSerializationSchema(schemaObj)
+
+        t.assert.strictEqual(first, firstCached)
+        t.assert.notStrictEqual(first, second)
+        t.assert.notStrictEqual(first, third)
+        t.assert.strictEqual(calls.length, 3)
+
+        t.assert.deepStrictEqual(JSON.parse(first({ a: 1 })), { httpStatus: '200', contentType: 'application/json', a: 1 })
+        t.assert.deepStrictEqual(JSON.parse(second({ a: 2 })), { httpStatus: '201', contentType: 'application/vnd.example+json', a: 2 })
+        t.assert.deepStrictEqual(JSON.parse(third({ a: 3 })), { a: 3 })
+
+        reply.send({ ok: true })
+      })
+
+      await fastify.inject('/')
+    }
+  )
 })
 
 test('Reply#getSerializationFunction', async t => {

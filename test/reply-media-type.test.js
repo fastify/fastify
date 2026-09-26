@@ -129,3 +129,40 @@ test('reply.mediaType should reflect the last type set', async (t) => {
   const body = response.body
   t.assert.strictEqual(body, 'mediaType = text/plain')
 })
+
+test('reply.mediaType should match the content-type set via raw.setHeader', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', (request, reply) => {
+    reply.raw.setHeader('content-type', 'application/json; charset=utf-8')
+    t.assert.strictEqual(reply.mediaType, 'application/json')
+    reply.send({ mediaType: reply.mediaType })
+  })
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+  const body = await response.json()
+  t.assert.strictEqual(body.mediaType, 'application/json')
+})
+
+test('reply.mediaType should match case-insensitive content-type set via raw.setHeader', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', (request, reply) => {
+    reply.raw.setHeader('Content-Type', 'text/html; charset=utf-8')
+    t.assert.strictEqual(reply.mediaType, 'text/html')
+    reply.send(reply.mediaType)
+  })
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+  t.assert.strictEqual(response.body, 'text/html')
+})

@@ -142,8 +142,9 @@ import { forbiddenResponse } from '../authorization/schemas.ts'
 
 export const deleteQuoteResponse = {
   204: Type.Null(),
+  401: errorMessage,
   403: forbiddenResponse,
-  404: quoteError
+  404: errorMessage
 }
 ```
 

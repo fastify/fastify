@@ -211,6 +211,9 @@ section.
 - [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
   A Fastify plugin for rendering Svelte components with support for SSR
   (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
+- [`@melroy89/fastify-mariadb`](https://github.com/melroy89/fastify-mariadb)
+  Fastify MariaDB connection plugin that shares a connection pool across the
+  server.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)

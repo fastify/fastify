@@ -97,8 +97,8 @@ declare namespace fastify {
 
   export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser' | 'constraints'> & {
     constraints?: {
-      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
-    },
+      [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>;
+    };
     defaultRoute?: (
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>

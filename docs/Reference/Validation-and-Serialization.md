@@ -915,6 +915,11 @@ message has to be rebuilt from the raw validation result:
 - `validationContext` is the part of the request that failed validation
   (`body`, `params`, `querystring` or `headers`).
 - `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
+- When the validator reports a list of errors (as Ajv does) and the default
+  [`schemaErrorFormatter`](#schemaerrorformatter) is used, the error is an
+  instance of [`FST_ERR_VALIDATION`](./Errors.md#fst_err_validation) without a
+  [stack trace](./Errors.md#errors-in-input-data). Errors returned by the
+  validator itself, or by a custom formatter, are used as they are.
 
 ```js
 const fastify = Fastify()

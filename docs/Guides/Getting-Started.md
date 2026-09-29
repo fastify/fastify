@@ -23,6 +23,11 @@ Install with yarn:
 yarn add fastify
 ```
 
+Install with Deno:
+```sh
+deno add fastify
+```
+
 ### Your first server
 <a id="first-server"></a>
 

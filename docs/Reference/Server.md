@@ -1046,7 +1046,7 @@ be invoked.
 
 This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
-attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
 
 
 ### `onBadUrl`
@@ -1916,8 +1916,9 @@ The handler is bound to the Fastify instance and is fully encapsulated, so
 different plugins can set different error handlers. *async-await* is
 supported as well.
 
-If the error `statusCode` is less than 400, Fastify will automatically
-set it to 500 before calling the error handler.
+If the error `statusCode` is outside the 400-599 range, Fastify will
+ignore it, keeping a valid status code already set on the reply or
+falling back to 500, before calling the error handler.
 
 `setErrorHandler` will ***not*** catch:
 - exceptions thrown in an `onResponse` hook because the response has already been

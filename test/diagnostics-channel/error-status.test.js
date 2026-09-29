@@ -89,6 +89,60 @@ test('diagnostics channel error event should report correct status with custom e
   t.assert.notStrictEqual(diagnosticsStatusCode, res.statusCode, 'custom handler can change status after diagnostics')
 })
 
+test('diagnostics channel error event falls back to 500 when the error statusCode is out of range', async (t) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  let diagnosticsStatusCode
+
+  const channel = diagnostics.channel('tracing:fastify.request.handler:error')
+  const handler = (msg) => {
+    diagnosticsStatusCode = msg.reply.statusCode
+  }
+  channel.subscribe(handler)
+  t.after(() => channel.unsubscribe(handler))
+
+  fastify.get('/', async () => {
+    const err = new Error('test error')
+    err.statusCode = 600
+    throw err
+  })
+
+  const res = await fastify.inject('/')
+
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(diagnosticsStatusCode, 500, 'diagnostics channel should report 500 for out-of-range status codes')
+  t.assert.strictEqual(diagnosticsStatusCode, res.statusCode, 'diagnostics status should match response status')
+})
+
+test('diagnostics channel error event falls back to 500 when a sync handler throws an error with out-of-range statusCode', async (t) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  let diagnosticsStatusCode
+
+  const channel = diagnostics.channel('tracing:fastify.request.handler:error')
+  const handler = (msg) => {
+    diagnosticsStatusCode = msg.reply.statusCode
+  }
+  channel.subscribe(handler)
+  t.after(() => channel.unsubscribe(handler))
+
+  fastify.get('/', () => {
+    const err = new Error('test error')
+    err.statusCode = 600
+    throw err
+  })
+
+  const res = await fastify.inject('/')
+
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(diagnosticsStatusCode, 500, 'diagnostics channel should report 500 for out-of-range status codes')
+  t.assert.strictEqual(diagnosticsStatusCode, res.statusCode, 'diagnostics status should match response status')
+})
+
 test('Error.status property support', (t, done) => {
   t.plan(4)
   const fastify = Fastify()

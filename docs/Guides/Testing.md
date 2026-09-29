@@ -479,3 +479,74 @@ test("Test the Plugin Route", async t => {
     t.assert.deepStrictEqual(JSON.parse(fastifyResponse.body), { message: "Hello World" })
 })
 ```
+
+### Testing dependency injection with plugins
+
+Fastify plugins can also provide dependencies to the parts of an application
+that need them. A common pattern is to register a plugin that decorates the
+Fastify instance with a repository, API client, or service, then register the
+routes that use that decorator below the dependency plugin.
+
+Encapsulation still applies. A decorator registered on a parent context is
+available to child plugins, but not to sibling or parent contexts. This makes it
+possible to build tests with a fake dependency while keeping production plugins
+unchanged.
+
+**app.js**:
+
+```js
+async function usersRoutes (fastify) {
+  const usersRepository = fastify.getDecorator('usersRepository')
+
+  fastify.get('/users/:id', async request => {
+    return usersRepository.findById(request.params.id)
+  })
+}
+
+module.exports = usersRoutes
+```
+
+**test/users.test.js**:
+
+```js
+const Fastify = require('fastify')
+const { test } = require('node:test')
+const usersRoutes = require('../app')
+
+test('uses a test repository dependency', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  t.after(() => fastify.close())
+
+  fastify.decorate('usersRepository', {
+    async findById (id) {
+      return { id, name: 'Test User' }
+    }
+  })
+
+  fastify.register(usersRoutes)
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/users/42'
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), {
+    id: '42',
+    name: 'Test User'
+  })
+})
+```
+
+The route plugin calls [`getDecorator()`](../Reference/Decorators.md#get-decorator)
+while it is registered. If the dependency is missing, the application fails
+during boot instead of failing later during a request.
+
+In production, register the real dependency before the routes that use it. In
+tests, register a fake dependency in the same parent context before registering
+the route plugin under test. If a decorator must be shared outside its
+encapsulation context, wrap the dependency plugin with
+[`fastify-plugin`](https://github.com/fastify/fastify-plugin).

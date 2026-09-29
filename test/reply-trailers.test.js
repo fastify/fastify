@@ -1,6 +1,7 @@
 'use strict'
 
 const { test, describe } = require('node:test')
+const net = require('node:net')
 const Fastify = require('..')
 const { Readable } = require('node:stream')
 const { createHash } = require('node:crypto')
@@ -600,4 +601,152 @@ test('throw error when trailer header value is not function', (t, testDone) => {
     t.assert.strictEqual(res.statusCode, 200)
     testDone()
   })
+})
+
+function rawRequest (port, method, path) {
+  return new Promise((resolve, reject) => {
+    const socket = net.connect(port, '127.0.0.1', () => {
+      socket.write(`${method} ${path} HTTP/1.1\r\nHost: 127.0.0.1:${port}\r\nConnection: close\r\n\r\n`)
+    })
+    const chunks = []
+    socket.on('data', (chunk) => { chunks.push(chunk) })
+    socket.on('end', () => resolve(Buffer.concat(chunks).toString('latin1')))
+    socket.on('error', reject)
+  })
+}
+
+function parseRawResponse (text) {
+  const [head, ...rest] = text.split('\r\n\r\n')
+  const lines = head.split('\r\n')
+  const headers = {}
+  for (let i = 1; i < lines.length; i++) {
+    const index = lines[i].indexOf(':')
+    if (index === -1) continue
+    headers[lines[i].slice(0, index).toLowerCase()] = lines[i].slice(index + 1).trim()
+  }
+  return {
+    statusLine: lines[0],
+    statusCode: Number(lines[0].split(' ')[1]),
+    headers,
+    body: rest.join('\r\n\r\n')
+  }
+}
+
+test('omit trailers on bodyless statuses over a real socket', async (t) => {
+  t.plan(12)
+
+  const fastify = Fastify({ logger: false })
+  t.after(() => fastify.close())
+
+  const withTrailer = (reply, code) => {
+    reply.code(code).trailer('x-t', function (_reply, _payload, done) {
+      done(null, 'v')
+    }).send('BODY')
+  }
+
+  for (const code of [200, 204, 304]) {
+    fastify.get(`/${code}`, function (_request, reply) {
+      withTrailer(reply, code)
+    })
+  }
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const { port } = fastify.server.address()
+
+  const ok = parseRawResponse(await rawRequest(port, 'GET', '/200'))
+  t.assert.strictEqual(ok.statusCode, 200)
+  t.assert.strictEqual(ok.headers['transfer-encoding'], 'chunked')
+  t.assert.strictEqual(ok.headers.trailer, 'x-t')
+  t.assert.ok(!ok.headers['content-length'])
+  t.assert.match(ok.body, /x-t: v/)
+
+  const noContent = parseRawResponse(await rawRequest(port, 'GET', '/204'))
+  t.assert.strictEqual(noContent.statusCode, 204)
+  t.assert.strictEqual(noContent.headers['transfer-encoding'], undefined)
+  t.assert.strictEqual(noContent.headers.trailer, undefined)
+  t.assert.ok(!noContent.body.includes('BODY'))
+
+  const notModified = parseRawResponse(await rawRequest(port, 'GET', '/304'))
+  t.assert.strictEqual(notModified.statusCode, 304)
+  t.assert.strictEqual(notModified.headers['transfer-encoding'], undefined)
+  t.assert.strictEqual(notModified.headers.trailer, undefined)
+})
+
+test('omit trailers on 205 over a real socket', async (t) => {
+  t.plan(3)
+
+  const fastify = Fastify({ logger: false })
+  t.after(() => fastify.close())
+
+  fastify.get('/205', function (_request, reply) {
+    reply.code(205).trailer('x-t', function (_reply, _payload, done) {
+      done(null, 'v')
+    }).send('BODY')
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const { port } = fastify.server.address()
+
+  const reset = parseRawResponse(await rawRequest(port, 'GET', '/205'))
+  t.assert.strictEqual(reset.statusCode, 205)
+  t.assert.strictEqual(reset.headers.trailer, undefined)
+  t.assert.ok(!reset.body.includes('x-t: v'))
+})
+
+test('auto-exposed HEAD must not send Content-Length with Transfer-Encoding', async (t) => {
+  t.plan(8)
+
+  const fastify = Fastify({ logger: false })
+  t.after(() => fastify.close())
+
+  fastify.head('/head-explicit', function (_request, reply) {
+    reply.trailer('x-t', function (_reply, _payload, done) {
+      done(null, 'v')
+    }).send('BODY')
+  })
+
+  fastify.get('/head-auto', function (_request, reply) {
+    reply.trailer('x-t', function (_reply, _payload, done) {
+      done(null, 'v')
+    }).send('BODY')
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const { port } = fastify.server.address()
+
+  const explicit = parseRawResponse(await rawRequest(port, 'HEAD', '/head-explicit'))
+  t.assert.strictEqual(explicit.statusCode, 200)
+  t.assert.strictEqual(explicit.headers['transfer-encoding'], 'chunked')
+  t.assert.strictEqual(explicit.headers['content-length'], undefined)
+  t.assert.strictEqual(explicit.body, '')
+
+  const autoHead = parseRawResponse(await rawRequest(port, 'HEAD', '/head-auto'))
+  t.assert.strictEqual(autoHead.statusCode, 200)
+  t.assert.strictEqual(autoHead.headers['transfer-encoding'], 'chunked')
+  t.assert.strictEqual(autoHead.headers['content-length'], undefined)
+  t.assert.strictEqual(autoHead.body, '')
+})
+
+test('omit trailers when sending a Response with status 204', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify({ logger: false })
+  t.after(() => fastify.close())
+
+  fastify.get('/', function (_request, reply) {
+    reply.trailer('x-t', function (_reply, _payload, done) {
+      t.assert.fail('trailer should not be called for 204')
+      done(null, 'v')
+    })
+    reply.send(new Response(null, { status: 204 }))
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const { port } = fastify.server.address()
+
+  const res = parseRawResponse(await rawRequest(port, 'GET', '/'))
+  t.assert.strictEqual(res.statusCode, 204)
+  t.assert.strictEqual(res.headers['transfer-encoding'], undefined)
+  t.assert.strictEqual(res.headers.trailer, undefined)
+  t.assert.ok(!res.body.includes('x-t: v'))
 })

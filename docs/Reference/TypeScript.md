@@ -632,7 +632,7 @@ newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
 out
-[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/index.d.ts).
+[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/main/types/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any
 TypeScript project!
@@ -1651,7 +1651,7 @@ database.
 <!-- Links -->
 
 [Fastify]:
-    #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
+    #fastify-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
 [RawServerGeneric]: #rawserver
 [RawRequestGeneric]: #rawrequest
 [RawReplyGeneric]: #rawreply
@@ -1660,22 +1660,28 @@ database.
 [HTTPMethods]: #fastifyhttpmethods
 [RawServerBase]: #fastifyrawserverbase
 [RawServerDefault]: #fastifyrawserverdefault
-[FastifyRequest]: #fastifyfastifyrequestrawserver-rawrequest-requestgeneric
+[FastifyRequest]: #fastifyfastifyrequest-requestgeneric-rawserver-rawrequest
 [FastifyRequestGenericInterface]: #fastifyrequestgenericinterface
 [RawRequestDefaultExpression]: #fastifyrawrequestdefaultexpressionrawserver
-[FastifyReply]: #fastifyfastifyreplyrawserver-rawreply-contextconfig
-[RawReplyDefaultExpression]: #fastifyrawreplydefaultexpression
+[FastifyReply]:
+    #fastifyfastifyreplyrequestgeneric-rawserver-rawrequest-rawreply-contextconfig
+[RawReplyDefaultExpression]: #fastifyrawreplydefaultexpression-rawserver
 [FastifyServerOptions]: #fastifyfastifyserveroptions-rawserver-logger
-[FastifyInstance]: #fastifyfastifyinstance
-[FastifyLoggerOptions]: #fastifyfastifyloggeroptions
+[FastifyInstance]: #fastifyfastifyinstance-rawserver-rawrequest-requestgeneric-logger
+[FastifyLoggerOptions]: #fastifyfastifyloggeroptions-rawserver-rawrequest-rawreply
 [ContextConfigGeneric]: #ContextConfigGeneric
-[FastifyPluginCallback]: #fastifyfastifyplugincallbackoptions
-[FastifyPluginAsync]: #fastifyfastifypluginasyncoptions
+[FastifyPluginCallback]: #fastifyfastifyplugincallback-options
+[FastifyPluginAsync]: #fastifyfastifypluginasync-options
 [FastifyPluginOptions]: #fastifyfastifypluginoptions
 [FastifyRegister]:
-    #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
-[FastifyRegisterOptions]: #fastifyfastifytregisteroptions
+    #fastifyfastifyregisterplugin-fastifyplugincallback-opts-fastifyregisteroptions
+[FastifyRegisterOptions]: #fastifyfastifyregisteroptions
 [LogLevel]: #fastifyloglevel
 [FastifyError]: #fastifyfastifyerror
 [RouteOptions]:
-    #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig
+    #fastifyrouteoptions-rawserver-rawrequest-rawreply-requestgeneric-contextconfig
+[RouteHandlerMethod]:
+    #fastifyroutehandlermethod-rawserver-rawrequest-rawreply-requestgeneric-contextconfig
+[FastifyBodyParser]: #fastifyfastifybodyparser-rawbody-rawserver-rawrequest
+[FastifyContentTypeParser]:
+    #fastifyfastifycontenttypeparser-rawserver-rawrequest

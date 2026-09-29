@@ -1,6 +1,7 @@
 'use strict'
 
 const { test, describe } = require('node:test')
+const http = require('node:http')
 const Fastify = require('..')
 const { Readable } = require('node:stream')
 const { createHash } = require('node:crypto')
@@ -528,7 +529,12 @@ test('hasTrailer', (t, testDone) => {
 
 test('throw error when trailer header name is not allowed', (t, testDone) => {
   const INVALID_TRAILERS = [
+    'connection',
+    'http2-settings',
+    'keep-alive',
+    'proxy-connection',
     'transfer-encoding',
+    'upgrade',
     'content-length',
     'host',
     'cache-control',
@@ -539,7 +545,10 @@ test('throw error when trailer header name is not allowed', (t, testDone) => {
     'content-encoding',
     'content-type',
     'content-range',
-    'trailer'
+    'trailer',
+    ':path',
+    'bad name',
+    ''
   ]
   t.plan(INVALID_TRAILERS.length + 2)
 
@@ -564,6 +573,85 @@ test('throw error when trailer header name is not allowed', (t, testDone) => {
     t.assert.strictEqual(res.statusCode, 200)
     testDone()
   })
+})
+
+test('invalid trailer values and thrown handlers do not crash the server', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', async (request, reply) => {
+    reply.trailer('x-invalid-unicode', async () => '😄')
+    reply.trailer('x-invalid-crlf', (reply, payload, done) => {
+      done(null, 'value\r\nother')
+    })
+    reply.trailer('x-throws', () => {
+      throw new Error('trailer handler failed')
+    })
+    reply.trailer('x-invalid-thenable', () => Object.defineProperty({}, 'then', {
+      get () {
+        throw new Error('then getter failed')
+      }
+    }))
+    reply.trailer('x-valid', async () => 'value')
+    return 'hello'
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+  t.after(() => fastify.close())
+
+  const response = await new Promise((resolve, reject) => {
+    http.get(`http://127.0.0.1:${fastify.server.address().port}`, res => {
+      let body = ''
+      res.setEncoding('utf8')
+      res.on('data', chunk => {
+        body += chunk
+      })
+      res.on('error', reject)
+      res.on('end', () => resolve({ body, res }))
+    }).on('error', reject)
+  })
+
+  t.assert.strictEqual(response.res.statusCode, 200)
+  t.assert.strictEqual(response.body, 'hello')
+  t.assert.strictEqual(response.res.trailers['x-invalid-unicode'], undefined)
+  t.assert.strictEqual(response.res.trailers['x-invalid-crlf'], undefined)
+  t.assert.strictEqual(response.res.trailers['x-throws'], undefined)
+  t.assert.strictEqual(response.res.trailers['x-invalid-thenable'], undefined)
+  t.assert.strictEqual(response.res.trailers['x-valid'], 'value')
+})
+
+test('errors from raw addTrailers do not crash the server', async t => {
+  const fastify = Fastify()
+  const expectedError = new Error('addTrailers failed')
+
+  fastify.get('/', async (request, reply) => {
+    reply.raw.addTrailers = trailers => {
+      t.assert.deepStrictEqual(trailers, { 'x-test': 'value' })
+      throw expectedError
+    }
+    reply.log.debug = error => {
+      t.assert.strictEqual(error, expectedError)
+    }
+    reply.trailer('x-test', async () => 'value')
+    return 'hello'
+  })
+
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+  t.after(() => fastify.close())
+
+  const response = await new Promise((resolve, reject) => {
+    http.get(`http://127.0.0.1:${fastify.server.address().port}`, res => {
+      let body = ''
+      res.setEncoding('utf8')
+      res.on('data', chunk => {
+        body += chunk
+      })
+      res.on('error', reject)
+      res.on('end', () => resolve({ body, statusCode: res.statusCode }))
+    }).on('error', reject)
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'hello')
 })
 
 test('throw error when trailer header value is not function', (t, testDone) => {

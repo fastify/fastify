@@ -132,6 +132,54 @@ test('should response with a Response without body', async (t) => {
   t.assert.strictEqual(headers.hello, 'world')
 })
 
+test('auto-exposed HEAD route should strip the body of a GET Response', async (t) => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.send(new Response('hello world', {
+      status: 200,
+      headers: {
+        hello: 'world'
+      }
+    }))
+  })
+
+  // Baseline: the GET route returns the full Response body.
+  const getRes = await fastify.inject({ method: 'GET', path: '/' })
+  t.assert.strictEqual(getRes.statusCode, 200)
+  t.assert.strictEqual(getRes.body, 'hello world')
+
+  // The auto-exposed HEAD route must behave like the GET route but with an
+  // empty body, instead of crashing with a 500.
+  const headRes = await fastify.inject({ method: 'HEAD', path: '/' })
+  t.assert.strictEqual(headRes.statusCode, 200)
+  t.assert.strictEqual(headRes.body, '')
+  t.assert.strictEqual(headRes.headers.hello, getRes.headers.hello)
+  t.assert.strictEqual(headRes.headers['content-length'], getRes.headers['content-length'])
+})
+
+test('auto-exposed HEAD route errors on a consumed Response body, like GET', async (t) => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async function (request, reply) {
+    const response = new Response('hello world')
+    // Consume the body before sending, so `bodyUsed` is true.
+    await response.text()
+    reply.send(response)
+  })
+
+  // Both GET and HEAD must reject a consumed Response body the same way
+  // (FST_ERR_REP_RESPONSE_BODY_CONSUMED → 500); HEAD must not silently 200.
+  const getRes = await fastify.inject({ method: 'GET', path: '/' })
+  const headRes = await fastify.inject({ method: 'HEAD', path: '/' })
+  t.assert.strictEqual(getRes.statusCode, 500)
+  t.assert.strictEqual(headRes.statusCode, getRes.statusCode)
+})
+
 test('able to use in onSend hook - ReadableStream', async (t) => {
   t.plan(4)
 

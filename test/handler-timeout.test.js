@@ -1,9 +1,10 @@
 'use strict'
 
 const { test } = require('node:test')
+const { request: httpRequest } = require('node:http')
 const net = require('node:net')
 const Fastify = require('..')
-const { Readable } = require('node:stream')
+const { PassThrough, Readable } = require('node:stream')
 const { kTimeoutTimer, kOnAbort } = require('../lib/symbols')
 const { setTimeout: sleep } = require('node:timers/promises')
 
@@ -92,6 +93,47 @@ test('client disconnect aborts lazily created signal (no handlerTimeout)', async
 })
 
 // --- Basic timeout behavior ---
+
+test('lazy request.signal aborts on disconnect during a POST response', { timeout: 3000 }, async t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  const stream = new PassThrough()
+  const responseClosed = Promise.withResolvers()
+  let capturedRequest
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    const signal = request.signal
+    t.assert.strictEqual(request.raw.complete, true)
+    t.assert.strictEqual(signal.aborted, false)
+    reply.raw.once('close', responseClosed.resolve)
+    stream.write('ready\n')
+    return reply.send(stream)
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const client = httpRequest(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' }
+  }, response => {
+    response.once('data', () => client.destroy())
+  })
+  client.on('error', () => {})
+  t.after(async () => {
+    client.destroy()
+    stream.destroy()
+    fastify.server.closeAllConnections()
+    await fastify.close()
+  })
+  client.end('{}')
+
+  await responseClosed.promise
+
+  t.assert.strictEqual(capturedRequest.raw.aborted, false)
+  t.assert.strictEqual(capturedRequest.signal.aborted, true)
+  t.assert.strictEqual(capturedRequest[kOnAbort], null)
+})
 
 test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT', async t => {
   t.plan(2)

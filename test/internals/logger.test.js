@@ -496,3 +496,49 @@ test('The serializer prevent fails if the request socket is undefined', t => {
     remotePort: undefined
   })
 })
+
+test('replyAlreadySent should not log when logging is disabled', t => {
+  t.plan(1)
+  const logController = new LogController({ disableRequestLogging: true })
+  const request = {}
+  const reply = {
+    request,
+    log: { warn: () => { t.assert.fail('warn should not be called') } }
+  }
+  logController.replyAlreadySent(new Error('already sent'), request, reply)
+  t.assert.ok(true, 'logger was not called')
+})
+
+test('replyAlreadySent should log warn with error message', t => {
+  t.plan(2)
+  const logController = new LogController({ disableRequestLogging: false })
+  const error = new Error('already sent')
+  const request = {}
+  const reply = {
+    request,
+    log: {
+      warn: (data, msg) => {
+        t.assert.strictEqual(msg, 'already sent')
+        t.assert.strictEqual(data.err, error)
+      }
+    }
+  }
+  logController.replyAlreadySent(error, request, reply)
+})
+
+test('handlerErrorAfterSend should log error even when logging is disabled', t => {
+  t.plan(2)
+  const logController = new LogController({ disableRequestLogging: true })
+  const error = new Error('late error')
+  const request = {}
+  const reply = {
+    request,
+    log: {
+      error: (data, msg) => {
+        t.assert.strictEqual(msg, 'Promise errored, but a response is already being sent')
+        t.assert.strictEqual(data.err, error)
+      }
+    }
+  }
+  logController.handlerErrorAfterSend(error, request, reply)
+})

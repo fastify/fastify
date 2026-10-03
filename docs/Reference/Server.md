@@ -458,6 +458,8 @@ exception, since no route — and therefore no `request`/`reply` — is formed.
 | `routeNotFound` | `(request, reply, metadata)` | Logs a "route not found" message at `info` level. |
 | `writeHeadError` | `(error, request, reply, metadata)` | Logs a warning when `writeHead` fails during error handling. |
 | `serializerError` | `(error, request, reply, metadata)` | Logs an error when the serializer for a given status code fails. The triggering status code is available as `metadata.statusCode`. |
+| `replyAlreadySent` | `(error, request, reply, metadata)` | Logs a warning when an `async` handler settles while a response started with `reply.send()` is still in progress, which usually means the handler forgot to `return reply` or `await reply`. |
+| `handlerErrorAfterSend` | `(error, request, reply, metadata)` | Logs an error from an `async` handler that rejected after `reply.send()` had already started the response. Always emitted, not gated by `disableRequestLogging`. |
 | `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
 
 **Note:** When you override a method, you take full control of it — the

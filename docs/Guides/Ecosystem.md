@@ -211,6 +211,9 @@ section.
 - [`@matths/fastify-svelte-view`](https://github.com/matths/fastify-svelte-view)
   A Fastify plugin for rendering Svelte components with support for SSR
   (Server-Side Rendering), CSR (Client-Side Rendering), and SSR with hydration.
+- [`@melroy89/fastify-mariadb`](https://github.com/melroy89/fastify-mariadb)
+  Fastify MariaDB connection plugin that shares a connection pool across the
+  server.
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
@@ -240,6 +243,9 @@ section.
   method with a body).
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
   SeaweedFS for Fastify
+- [`@validex/fastify`](https://github.com/chiptoma/validex/tree/main/packages/fastify)
+  Zod 4 validation plugin with 25 typed rules, structured error codes, and
+  `request.validate()` decorator.
 - [`@yeliex/fastify-problem-details`](https://github.com/yeliex/fastify-problem-details)
   RFC 9457 Problem Details implementation for Fastify, with typed HTTP errors.
 - [`@zrosenbauer/fastify-prisma`](https://github.com/zrosenbauer/fastify-prisma)

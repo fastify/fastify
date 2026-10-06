@@ -731,19 +731,17 @@ middlewares into Fastify plugins
 
 #### [Community Tools](#community-tools)
 
-- [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration
-  generator by directory structure.
-- [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
-  Fastify APIs using decorators and convert Typescript interface to JSON Schema.
-- [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify)
-  i18n solution for error handling, email template
-- [`jeasx`](https://www.jeasx.dev)
-  A flexible server-rendering framework built on Fastify
-  that leverages asynchronous JSX to simplify web development.
-- [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
-  generate JSON Schema from TypeScript interfaces.
-- [`vite-plugin-fastify`](https://github.com/Vanilla-IceCream/vite-plugin-fastify)
-  Fastify plugin for Vite with Hot-module Replacement.
-- [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
-  File-based routing for Fastify applications using Vite.
+Plugins in this section stay in alphabetical order. The `tags` column
+lists one or more lowercase labels, separated by a comma and a space,
+so a plugin can be found without moving it into another section.
+
+| Plugin | Description | Tags |
+| ------ | ----------- | ---- |
+| [`fast-maker`](https://github.com/imjuni/fast-maker) | route configuration generator by directory structure. | codegen, tooling |
+| [`fastify-flux`](https://github.com/Jnig/fastify-flux) | Tool for building Fastify APIs using decorators and convert Typescript interface to JSON Schema. | codegen, schema, tooling |
+| [`fastify-intlayer`](https://intlayer.org/doc/environment/fastify) | i18n solution for error handling, email template | i18n |
+| [`jeasx`](https://www.jeasx.dev) | A flexible server-rendering framework built on Fastify that leverages asynchronous JSX to simplify web development. | framework, ssr |
+| [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) | CLI tool to generate JSON Schema from TypeScript interfaces. | cli, codegen, schema |
+| [`vite-plugin-fastify`](https://github.com/Vanilla-IceCream/vite-plugin-fastify) | Fastify plugin for Vite with Hot-module Replacement. | tooling, vite |
+| [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes) | File-based routing for Fastify applications using Vite. | routing, tooling, vite |
 

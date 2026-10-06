@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "**/Ecosystem.md"
+      - ".github/scripts/lint-ecosystem.js"
 
 permissions:
   contents: read

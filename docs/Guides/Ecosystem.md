@@ -8,6 +8,9 @@ section.
 
 #### [Core](#core)
 
+Logging plugins are marked with the tag `logging`. The list stays
+alphabetical.
+
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
@@ -81,7 +84,7 @@ section.
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Formats
-  Fastify's logs into a nice one-line message.
+  Fastify's logs into a nice one-line message. Tag: `logging`.
 - [`@fastify/otel`](https://github.com/fastify/otel) OpenTelemetry
   instrumentation library.
 - [`@fastify/passport`](https://github.com/fastify/fastify-passport) Use Passport

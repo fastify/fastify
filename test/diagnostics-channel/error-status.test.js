@@ -89,6 +89,54 @@ test('diagnostics channel error event should report correct status with custom e
   t.assert.notStrictEqual(diagnosticsStatusCode, res.statusCode, 'custom handler can change status after diagnostics')
 })
 
+for (const property of ['statusCode', 'status']) {
+  for (const code of [600, 1000]) {
+    test(`error ${property} ${code} is replied as 500 with a diagnostics subscriber`, async (t) => {
+      t.plan(4)
+      const fastify = Fastify()
+      t.after(() => fastify.close())
+
+      const channel = diagnostics.channel('tracing:fastify.request.handler:error')
+      const handler = () => {}
+      channel.subscribe(handler)
+      t.after(() => channel.unsubscribe(handler))
+
+      fastify.get('/handler', async () => {
+        throw Object.assign(new Error('out of range'), { [property]: code })
+      })
+      fastify.get('/pre-handler', {
+        preHandler: async () => {
+          throw Object.assign(new Error('out of range'), { [property]: code })
+        }
+      }, async () => 'unreachable')
+
+      for (const url of ['/handler', '/pre-handler']) {
+        const res = await fastify.inject(url)
+        t.assert.strictEqual(res.statusCode, 500)
+        t.assert.strictEqual(res.json().message, 'out of range')
+      }
+    })
+  }
+}
+
+for (const property of ['statusCode', 'status']) {
+  for (const code of [600, 1000]) {
+    test(`error ${property} ${code} is replied as 500 without a diagnostics subscriber`, async (t) => {
+      t.plan(2)
+      const fastify = Fastify()
+      t.after(() => fastify.close())
+
+      fastify.get('/', async () => {
+        throw Object.assign(new Error('out of range'), { [property]: code })
+      })
+
+      const res = await fastify.inject('/')
+      t.assert.strictEqual(res.statusCode, 500)
+      t.assert.strictEqual(res.json().message, 'out of range')
+    })
+  }
+}
+
 test('Error.status property support', (t, done) => {
   t.plan(4)
   const fastify = Fastify()

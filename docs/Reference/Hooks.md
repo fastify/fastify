@@ -554,6 +554,36 @@ fastify.addHook('preClose', async () => {
 })
 ```
 
+Plugins can also use `preClose` to stop starting new optional work when
+shutdown begins:
+
+```js
+fastify.register(async function backgroundWorkPlugin (instance) {
+  let closing = false
+
+  instance.addHook('preClose', async () => {
+    closing = true
+  })
+
+  async function startOptionalWork () {
+    if (closing) return
+
+    // Start optional work
+  }
+
+  // Call startOptionalWork() from this plugin's event handlers as needed.
+})
+```
+
+This only prevents new work from starting; it does not cancel work already in
+progress. Give in-progress work its own cancellation or completion mechanism.
+The flag is local to this plugin instance. If multiple plugins need to share
+shutdown state, give that state an explicit shared owner.
+
+If the application must stop receiving traffic and wait for load balancers to
+observe the change before shutdown starts, coordinate that drain before calling
+`fastify.close()`. `preClose` runs only after shutdown has started.
+
 ### onRoute
 <a id="on-route"></a>
 

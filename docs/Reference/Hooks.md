@@ -576,7 +576,7 @@ The flag only prevents new work from starting. Work that is already running
 needs its own cancellation or completion logic, for example in an
 [`onClose`](#onclose) hook. The flag is local to the plugin that declares it;
 if several plugins need to share the same shutdown state, give that state an
-explicit shared owner, such as a decorator.
+explicit shared owner, such as a decorator on a common parent instance.
 
 ### onRoute
 <a id="on-route"></a>

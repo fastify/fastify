@@ -96,9 +96,12 @@ test('Error.status property support', (t, done) => {
   const err = new Error('winter is coming')
   err.status = 418
 
-  diagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {
+  const channel = diagnostics.channel('tracing:fastify.request.handler:error')
+  const handler = (msg) => {
     t.assert.strictEqual(msg.error.message, 'winter is coming')
-  })
+  }
+  channel.subscribe(handler)
+  t.after(() => channel.unsubscribe(handler))
 
   fastify.get('/', () => {
     return Promise.reject(err)
@@ -120,4 +123,34 @@ test('Error.status property support', (t, done) => {
     )
     done()
   })
+})
+
+test('diagnostics channel error event should report 500 for error with statusCode >= 600', async (t) => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  let diagnosticsStatusCode
+  let diagnosticsError
+
+  const channel = diagnostics.channel('tracing:fastify.request.handler:error')
+  const handler = (msg) => {
+    diagnosticsStatusCode = msg.reply.statusCode
+    diagnosticsError = msg.error
+  }
+  channel.subscribe(handler)
+  t.after(() => channel.unsubscribe(handler))
+
+  fastify.get('/', async () => {
+    const err = new Error('custom invalid status')
+    err.statusCode = 600
+    throw err
+  })
+
+  const res = await fastify.inject('/')
+
+  t.assert.strictEqual(res.statusCode, 500)
+  t.assert.strictEqual(diagnosticsStatusCode, 500, 'diagnostics channel should report 500 when statusCode >= 600')
+  t.assert.strictEqual(diagnosticsStatusCode, res.statusCode, 'diagnostics status should match response status')
+  t.assert.strictEqual(diagnosticsError.message, 'custom invalid status')
 })

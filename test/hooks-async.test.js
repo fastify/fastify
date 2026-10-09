@@ -1096,3 +1096,36 @@ test('Register an hook (onRequestAbort) as route option should fail if mixing as
     t.assert.strictEqual(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
   }
 })
+
+describe('replying from async lifecycle hook with multiple async onSend hooks', () => {
+  const lifecycleHooks = ['onRequest', 'preParsing', 'preValidation', 'preHandler']
+
+  for (const hookName of lifecycleHooks) {
+    test(`replying from async ${hookName} halts execution when multiple async onSend hooks are registered`, async (t) => {
+      for (const onSendCount of [2, 3]) {
+        const app = Fastify()
+        let handlerRan = false
+
+        for (let i = 0; i < onSendCount; i++) {
+          app.addHook('onSend', async (req, reply, payload) => payload)
+        }
+
+        app.addHook(hookName, async (req, reply) => {
+          reply.code(401).send({ error: `unauthorized from ${hookName}` })
+        })
+
+        app.get('/', async (req, reply) => {
+          handlerRan = true
+          return reply.code(400).send({ error: 'handler ran' })
+        })
+
+        const res = await app.inject({ method: 'GET', url: '/' })
+        await app.close()
+
+        t.assert.strictEqual(handlerRan, false)
+        t.assert.strictEqual(res.statusCode, 401)
+        t.assert.deepStrictEqual(JSON.parse(res.body), { error: `unauthorized from ${hookName}` })
+      }
+    })
+  }
+})

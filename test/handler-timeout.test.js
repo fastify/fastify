@@ -135,6 +135,59 @@ test('lazy request.signal aborts on disconnect during a POST response', { timeou
   t.assert.strictEqual(capturedRequest[kOnAbort], null)
 })
 
+test('lazy request.signal aborts when the closed request was aborted', async t => {
+  const fastify = Fastify()
+  let capturedSignal
+
+  fastify.get('/', async request => {
+    capturedSignal = request.signal
+    request.raw.aborted = true
+    request.raw.emit('close')
+    return 'ok'
+  })
+
+  const response = await fastify.inject('/')
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(capturedSignal.aborted, true)
+})
+
+test('lazy request.signal ignores a completed request close while the response is streaming', { timeout: 3000 }, async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  const stream = new PassThrough()
+  const requestClosed = Promise.withResolvers()
+  let capturedRequest
+  let capturedSignal
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    capturedSignal = request.signal
+    request.raw.once('close', requestClosed.resolve)
+    stream.write('ready\n')
+    return reply.send(stream)
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  t.after(async () => {
+    stream.destroy()
+    fastify.server.closeAllConnections()
+    await fastify.close()
+  })
+
+  const responsePromise = fetch(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{}'
+  }).then(response => response.text())
+
+  await requestClosed.promise
+  t.assert.strictEqual(capturedRequest.raw.aborted, false)
+  t.assert.strictEqual(capturedSignal.aborted, false)
+  stream.end('done')
+  await responsePromise
+})
+
 test('lazy request.signal cleans up after a successful POST response', async t => {
   t.plan(5)
 

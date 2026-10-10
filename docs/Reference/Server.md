@@ -924,7 +924,7 @@ fastify.get('/user/:username', (request, reply) => {
 ### `compile`
 <a id="compile"></a>
 
-+ Default: `false`
++ Default: `true`
 
 When `true`, Fastify calls the
 [`compile()`](https://github.com/delvedor/find-my-way#compiler-mode) method of
@@ -948,6 +948,7 @@ Keep in mind that:
   percent-encoded characters fall back to the decoded path and are not faster;
 + every route generates its own code, so applications with thousands of routes
   produce a large amount of JavaScript, which needs to warm up per route.
+  Set `compile` to `false` to use the tree walk instead.
 
 ### `constraints`
 <a id="constraints"></a>

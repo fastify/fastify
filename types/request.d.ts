@@ -68,10 +68,6 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   validationError?: Error & { validation: any; validationContext: string };
 
   /**
-   * @deprecated Use `raw` property
-   */
-  readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
-  /**
    * Derived from request socket metadata or forwarding headers.
    * Treat as untrusted input and validate before security-sensitive use.
    */

@@ -36,20 +36,21 @@ test('without options passed to Fastify, initialConfig should expose default val
     requestTimeout: 0,
     handlerTimeout: 0,
     bodyLimit: 1024 * 1024,
-    caseSensitive: true,
-    allowUnsafeRegex: false,
-    disableRequestLogging: false,
-    ignoreTrailingSlash: false,
-    ignoreDuplicateSlashes: false,
-    maxParamLength: 100,
     onProtoPoisoning: 'error',
     onConstructorPoisoning: 'error',
     pluginTimeout: 10000,
     requestIdHeader: false,
-    requestIdLogLabel: 'reqId',
     http2SessionTimeout: 72000,
     exposeHeadRoutes: true,
-    useSemicolonDelimiter: false
+    routerOptions: {
+      allowUnsafeRegex: false,
+      caseSensitive: true,
+      constraints: undefined,
+      ignoreTrailingSlash: false,
+      ignoreDuplicateSlashes: false,
+      maxParamLength: 100,
+      useSemicolonDelimiter: false
+    }
   }
 
   t.assert.deepStrictEqual(Fastify().initialConfig, fastifyDefaultOptions)
@@ -88,65 +89,79 @@ test('Fastify.initialConfig should expose all options', t => {
       key: global.context.key,
       cert: global.context.cert
     },
-    ignoreTrailingSlash: true,
-    ignoreDuplicateSlashes: true,
-    maxParamLength: 200,
     connectionTimeout: 0,
     keepAliveTimeout: 72000,
     bodyLimit: 1049600,
     onProtoPoisoning: 'remove',
     serverFactory,
-    caseSensitive: true,
-    allowUnsafeRegex: false,
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
-    useSemicolonDelimiter: false,
-    querystringParser: str => str,
     genReqId: function (req) {
       return reqId++
     },
     loggerInstance: pino({ level: 'info' }),
-    constraints: {
-      version: versionStrategy
-    },
     trustProxy: function myTrustFn (address, hop) {
       return address === '1.2.3.4' || hop === 1
+    },
+    routerOptions: {
+      allowUnsafeRegex: false,
+      caseSensitive: true,
+      constraints: {
+        version: versionStrategy
+      },
+      ignoreTrailingSlash: true,
+      ignoreDuplicateSlashes: true,
+      maxParamLength: 200,
+      querystringParser: str => str,
+      useSemicolonDelimiter: false
     }
   }
 
   const fastify = Fastify(options)
+
   t.assert.strictEqual(fastify.initialConfig.http2, true)
   t.assert.strictEqual(fastify.initialConfig.https, true, 'for security reason the key cert is hidden')
-  t.assert.strictEqual(fastify.initialConfig.ignoreTrailingSlash, true)
-  t.assert.strictEqual(fastify.initialConfig.ignoreDuplicateSlashes, true)
-  t.assert.strictEqual(fastify.initialConfig.maxParamLength, 200)
   t.assert.strictEqual(fastify.initialConfig.connectionTimeout, 0)
   t.assert.strictEqual(fastify.initialConfig.keepAliveTimeout, 72000)
   t.assert.strictEqual(fastify.initialConfig.bodyLimit, 1049600)
   t.assert.strictEqual(fastify.initialConfig.onProtoPoisoning, 'remove')
-  t.assert.strictEqual(fastify.initialConfig.caseSensitive, true)
-  t.assert.strictEqual(fastify.initialConfig.useSemicolonDelimiter, false)
-  t.assert.strictEqual(fastify.initialConfig.allowUnsafeRegex, false)
   t.assert.strictEqual(fastify.initialConfig.requestIdHeader, 'request-id-alt')
   t.assert.strictEqual(fastify.initialConfig.pluginTimeout, 20000)
-  t.assert.ok(fastify.initialConfig.constraints.version)
 
   // obfuscated options:
   t.assert.strictEqual(fastify.initialConfig.serverFactory, undefined)
   t.assert.strictEqual(fastify.initialConfig.trustProxy, undefined)
   t.assert.strictEqual(fastify.initialConfig.genReqId, undefined)
   t.assert.strictEqual(fastify.initialConfig.childLoggerFactory, undefined)
-  t.assert.strictEqual(fastify.initialConfig.querystringParser, undefined)
   t.assert.strictEqual(fastify.initialConfig.logger, undefined)
   t.assert.strictEqual(fastify.initialConfig.trustProxy, undefined)
+
+  // router options
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.allowUnsafeRegex, false)
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.caseSensitive, true)
+  t.assert.ok(fastify.initialConfig.routerOptions.constraints.version)
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.ignoreTrailingSlash, true)
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.ignoreDuplicateSlashes, true)
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.maxParamLength, 200)
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.querystringParser, undefined)
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.useSemicolonDelimiter, false)
 })
 
 test('Should throw if you try to modify Fastify.initialConfig', t => {
-  t.plan(4)
+  t.plan(8)
 
-  const fastify = Fastify({ ignoreTrailingSlash: true })
+  const fastify = Fastify({ keepAliveTimeout: 1, routerOptions: { ignoreTrailingSlash: true } })
   try {
-    fastify.initialConfig.ignoreTrailingSlash = false
+    fastify.initialConfig.keepAliveTimeout = 2
+    t.assert.fail()
+  } catch (error) {
+    t.assert.ok(error instanceof TypeError)
+    t.assert.strictEqual(error.message, "Cannot assign to read only property 'keepAliveTimeout' of object '#<Object>'")
+    t.assert.ok(error.stack)
+    t.assert.ok(true)
+  }
+  try {
+    fastify.initialConfig.routerOptions.ignoreTrailingSlash = false
     t.assert.fail()
   } catch (error) {
     t.assert.ok(error instanceof TypeError)
@@ -252,10 +267,12 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
   const stream = split(JSON.parse)
 
   const originalOptions = {
-    ignoreTrailingSlash: true,
     logger: {
       level: 'trace',
       stream
+    },
+    routerOptions: {
+      ignoreTrailingSlash: true
     }
   }
 
@@ -276,20 +293,21 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       requestTimeout: 0,
       handlerTimeout: 0,
       bodyLimit: 1024 * 1024,
-      caseSensitive: true,
-      allowUnsafeRegex: false,
-      disableRequestLogging: false,
-      ignoreTrailingSlash: true,
-      ignoreDuplicateSlashes: false,
-      maxParamLength: 100,
       onProtoPoisoning: 'error',
       onConstructorPoisoning: 'error',
       pluginTimeout: 10000,
       requestIdHeader: false,
-      requestIdLogLabel: 'reqId',
       http2SessionTimeout: 72000,
       exposeHeadRoutes: true,
-      useSemicolonDelimiter: false
+      routerOptions: {
+        allowUnsafeRegex: false,
+        caseSensitive: true,
+        constraints: undefined,
+        ignoreTrailingSlash: true,
+        ignoreDuplicateSlashes: false,
+        maxParamLength: 100,
+        useSemicolonDelimiter: false
+      }
     })
   } catch (error) {
     t.assert.fail()

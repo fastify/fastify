@@ -10,6 +10,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 ## Tier 4
 
 - [SerpApi](https://serpapi.com/?utm_source=fastify)
+- [Cloudways](https://www.cloudways.com/en/velocity.php?id=1258368&data1=fastify)
 
 ## Tier 3
 
@@ -19,6 +20,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 - [atagon GmbH](https://github.com/atagon-GmbH)
 - [Photon](https://github.com/photon-hq)
 - [N-iX](https://www.n-ix.com/)
+- [TestMu AI](https://www.testmuai.com/?utm_medium=sponsor&utm_source=fastify)
 
 ## Tier 2
 

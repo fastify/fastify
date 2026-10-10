@@ -58,6 +58,15 @@ const asyncPreHandler = async (request: FastifyRequest) => {
 
 fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
 
+fastify().route({
+  method: 'GET',
+  url: '/',
+  onRequest: async function () {
+    expect(this).type.toBe<FastifyInstance>()
+  },
+  handler: async () => 'ok'
+})
+
 fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: true } },
@@ -495,6 +504,12 @@ expect(fastify().hasRoute({
   method: 'GET'
 })).type.toBe<boolean>()
 
+fastify().hasRoute({
+  url: '/',
+  // @ts-expect-error  Type 'string[]' is not assignable to type 'HTTPMethods'.
+  method: ['GET', 'POST']
+})
+
 expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
@@ -538,6 +553,12 @@ expect(
     method: 'get'
   })
 ).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>()
+
+fastify().findRoute({
+  url: '/',
+  // @ts-expect-error  Type 'string[]' is not assignable to type 'HTTPMethods'.
+  method: ['GET', 'POST']
+})
 
 // we should not expose store
 expect(fastify().findRoute({

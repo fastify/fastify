@@ -13,8 +13,6 @@ on:
         required: true
         type: choice
         options:
-          - '20'
-          - '22'
           - '24'
           - '26'
           - 'lts/*'
@@ -40,7 +38,7 @@ on:
         description: 'Node version to test'
         required: true
         type: string
-        default: '20'
+        default: '24'
       os:
         description: 'Operating System'
         required: false

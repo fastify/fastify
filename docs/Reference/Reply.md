@@ -6,6 +6,7 @@
   - [.code(statusCode)](#codestatuscode)
   - [.elapsedTime](#elapsedtime)
   - [.statusCode](#statuscode)
+  - [.mediaType](#mediatype)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
   - [.headers(object)](#headersobject)
@@ -51,6 +52,7 @@ object that exposes the following functions and properties:
 - `.statusCode` - Read and set the HTTP status code.
 - `.elapsedTime` - Returns the amount of time passed
 since the request was received by Fastify.
+- `.mediaType` - The media type extracted from `Content-Type` header.
 - `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
@@ -127,6 +129,18 @@ This property reads and sets the HTTP status code. It is an alias for
 ```js
 if (reply.statusCode >= 299) {
   reply.statusCode = 500
+}
+```
+### .mediaType
+<a id="mediatype"></a>
+
+Returns the media type extracted from `Content-Type` header. When `Content-Type`
+header is missing, it will return `undefined`.
+
+```js
+if (reply.mediaType === 'image/gif') {
+  const versionBuffer = new Uint8Array(reply.payload, 3, 3)
+  reply.header('x-gif-version', new TextDecoder().decode(versionBuffer))
 }
 ```
 
@@ -263,8 +277,9 @@ requires heavy resources to be sent after the `data`, for example,
 as soon as possible.
 
 > ℹ️ Note:
-> The header `Transfer-Encoding: chunked` will be added once you use
-> the trailer. It is a hard requirement for using trailer in Node.js.
+> For HTTP/1 responses, the header `Transfer-Encoding: chunked` will be added
+> once you use a trailer. HTTP/2 does not use chunked transfer encoding and
+> sends trailers using its native trailing headers support.
 
 > ℹ️ Note:
 > Any error passed to `done` callback will be ignored. If you are interested
@@ -324,6 +339,23 @@ to `302` (if status code is not already set by calling `code`).
 > or similar modules such as
 > [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
 > result in a 500 `TypeError` response.
+
+> ⚠️ Security:
+> Encoding alone does **not** prevent open redirects. Neither `encodeURI`
+> nor `encodeurl` escapes `/`, so a caller-supplied target such as
+> `//evil.com` or `/\evil.com` survives encoding and is resolved by the
+> browser as a new host (a protocol-relative, authority-opening
+> reference). When `dest` can be influenced by request input
+> (`req.query`, `req.body`, `req.params`, cookies, or headers), validate
+> that the resolved target is same-origin or on an explicit allowlist
+> instead of relying on encoding:
+>
+> ```js
+> const target = new URL(dest, 'https://your-site.example')
+> if (target.origin !== 'https://your-site.example') {
+>   return reply.code(400).send()
+> }
+> ```
 
 Example (no `reply.code()` call) sets status code to `302` and redirects to
 `/home`
@@ -623,9 +655,6 @@ it is possible to call `reply.hijack()` to indicate that the automatic
 invocation of `reply.send()` once the handler promise resolve should be skipped.
 By calling `reply.hijack()`, an application claims full responsibility for the
 low-level request and response. Moreover, hooks will not be invoked.
-
-*Modifying the `.sent` property directly is deprecated. Please use the
-aforementioned `.hijack()` method to achieve the same effect.*
 
 ### .hijack()
 <a name="hijack"></a>

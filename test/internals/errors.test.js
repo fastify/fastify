@@ -710,6 +710,16 @@ test('FST_ERR_ROUTE_METHOD_INVALID', t => {
   t.assert.ok(error instanceof TypeError)
 })
 
+test('FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED('GET')
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED')
+  t.assert.strictEqual(error.message, 'Method "GET" is already supported. Use `overrideExisting: true` to override it.')
+  t.assert.strictEqual(error.statusCode, 500)
+  t.assert.ok(error instanceof TypeError)
+})
+
 test('FST_ERR_ROUTE_METHOD_NOT_SUPPORTED', t => {
   t.plan(5)
   const error = new errors.FST_ERR_ROUTE_METHOD_NOT_SUPPORTED()
@@ -780,16 +790,6 @@ test('FST_ERR_ROUTE_MISSING_CONTENT_TYPE', t => {
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_ROUTE_MISSING_CONTENT', t => {
-  t.plan(5)
-  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT()
-  t.assert.strictEqual(error.name, 'FastifyError')
-  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT')
-  t.assert.strictEqual(error.message, "Method '%s' must provide a request body.")
-  t.assert.strictEqual(error.statusCode, 400)
-  t.assert.ok(error instanceof Error)
-})
-
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
   t.plan(5)
   const error = new errors.FST_ERR_REOPENED_CLOSE_SERVER()
@@ -805,16 +805,16 @@ test('FST_ERR_REOPENED_SERVER', t => {
   const error = new errors.FST_ERR_REOPENED_SERVER()
   t.assert.strictEqual(error.name, 'FastifyError')
   t.assert.strictEqual(error.code, 'FST_ERR_REOPENED_SERVER')
-  t.assert.strictEqual(error.message, 'Fastify is already listening')
+  t.assert.strictEqual(error.message, 'Fastify is already started')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)
 })
 
-test('FST_ERR_INSTANCE_ALREADY_LISTENING', t => {
+test('FST_ERR_INSTANCE_ALREADY_STARTED', t => {
   t.plan(5)
-  const error = new errors.FST_ERR_INSTANCE_ALREADY_LISTENING()
+  const error = new errors.FST_ERR_INSTANCE_ALREADY_STARTED()
   t.assert.strictEqual(error.name, 'FastifyError')
-  t.assert.strictEqual(error.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
+  t.assert.strictEqual(error.code, 'FST_ERR_INSTANCE_ALREADY_STARTED')
   t.assert.strictEqual(error.message, 'Fastify instance is already listening. %s')
   t.assert.strictEqual(error.statusCode, 500)
   t.assert.ok(error instanceof Error)

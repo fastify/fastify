@@ -46,7 +46,8 @@ export interface RouteConstraint {
 /**
  * Route shorthand options for the various shorthand methods
  */
-type RouteShorthandHook<T extends (...args: any) => any> = (...args: Parameters<T>) => void | Promise<unknown>
+type RouteShorthandHook<T extends (this: any, ...args: any) => any> =
+  (this: ThisParameterType<T>, ...args: Parameters<T>) => void | Promise<unknown>
 
 export interface RouteShorthandOptions<
   RawServer extends RawServerBase = RawServerDefault,
@@ -78,7 +79,7 @@ export interface RouteShorthandOptions<
     reply: FastifyReply<RouteGeneric, RawServer, RawRequest, RawReply, ContextConfig, NoInfer<SchemaCompiler>,
       TypeProvider>
   ) => void;
-  childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  childLoggerFactory?: FastifyChildLoggerFactory<RawServer, RawRequest, RawReply, FastifyBaseLogger, TypeProvider>;
   schemaErrorFormatter?: SchemaErrorFormatter;
 
   // hooks

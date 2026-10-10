@@ -35,7 +35,7 @@ const doGet = async function (url) {
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(16)
-  const response = { res: 'res' }
+  const response = { res: 'res', getHeader: () => undefined }
   const context = {
     config: { onSend: [] },
     schema: {},

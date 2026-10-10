@@ -41,6 +41,7 @@ describes the properties available in that options object.
     - [`allowUnsafeRegex`](#allowunsaferegex)
     - [`buildPrettyMeta`](#buildprettymeta)
     - [`caseSensitive`](#casesensitive)
+    - [`compile`](#compile)
     - [`constraints`](#constraints)
     - [`defaultRoute`](#defaultroute)
     - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
@@ -919,6 +920,34 @@ fastify.get('/user/:username', (request, reply) => {
   console.log(request.params.username) // -> 'NodeJS'
 })
 ```
+
+### `compile`
+<a id="compile"></a>
+
++ Default: `false`
+
+When `true`, Fastify calls the
+[`compile()`](https://github.com/delvedor/find-my-way#compiler-mode) method of
+`find-my-way` once all the routes are registered, right before the
+[`onReady`](./Hooks.md#onready) hooks run. Each HTTP method's routing tree is
+turned into generated JavaScript instead of being walked for every request,
+which makes route lookups faster. Matching semantics are the same as with the
+default tree walk.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    compile: true
+  }
+})
+```
+
+Keep in mind that:
+
++ the compiled matcher works on the raw request URL; URLs containing
+  percent-encoded characters fall back to the decoded path and are not faster;
++ every route generates its own code, so applications with thousands of routes
+  produce a large amount of JavaScript, which needs to warm up per route.
 
 ### `constraints`
 <a id="constraints"></a>
@@ -2382,6 +2411,7 @@ The properties that can currently be exposed are:
   - allowUnsafeRegex
   - buildPrettyMeta
   - caseSensitive
+  - compile
   - constraints
   - defaultRoute
   - ignoreDuplicateSlashes

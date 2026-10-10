@@ -45,6 +45,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     routerOptions: {
       allowUnsafeRegex: false,
       caseSensitive: true,
+      compile: false,
       constraints: undefined,
       ignoreTrailingSlash: false,
       ignoreDuplicateSlashes: false,
@@ -302,6 +303,7 @@ test('Should not have issues when passing stream options to Pino.js', (t, done) 
       routerOptions: {
         allowUnsafeRegex: false,
         caseSensitive: true,
+        compile: false,
         constraints: undefined,
         ignoreTrailingSlash: true,
         ignoreDuplicateSlashes: false,

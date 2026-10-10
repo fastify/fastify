@@ -381,6 +381,12 @@ function fastify (serverOptions) {
 
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
+    // All the routes are registered at this point. Routes added or removed
+    // afterwards make find-my-way compile the changed trees again lazily.
+    if (options.routerOptions.compile === true) {
+      router.compileRoutes()
+    }
+
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()

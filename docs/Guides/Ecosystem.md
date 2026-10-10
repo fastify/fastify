@@ -73,8 +73,9 @@ section.
   connection pool across every part of your server.
 - [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart
   support for Fastify.
-- [`@fastify/mysql`](https://github.com/fastify/fastify-mysql) Fastify MySQL
+- [`@fastify/mysql`](https://github.com/fastify/fastify-mysql) Fastify MySQL Tag: `database`.
   connection plugin.
+- [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify PostgreSQL connection plugin, with which you can share the same PostgreSQL connection pool in every part of your server. Tag: `database`.
 - [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
   server-side rendering support for Fastify with
   [Next](https://github.com/vercel/next.js/).

@@ -63,7 +63,7 @@ function getResponseSchema () {
 }
 
 test('Reply#compileSerializationSchema', async t => {
-  t.plan(4)
+  t.plan(6)
 
   await t.test('Should return a serialization function', async t => {
     const fastify = Fastify()
@@ -201,6 +201,76 @@ test('Reply#compileSerializationSchema', async t => {
       })
     }
   )
+
+  await t.test('Should not reuse a serializer compiled for different metadata', async t => {
+    const fastify = Fastify()
+
+    t.plan(7)
+
+    const compiled = []
+    const schemaObj = getDefaultSchema()
+
+    fastify.setSerializerCompiler(function ({ httpStatus, contentType }) {
+      compiled.push({ httpStatus, contentType })
+      return function (data) {
+        return JSON.stringify({ httpStatus, contentType, data })
+      }
+    })
+
+    fastify.get('/', (req, reply) => {
+      const first = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+      const second = reply.compileSerializationSchema(schemaObj, '201', 'application/vnd.example+json')
+
+      // The metadata is part of what the compiler is given, so a serializer
+      // compiled for one tuple must not be handed back for another.
+      t.assert.notStrictEqual(first, second)
+      t.assert.strictEqual(compiled.length, 2)
+      t.assert.deepStrictEqual(compiled[0], { httpStatus: '200', contentType: 'application/json' })
+      t.assert.deepStrictEqual(compiled[1], { httpStatus: '201', contentType: 'application/vnd.example+json' })
+
+      const input = { hello: 'world' }
+      t.assert.strictEqual(JSON.parse(first(input)).httpStatus, '200')
+      t.assert.strictEqual(JSON.parse(second(input)).httpStatus, '201')
+      t.assert.strictEqual(JSON.parse(second(input)).contentType, 'application/vnd.example+json')
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  await t.test('Should reuse the serializer for the same metadata tuple', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    const compiled = []
+    const schemaObj = getDefaultSchema()
+
+    fastify.setSerializerCompiler(function ({ httpStatus, contentType }) {
+      compiled.push({ httpStatus, contentType })
+      return (data) => JSON.stringify(data)
+    })
+
+    fastify.get('/', (req, reply) => {
+      const first = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+      const second = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+
+      t.assert.strictEqual(first, second)
+      t.assert.strictEqual(compiled.length, 1)
+      t.assert.strictEqual(first({ hello: 'world' }), JSON.stringify({ hello: 'world' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 
   await t.test('Should build a WeakMap for cache when called', async t => {
     const fastify = Fastify()

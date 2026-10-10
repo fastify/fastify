@@ -65,7 +65,7 @@ export interface FastifyRegister<
       FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>
       | FastifyPluginAsync<FastifyPluginOptions, Server, TypeProvider, Logger>
       | Promise<{
-        default: FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>
+        default: FastifyPluginCallback<FastifyPluginOptions, Server, TypeProvider, Logger>;
       }>
       | Promise<{ default: FastifyPluginAsync<FastifyPluginOptions, Server, TypeProvider, Logger> }>,
   ): T;

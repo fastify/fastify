@@ -862,7 +862,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   if (
     options.routerOptions?.querystringParser &&
-      typeof options.routerOptions.querystringParser !== 'function'
+    typeof options.routerOptions.querystringParser !== 'function'
   ) {
     throw new FST_ERR_QSP_NOT_FN(typeof options.routerOptions.querystringParser)
   }

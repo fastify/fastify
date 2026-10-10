@@ -1048,8 +1048,7 @@ test('chain of decorators on Request', async t => {
       name: 'third'
     }))
   },
-  { prefix: '/plugin2', name: 'plugin2' }
-  )
+  { prefix: '/plugin2', name: 'plugin2' })
 
   await fastify.ready()
 
@@ -1121,8 +1120,7 @@ test('chain of decorators on Reply', async (t) => {
       name: 'third'
     }))
   },
-  { prefix: '/plugin2', name: 'plugin2' }
-  )
+  { prefix: '/plugin2', name: 'plugin2' })
 
   await fastify.ready()
 

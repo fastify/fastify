@@ -213,7 +213,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
+property](https://nodejs.org/dist/latest/docs/api/http.html#serverrequesttimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -1046,7 +1046,7 @@ be invoked.
 
 This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
-attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
 
 
 ### `onBadUrl`

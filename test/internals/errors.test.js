@@ -780,6 +780,16 @@ test('FST_ERR_ROUTE_MISSING_CONTENT_TYPE', t => {
   t.assert.ok(error instanceof Error)
 })
 
+test('FST_ERR_ROUTE_MISSING_CONTENT', t => {
+  t.plan(5)
+  const error = new errors.FST_ERR_ROUTE_MISSING_CONTENT()
+  t.assert.strictEqual(error.name, 'FastifyError')
+  t.assert.strictEqual(error.code, 'FST_ERR_ROUTE_MISSING_CONTENT')
+  t.assert.strictEqual(error.message, "Method '%s' must provide a request body.")
+  t.assert.strictEqual(error.statusCode, 400)
+  t.assert.ok(error instanceof Error)
+})
+
 test('FST_ERR_REOPENED_CLOSE_SERVER', t => {
   t.plan(5)
   const error = new errors.FST_ERR_REOPENED_CLOSE_SERVER()

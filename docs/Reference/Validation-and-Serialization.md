@@ -5,11 +5,11 @@ Fastify uses a schema-based approach. We recommend using
 [JSON Schema](https://json-schema.org/) to validate routes and serialize outputs.
 Fastify compiles the schema into a highly performant function.
 
-Validation is only attempted if the content type is `application/json`,
-unless the body schema uses the [`content`](#body-content-type-validation)
-property to specify validation per content type. When the body schema defines
-a `content` field, it must enumerate all possible content types the
-application expects to handle with the associated handler.
+A body schema without a [`content`](#body-content-type-validation) property is
+applied to every successfully parsed request body, regardless of its content
+type. Use the `content` property to specify different schemas per content type.
+When the body schema defines a `content` field, it must enumerate all content
+types the application expects the route to accept.
 
 All examples use the
 [JSON Schema Draft 7](https://json-schema.org/draft-07)
@@ -250,7 +250,7 @@ fastify.post('/the/url', {
         'text/plain': {
           schema: { type: 'string' }
         }
-        // Other content types will not be validated
+        // Other content types will be rejected with a 415 response
       }
     }
   }
@@ -258,20 +258,21 @@ fastify.post('/the/url', {
 ```
 
 > ⚠ Warning:
-> When using [custom content type parsers](./ContentTypeParser.md), the parsed
-> body is validated **only** when the request content type matches a key in the
-> schema `content` map.
+> When using [custom content type parsers](./ContentTypeParser.md), the request
+> content type must match a key in the schema `content` map. Requests without a
+> matching schema, including requests without a `Content-Type` header, are
+> rejected with a `415 Unsupported Media Type` response.
 >
 > Schema selection uses an exact match on the request's
 > [essence MIME type](https://mimesniff.spec.whatwg.org/#mime-type-miscellaneous)
 > (for example, `application/json`). If a parser is registered with a regular
 > expression (for example, `/^application\/.*json$/`), the parser can accept
 > more content types than the `content` map covers. Requests in that gap are
-> parsed but **not validated**.
+> rejected.
 >
 > Ensure every content type accepted by the parser has a corresponding key in
-> the `content` map, or use a catch-all body schema without `content` when
-> strict per-content-type discrimination is not required.
+> the `content` map, or use a body schema without `content` when the same schema
+> should apply to every successfully parsed body.
 >
 > ```js
 > // Add a custom parser for YAML

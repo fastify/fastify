@@ -114,6 +114,7 @@ function fastify (serverOptions) {
   } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
+  const setupRequestSignal = Reply.setupRequestSignal
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
   // Public API
@@ -444,6 +445,7 @@ function fastify (serverOptions) {
     fourOhFour,
     hasLogger,
     setupResponseListeners,
+    setupRequestSignal,
     throwIfAlreadyStarted,
     keepAliveConnections
   })
@@ -648,6 +650,7 @@ function fastify (serverOptions) {
 
       const request = new Request(id, null, req, null, childLogger, routeEventContext)
       const reply = new Reply(res, request, childLogger)
+      setupRequestSignal(reply)
 
       routeEventContext.server[kLogController].incomingRequest(request, reply)
 
@@ -673,6 +676,7 @@ function fastify (serverOptions) {
 
       const request = new Request(id, null, req, null, childLogger, routeEventContext)
       const reply = new Reply(res, request, childLogger)
+      setupRequestSignal(reply)
 
       routeEventContext.server[kLogController].incomingRequest(request, reply)
 
@@ -701,6 +705,7 @@ function fastify (serverOptions) {
 
           const request = new Request(id, null, req, null, childLogger, routeEventContext)
           const reply = new Reply(res, request, childLogger)
+          setupRequestSignal(reply)
 
           routeEventContext.server[kLogController].incomingRequest(request, reply)
 

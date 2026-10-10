@@ -8,6 +8,9 @@ section.
 
 #### [Core](#core)
 
+Validation plugins are marked with the tag `validation`. The list stays
+alphabetical.
+
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
@@ -102,7 +105,8 @@ section.
   (with fallback to [cls-hooked](https://github.com/Jeff-Lewis/cls-hooked)),
   providing functionality similar to thread-local storages.
 - [`@fastify/response-validation`](https://github.com/fastify/fastify-response-validation)
-  A simple plugin that enables response validation for Fastify.
+  A simple plugin that enables response validation for Fastify. Tag:
+  `validation`.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
 - [`@fastify/routes-stats`](https://github.com/fastify/fastify-routes-stats)

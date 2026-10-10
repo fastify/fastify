@@ -2082,3 +2082,90 @@ test('hooks are applied to not found handlers /3', async t => {
   const { statusCode } = await fastify.inject('/')
   t.assert.strictEqual(statusCode, 401)
 })
+
+test('encapsulated 404 handler is used when routerOptions.caseSensitive is false', async t => {
+  t.plan(4)
+
+  const fastify = Fastify({ routerOptions: { caseSensitive: false } })
+
+  fastify.register(async function (instance) {
+    instance.addHook('onRequest', async function (request, reply) {
+      reply.header('x-prefixed', 'true')
+    })
+    instance.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('prefixed 404')
+    })
+  }, { prefix: '/prefixed' })
+
+  fastify.setNotFoundHandler(function (request, reply) {
+    reply.code(404).send('root 404')
+  })
+
+  const res = await fastify.inject('/PREFIXED/not-found')
+  t.assert.strictEqual(res.statusCode, 404)
+  t.assert.strictEqual(res.payload, 'prefixed 404')
+  t.assert.strictEqual(res.headers['x-prefixed'], 'true')
+
+  const root = await fastify.inject('/not-found')
+  t.assert.strictEqual(root.payload, 'root 404')
+})
+
+test('encapsulated 404 handler is used when routerOptions.ignoreDuplicateSlashes is true', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ routerOptions: { ignoreDuplicateSlashes: true } })
+
+  fastify.register(async function (instance) {
+    instance.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('prefixed 404')
+    })
+  }, { prefix: '/prefixed' })
+
+  fastify.setNotFoundHandler(function (request, reply) {
+    reply.code(404).send('root 404')
+  })
+
+  const res = await fastify.inject('//prefixed//not-found')
+  t.assert.strictEqual(res.statusCode, 404)
+  t.assert.strictEqual(res.payload, 'prefixed 404')
+})
+
+test('encapsulated 404 handler is used when routerOptions.useSemicolonDelimiter is true', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ routerOptions: { useSemicolonDelimiter: true } })
+
+  fastify.register(async function (instance) {
+    instance.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('prefixed 404')
+    })
+  }, { prefix: '/prefixed' })
+
+  fastify.setNotFoundHandler(function (request, reply) {
+    reply.code(404).send('root 404')
+  })
+
+  const res = await fastify.inject('/prefixed;foo=bar')
+  t.assert.strictEqual(res.statusCode, 404)
+  t.assert.strictEqual(res.payload, 'prefixed 404')
+})
+
+test('encapsulated 404 handler is used when routerOptions.maxParamLength is raised', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ routerOptions: { maxParamLength: 500 } })
+
+  fastify.register(async function (instance) {
+    instance.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('tenant 404')
+    })
+  }, { prefix: '/tenant/:id' })
+
+  fastify.setNotFoundHandler(function (request, reply) {
+    reply.code(404).send('root 404')
+  })
+
+  const res = await fastify.inject(`/tenant/${'a'.repeat(200)}/not-found`)
+  t.assert.strictEqual(res.statusCode, 404)
+  t.assert.strictEqual(res.payload, 'tenant 404')
+})

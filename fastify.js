@@ -415,12 +415,20 @@ function fastify (serverOptions) {
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
           instance.server.close(function (err) {
-            /* c8 ignore next 6 */
-            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
-              done(null)
-            } else {
-              done()
-            }
+            // A dual-stack `listen()` creates a secondary server for every
+            // additional address. Those are closed when the main server
+            // emits `close`, so that their close is never triggered before
+            // the `preClose` hook has run. They must be awaited as well,
+            // otherwise in-flight requests served by a secondary binding
+            // would still be running when `close()` resolves.
+            Promise.all(fastify[kServerBindings].map(closeBinding)).then(function () {
+              /* c8 ignore next 6 */
+              if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
+                done(null)
+              } else {
+                done()
+              }
+            })
           })
         } else {
           process.nextTick(done, null)
@@ -849,6 +857,18 @@ function fastify (serverOptions) {
 
     return this
   }
+}
+
+// Closes a secondary server created by a dual-stack `listen()` and resolves
+// once it is fully closed, so that its in-flight requests have completed.
+// Any error is swallowed on purpose: the close of a secondary server is a
+// best effort, exactly as it is when it is triggered by the main server.
+function closeBinding (server) {
+  return new Promise(function (resolve) {
+    server.close(function () {
+      resolve()
+    })
+  })
 }
 
 function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {

@@ -1096,3 +1096,220 @@ test('Register an hook (onRequestAbort) as route option should fail if mixing as
     t.assert.strictEqual(e.message, 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
   }
 })
+
+// https://github.com/fastify/fastify/issues/7090
+describe('replying from an async hook stops the chain', () => {
+  const requestHooks = ['onRequest', 'preParsing', 'preValidation', 'preHandler']
+
+  // `reply.sent` turns true only once the response has ended, and every async
+  // onSend hook defers that by a tick. From two of them on, the hook that
+  // replied used to resolve first, and the chain carried on into the handler.
+  for (const hookName of requestHooks) {
+    for (const onSendCount of [0, 1, 2, 3]) {
+      test(`${hookName} with ${onSendCount} async onSend hook(s)`, async t => {
+        t.plan(2)
+        const fastify = Fastify()
+
+        for (let i = 0; i < onSendCount; i++) {
+          fastify.addHook('onSend', async (request, reply, payload) => payload)
+        }
+
+        fastify.addHook(hookName, async (request, reply) => {
+          reply.code(401).send({ error: 'unauthorized' })
+        })
+
+        fastify.addHook(hookName, async () => {
+          t.assert.fail('the next hook should not be called')
+        })
+
+        fastify.get('/', async () => {
+          t.assert.fail('the handler should not be called')
+        })
+
+        const res = await fastify.inject('/')
+        t.assert.strictEqual(res.statusCode, 401)
+        t.assert.deepStrictEqual(res.json(), { error: 'unauthorized' })
+      })
+    }
+  }
+
+  test('a later phase does not start either', async t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('onSend', async (request, reply, payload) => payload)
+    fastify.addHook('onSend', async (request, reply, payload) => payload)
+
+    fastify.addHook('onRequest', async (request, reply) => {
+      reply.code(401).send({ error: 'unauthorized' })
+    })
+
+    for (const hookName of ['preParsing', 'preValidation', 'preHandler']) {
+      fastify.addHook(hookName, async () => {
+        t.assert.fail(`${hookName} should not be called`)
+      })
+    }
+
+    fastify.get('/', async () => {
+      t.assert.fail('the handler should not be called')
+    })
+
+    const res = await fastify.inject('/')
+    t.assert.strictEqual(res.statusCode, 401)
+    t.assert.deepStrictEqual(res.json(), { error: 'unauthorized' })
+  })
+
+  test('an error reply is not overtaken by the handler while an async error handler runs', async t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.setErrorHandler(async (err, request, reply) => {
+      await sleep(1)
+      reply.code(403).send({ handled: err.message })
+    })
+
+    fastify.get('/', {
+      preHandler: async (request, reply) => {
+        reply.send(new Error('kaboom'))
+      }
+    }, async () => {
+      t.assert.fail('the handler should not be called')
+    })
+
+    const res = await fastify.inject('/')
+    t.assert.strictEqual(res.statusCode, 403)
+    t.assert.deepStrictEqual(res.json(), { handled: 'kaboom' })
+  })
+
+  for (const hookName of requestHooks) {
+    test(`${hookName} that replies and then rejects keeps its reply`, async t => {
+      t.plan(2)
+      const fastify = Fastify()
+
+      fastify.addHook('onSend', async (request, reply, payload) => payload)
+      fastify.addHook('onSend', async (request, reply, payload) => payload)
+
+      fastify.setErrorHandler(() => {
+        t.assert.fail('the error handler should not be called')
+      })
+
+      fastify.addHook(hookName, async (request, reply) => {
+        reply.code(401).send({ error: 'unauthorized' })
+        throw new Error('after the reply')
+      })
+
+      fastify.get('/', async () => {
+        t.assert.fail('the handler should not be called')
+      })
+
+      const res = await fastify.inject('/')
+      t.assert.strictEqual(res.statusCode, 401)
+      t.assert.deepStrictEqual(res.json(), { error: 'unauthorized' })
+    })
+  }
+
+  test('callNotFound from a hook runs the not found handler once, and not the route handler', async t => {
+    t.plan(3)
+    const fastify = Fastify()
+    const calls = []
+
+    fastify.setNotFoundHandler({
+      preHandler: async () => {
+        calls.push('preHandler')
+      }
+    }, async (request, reply) => {
+      calls.push('handler')
+      reply.code(404)
+      return { notFound: true }
+    })
+
+    fastify.get('/', {
+      preHandler: async (request, reply) => {
+        reply.callNotFound()
+      }
+    }, async () => {
+      t.assert.fail('the handler should not be called')
+    })
+
+    const res = await fastify.inject('/')
+    t.assert.strictEqual(res.statusCode, 404)
+    t.assert.deepStrictEqual(res.json(), { notFound: true })
+    t.assert.deepStrictEqual(calls, ['preHandler', 'handler'])
+  })
+
+  test('an error handler can hand a hook\'s error reply over to the not found handler', async t => {
+    t.plan(3)
+    const fastify = Fastify()
+    const calls = []
+
+    fastify.setNotFoundHandler({
+      preHandler: async () => {
+        calls.push('preHandler')
+      }
+    }, async (request, reply) => {
+      calls.push('handler')
+      reply.code(404)
+      return { notFound: true }
+    })
+
+    fastify.setErrorHandler((err, request, reply) => {
+      t.assert.ok(err)
+      reply.callNotFound()
+    })
+
+    fastify.get('/', {
+      preHandler: async (request, reply) => {
+        reply.send(new Error('kaboom'))
+      }
+    }, async () => {
+      t.assert.fail('the handler should not be called')
+    })
+
+    const res = await fastify.inject('/')
+    t.assert.strictEqual(res.statusCode, 404)
+    t.assert.deepStrictEqual(calls, ['preHandler', 'handler'])
+  })
+
+  // No reply is started here, so this is still `reply.sent` stopping the chain.
+  test('a hook that ends the raw response stops the chain too', async t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('preHandler', (request, reply, done) => {
+      reply.raw.end('raw')
+      done()
+    })
+
+    fastify.addHook('preHandler', () => {
+      t.assert.fail('the next hook should not be called')
+    })
+
+    fastify.get('/', async () => {
+      t.assert.fail('the handler should not be called')
+    })
+
+    const res = await fastify.inject('/')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'raw')
+  })
+
+  test('a hook that does not reply lets the request proceed', async t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('onSend', async (request, reply, payload) => payload)
+    fastify.addHook('onSend', async (request, reply, payload) => payload)
+
+    for (const hookName of requestHooks) {
+      fastify.addHook(hookName, async () => {
+        await sleep(1)
+      })
+    }
+
+    fastify.get('/', async () => ({ hello: 'world' }))
+
+    const res = await fastify.inject('/')
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { hello: 'world' })
+  })
+})

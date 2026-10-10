@@ -40,7 +40,7 @@ const defaultInitOptions = {
   routerOptions: {
     allowUnsafeRegex: false,
     caseSensitive: true,
-    compile: false,
+    compile: true,
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,
     maxParamLength: 100,

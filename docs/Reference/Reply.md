@@ -277,8 +277,9 @@ requires heavy resources to be sent after the `data`, for example,
 as soon as possible.
 
 > ℹ️ Note:
-> The header `Transfer-Encoding: chunked` will be added once you use
-> the trailer. It is a hard requirement for using trailer in Node.js.
+> For HTTP/1 responses, the header `Transfer-Encoding: chunked` will be added
+> once you use a trailer. HTTP/2 does not use chunked transfer encoding and
+> sends trailers using its native trailing headers support.
 
 > ℹ️ Note:
 > Any error passed to `done` callback will be ignored. If you are interested

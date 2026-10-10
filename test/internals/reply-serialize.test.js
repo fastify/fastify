@@ -712,3 +712,23 @@ test('Reply#serializeInput', async t => {
     })
   })
 })
+
+test('Reply#compileSerializationSchema omits absent metadata instead of passing null', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.setSerializerCompiler(({ httpStatus, contentType }) => {
+    t.assert.strictEqual(httpStatus, undefined)
+    t.assert.strictEqual(contentType, undefined)
+
+    return input => JSON.stringify(input)
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.compileSerializationSchema(getDefaultSchema())
+    reply.send({ hello: 'world' })
+  })
+
+  await fastify.inject({ path: '/', method: 'GET' })
+})

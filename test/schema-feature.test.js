@@ -1501,7 +1501,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
     }
   })
 
-  fastify.addHook('onReady', function (done) {
+  fastify.addHook('onReady', function (instance, done) {
     t.assert.ok(this.validatorCompiler)
     t.assert.ok(this.serializerCompiler)
     done()
@@ -1509,7 +1509,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
 
   let hookCallCounter = 0
   fastify.register(async (i, o) => {
-    i.addHook('onReady', function (done) {
+    i.addHook('onReady', function (instance, done) {
       t.assert.ok(this.validatorCompiler)
       t.assert.ok(this.serializerCompiler)
       done()
@@ -1517,7 +1517,7 @@ test('onReady hook has the compilers ready', (t, testDone) => {
 
     i.register(async (i, o) => { })
 
-    i.addHook('onReady', function (done) {
+    i.addHook('onReady', function (instance, done) {
       hookCallCounter++
       done()
     })
@@ -1710,21 +1710,21 @@ test('Schema controller bucket', (t, testDone) => {
 
   fastify.register(async (instance) => {
     instance.addSchema({ $id: 'b', type: 'string' })
-    instance.addHook('onReady', function (done) {
+    instance.addHook('onReady', function (instance, done) {
       t.assert.strictEqual(instance.getSchemas().size, 2)
       done()
     })
     instance.register(async (subinstance) => {
       subinstance.addSchema({ $id: 'c', type: 'string' })
-      subinstance.addHook('onReady', function (done) {
-        t.assert.strictEqual(subinstance.getSchemas().size, 3)
+      subinstance.addHook('onReady', function (instance, done) {
+        t.assert.strictEqual(instance.getSchemas().size, 3)
         done()
       })
     })
   })
 
   fastify.register(async (instance) => {
-    instance.addHook('onReady', function (done) {
+    instance.addHook('onReady', function (instance, done) {
       t.assert.strictEqual(instance.getSchemas().size, 1)
       done()
     })
@@ -1782,7 +1782,7 @@ test('setSchemaController per instance', (t, testDone) => {
 
     instance2.addSchema(bSchema)
 
-    instance2.addHook('onReady', function (done) {
+    instance2.addHook('onReady', function (instance, done) {
       instance2.getSchemas()
       t.assert.deepStrictEqual(instance2.getSchema('b'), bSchema, 'the schema are loaded')
       done()

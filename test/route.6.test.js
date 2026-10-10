@@ -13,7 +13,7 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
 
   const arr = []
   fastify.register((instance, opts, next) => {
-    instance.addHook('onRoute', (routeOptions) => {
+    instance.addHook('onRoute', (instance, routeOptions) => {
       arr.push(`${routeOptions.method} ${routeOptions.url}`)
     })
 

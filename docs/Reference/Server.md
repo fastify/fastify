@@ -300,6 +300,21 @@ reply, if the size of the body exceeds this limit.
 If [`preParsing` hook](./Hooks.md#preparsing) is provided, this limit is applied
 to the size of the stream the hook returns (i.e. the size of "decoded" body).
 
+### `strictContentTypeHeaderValidation`
+<a id="factory-strict-content-type-header-validation"></a>
+
++ Default: `true`
+
+Rejects syntactically invalid `Content-Type` request headers before body parser
+selection. Set this to `false` only as a compatibility escape hatch for clients
+you cannot control. In that mode, RegExp and catch-all content-type parsers can
+match the raw invalid header value.
+
+Malformed values do not produce a valid `request.mediaType` and therefore do
+not select a validator from `schema.body.content`. Applications using this
+option must canonicalize the header before validation or perform equivalent
+body validation in their custom parser or handler.
+
 ### `onProtoPoisoning`
 <a id="factory-on-proto-poisoning"></a>
 

@@ -72,10 +72,6 @@ Request is a core Fastify object containing the following fields:
   for cooperative cancellation. On timeout, `signal.reason` is the
   `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
   `AbortError`. Check `signal.reason.code` to distinguish the two cases.
-- `context` - Deprecated, use `request.routeOptions.config` instead. A Fastify
-  internal object. Do not use or modify it directly. It is useful to access one
-  special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
   - `handlerTimeout` - The handler timeout configured for this route.
@@ -125,6 +121,14 @@ to headers on `not found` routes.
 > ℹ️ Note:
 > Schema validation may mutate the `request.headers` and
 > `request.raw.headers` objects, causing the headers to become empty.
+
+> ℹ️ Note:
+> The setter is additive, so it cannot be used to *remove* a header, and a
+> `headers` schema validator's synchronous `{ value }` result is applied through
+> this same setter. `request.headers` is therefore the incoming request's
+> headers (plus any additive values), not a sanitized or authoritative view. If
+> your application needs an allow-listed header subset, build and consume it
+> explicitly from the validated data or from `request.raw.headers`.
 
 ```js
 fastify.post('/:params', options, function (request, reply) {

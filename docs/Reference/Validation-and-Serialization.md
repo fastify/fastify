@@ -628,6 +628,34 @@ This pattern ensures validators work correctly with both sync and async
 `preValidation` hooks, preventing unhandled promise rejections that can crash
 an application.
 
+> [!IMPORTANT]
+> The `{ value, error }` result convention applies to **synchronous** validator
+> compilers only. An **asynchronous** validator (a compiler that returns a
+> promise, including an [`$async` Ajv schema](https://ajv.js.org/guide/async-validation.html))
+> is treated as pass/fail only: its resolved value is not unwrapped as
+> `{ value, error }`. An async schema resolves with the validated data itself, so
+> unwrapping it would let a payload that carries `value` or `error` keys replace
+> the request part or inject a validation error. An async validator must signal
+> failure by rejecting (throwing), and it cannot coerce the request part through
+> a resolved `value`.
+
+##### `headers` and the `{ value }` result
+
+For the `headers` part specifically, the synchronous success `value` is applied
+through the additive [`request.headers`](./Request.md#headers) setter. That
+setter *adds or overrides* headers on top of the raw request headers; it does
+**not** replace them. Raw request headers remain separately available as
+`request.raw.headers`, and any incoming header that is not present in the
+returned `value` is still visible on `request.headers`.
+
+Consequently, a synchronous custom `headers` validator cannot remove a header by
+simply omitting it from `value`. The same applies to the default Ajv validator:
+`request.headers` is the incoming request's headers (plus any additive values)
+and is not a sanitized, authoritative view. If your application needs a
+sanitized or allow-listed header view — for example to drive an authorization
+decision — build and consume that view explicitly from the validated data rather
+than re-reading `request.headers`.
+
 ##### .statusCode property
 
 All validation errors have a `.statusCode` property set to `400`, ensuring the

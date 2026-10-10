@@ -18,6 +18,10 @@ EXPENSE_POLICY.md
 # AI files
 .claude/
 CLAUDE.md
+AGENTS.md
+.agent
+.agents/
+.pi/
 
 # test certification
 test/https/fastify.cert

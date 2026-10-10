@@ -469,6 +469,30 @@ test('Should honor routerOptions.onBadUrl', async t => {
   t.assert.strictEqual(res.payload, 'Bad URL: /hello/%world')
 })
 
+test('Should honor routerOptions.onBadUrl when no method tree exists', async t => {
+  t.plan(3)
+  const fastify = Fastify({
+    routerOptions: {
+      onBadUrl: function (path, _, res) {
+        t.assert.ok('bad url called')
+        res.statusCode = 400
+        res.end(`Bad URL: ${path}`)
+      }
+    }
+  })
+
+  fastify.get('/hello/:id', (req, res) => {
+    res.send({ hello: 'world' })
+  })
+
+  const res = await fastify.inject({
+    method: 'DELETE',
+    url: '/hello/%world'
+  })
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(res.payload, 'Bad URL: /hello/%world')
+})
+
 test('Should honor routerOptions.onMaxParamLength', async t => {
   t.plan(3)
   const fastify = Fastify({

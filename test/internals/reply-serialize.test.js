@@ -284,7 +284,7 @@ test('Reply#compileSerializationSchema', async t => {
 })
 
 test('Reply#getSerializationFunction', async t => {
-  t.plan(3)
+  t.plan(6)
 
   await t.test('Should retrieve the serialization function from the Schema definition',
     async t => {
@@ -487,6 +487,88 @@ test('Reply#getSerializationFunction', async t => {
       method: 'GET'
     })
   })
+
+  await t.test('Should retrieve the correct cached serializer for vendor content-type when multiple content-types compiled for the same schema',
+    async t => {
+      const fastify = Fastify()
+      t.plan(4)
+
+      const schemaObj = getDefaultSchema()
+
+      fastify.get('/', {
+        serializerCompiler: ({ contentType }) => (input) => JSON.stringify({ contentType, ...input })
+      }, (req, reply) => {
+        const jsonSerializer = reply.compileSerializationSchema(schemaObj, undefined, 'application/json')
+        const vendorSerializer = reply.compileSerializationSchema(schemaObj, undefined, 'application/vnd.example+json')
+        const retrievedVendor = reply.getSerializationFunction(schemaObj, 'application/vnd.example+json')
+        const retrievedJson = reply.getSerializationFunction(schemaObj, 'application/json')
+
+        t.assert.strictEqual(retrievedVendor, vendorSerializer)
+        t.assert.notStrictEqual(retrievedVendor, jsonSerializer)
+        t.assert.strictEqual(retrievedJson, jsonSerializer)
+        t.assert.deepStrictEqual(JSON.parse(retrievedVendor({ a: 1 })), { contentType: 'application/vnd.example+json', a: 1 })
+
+        reply.send({ ok: true })
+      })
+
+      await fastify.inject('/')
+    }
+  )
+
+  await t.test('Should not return metadata-specific serializer when requesting no-metadata serializer before no-metadata compilation',
+    async t => {
+      const fastify = Fastify()
+      t.plan(5)
+
+      const schemaObj = getDefaultSchema()
+
+      fastify.get('/', {
+        serializerCompiler: ({ httpStatus, contentType }) =>
+          (input) => JSON.stringify({ httpStatus, contentType, ...input })
+      }, (req, reply) => {
+        const specificSerializer = reply.compileSerializationSchema(schemaObj, '200', 'application/json')
+        const noMetadataGetter = reply.getSerializationFunction(schemaObj)
+
+        t.assert.strictEqual(noMetadataGetter, undefined)
+
+        const serialized = reply.serializeInput({ a: 1 }, schemaObj)
+        t.assert.deepStrictEqual(JSON.parse(serialized), { a: 1 })
+
+        const noMetadataGetterAfter = reply.getSerializationFunction(schemaObj)
+        t.assert.ok(noMetadataGetterAfter instanceof Function)
+        t.assert.notStrictEqual(noMetadataGetterAfter, specificSerializer)
+        t.assert.deepStrictEqual(JSON.parse(noMetadataGetterAfter({ a: 2 })), { a: 2 })
+
+        reply.send({ ok: true })
+      })
+
+      await fastify.inject('/')
+    }
+  )
+
+  await t.test('Should fallback to no-metadata serializer when specific contentType serializer is not compiled',
+    async t => {
+      const fastify = Fastify()
+      t.plan(2)
+
+      const schemaObj = getDefaultSchema()
+
+      fastify.get('/', {
+        serializerCompiler: ({ httpStatus, contentType }) =>
+          (input) => JSON.stringify({ httpStatus, contentType, ...input })
+      }, (req, reply) => {
+        const noMetadata = reply.compileSerializationSchema(schemaObj)
+        const retrievedXml = reply.getSerializationFunction(schemaObj, 'application/xml')
+
+        t.assert.strictEqual(retrievedXml, noMetadata)
+        t.assert.deepStrictEqual(JSON.parse(retrievedXml({ a: 1 })), { a: 1 })
+
+        reply.send({ ok: true })
+      })
+
+      await fastify.inject('/')
+    }
+  )
 })
 
 test('Reply#serializeInput', async t => {

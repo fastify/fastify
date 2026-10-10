@@ -1046,7 +1046,7 @@ be invoked.
 
 This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
-attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
 
 
 ### `onBadUrl`

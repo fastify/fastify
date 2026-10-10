@@ -119,6 +119,18 @@ export declare class LogController {
   routeNotFound (request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   writeHeadError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata?: Record<string, unknown>): void
   serializerError (error: Error, request: FastifyRequest, reply: FastifyReply, metadata: { statusCode: number }): void
+  replyAlreadySent (
+    error: Error,
+    request: FastifyRequest,
+    reply: FastifyReply,
+    metadata?: Record<string, unknown>
+  ): void
+  handlerErrorAfterSend (
+    error: Error,
+    request: FastifyRequest,
+    reply: FastifyReply,
+    metadata?: Record<string, unknown>
+  ): void
   serviceUnavailable (logger: FastifyBaseLogger, server: FastifyInstance): void
 }
 

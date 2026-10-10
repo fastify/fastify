@@ -8,12 +8,15 @@ section.
 
 #### [Core](#core)
 
+Authentication plugins are marked with the tag `auth`. The list stays
+alphabetical.
+
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to the `Accept` header.
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
-  functions in Fastify.
+  functions in Fastify. Tag: `auth`.
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
   plugins in a directory.
 - [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) Dependency
@@ -23,9 +26,9 @@ section.
   you to easily build serverless web applications/services and RESTful APIs
   using Fastify on top of AWS Lambda and Amazon API Gateway.
 - [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic
-  auth plugin for Fastify.
+  auth plugin for Fastify. Tag: `auth`.
 - [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
-  Bearer auth plugin for Fastify.
+  Bearer auth plugin for Fastify. Tag: `auth`.
 - [`@fastify/caching`](https://github.com/fastify/fastify-caching) General
   server-side cache and ETag support.
 - [`@fastify/circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker)
@@ -64,6 +67,7 @@ section.
   your HTTP requests to another server, with hooks.
 - [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) JWT utils for
   Fastify, internally uses [fast-jwt](https://github.com/nearform/fast-jwt).
+  Tag: `auth`.
 - [`@fastify/kafka`](https://github.com/fastify/fastify-kafka) Plugin to interact
   with Apache Kafka.
 - [`@fastify/middie`](https://github.com/fastify/middie) Middleware engine for
@@ -79,13 +83,13 @@ section.
   server-side rendering support for Fastify with
   [Next](https://github.com/vercel/next.js/).
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
-  [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
+  [`simple-oauth2`](https://github.com/lelylan/simple-oauth2). Tag: `auth`.
 - [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Formats
   Fastify's logs into a nice one-line message.
 - [`@fastify/otel`](https://github.com/fastify/otel) OpenTelemetry
   instrumentation library.
 - [`@fastify/passport`](https://github.com/fastify/fastify-passport) Use Passport
-  strategies to authenticate requests and protect route.
+  strategies to authenticate requests and protect route. Tag: `auth`.
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
   PostgreSQL connection plugin, with this you can share the same PostgreSQL
   connection pool in every part of your server.

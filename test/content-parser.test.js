@@ -827,3 +827,36 @@ test('string body with invalid UTF-8 is not treated as a content-length mismatch
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.body, 'a�b')
 })
+
+test('parser registered with a charset matches the charset case-insensitively', async t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  fastify.addContentTypeParser('application/json; charset=utf-8', { parseAs: 'string' }, function (req, body, done) {
+    done(null, { custom: true })
+  })
+  fastify.addContentTypeParser('text/x-thing; charset=utf-8', { parseAs: 'string' }, function (req, body, done) {
+    done(null, 'custom')
+  })
+  fastify.post('/', async (request) => request.body)
+
+  for (const contentType of ['application/json; charset=UTF-8', 'application/json; charset="Utf-8"']) {
+    const res = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': contentType },
+      payload: '{"x":1}'
+    })
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.json(), { custom: true })
+  }
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'text/x-thing; charset=UTF-8' },
+    payload: 'x'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.body, 'custom')
+})

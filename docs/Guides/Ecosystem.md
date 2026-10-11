@@ -480,6 +480,8 @@ section.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose)
   Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin
   with support for Models.
+- [`fastify-mosquitto-dynsec`](https://github.com/LuizTakeda/fastify-mosquitto-dynsec)
+  Fastify plugin to manage Mosquitto Dynamic Security over MQTT.
 - [`fastify-mqtt`](https://github.com/love-lena/fastify-mqtt) Plugin to share
   [mqtt](https://www.npmjs.com/package/mqtt) client across Fastify.
 - [`fastify-msgpack`](https://github.com/kenriortega/fastify-msgpack) Fastify

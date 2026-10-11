@@ -213,7 +213,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
+property](https://nodejs.org/dist/latest/docs/api/http.html#serverrequesttimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -1047,7 +1047,7 @@ be invoked.
 For regex-based routes the limit applies to the captured values, and it is
 checked after the route's regex has run. It does not limit the input the regex
 is executed on, so it is not a protection against [ReDoS
-attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS):
+attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS):
 keep route regexes free of patterns prone to catastrophic backtracking.
 
 

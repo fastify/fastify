@@ -71,9 +71,10 @@ test('routerOptions.compile: true compiles the routes on ready', async t => {
 
   t.assert.strictEqual(fastify.initialConfig.routerOptions.compile, true)
   await fastify.ready()
-  t.assert.strictEqual(compile.mock.callCount(), 1)
+  // the main router and the 404 router
+  t.assert.strictEqual(compile.mock.callCount(), 2)
   await assertRoutes(t, fastify)
-  t.assert.strictEqual(compile.mock.callCount(), 1)
+  t.assert.strictEqual(compile.mock.callCount(), 2)
 })
 
 test('routerOptions.compile: true works with real http requests', async t => {
@@ -179,6 +180,44 @@ test('routerOptions.compile: true supports encapsulated 404 handlers', async t =
 
   res = await fastify.inject('/api/missing')
   t.assert.deepStrictEqual(res.json(), { notFound: 'api' })
+})
+
+test('routerOptions.compile: true compiles the 404 router', async t => {
+  const fastify = Fastify({ routerOptions: { compile: true } })
+  t.after(() => fastify.close())
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.code(404).send({ notFound: 'root', method: req.method })
+  })
+
+  fastify.register(async (instance) => {
+    instance.setNotFoundHandler((req, reply) => {
+      reply.code(404).send({ notFound: 'api', method: req.method })
+    })
+
+    instance.register(async (instance) => {
+      instance.setNotFoundHandler((req, reply) => {
+        reply.code(404).send({ notFound: 'v1', method: req.method })
+      })
+    }, { prefix: '/v1' })
+  }, { prefix: '/api' })
+
+  for (const method of ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']) {
+    let res = await fastify.inject({ method, url: '/missing' })
+    t.assert.deepStrictEqual(res.json(), { notFound: 'root', method })
+
+    res = await fastify.inject({ method, url: '/api/missing?x=1' })
+    t.assert.deepStrictEqual(res.json(), { notFound: 'api', method })
+
+    res = await fastify.inject({ method, url: '/api/v1/a/b/c' })
+    t.assert.deepStrictEqual(res.json(), { notFound: 'v1', method })
+  }
+
+  let res = await fastify.inject('/api')
+  t.assert.deepStrictEqual(res.json(), { notFound: 'api', method: 'GET' })
+
+  res = await fastify.inject('/api/v1/caf%C3%A9')
+  t.assert.deepStrictEqual(res.json(), { notFound: 'v1', method: 'GET' })
 })
 
 test('routerOptions.compile: true keeps findRoute and hasRoute working', async t => {

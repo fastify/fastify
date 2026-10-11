@@ -929,7 +929,9 @@ fastify.get('/user/:username', (request, reply) => {
 When `true`, Fastify calls the
 [`compile()`](https://github.com/delvedor/find-my-way#compiler-mode) method of
 `find-my-way` once all the routes are registered, right before the
-[`onReady`](./Hooks.md#onready) hooks run. Each HTTP method's routing tree is
+[`onReady`](./Hooks.md#onready) hooks run. This applies to both the main
+router and the router used for [not found handlers](#set-not-found-handler).
+Each HTTP method's routing tree is
 turned into generated JavaScript instead of being walked for every request,
 which makes route lookups faster. Matching semantics are the same as with the
 default tree walk.

@@ -385,6 +385,7 @@ function fastify (serverOptions) {
     // afterwards make find-my-way compile the changed trees again lazily.
     if (options.routerOptions.compile === true) {
       router.compileRoutes()
+      fourOhFour.router.compile()
     }
 
     fastify.onClose((instance, done) => {

@@ -1944,6 +1944,29 @@ test('header schema with a $ref inside propertyNames emits FSTSEC003 (case-norma
   t.assert.deepStrictEqual(spyData.calls[0].arguments, ['POST', '/', '#/definitions/denied'])
 })
 
+test('header schema detects a $ref inside propertyNames nested in an array', async t => {
+  const spyData = spyWarning(FSTSEC003)
+  t.after(spyData.restore)
+
+  const fastify = Fastify()
+  fastify.post('/', {
+    schema: {
+      headers: {
+        type: 'object',
+        propertyNames: { not: { anyOf: [{ $ref: '#/definitions/denied' }] } },
+        definitions: {
+          denied: { enum: ['X-Debug-Override'] }
+        }
+      }
+    }
+  }, async () => ({ ok: true }))
+
+  await fastify.ready()
+
+  t.assert.strictEqual(spyData.callCount(), 1)
+  t.assert.deepStrictEqual(spyData.calls[0].arguments, ['POST', '/', '#/definitions/denied'])
+})
+
 test('header schema normalization traverses dependent schema keywords', async t => {
   const fastify = Fastify({
     ajv: { customOptions: { strictSchema: false } }
@@ -2042,6 +2065,37 @@ test('header schema propertyNames: not-enum deny-list is lowercased', async t =>
   })
   t.assert.strictEqual(blocked.statusCode, 400)
   t.assert.strictEqual(blocked.json().code, 'FST_ERR_VALIDATION')
+
+  const ok = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: { 'X-Other': '1' }
+  })
+  t.assert.strictEqual(ok.statusCode, 200)
+})
+
+test('header schema propertyNames: non-string enum items are left untouched', async t => {
+  const fastify = Fastify({
+    ajv: { customOptions: { strictSchema: false } }
+  })
+
+  fastify.get('/', {
+    schema: {
+      headers: {
+        type: 'object',
+        propertyNames: { not: { enum: ['X-Debug-Override', 42, null] } }
+      }
+    }
+  }, async () => ({ ok: true }))
+
+  await fastify.ready()
+
+  const blocked = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: { 'X-Debug-Override': '1' }
+  })
+  t.assert.strictEqual(blocked.statusCode, 400)
 
   const ok = await fastify.inject({
     method: 'GET',

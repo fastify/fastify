@@ -11,6 +11,7 @@
   - [Fastify Security Codes](#fastify-security-codes)
     - [FSTSEC001](#FSTSEC001)
     - [FSTSEC002](#FSTSEC002)
+    - [FSTSEC003](#FSTSEC003)
   - [Fastify Deprecation Codes](#fastify-deprecation-codes)
     - [FSTDEP022](#FSTDEP022)
     - [FSTDEP023](#FSTDEP023)
@@ -57,6 +58,7 @@ Disabling warnings is not recommended and may cause unexpected behavior.
 | ---- | ----------- | ------------ | ---------- |
 | <a id="FSTSEC001">FSTSEC001</a> | A `RegExp` Content-Type is used that may be vulnerable to a CORS bypass, because it does not anchor the essence MIME type. | Start the `RegExp` with `^` or include `;?` so the essence MIME type is detected correctly. | [#4450](https://github.com/fastify/fastify/pull/4450) |
 | <a id="FSTSEC002">FSTSEC002</a> | A headers schema references an external `$ref` (a schema registered with `addSchema`) that is not reached by header case normalization. Header names in the referenced schema keep their original case and do not match the lowercased request headers, so case-insensitive assertions such as `required` and `dependencies` may not apply. | Inline the header schema instead of referencing it with an external `$ref`. | - |
+| <a id="FSTSEC003">FSTSEC003</a> | A headers schema uses a `$ref` inside `propertyNames` that is not reached by header case normalization. Header names held in the referenced schema keep their original case and do not match the lowercased request headers, so a case-insensitive deny-list or allow-list on header names may not apply. | Inline the `propertyNames` constraint instead of referencing it with a `$ref`. | - |
 
 ### Fastify Deprecation Codes
 

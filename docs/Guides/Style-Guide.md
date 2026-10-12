@@ -13,7 +13,8 @@ This guide is for anyone who loves to build with Fastify or wants to contribute
 to our documentation. You do not need to be an expert in writing technical
 documentation. This guide is here to help you.
 
-Visit the [contribute](https://fastify.dev/contribute/) page on our website or
+Visit the [contribute](https://fastify.dev/docs/latest/Guides/Contributing/)
+page on our website or
 read the
 [CONTRIBUTING.md](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)
 file on GitHub to join our Open Source folks.
@@ -224,18 +225,18 @@ hyperlink should look:
 <!-- More like this -->
 
 // Add clear & brief description
-[Fastify Plugins] (https://fastify.dev/docs/latest/Plugins/)
+[Fastify Plugins] (https://fastify.dev/docs/latest/Reference/Plugins/)
 
 <!--Less like this -->
 
 // incomplete description
-[Fastify] (https://fastify.dev/docs/latest/Plugins/)
+[Fastify] (https://fastify.dev/docs/latest/Reference/Plugins/)
 
 // Adding title in link brackets
-[](https://fastify.dev/docs/latest/Plugins/ "fastify plugin")
+[](https://fastify.dev/docs/latest/Reference/Plugins/ "fastify plugin")
 
 // Empty title
-[](https://fastify.dev/docs/latest/Plugins/)
+[](https://fastify.dev/docs/latest/Reference/Plugins/)
 
 // Adding links localhost URLs instead of using code strings (``)
 [http://localhost:3000/](http://localhost:3000/)

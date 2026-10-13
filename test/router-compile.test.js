@@ -54,9 +54,21 @@ async function assertRoutes (t, fastify) {
   t.assert.strictEqual(res.statusCode, 404)
 }
 
-test('routerOptions.compile defaults to false', async t => {
+test('routerOptions.compile defaults to true', async t => {
   const compile = t.mock.method(RouterPrototype, 'compile')
   const fastify = buildApp()
+  t.after(() => fastify.close())
+
+  t.assert.strictEqual(fastify.initialConfig.routerOptions.compile, true)
+  await fastify.ready()
+  // the main router and the 404 router
+  t.assert.strictEqual(compile.mock.callCount(), 2)
+  await assertRoutes(t, fastify)
+})
+
+test('routerOptions.compile: false does not compile the routes', async t => {
+  const compile = t.mock.method(RouterPrototype, 'compile')
+  const fastify = buildApp({ routerOptions: { compile: false } })
   t.after(() => fastify.close())
 
   t.assert.strictEqual(fastify.initialConfig.routerOptions.compile, false)

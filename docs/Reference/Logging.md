@@ -13,6 +13,9 @@ As Fastify is focused on performance, it uses
 [pino](https://github.com/pinojs/pino) as its logger, with the default log
 level set to `'info'` when enabled.
 
+The log level can be set per-route. See [the routes
+documentation](./Routes.md#custom-log-level).
+
 #### Basic Logging Setup
 The following enables the production JSON logger:
 

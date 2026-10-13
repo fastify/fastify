@@ -85,6 +85,30 @@ test('Should handle properly requestIdHeader option', t => {
   t.assert.strictEqual(Fastify({ requestIdHeader: 'x-request-id' }).initialConfig.requestIdHeader, 'x-request-id')
 })
 
+test('Should expose the genReqId function via the getter', (t, done) => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  t.assert.strictEqual(typeof fastify.genReqId, 'function')
+  t.assert.strictEqual(typeof fastify.genReqId({ headers: {} }), 'string')
+
+  const custom = function (req) {
+    return 'custom'
+  }
+
+  fastify.register(function (instance, opts, next) {
+    instance.setGenReqId(custom)
+    t.assert.strictEqual(instance.genReqId(), 'custom')
+    next()
+  })
+
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    t.assert.notStrictEqual(fastify.genReqId, custom)
+    done()
+  })
+})
+
 test('Should accept option to set genReqId with setGenReqId option', (t, done) => {
   t.plan(9)
 

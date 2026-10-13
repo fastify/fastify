@@ -1,9 +1,12 @@
 'use strict'
 
 const { test } = require('node:test')
+const { spyWarning } = require('process-warning')
+const { Readable } = require('node:stream')
 const Fastify = require('..')
 const keys = require('../lib/symbols')
 const { FST_ERR_CTP_ALREADY_PRESENT, FST_ERR_CTP_INVALID_TYPE, FST_ERR_CTP_INVALID_MEDIA_TYPE } = require('../lib/errors')
+const { FSTSEC001 } = require('../lib/warnings')
 
 const first = function (req, payload, done) {}
 const second = function (req, payload, done) {}
@@ -488,41 +491,37 @@ test('Safeguard against content-type spoofing - string', async t => {
 })
 
 test('Warning against improper content-type - regexp', async t => {
-  await t.test('improper regex - text plain', (t, done) => {
+  await t.test('improper regex - text plain', async (t) => {
     t.plan(2)
-    const fastify = Fastify()
+    const spyData = spyWarning(FSTSEC001)
+    t.after(spyData.restore)
 
-    process.on('warning', onWarning)
-    function onWarning (warning) {
-      t.assert.strictEqual(warning.name, 'FastifySecurity')
-      t.assert.strictEqual(warning.code, 'FSTSEC001')
-      done()
-    }
-    t.after(() => process.removeListener('warning', onWarning))
+    const fastify = Fastify()
 
     fastify.removeAllContentTypeParsers()
     fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
       done(null, body)
     })
+
+    await fastify.ready()
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['text\\/plain'], result: true }])
+    t.assert.strictEqual(spyData.callCount(), 1)
   })
 
-  await t.test('improper regex - application json', (t, done) => {
+  await t.test('improper regex - application json', async (t) => {
     t.plan(2)
+    const spyData = spyWarning(FSTSEC001)
+    t.after(spyData.restore)
     const fastify = Fastify()
-
-    process.on('warning', onWarning)
-    function onWarning (warning) {
-      t.assert.strictEqual(warning.name, 'FastifySecurity')
-      t.assert.strictEqual(warning.code, 'FSTSEC001')
-      done()
-    }
-    t.after(() => process.removeListener('warning', onWarning))
 
     fastify.removeAllContentTypeParsers()
 
     fastify.addContentTypeParser(/application\/json/, function (request, body, done) {
       done(null, body)
     })
+
+    t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['application\\/json'], result: true }])
+    t.assert.deepEqual(spyData.callCount(), 1)
   })
 })
 
@@ -576,6 +575,38 @@ test('content-type match parameters - regexp', async t => {
     },
     body: ''
   })
+})
+
+test('content-type match - RegExp with global flag', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.addContentTypeParser(/^application\/.+\+xml$/g, { parseAs: 'string' }, function (request, body, done) {
+    done(null, body)
+  })
+
+  fastify.post('/', async (request) => request.body)
+
+  // Two distinct content types that both match the parser. A RegExp with the
+  // `g` flag keeps a mutable lastIndex between test() calls, so the second
+  // content type must still match rather than fall through to 415.
+  const first = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: { 'content-type': 'application/vnd.a+xml' },
+    body: '<a/>'
+  })
+  const second = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: { 'content-type': 'application/vnd.b+xml' },
+    body: '<b/>'
+  })
+
+  t.assert.strictEqual(first.statusCode, 200)
+  t.assert.strictEqual(first.payload, '<a/>')
+  t.assert.strictEqual(second.statusCode, 200)
+  t.assert.strictEqual(second.payload, '<b/>')
 })
 
 test('content-type fail when parameters not match - string 1', async t => {
@@ -736,4 +767,63 @@ test('content-type fail when not a valid type', async t => {
   } catch (error) {
     t.assert.equal(error.message, 'The content type should be a string or a RegExp')
   }
+})
+
+test('string body keeps multi-byte characters split across chunks', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  const encoded = Buffer.from(JSON.stringify({ hello: 'wörld ✓ 😀' }))
+
+  fastify.addHook('preParsing', async () => {
+    // Emit one byte per chunk so every multi-byte character is split
+    return Readable.from(Array.from(encoded, byte => Buffer.from([byte])), { objectMode: false })
+  })
+  fastify.post('/', async (request) => request.body)
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'application/json' },
+    payload: encoded
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.deepStrictEqual(res.json(), { hello: 'wörld ✓ 😀' })
+})
+
+test('string body accepts string chunks from a preParsing stream', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (request, reply, payload) => {
+    payload.setEncoding('utf8')
+    return payload
+  })
+  fastify.post('/', async (request) => request.body)
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'text/plain' },
+    payload: 'hellö'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.body, 'hellö')
+})
+
+test('string body with invalid UTF-8 is not treated as a content-length mismatch', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.post('/', async (request) => request.body)
+
+  const res = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'text/plain' },
+    payload: Buffer.from([0x61, 0xff, 0x62])
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.body, 'a�b')
 })

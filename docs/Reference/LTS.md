@@ -60,7 +60,8 @@ For more information, see the [Never Ending Support][hd-link] service offered.
 | 2.0.0   | 2019-02-25   | 2021-01-31      | 6, 8, 10, 12, 14   |                |
 | 3.0.0   | 2020-07-07   | 2023-06-30      | 10, 12, 14, 16, 18 | v5(18)         |
 | 4.0.0   | 2022-06-08   | 2025-06-30      | 14, 16, 18, 20, 22 | v5(18), v5(20) |
-| 5.0.0   | 2024-09-17   | TBD             | 20, 22             | v5(20)         |
+| 5.0.0   | 2024-09-17   | TBD             | 20, 22, 24, 26     | v5(20)         |
+| 6.0.0   | TDB          | TBD             | 24, 26             | v6(24)         |
 
 ### CI Tested Operating Systems
 <a id="supported-os"></a>
@@ -73,10 +74,10 @@ YAML workflow labels below:
 
 | OS      | YAML Workflow Label | Package Manager | Node.js     | Nsolid(Node)  |
 | ------- | ------------------- | --------------- | ----------- | ------------- |
-| Linux   | `ubuntu-latest`     | npm             | 20          | v5(20)        |
-| Linux   | `ubuntu-latest`     | yarn,pnpm       | 20          | v5(20)        |
-| Windows | `windows-latest`    | npm             | 20          | v5(20)        |
-| MacOS   | `macos-latest`      | npm             | 20          | v5(20)        |
+| Linux   | `ubuntu-latest`     | npm             | 24          | v6(24)        |
+| Linux   | `ubuntu-latest`     | yarn,pnpm       | 24          | v6(24)        |
+| Windows | `windows-latest`    | npm             | 24          | v6(24)        |
+| MacOS   | `macos-latest`      | npm             | 24          | v6(24)        |
 
 When using [yarn](https://yarnpkg.com/), the `--ignore-engines` flag may be required.
 

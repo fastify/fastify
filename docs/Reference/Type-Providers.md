@@ -34,10 +34,10 @@ $ npm i @fastify/type-provider-json-schema-to-ts
 ```
 
 ```typescript
-import fastify from 'fastify'
+import Fastify from 'fastify'
 import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
 
-const server = fastify().withTypeProvider<JsonSchemaToTsProvider>()
+const server = Fastify().withTypeProvider<JsonSchemaToTsProvider>()
 
 server.get('/route', {
   schema: {
@@ -86,11 +86,11 @@ $ npm i typebox @fastify/type-provider-typebox
 ```
 
 ```typescript
-import fastify from 'fastify'
+import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from 'typebox'
 
-const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
+const server = Fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
   schema: {

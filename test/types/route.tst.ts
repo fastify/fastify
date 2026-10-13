@@ -1,5 +1,5 @@
-import * as http from 'node:http'
 import { FastifyError } from '@fastify/error'
+import * as http from 'node:http'
 import { expect } from 'tstyche'
 import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify.js'
 import { RequestPayload } from '../../types/hooks.js'
@@ -58,6 +58,15 @@ const asyncPreHandler = async (request: FastifyRequest) => {
 
 fastify().get('/', { preHandler: asyncPreHandler }, async () => 'this is an example')
 
+fastify().route({
+  method: 'GET',
+  url: '/',
+  onRequest: async function () {
+    expect(this).type.toBe<FastifyInstance>()
+  },
+  handler: async () => 'ok'
+})
+
 fastify().get(
   '/',
   { config: { foo: 'bar', bar: 100, includeMessage: true } },
@@ -75,10 +84,10 @@ fastify().get(
 )
 
 type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put' |
-  'options' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
+  'options' | 'query' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
   'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'
 
-  ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'PROPFIND',
+  ;['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS', 'QUERY', 'PROPFIND',
   'PROPPATCH', 'MKCOL', 'COPY', 'MOVE', 'LOCK', 'UNLOCK', 'TRACE', 'SEARCH', 'MKCALENDAR', 'REPORT'
 ].forEach(method => {
   // route method
@@ -495,6 +504,12 @@ expect(fastify().hasRoute({
   method: 'GET'
 })).type.toBe<boolean>()
 
+fastify().hasRoute({
+  url: '/',
+  // @ts-expect-error  Type 'string[]' is not assignable to type 'HTTPMethods'.
+  method: ['GET', 'POST']
+})
+
 expect(fastify().hasRoute({
   url: '/',
   method: 'GET',
@@ -538,6 +553,12 @@ expect(
     method: 'get'
   })
 ).type.toBe<Omit<FindMyWayFindResult<RawServerDefault>, 'store'>>()
+
+fastify().findRoute({
+  url: '/',
+  // @ts-expect-error  Type 'string[]' is not assignable to type 'HTTPMethods'.
+  method: ['GET', 'POST']
+})
 
 // we should not expose store
 expect(fastify().findRoute({

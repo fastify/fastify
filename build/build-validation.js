@@ -46,6 +46,7 @@ const defaultInitOptions = {
   useSemicolonDelimiter: false,
   allowErrorHandlerOverride: true, // TODO: set to false in v6
   routerOptions: {
+    compile: false,
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,
     maxParamLength: 100,
@@ -115,6 +116,7 @@ const schema = {
       type: 'object',
       additionalProperties: true,
       properties: {
+        compile: { type: 'boolean', default: defaultInitOptions.routerOptions.compile },
         ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreTrailingSlash },
         ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.routerOptions.ignoreDuplicateSlashes },
         maxParamLength: { type: 'integer', default: defaultInitOptions.routerOptions.maxParamLength },

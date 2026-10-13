@@ -97,6 +97,7 @@ declare namespace fastify {
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
   export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser'> & {
+    compile?: boolean,
     defaultRoute?: (
       req: RawRequestDefaultExpression<RawServer>,
       res: RawReplyDefaultExpression<RawServer>

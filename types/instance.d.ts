@@ -697,6 +697,7 @@ export interface FastifyInstance<
     bodyLimit?: number,
     caseSensitive?: boolean,
     allowUnsafeRegex?: boolean,
+    strictContentTypeHeaderValidation?: boolean,
     http2?: boolean,
     https?: boolean | Readonly<{ allowHTTP1: boolean }>,
     ignoreTrailingSlash?: boolean,

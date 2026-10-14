@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '6.0.0-alpha.4'
+const VERSION = '6.0.0-alpha.5'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -381,6 +381,13 @@ function fastify (serverOptions) {
 
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
+    // All the routes are registered at this point. Routes added or removed
+    // afterwards make find-my-way compile the changed trees again lazily.
+    if (options.routerOptions.compile === true) {
+      router.compileRoutes()
+      fourOhFour.router.compile()
+    }
+
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()

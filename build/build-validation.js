@@ -41,6 +41,7 @@ const defaultInitOptions = {
   routerOptions: {
     allowUnsafeRegex: false,
     caseSensitive: true,
+    compile: false,
     ignoreTrailingSlash: false,
     ignoreDuplicateSlashes: false,
     maxParamLength: 100,
@@ -104,6 +105,7 @@ const schema = {
       properties: {
         allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.routerOptions.allowUnsafeRegex },
         caseSensitive: { type: 'boolean', default: defaultInitOptions.routerOptions.caseSensitive },
+        compile: { type: 'boolean', default: defaultInitOptions.routerOptions.compile },
         constraints: {
           type: 'object',
           additionalProperties: {

@@ -1,9 +1,10 @@
 'use strict'
 
 const { test } = require('node:test')
+const { request: httpRequest } = require('node:http')
 const net = require('node:net')
 const Fastify = require('..')
-const { Readable } = require('node:stream')
+const { PassThrough, Readable } = require('node:stream')
 const { kTimeoutTimer, kOnAbort } = require('../lib/symbols')
 const { setTimeout: sleep } = require('node:timers/promises')
 
@@ -92,6 +93,243 @@ test('client disconnect aborts lazily created signal (no handlerTimeout)', async
 })
 
 // --- Basic timeout behavior ---
+
+test('lazy request.signal aborts on disconnect during a POST response', { timeout: 3000 }, async t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  const stream = new PassThrough()
+  const responseClosed = Promise.withResolvers()
+  let capturedRequest
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    const signal = request.signal
+    t.assert.strictEqual(request.raw.complete, true)
+    t.assert.strictEqual(signal.aborted, false)
+    reply.raw.once('close', responseClosed.resolve)
+    stream.write('ready\n')
+    return reply.send(stream)
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const client = httpRequest(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' }
+  }, response => {
+    response.once('data', () => client.destroy())
+  })
+  client.on('error', () => {})
+  t.after(async () => {
+    client.destroy()
+    stream.destroy()
+    fastify.server.closeAllConnections()
+    await fastify.close()
+  })
+  client.end('{}')
+
+  await responseClosed.promise
+
+  t.assert.strictEqual(capturedRequest.raw.aborted, false)
+  t.assert.strictEqual(capturedRequest.signal.aborted, true)
+  t.assert.strictEqual(capturedRequest[kOnAbort], null)
+})
+
+test('lazy request.signal aborts when the closed request was aborted', async t => {
+  const fastify = Fastify()
+  let capturedSignal
+
+  fastify.get('/', async request => {
+    capturedSignal = request.signal
+    request.raw.aborted = true
+    request.raw.emit('close')
+    return 'ok'
+  })
+
+  const response = await fastify.inject('/')
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(capturedSignal.aborted, true)
+})
+
+test('lazy request.signal ignores a completed request close while the response is streaming', { timeout: 3000 }, async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  const stream = new PassThrough()
+  const requestClosed = Promise.withResolvers()
+  let capturedRequest
+  let capturedSignal
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    capturedSignal = request.signal
+    request.raw.once('close', requestClosed.resolve)
+    stream.write('ready\n')
+    return reply.send(stream)
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  t.after(async () => {
+    stream.destroy()
+    fastify.server.closeAllConnections()
+    await fastify.close()
+  })
+
+  const responsePromise = fetch(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{}'
+  }).then(response => response.text())
+
+  await requestClosed.promise
+  t.assert.strictEqual(capturedRequest.raw.aborted, false)
+  t.assert.strictEqual(capturedSignal.aborted, false)
+  stream.end('done')
+  await responsePromise
+})
+
+test('lazy request.signal cleans up after a successful POST response', async t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  const responseClosed = Promise.withResolvers()
+  let capturedRequest
+  let capturedReply
+  let requestCloseListeners
+  let responseCloseListeners
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    capturedReply = reply
+    requestCloseListeners = request.raw.listenerCount('close')
+    responseCloseListeners = reply.raw.listenerCount('close')
+    t.assert.strictEqual(request.signal.aborted, false)
+    reply.raw.once('close', responseClosed.resolve)
+    return 'ok'
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  t.after(() => fastify.close())
+  const response = await fetch(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{}'
+  })
+  await response.text()
+  await responseClosed.promise
+
+  t.assert.strictEqual(capturedRequest.signal.aborted, false)
+  t.assert.strictEqual(capturedRequest[kOnAbort], null)
+  t.assert.strictEqual(capturedRequest.raw.listenerCount('close'), requestCloseListeners)
+  t.assert.strictEqual(capturedReply.raw.listenerCount('close'), responseCloseListeners)
+})
+
+test('hijacking removes lazy request.signal listeners', async t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.get('/', async (request, reply) => {
+    const requestCloseListeners = request.raw.listenerCount('close')
+    const responseCloseListeners = reply.raw.listenerCount('close')
+    const signal = request.signal
+    t.assert.strictEqual(request.raw.listenerCount('close'), requestCloseListeners + 1)
+    t.assert.strictEqual(reply.raw.listenerCount('close'), responseCloseListeners + 1)
+    reply.hijack()
+    t.assert.strictEqual(request.raw.listenerCount('close'), requestCloseListeners)
+    t.assert.strictEqual(reply.raw.listenerCount('close'), responseCloseListeners)
+    t.assert.strictEqual(signal.aborted, false)
+    reply.raw.end('ok')
+  })
+
+  const response = await fastify.inject('/')
+  t.assert.strictEqual(response.payload, 'ok')
+})
+
+test('lazy request.signal handles a response that already disconnected', { timeout: 3000 }, async t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+  const stream = new PassThrough()
+  const responseClosed = Promise.withResolvers()
+  let capturedRequest
+  let capturedReply
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    capturedReply = reply
+    t.assert.strictEqual(request.raw.complete, true)
+    reply.raw.once('close', responseClosed.resolve)
+    stream.write('ready\n')
+    return reply.send(stream)
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  const client = httpRequest(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' }
+  }, response => {
+    response.once('data', () => client.destroy())
+  })
+  client.on('error', () => {})
+  t.after(async () => {
+    client.destroy()
+    stream.destroy()
+    fastify.server.closeAllConnections()
+    await fastify.close()
+  })
+  client.end('{}')
+
+  await responseClosed.promise
+  const requestCloseListeners = capturedRequest.raw.listenerCount('close')
+  const responseCloseListeners = capturedReply.raw.listenerCount('close')
+
+  t.assert.strictEqual(capturedReply.raw.writableFinished, false)
+  t.assert.strictEqual(capturedRequest.raw.aborted, false)
+  t.assert.strictEqual(capturedRequest.signal.aborted, true)
+  t.assert.strictEqual(capturedRequest[kOnAbort], null)
+  t.assert.strictEqual(capturedRequest.raw.listenerCount('close'), requestCloseListeners)
+  t.assert.strictEqual(capturedReply.raw.listenerCount('close'), responseCloseListeners)
+})
+
+test('lazy request.signal handles a response that already finished', { timeout: 3000 }, async t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+  const responseClosed = Promise.withResolvers()
+  let capturedRequest
+  let capturedReply
+
+  fastify.post('/', async (request, reply) => {
+    capturedRequest = request
+    capturedReply = reply
+    t.assert.strictEqual(request.raw.complete, true)
+    reply.raw.once('close', responseClosed.resolve)
+    return 'ok'
+  })
+
+  const address = await fastify.listen({ port: 0, host: '127.0.0.1' })
+  t.after(async () => {
+    fastify.server.closeAllConnections()
+    await fastify.close()
+  })
+  const response = await fetch(address, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{}'
+  })
+  await response.text()
+  await responseClosed.promise
+  const requestCloseListeners = capturedRequest.raw.listenerCount('close')
+  const responseCloseListeners = capturedReply.raw.listenerCount('close')
+
+  t.assert.strictEqual(capturedReply.raw.writableFinished, true)
+  t.assert.strictEqual(capturedRequest.raw.aborted, false)
+  t.assert.strictEqual(capturedRequest.signal.aborted, false)
+  t.assert.strictEqual(capturedRequest[kOnAbort], null)
+  t.assert.strictEqual(capturedRequest.raw.listenerCount('close'), requestCloseListeners)
+  t.assert.strictEqual(capturedReply.raw.listenerCount('close'), responseCloseListeners)
+})
 
 test('slow handler returns 503 with FST_ERR_HANDLER_TIMEOUT', async t => {
   t.plan(2)

@@ -587,6 +587,29 @@ function fastify (serverOptions) {
       throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
     }
 
+    if (name === 'onClose') {
+      if (typeof fn !== 'function') {
+        if (typeof fn[Symbol.asyncDispose] === 'function') {
+          const disposable = fn
+          fn = async function () {
+            await disposable[Symbol.asyncDispose]()
+          }
+        } else if (typeof fn[Symbol.dispose] === 'function') {
+          const disposable = fn
+          fn = function (instance, done) {
+            try {
+              disposable[Symbol.dispose]()
+              done()
+            } catch (err) {
+              done(err)
+            }
+          }
+        } else {
+          throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, Object.prototype.toString.call(fn))
+        }
+      }
+    }
+
     if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()

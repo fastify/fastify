@@ -41,6 +41,7 @@ describes the properties available in that options object.
     - [`allowUnsafeRegex`](#allowunsaferegex)
     - [`buildPrettyMeta`](#buildprettymeta)
     - [`caseSensitive`](#casesensitive)
+    - [`compile`](#compile)
     - [`constraints`](#constraints)
     - [`defaultRoute`](#defaultroute)
     - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
@@ -213,7 +214,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
+property](https://nodejs.org/dist/latest/docs/api/http.html#serverrequesttimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -920,6 +921,36 @@ fastify.get('/user/:username', (request, reply) => {
 })
 ```
 
+### `compile`
+<a id="compile"></a>
+
++ Default: `false`
+
+When `true`, Fastify calls the
+[`compile()`](https://github.com/delvedor/find-my-way#compiler-mode) method of
+`find-my-way` once all the routes are registered, right before the
+[`onReady`](./Hooks.md#onready) hooks run. This applies to both the main
+router and the router used for [not found handlers](#set-not-found-handler).
+Each HTTP method's routing tree is
+turned into generated JavaScript instead of being walked for every request,
+which makes route lookups faster. Matching semantics are the same as with the
+default tree walk.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    compile: true
+  }
+})
+```
+
+Keep in mind that:
+
++ the compiled matcher works on the raw request URL; URLs containing
+  percent-encoded characters fall back to the decoded path and are not faster;
++ every route generates its own code, so applications with thousands of routes
+  produce a large amount of JavaScript, which needs to warm up per route.
+
 ### `constraints`
 <a id="constraints"></a>
 
@@ -1046,7 +1077,7 @@ be invoked.
 
 This can be useful especially if you have a regex-based route, protecting you
 against [ReDoS
-attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
 
 
 ### `onBadUrl`
@@ -2382,6 +2413,7 @@ The properties that can currently be exposed are:
   - allowUnsafeRegex
   - buildPrettyMeta
   - caseSensitive
+  - compile
   - constraints
   - defaultRoute
   - ignoreDuplicateSlashes

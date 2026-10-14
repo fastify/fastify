@@ -3,7 +3,7 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 const { spyWarning } = require('process-warning')
-const { FSTWRN001, FSTSEC002 } = require('../lib/warnings')
+const { FSTWRN001, FSTSEC002, FSTSEC003 } = require('../lib/warnings')
 const { AjvCompiler } = require('@fastify/ajv-compiler')
 const { SerializerSelector } = require('@fastify/fast-json-stringify-compiler')
 
@@ -373,6 +373,28 @@ test('lazy mode: FSTSEC002 for an external header $ref is still emitted at regis
   fastify.post('/warn', { schema: { headers: { $ref: 'http://example.com/lazy-headers#' } } }, async () => ({}))
   await fastify.ready()
   t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['POST', '/warn', 'http://example.com/lazy-headers#'], result: true }])
+  const res = await fastify.inject({ method: 'POST', url: '/warn', payload: {} })
+  t.assert.strictEqual(res.statusCode, 200)
+  // compiling the route at the first request does not warn a second time
+  t.assert.strictEqual(spyData.callCount(), 1)
+})
+
+test('lazy mode: FSTSEC003 for a $ref inside header propertyNames is still emitted at registration', async t => {
+  t.plan(3)
+  const spyData = spyWarning(FSTSEC003)
+  t.after(spyData.restore)
+  const fastify = Fastify({ lazySchemaCompilation: true })
+  fastify.post('/warn', {
+    schema: {
+      headers: {
+        type: 'object',
+        propertyNames: { $ref: '#/definitions/denied' },
+        definitions: { denied: { not: { enum: ['X-Debug-Override'] } } }
+      }
+    }
+  }, async () => ({}))
+  await fastify.ready()
+  t.assert.deepStrictEqual(spyData.calls, [{ arguments: ['POST', '/warn', '#/definitions/denied'], result: true }])
   const res = await fastify.inject({ method: 'POST', url: '/warn', payload: {} })
   t.assert.strictEqual(res.statusCode, 200)
   // compiling the route at the first request does not warn a second time

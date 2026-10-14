@@ -39,5 +39,8 @@ This table of contents is in alphabetical order.
   Fastify documentation for those who want to contribute documentation.
 + [Testing](./Testing.md): Explains how to write unit tests for Fastify
   applications.
++ [Webhook Signature Verification](./Webhook-Verification.md): Explains how to
+  verify cryptographic webhook signatures efficiently using route-scoped content
+  type parsers without global overhead.
 + [Write Plugin](./Write-Plugin.md): A set of guidelines for what the Fastify
   team considers good practices for writing a Fastify plugin.

@@ -361,5 +361,9 @@ fastify({ routerOptions: { allowUnsafeRegex: true } })
 fastify({ routerOptions: { allowUnsafeRegex: false } })
 expect(fastify).type.not.toBeCallableWith({ routerOptions: { allowUnsafeRegex: 'invalid' } })
 
+fastify({ routerOptions: { compile: true } })
+fastify({ routerOptions: { compile: false } })
+expect(fastify).type.not.toBeCallableWith({ routerOptions: { compile: 'invalid' } })
+
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

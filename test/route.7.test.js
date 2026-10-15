@@ -136,6 +136,47 @@ test('HEAD route should be exposed by default', async t => {
   t.assert.strictEqual(res.body, '')
 })
 
+test('explicit HEAD route should not include a body in inject', async t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.route({
+    method: 'HEAD',
+    url: '/explicit-head',
+    handler: (req, reply) => {
+      reply.send({ secret: 'must-not-leak' })
+    }
+  })
+
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/explicit-head'
+  })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.body, '')
+  t.assert.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+  t.assert.ok(Number(res.headers['content-length']) > 0)
+})
+
+test('HEAD on unknown route should not include a body in inject', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  await fastify.ready()
+
+  const res = await fastify.inject({
+    method: 'HEAD',
+    url: '/this-route-does-not-exist'
+  })
+
+  t.assert.strictEqual(res.statusCode, 404)
+  t.assert.strictEqual(res.body, '')
+})
+
 test('HEAD route should be exposed if route exposeHeadRoute is set', async t => {
   t.plan(5)
 

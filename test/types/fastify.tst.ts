@@ -367,3 +367,5 @@ expect(fastify).type.not.toBeCallableWith({ routerOptions: { compile: 'invalid' 
 
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ lazySchemaCompilation: true })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({ lazySchemaCompilation: false })).type.toBeAssignableTo<FastifyInstance>()

@@ -278,8 +278,9 @@ fields are emitted as structured log fields, as described in the [Cloud
 Logging structured logging documentation](https://docs.cloud.google.com/logging/docs/structured-logging)
 and the [Cloud Run logging guide](https://docs.cloud.google.com/run/docs/logging).
 In Cloud Logging, create a [log-based
-metric](https://docs.cloud.google.com/logging/docs/logs-based-metrics) or filter on
-`jsonPayload.route` to get per-route request counts, latency, and error rates.
+metric](https://docs.cloud.google.com/logging/docs/logs-based-metrics)
+or filter on `jsonPayload.route` to get per-route request counts, latency, and
+error rates.
 
 The same hook works when deploying through Firebase Functions with `onRequest`.
 

@@ -278,8 +278,11 @@ as soon as possible.
 
 > ℹ️ Note:
 > For HTTP/1 responses, the header `Transfer-Encoding: chunked` will be added
-> once you use a trailer. HTTP/2 does not use chunked transfer encoding and
-> sends trailers using its native trailing headers support.
+> once you use a trailer, and any `Content-Length` header is removed: a message
+> must not carry both `Content-Length` and `Transfer-Encoding` ([RFC 9110
+> §6.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-6.1)). HTTP/2 does
+> not use chunked transfer encoding and sends trailers using its native
+> trailing headers support.
 
 > ℹ️ Note:
 > Any error passed to `done` callback will be ignored. If you are interested

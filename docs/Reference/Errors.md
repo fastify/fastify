@@ -12,6 +12,7 @@
     - [Errors In Input Data](#errors-in-input-data)
     - [Catching Uncaught Errors In Fastify](#catching-uncaught-errors-in-fastify)
     - [What The Default Error Handler Sends](#what-the-default-error-handler-sends)
+    - [Properties Fastify Sets On Errors](#properties-fastify-sets-on-errors)
   - [Errors In Fastify Lifecycle Hooks And A Custom Error Handler](#errors-in-fastify-lifecycle-hooks-and-a-custom-error-handler)
   - [Fastify Error Codes](#fastify-error-codes)
     - [FST_ERR_NOT_FOUND](#fst_err_not_found)
@@ -219,6 +220,29 @@ Note that a route-level response schema is still applied to whatever the error
 handler sends, and will reshape the payload accordingly — including properties
 the built-in error serializer would have omitted, such as `stack`. See
 [Serialization](./Validation-and-Serialization.md#serialization).
+
+#### Properties Fastify Sets On Errors
+In a few places Fastify writes properties directly onto an error object before
+passing it to the error handler. The object may have been created by
+application code, such as a custom validator, a `schemaErrorFormatter`, a
+`preParsing` stream, or a custom serializer, so a property with the same name
+set by that code can be overwritten.
+
+| Where the error comes from | Property | When it is set |
+|---|---|---|
+| Request validation | `statusCode` | Set to `400` if not already set |
+| Request validation | `code` | Set to `'FST_ERR_VALIDATION'` if not already set |
+| Request validation | `validationContext` | Always set to `'body'`, `'params'`, `'querystring'` or `'headers'`, unless the validator returned an `Error`, which keeps its own value |
+| Request validation | `validation` | Always set to the raw validation result, unless the validator returned an `Error`, which does not get this property |
+| A validator that throws | `statusCode` | Always set to `500` |
+| Reading the request body | `statusCode` | Set to `400` unless it is already a number of `400` or more |
+| Response serialization | `serialization` | Always set to the route's `config` |
+
+A validator that throws is then handled like a validator that returned an
+`Error`, so it also receives `code` and `validationContext` as described above.
+
+Custom errors that can reach one of these code paths should not rely on these
+property names.
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 

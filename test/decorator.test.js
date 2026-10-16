@@ -1328,3 +1328,29 @@ test('Request.setDecorator should update an existing decorator', (t, done) => {
     })
   })
 })
+
+test('empty-name instance decorators can be dependencies', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.decorate('', 1)
+  fastify.decorate('dependent', 2, [''])
+  t.assert.strictEqual(fastify.getDecorator('dependent'), 2)
+})
+
+for (const [decorate, has, target] of [
+  ['decorateRequest', 'hasRequestDecorator', 'request'],
+  ['decorateReply', 'hasReplyDecorator', 'reply']
+]) {
+  test(`${target} decorators can use an empty name`, async t => {
+    const fastify = Fastify()
+    t.after(() => fastify.close())
+    fastify[decorate]('', 1)
+    fastify[decorate]('dependent', 2, [''])
+    t.assert.strictEqual(fastify[has](''), true)
+    fastify.get('/', async (request, reply) => {
+      t.assert.strictEqual((target === 'request' ? request : reply).getDecorator(''), 1)
+      return 'ok'
+    })
+    t.assert.strictEqual((await fastify.inject('/')).body, 'ok')
+  })
+}

@@ -485,6 +485,10 @@ export interface FastifyInstance<
   /**
   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
   */
+  addHook(
+    name: 'onClose',
+    hook: AsyncDisposable | Disposable,
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   addHook<
     Fn extends onCloseHookHandler | onCloseAsyncHookHandler = onCloseHookHandler
   >(

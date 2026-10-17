@@ -488,6 +488,13 @@ fastify.addHook('onClose', async (instance) => {
   // Some async code
   await closeDatabaseConnections()
 })
+
+// or disposable object style (Explicit Resource Management)
+fastify.addHook('onClose', {
+  async [Symbol.asyncDispose] () {
+    await closeDatabaseConnections()
+  }
+})
 ```
 
 #### Execution order

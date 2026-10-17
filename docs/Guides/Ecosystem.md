@@ -191,8 +191,9 @@ section.
   Tiny (~5k), Fast, KISS, and dependency-free Node.js library to make your
   Fastify API graceful.
 - [`@guardcore/fastify`](https://github.com/Guard-Core/guard-core-ts/tree/master/packages/fastify)
-  Security plugin with IP allow and deny lists, rate limiting with automatic
-  bans and penetration attempt detection.
+  Application-layer security plugin: request attack detection, IP and country
+  controls, bans, behavior rules, honeypots, security headers and per-route
+  decorators.
 - [`@h4ad/serverless-adapter`](https://github.com/H4ad/serverless-adapter)
   Run REST APIs and other web applications using your existing Node.js
   application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda,

@@ -63,15 +63,18 @@ Request is a core Fastify object containing the following fields:
   header is missing, it will return `undefined`.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
-- `signal` - An `AbortSignal` that aborts when the handler timeout
-  fires or the client disconnects. Created lazily on first access, so
-  there is zero overhead when not used. When
-  [`handlerTimeout`](./Server.md#factory-handler-timeout) is configured,
-  the signal is pre-created and also aborts on timeout. Pass it to
-  `fetch()`, database queries, or any API accepting a `signal` option
-  for cooperative cancellation. On timeout, `signal.reason` is the
-  `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
-  `AbortError`. Check `signal.reason.code` to distinguish the two cases.
+- `signal` - An `AbortSignal` that aborts when the handler timeout fires or the
+  response is interrupted. Normal request body and response completion do not
+  abort it. The signal is created on first access, when
+  [`handlerTimeout`](./Server.md#factory-handler-timeout) is configured, or when
+  an interruption is detected. Response interruption is observed even if the
+  signal has not been accessed; reading it after interruption handling returns
+  an aborted signal. Pass it to `fetch()`, database queries, or any API accepting
+  a `signal` option for cooperative cancellation. On timeout, `signal.reason`
+  is the `FST_ERR_HANDLER_TIMEOUT` error; on interruption it is an `AbortError`.
+  Check `signal.reason.code` to distinguish the two cases. The first abort reason
+  is preserved. Calling [`reply.hijack()`](./Reply.md#hijack) stops cancellation
+  handling without aborting the signal or changing an existing abort.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
   - `bodyLimit` - Either server limit or route limit.
   - `handlerTimeout` - The handler timeout configured for this route.

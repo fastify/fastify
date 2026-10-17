@@ -197,7 +197,7 @@ If you learn best by reading code, explore the official [demo](https://github.co
 
 ### Benchmarks
 
-__Machine:__ EX41S-SSD, Intel Core i7, 4Ghz, 64GB RAM, 4C/8T, SSD.
+__Machine:__ EX41S-SSD, Intel Core i7, 4GHz, 64GB RAM, 4C/8T, SSD.
 
 __Method__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the
 second average

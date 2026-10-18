@@ -125,26 +125,30 @@ server.addHook('onRequestAbort', function (request, done) {
   expect(done(new Error())).type.toBe<void>()
 })
 
-server.addHook('onRoute', function (opts) {
+server.addHook('onRoute', function (instance, opts) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
   expect(opts).type.toBe<RouteOptions & { routePath: string; path: string; prefix: string }>()
 })
 
-server.addHook('onRegister', function (instance, opts) {
+server.addHook('onRegister', function (instance, newInstance, options) {
   expect(this).type.toBe<FastifyInstance>()
   expect(instance).type.toBe<FastifyInstance>()
-  expect(opts).type.toBe<RegisterOptions & FastifyPluginOptions>()
+  expect(newInstance).type.toBe<FastifyInstance>()
+  expect(options).type.toBe<RegisterOptions & FastifyPluginOptions>()
 })
 
-server.addHook('onReady', function (done) {
+server.addHook('onReady', function (instance, done) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
   expect(done).type.toBeAssignableTo<(err?: FastifyError) => void>()
   expect(done).type.toBeAssignableTo<(err?: NodeJS.ErrnoException) => void>()
   expect(done(new Error())).type.toBe<void>()
 })
 
-server.addHook('onListen', function (done) {
+server.addHook('onListen', function (instance, done) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
   expect(done).type.toBeAssignableTo<(err?: FastifyError) => void>()
   expect(done).type.toBeAssignableTo<(err?: NodeJS.ErrnoException) => void>()
 })
@@ -222,17 +226,20 @@ server.addHook('onRequestAbort', async function (request) {
   expect(request).type.toBe<FastifyRequest>()
 })
 
-server.addHook('onRegister', async (instance, opts) => {
+server.addHook('onRegister', async (instance, newInstance, options) => {
   expect(instance).type.toBe<FastifyInstance>()
-  expect(opts).type.toBe<RegisterOptions & FastifyPluginOptions>()
+  expect(newInstance).type.toBe<FastifyInstance>()
+  expect(options).type.toBe<RegisterOptions & FastifyPluginOptions>()
 })
 
-server.addHook('onReady', async function () {
+server.addHook('onReady', async function (instance) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
 })
 
-server.addHook('onListen', async function () {
+server.addHook('onListen', async function (instance) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
 })
 
 server.addHook('onClose', async function (instance) {
@@ -528,25 +535,29 @@ server.get('/', {
 // server.get('/', { onTimeout: async (request, reply, done) => {} }, async (request, reply) => {})
 // server.get('/', { onError: async (request, reply, error, done) => {} }, async (request, reply) => {})
 
-server.addHook('preClose', function (done) {
+server.addHook('preClose', function (instance, done) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
   expect(done).type.toBeAssignableTo<(err?: FastifyError) => void>()
   expect(done).type.toBeAssignableTo<(err?: NodeJS.ErrnoException) => void>()
   expect(done(new Error())).type.toBe<void>()
 })
 
-const preCloseHandler: preCloseHookHandler = function (done) {
+const preCloseHandler: preCloseHookHandler = function (instance, done) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
   expect(done).type.toBe<HookHandlerDoneFunction>()
 }
 server.addHook('preClose', preCloseHandler)
 
-server.addHook('preClose', async function () {
+server.addHook('preClose', async function (instance) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
 })
 
-const preCloseAsyncHandler: preCloseAsyncHookHandler = async function () {
+const preCloseAsyncHandler: preCloseAsyncHookHandler = async function (instance) {
   expect(this).type.toBe<FastifyInstance>()
+  expect(instance).type.toBe<FastifyInstance>()
 }
 server.addHook('preClose', preCloseAsyncHandler)
 
@@ -555,9 +566,9 @@ server.addHook('onClose', async function (instance, done) {})
 // @ts-expect-error  No overload matches this call.
 server.addHook('onError', async function (request, reply, error, done) {})
 // @ts-expect-error  No overload matches this call.
-server.addHook('onReady', async function (done) {})
+server.addHook('onReady', async function (instance, done) {})
 // @ts-expect-error  No overload matches this call.
-server.addHook('onListen', async function (done) {})
+server.addHook('onListen', async function (instance, done) {})
 // @ts-expect-error  No overload matches this call.
 server.addHook('onRequest', async function (request, reply, done) {})
 // @ts-expect-error  No overload matches this call.
@@ -569,7 +580,7 @@ server.addHook('onSend', async function (request, reply, payload, done) {})
 // @ts-expect-error  No overload matches this call.
 server.addHook('onTimeout', async function (request, reply, done) {})
 // @ts-expect-error  No overload matches this call.
-server.addHook('preClose', async function (done) {})
+server.addHook('preClose', async function (instance, done) {})
 // @ts-expect-error  No overload matches this call.
 server.addHook('preHandler', async function (request, reply, done) {})
 // @ts-expect-error  No overload matches this call.

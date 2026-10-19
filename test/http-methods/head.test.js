@@ -161,6 +161,16 @@ test('missing schema - head', t => {
   }
 })
 
+fastify.get('/response', function () {
+  return new Response('hello world', {
+    status: 201,
+    headers: {
+      'content-type': 'text/plain',
+      'x-demo': 'yes'
+    }
+  })
+})
+
 test('head test', async t => {
   t.after(() => { fastify.close() })
   const fastifyServer = await fastify.listen({ port: 0 })
@@ -217,6 +227,19 @@ test('head test', async t => {
     })
     t.assert.ok(result.ok)
     t.assert.strictEqual(result.status, 200)
+  })
+
+  await t.test('auto-generated head route handles web Response payloads', async t => {
+    t.plan(6)
+    const get = await fetch(`${fastifyServer}/response`)
+    const head = await fetch(`${fastifyServer}/response`, { method: 'HEAD' })
+
+    t.assert.strictEqual(get.status, 201)
+    t.assert.strictEqual(get.headers.get('content-type'), 'text/plain')
+    t.assert.strictEqual(get.headers.get('x-demo'), 'yes')
+    t.assert.strictEqual(head.status, 201)
+    t.assert.strictEqual(head.headers.get('content-type'), 'text/plain')
+    t.assert.strictEqual(await head.text(), '')
   })
 
   await t.test('shorthand - request head custom head', async t => {

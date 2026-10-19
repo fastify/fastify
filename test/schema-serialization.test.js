@@ -1383,3 +1383,43 @@ test('response content-type matching */* still serialises when no exact content-
     testDone()
   })
 })
+
+test('error responses fall back to the default error serializer when the content map does not declare the error content type', (t, testDone) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  // The content map does not declare `application/json` and has no `*/*`
+  // catch-all, so the error handler must fall back to the default serializer
+  // instead of failing closed.
+  fastify.get('/', {
+    schema: {
+      response: {
+        default: {
+          content: {
+            'application/problem+json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    throw new Error('boom')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.deepStrictEqual(res.json(), {
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'boom'
+    })
+    testDone()
+  })
+})

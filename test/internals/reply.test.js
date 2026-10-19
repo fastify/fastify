@@ -1003,6 +1003,35 @@ test('reply can set multiple instances of same header', async t => {
   t.assert.deepStrictEqual(result.headers.getSetCookie(), ['one', 'two'])
 })
 
+test('reply.header does not mutate a set-cookie array passed by the caller', async t => {
+  t.plan(5)
+
+  const fastify = require('../../')()
+  const defaults = ['a=1']
+
+  fastify.get('/headers', function (req, reply) {
+    reply
+      .header('set-cookie', defaults)
+      .header('set-cookie', 'b=2')
+      .send({})
+  })
+
+  const fastifyServer = await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const first = await fetch(`${fastifyServer}/headers`)
+  t.assert.deepStrictEqual(first.headers.getSetCookie(), ['a=1', 'b=2'])
+  const second = await fetch(`${fastifyServer}/headers`)
+  t.assert.deepStrictEqual(second.headers.getSetCookie(), ['a=1', 'b=2'])
+  t.assert.deepStrictEqual(defaults, ['a=1'])
+
+  const reply = new Reply({ setHeader () {}, removeHeader () {} }, {}, {})
+  const cookies = ['one']
+  reply.header('set-cookie', cookies).header('set-cookie', 'two')
+  t.assert.deepStrictEqual(reply.getHeader('set-cookie'), ['one', 'two'])
+  t.assert.deepStrictEqual(cookies, ['one'])
+})
+
 test('reply.hasHeader returns correct values', async t => {
   t.plan(2)
 

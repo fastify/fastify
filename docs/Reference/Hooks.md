@@ -476,6 +476,12 @@ arrive.
 
 The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
+
+Alternatively, an object implementing `Symbol.asyncDispose` or
+`Symbol.dispose` can be registered as an `onClose` hook. Fastify invokes
+the appropriate disposal method when closing the server, allowing resources
+to be cleaned up using JavaScript's Explicit Resource Management protocol.
+
 ```js
 // callback style
 fastify.addHook('onClose', (instance, done) => {

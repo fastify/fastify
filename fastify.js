@@ -85,7 +85,7 @@ const initChannel = diagnostics.channel('fastify.initialization')
 
 function asyncDisposableHook (disposable) {
   return function (instance, done) {
-    disposable[Symbol.asyncDispose]().then(done, done)
+    disposable[Symbol.asyncDispose]().then(() => done(), done)
   }
 }
 

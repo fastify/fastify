@@ -79,6 +79,21 @@ test('addHook onClose propagates rejection from Symbol.asyncDispose', async t =>
   })
 })
 
+test('addHook onClose ignores fulfillment value from Symbol.asyncDispose', async t => {
+  const app = Fastify()
+
+  const resource = {
+    async [Symbol.asyncDispose] () {
+      return 'OK'
+    }
+  }
+
+  app.addHook('onClose', resource)
+  await app.ready()
+
+  await t.assert.doesNotReject(app.close())
+})
+
 test('addHook onClose propagates thrown error from Symbol.dispose', async t => {
   const app = Fastify()
   const customError = new Error('dispose sync failed')

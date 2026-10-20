@@ -56,8 +56,7 @@ test('can be created - propfind', t => {
                   <D:status>HTTP/1.1 200 OK</D:status>
                 </D:propstat>
               </D:response>
-            </D:multistatus>`
-          )
+            </D:multistatus>`)
       }
     })
     t.assert.ok(true)

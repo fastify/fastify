@@ -92,7 +92,7 @@ test('Will not create a HEAD route that is not GET', async t => {
 })
 
 test('HEAD route should handle properly each response type', async t => {
-  t.plan(24)
+  t.plan(28)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
   const resString = 'Found me!'
@@ -150,6 +150,17 @@ test('HEAD route should handle properly each response type', async t => {
     }
   })
 
+  fastify.route({
+    method: 'GET',
+    path: '/web-response',
+    handler: (req, reply) => {
+      return new Response(resString, {
+        status: 200,
+        headers: { 'x-demo': 'yes', 'content-type': 'text/plain' }
+      })
+    }
+  })
+
   let res = await fastify.inject({
     method: 'HEAD',
     url: '/json'
@@ -202,6 +213,15 @@ test('HEAD route should handle properly each response type', async t => {
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.strictEqual(res.headers['content-type'], undefined)
   t.assert.strictEqual(res.headers['content-length'], undefined)
+  t.assert.strictEqual(res.body, '')
+
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response'
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(res.headers['x-demo'], 'yes')
   t.assert.strictEqual(res.body, '')
 })
 

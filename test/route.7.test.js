@@ -404,3 +404,70 @@ test('HEAD route with body schema should throw - shorthand', t => {
     )
   }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for HEAD:/shouldThrow2 route is not supported!')())
 })
+
+test('HEAD route should mirror the status and headers of a web Response', async t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.send(new Response('hello world', {
+      status: 201,
+      headers: {
+        'content-type': 'text/plain',
+        'x-demo': 'yes'
+      }
+    }))
+  })
+
+  const get = await fastify.inject({ method: 'GET', path: '/' })
+  t.assert.strictEqual(get.statusCode, 201)
+  t.assert.strictEqual(get.headers['x-demo'], 'yes')
+
+  const head = await fastify.inject({ method: 'HEAD', path: '/' })
+  t.assert.strictEqual(head.statusCode, 201)
+  t.assert.strictEqual(head.headers['x-demo'], 'yes')
+  t.assert.strictEqual(head.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(head.body, '')
+
+  await fastify.close()
+})
+
+test('HEAD route should handle a web Response without a body', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.send(new Response(null, {
+      status: 200,
+      headers: {
+        'x-demo': 'yes'
+      }
+    }))
+  })
+
+  const head = await fastify.inject({ method: 'HEAD', path: '/' })
+  t.assert.strictEqual(head.statusCode, 200)
+  t.assert.strictEqual(head.headers['x-demo'], 'yes')
+  t.assert.strictEqual(head.headers['content-length'], '0')
+
+  await fastify.close()
+})
+
+test('HEAD route should not send content-length for a bodyless 204 web Response', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.send(new Response(null, { status: 204 }))
+  })
+
+  const head = await fastify.inject({ method: 'HEAD', path: '/' })
+  t.assert.strictEqual(head.statusCode, 204)
+  t.assert.strictEqual(head.headers['content-length'], undefined)
+  t.assert.strictEqual(head.body, '')
+
+  await fastify.close()
+})

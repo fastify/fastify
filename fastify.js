@@ -83,6 +83,23 @@ const { buildErrorHandler } = require('./lib/error-handler.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
 
+function asyncDisposableHook (disposable) {
+  return function (instance, done) {
+    disposable[Symbol.asyncDispose]().then(() => done(), done)
+  }
+}
+
+function disposableHook (disposable) {
+  return function (instance, done) {
+    try {
+      disposable[Symbol.dispose]()
+      done()
+    } catch (err) {
+      done(err)
+    }
+  }
+}
+
 /**
  * @param {import('./fastify.js').FastifyServerOptions} serverOptions
  */
@@ -602,6 +619,16 @@ function fastify (serverOptions) {
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
+    }
+
+    if (name === 'onClose' && typeof fn !== 'function') {
+      if (typeof fn[Symbol.asyncDispose] === 'function') {
+        fn = asyncDisposableHook(fn)
+      } else if (typeof fn[Symbol.dispose] === 'function') {
+        fn = disposableHook(fn)
+      } else {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, Object.prototype.toString.call(fn))
       }
     }
 

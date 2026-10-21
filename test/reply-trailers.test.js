@@ -163,6 +163,86 @@ test('send trailers when payload is stream', (t, testDone) => {
   })
 })
 
+test('remove a preset content-length when trailers force chunked encoding', (t, testDone) => {
+  t.plan(7)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.header('content-length', '5')
+    reply.trailer('ETag', function (reply, payload, done) {
+      done(null, 'custom-etag')
+    })
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+    t.assert.strictEqual(res.headers.trailer, 'etag')
+    t.assert.strictEqual(res.trailers.etag, 'custom-etag')
+    t.assert.ok(!res.headers['content-length'])
+    t.assert.strictEqual(res.body, 'hello')
+    testDone()
+  })
+})
+
+test('remove a preset content-length when a stream is sent with trailers', (t, testDone) => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.header('content-length', '5')
+    reply.trailer('ETag', function (reply, payload, done) {
+      done(null, 'custom-etag')
+    })
+    reply.send(Readable.from(['hello']))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+    t.assert.strictEqual(res.trailers.etag, 'custom-etag')
+    t.assert.ok(!res.headers['content-length'])
+    t.assert.strictEqual(res.body, 'hello')
+    testDone()
+  })
+})
+
+test('remove the content-length set by the auto-exposed HEAD route when trailers are used', (t, testDone) => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function (reply, payload, done) {
+      done(null, 'custom-etag')
+    })
+    reply.send('BODY')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+    t.assert.strictEqual(res.headers.trailer, 'etag')
+    t.assert.ok(!res.headers['content-length'])
+    testDone()
+  })
+})
+
 // fastify.inject() never touches a real socket, so it cannot observe
 // the res.end() race between Readable#pipe() and the trailer flush.
 describe('trailers over a real socket', () => {

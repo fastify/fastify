@@ -167,6 +167,22 @@ parameters at the top level.
 > ℹ For using the latest Ajv (v8), refer to the
 > [`schemaController`](./Server.md#schema-controller) section.
 
+##### Header name case
+
+Node.js exposes request header names in lowercase. Fastify normalizes header
+names in a `headers` schema to lowercase before compilation, so assertions
+written in the canonical header-name case still match the request, for example
+`required: ['X-Api-Key']`, `dependencies`, and a `propertyNames` deny-list that
+uses `enum` or `const`.
+
+Regular-expression constraints on header names are the exception. A
+`patternProperties` key and a `propertyNames` `pattern` are regular expressions
+matched against the already-lowercased header names, and Fastify cannot safely
+rewrite a regular expression. Author them to match lowercase (for example
+`^x-debug-.*$`, not `^X-Debug-.*$`) or make them case-insensitive. A pattern
+written in canonical case will not match, and the assertion it guards will not
+apply.
+
 Example:
 ```js
 const bodyJsonSchema = {
@@ -634,6 +650,34 @@ This pattern ensures validators work correctly with both sync and async
 `preValidation` hooks, preventing unhandled promise rejections that can crash
 an application.
 
+> [!IMPORTANT]
+> The `{ value, error }` result convention applies to **synchronous** validator
+> compilers only. An **asynchronous** validator (a compiler that returns a
+> promise, including an [`$async` Ajv schema](https://ajv.js.org/guide/async-validation.html))
+> is treated as pass/fail only: its resolved value is not unwrapped as
+> `{ value, error }`. An async schema resolves with the validated data itself, so
+> unwrapping it would let a payload that carries `value` or `error` keys replace
+> the request part or inject a validation error. An async validator must signal
+> failure by rejecting (throwing), and it cannot coerce the request part through
+> a resolved `value`.
+
+##### `headers` and the `{ value }` result
+
+For the `headers` part specifically, the synchronous success `value` is applied
+through the additive [`request.headers`](./Request.md#headers) setter. That
+setter *adds or overrides* headers on top of the raw request headers; it does
+**not** replace them. Raw request headers remain separately available as
+`request.raw.headers`, and any incoming header that is not present in the
+returned `value` is still visible on `request.headers`.
+
+Consequently, a synchronous custom `headers` validator cannot remove a header by
+simply omitting it from `value`. The same applies to the default Ajv validator:
+`request.headers` is the incoming request's headers (plus any additive values)
+and is not a sanitized, authoritative view. If your application needs a
+sanitized or allow-listed header view — for example to drive an authorization
+decision — build and consume that view explicitly from the validated data rather
+than re-reading `request.headers`.
+
 ##### .statusCode property
 
 All validation errors have a `.statusCode` property set to `400`, ensuring the
@@ -893,6 +937,11 @@ message has to be rebuilt from the raw validation result:
 - `validationContext` is the part of the request that failed validation
   (`body`, `params`, `querystring` or `headers`).
 - `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
+- When the validator reports a list of errors (as Ajv does) and the default
+  [`schemaErrorFormatter`](#schemaerrorformatter) is used, the error is an
+  instance of [`FST_ERR_VALIDATION`](./Errors.md#fst_err_validation) without a
+  [stack trace](./Errors.md#errors-in-input-data). Errors returned by the
+  validator itself, or by a custom formatter, are used as they are.
 
 ```js
 const fastify = Fastify()

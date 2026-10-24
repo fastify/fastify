@@ -193,15 +193,7 @@ if (reply.mediaType === 'image/gif') {
 }
 ```
 
-#### Methods
-<a id="methods"></a>
-
-### .code(statusCode)
-<a id="code"></a>
-
-If not set via `reply.code`, the resulting `statusCode` will be `200`.
-
-### .elapsedTime
+##### .elapsedTime
 <a id="elapsedTime"></a>
 
 Invokes the custom response time getter to calculate the amount of time passed
@@ -210,6 +202,14 @@ since the request was received by Fastify.
 ```js
 const milliseconds = reply.elapsedTime
 ```
+
+#### Methods
+<a id="methods"></a>
+
+### .code(statusCode)
+<a id="code"></a>
+
+If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 ### .header(key, value)
 <a id="header"></a>

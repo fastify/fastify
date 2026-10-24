@@ -386,7 +386,7 @@ console.log(validate({ foo: 0.5 })) // false
 console.log(validate.errors) // validation errors
 ```
 
-See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)
+See [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema)
 for more information on compiling validation schemas.
 
 ##### .compileValidationSchema(schema, [httpPart])
@@ -514,5 +514,5 @@ request
   .validateInput({ hello: 'world'}, 'query') // false
 ```
 
-See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)
+See [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema)
 for more information on compiling validation schemas.

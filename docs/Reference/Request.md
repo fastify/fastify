@@ -49,9 +49,7 @@ Request is a core Fastify object containing the following fields:
 - `id` - The request ID.
 - `log` - The logger instance of the incoming request.
 - `ip` - The IP address of the incoming request.
-- `ips` - An array of IP addresses, ordered from closest to furthest, from
-  `X-Forwarded-For` (only when
-  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+- `ips` - An array of IP addresses from `X-Forwarded-For`.
 - `host` - The host of the incoming request (derived from `X-Forwarded-Host`
   when [`trustProxy`](./Server.md#factory-trust-proxy) is enabled). For HTTP/2
   compatibility, it returns `:authority` if no host header exists. The host
@@ -245,6 +243,12 @@ The incoming HTTP request from Node core.
 The IP address of the incoming request. This value is taken from
 `socket.remoteAddress` (or from `X-Forwarded-For` when
 [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+
+##### .ips
+
+An array of IP addresses, ordered from closest to furthest, from
+`X-Forwarded-For` (only when [`trustProxy`](./Server.md#factory-trust-proxy) is
+enabled).
 
 #### Methods
 <a id="methods"></a>

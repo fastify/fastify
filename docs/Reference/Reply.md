@@ -758,28 +758,7 @@ reply
 See [`.send()`](#send) for more information on sending different types of
 values.
 
-### .writeEarlyHints(hints, callback)
-<a id="writeEarlyHints"></a>
-
-Sends early hints to the client. Early hints allow the client to
-start processing resources before the final response is sent.
-This can improve performance by allowing the client to preload
-or preconnect to resources while the server is still generating the response.
-
-The hints parameter is an object containing the early hint key-value pairs.
-
-Example:
-
-```js
-reply.writeEarlyHints({
-  Link: '</styles.css>; rel=preload; as=style'
-});
-```
-
-The optional callback parameter is a function that will be called
-once the hint is sent or if an error occurs.
-
-### .trailer(key, function)
+##### .trailer(key, function)
 <a id="trailer"></a>
 
 Sets a response trailer. Trailer is usually used when you need a header that
@@ -819,6 +798,27 @@ reply.trailer('content-md5', async function(reply, payload) {
   return hash.digest('hex')
 })
 ```
+
+### .writeEarlyHints(hints, callback)
+<a id="writeEarlyHints"></a>
+
+Sends early hints to the client. Early hints allow the client to
+start processing resources before the final response is sent.
+This can improve performance by allowing the client to preload
+or preconnect to resources while the server is still generating the response.
+
+The hints parameter is an object containing the early hint key-value pairs.
+
+Example:
+
+```js
+reply.writeEarlyHints({
+  Link: '</styles.css>; rel=preload; as=style'
+});
+```
+
+The optional callback parameter is a function that will be called
+once the hint is sent or if an error occurs.
 
 ### .hasTrailer(key)
 <a id="hasTrailer"></a>

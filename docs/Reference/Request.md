@@ -410,7 +410,7 @@ const newValidate = request.compileValidationSchema(newSchema)
 console.log(newValidate === validate) // false
 ```
 
-### .validateInput(data, [schema | httpPart], [httpPart])
+##### .validateInput(data, [schema | httpPart], [httpPart])
 <a id="validate"></a>
 
 This function validates the input based on the provided schema or HTTP part. If

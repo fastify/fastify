@@ -607,6 +607,58 @@ If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
 `utf-8` will be used as the charset by default. For other content types, the
 charset must be set explicitly.
 
+##### .redirect(dest, [code ,])
+<a id="redirect"></a>
+
+Redirects a request to the specified URL, the status code is optional, default
+to `302` (if status code is not already set by calling `code`).
+
+> ℹ️ Note:
+> The input URL must be properly encoded using
+> [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+> or similar modules such as
+> [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
+> result in a 500 `TypeError` response.
+
+> ⚠️ Security:
+> Encoding alone does **not** prevent open redirects. Neither `encodeURI`
+> nor `encodeurl` escapes `/`, so a caller-supplied target such as
+> `//evil.com` or `/\evil.com` survives encoding and is resolved by the
+> browser as a new host (a protocol-relative, authority-opening
+> reference). When `dest` can be influenced by request input
+> (`req.query`, `req.body`, `req.params`, cookies, or headers), validate
+> that the resolved target is same-origin or on an explicit allowlist
+> instead of relying on encoding:
+>
+> ```js
+> const target = new URL(dest, 'https://your-site.example')
+> if (target.origin !== 'https://your-site.example') {
+>   return reply.code(400).send()
+> }
+> ```
+
+Example (no `reply.code()` call) sets status code to `302` and redirects to
+`/home`
+```js
+reply.redirect('/home')
+```
+
+Example (no `reply.code()` call) sets status code to `303` and redirects to
+`/home`
+```js
+reply.redirect('/home', 303)
+```
+
+Example (`reply.code()` call) sets status code to `303` and redirects to `/home`
+```js
+reply.code(303).redirect('/home')
+```
+
+Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
+```js
+reply.code(303).redirect('/home', 302)
+```
+
 ### .getHeader(key)
 <a id="getHeader"></a>
 
@@ -724,58 +776,6 @@ reply.removeTrailer('server-timing')
 reply.hasTrailer('server-timing') // false
 ```
 
-
-### .redirect(dest, [code ,])
-<a id="redirect"></a>
-
-Redirects a request to the specified URL, the status code is optional, default
-to `302` (if status code is not already set by calling `code`).
-
-> ℹ️ Note:
-> The input URL must be properly encoded using
-> [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
-> or similar modules such as
-> [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
-> result in a 500 `TypeError` response.
-
-> ⚠️ Security:
-> Encoding alone does **not** prevent open redirects. Neither `encodeURI`
-> nor `encodeurl` escapes `/`, so a caller-supplied target such as
-> `//evil.com` or `/\evil.com` survives encoding and is resolved by the
-> browser as a new host (a protocol-relative, authority-opening
-> reference). When `dest` can be influenced by request input
-> (`req.query`, `req.body`, `req.params`, cookies, or headers), validate
-> that the resolved target is same-origin or on an explicit allowlist
-> instead of relying on encoding:
->
-> ```js
-> const target = new URL(dest, 'https://your-site.example')
-> if (target.origin !== 'https://your-site.example') {
->   return reply.code(400).send()
-> }
-> ```
-
-Example (no `reply.code()` call) sets status code to `302` and redirects to
-`/home`
-```js
-reply.redirect('/home')
-```
-
-Example (no `reply.code()` call) sets status code to `303` and redirects to
-`/home`
-```js
-reply.redirect('/home', 303)
-```
-
-Example (`reply.code()` call) sets status code to `303` and redirects to `/home`
-```js
-reply.code(303).redirect('/home')
-```
-
-Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
-```js
-reply.code(303).redirect('/home', 302)
-```
 
 ### .callNotFound()
 <a id="call-not-found"></a>

@@ -707,6 +707,29 @@ hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 reply.callNotFound()
 ```
 
+##### .hijack()
+<a name="hijack"></a>
+
+Sometimes you might need to halt the execution of the normal request lifecycle
+and handle sending the response manually.
+
+To achieve this, Fastify provides the `reply.hijack()` method that can be called
+during the request lifecycle (At any point before `reply.send()` is called), and
+allows you to prevent Fastify from sending the response, and from running the
+remaining hooks (and user handler if the reply was hijacked before).
+
+```js
+app.get('/', (req, reply) => {
+  reply.hijack()
+  reply.raw.end('hello world')
+
+  return Promise.resolve('this will be skipped')
+})
+```
+
+If `reply.raw` is used to send a response back to the user, the `onResponse`
+hooks will still be executed.
+
 ### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>
 
@@ -1005,29 +1028,6 @@ reply
 
 See [`.send()`](#send) for more information on sending different types of
 values.
-
-### .hijack()
-<a name="hijack"></a>
-
-Sometimes you might need to halt the execution of the normal request lifecycle
-and handle sending the response manually.
-
-To achieve this, Fastify provides the `reply.hijack()` method that can be called
-during the request lifecycle (At any point before `reply.send()` is called), and
-allows you to prevent Fastify from sending the response, and from running the
-remaining hooks (and user handler if the reply was hijacked before).
-
-```js
-app.get('/', (req, reply) => {
-  reply.hijack()
-  reply.raw.end('hello world')
-
-  return Promise.resolve('this will be skipped')
-})
-```
-
-If `reply.raw` is used to send a response back to the user, the `onResponse`
-hooks will still be executed.
 
 ### .then(fulfilled, rejected)
 <a id="then"></a>

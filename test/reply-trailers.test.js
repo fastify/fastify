@@ -4,7 +4,28 @@ const { test, describe } = require('node:test')
 const Fastify = require('..')
 const { Readable } = require('node:stream')
 const { createHash } = require('node:crypto')
-const { sleep } = require('./helper')
+const { sleep, getServerUrl } = require('./helper')
+const http = require('node:http')
+
+function getWithTrailers (url) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(url, (res) => {
+      const chunks = []
+      res.on('data', (chunk) => chunks.push(chunk))
+      res.on('end', () => {
+        resolve({
+          statusCode: res.statusCode,
+          headers: res.headers,
+          trailers: res.trailers,
+          body: Buffer.concat(chunks).toString()
+        })
+      })
+      res.on('error', reject)
+    })
+    req.on('error', reject)
+    req.end()
+  })
+}
 
 test('send trailers when payload is empty string', (t, testDone) => {
   t.plan(5)
@@ -138,6 +159,174 @@ test('send trailers when payload is stream', (t, testDone) => {
     t.assert.strictEqual(res.headers.trailer, 'etag')
     t.assert.strictEqual(res.trailers.etag, 'custom-etag')
     t.assert.ok(!res.headers['content-length'])
+    testDone()
+  })
+})
+
+// fastify.inject() never touches a real socket, so it cannot observe
+// the res.end() race between Readable#pipe() and the trailer flush.
+describe('trailers over a real socket', () => {
+  test('send trailers when payload is a Readable stream', async (t) => {
+    const fastify = Fastify()
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('ETag', function (reply, payload, done) {
+        done(null, 'custom-etag')
+      })
+      const stream = Readable.from([JSON.stringify({ hello: 'world' })])
+      reply.send(stream)
+    })
+
+    await fastify.listen({ port: 0 })
+    t.after(() => fastify.close())
+
+    const res = await getWithTrailers(getServerUrl(fastify))
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+    t.assert.strictEqual(res.headers.trailer, 'etag')
+    t.assert.strictEqual(res.trailers.etag, 'custom-etag')
+    t.assert.strictEqual(res.body, JSON.stringify({ hello: 'world' }))
+  })
+
+  test('send trailers when payload is a web ReadableStream', async (t) => {
+    const fastify = Fastify()
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('ETag', function (reply, payload, done) {
+        done(null, 'custom-etag')
+      })
+      const webStream = new ReadableStream({
+        start (controller) {
+          controller.enqueue(Buffer.from(JSON.stringify({ hello: 'world' })))
+          controller.close()
+        }
+      })
+      reply.send(webStream)
+    })
+
+    await fastify.listen({ port: 0 })
+    t.after(() => fastify.close())
+
+    const res = await getWithTrailers(getServerUrl(fastify))
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.trailer, 'etag')
+    t.assert.strictEqual(res.trailers.etag, 'custom-etag')
+    t.assert.strictEqual(res.body, JSON.stringify({ hello: 'world' }))
+  })
+
+  test('send trailers when payload is a pre-ended Readable stream', async (t) => {
+    const fastify = Fastify()
+
+    // drain the stream and let 'end' pass before it is ever handed to
+    // send(), so sendStream() attaches its listeners after the stream
+    // is already done. the route handler stays synchronous so fastify's
+    // async "did the handler forget to send" rescue in wrap-thenable
+    // never gets a chance to paper over a stuck response.
+    const stream = Readable.from([JSON.stringify({ hello: 'world' })])
+    stream.resume()
+    await new Promise((resolve) => stream.on('end', resolve))
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('ETag', function (reply, payload, done) {
+        done(null, 'custom-etag')
+      })
+      reply.send(stream)
+    })
+
+    await fastify.listen({ port: 0 })
+    t.after(() => fastify.close())
+
+    const res = await Promise.race([
+      getWithTrailers(getServerUrl(fastify)),
+      new Promise((resolve, reject) => {
+        const hangTimer = setTimeout(() => reject(new Error('response hung')), 2000)
+        t.after(() => clearTimeout(hangTimer))
+      })
+    ])
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.trailer, 'etag')
+    t.assert.strictEqual(res.trailers.etag, 'custom-etag')
+    t.assert.strictEqual(res.body, '')
+  })
+
+  test('stream response with no trailers registered ends normally', async (t) => {
+    const fastify = Fastify()
+
+    fastify.get('/', function (request, reply) {
+      const stream = Readable.from(['no-trailer-payload'])
+      reply.send(stream)
+    })
+
+    await fastify.listen({ port: 0 })
+    t.after(() => fastify.close())
+
+    const res = await getWithTrailers(getServerUrl(fastify))
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.deepStrictEqual(res.trailers, {})
+    t.assert.strictEqual(res.body, 'no-trailer-payload')
+  })
+
+  test('stream error before end does not hang the response', async (t) => {
+    const fastify = Fastify({ logger: false })
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('ETag', function (reply, payload, done) {
+        done(null, 'custom-etag')
+      })
+      const stream = new Readable({
+        read () {
+          this.push('partial-data')
+          process.nextTick(() => this.destroy(new Error('boom')))
+        }
+      })
+      reply.send(stream)
+    })
+
+    await fastify.listen({ port: 0 })
+    t.after(() => fastify.close())
+
+    await new Promise((resolve, reject) => {
+      const req = http.request(getServerUrl(fastify), (res) => {
+        res.on('data', () => {})
+        res.on('error', () => resolve())
+        res.on('close', () => resolve())
+        res.on('end', () => resolve())
+      })
+      req.on('error', () => resolve())
+      req.end()
+      const hangTimer = setTimeout(() => reject(new Error('response hung')), 2000)
+      t.after(() => clearTimeout(hangTimer))
+    })
+  })
+})
+
+test('remove trailer while stream is being consumed', (t, testDone) => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    const stream = Readable.from((function * () {
+      reply.removeTrailer('ETag')
+      yield 'hello'
+    })())
+
+    reply.trailer('ETag', function () {
+      t.assert.fail('removed trailer should not be called')
+    })
+
+    reply.send(stream)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.payload, 'hello')
+    t.assert.strictEqual(res.headers.trailer, 'etag')
+    t.assert.strictEqual(res.trailers.etag, undefined)
     testDone()
   })
 })
@@ -395,10 +584,67 @@ test('remove all trailers', (t, testDone) => {
   }, (error, res) => {
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
-    t.assert.ok(!res.headers.trailer)
-    t.assert.ok(!res.trailers.etag)
-    t.assert.ok(!res.trailers['should-not-call'])
-    t.assert.ok(!res.headers['content-length'])
+    t.assert.strictEqual(res.headers.trailer, undefined)
+    t.assert.strictEqual(res.trailers.etag, undefined)
+    t.assert.strictEqual(res.trailers['should-not-call'], undefined)
+    t.assert.strictEqual(res.headers['content-length'], '0')
+    testDone()
+  })
+})
+
+test('remove some trailers should keep trailer mode for the remaining ones', (t, testDone) => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function () {
+      t.assert.fail('removed trailer should not be called')
+    })
+    reply.removeTrailer('ETag')
+    reply.trailer('Content-MD5', function (reply, payload, done) {
+      done(null, 'custom-md5')
+    })
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.trailer, 'content-md5')
+    t.assert.strictEqual(res.headers['transfer-encoding'], 'chunked')
+    t.assert.strictEqual(res.headers['content-length'], undefined)
+    t.assert.strictEqual(res.trailers['content-md5'], 'custom-md5')
+    testDone()
+  })
+})
+
+test('remove all trailers should behave like no trailers were registered', (t, testDone) => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function () {
+      t.assert.fail('removed trailer should not be called')
+    })
+    reply.removeTrailer('ETag')
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    t.assert.strictEqual(res.headers.trailer, undefined)
+    t.assert.strictEqual(res.headers['transfer-encoding'], undefined)
+    t.assert.strictEqual(res.headers['content-length'], '5')
+    t.assert.strictEqual(res.trailers.etag, undefined)
     testDone()
   })
 })

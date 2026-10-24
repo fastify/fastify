@@ -27,7 +27,9 @@ test('setErrorHandler can be set independently in parent and child scopes', asyn
 test('setErrorHandler can be overridden if allowErrorHandlerOverride is set to true', async t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({
+    allowErrorHandlerOverride: true
+  })
   t.after(() => fastify.close())
 
   fastify.register(async (child) => {
@@ -41,23 +43,19 @@ test('setErrorHandler can be overridden if allowErrorHandlerOverride is set to t
   await fastify.ready()
 })
 
-test('if `allowErrorHandlerOverride` is disabled, setErrorHandler should throw if called more than once in the same scope', t => {
+test('setErrorHandler should throw by default if called more than once in the same scope', t => {
   t.plan(1)
 
-  const fastify = Fastify({
-    allowErrorHandlerOverride: false
-  })
+  const fastify = Fastify()
 
   fastify.setErrorHandler(() => {})
   t.assert.throws(() => fastify.setErrorHandler(() => {}), new FST_ERR_ERROR_HANDLER_ALREADY_SET())
 })
 
-test('if `allowErrorHandlerOverride` is disabled, setErrorHandler should throw if called more than once in the same scope 2', async t => {
+test('setErrorHandler should throw by default if called more than once in a child scope', async t => {
   t.plan(1)
 
-  const fastify = Fastify({
-    allowErrorHandlerOverride: false
-  })
+  const fastify = Fastify()
   t.after(() => fastify.close())
 
   fastify.register(async (child) => {

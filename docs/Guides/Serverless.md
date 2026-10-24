@@ -127,8 +127,6 @@ on Fastify to find out how to integrate.
 [Genezio](https://genezio.com/) is a platform designed to simplify the deployment
 of serverless applications to the cloud.
 
-[Genezio has a dedicated guide for deploying a Fastify application.](https://deployapps.dev/docs/frameworks/fastify/)
-
 ## Google Cloud Functions
 
 ### Creation of Fastify instance
@@ -256,9 +254,42 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
 {"message":"Hello Fastify!"}
 ```
 
+#### Per-route logging
+
+Google Cloud Functions exposes one entry point for your Fastify instance, so
+the dashboard may show all HTTP traffic under that function. Instead of
+deploying one function per endpoint, keep the single Fastify instance and emit
+a structured log line after each request with the matched route:
+
+```js
+fastify.addHook('onResponse', async (request, reply) => {
+  request.log.info({
+    route: request.routeOptions.url,
+    method: request.method,
+    statusCode: reply.statusCode,
+    responseTime: reply.elapsedTime
+  }, 'request completed')
+})
+```
+
+`request.routeOptions.url` is the route pattern, so `/users/123` and
+`/users/456` are grouped under `/users/:id`. With Fastify's logger enabled, the
+fields are emitted as structured log fields, as described in the [Cloud
+Logging structured logging documentation](https://docs.cloud.google.com/logging/docs/structured-logging)
+and the [Cloud Run logging guide](https://docs.cloud.google.com/run/docs/logging).
+In Cloud Logging, create a [log-based
+metric](https://docs.cloud.google.com/logging/docs/logs-based-metrics)
+or filter on `jsonPayload.route` to get per-route request counts, latency, and
+error rates.
+
+The same hook works when deploying through Firebase Functions with `onRequest`.
+
 ### References
 - [Google Cloud Functions - Node.js Quickstart
   ](https://docs.cloud.google.com/run/docs/quickstarts/functions/deploy-functions-gcloud)
+- [Cloud Logging - Structured Logging](https://docs.cloud.google.com/logging/docs/structured-logging)
+- [Cloud Logging - Log-based Metrics](https://docs.cloud.google.com/logging/docs/logs-based-metrics)
+- [Cloud Run - Logging](https://docs.cloud.google.com/run/docs/logging)
 
 ## Google Firebase Functions
 
@@ -351,6 +382,30 @@ Final step is to export the Fastify app instance to Firebase's own
 ```js
 exports.app = onRequest(fastifyApp)
 ```
+
+### A note on per-route functions and observability
+
+When a Fastify instance is wrapped with a single `onRequest()` handler, all
+routes are handled through a single Cloud Function entry point (e.g. `app`).
+Fastify still performs internal routing as usual, but from the provider's
+perspective there is only one deployed function. As a result, logs, metrics,
+and analytics in the Cloud Console are grouped under that single function
+rather than being split per route (e.g. `app-api-v1-user`).
+
+This behavior is expected because Fastify acts as a single HTTP server with
+internal routing, while Cloud Functions exposes only function-level
+observability. This is different from architectures where each route is
+deployed as an individual Cloud Function.
+
+If per-function grouping is required, you must export multiple `onRequest()`
+handlers instead of routing everything through a single Fastify instance.
+
+Alternatively, you can keep a single Fastify application and deploy it to
+Cloud Run, where it runs as a long-lived server. In that setup, Fastify's
+built-in logging (request method, URL, and response timing) provides per-route
+observability. On Cloud Functions, similar request-level logs are still
+available, but they are grouped under the single function entry in the
+provider's console.
 
 ### Local test
 

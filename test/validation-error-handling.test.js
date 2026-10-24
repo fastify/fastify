@@ -218,6 +218,60 @@ test('should be able to attach validation to request', async (t) => {
   t.assert.strictEqual(response.statusCode, 400)
 })
 
+test('attached validationError exposes the same message sent by the default handler', async (t) => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.post('/attached', { schema, attachValidation: true }, function (req, reply) {
+    reply.code(400).send({
+      message: req.validationError.message,
+      code: req.validationError.code,
+      statusCode: req.validationError.statusCode,
+      validationContext: req.validationError.validationContext
+    })
+  })
+
+  fastify.post('/default', { schema }, echoBody)
+
+  const payload = { hello: 'michelangelo' }
+  const attached = await fastify.inject({ method: 'POST', payload, url: '/attached' })
+  const notAttached = await fastify.inject({ method: 'POST', payload, url: '/default' })
+
+  const attachedBody = attached.json()
+
+  t.assert.deepStrictEqual(attachedBody, {
+    message: "body must have required property 'name'",
+    code: 'FST_ERR_VALIDATION',
+    statusCode: 400,
+    validationContext: 'body'
+  })
+
+  t.assert.strictEqual(attachedBody.message, notAttached.json().message)
+  t.assert.strictEqual(attached.statusCode, 400)
+  t.assert.strictEqual(notAttached.statusCode, 400)
+})
+
+test('default validation errors are FST_ERR_VALIDATION errors without a stack trace', async (t) => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  let validationError
+  fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
+    validationError = req.validationError
+    reply.code(400).send()
+  })
+
+  await fastify.inject({ method: 'POST', payload: { hello: 'michelangelo' }, url: '/' })
+
+  t.assert.ok(validationError instanceof Fastify.errorCodes.FST_ERR_VALIDATION)
+  t.assert.ok(validationError instanceof Error)
+  t.assert.strictEqual(validationError.name, 'FastifyError')
+  t.assert.strictEqual(validationError.message, "body must have required property 'name'")
+  t.assert.strictEqual(validationError.stack, undefined)
+})
+
 test('should respect when attachValidation is explicitly set to false', async (t) => {
   t.plan(2)
 
@@ -269,7 +323,7 @@ test('Attached validation error should take precedence over setErrorHandler', as
     url: '/'
   })
 
-  t.assert.deepStrictEqual(response.payload, "Attached: Error: body must have required property 'name'")
+  t.assert.deepStrictEqual(response.payload, "Attached: FastifyError [FST_ERR_VALIDATION]: body must have required property 'name'")
   t.assert.strictEqual(response.statusCode, 400)
 })
 

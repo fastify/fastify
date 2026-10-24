@@ -2,7 +2,8 @@
 
 const { test } = require('node:test')
 const Fastify = require('..')
-const { waitForCb } = require('./toolkit')
+const ContentType = require('../lib/content-type')
+const { waitForCb } = require('./helper')
 
 const echoBody = (req, reply) => { reply.send(req.body) }
 
@@ -60,6 +61,38 @@ test('custom serializer options', (t, testDone) => {
     t.assert.strictEqual(res.statusCode, 200)
     testDone()
   })
+})
+
+test('reuse parsed content type when selecting response serializer', async t => {
+  const fastify = Fastify()
+  const contentType = 'application/x-fastify-cache-test+json; version=1'
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/x-fastify-cache-test+json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  hello: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (request, reply) {
+    reply.type(contentType).send({ hello: 'world', ignored: true })
+  })
+
+  const response = await fastify.inject('/')
+  const normalizedContentType = response.headers['content-type']
+
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+  t.assert.ok(ContentType.cache.get(normalizedContentType))
 })
 
 test('Different content types', (t, testDone) => {

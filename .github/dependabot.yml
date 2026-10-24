@@ -34,6 +34,7 @@ updates:
       - dependency-name: "eslint"
       - dependency-name: "neostandard"
       - dependency-name: "@stylistic/*"
+      - dependency-name: "typescript"  
     open-pull-requests-limit: 10
     groups:
       # Production dependencies with breaking changes

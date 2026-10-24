@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.10.0'
+const VERSION = '6.0.0-alpha.5'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -57,7 +57,6 @@ const {
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
-const PonyPromise = require('./lib/promise')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -70,19 +69,36 @@ const {
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
-  FST_ERR_INSTANCE_ALREADY_LISTENING,
+  FST_ERR_INSTANCE_ALREADY_STARTED,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
   FST_ERR_ERROR_HANDLER_ALREADY_SET,
-  FST_ERR_ROUTE_METHOD_INVALID
+  FST_ERR_ROUTE_METHOD_INVALID,
+  FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004, FSTDEP023, FSTDEP024 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
+
+function asyncDisposableHook (disposable) {
+  return function (instance, done) {
+    disposable[Symbol.asyncDispose]().then(() => done(), done)
+  }
+}
+
+function disposableHook (disposable) {
+  return function (instance, done) {
+    try {
+      disposable[Symbol.dispose]()
+      done()
+    } catch (err) {
+      done(err)
+    }
+  }
+}
 
 /**
  * @param {import('./fastify.js').FastifyServerOptions} serverOptions
@@ -143,7 +159,9 @@ function fastify (serverOptions) {
         'OPTIONS',
         'PATCH',
         'PUT',
-        'POST'
+        'POST',
+        // RFC 10008
+        'QUERY'
       ])
     },
     [kOptions]: options,
@@ -199,6 +217,9 @@ function fastify (serverOptions) {
     },
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
+    },
+    query: function _query (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'QUERY', url, options, handler })
     },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
@@ -377,6 +398,13 @@ function fastify (serverOptions) {
 
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
+    // All the routes are registered at this point. Routes added or removed
+    // afterwards make find-my-way compile the changed trees again lazily.
+    if (options.routerOptions.compile === true) {
+      router.compileRoutes()
+      fourOhFour.router.compile()
+    }
+
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
@@ -387,7 +415,7 @@ function fastify (serverOptions) {
           if (forceCloseConnections === 'idle' && options.serverFactory) {
             instance.server.closeIdleConnections()
             /* istanbul ignore next: Cannot test this without Node.js core support */
-          } else if (serverHasCloseAllConnections && forceCloseConnections) {
+          } else if (serverHasCloseAllConnections && forceCloseConnections === true) {
             instance.server.closeAllConnections()
           } else if (forceCloseConnections === true) {
             for (const conn of fastify[kKeepAliveConnections]) {
@@ -461,7 +489,7 @@ function fastify (serverOptions) {
   return fastify
 
   function throwIfAlreadyStarted (msg) {
-    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
+    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_STARTED(msg)
   }
 
   // HTTP injection handling
@@ -523,7 +551,7 @@ function fastify (serverOptions) {
     // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
     // as well as a flow control mechanism to chain cbs and further
     // promises
-    this[kState].readyResolver = PonyPromise.withResolvers()
+    this[kState].readyResolver = Promise.withResolvers()
 
     if (!cb) {
       return this[kState].readyResolver.promise
@@ -594,9 +622,19 @@ function fastify (serverOptions) {
       }
     }
 
+    if (name === 'onClose' && typeof fn !== 'function') {
+      if (typeof fn[Symbol.asyncDispose] === 'function') {
+        fn = asyncDisposableHook(fn)
+      } else if (typeof fn[Symbol.dispose] === 'function') {
+        fn = disposableHook(fn)
+      } else {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, Object.prototype.toString.call(fn))
+      }
+    }
+
     if (name === 'onClose') {
       this.onClose(fn.bind(this))
-    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute' || name === 'preClose') {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -766,10 +804,8 @@ function fastify (serverOptions) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
-    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+    if (this[kErrorHandlerAlreadySet] && !options.allowErrorHandlerOverride) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
-    } else if (this[kErrorHandlerAlreadySet]) {
-      FSTWRN004()
     }
 
     this[kErrorHandlerAlreadySet] = true
@@ -818,9 +854,16 @@ function fastify (serverOptions) {
     return this
   }
 
-  function addHttpMethod (method, { hasBody = false } = {}) {
+  function addHttpMethod (method, { hasBody = false, overrideExisting = false } = {}) {
     if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
+    }
+
+    const alreadyExists = this[kSupportedHTTPMethods].bodyless.has(method) ||
+      this[kSupportedHTTPMethods].bodywith.has(method)
+
+    if (alreadyExists && !overrideExisting) {
+      throw new FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED(method)
     }
 
     if (hasBody === true) {
@@ -852,13 +895,10 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   }
 
   if (
-    (options.querystringParser && typeof options.querystringParser !== 'function') ||
-    (
-      options.routerOptions?.querystringParser &&
+    options.routerOptions?.querystringParser &&
       typeof options.routerOptions.querystringParser !== 'function'
-    )
   ) {
-    throw new FST_ERR_QSP_NOT_FN(typeof (options.querystringParser ?? options.routerOptions.querystringParser))
+    throw new FST_ERR_QSP_NOT_FN(typeof options.routerOptions.querystringParser)
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
@@ -869,13 +909,7 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
-  if (options.requestIdLogLabel !== undefined) {
-    FSTDEP024()
-  }
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  if (options.disableRequestLogging !== undefined) {
-    FSTDEP023()
-  }
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -906,6 +940,13 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
 
+  options.routerOptions = buildRouterOptions(options, {
+    buildPrettyMeta: defaultBuildPrettyMeta,
+    defaultRoute,
+    onBadUrl,
+    onMaxParamLength
+  })
+
   const initialConfig = getSecuredInitialConfig(options)
 
   // exposeHeadRoutes have its default set from the validator
@@ -913,18 +954,6 @@ function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
-
-  options.routerOptions = buildRouterOptions(options, {
-    defaultRoute,
-    onBadUrl,
-    onMaxParamLength,
-    ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
-    ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
-    maxParamLength: defaultInitOptions.maxParamLength,
-    allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
-    buildPrettyMeta: defaultBuildPrettyMeta,
-    useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
-  })
 
   return {
     options,

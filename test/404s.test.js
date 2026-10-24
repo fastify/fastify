@@ -1226,7 +1226,7 @@ test('onSend hooks run when an encapsulated route invokes the notFound handler',
 
 // https://github.com/fastify/fastify/issues/713
 test('preHandler option for setNotFoundHandler', async t => {
-  t.plan(10)
+  t.plan(11)
 
   await t.test('preHandler option', (t, done) => {
     t.plan(2)
@@ -1269,6 +1269,39 @@ test('preHandler option for setNotFoundHandler', async t => {
 
     fastify.post('/', function (req, reply) {
       t.assert.strictEqual(reply.callNotFound(), reply)
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    }, (err, res) => {
+      t.assert.ifError(err)
+      const payload = JSON.parse(res.payload)
+      t.assert.deepStrictEqual(payload, { preHandler: true, hello: 'world' })
+      done()
+    })
+  })
+
+  // https://github.com/fastify/fastify/security/advisories/GHSA-gm8r-x7h4-fm5r
+  await t.test('preHandler hook in setNotFoundHandler should be called when callNotFound and the route is registered first', (t, done) => {
+    t.plan(3)
+    const fastify = Fastify()
+
+    // Register the route before the not-found handler so that the route's
+    // preReady callback snapshots the not-found context before its lifecycle
+    // hooks are populated.
+    fastify.post('/', function (req, reply) {
+      t.assert.strictEqual(reply.callNotFound(), reply)
+    })
+
+    fastify.setNotFoundHandler({
+      preHandler: (req, reply, done) => {
+        req.body.preHandler = true
+        done()
+      }
+    }, function (req, reply) {
+      reply.code(404).send(req.body)
     })
 
     fastify.inject({
@@ -1800,11 +1833,12 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
       method: 'GET'
     }, (err, response) => {
       t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
+      t.assert.strictEqual(response.statusCode, 400)
       t.assert.deepStrictEqual(JSON.parse(response.payload), {
-        error: 'Not Found',
-        message: 'Route GET:/%c0 not found',
-        statusCode: 404
+        error: 'Bad Request',
+        message: "'/%c0' is not a valid url component",
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
       })
       done()
     })
@@ -1840,10 +1874,74 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', async t => {
       method: 'GET'
     }, (err, response) => {
       t.assert.ifError(err)
-      t.assert.strictEqual(response.statusCode, 404)
-      t.assert.deepStrictEqual(response.payload, 'this was not found')
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
+        error: 'Bad Request',
+        message: "'/%c0' is not a valid url component",
+        statusCode: 400,
+        code: 'FST_ERR_BAD_URL'
+      })
       done()
     })
+  })
+
+  await t.test('Bad URL does not invoke an encapsulated not found handler', async t => {
+    const fastify = Fastify()
+    let publicHandlerCalls = 0
+    let privatePreHandlerCalls = 0
+    let privateHandlerCalls = 0
+
+    fastify.register(async function (instance) {
+      instance.get('/existing', () => 'public')
+      instance.setNotFoundHandler(function (_request, reply) {
+        publicHandlerCalls++
+        reply.code(404).send('public not found')
+      })
+    }, { prefix: '/public' })
+
+    fastify.register(async function (instance) {
+      instance.setNotFoundHandler({
+        preHandler: function (request, reply, done) {
+          privatePreHandlerCalls++
+          if (request.headers.authorization !== 'Bearer valid') {
+            reply.code(401).send('unauthorized')
+          }
+          done()
+        }
+      }, function (_request, reply) {
+        privateHandlerCalls++
+        reply.send('private canary')
+      })
+    }, { prefix: '/private' })
+
+    const malformed = await fastify.inject({
+      method: 'DELETE',
+      url: '/public/%c0'
+    })
+    t.assert.strictEqual(malformed.statusCode, 400)
+    t.assert.strictEqual(JSON.parse(malformed.payload).code, 'FST_ERR_BAD_URL')
+    t.assert.strictEqual(publicHandlerCalls, 0)
+    t.assert.strictEqual(privatePreHandlerCalls, 0)
+    t.assert.strictEqual(privateHandlerCalls, 0)
+
+    const unauthorized = await fastify.inject({
+      method: 'DELETE',
+      url: '/private/missing'
+    })
+    t.assert.strictEqual(unauthorized.statusCode, 401)
+    t.assert.strictEqual(unauthorized.payload, 'unauthorized')
+    t.assert.strictEqual(privatePreHandlerCalls, 1)
+    t.assert.strictEqual(privateHandlerCalls, 0)
+
+    const authorized = await fastify.inject({
+      method: 'DELETE',
+      url: '/private/missing',
+      headers: { authorization: 'Bearer valid' }
+    })
+    t.assert.strictEqual(authorized.statusCode, 200)
+    t.assert.strictEqual(authorized.payload, 'private canary')
+    t.assert.strictEqual(privatePreHandlerCalls, 2)
+    t.assert.strictEqual(privateHandlerCalls, 1)
   })
 
   await t.test('Bad URL with special characters should be properly JSON escaped', (t, done) => {
@@ -1983,53 +2081,4 @@ test('hooks are applied to not found handlers /3', async t => {
 
   const { statusCode } = await fastify.inject('/')
   t.assert.strictEqual(statusCode, 401)
-})
-
-test('should honor disableRequestLogging function for 404', async t => {
-  t.plan(3)
-
-  const Writable = require('node:stream').Writable
-
-  const logStream = new Writable()
-  logStream.logs = []
-  logStream._write = function (chunk, encoding, callback) {
-    this.logs.push(JSON.parse(chunk.toString()))
-    callback()
-  }
-
-  const fastify = Fastify({
-    logger: {
-      level: 'info',
-      stream: logStream
-    },
-    disableRequestLogging: (req) => {
-      // Disable logging for URLs containing 'silent'
-      return req.url.includes('silent')
-    }
-  })
-
-  fastify.get('/', function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  t.after(() => { fastify.close() })
-
-  // First request to a non-existent route (no 'silent' in URL) - should log
-  const response1 = await fastify.inject({
-    method: 'GET',
-    url: '/not-found'
-  })
-  t.assert.strictEqual(response1.statusCode, 404)
-
-  // Second request to a non-existent route with 'silent' in URL - should not log
-  const response2 = await fastify.inject({
-    method: 'GET',
-    url: '/silent-route'
-  })
-  t.assert.strictEqual(response2.statusCode, 404)
-
-  // Check logs: first request should have logged, second should not
-  // We expect: incoming request, Route not found info, request completed (for first request only)
-  const infoLogs = logStream.logs.filter(log => log.msg && log.msg.includes('Route GET:/not-found not found'))
-  t.assert.strictEqual(infoLogs.length, 1, 'Should log 404 info only for non-silent route')
 })

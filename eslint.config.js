@@ -28,7 +28,7 @@ module.exports = [
   {
     files: ['**/*.d.ts'],
     rules: {
-      'max-len': 'off'
+      '@stylistic/indent-binary-ops': ['error', 2]
     }
   },
   {

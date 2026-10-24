@@ -260,10 +260,6 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
-> ℹ️ Note:
-> Setting `disableRequestLogging` to `true` will disable any error log
-> inside the `onResponse` hook. In this case use `try - catch` to log errors.
-
 ### onTimeout
 
 ```js
@@ -480,6 +476,12 @@ arrive.
 
 The hook function takes the Fastify instance as a first argument,
 and a `done` callback for synchronous hook functions.
+
+Alternatively, an object implementing `Symbol.asyncDispose` or
+`Symbol.dispose` can be registered as an `onClose` hook. Fastify invokes
+the appropriate disposal method when closing the server, allowing resources
+to be cleaned up using JavaScript's Explicit Resource Management protocol.
+
 ```js
 // callback style
 fastify.addHook('onClose', (instance, done) => {
@@ -491,6 +493,13 @@ fastify.addHook('onClose', (instance, done) => {
 fastify.addHook('onClose', async (instance) => {
   // Some async code
   await closeDatabaseConnections()
+})
+
+// or disposable object style (Explicit Resource Management)
+fastify.addHook('onClose', {
+  async [Symbol.asyncDispose] () {
+    await closeDatabaseConnections()
+  }
 })
 ```
 

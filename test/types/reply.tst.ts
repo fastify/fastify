@@ -34,7 +34,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expect(reply.writeEarlyHints).type.toBe<
     (hints: Record<string, string | string[]>, callback?: (() => void) | undefined) => void
   >()
-  expect(reply.send).type.toBe<((...args: [payload?: unknown]) => FastifyReply)>()
+  expect(reply.send).type.toBe<((...args: [payload?: unknown | PromiseLike<unknown>]) => FastifyReply)>()
   expect(reply.header).type.toBeAssignableTo<(key: string, value: any) => FastifyReply>()
   expect(reply.headers).type.toBeAssignableTo<(values: { [key: string]: any }) => FastifyReply>()
   expect(reply.getHeader).type.toBeAssignableTo<(key: string) => number | string | string[] | undefined>()
@@ -133,9 +133,9 @@ interface ReplyHttpCodesWithNoContent {
 }
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
-  // When Reply type is specified, send() requires a payload argument
-  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
-  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply']]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  // When Reply type is specified, send() requires a payload argument (direct value or Promise)
+  expect(reply.send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | PromiseLike<ReplyPayload['Reply']>]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
+  expect(reply.code(100).send).type.toBe<((...args: [payload: ReplyPayload['Reply'] | PromiseLike<ReplyPayload['Reply']>]) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>()
 }
 
 const server = fastify()
@@ -155,7 +155,7 @@ server.get<ReplyPayload>('/get-generic-return', async function handler (request,
 })
 server.get<ReplyPayload>('/get-generic-send-error', async function handler (request, reply) {
   reply.send({
-    // @ts-expect-error  'foo' does not exist in type '{ test: boolean; }'.
+    // @ts-expect-error  'foo' does not exist in type '{ test: boolean; } | PromiseLike<{ test: boolean; }>'.
     foo: 'bar'
   })
 })
@@ -179,7 +179,7 @@ server.get<ReplyUnion>('/get-generic-union-return', async function handler (requ
 })
 server.get<ReplyUnion>('/get-generic-union-send-error-1', async function handler (request, reply) {
   reply.send({
-    // @ts-expect-error  'successes' does not exist in type '{ success: boolean; } | { error: string; }'.
+    // @ts-expect-error  'successes' does not exist in type '{ success: boolean; } | { error: string; } | PromiseLike<{ success: boolean; } | { error: string; }>'.
     successes: true
   })
 })
@@ -205,12 +205,12 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send', async function handle
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-1', async function handler (request, reply) {
   reply.code(200)
-  // @ts-expect-error  Argument of type '"def"' is not assignable to parameter of type '"abc"'.
+  // @ts-expect-error  Argument of type '"def"' is not assignable to parameter of type '"abc" | PromiseLike<"abc">'.
     .send('def')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-2', async function handler (request, reply) {
   reply.code(201)
-  // @ts-expect-error  Argument of type 'number' is not assignable to parameter of type 'boolean'.
+  // @ts-expect-error  Argument of type '0' is not assignable to parameter of type 'boolean | PromiseLike<boolean>'.
     .send(0)
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async function handler (request, reply) {
@@ -221,7 +221,7 @@ server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-3', async functio
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-4', async function handler (request, reply) {
   reply.code(100)
-  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type 'number'.
+  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type 'number | PromiseLike<number>'.
     .send('asdasd')
 })
 server.get<ReplyHttpCodes>('/get-generic-http-codes-send-error-5', async function handler (request, reply) {
@@ -237,7 +237,7 @@ server.get<ReplyArrayPayload>('/get-generic-array-send', async function handler 
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
   reply.code(200)
-  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type '{ '1xx': number; 200: string; 999: boolean; }'.
+  // @ts-expect-error  Argument of type 'string' is not assignable to parameter of type '{ '1xx': number; 200: string; 999: boolean; } | PromiseLike<{ '1xx': number; 200: string; 999: boolean; }>'.
     .send('')
 })
 server.get<InvalidReplyHttpCodes>('get-invalid-http-codes-reply-error', async function handler (request, reply) {
@@ -280,6 +280,21 @@ server.get<ReplyVoid>('/get-void-send-empty', async function handler (request, r
 // Test: send() without arguments is valid when Reply type is undefined
 server.get<ReplyUndefined>('/get-undefined-send-empty', async function handler (request, reply) {
   reply.send()
+})
+
+// Test: send() accepts a Promise<T> when Reply type is specified (matches runtime behavior via wrap-thenable)
+server.get<ReplyPayload>('/get-generic-send-promise', async function handler (request, reply) {
+  reply.send(Promise.resolve({ test: true }))
+})
+// Test: send() accepts Promise with async function that resolves the payload
+server.get<ReplyPayload>('/get-generic-send-async', async function handler (request, reply) {
+  const fetchData = async (): Promise<ReplyPayload['Reply']> => ({ test: true })
+  reply.send(fetchData())
+})
+// Test: send() with Promise should error when Promise resolves to wrong type
+server.get<ReplyPayload>('/get-generic-send-promise-wrong-type', async function handler (request, reply) {
+  // @ts-expect-error  Argument of type 'Promise<{ foo: string; }>' is not assignable to parameter of type '{ test: boolean; } | PromiseLike<{ test: boolean; }>'.
+  reply.send(Promise.resolve({ foo: 'bar' }))
 })
 
 // Issue #5534 scenario: HTTP status codes with 204 No Content

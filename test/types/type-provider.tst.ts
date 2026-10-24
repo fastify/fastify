@@ -479,9 +479,11 @@ server.withTypeProvider<TypeBoxProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expect(res.code(200).send).type.toBe<((...args: [payload: string]) => typeof res)>()
-    expect(res.code(400).send).type.toBe<((...args: [payload: number]) => typeof res)>()
-    expect(res.code(500).send).type.toBe<((...args: [payload: { error: string }]) => typeof res)>()
+    expect(res.code(200).send).type.toBe<((...args: [payload: string | PromiseLike<string>]) => typeof res)>()
+    expect(res.code(400).send).type.toBe<((...args: [payload: number | PromiseLike<number>]) => typeof res)>()
+    expect(res.code(500).send).type.toBe<
+      (...args: [payload: { error: string } | PromiseLike<{ error: string }>]) => typeof res
+    >()
   }
 )
 
@@ -712,10 +714,11 @@ server.withTypeProvider<JsonSchemaToTsProvider>().get(
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })
-    expect(res.code(200).send).type.toBe<((...args: [payload: string]) => typeof res)>()
-    expect(res.code(400).send).type.toBe<((...args: [payload: number]) => typeof res)>()
+    expect(res.code(200).send).type.toBe<((...args: [payload: string | PromiseLike<string>]) => typeof res)>()
+    expect(res.code(400).send).type.toBe<((...args: [payload: number | PromiseLike<number>]) => typeof res)>()
     expect(res.code(500).send).type.toBe<
-      ((...args: [payload: { [x: string]: unknown; error?: string }]) => typeof res)
+      (...args: [payload: { [x: string]: unknown; error?: string } |
+        PromiseLike<{ [x: string]: unknown; error?: string }>]) => typeof res
     >()
   }
 )

@@ -45,8 +45,7 @@ Request is a core Fastify object containing the following fields:
 - `params` - The params matching the URL.
 - [`headers`](#headers) - The headers getter and setter.
 - `raw` - The incoming HTTP request from Node core.
-- `server` - The Fastify server instance, scoped to the current
-  [encapsulation context](./Encapsulation.md).
+- `server` - The Fastify server instance.
 - `id` - The request ID.
 - `log` - The logger instance of the incoming request.
 - `ip` - The IP address of the incoming request. This value is taken from
@@ -233,6 +232,11 @@ The route [`option`](./Routes.md#routes-options) object.
 - `exposeHeadRoute` - Creates a sibling HEAD route for any GET routes.
 - `prefixTrailingSlash` - String used to determine how to handle passing `/`
   as a route with a prefix.
+
+##### .server
+
+The Fastify server instance, scoped to the current
+[encapsulation context](./Encapsulation.md).
 
 #### Methods
 <a id="methods"></a>

@@ -697,6 +697,16 @@ reply.removeHeader('x-foo')
 reply.getHeader('x-foo') // undefined
 ```
 
+##### .callNotFound()
+<a id="call-not-found"></a>
+
+Invokes the custom not found handler. Note that it will only call `preHandler`
+hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
+
+```js
+reply.callNotFound()
+```
+
 ### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>
 
@@ -776,16 +786,6 @@ reply.removeTrailer('server-timing')
 reply.hasTrailer('server-timing') // false
 ```
 
-
-### .callNotFound()
-<a id="call-not-found"></a>
-
-Invokes the custom not found handler. Note that it will only call `preHandler`
-hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
-
-```js
-reply.callNotFound()
-```
 
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>

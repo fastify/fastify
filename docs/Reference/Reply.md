@@ -542,7 +542,7 @@ fastify.get('/botnet', async function (request, reply) {
 If you want to know more please review
 [Routes#async-await](./Routes.md#async-await).
 
-### .code(statusCode)
+##### .code(statusCode)
 <a id="code"></a>
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.

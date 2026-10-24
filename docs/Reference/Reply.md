@@ -804,6 +804,18 @@ reply.trailer('content-md5', async function(reply, payload) {
 
 Returns a boolean indicating if the specified trailer has been set.
 
+##### .removeTrailer(key)
+<a id="removeTrailer"></a>
+
+Remove the value of a previously set trailer.
+```js
+reply.trailer('server-timing', async function () {
+  return 'db;dur=53, app;dur=47.2'
+})
+reply.removeTrailer('server-timing')
+reply.hasTrailer('server-timing') // false
+```
+
 ### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>
 
@@ -824,19 +836,6 @@ reply.writeEarlyHints({
 
 The optional callback parameter is a function that will be called
 once the hint is sent or if an error occurs.
-
-### .removeTrailer(key)
-<a id="removeTrailer"></a>
-
-Remove the value of a previously set trailer.
-```js
-reply.trailer('server-timing', async function () {
-  return 'db;dur=53, app;dur=47.2'
-})
-reply.removeTrailer('server-timing')
-reply.hasTrailer('server-timing') // false
-```
-
 
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>

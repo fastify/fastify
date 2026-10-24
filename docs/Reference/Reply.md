@@ -164,6 +164,22 @@ app.get('/cookie-2', (req, reply) => {
 Another example of the misuse of `Reply.raw` is explained in
 [Reply](#getheaders).
 
+##### .server
+<a id="server"></a>
+
+The Fastify server instance, scoped to the current [encapsulation
+context](./Encapsulation.md).
+
+```js
+fastify.decorate('util', function util () {
+  return 'foo'
+})
+
+fastify.get('/', async function (req, rep) {
+  return rep.server.util() // foo
+})
+```
+
 #### Methods
 <a id="methods"></a>
 
@@ -193,22 +209,6 @@ if (reply.mediaType === 'image/gif') {
   const versionBuffer = new Uint8Array(reply.payload, 3, 3)
   reply.header('x-gif-version', new TextDecoder().decode(versionBuffer))
 }
-```
-
-### .server
-<a id="server"></a>
-
-The Fastify server instance, scoped to the current [encapsulation
-context](./Encapsulation.md).
-
-```js
-fastify.decorate('util', function util () {
-  return 'foo'
-})
-
-fastify.get('/', async function (req, rep) {
-  return rep.server.util() // foo
-})
 ```
 
 ### .header(key, value)

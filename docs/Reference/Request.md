@@ -289,7 +289,7 @@ The underlying connection of the incoming request.
 #### Methods
 <a id="methods"></a>
 
-### .getValidationFunction(schema | httpPart)
+##### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>
 
 By calling this function with a provided `schema` or `httpPart`, it returns a

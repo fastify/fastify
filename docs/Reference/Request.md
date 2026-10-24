@@ -323,7 +323,7 @@ console.log(validate.errors) // validation errors
 See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)
 for more information on compiling validation schemas.
 
-### .compileValidationSchema(schema, [httpPart])
+##### .compileValidationSchema(schema, [httpPart])
 <a id="compilevalidationschema"></a>
 
 This function compiles a validation schema and returns a function to validate data.

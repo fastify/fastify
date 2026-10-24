@@ -856,7 +856,7 @@ For more details, see:
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
   for the signature
 
-### .getSerializationFunction(schema | httpStatus, [contentType])
+##### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>
 
 By calling this function using a provided `schema` or `httpStatus`,

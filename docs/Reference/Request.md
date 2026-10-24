@@ -221,6 +221,10 @@ The request ID.
 
 The logger instance of the incoming request.
 
+##### .method
+
+The method of the incoming request.
+
 #### Methods
 <a id="methods"></a>
 

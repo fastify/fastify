@@ -206,6 +206,342 @@ const milliseconds = reply.elapsedTime
 #### Methods
 <a id="methods"></a>
 
+##### .send(data)
+<a id="send"></a>
+
+As the name suggests, `.send()` is the function that sends the payload to the
+end user.
+
+###### Objects
+<a id="send-object"></a>
+
+As noted above, if you are sending JSON objects, `send` will serialize the
+object with
+[fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you
+set an output schema, otherwise, `JSON.stringify()` will be used.
+```js
+fastify.get('/json', options, function (request, reply) {
+  reply.send({ hello: 'world' })
+})
+```
+
+###### Strings
+<a id="send-string"></a>
+
+If you pass a string to `send` without a `Content-Type`, it will be sent as
+`text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a
+string to `send`, it will be serialized with the custom serializer if one is
+set, otherwise, it will be sent unmodified.
+
+> ℹ️ Note:
+> Even when the `Content-Type` header is set to `application/json`,
+> strings are sent unmodified by default. To serialize a string as JSON, you
+> must set a custom serializer:
+
+```js
+fastify.get('/json-string', async function (request, reply) {
+  reply
+    .type('application/json; charset=utf-8')
+    .serializer(JSON.stringify)
+    .send('Hello') // Returns "Hello" (JSON-encoded string)
+})
+```
+```js
+fastify.get('/json', options, function (request, reply) {
+  reply.send('plain string')
+})
+```
+
+###### Streams
+<a id="send-streams"></a>
+
+If you are sending a stream and you have not set a `'Content-Type'` header,
+*send* will set it to `'application/octet-stream'`.
+
+As noted above, streams are considered to be pre-serialized, so they will be
+sent unmodified without response validation.
+
+When sending streams over HTTP/2, Fastify does not change the chunks emitted by
+the stream. If a stream can emit very large chunks, split them in your
+application code, for example by using `fs.createReadStream()` or a transform
+stream that emits smaller chunks.
+
+See special note about error handling for streams in
+[`setErrorHandler`](./Server.md#seterrorhandler).
+
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(stream)
+})
+```
+When using async-await you will need to return or await the reply object:
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', async function (request, reply) {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
+  return reply.send(stream)
+})
+```
+
+###### Buffers
+<a id="send-buffers"></a>
+
+If you are sending a buffer and you have not set a `'Content-Type'` header,
+*send* will set it to `'application/octet-stream'`.
+
+As noted above, Buffers are considered to be pre-serialized, so they will be
+sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', function (request, reply) {
+  fs.readFile('some-file', (err, fileBuffer) => {
+    reply.send(err || fileBuffer)
+  })
+})
+```
+
+When using async-await you will need to return or await the reply object:
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', async function (request, reply) {
+  fs.readFile('some-file', (err, fileBuffer) => {
+    reply.send(err || fileBuffer)
+  })
+  return reply
+})
+```
+
+###### TypedArrays
+<a id="send-typedarrays"></a>
+
+`send` manages TypedArray like a Buffer, and sets the `'Content-Type'`
+header to `'application/octet-stream'` if not already set.
+
+As noted above, TypedArray/Buffers are considered to be pre-serialized, so they
+will be sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', function (request, reply) {
+  const typedArray = new Uint16Array(10)
+  reply.send(typedArray)
+})
+```
+
+###### ReadableStream
+<a id="send-readablestream"></a>
+
+`ReadableStream` will be treated as a node stream mentioned above,
+the content is considered to be pre-serialized, so they will be
+sent unmodified without response validation.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(ReadableStream.from(stream))
+})
+```
+
+###### Response
+<a id="send-response"></a>
+
+`Response` allows to manage the reply payload, status code and
+headers in one place. The payload provided inside `Response` is
+considered to be pre-serialized, so they will be sent unmodified
+without response validation.
+
+Please be aware when using `Response`, the status code and headers
+will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
+Such behavior is based on `Response` only allow `readonly` status
+code and headers. The data is not allow to be bi-direction editing,
+and may confuse when checking the `payload` in `onSend` hooks.
+
+```js
+const fs = require('node:fs')
+const { ReadableStream } = require('node:stream/web')
+
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file')
+  const readableStream = ReadableStream.from(stream)
+  const response = new Response(readableStream, {
+    status: 200,
+    headers: { 'content-type': 'application/octet-stream' }
+  })
+  reply.send(response)
+})
+```
+
+
+###### Errors
+<a id="errors"></a>
+
+If you pass to *send* an object that is an instance of *Error*, Fastify will
+automatically create an error structured as the following:
+
+```js
+{
+  error: String        // the HTTP error message
+  code: String         // the Fastify error code
+  message: String      // the user error message
+  statusCode: Number   // the HTTP status code
+}
+```
+
+You can add custom properties to the Error object, such as `headers`, that will
+be used to enhance the HTTP response.
+
+> ℹ️ Note:
+> If you are passing an error to `send` and the statusCode is less than
+> 400, Fastify will automatically set it at 500.
+
+Tip: you can simplify errors by using the
+[`http-errors`](https://www.npmjs.com/package/http-errors) module or
+[`@fastify/sensible`](https://github.com/fastify/fastify-sensible) plugin to
+generate errors:
+
+```js
+fastify.get('/', function (request, reply) {
+  reply.send(httpErrors.Gone())
+})
+```
+
+To customize the JSON error output you can do it by:
+
+- setting a response JSON schema for the status code you need
+- add the additional properties to the `Error` instance
+
+Notice that if the returned status code is not in the response schema list, the
+default behavior will be applied.
+
+```js
+fastify.get('/', {
+  schema: {
+    response: {
+      501: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          code: { type: 'string' },
+          error: { type: 'string' },
+          message: { type: 'string' },
+          time: { type: 'string' }
+        }
+      }
+    }
+  }
+}, function (request, reply) {
+  const error = new Error('This endpoint has not been implemented')
+  error.time = 'it will be implemented in two weeks'
+  reply.code(501).send(error)
+})
+```
+
+If you want to customize error handling, check out
+[`setErrorHandler`](./Server.md#seterrorhandler) API.
+
+> ℹ️ Note:
+> You are responsible for logging when customizing the error handler.
+
+API:
+
+```js
+fastify.setErrorHandler(function (error, request, reply) {
+  request.log.warn(error)
+  const statusCode = error.statusCode >= 400 ? error.statusCode : 500
+  reply
+    .code(statusCode)
+    .type('text/plain')
+    .send(statusCode >= 500 ? 'Internal server error' : error.message)
+})
+```
+
+Beware that calling `reply.send(error)` in your custom error handler will send
+the error to the default error handler.
+Check out the [Reply Lifecycle](./Lifecycle.md#reply-lifecycle)
+for more information.
+
+The not found errors generated by the router will use the
+[`setNotFoundHandler`](./Server.md#setnotfoundhandler)
+
+API:
+
+```js
+fastify.setNotFoundHandler(function (request, reply) {
+  reply
+    .code(404)
+    .type('text/plain')
+    .send('a custom not found')
+})
+```
+
+###### Type of the final payload
+<a id="payload-type"></a>
+
+The type of the sent payload (after serialization and going through any
+[`onSend` hooks](./Hooks.md#onsend)) must be one of the following types,
+otherwise, an error will be thrown:
+
+- `string`
+- `Buffer`
+- `stream`
+- `undefined`
+- `null`
+
+###### Async-Await and Promises
+<a id="async-await-promise"></a>
+
+Fastify natively handles promises and supports async-await.
+
+*Note that in the following examples we are not using reply.send.*
+```js
+const { promisify } = require('node:util')
+const delay = promisify(setTimeout)
+
+fastify.get('/promises', options, function (request, reply) {
+ return delay(200).then(() => { return { hello: 'world' }})
+})
+
+fastify.get('/async-await', options, async function (request, reply) {
+  await delay(200)
+  return { hello: 'world' }
+})
+```
+
+Rejected promises default to a `500` HTTP status code. Reject the promise, or
+`throw` in an `async function`, with an object that has `statusCode` (or
+`status`) and `message` properties to modify the reply.
+
+```js
+fastify.get('/teapot', async function (request, reply) {
+  const err = new Error()
+  err.statusCode = 418
+  err.message = 'short and stout'
+  throw err
+})
+
+fastify.get('/botnet', async function (request, reply) {
+  throw { statusCode: 418, message: 'short and stout' }
+  // will return to the client the same json
+})
+```
+
+If you want to know more please review
+[Routes#async-await](./Routes.md#async-await).
+
 ### .code(statusCode)
 <a id="code"></a>
 
@@ -694,342 +1030,6 @@ app.get('/', (req, reply) => {
 
 If `reply.raw` is used to send a response back to the user, the `onResponse`
 hooks will still be executed.
-
-### .send(data)
-<a id="send"></a>
-
-As the name suggests, `.send()` is the function that sends the payload to the
-end user.
-
-#### Objects
-<a id="send-object"></a>
-
-As noted above, if you are sending JSON objects, `send` will serialize the
-object with
-[fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you
-set an output schema, otherwise, `JSON.stringify()` will be used.
-```js
-fastify.get('/json', options, function (request, reply) {
-  reply.send({ hello: 'world' })
-})
-```
-
-#### Strings
-<a id="send-string"></a>
-
-If you pass a string to `send` without a `Content-Type`, it will be sent as
-`text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a
-string to `send`, it will be serialized with the custom serializer if one is
-set, otherwise, it will be sent unmodified.
-
-> ℹ️ Note:
-> Even when the `Content-Type` header is set to `application/json`,
-> strings are sent unmodified by default. To serialize a string as JSON, you
-> must set a custom serializer:
-
-```js
-fastify.get('/json-string', async function (request, reply) {
-  reply
-    .type('application/json; charset=utf-8')
-    .serializer(JSON.stringify)
-    .send('Hello') // Returns "Hello" (JSON-encoded string)
-})
-```
-```js
-fastify.get('/json', options, function (request, reply) {
-  reply.send('plain string')
-})
-```
-
-#### Streams
-<a id="send-streams"></a>
-
-If you are sending a stream and you have not set a `'Content-Type'` header,
-*send* will set it to `'application/octet-stream'`.
-
-As noted above, streams are considered to be pre-serialized, so they will be
-sent unmodified without response validation.
-
-When sending streams over HTTP/2, Fastify does not change the chunks emitted by
-the stream. If a stream can emit very large chunks, split them in your
-application code, for example by using `fs.createReadStream()` or a transform
-stream that emits smaller chunks.
-
-See special note about error handling for streams in
-[`setErrorHandler`](./Server.md#seterrorhandler).
-
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', function (request, reply) {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.header('Content-Type', 'application/octet-stream')
-  reply.send(stream)
-})
-```
-When using async-await you will need to return or await the reply object:
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', async function (request, reply) {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.header('Content-Type', 'application/octet-stream')
-  return reply.send(stream)
-})
-```
-
-#### Buffers
-<a id="send-buffers"></a>
-
-If you are sending a buffer and you have not set a `'Content-Type'` header,
-*send* will set it to `'application/octet-stream'`.
-
-As noted above, Buffers are considered to be pre-serialized, so they will be
-sent unmodified without response validation.
-
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', function (request, reply) {
-  fs.readFile('some-file', (err, fileBuffer) => {
-    reply.send(err || fileBuffer)
-  })
-})
-```
-
-When using async-await you will need to return or await the reply object:
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', async function (request, reply) {
-  fs.readFile('some-file', (err, fileBuffer) => {
-    reply.send(err || fileBuffer)
-  })
-  return reply
-})
-```
-
-#### TypedArrays
-<a id="send-typedarrays"></a>
-
-`send` manages TypedArray like a Buffer, and sets the `'Content-Type'`
-header to `'application/octet-stream'` if not already set.
-
-As noted above, TypedArray/Buffers are considered to be pre-serialized, so they
-will be sent unmodified without response validation.
-
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', function (request, reply) {
-  const typedArray = new Uint16Array(10)
-  reply.send(typedArray)
-})
-```
-
-#### ReadableStream
-<a id="send-readablestream"></a>
-
-`ReadableStream` will be treated as a node stream mentioned above,
-the content is considered to be pre-serialized, so they will be
-sent unmodified without response validation.
-
-```js
-const fs = require('node:fs')
-const { ReadableStream } = require('node:stream/web')
-
-fastify.get('/streams', function (request, reply) {
-  const stream = fs.createReadStream('some-file')
-  reply.header('Content-Type', 'application/octet-stream')
-  reply.send(ReadableStream.from(stream))
-})
-```
-
-#### Response
-<a id="send-response"></a>
-
-`Response` allows to manage the reply payload, status code and
-headers in one place. The payload provided inside `Response` is
-considered to be pre-serialized, so they will be sent unmodified
-without response validation.
-
-Please be aware when using `Response`, the status code and headers
-will not directly reflect to `reply.statusCode` and `reply.getHeaders()`.
-Such behavior is based on `Response` only allow `readonly` status
-code and headers. The data is not allow to be bi-direction editing,
-and may confuse when checking the `payload` in `onSend` hooks.
-
-```js
-const fs = require('node:fs')
-const { ReadableStream } = require('node:stream/web')
-
-fastify.get('/streams', function (request, reply) {
-  const stream = fs.createReadStream('some-file')
-  const readableStream = ReadableStream.from(stream)
-  const response = new Response(readableStream, {
-    status: 200,
-    headers: { 'content-type': 'application/octet-stream' }
-  })
-  reply.send(response)
-})
-```
-
-
-#### Errors
-<a id="errors"></a>
-
-If you pass to *send* an object that is an instance of *Error*, Fastify will
-automatically create an error structured as the following:
-
-```js
-{
-  error: String        // the HTTP error message
-  code: String         // the Fastify error code
-  message: String      // the user error message
-  statusCode: Number   // the HTTP status code
-}
-```
-
-You can add custom properties to the Error object, such as `headers`, that will
-be used to enhance the HTTP response.
-
-> ℹ️ Note:
-> If you are passing an error to `send` and the statusCode is less than
-> 400, Fastify will automatically set it at 500.
-
-Tip: you can simplify errors by using the
-[`http-errors`](https://www.npmjs.com/package/http-errors) module or
-[`@fastify/sensible`](https://github.com/fastify/fastify-sensible) plugin to
-generate errors:
-
-```js
-fastify.get('/', function (request, reply) {
-  reply.send(httpErrors.Gone())
-})
-```
-
-To customize the JSON error output you can do it by:
-
-- setting a response JSON schema for the status code you need
-- add the additional properties to the `Error` instance
-
-Notice that if the returned status code is not in the response schema list, the
-default behavior will be applied.
-
-```js
-fastify.get('/', {
-  schema: {
-    response: {
-      501: {
-        type: 'object',
-        properties: {
-          statusCode: { type: 'number' },
-          code: { type: 'string' },
-          error: { type: 'string' },
-          message: { type: 'string' },
-          time: { type: 'string' }
-        }
-      }
-    }
-  }
-}, function (request, reply) {
-  const error = new Error('This endpoint has not been implemented')
-  error.time = 'it will be implemented in two weeks'
-  reply.code(501).send(error)
-})
-```
-
-If you want to customize error handling, check out
-[`setErrorHandler`](./Server.md#seterrorhandler) API.
-
-> ℹ️ Note:
-> You are responsible for logging when customizing the error handler.
-
-API:
-
-```js
-fastify.setErrorHandler(function (error, request, reply) {
-  request.log.warn(error)
-  const statusCode = error.statusCode >= 400 ? error.statusCode : 500
-  reply
-    .code(statusCode)
-    .type('text/plain')
-    .send(statusCode >= 500 ? 'Internal server error' : error.message)
-})
-```
-
-Beware that calling `reply.send(error)` in your custom error handler will send
-the error to the default error handler.
-Check out the [Reply Lifecycle](./Lifecycle.md#reply-lifecycle)
-for more information.
-
-The not found errors generated by the router will use the
-[`setNotFoundHandler`](./Server.md#setnotfoundhandler)
-
-API:
-
-```js
-fastify.setNotFoundHandler(function (request, reply) {
-  reply
-    .code(404)
-    .type('text/plain')
-    .send('a custom not found')
-})
-```
-
-#### Type of the final payload
-<a id="payload-type"></a>
-
-The type of the sent payload (after serialization and going through any
-[`onSend` hooks](./Hooks.md#onsend)) must be one of the following types,
-otherwise, an error will be thrown:
-
-- `string`
-- `Buffer`
-- `stream`
-- `undefined`
-- `null`
-
-#### Async-Await and Promises
-<a id="async-await-promise"></a>
-
-Fastify natively handles promises and supports async-await.
-
-*Note that in the following examples we are not using reply.send.*
-```js
-const { promisify } = require('node:util')
-const delay = promisify(setTimeout)
-
-fastify.get('/promises', options, function (request, reply) {
- return delay(200).then(() => { return { hello: 'world' }})
-})
-
-fastify.get('/async-await', options, async function (request, reply) {
-  await delay(200)
-  return { hello: 'world' }
-})
-```
-
-Rejected promises default to a `500` HTTP status code. Reject the promise, or
-`throw` in an `async function`, with an object that has `statusCode` (or
-`status`) and `message` properties to modify the reply.
-
-```js
-fastify.get('/teapot', async function (request, reply) {
-  const err = new Error()
-  err.statusCode = 418
-  err.message = 'short and stout'
-  throw err
-})
-
-fastify.get('/botnet', async function (request, reply) {
-  throw { statusCode: 418, message: 'short and stout' }
-  // will return to the client the same json
-})
-```
-
-If you want to know more please review
-[Routes#async-await](./Routes.md#async-await).
 
 ### .then(fulfilled, rejected)
 <a id="then"></a>

@@ -83,6 +83,22 @@ fastify().get(
   }
 )
 
+fastify().get(
+  '/',
+  { logLevel: 'info', logSerializers: { test: (value: number) => 'X' + value } },
+  routeHandler
+)
+
+fastify().route({
+  method: 'GET',
+  url: '/',
+  logSerializers: {
+    // serializers may return objects as well as strings
+    req: (req: FastifyRequest) => ({ url: req.url })
+  },
+  handler: routeHandler
+})
+
 type LowerCaseHTTPMethods = 'delete' | 'get' | 'head' | 'patch' | 'post' | 'put' |
   'options' | 'query' | 'propfind' | 'proppatch' | 'mkcol' | 'copy' | 'move' | 'lock' |
   'unlock' | 'trace' | 'search' | 'mkcalendar' | 'report'

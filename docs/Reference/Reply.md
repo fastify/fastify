@@ -129,6 +129,19 @@ if (reply.statusCode >= 299) {
 }
 ```
 
+##### .sent
+<a id="sent"></a>
+
+As the name suggests, `.sent` is a property to indicate if a response has been
+sent via `reply.send()`. It will also be `true` in case `reply.hijack()` was
+used.
+
+In case a route handler is defined as an async function or it returns a promise,
+it is possible to call `reply.hijack()` to indicate that the automatic
+invocation of `reply.send()` once the handler promise resolve should be skipped.
+By calling `reply.hijack()`, an application claims full responsibility for the
+low-level request and response. Moreover, hooks will not be invoked.
+
 #### Methods
 <a id="methods"></a>
 
@@ -658,19 +671,6 @@ app.get('/cookie-2', (req, reply) => {
 ```
 Another example of the misuse of `Reply.raw` is explained in
 [Reply](#getheaders).
-
-### .sent
-<a id="sent"></a>
-
-As the name suggests, `.sent` is a property to indicate if a response has been
-sent via `reply.send()`. It will also be `true` in case `reply.hijack()` was
-used.
-
-In case a route handler is defined as an async function or it returns a promise,
-it is possible to call `reply.hijack()` to indicate that the automatic
-invocation of `reply.send()` once the handler promise resolve should be skipped.
-By calling `reply.hijack()`, an application claims full responsibility for the
-low-level request and response. Moreover, hooks will not be invoked.
 
 ### .hijack()
 <a name="hijack"></a>

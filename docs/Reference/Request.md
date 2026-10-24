@@ -73,24 +73,6 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - The protocol of the incoming request (`https` or `http`). This
   value comes from `socket.encrypted` (or `X-Forwarded-Proto` when
   [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
-
-> ⚠️ Security:
-> `request.params`, `request.query`, `request.headers`, and `request.body`
-> are untrusted network input. Route parameter values are percent-decoded
-> before your handler runs, so a segment like `..%2ffile` becomes `../file`
-> in `request.params`. Do not use parameter values as filesystem paths,
-> template names, or redirect targets without validating or containing
-> them. Prefer [`@fastify/static`](https://github.com/fastify/fastify-static)
-> (or `reply.sendFile`) when serving files from a root directory.
->
-> `request.ip`, `request.ips`, `request.host`, `request.hostname`,
-> `request.port`, and `request.protocol` come from request metadata
-> (socket and/or forwarding headers) and should also be treated as
-> untrusted input. Fastify does not perform security validation for
-> business logic. If these values are used in security-sensitive decisions,
-> they must be validated explicitly (for example: trusted proxy
-> configuration, allow-lists, strict parsing, and normalization).
-
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
@@ -134,6 +116,23 @@ Request is a core Fastify object containing the following fields:
   Validates the input using the specified schema or HTTP part and returns
   `true` if the input is valid, `false` otherwise. If `httpPart` is provided,
   the function uses the validator for that HTTP part. Defaults to `null`.
+
+> ⚠️ Security:
+> `request.params`, `request.query`, `request.headers`, and `request.body`
+> are untrusted network input. Route parameter values are percent-decoded
+> before your handler runs, so a segment like `..%2ffile` becomes `../file`
+> in `request.params`. Do not use parameter values as filesystem paths,
+> template names, or redirect targets without validating or containing
+> them. Prefer [`@fastify/static`](https://github.com/fastify/fastify-static)
+> (or `reply.sendFile`) when serving files from a root directory.
+>
+> `request.ip`, `request.ips`, `request.host`, `request.hostname`,
+> `request.port`, and `request.protocol` come from request metadata
+> (socket and/or forwarding headers) and should also be treated as
+> untrusted input. Fastify does not perform security validation for
+> business logic. If these values are used in security-sensitive decisions,
+> they must be validated explicitly (for example: trusted proxy
+> configuration, allow-lists, strict parsing, and normalization).
 
 ### Request
 <a id="request-object"></a>

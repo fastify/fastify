@@ -682,6 +682,11 @@ reply.raw.setHeader('x-foo', 'foo2')
 reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
 ```
 
+##### .hasHeader(key)
+<a id="hasHeader"></a>
+
+Returns a boolean indicating if the specified header has been set.
+
 ### .removeHeader(key)
 <a id="removeHeader"></a>
 
@@ -691,11 +696,6 @@ reply.header('x-foo', 'foo')
 reply.removeHeader('x-foo')
 reply.getHeader('x-foo') // undefined
 ```
-
-### .hasHeader(key)
-<a id="hasHeader"></a>
-
-Returns a boolean indicating if the specified header has been set.
 
 ### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>

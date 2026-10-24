@@ -53,9 +53,7 @@ Request is a core Fastify object containing the following fields:
 - `host` - The host of the incoming request.
 - `hostname` - The hostname parsed from `request.host`.
 - `port` - The port parsed from `request.host`.
-- `protocol` - The protocol of the incoming request (`https` or `http`). This
-  value comes from `socket.encrypted` (or `X-Forwarded-Proto` when
-  [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+- `protocol` - The protocol of the incoming request (`https` or `http`).
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - Similar to `url`, allows access to the original `url` in
@@ -261,6 +259,12 @@ The hostname parsed from `request.host`.
 
 The port parsed from `request.host`, which may refer to the port the server is
 listening on.
+
+##### .protocol
+
+The protocol of the incoming request (`https` or `http`). This value comes from
+`socket.encrypted` (or `X-Forwarded-Proto` when
+[`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
 
 #### Methods
 <a id="methods"></a>

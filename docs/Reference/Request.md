@@ -238,6 +238,10 @@ The route [`option`](./Routes.md#routes-options) object.
 The Fastify server instance, scoped to the current
 [encapsulation context](./Encapsulation.md).
 
+##### .raw
+
+The incoming HTTP request from Node core.
+
 #### Methods
 <a id="methods"></a>
 

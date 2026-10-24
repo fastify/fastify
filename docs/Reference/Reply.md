@@ -1001,7 +1001,7 @@ const newSerialize = reply.compileSerializationSchema(newSchema)
 console.log(newSerialize === serialize) // false
 ```
 
-### .serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])
+##### .serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])
 <a id="serializeinput"></a>
 
 This function will serialize the input data based on the provided schema

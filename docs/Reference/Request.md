@@ -63,6 +63,9 @@ Request is a core Fastify object containing the following fields:
 - `signal` - An `AbortSignal` that aborts on handler timeout or client
   disconnect.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
+- `validationError` - The validation error, when `attachValidation` is set.
+- `getDecorator(name)` - Returns the value of a request decorator.
+- `setDecorator(name, value)` - Sets the value of a request decorator.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) -
   Returns a validation function for the specified schema or HTTP part, if
   set or cached.
@@ -286,8 +289,64 @@ The underlying connection of the incoming request.
 
 `true` if request is being handled by 404 handler, `false` otherwise.
 
+##### .validationError
+
+The validation error of the request. It is set only when the route has the
+[`attachValidation`](./Routes.md#routes-options) option enabled and the
+validation fails; otherwise it is `undefined`. In that case, Fastify calls the
+handler instead of replying with a `400` error. See
+[Validation and Serialization](./Validation-and-Serialization.md#error-handling)
+for the properties of the error object.
+
+```js
+fastify.post('/', { schema, attachValidation: true }, function (request, reply) {
+  if (request.validationError) {
+    // `request.validationError.validationContext` is the failed part,
+    // for example `body`
+    reply.code(422).send(request.validationError)
+    return
+  }
+  reply.send({ hello: 'world' })
+})
+```
+
 #### Methods
 <a id="methods"></a>
+
+##### .getDecorator(name)
+<a id="getdecorator"></a>
+
+Returns the value of a request decorator declared with
+[`decorateRequest`](./Decorators.md#decoraterequestname-value-dependencies).
+If the decorator is a function, it is returned bound to the request. It throws
+an `FST_ERR_DEC_UNDECLARED` error if the decorator has not been declared. See
+[`getDecorator`](./Decorators.md#getdecoratorname) for more details.
+
+```js
+fastify.decorateRequest('user', null)
+
+fastify.get('/', function (request, reply) {
+  const user = request.getDecorator('user')
+  reply.send({ user })
+})
+```
+
+##### .setDecorator(name, value)
+<a id="setdecorator"></a>
+
+Sets the value of a request decorator declared with
+[`decorateRequest`](./Decorators.md#decoraterequestname-value-dependencies).
+It throws an `FST_ERR_DEC_UNDECLARED` error if the decorator has not been
+declared. See [`setDecorator`](./Decorators.md#setdecoratorname-value) for more
+details.
+
+```js
+fastify.decorateRequest('user', null)
+
+fastify.addHook('preHandler', async (request) => {
+  request.setDecorator('user', 'Bob Dylan')
+})
+```
 
 ##### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>

@@ -72,7 +72,7 @@ since the request was received by Fastify.
 - `.hasTrailer(key)` - Determine if a trailer has been set.
 - `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect(dest, [code,])` - Redirect to the specified URL, the status code is
+- `.redirect(dest, [code])` - Redirect to the specified URL, the status code is
   optional (defaults to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default
@@ -647,7 +647,7 @@ If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
 `utf-8` will be used as the charset by default. For other content types, the
 charset must be set explicitly.
 
-##### .redirect(dest, [code ,])
+##### .redirect(dest, [code])
 <a id="redirect"></a>
 
 Redirects a request to the specified URL, the status code is optional, default

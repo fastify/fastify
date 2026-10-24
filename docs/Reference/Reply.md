@@ -816,7 +816,7 @@ reply.removeTrailer('server-timing')
 reply.hasTrailer('server-timing') // false
 ```
 
-### .writeEarlyHints(hints, callback)
+##### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>
 
 Sends early hints to the client. Early hints allow the client to

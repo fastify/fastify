@@ -40,8 +40,7 @@
 The first parameter of the handler function is `Request`.
 
 Request is a core Fastify object containing the following fields:
-- `query` - The parsed querystring, its format is specified by
-  [`querystringParser`](./Server.md#querystringparser).
+- `query` - The parsed querystring.
 - `body` - The request payload.
 - `params` - The params matching the URL. Values are percent-decoded
   (for example `%20` becomes a space, and `%2f` becomes `/`). Decoded
@@ -173,6 +172,11 @@ fastify.post('/:params', options, function (request, reply) {
 The request payload. See [Content-Type Parser](./ContentTypeParser.md) for
 details on what request payloads Fastify natively parses and how to support
 other content types.
+
+##### .query
+
+The parsed querystring. Its format is specified by
+[`querystringParser`](./Server.md#querystringparser).
 
 #### Methods
 <a id="methods"></a>

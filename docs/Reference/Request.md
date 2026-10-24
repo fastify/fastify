@@ -282,6 +282,10 @@ cooperative cancellation. On timeout, `signal.reason` is the
 
 The underlying connection of the incoming request.
 
+##### .is404
+
+`true` if request is being handled by 404 handler, `false` otherwise.
+
 #### Methods
 <a id="methods"></a>
 

@@ -1501,7 +1501,7 @@ When `fastify.close()` is called, the following steps happen in order:
 3. **Connection draining** based on the
    [`forceCloseConnections`](#forcecloseconnections) option:
    - `"idle"` — idle keep-alive connections are closed; in-flight requests
-     continue.
+     continue, and their connections are closed once they become idle.
    - `true` — all persistent connections are destroyed immediately.
    - `false` — no forced closure; idle connections remain open until they time
      out naturally (see [`keepAliveTimeout`](#keepalivetimeout)).

@@ -777,3 +777,47 @@ test('does not destroy connections with in-flight requests (default options)', a
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
 })
+
+test('close() does not wait for keepAliveTimeout when a connection becomes idle after close() was called', async t => {
+  const fastify = Fastify({ keepAliveTimeout: 60000 })
+  let release
+  let handling
+  const requested = new Promise((resolve) => { handling = resolve })
+  fastify.get('/', () => new Promise((resolve) => {
+    release = () => resolve({ hello: 'world' })
+    handling()
+  }))
+  let closeStarted
+  const closing = new Promise((resolve) => { closeStarted = resolve })
+  fastify.addHook('preClose', async () => { closeStarted() })
+  await fastify.listen({ port: 0, host: '127.0.0.1' })
+
+  const client = net.createConnection({ port: fastify.server.address().port, host: '127.0.0.1' })
+  let received = ''
+  client.on('data', (chunk) => { received += chunk })
+  const closed = new Promise((resolve) => client.once('close', resolve))
+  await new Promise((resolve) => client.once('connect', resolve))
+  client.write('GET / HTTP/1.1\r\nHost: fastify.test\r\nConnection: keep-alive\r\n\r\n')
+  await requested
+
+  // the connection is busy when server.close() is called, so it is not reaped there
+  const closePromise = fastify.close()
+  await closing
+  await new Promise((resolve) => {
+    const check = () => (fastify.server.listening ? setImmediate(check) : resolve())
+    check()
+  })
+  release()
+  let timer
+  await Promise.race([
+    closePromise,
+    new Promise((resolve, reject) => {
+      timer = setTimeout(() => reject(new Error('close() waited for the keep-alive timeout')), 5000)
+    })
+  ])
+  clearTimeout(timer)
+
+  // the server reaps the connection once it becomes idle
+  await closed
+  t.assert.match(received, /^HTTP\/1\.1 200 OK/)
+})

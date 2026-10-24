@@ -278,6 +278,10 @@ cooperative cancellation. On timeout, `signal.reason` is the
 `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
 `AbortError`. Check `signal.reason.code` to distinguish the two cases.
 
+##### .socket
+
+The underlying connection of the incoming request.
+
 #### Methods
 <a id="methods"></a>
 

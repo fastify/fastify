@@ -217,6 +217,10 @@ to headers on `not found` routes.
 
 The request ID.
 
+##### .log
+
+The logger instance of the incoming request.
+
 #### Methods
 <a id="methods"></a>
 

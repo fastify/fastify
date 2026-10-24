@@ -213,6 +213,10 @@ to headers on `not found` routes.
 > your application needs an allow-listed header subset, build and consume it
 > explicitly from the validated data or from `request.raw.headers`.
 
+##### .id
+
+The request ID.
+
 #### Methods
 <a id="methods"></a>
 

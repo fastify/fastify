@@ -117,6 +117,36 @@ Request is a core Fastify object containing the following fields:
   `true` if the input is valid, `false` otherwise. If `httpPart` is provided,
   the function uses the validator for that HTTP part. Defaults to `null`.
 
+```js
+fastify.post('/:params', options, function (request, reply) {
+  console.log(request.body)
+  console.log(request.query)
+  console.log(request.params)
+  console.log(request.headers)
+  console.log(request.raw)
+  console.log(request.server)
+  console.log(request.id)
+  console.log(request.ip)
+  console.log(request.ips)
+  console.log(request.host)
+  console.log(request.hostname)
+  console.log(request.port)
+  console.log(request.protocol)
+  console.log(request.url)
+  console.log(request.routeOptions.method)
+  console.log(request.routeOptions.bodyLimit)
+  console.log(request.routeOptions.handlerTimeout)
+  console.log(request.routeOptions.url)
+  console.log(request.routeOptions.attachValidation)
+  console.log(request.routeOptions.logLevel)
+  console.log(request.routeOptions.version)
+  console.log(request.routeOptions.exposeHeadRoute)
+  console.log(request.routeOptions.prefixTrailingSlash)
+  console.log(request.routeOptions.config)
+  request.log.info('some info')
+})
+```
+
 > ⚠️ Security:
 > `request.params`, `request.query`, `request.headers`, and `request.body`
 > are untrusted network input. Route parameter values are percent-decoded
@@ -174,35 +204,6 @@ to headers on `not found` routes.
 > your application needs an allow-listed header subset, build and consume it
 > explicitly from the validated data or from `request.raw.headers`.
 
-```js
-fastify.post('/:params', options, function (request, reply) {
-  console.log(request.body)
-  console.log(request.query)
-  console.log(request.params)
-  console.log(request.headers)
-  console.log(request.raw)
-  console.log(request.server)
-  console.log(request.id)
-  console.log(request.ip)
-  console.log(request.ips)
-  console.log(request.host)
-  console.log(request.hostname)
-  console.log(request.port)
-  console.log(request.protocol)
-  console.log(request.url)
-  console.log(request.routeOptions.method)
-  console.log(request.routeOptions.bodyLimit)
-  console.log(request.routeOptions.handlerTimeout)
-  console.log(request.routeOptions.url)
-  console.log(request.routeOptions.attachValidation)
-  console.log(request.routeOptions.logLevel)
-  console.log(request.routeOptions.version)
-  console.log(request.routeOptions.exposeHeadRoute)
-  console.log(request.routeOptions.prefixTrailingSlash)
-  console.log(request.routeOptions.config)
-  request.log.info('some info')
-})
-```
 ### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>
 

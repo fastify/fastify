@@ -57,8 +57,7 @@ Request is a core Fastify object containing the following fields:
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
 - `originalUrl` - The original URL of the incoming request.
-- `mediaType` - The media type extracted from `Content-Type` header. When `Content-Type`
-  header is missing, it will return `undefined`.
+- `mediaType` - The media type extracted from `Content-Type` header.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
 - `socket` - The underlying connection of the incoming request.
 - `signal` - An `AbortSignal` that aborts when the handler timeout
@@ -269,6 +268,11 @@ The protocol of the incoming request (`https` or `http`). This value comes from
 
 Similar to `url`, allows access to the original `url` in case of internal
 re-routing.
+
+##### .mediaType
+
+The media type extracted from `Content-Type` header. When `Content-Type` header
+is missing, it will return `undefined`.
 
 #### Methods
 <a id="methods"></a>

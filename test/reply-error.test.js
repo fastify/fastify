@@ -245,6 +245,35 @@ test('Error status code below 400 defaults to 500', (t, testDone) => {
   })
 })
 
+test('Error status code above 599 defaults to 500', (t, testDone) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  const err = new Error('winter is coming')
+  err.statusCode = 600
+
+  fastify.get('/', () => {
+    return Promise.reject(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.deepStrictEqual(
+      {
+        error: statusCodes['500'],
+        message: err.message,
+        statusCode: 500
+      },
+      JSON.parse(res.payload)
+    )
+    testDone()
+  })
+})
+
 test('Error.status property support', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()

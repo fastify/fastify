@@ -582,7 +582,7 @@ For more information, see
     `reply.removeHeader('set-cookie')`, read more about `.removeHeader(key)`
     [here](#removeheaderkey).
 
-### .headers(object)
+##### .headers(object)
 <a id="headers"></a>
 
 Sets all the keys of the object as response headers.

@@ -488,19 +488,6 @@ fastify.setNotFoundHandler(function (request, reply) {
 })
 ```
 
-###### Type of the final payload
-<a id="payload-type"></a>
-
-The type of the sent payload (after serialization and going through any
-[`onSend` hooks](./Hooks.md#onsend)) must be one of the following types,
-otherwise, an error will be thrown:
-
-- `string`
-- `Buffer`
-- `stream`
-- `undefined`
-- `null`
-
 ###### Async-Await and Promises
 <a id="async-await-promise"></a>
 
@@ -541,6 +528,19 @@ fastify.get('/botnet', async function (request, reply) {
 
 If you want to know more please review
 [Routes#async-await](./Routes.md#async-await).
+
+###### Type of the final payload
+<a id="payload-type"></a>
+
+The type of the sent payload (after serialization and going through any
+[`onSend` hooks](./Hooks.md#onsend)) must be one of the following types,
+otherwise, an error will be thrown:
+
+- `string`
+- `Buffer`
+- `stream`
+- `undefined`
+- `null`
 
 ##### .code(statusCode)
 <a id="code"></a>

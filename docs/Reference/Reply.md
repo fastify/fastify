@@ -687,7 +687,7 @@ reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
 
 Returns a boolean indicating if the specified header has been set.
 
-### .removeHeader(key)
+##### .removeHeader(key)
 <a id="removeHeader"></a>
 
 Remove the value of a previously set header.

@@ -1,6 +1,42 @@
 <h1 align="center">Fastify</h1>
 
 ## Request
+- [Introduction](#introduction)
+- [Request](#request-object)
+  - [Properties](#properties)
+    - [.body](#body)
+    - [.query](#query)
+    - [.params](#params)
+    - [.headers](#headers)
+    - [.id](#id)
+    - [.log](#log)
+    - [.method](#method)
+    - [.url](#url)
+    - [.routeOptions](#routeoptions)
+    - [.server](#server)
+    - [.raw](#raw)
+    - [.ip](#ip)
+    - [.ips](#ips)
+    - [.host](#host)
+    - [.hostname](#hostname)
+    - [.port](#port)
+    - [.protocol](#protocol)
+    - [.originalUrl](#originalurl)
+    - [.mediaType](#mediatype)
+    - [.signal](#signal)
+    - [.socket](#socket)
+    - [.is404](#is404)
+    - [.validationError](#validationerror)
+  - [Methods](#methods)
+    - [.getDecorator(name)](#getdecorator)
+    - [.setDecorator(name, value)](#setdecorator)
+    - [.getValidationFunction(schema | httpPart)](#getvalidationfunction)
+    - [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema)
+    - [.validateInput(data, [schema | httpPart], [httpPart])](#validate)
+
+### Introduction
+<a id="introduction"></a>
+
 The first parameter of the handler function is `Request`.
 
 Request is a core Fastify object containing the following fields:
@@ -98,6 +134,15 @@ Request is a core Fastify object containing the following fields:
   Validates the input using the specified schema or HTTP part and returns
   `true` if the input is valid, `false` otherwise. If `httpPart` is provided,
   the function uses the validator for that HTTP part. Defaults to `null`.
+
+### Request
+<a id="request-object"></a>
+
+#### Properties
+<a id="properties"></a>
+
+#### Methods
+<a id="methods"></a>
 
 ### Headers
 

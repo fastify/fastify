@@ -163,7 +163,7 @@ request.headers = {
 ```
 
 This operation adds new values to the request headers, accessible via
-`request.headers.bar`. Standard request headers remain accessible via
+`request.headers.foo`. Standard request headers remain accessible via
 `request.raw.headers`.
 
 For performance reasons, `Symbol('fastify.RequestAcceptVersion')` may be added
@@ -360,7 +360,7 @@ fastify.addHook('preHandler', async (request) => {
 
 By calling this function with a provided `schema` or `httpPart`, it returns a
 `validation` function to validate diverse inputs. It returns `undefined` if no
-serialization function is found using the provided inputs.
+validation function is found using the provided inputs.
 
 This function has an `errors` property. Errors encountered during the last
 validation are assigned to `errors`.
@@ -427,8 +427,8 @@ const validate = request
                         type: 'string'
                       }
                     }
-                  }, 200)
-console.log(validate({ hello: 'world' })) // false
+                  }, 'body')
+console.log(validate({ foo: {} })) // false
 console.log(validate.errors) // validation errors
 ```
 

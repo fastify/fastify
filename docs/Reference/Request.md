@@ -182,10 +182,7 @@ becomes a space, and `%2f` becomes `/`). Decoded values may contain `.`, `..`,
 [security note](#introduction) and
 [Routes - Url building](./Routes.md#url-building).
 
-#### Methods
-<a id="methods"></a>
-
-### Headers
+##### .headers
 
 The `request.headers` is a getter that returns an object with the headers of the
 incoming request. Set custom headers as follows:
@@ -215,6 +212,9 @@ to headers on `not found` routes.
 > headers (plus any additive values), not a sanitized or authoritative view. If
 > your application needs an allow-listed header subset, build and consume it
 > explicitly from the validated data or from `request.raw.headers`.
+
+#### Methods
+<a id="methods"></a>
 
 ### .getValidationFunction(schema | httpPart)
 <a id="getvalidationfunction"></a>

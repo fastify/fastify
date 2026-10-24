@@ -42,11 +42,7 @@ The first parameter of the handler function is `Request`.
 Request is a core Fastify object containing the following fields:
 - `query` - The parsed querystring.
 - `body` - The request payload.
-- `params` - The params matching the URL. Values are percent-decoded
-  (for example `%20` becomes a space, and `%2f` becomes `/`). Decoded
-  values may contain `.`, `..`, `/`, or other characters; treat them as
-  untrusted input. See the security note below and
-  [Routes - Url building](./Routes.md#url-building).
+- `params` - The params matching the URL.
 - [`headers`](#headers) - The headers getter and setter.
 - `raw` - The incoming HTTP request from Node core.
 - `server` - The Fastify server instance, scoped to the current
@@ -177,6 +173,14 @@ other content types.
 
 The parsed querystring. Its format is specified by
 [`querystringParser`](./Server.md#querystringparser).
+
+##### .params
+
+The params matching the URL. Values are percent-decoded (for example `%20`
+becomes a space, and `%2f` becomes `/`). Decoded values may contain `.`, `..`,
+`/`, or other characters; treat them as untrusted input. See the
+[security note](#introduction) and
+[Routes - Url building](./Routes.md#url-building).
 
 #### Methods
 <a id="methods"></a>

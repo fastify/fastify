@@ -43,6 +43,7 @@
     - [.removeTrailer(key)](#removetrailerkey)
     - [.writeEarlyHints(hints, callback)](#writeearlyhintshints-callback)
     - [.then(fulfilled, rejected)](#thenfulfilled-rejected)
+    - [.getDecorator(name)](#getdecoratorname)
     - [.getSerializationFunction(schema | httpStatus, [contentType])](#getserializationfunctionschema--httpstatus-contenttype)
     - [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschemaschema-httpstatus-contenttype)
     - [.serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])](#serializeinputdata-schema--httpstatus-httpstatus-contenttype)
@@ -101,6 +102,7 @@ since the request was received by Fastify.
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
+- `.getDecorator(name)` - Returns the value of a reply decorator.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -910,6 +912,25 @@ For more details, see:
   feature
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
   for the signature
+
+##### .getDecorator(name)
+
+Returns the value of a reply decorator declared with
+[`decorateReply`](./Decorators.md#decoratereplyname-value-dependencies). If the
+decorator is a function, it is returned bound to the reply. It throws an
+`FST_ERR_DEC_UNDECLARED` error if the decorator has not been declared. See
+[`getDecorator`](./Decorators.md#getdecoratorname) for more details.
+
+```js
+fastify.decorateReply('helper', function () {
+  return this.statusCode
+})
+
+fastify.get('/', function (request, reply) {
+  const helper = reply.getDecorator('helper')
+  reply.code(201).send({ statusCode: helper() }) // { statusCode: 201 }
+})
+```
 
 ##### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>

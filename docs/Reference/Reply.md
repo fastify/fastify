@@ -142,6 +142,32 @@ invocation of `reply.send()` once the handler promise resolve should be skipped.
 By calling `reply.hijack()`, an application claims full responsibility for the
 low-level request and response. Moreover, hooks will not be invoked.
 
+##### .request
+<a id="request"></a>
+
+The [`Request`](./Request.md) object of the incoming request this reply belongs
+to.
+
+```js
+fastify.addHook('onSend', async function (request, reply, payload) {
+  reply.header('x-request-url', reply.request.url)
+})
+```
+
+##### .log
+<a id="log"></a>
+
+The logger instance of the incoming request. It is the same instance as
+`request.log`, so every log line includes the request id. See
+[Logging](./Logging.md) for more information.
+
+```js
+fastify.get('/', function (request, reply) {
+  reply.log.info('sending the response')
+  reply.send({ hello: 'world' })
+})
+```
+
 ##### .raw
 <a id="raw"></a>
 
@@ -177,6 +203,18 @@ fastify.decorate('util', function util () {
 
 fastify.get('/', async function (req, rep) {
   return rep.server.util() // foo
+})
+```
+
+##### .routeOptions
+<a id="routeoptions"></a>
+
+A read-only reference to the route options of the incoming request. It is the
+same object as [`request.routeOptions`](./Request.md).
+
+```js
+fastify.get('/', { config: { foo: 'bar' } }, function (request, reply) {
+  reply.send(reply.routeOptions.config.foo) // bar
 })
 ```
 
@@ -547,6 +585,8 @@ otherwise, an error will be thrown:
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
+`.status(statusCode)` is an alias of `.code(statusCode)`.
+
 ##### .header(key, value)
 <a id="header"></a>
 
@@ -757,6 +797,21 @@ reply
 
 See [`.send()`](#send) for more information on sending different types of
 values.
+
+##### .serialize(payload)
+<a id="serialize"></a>
+
+Serializes the specified payload using the custom serializer set via
+[`.serializer()`](#serializerfunc), if any. Otherwise, it uses the default
+serializer of the route, which takes into account the response schema for the
+current status code. It returns the serialized payload.
+
+```js
+fastify.get('/', function (request, reply) {
+  const payload = reply.serialize({ hello: 'world' })
+  reply.type('application/json').send(payload)
+})
+```
 
 ##### .trailer(key, function)
 <a id="trailer"></a>

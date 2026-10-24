@@ -895,7 +895,7 @@ serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
-### .compileSerializationSchema(schema, [httpStatus], [contentType])
+##### .compileSerializationSchema(schema, [httpStatus], [contentType])
 <a id="compileserializationschema"></a>
 
 This function will compile a serialization schema and

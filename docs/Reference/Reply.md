@@ -180,6 +180,19 @@ fastify.get('/', async function (req, rep) {
 })
 ```
 
+##### .mediaType
+<a id="mediatype"></a>
+
+Returns the media type extracted from `Content-Type` header. When `Content-Type`
+header is missing, it will return `undefined`.
+
+```js
+if (reply.mediaType === 'image/gif') {
+  const versionBuffer = new Uint8Array(reply.payload, 3, 3)
+  reply.header('x-gif-version', new TextDecoder().decode(versionBuffer))
+}
+```
+
 #### Methods
 <a id="methods"></a>
 
@@ -196,19 +209,6 @@ since the request was received by Fastify.
 
 ```js
 const milliseconds = reply.elapsedTime
-```
-
-### .mediaType
-<a id="mediatype"></a>
-
-Returns the media type extracted from `Content-Type` header. When `Content-Type`
-header is missing, it will return `undefined`.
-
-```js
-if (reply.mediaType === 'image/gif') {
-  const versionBuffer = new Uint8Array(reply.payload, 3, 3)
-  reply.header('x-gif-version', new TextDecoder().decode(versionBuffer))
-}
 ```
 
 ### .header(key, value)

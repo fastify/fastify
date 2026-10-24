@@ -799,6 +799,11 @@ reply.trailer('content-md5', async function(reply, payload) {
 })
 ```
 
+##### .hasTrailer(key)
+<a id="hasTrailer"></a>
+
+Returns a boolean indicating if the specified trailer has been set.
+
 ### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>
 
@@ -819,11 +824,6 @@ reply.writeEarlyHints({
 
 The optional callback parameter is a function that will be called
 once the hint is sent or if an error occurs.
-
-### .hasTrailer(key)
-<a id="hasTrailer"></a>
-
-Returns a boolean indicating if the specified trailer has been set.
 
 ### .removeTrailer(key)
 <a id="removeTrailer"></a>

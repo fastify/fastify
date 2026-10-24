@@ -84,20 +84,6 @@ Request is a core Fastify object containing the following fields:
   `FST_ERR_HANDLER_TIMEOUT` error; on client disconnect it is a generic
   `AbortError`. Check `signal.reason.code` to distinguish the two cases.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object.
-  - `bodyLimit` - Either server limit or route limit.
-  - `handlerTimeout` - The handler timeout configured for this route.
-  - `config` - The [`config`](./Routes.md#routes-config) object for this route.
-  - `method` - The HTTP method for the route.
-  - `url` - The path of the URL to match this route.
-  - `handler` - The handler for this route.
-  - `attachValidation` - Attach `validationError` to request (if there is
-    a schema defined).
-  - `logLevel` - Log level defined for this route.
-  - `schema` - The JSON schemas definition for this route.
-  - `version` - A semver compatible string that defines the version of the endpoint.
-  - `exposeHeadRoute` - Creates a sibling HEAD route for any GET routes.
-  - `prefixTrailingSlash` - String used to determine how to handle passing `/`
-    as a route with a prefix.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) -
   Returns a validation function for the specified schema or HTTP part, if
   set or cached.
@@ -228,6 +214,25 @@ The method of the incoming request.
 ##### .url
 
 The URL of the incoming request.
+
+##### .routeOptions
+
+The route [`option`](./Routes.md#routes-options) object.
+- `bodyLimit` - Either server limit or route limit.
+- `handlerTimeout` - The handler timeout configured for this route.
+- `config` - The [`config`](./Routes.md#routes-config) object for this route.
+- `method` - The HTTP method for the route.
+- `url` - The path of the URL to match this route.
+- `handler` - The handler for this route.
+- `attachValidation` - Attach `validationError` to request (if there is
+  a schema defined).
+- `logLevel` - Log level defined for this route.
+- `schema` - The JSON schemas definition for this route.
+- `version` - A semver compatible string that defines the version of the
+  endpoint.
+- `exposeHeadRoute` - Creates a sibling HEAD route for any GET routes.
+- `prefixTrailingSlash` - String used to determine how to handle passing `/`
+  as a route with a prefix.
 
 #### Methods
 <a id="methods"></a>

@@ -730,6 +730,34 @@ app.get('/', (req, reply) => {
 If `reply.raw` is used to send a response back to the user, the `onResponse`
 hooks will still be executed.
 
+##### .serializer(func)
+<a id="serializer"></a>
+
+By default, `.send()` will JSON-serialize any value that is not one of `Buffer`,
+`stream`, `string`, `undefined`, or `Error`. If you need to replace the default
+serializer with a custom serializer for a particular request, you can do so with
+the `.serializer()` utility. Be aware that if you are using a custom serializer,
+you must set a custom `'Content-Type'` header.
+
+```js
+reply
+  .header('Content-Type', 'application/x-protobuf')
+  .serializer(protoBuf.serialize)
+```
+
+Note that you don't need to use this utility inside a `handler` because Buffers,
+streams, and strings (unless a serializer is set) are considered to already be
+serialized.
+
+```js
+reply
+  .header('Content-Type', 'application/x-protobuf')
+  .send(protoBuf.serialize(data))
+```
+
+See [`.send()`](#send) for more information on sending different types of
+values.
+
 ### .writeEarlyHints(hints, callback)
 <a id="writeEarlyHints"></a>
 
@@ -1000,34 +1028,6 @@ reply
 
 See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
-
-### .serializer(func)
-<a id="serializer"></a>
-
-By default, `.send()` will JSON-serialize any value that is not one of `Buffer`,
-`stream`, `string`, `undefined`, or `Error`. If you need to replace the default
-serializer with a custom serializer for a particular request, you can do so with
-the `.serializer()` utility. Be aware that if you are using a custom serializer,
-you must set a custom `'Content-Type'` header.
-
-```js
-reply
-  .header('Content-Type', 'application/x-protobuf')
-  .serializer(protoBuf.serialize)
-```
-
-Note that you don't need to use this utility inside a `handler` because Buffers,
-streams, and strings (unless a serializer is set) are considered to already be
-serialized.
-
-```js
-reply
-  .header('Content-Type', 'application/x-protobuf')
-  .send(protoBuf.serialize(data))
-```
-
-See [`.send()`](#send) for more information on sending different types of
-values.
 
 ### .then(fulfilled, rejected)
 <a id="then"></a>

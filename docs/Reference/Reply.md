@@ -659,7 +659,7 @@ Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
 reply.code(303).redirect('/home', 302)
 ```
 
-### .getHeader(key)
+##### .getHeader(key)
 <a id="getHeader"></a>
 
 Retrieves the value of a previously set header.

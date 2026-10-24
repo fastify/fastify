@@ -837,6 +837,25 @@ reply.writeEarlyHints({
 The optional callback parameter is a function that will be called
 once the hint is sent or if an error occurs.
 
+##### .then(fulfilled, rejected)
+<a id="then"></a>
+
+As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply`
+will wait until the reply is sent. The `await` syntax calls the `reply.then()`.
+
+`reply.then(fulfilled, rejected)` accepts two parameters:
+
+- `fulfilled` will be called when a response has been fully sent,
+- `rejected` will be called if the underlying stream had an error, e.g. the
+  socket has been destroyed.
+
+For more details, see:
+
+- https://github.com/fastify/fastify/issues/1864 for the discussion about this
+  feature
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
+  for the signature
+
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>
 
@@ -1027,22 +1046,3 @@ reply
 
 See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
-
-### .then(fulfilled, rejected)
-<a id="then"></a>
-
-As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply`
-will wait until the reply is sent. The `await` syntax calls the `reply.then()`.
-
-`reply.then(fulfilled, rejected)` accepts two parameters:
-
-- `fulfilled` will be called when a response has been fully sent,
-- `rejected` will be called if the underlying stream had an error, e.g. the
-  socket has been destroyed.
-
-For more details, see:
-
-- https://github.com/fastify/fastify/issues/1864 for the discussion about this
-  feature
-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
-  for the signature

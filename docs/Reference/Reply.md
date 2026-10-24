@@ -547,7 +547,7 @@ If you want to know more please review
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
-### .header(key, value)
+##### .header(key, value)
 <a id="header"></a>
 
 Sets a response header. If the value is omitted or undefined, it is coerced to
@@ -563,7 +563,7 @@ Sets a response header. If the value is omitted or undefined, it is coerced to
 For more information, see
 [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_response_setheader_name_value).
 
-- ### set-cookie
+- ###### set-cookie
   <a id="set-cookie"></a>
 
     - When sending different values as a cookie with `set-cookie` as the key,
@@ -581,8 +581,6 @@ For more information, see
   - To reset the `set-cookie` header, you need to make an explicit call to
     `reply.removeHeader('set-cookie')`, read more about `.removeHeader(key)`
     [here](#removeheaderkey).
-
-
 
 ### .headers(object)
 <a id="headers"></a>

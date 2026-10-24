@@ -257,6 +257,14 @@ To register a **parametric** path, use a *colon* before the parameter name. For
 **wildcard**, use a *star*. Static routes are always checked before parametric
 and wildcard routes.
 
+Because non-static requests fall through to dynamic routes when no static route
+matches, root-level parametric routes (such as `/:param`) or wildcard routes
+(such as `/*`) will match automatic browser requests like `/favicon.ico`. When
+unhandled, this can trigger route validation or application handlers
+unexpectedly. To prevent this, register an explicit static route (such as
+returning a `204` status code), or use a plugin such as
+[`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon).
+
 ```js
 // parametric
 fastify.get('/example/:userId', function (request, reply) {

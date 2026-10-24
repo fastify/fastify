@@ -254,6 +254,10 @@ compatibility, it returns `:authority` if no host header exists. The host header
 may return an empty string if `requireHostHeader` is `false`, not provided with
 HTTP/1.0, or removed by schema validation.
 
+##### .hostname
+
+The hostname parsed from `request.host`.
+
 #### Methods
 <a id="methods"></a>
 

@@ -127,7 +127,12 @@ server.addHook('onRequestAbort', function (request, done) {
 
 server.addHook('onRoute', function (opts) {
   expect(this).type.toBe<FastifyInstance>()
-  expect(opts).type.toBe<RouteOptions & { routePath: string; path: string; prefix: string }>()
+  expect(opts).type.toBe<RouteOptions & {
+    routePath: string;
+    path: string;
+    prefix: string;
+    isGeneratedHeadRoute: boolean;
+  }>()
 })
 
 server.addHook('onRegister', function (instance, opts) {

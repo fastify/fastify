@@ -252,43 +252,6 @@ fastify.get('/json', options, function (request, reply) {
 })
 ```
 
-###### Streams
-<a id="send-streams"></a>
-
-If you are sending a stream and you have not set a `'Content-Type'` header,
-*send* will set it to `'application/octet-stream'`.
-
-As noted above, streams are considered to be pre-serialized, so they will be
-sent unmodified without response validation.
-
-When sending streams over HTTP/2, Fastify does not change the chunks emitted by
-the stream. If a stream can emit very large chunks, split them in your
-application code, for example by using `fs.createReadStream()` or a transform
-stream that emits smaller chunks.
-
-See special note about error handling for streams in
-[`setErrorHandler`](./Server.md#seterrorhandler).
-
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', function (request, reply) {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.header('Content-Type', 'application/octet-stream')
-  reply.send(stream)
-})
-```
-When using async-await you will need to return or await the reply object:
-```js
-const fs = require('node:fs')
-
-fastify.get('/streams', async function (request, reply) {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.header('Content-Type', 'application/octet-stream')
-  return reply.send(stream)
-})
-```
-
 ###### Buffers
 <a id="send-buffers"></a>
 
@@ -335,6 +298,43 @@ const fs = require('node:fs')
 fastify.get('/streams', function (request, reply) {
   const typedArray = new Uint16Array(10)
   reply.send(typedArray)
+})
+```
+
+###### Streams
+<a id="send-streams"></a>
+
+If you are sending a stream and you have not set a `'Content-Type'` header,
+*send* will set it to `'application/octet-stream'`.
+
+As noted above, streams are considered to be pre-serialized, so they will be
+sent unmodified without response validation.
+
+When sending streams over HTTP/2, Fastify does not change the chunks emitted by
+the stream. If a stream can emit very large chunks, split them in your
+application code, for example by using `fs.createReadStream()` or a transform
+stream that emits smaller chunks.
+
+See special note about error handling for streams in
+[`setErrorHandler`](./Server.md#seterrorhandler).
+
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', function (request, reply) {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
+  reply.send(stream)
+})
+```
+When using async-await you will need to return or await the reply object:
+```js
+const fs = require('node:fs')
+
+fastify.get('/streams', async function (request, reply) {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
+  return reply.send(stream)
 })
 ```
 

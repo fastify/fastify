@@ -142,6 +142,28 @@ invocation of `reply.send()` once the handler promise resolve should be skipped.
 By calling `reply.hijack()`, an application claims full responsibility for the
 low-level request and response. Moreover, hooks will not be invoked.
 
+##### .raw
+<a id="raw"></a>
+
+This is the
+[`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
+from Node core. Whilst you are using the Fastify `Reply` object, the use of
+`Reply.raw` functions is at your own risk as you are skipping all the Fastify
+logic of handling the HTTP response. e.g.:
+
+```js
+app.get('/cookie-2', (req, reply) => {
+  reply.setCookie('session', 'value', { secure: false }) // this will not be used
+
+  // in this case we are using only the nodejs http server response object
+  reply.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+  reply.raw.write('ok')
+  reply.raw.end()
+})
+```
+Another example of the misuse of `Reply.raw` is explained in
+[Reply](#getheaders).
+
 #### Methods
 <a id="methods"></a>
 
@@ -649,28 +671,6 @@ reply
 
 See [`.send()`](#send) for more information on sending different types of
 values.
-
-### .raw
-<a id="raw"></a>
-
-This is the
-[`http.ServerResponse`](https://nodejs.org/dist/latest-v20.x/docs/api/http.html#http_class_http_serverresponse)
-from Node core. Whilst you are using the Fastify `Reply` object, the use of
-`Reply.raw` functions is at your own risk as you are skipping all the Fastify
-logic of handling the HTTP response. e.g.:
-
-```js
-app.get('/cookie-2', (req, reply) => {
-  reply.setCookie('session', 'value', { secure: false }) // this will not be used
-
-  // in this case we are using only the nodejs http server response object
-  reply.raw.writeHead(200, { 'Content-Type': 'text/plain' })
-  reply.raw.write('ok')
-  reply.raw.end()
-})
-```
-Another example of the misuse of `Reply.raw` is explained in
-[Reply](#getheaders).
 
 ### .hijack()
 <a name="hijack"></a>

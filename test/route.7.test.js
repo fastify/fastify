@@ -96,6 +96,79 @@ test('HEAD route should handle ReadableStream.cancel() error', (t, done) => {
   })
 })
 
+test('HEAD route mirrors status and headers of a web Response returned by GET', async t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/web-response', (req, reply) => {
+    reply.send(new Response('hello world', {
+      status: 201,
+      headers: { 'x-demo': 'yes', 'content-type': 'text/plain' }
+    }))
+  })
+
+  const getRes = await fastify.inject({ method: 'GET', url: '/web-response' })
+  t.assert.strictEqual(getRes.statusCode, 201)
+  t.assert.strictEqual(getRes.body, 'hello world')
+
+  const headRes = await fastify.inject({ method: 'HEAD', url: '/web-response' })
+  t.assert.strictEqual(headRes.statusCode, 201)
+  t.assert.strictEqual(headRes.headers['x-demo'], 'yes')
+  t.assert.strictEqual(headRes.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(headRes.body, '')
+})
+
+test('HEAD route cancels the body stream of a web Response', (t, done) => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/web-response-stream', (req, reply) => {
+    return new Response(new ReadableStream({
+      start (controller) {
+        controller.enqueue('hi')
+      },
+      cancel (reason) {
+        t.assert.strictEqual(reason, 'Stream cancelled by HEAD route')
+      }
+    }), { status: 200 })
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-stream'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
+  })
+})
+
+test('HEAD route keeps GET error when web Response body is locked', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/web-response-locked', (req, reply) => {
+    const body = new ReadableStream({
+      start (controller) {
+        controller.enqueue('x')
+      }
+    })
+    const response = new Response(body)
+    body.getReader()
+    return response
+  })
+
+  const getRes = await fastify.inject({ method: 'GET', url: '/web-response-locked' })
+  t.assert.strictEqual(getRes.statusCode, 500)
+  t.assert.strictEqual(getRes.json().code, 'FST_ERR_REP_READABLE_STREAM_LOCKED')
+
+  const headRes = await fastify.inject({ method: 'HEAD', url: '/web-response-locked' })
+  t.assert.strictEqual(headRes.statusCode, 500)
+})
+
 test('HEAD route should be exposed by default', async t => {
   t.plan(5)
 

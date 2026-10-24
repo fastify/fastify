@@ -668,7 +668,7 @@ reply.header('x-foo', 'foo') // setHeader: key, value
 reply.getHeader('x-foo') // 'foo'
 ```
 
-### .getHeaders()
+##### .getHeaders()
 <a id="getHeaders"></a>
 
 Gets a shallow copy of all current response headers, including those set via the

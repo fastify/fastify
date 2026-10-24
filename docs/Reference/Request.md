@@ -56,8 +56,7 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - The protocol of the incoming request (`https` or `http`).
 - `method` - The method of the incoming request.
 - `url` - The URL of the incoming request.
-- `originalUrl` - Similar to `url`, allows access to the original `url` in
-  case of internal re-routing.
+- `originalUrl` - The original URL of the incoming request.
 - `mediaType` - The media type extracted from `Content-Type` header. When `Content-Type`
   header is missing, it will return `undefined`.
 - `is404` - `true` if request is being handled by 404 handler, `false` otherwise.
@@ -265,6 +264,11 @@ listening on.
 The protocol of the incoming request (`https` or `http`). This value comes from
 `socket.encrypted` (or `X-Forwarded-Proto` when
 [`trustProxy`](./Server.md#factory-trust-proxy) is enabled).
+
+##### .originalUrl
+
+Similar to `url`, allows access to the original `url` in case of internal
+re-routing.
 
 #### Methods
 <a id="methods"></a>

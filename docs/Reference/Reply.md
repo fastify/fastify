@@ -594,6 +594,19 @@ reply.headers({
 })
 ```
 
+##### .type(contentType)
+<a id="type"></a>
+
+Sets the content type for the response. This is a shortcut for
+`reply.header('Content-Type', 'the/type')`.
+
+```js
+reply.type('text/html')
+```
+If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
+`utf-8` will be used as the charset by default. For other content types, the
+charset must be set explicitly.
+
 ### .getHeader(key)
 <a id="getHeader"></a>
 
@@ -773,19 +786,6 @@ hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 ```js
 reply.callNotFound()
 ```
-
-### .type(contentType)
-<a id="type"></a>
-
-Sets the content type for the response. This is a shortcut for
-`reply.header('Content-Type', 'the/type')`.
-
-```js
-reply.type('text/html')
-```
-If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
-`utf-8` will be used as the charset by default. For other content types, the
-charset must be set explicitly.
 
 ### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>

@@ -118,6 +118,17 @@ fastify.get('/', options, function (request, reply) {
 #### Properties
 <a id="properties"></a>
 
+##### .statusCode
+<a id="statusCode"></a>
+
+This property reads and sets the HTTP status code. It is an alias for
+`reply.code()` when used as a setter.
+```js
+if (reply.statusCode >= 299) {
+  reply.statusCode = 500
+}
+```
+
 #### Methods
 <a id="methods"></a>
 
@@ -136,16 +147,6 @@ since the request was received by Fastify.
 const milliseconds = reply.elapsedTime
 ```
 
-### .statusCode
-<a id="statusCode"></a>
-
-This property reads and sets the HTTP status code. It is an alias for
-`reply.code()` when used as a setter.
-```js
-if (reply.statusCode >= 299) {
-  reply.statusCode = 500
-}
-```
 ### .mediaType
 <a id="mediatype"></a>
 

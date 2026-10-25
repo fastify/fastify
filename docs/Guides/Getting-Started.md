@@ -445,6 +445,11 @@ above structure.
           └── your services
 ```
 
+You can load every plugin in a directory with
+[`@fastify/autoload`](https://github.com/fastify/fastify-autoload).
+Register that plugin after the plugins it depends on, so the loading
+order above still applies.
+
 ### Validate your data
 <a id="validate-data"></a>
 

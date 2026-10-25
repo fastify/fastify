@@ -117,6 +117,12 @@ fastify.post('/:params', options, function (request, reply) {
 > them. Prefer [`@fastify/static`](https://github.com/fastify/fastify-static)
 > (or `reply.sendFile`) when serving files from a root directory.
 >
+> `request.url` is the raw request target and is neither percent-decoded nor
+> normalized, so it can differ from the route the request was dispatched to:
+> `/%61dmin/users` is routed to `/admin/users` while `request.url` stays
+> `/%61dmin/users`. Do not use it for authorization decisions; use
+> `request.routeOptions.url` for the matched route path.
+>
 > `request.ip`, `request.ips`, `request.host`, `request.hostname`,
 > `request.port`, and `request.protocol` come from request metadata
 > (socket and/or forwarding headers) and should also be treated as
@@ -199,7 +205,17 @@ The method of the incoming request.
 
 ##### .url
 
-The URL of the incoming request.
+The raw request target of the incoming request, exactly as it arrived on the
+request line. It is not percent-decoded and not normalized, so it can differ
+from the path the router matched: a request for `/%61dmin/users` is dispatched
+to the `/admin/users` route while `request.url` remains `/%61dmin/users`. For
+an absolute-form request target — which servers must accept, see
+[RFC 9112 §3.2.2](https://www.rfc-editor.org/rfc/rfc9112#section-3.2.2) — it
+holds the whole URI, for example `http://example.com/admin/users`.
+
+Use [`request.routeOptions.url`](#routeoptions) when you need the path of the
+route that matched, such as in an `onRequest` hook that makes an authorization
+decision. See the [security note](#introduction).
 
 ##### .routeOptions
 

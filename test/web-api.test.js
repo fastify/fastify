@@ -6,7 +6,6 @@ const fs = require('node:fs')
 const { Readable } = require('node:stream')
 const { fetch: undiciFetch } = require('undici')
 const http = require('node:http')
-const zlib = require('node:zlib')
 const { setTimeout: sleep } = require('node:timers/promises')
 
 test('should response with a ReadableStream', async (t) => {
@@ -614,76 +613,4 @@ test('WebStream should warn when headers already sent', async (t) => {
   const response = await fetch(`http://localhost:${fastify.server.address().port}/`)
   t.assert.strictEqual(response.status, 200)
   t.assert.strictEqual(warnCalled, true)
-})
-
-test('should not forward content-encoding and content-length from a decoded fetch Response', async (t) => {
-  t.plan(5)
-
-  const plain = 'hello world '.repeat(200)
-  const gzipped = zlib.gzipSync(plain)
-
-  const upstream = http.createServer((req, res) => {
-    res.writeHead(200, {
-      'content-type': 'text/plain',
-      'content-encoding': 'gzip',
-      'content-length': gzipped.length
-    })
-    res.end(gzipped)
-  })
-  await new Promise((resolve) => upstream.listen(0, '127.0.0.1', resolve))
-  t.after(() => {
-    upstream.close()
-    upstream.closeAllConnections()
-  })
-
-  const fastify = Fastify()
-  t.after(() => fastify.close())
-
-  fastify.get('/', function (request, reply) {
-    return fetch(`http://127.0.0.1:${upstream.address().port}/`)
-  })
-
-  await fastify.listen({ port: 0 })
-
-  const { statusCode, headers, body } = await new Promise((resolve, reject) => {
-    http.get(`http://localhost:${fastify.server.address().port}/`, (res) => {
-      const chunks = []
-      res.on('data', (chunk) => chunks.push(chunk))
-      res.on('end', () => {
-        resolve({ statusCode: res.statusCode, headers: res.headers, body: Buffer.concat(chunks).toString() })
-      })
-      res.on('error', reject)
-    }).on('error', reject)
-  })
-
-  t.assert.strictEqual(statusCode, 200)
-  t.assert.strictEqual(headers['content-type'], 'text/plain')
-  t.assert.strictEqual(headers['content-encoding'], undefined)
-  t.assert.strictEqual(headers['content-length'], undefined)
-  t.assert.strictEqual(body, plain)
-})
-
-test('should keep content-encoding and content-length on a Response built by hand', async (t) => {
-  t.plan(4)
-
-  const gzipped = zlib.gzipSync('hello')
-
-  const fastify = Fastify()
-
-  fastify.get('/', function (request, reply) {
-    reply.send(new Response(gzipped, {
-      status: 200,
-      headers: {
-        'content-encoding': 'gzip',
-        'content-length': gzipped.length
-      }
-    }))
-  })
-
-  const { statusCode, headers, rawPayload } = await fastify.inject({ method: 'GET', path: '/' })
-
-  t.assert.strictEqual(statusCode, 200)
-  t.assert.strictEqual(headers['content-encoding'], 'gzip')
-  t.assert.strictEqual(headers['content-length'], String(gzipped.length))
-  t.assert.strictEqual(zlib.gunzipSync(rawPayload).toString(), 'hello')
 })

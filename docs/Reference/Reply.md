@@ -843,11 +843,12 @@ Such behavior is based on `Response` only allow `readonly` status
 code and headers. The data is not allow to be bi-direction editing,
 and may confuse when checking the `payload` in `onSend` hooks.
 
-A `Response` returned by `fetch()` carries a body that has already been
-decoded, while its `content-encoding` and `content-length` headers still
-describe the encoded upstream bytes. Fastify does not forward those two
-headers in that case. A `Response` created with `new Response()` is sent
-with its headers unchanged.
+Headers of a `Response` are forwarded as-is. A `Response` returned by
+`fetch()` may carry a decoded body while its `content-encoding` and
+`content-length` headers still describe the encoded upstream bytes, so
+remove them before sending it, or use
+[`@fastify/http-proxy`](https://github.com/fastify/fastify-http-proxy)
+to proxy upstream responses.
 
 ```js
 const fs = require('node:fs')

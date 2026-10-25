@@ -43,6 +43,50 @@ if (os.platform() !== 'win32') {
   })
 }
 
+test('listen on a path with a host does not create additional bindings', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const sockFile = os.platform() !== 'win32'
+    ? path.join(os.tmpdir(), `${(Math.random().toString(16) + '0000000').slice(2, 10)}-server.sock`)
+    : `\\\\.\\pipe\\${(Math.random().toString(16) + '0000000').slice(2, 10)}-server-sock`
+
+  if (os.platform() !== 'win32') {
+    try {
+      fs.unlinkSync(sockFile)
+    } catch (e) { }
+  }
+
+  await fastify.listen({ path: sockFile, host: 'localhost' })
+
+  t.assert.strictEqual(fastify.server.address(), sockFile)
+  t.assert.deepStrictEqual(fastify.addresses(), [sockFile])
+})
+
+test('listen on a path with a host does not create additional bindings - callback', (t, done) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const sockFile = os.platform() !== 'win32'
+    ? path.join(os.tmpdir(), `${(Math.random().toString(16) + '0000000').slice(2, 10)}-server.sock`)
+    : `\\\\.\\pipe\\${(Math.random().toString(16) + '0000000').slice(2, 10)}-server-sock`
+
+  if (os.platform() !== 'win32') {
+    try {
+      fs.unlinkSync(sockFile)
+    } catch (e) { }
+  }
+
+  fastify.listen({ path: sockFile, host: 'localhost' }, (err) => {
+    t.assert.ifError(err)
+    t.assert.strictEqual(fastify.server.address(), sockFile)
+    t.assert.deepStrictEqual(fastify.addresses(), [sockFile])
+    done()
+  })
+})
+
 test('listen without callback with (address)', async t => {
   t.plan(1)
   const fastify = Fastify()

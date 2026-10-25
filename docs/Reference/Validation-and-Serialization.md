@@ -782,7 +782,7 @@ For example:
 const schema = {
   response: {
     200: {
-      description: 'Response schema that support different content types'
+      description: 'Response schema that support different content types',
       content: {
         'application/json': {
           schema: {

@@ -402,8 +402,10 @@ is used to cache this, reducing compilation calls.
 The optional parameter `httpPart`, if provided, is forwarded to the
 `ValidationCompiler`, allowing it to compile the validation function if a custom
 `ValidationCompiler` is provided for the route.
-It is part of the cache key too, so the same `schema` compiled with
-different `httpPart` values gets its own validation function.
+With a custom `ValidationCompiler` it is part of the cache key too, so the
+same `schema` compiled with different `httpPart` values gets its own
+validation function. The default compiler ignores it and compiles each
+`schema` once.
 
 This function has an `errors` property. Errors encountered during the last
 validation are assigned to `errors`.

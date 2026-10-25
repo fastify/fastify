@@ -45,7 +45,7 @@ const requestSchema = {
 }
 
 test('#compileValidationSchema', async subtest => {
-  subtest.plan(8)
+  subtest.plan(9)
 
   await subtest.test('Should return a function - Route without schema', async t => {
     const fastify = Fastify()
@@ -259,6 +259,33 @@ test('#compileValidationSchema', async subtest => {
         t.assert.ok(!first({ role: 'user' }))
         t.assert.ok(second('fixed-value'))
         t.assert.ok(!second('other-value'))
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
+    'Should compile the schema once with the default compiler',
+    async t => {
+      const fastify = Fastify()
+
+      t.plan(4)
+
+      fastify.get('/', (req, reply) => {
+        const first = req.compileValidationSchema(defaultSchema, 'querystring')
+        const second = req.compileValidationSchema(defaultSchema, 'headers')
+        const third = req.compileValidationSchema(defaultSchema)
+
+        t.assert.strictEqual(first, second)
+        t.assert.strictEqual(first, third)
+        t.assert.ok(first({ hello: 'world' }))
+        t.assert.strictEqual(req.getValidationFunction(defaultSchema), first)
 
         reply.send({ hello: 'world' })
       })
@@ -512,7 +539,7 @@ test('#getValidationFunction', async subtest => {
 })
 
 test('#validate', async subtest => {
-  subtest.plan(8)
+  subtest.plan(9)
 
   await subtest.test(
     'Should return true/false if input valid - Route without schema',
@@ -543,11 +570,12 @@ test('#validate', async subtest => {
     async t => {
       const fastify = Fastify()
       let called = 0
+      const compiledParts = []
       const custom = ({ schema, httpPart, url, method }) => {
         t.assert.strictEqual(schema, defaultSchema)
         t.assert.strictEqual(url, '/')
         t.assert.strictEqual(method, 'GET')
-        t.assert.strictEqual(httpPart, 'querystring')
+        compiledParts.push(httpPart)
 
         return input => {
           called++
@@ -556,7 +584,7 @@ test('#validate', async subtest => {
         }
       }
 
-      t.plan(9)
+      t.plan(12)
 
       fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
         const ok = req.validateInput(
@@ -569,6 +597,41 @@ test('#validate', async subtest => {
         t.assert.ok(ok)
         t.assert.ok(ok2)
         t.assert.strictEqual(called, 2)
+        t.assert.deepStrictEqual(compiledParts, ['querystring', null])
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
+
+  await subtest.test(
+    'Should not reuse a part specific validator when no part is given',
+    async t => {
+      const fastify = Fastify()
+      const compiledParts = []
+      const custom = ({ httpPart }) => {
+        compiledParts.push(httpPart)
+        return input => input === httpPart
+      }
+
+      t.plan(4)
+
+      fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+        const partOk = req.validateInput('querystring', defaultSchema, 'querystring')
+        // no part: a fn compiled without a part is used instead
+        const noPartOk = req.validateInput('querystring', defaultSchema)
+        // and that fn is reused on the next call
+        const again = req.validateInput(null, defaultSchema)
+
+        t.assert.ok(partOk)
+        t.assert.ok(!noPartOk)
+        t.assert.ok(again)
+        t.assert.deepStrictEqual(compiledParts, ['querystring', null])
 
         reply.send({ hello: 'world' })
       })
@@ -1363,11 +1426,12 @@ test('Nested Context', async subtest => {
             return () => true
           }
 
+          const compiledParts = []
           const customChild = ({ schema, httpPart, url, method }) => {
             t.assert.strictEqual(schema, defaultSchema)
             t.assert.strictEqual(url, '/')
             t.assert.strictEqual(method, 'GET')
-            t.assert.strictEqual(httpPart, 'querystring')
+            compiledParts.push(httpPart)
 
             return input => {
               childCalled++
@@ -1376,7 +1440,7 @@ test('Nested Context', async subtest => {
             }
           }
 
-          t.plan(10)
+          t.plan(13)
 
           fastify.setValidatorCompiler(customParent)
 
@@ -1396,6 +1460,7 @@ test('Nested Context', async subtest => {
                 t.assert.ok(ok2)
                 t.assert.strictEqual(childCalled, 2)
                 t.assert.strictEqual(parentCalled, 0)
+                t.assert.deepStrictEqual(compiledParts, ['querystring', null])
 
                 reply.send({ hello: 'world' })
               }

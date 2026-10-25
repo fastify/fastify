@@ -141,7 +141,9 @@ test('listen options follow the Node.js priority of handle, port and path', asyn
     { name: '{ path, host, port }', actual: { path: '/tmp/a.sock', host: '127.0.0.1', port: 1 }, expect: { host: '127.0.0.1', port: 1 } },
     { name: '{ port }', actual: { port: 1 }, expect: { host: 'localhost', port: 1 } },
     { name: '{ host }', actual: { host: '127.0.0.1' }, expect: { host: '127.0.0.1', port: 0 } },
-    { name: '{ host, port }', actual: { host: '127.0.0.1', port: 1 }, expect: { host: '127.0.0.1', port: 1 } }
+    { name: '{ host, port }', actual: { host: '127.0.0.1', port: 1 }, expect: { host: '127.0.0.1', port: 1 } },
+    { name: '{ path, port: undefined }', actual: { path: '/tmp/a.sock', port: undefined }, expect: { path: '/tmp/a.sock' } },
+    { name: '{ path, port: null }', actual: { path: '/tmp/a.sock', port: null }, expect: { path: '/tmp/a.sock' } }
   ]
   t.plan(cases.length)
 

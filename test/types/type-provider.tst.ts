@@ -25,8 +25,8 @@ server.get('/', (req) => expect(req.body).type.toBe<unknown>())
 // -------------------------------------------------------------------
 
 interface NumberProvider extends FastifyTypeProvider {
-  validator: number
-  serializer: number
+  validator: number;
+  serializer: number;
 } // remap all schemas to numbers
 
 server.withTypeProvider<NumberProvider>().get(
@@ -74,8 +74,8 @@ server.withTypeProvider<OverriddenProvider>().get<{ Body: 'override' }>(
 // -------------------------------------------------------------------
 
 interface TypeBoxProvider extends FastifyTypeProvider {
-  validator: this['schema'] extends TSchema ? Static<this['schema']> : unknown
-  serializer: this['schema'] extends TSchema ? Static<this['schema']> : unknown
+  validator: this['schema'] extends TSchema ? Static<this['schema']> : unknown;
+  serializer: this['schema'] extends TSchema ? Static<this['schema']> : unknown;
 }
 
 server.withTypeProvider<TypeBoxProvider>().get(
@@ -111,8 +111,8 @@ expect(server.withTypeProvider<TypeBoxProvider>()).type.toBeAssignableTo<Fastify
 // -------------------------------------------------------------------
 
 interface JsonSchemaToTsProvider extends FastifyTypeProvider {
-  validator: this['schema'] extends JSONSchema ? FromSchema<this['schema']> : unknown
-  serializer: this['schema'] extends JSONSchema ? FromSchema<this['schema']> : unknown
+  validator: this['schema'] extends JSONSchema ? FromSchema<this['schema']> : unknown;
+  serializer: this['schema'] extends JSONSchema ? FromSchema<this['schema']> : unknown;
 }
 
 // explicitly setting schema `as const`
@@ -1051,10 +1051,10 @@ server.withTypeProvider<JsonSchemaToTsProvider>().get(
 
 server.get<{
   Reply: {
-    200: string | { msg: string }
-    400: number
-    '5xx': { error: string }
-  }
+    200: string | { msg: string };
+    400: number;
+    '5xx': { error: string };
+  };
 }>(
   '/',
   async (_, res) => {
@@ -1074,10 +1074,10 @@ server.get<{
 
 server.get<{
   Reply: {
-    200: string | { msg: string }
-    400: number
-    '5xx': { error: string }
-  }
+    200: string | { msg: string };
+    400: number;
+    '5xx': { error: string };
+  };
 }>(
   '/',
   async (_, res) => {
@@ -1098,10 +1098,10 @@ server.get<{
 
 server.get<{
   Reply: {
-    200: string | { msg: string }
-    400: number
-    '5xx': { error: string }
-  }
+    200: string | { msg: string };
+    400: number;
+    '5xx': { error: string };
+  };
 }>(
   '/',
   // @ts-expect-error  Type 'boolean' is not assignable to type 'string | number | void | { msg: string; } | { error: string; } | { 200: string | { msg: string; }; 400: number; '5xx': { error: string; }; }'.
@@ -1197,8 +1197,8 @@ expect(safePromiseLike).type.not.toBeAssignableTo<Promise<string>>()
 // -------------------------------------------------------------------
 
 interface SeparateProvider extends FastifyTypeProvider {
-  validator: string
-  serializer: Date
+  validator: string;
+  serializer: Date;
 }
 
 server.withTypeProvider<SeparateProvider>().get(

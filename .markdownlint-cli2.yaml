@@ -12,6 +12,12 @@ config:
     strict: false
     stern: false
 
+  # Disallow trailing spaces (except 2 spaces for hard line breaks).
+  MD009:
+    br_spaces: 2
+    strict: false
+    list_item_empty_lines: false
+
 globs:
   - '**/*.md'
 

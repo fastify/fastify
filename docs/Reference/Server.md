@@ -456,6 +456,7 @@ exception, since no route — and therefore no `request`/`reply` — is formed.
 | `requestCompleted` | `(error, request, reply, metadata)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
 | `defaultErrorLog` | `(error, request, reply, metadata)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
 | `streamError` | `(error, request, reply, metadata)` | Logs stream-level errors after headers have been sent. |
+| `headStreamError` | `(error, request, reply, metadata)` | Logs an error emitted by a response stream on a HEAD route. |
 | `routeNotFound` | `(request, reply, metadata)` | Logs a "route not found" message at `info` level. |
 | `writeHeadError` | `(error, request, reply, metadata)` | Logs a warning when `writeHead` fails during error handling. |
 | `serializerError` | `(error, request, reply, metadata)` | Logs an error when the serializer for a given status code fails. The triggering status code is available as `metadata.statusCode`. |

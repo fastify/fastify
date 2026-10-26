@@ -169,6 +169,47 @@ test('HEAD route keeps GET error when web Response body is locked', async t => {
   t.assert.strictEqual(headRes.statusCode, 500)
 })
 
+test('HEAD route should handle web Response body.cancel() error via logController', (t, done) => {
+  t.plan(6)
+
+  const logStream = split(JSON.parse)
+  const expectedError = new Error('Response cancel error!')
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  fastify.get('/web-response-cancel-error', (req, reply) => {
+    return new Response(new ReadableStream({
+      start (controller) {
+        controller.enqueue('hi')
+      },
+      cancel (reason) {
+        t.assert.strictEqual(reason, 'Stream cancelled by HEAD route')
+        throw expectedError
+      }
+    }), { status: 200 })
+  })
+
+  logStream.once('data', line => {
+    const { message, stack } = expectedError
+    t.assert.deepStrictEqual(line.err, { type: 'Error', message, stack })
+    t.assert.strictEqual(line.msg, 'Error on Stream found for HEAD route')
+    t.assert.strictEqual(line.level, 50)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-cancel-error'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 200)
+    done()
+  })
+})
+
 test('HEAD route should be exposed by default', async t => {
   t.plan(5)
 

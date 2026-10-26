@@ -42,6 +42,17 @@ expect(
 ).type.toBeAssignableTo<FastifyInstance>()
 
 expect(
+  fastify().register(
+    testPluginOptsAsync, {
+      logSerializers: {
+        // serializers may return objects as well as strings
+        user: (value: { id: number }) => ({ id: value.id })
+      }
+    }
+  )
+).type.toBeAssignableTo<FastifyInstance>()
+
+expect(
   fastify().register(testPluginOptsAsync, () => {
     return {}
   })

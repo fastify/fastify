@@ -167,6 +167,22 @@ parameters at the top level.
 > ℹ For using the latest Ajv (v8), refer to the
 > [`schemaController`](./Server.md#schema-controller) section.
 
+##### Header name case
+
+Node.js exposes request header names in lowercase. Fastify normalizes header
+names in a `headers` schema to lowercase before compilation, so assertions
+written in the canonical header-name case still match the request, for example
+`required: ['X-Api-Key']`, `dependencies`, and a `propertyNames` deny-list that
+uses `enum` or `const`.
+
+Regular-expression constraints on header names are the exception. A
+`patternProperties` key and a `propertyNames` `pattern` are regular expressions
+matched against the already-lowercased header names, and Fastify cannot safely
+rewrite a regular expression. Author them to match lowercase (for example
+`^x-debug-.*$`, not `^X-Debug-.*$`) or make them case-insensitive. A pattern
+written in canonical case will not match, and the assertion it guards will not
+apply.
+
 Example:
 ```js
 const bodyJsonSchema = {
@@ -783,7 +799,7 @@ For example:
 const schema = {
   response: {
     200: {
-      description: 'Response schema that support different content types'
+      description: 'Response schema that support different content types',
       content: {
         'application/json': {
           schema: {
@@ -915,6 +931,11 @@ message has to be rebuilt from the raw validation result:
 - `validationContext` is the part of the request that failed validation
   (`body`, `params`, `querystring` or `headers`).
 - `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
+- When the validator reports a list of errors (as Ajv does) and the default
+  [`schemaErrorFormatter`](#schemaerrorformatter) is used, the error is an
+  instance of [`FST_ERR_VALIDATION`](./Errors.md#fst_err_validation) without a
+  [stack trace](./Errors.md#errors-in-input-data). Errors returned by the
+  validator itself, or by a custom formatter, are used as they are.
 
 ```js
 const fastify = Fastify()

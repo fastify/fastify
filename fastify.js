@@ -94,7 +94,11 @@ function asyncDisposableHook (disposable) {
       done(err)
       return
     }
-    Promise.resolve(result).then(() => done(), done)
+    if (result && typeof result.then === 'function') {
+      result.then(() => done(), done)
+      return
+    }
+    done()
   }
 }
 

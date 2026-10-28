@@ -271,6 +271,10 @@ section.
   return 204 status on empty response.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds
   405 HTTP status to your routes
+- [`fastify-ai-chatbot`](https://github.com/asyntai/fastify-ai-chatbot) Fastify
+  plugin that adds the [Asyntai](https://asyntai.com/documentation/integrations/fastify/)
+  AI chat assistant to every HTML page, answering visitors from your own
+  content.
 - [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Fastify plugin
   that automatically adds an Allow header to responses with routes. Also sends
   405 responses for routes that have a handler but not for the request's method.

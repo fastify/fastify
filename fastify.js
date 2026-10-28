@@ -87,18 +87,17 @@ function asyncDisposableHook (disposable) {
   return function (instance, done) {
     // Like `await using`, accept a non-promise result and turn a synchronous
     // throw into a rejection instead of an uncaught exception.
-    let result
+    let err
     try {
-      result = disposable[Symbol.asyncDispose]()
-    } catch (err) {
-      done(err)
-      return
+      const result = disposable[Symbol.asyncDispose]()
+      if (result && typeof result.then === 'function') {
+        result.then(() => done(), done)
+        return
+      }
+    } catch (error) {
+      err = error
     }
-    if (result && typeof result.then === 'function') {
-      result.then(() => done(), done)
-      return
-    }
-    done()
+    done(err)
   }
 }
 

@@ -94,6 +94,62 @@ test('addHook onClose ignores fulfillment value from Symbol.asyncDispose', async
   await t.assert.doesNotReject(app.close())
 })
 
+test('addHook onClose accepts a Symbol.asyncDispose that does not return a promise', async t => {
+  const app = Fastify()
+  let disposed = false
+
+  const resource = {
+    [Symbol.asyncDispose] () {
+      disposed = true
+    }
+  }
+
+  app.addHook('onClose', resource)
+  await app.ready()
+
+  await t.assert.doesNotReject(app.close())
+  t.assert.equal(disposed, true)
+})
+
+test('addHook onClose propagates synchronous throw from Symbol.asyncDispose', async t => {
+  const app = Fastify()
+  const customError = new Error('dispose async threw synchronously')
+
+  const resource = {
+    [Symbol.asyncDispose] () {
+      throw customError
+    }
+  }
+
+  app.addHook('onClose', resource)
+  await app.ready()
+
+  await t.assert.rejects(app.close(), {
+    message: 'dispose async threw synchronously'
+  })
+})
+
+test('addHook onClose propagates a throw from the then of the Symbol.asyncDispose result', async t => {
+  const app = Fastify()
+
+  const resource = {
+    [Symbol.asyncDispose] () {
+      return {
+        then () {
+          throw new Error('then threw')
+        }
+      }
+    }
+  }
+
+  app.addHook('onClose', resource)
+  await app.ready()
+
+  await t.assert.rejects(app.close(), {
+    message: 'then threw'
+  })
+})
+
 test('addHook onClose propagates thrown error from Symbol.dispose', async t => {
   const app = Fastify()
   const customError = new Error('dispose sync failed')

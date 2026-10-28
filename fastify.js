@@ -85,7 +85,19 @@ const initChannel = diagnostics.channel('fastify.initialization')
 
 function asyncDisposableHook (disposable) {
   return function (instance, done) {
-    disposable[Symbol.asyncDispose]().then(() => done(), done)
+    // Like `await using`, accept a non-promise result and turn a synchronous
+    // throw into a rejection instead of an uncaught exception.
+    let err
+    try {
+      const result = disposable[Symbol.asyncDispose]()
+      if (result && typeof result.then === 'function') {
+        result.then(() => done(), done)
+        return
+      }
+    } catch (error) {
+      err = error
+    }
+    done(err)
   }
 }
 

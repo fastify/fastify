@@ -36,7 +36,7 @@ async function start (t, configure, options = {}) {
 async function client (t, app, protocol = 'h3') {
   const authority = `https://127.0.0.1:${app.server.address().port}`
   const session = protocol === 'h3'
-    ? await connectAsync(authority, { ca: tls.cert, servername: 'localhost' })
+    ? await connectAsync(authority, { ca: tls.cert, servername: 'localhost', runtimeMode: 'portable' })
     : http2.connect(authority, { ca: tls.cert })
   if (protocol === 'h2') await once(session, 'connect')
   t.after(async () => {

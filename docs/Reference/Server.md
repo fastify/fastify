@@ -500,6 +500,10 @@ enhance the server instance inside the `serverFactory` function before the
 `return` statement.
 
 
+For an experimental HTTP/3 integration using an external transport, see the
+[HTTP/3 server-factory example](../../examples/http3/README.md). It includes
+HTTP/2 and HTTP/1.1 fallback and documents the supported request/response APIs.
+
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 

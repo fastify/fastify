@@ -414,7 +414,7 @@ function fastify (serverOptions) {
 
         if (fastify[kState].listening) {
           /* istanbul ignore next: Cannot test this without Node.js core support */
-          if (forceCloseConnections === 'idle') {
+          if (forceCloseConnections === 'idle' && options.serverFactory) {
             for (const s of servers) {
               if (typeof s.closeIdleConnections === 'function') {
                 s.closeIdleConnections()

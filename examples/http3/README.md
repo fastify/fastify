@@ -1,8 +1,9 @@
 # HTTP/3 using a custom server factory
 
 This experimental example uses
-[`@currentspace/http3`](https://github.com/currentspace/http3) to run Fastify
-handlers over HTTP/3, with HTTP/2 and HTTP/1.1 fallback on the same port.
+[`@currentspace/http3@0.9.4`](https://github.com/currentspace/http3/releases/tag/v0.9.4)
+to run Fastify handlers over HTTP/3, with HTTP/2 and HTTP/1.1 fallback on the
+same port.
 HTTP/3 uses UDP; the fallback protocols use TCP. Routes, hooks, validation and
 serialization run in Fastify for each protocol.
 
@@ -18,7 +19,7 @@ transport or a claim that every Fastify plugin supports HTTP/3.
 
 The example uses the portable runtime so Linux does not require io_uring.
 See the package's
-[support matrix](https://github.com/currentspace/http3/blob/main/docs/SUPPORT_MATRIX.md)
+[support matrix](https://github.com/currentspace/http3/blob/v0.9.4/docs/SUPPORT_MATRIX.md)
 for other environments.
 
 ## Run
@@ -71,6 +72,9 @@ const app = Fastify({
 Supply TLS credentials to the transport and set `https` on Fastify so its
 listen address and secure request behavior are consistent. Do not set
 `http2: true`; the external factory owns protocol selection.
+See the transport's
+[Node server factory guide](https://github.com/currentspace/http3/blob/v0.9.4/docs/NODE_SERVER.md)
+for its API and supported behavior.
 
 ## Boundaries
 

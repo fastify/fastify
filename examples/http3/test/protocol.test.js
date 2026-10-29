@@ -36,8 +36,8 @@ async function start (t, configure, options = {}) {
 async function client (t, app, protocol = 'h3') {
   const authority = `https://127.0.0.1:${app.server.address().port}`
   const session = protocol === 'h3'
-    ? await connectAsync(authority, { rejectUnauthorized: false })
-    : http2.connect(authority, { rejectUnauthorized: false })
+    ? await connectAsync(authority, { ca: tls.cert, servername: 'localhost' })
+    : http2.connect(authority, { ca: tls.cert })
   if (protocol === 'h2') await once(session, 'connect')
   t.after(async () => {
     if (protocol === 'h3') await session.close()
@@ -170,7 +170,7 @@ for (const protocol of ['h3', 'h2']) {
 test('optional HTTP/1.1 fallback advertises HTTP/3', async t => {
   const app = await start(t, app => app.get('/', req => ({ version: req.raw.httpVersion })), { allowHTTP1: true })
   const result = await new Promise((resolve, reject) => {
-    https.get({ host: '127.0.0.1', port: app.server.address().port, rejectUnauthorized: false, agent: false }, res => {
+    https.get({ host: '127.0.0.1', port: app.server.address().port, ca: tls.cert, agent: false }, res => {
       const chunks = []
       res.on('data', chunk => chunks.push(chunk))
       res.on('end', () => resolve({ headers: res.headers, body: Buffer.concat(chunks).toString() }))

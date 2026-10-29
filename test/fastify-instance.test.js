@@ -298,3 +298,39 @@ test('fastify instance should ensure ready promise cleanup on ready', async t =>
   await fastify.ready()
   t.assert.strictEqual(fastify[kState].readyResolver, null)
 })
+
+test('cannot register hooks, decorators, routes or parsers right after ready() resolves', async t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  await fastify.ready()
+
+  t.assert.throws(() => fastify.addHook('onClose', async () => {}), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+  t.assert.throws(() => fastify.decorate('late', true), { code: 'FST_ERR_DEC_AFTER_START' })
+  t.assert.throws(() => fastify.get('/late', () => 'late'), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+  t.assert.throws(
+    () => fastify.addContentTypeParser('text/late', (req, body, done) => done(null, body)),
+    { code: 'FST_ERR_CTP_INSTANCE_ALREADY_STARTED' }
+  )
+})
+
+test('cannot register hooks inside the ready() callback', (t, done) => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.ready(err => {
+    t.assert.ifError(err)
+    t.assert.throws(() => fastify.addHook('onClose', async () => {}), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+    fastify.close(done)
+  })
+})
+
+test('a route rejected right after ready() is not left in the router', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  await fastify.ready()
+
+  t.assert.throws(() => fastify.get('/late', () => 'late'), { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' })
+  const res = await fastify.inject('/late')
+  t.assert.strictEqual(res.statusCode, 404)
+})

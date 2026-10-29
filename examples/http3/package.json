@@ -1,0 +1,15 @@
+{
+  "name": "fastify-http3-example",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test --test-timeout=20000 test/*.test.js"
+  },
+  "dependencies": {
+    "@currentspace/http3": "0.9.4",
+    "@fastify/static": "10.1.8"
+  }
+}

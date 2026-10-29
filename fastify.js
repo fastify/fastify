@@ -410,13 +410,23 @@ function fastify (serverOptions) {
       router.closeRoutes()
 
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
+        const servers = [instance.server, ...instance[kServerBindings]]
+
         if (fastify[kState].listening) {
           /* istanbul ignore next: Cannot test this without Node.js core support */
-          if (forceCloseConnections === 'idle' && options.serverFactory) {
-            instance.server.closeIdleConnections()
+          if (forceCloseConnections === 'idle') {
+            for (const s of servers) {
+              if (typeof s.closeIdleConnections === 'function') {
+                s.closeIdleConnections()
+              }
+            }
             /* istanbul ignore next: Cannot test this without Node.js core support */
           } else if (serverHasCloseAllConnections && forceCloseConnections === true) {
-            instance.server.closeAllConnections()
+            for (const s of servers) {
+              if (typeof s.closeAllConnections === 'function') {
+                s.closeAllConnections()
+              }
+            }
           } else if (forceCloseConnections === true) {
             for (const conn of fastify[kKeepAliveConnections]) {
               // We must invoke the destroy method instead of merely unreffing
@@ -432,20 +442,30 @@ function fastify (serverOptions) {
         if (serverHasCloseHttp2Sessions) {
           instance.server.closeHttp2Sessions()
         }
+        for (const s of instance[kServerBindings]) {
+          if (typeof s.closeHttp2Sessions === 'function') {
+            s.closeHttp2Sessions()
+          }
+        }
 
         // No new TCP connections are accepted.
         // We must call close on the server even if we are not listening
         // otherwise memory will be leaked.
         // https://github.com/nodejs/node/issues/48604
         if (!options.serverFactory || fastify[kState].listening) {
-          instance.server.close(function (err) {
-            /* c8 ignore next 6 */
-            if (err && err.code !== 'ERR_SERVER_NOT_RUNNING') {
-              done(null)
-            } else {
-              done()
-            }
-          })
+          let pending = servers.length
+          let firstError = null
+          for (const s of servers) {
+            s.close(function (err) {
+              /* c8 ignore next 6 */
+              if (err && err.code !== 'ERR_SERVER_NOT_RUNNING' && !firstError) {
+                firstError = err
+              }
+              if (--pending === 0) {
+                done(firstError)
+              }
+            })
+          }
         } else {
           process.nextTick(done, null)
         }

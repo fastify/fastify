@@ -168,3 +168,44 @@ test('addHttpMethod can change an existing method body behavior', async t => {
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(response.json(), { hello: 'world' })
 })
+
+test('addHttpMethod cannot override an existing method after the instance has started', async t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', async request => request.body)
+
+  t.after(() => fastify.close())
+  await fastify.listen({ port: 0 })
+
+  t.assert.throws(
+    () => fastify.addHttpMethod('POST', { overrideExisting: true }),
+    {
+      code: 'FST_ERR_INSTANCE_ALREADY_STARTED',
+      message: 'Fastify instance is already listening. Cannot call "addHttpMethod"!'
+    }
+  )
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+})
+
+test('addHttpMethod does not add a new method after the instance has started', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  t.after(() => fastify.close())
+  await fastify.listen({ port: 0 })
+
+  t.assert.throws(
+    () => fastify.addHttpMethod('MKCOL'),
+    { code: 'FST_ERR_INSTANCE_ALREADY_STARTED' }
+  )
+  t.assert.strictEqual(fastify.supportedMethods.includes('MKCOL'), false)
+})

@@ -319,6 +319,7 @@ listed in alphabetical order.
   <https://x.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners),
   <https://x.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+* [__Antonio Tripodi__](https://github.com/Tony133), <https://www.npmjs.com/~tony133>
 
 ### Fastify Plugins team
 * [__Harry Brundage__](https://github.com/airhorns/),

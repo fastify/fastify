@@ -92,7 +92,7 @@ test('Will not create a HEAD route that is not GET', async t => {
 })
 
 test('HEAD route should handle properly each response type', async t => {
-  t.plan(24)
+  t.plan(31)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
   const resString = 'Found me!'
@@ -150,6 +150,28 @@ test('HEAD route should handle properly each response type', async t => {
     }
   })
 
+  fastify.route({
+    method: 'GET',
+    path: '/web-response',
+    handler: (req, reply) => {
+      reply.send(new Response('I am a web response!', {
+        status: 202,
+        headers: {
+          'content-type': 'text/plain',
+          'x-custom': 'yes'
+        }
+      }))
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/web-response-without-body',
+    handler: (req, reply) => {
+      reply.send(new Response(null, { status: 204 }))
+    }
+  })
+
   let res = await fastify.inject({
     method: 'HEAD',
     url: '/json'
@@ -203,6 +225,57 @@ test('HEAD route should handle properly each response type', async t => {
   t.assert.strictEqual(res.headers['content-type'], undefined)
   t.assert.strictEqual(res.headers['content-length'], undefined)
   t.assert.strictEqual(res.body, '')
+
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response'
+  })
+  t.assert.strictEqual(res.statusCode, 202)
+  t.assert.strictEqual(res.headers['content-type'], 'text/plain')
+  t.assert.strictEqual(res.headers['x-custom'], 'yes')
+  t.assert.strictEqual(res.body, '')
+
+  res = await fastify.inject({
+    method: 'HEAD',
+    url: '/web-response-without-body'
+  })
+  t.assert.strictEqual(res.statusCode, 204)
+  t.assert.strictEqual(res.headers['content-length'], undefined)
+  t.assert.strictEqual(res.body, '')
+})
+
+test('HEAD route should cancel the body of a web Response', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+  let cancelled = false
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    handler: (req, reply) => {
+      const body = new ReadableStream({
+        pull (controller) {
+          controller.enqueue(new TextEncoder().encode('I am a web response!'))
+        },
+        cancel () {
+          cancelled = true
+        }
+      })
+
+      reply.send(new Response(body, {
+        status: 200,
+        headers: {
+          'content-type': 'text/plain'
+        }
+      }))
+    }
+  })
+
+  const res = await fastify.inject({ method: 'HEAD', url: '/' })
+
+  t.assert.strictEqual(res.statusCode, 200)
+  t.assert.strictEqual(cancelled, true)
 })
 
 test('HEAD route should respect custom onSend handlers', async t => {

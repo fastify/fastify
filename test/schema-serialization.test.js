@@ -142,6 +142,30 @@ test('duplicate case-equivalent response content schema keys are rejected', asyn
   await t.assert.rejects(fastify.ready(), (err) => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
     t.assert.match(err.message, /Duplicate case-equivalent content schema for 'application\/json'/)
+    t.assert.strictEqual(err.cause.code, 'FST_ERR_SCH_CONTENT_DUPLICATE')
+    return true
+  })
+})
+
+test('invalid response content schema key is rejected', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            foo: { schema: { type: 'object' } }
+          }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+    t.assert.match(err.message, /Invalid content type 'foo' in schema\.content/)
+    t.assert.strictEqual(err.cause.code, 'FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE')
     return true
   })
 })

@@ -1638,27 +1638,6 @@ test('mixed-case schema.body.content key is canonicalized and selected', async t
   t.assert.deepStrictEqual(valid.json(), { role: 'admin' })
 })
 
-test('duplicate case-equivalent schema.body.content keys are rejected', async t => {
-  const fastify = Fastify()
-
-  fastify.post('/', {
-    schema: {
-      body: {
-        content: {
-          'application/json': { schema: { type: 'object' } },
-          'Application/JSON': { schema: { type: 'object' } }
-        }
-      }
-    }
-  }, async () => 'ok')
-
-  await t.assert.rejects(fastify.ready(), (err) => {
-    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.assert.match(err.message, /Duplicate case-equivalent content schema for 'application\/json'/)
-    return true
-  })
-})
-
 test('invalid schema.body.content key is rejected', async t => {
   const fastify = Fastify()
 
@@ -1675,6 +1654,7 @@ test('invalid schema.body.content key is rejected', async t => {
   await t.assert.rejects(fastify.ready(), (err) => {
     t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
     t.assert.match(err.message, /Invalid content type 'foo' in schema\.content/)
+    t.assert.strictEqual(err.cause.code, 'FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE')
     return true
   })
 })

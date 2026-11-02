@@ -370,6 +370,54 @@ test('handlerTimeout keeps the connection usable when an abort listener sends th
   t.assert.strictEqual(second.includes('ok'), true)
 })
 
+// A response can be ended (reply.sent === true) while its body is still being
+// flushed to a slow client, so 'finish' has not fired and the timer is still
+// pending. When it fires it must leave the response and request.signal alone.
+test('handlerTimeout firing after the reply ended but before it finished is a no-op', async t => {
+  t.plan(3)
+
+  const fastify = Fastify({ handlerTimeout: 100 })
+  // Large enough to exceed the socket buffers, so the response cannot finish
+  // while the client is not reading.
+  const size = 64 * 1024 * 1024
+  const big = Buffer.alloc(size, 'a')
+
+  let signal
+  fastify.get('/big', async (request, reply) => {
+    signal = request.signal
+    reply.type('application/octet-stream')
+    return big
+  })
+
+  await fastify.listen({ port: 0 })
+  t.after(() => fastify.close())
+
+  const socket = net.connect(fastify.server.address().port, '127.0.0.1')
+  t.after(() => socket.destroy())
+
+  let received = 0
+  await new Promise((resolve, reject) => {
+    socket.on('connect', () => {
+      socket.write('GET /big HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n')
+    })
+    socket.once('data', () => {
+      // Stop reading until well past the handlerTimeout.
+      socket.pause()
+      setTimeout(() => {
+        t.assert.strictEqual(signal.aborted, false)
+        socket.resume()
+      }, 300)
+    })
+    socket.on('data', (chunk) => { received += chunk.length })
+    socket.on('end', resolve)
+    socket.on('error', reject)
+  })
+
+  // The whole body was delivered and the request was never aborted.
+  t.assert.ok(received > size)
+  t.assert.strictEqual(signal.aborted, false)
+})
+
 // --- SSE with reply.hijack() ---
 
 test('reply.hijack() clears timeout timer', async t => {

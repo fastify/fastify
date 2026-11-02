@@ -278,6 +278,35 @@ test('HEAD route should cancel the body of a web Response', async t => {
   t.assert.strictEqual(cancelled, true)
 })
 
+test('HEAD route should reject a web Response whose body was already consumed', async t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+  const errors = []
+  fastify.addHook('onError', async (request, reply, error) => {
+    errors.push(error)
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    handler: async (req, reply) => {
+      const response = new Response('I am a web response!')
+      await response.text()
+
+      reply.send(response)
+    }
+  })
+
+  const head = await fastify.inject({ method: 'HEAD', url: '/' })
+  t.assert.strictEqual(head.statusCode, 500)
+  t.assert.strictEqual(errors[0].code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
+
+  const get = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(get.statusCode, 500)
+  t.assert.strictEqual(JSON.parse(get.body).code, 'FST_ERR_REP_RESPONSE_BODY_CONSUMED')
+})
+
 test('HEAD route should respect custom onSend handlers', async t => {
   t.plan(5)
 

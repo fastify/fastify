@@ -851,6 +851,15 @@ const schema = {
 fastify.post('/url', { schema }, handler)
 ```
 
+> When the route declares a per-content-type response schema through `content`,
+> Fastify matches the response `Content-Type` against the declared keys and falls
+> back to `*/*` (if present). If the response `Content-Type` is not declared and
+> there is no `*/*` key, serialization **fails closed**: Fastify throws
+> `FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN` and replies with a `500` error,
+> instead of silently serializing the payload with `JSON.stringify` (which would
+> bypass the response schema). Every `Content-Type` a route may respond with must
+> be declared, or the route must define a `*/*` catch-all.
+
 #### Serializer Compiler
 <a id="schema-serializer"></a>
 

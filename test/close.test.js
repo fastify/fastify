@@ -568,6 +568,98 @@ test('triggers on-close hook in the right order with multiple bindings (forceClo
   })
 })
 
+// https://github.com/fastify/fastify/issues/7043
+//
+// `listen()` on `localhost` binds the address reported by `server.address()`
+// to the main server and every other loopback address to a secondary one. A
+// request served by a secondary binding must be drained by `close()` exactly
+// like one served by the main binding, otherwise `onClose` hooks - the safe
+// place to release resources such as database connection pools - would run
+// while a handler is still running.
+async function drainsInFlightRequest (t, isSecondary) {
+  const fastify = Fastify()
+  const order = []
+  let inFlight = 0
+  let inFlightOnClose = null
+  let inFlightAtClose = null
+  let closeSettled = false
+
+  // The request is held by the handler until the test releases it, so the
+  // close path is guaranteed to find it in flight.
+  const { promise: handlerStarted, resolve: markHandlerStarted } = Promise.withResolvers()
+  const { promise: handlerReleased, resolve: markHandlerReleased } = Promise.withResolvers()
+
+  fastify.addHook('onClose', async () => {
+    order.push('onClose')
+    inFlightOnClose = inFlight
+  })
+
+  fastify.get('/', async () => {
+    order.push('handler:start')
+    inFlight++
+    markHandlerStarted()
+    await handlerReleased
+    inFlight--
+    order.push('handler:end')
+    return { hello: 'world' }
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const mainAddress = fastify.server.address().address
+  const address = isSecondary
+    ? fastify.addresses().find(({ address }) => address !== mainAddress)
+    : fastify.server.address()
+
+  if (address === undefined) {
+    await fastify.close()
+    t.skip('no secondary binding has been created')
+    return
+  }
+
+  const request = http.get({ host: address.address, port: address.port, path: '/', agent: false })
+  t.after(() => request.destroy())
+  request.on('error', () => {})
+  request.on('response', res => res.resume())
+
+  // Wait for the handler to actually be running, instead of guessing how
+  // long the request needs to reach the server.
+  await handlerStarted
+
+  const closed = fastify.close().then(() => {
+    closeSettled = true
+    inFlightAtClose = inFlight
+    order.push('close:resolved')
+  })
+
+  // Yield to the event loop. A close that does not wait for the binding
+  // serving the request settles as soon as the main server is closed, which
+  // needs no I/O at all: draining the microtask and `process.nextTick` queues
+  // is enough for it to happen. Releasing the request afterwards means such a
+  // close has already settled, while a close that drains the in-flight
+  // request is still pending.
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.assert.strictEqual(closeSettled, false, 'close() resolved before the in-flight request completed')
+  t.assert.strictEqual(inFlightOnClose, null, 'onClose ran before the in-flight request completed')
+
+  markHandlerReleased()
+
+  await closed
+
+  t.assert.strictEqual(inFlightAtClose, 0, 'close() resolved with a request still in flight')
+  t.assert.strictEqual(inFlightOnClose, 0, 'onClose ran with a request still in flight')
+  t.assert.deepStrictEqual(order, ['handler:start', 'handler:end', 'onClose', 'close:resolved'])
+}
+
+test('close() drains the in-flight request served by the main binding', async t => {
+  await drainsInFlightRequest(t, false)
+})
+
+test('close() drains the in-flight request served by a secondary binding', async t => {
+  await drainsInFlightRequest(t, true)
+})
+
 test('shutsdown while keep-alive connections are active (non-async, custom)', (t, done) => {
   t.plan(5)
 

@@ -373,48 +373,55 @@ test('handlerTimeout keeps the connection usable when an abort listener sends th
 // A response can be ended (reply.sent === true) while its body is still being
 // flushed to a slow client, so 'finish' has not fired and the timer is still
 // pending. When it fires it must leave the response and request.signal alone.
+// 'finish' is held back explicitly so the test does not depend on how much
+// data the OS socket buffers absorb.
 test('handlerTimeout firing after the reply ended but before it finished is a no-op', async t => {
-  t.plan(3)
+  t.plan(4)
 
-  const fastify = Fastify({ handlerTimeout: 100 })
-  // Large enough to exceed the socket buffers, so the response cannot finish
-  // while the client is not reading.
-  const size = 64 * 1024 * 1024
-  const big = Buffer.alloc(size, 'a')
+  const fastify = Fastify({ handlerTimeout: 50 })
 
   let signal
-  fastify.get('/big', async (request, reply) => {
+  fastify.get('/', async (request, reply) => {
     signal = request.signal
-    reply.type('application/octet-stream')
-    return big
+    const res = reply.raw
+    const emit = res.emit
+    res.emit = function (event, ...args) {
+      if (event !== 'finish') return emit.call(this, event, ...args)
+      // Emit 'finish' only well after the handlerTimeout has fired.
+      setTimeout(() => {
+        t.assert.strictEqual(reply.sent, true)
+        t.assert.strictEqual(signal.aborted, false)
+        emit.call(this, event, ...args)
+      }, 200)
+      return true
+    }
+    return 'ok'
   })
 
   await fastify.listen({ port: 0 })
   t.after(() => fastify.close())
 
+  // A raw keep-alive connection, so nothing but the timer can abort the
+  // request while 'finish' is pending.
   const socket = net.connect(fastify.server.address().port, '127.0.0.1')
   t.after(() => socket.destroy())
 
-  let received = 0
-  await new Promise((resolve, reject) => {
+  const response = await new Promise((resolve, reject) => {
+    let buffer = ''
+    socket.setEncoding('utf8')
     socket.on('connect', () => {
-      socket.write('GET /big HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n')
+      socket.write('GET / HTTP/1.1\r\nHost: localhost\r\n\r\n')
     })
-    socket.once('data', () => {
-      // Stop reading until well past the handlerTimeout.
-      socket.pause()
-      setTimeout(() => {
-        t.assert.strictEqual(signal.aborted, false)
-        socket.resume()
-      }, 300)
+    socket.on('data', (chunk) => {
+      buffer += chunk
+      if (buffer.endsWith('ok')) resolve(buffer)
     })
-    socket.on('data', (chunk) => { received += chunk.length })
-    socket.on('end', resolve)
     socket.on('error', reject)
   })
+  t.assert.strictEqual(response.startsWith('HTTP/1.1 200'), true)
 
-  // The whole body was delivered and the request was never aborted.
-  t.assert.ok(received > size)
+  // Wait for the deferred 'finish', then the request must still not be aborted.
+  await new Promise((resolve) => setTimeout(resolve, 300))
   t.assert.strictEqual(signal.aborted, false)
 })
 

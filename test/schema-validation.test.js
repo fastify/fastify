@@ -1659,6 +1659,115 @@ test('invalid schema.body.content key is rejected', async t => {
   })
 })
 
+test('duplicate case-equivalent schema.body.content keys are rejected', async t => {
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json': { schema: { type: 'object' } },
+          'Application/JSON': { schema: { type: 'object' } }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.assert.match(err.message, /Duplicate case-equivalent content schema for 'application\/json'/)
+    t.assert.strictEqual(err.cause.code, 'FST_ERR_SCH_CONTENT_DUPLICATE')
+    return true
+  })
+})
+
+test('schema.body.content media type ranges select a validator', async t => {
+  const fastify = Fastify()
+
+  const schema = {
+    type: 'object',
+    additionalProperties: false,
+    required: ['kind'],
+    properties: { kind: { type: 'string' } }
+  }
+
+  fastify.post('/wildcard', {
+    schema: { body: { content: { '*/*': { schema } } } }
+  }, async (req) => req.body)
+
+  fastify.post('/type-range', {
+    schema: { body: { content: { 'application/*': { schema } } } }
+  }, async (req) => req.body)
+
+  // application/json matches the */* wildcard, so the invalid body is rejected.
+  let res = await fastify.inject({
+    method: 'POST',
+    url: '/wildcard',
+    headers: { 'content-type': 'application/json' },
+    payload: JSON.stringify({ foo: 'bar' }) // missing required `kind`
+  })
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(res.json().code, 'FST_ERR_VALIDATION')
+
+  // application/json matches the application/* range.
+  res = await fastify.inject({
+    method: 'POST',
+    url: '/type-range',
+    headers: { 'content-type': 'application/json' },
+    payload: JSON.stringify({ foo: 'bar' }) // missing required `kind`
+  })
+  t.assert.strictEqual(res.statusCode, 400)
+  t.assert.strictEqual(res.json().code, 'FST_ERR_VALIDATION')
+
+  // text/plain does not match application/* (no */* either), so it falls through.
+  res = await fastify.inject({
+    method: 'POST',
+    url: '/type-range',
+    headers: { 'content-type': 'text/plain' },
+    payload: JSON.stringify({ kind: 'a', extra: true })
+  })
+  t.assert.strictEqual(res.statusCode, 200)
+})
+
+test('schema.body.content key with media type parameters is canonicalized', async t => {
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        content: {
+          'application/json; charset=utf-8': {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['kind'],
+              properties: { kind: { type: 'string' } }
+            }
+          }
+        }
+      }
+    }
+  }, async (req) => req.body)
+
+  const invalid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'application/json; charset=utf-8' },
+    payload: JSON.stringify({ foo: 'bar' }) // missing required `kind`
+  })
+  t.assert.strictEqual(invalid.statusCode, 400)
+  t.assert.strictEqual(invalid.json().code, 'FST_ERR_VALIDATION')
+
+  const valid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'application/json' },
+    payload: JSON.stringify({ kind: 'a' })
+  })
+  t.assert.strictEqual(valid.statusCode, 200)
+  t.assert.deepStrictEqual(valid.json(), { kind: 'a' })
+})
+
 test('coercion of empty string to null with nullable types', async t => {
   const assert = require('node:assert')
   const fastify = Fastify()

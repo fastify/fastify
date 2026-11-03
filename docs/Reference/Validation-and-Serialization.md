@@ -286,7 +286,12 @@ fastify.post('/the/url', {
 > to `application/json`. Declaring two case-equivalent keys (for example
 > `application/json` and `Application/JSON`) is rejected at startup with
 > `FST_ERR_SCH_CONTENT_DUPLICATE`, and a key that is not a valid `type/subtype`
-> media type is rejected with `FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE`. If a
+> media type is rejected with `FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE`.
+>
+> The body `content` map also supports media type ranges, selected most-specific
+> first: an exact media type, then `type/*`, then the match-all `*/*`. A range
+> only applies when it is declared; it does not widen the media types validated
+> by a route that does not declare that range. If a
 > parser is registered with a regular expression (for example,
 > `/^application\/.*json$/`), the parser can accept more content types than the
 > `content` map covers. Requests in that gap are parsed but **not validated**.

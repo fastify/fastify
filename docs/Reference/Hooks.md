@@ -349,10 +349,10 @@ resolves, otherwise, the request will proceed. When `reply.send()` is called
 outside of the promise chain, it is important to `return reply` otherwise the
 request will be executed twice.
 
-Always `return reply` from an `async` hook after calling `reply.send()`, even
-when `send()` is called synchronously. Calling `send()` without returning
-`reply` is not supported and can let the hook chain continue. This is
-especially visible when more than one async `onSend` hook is registered.
+When replying from an `async` hook, return or await `reply`, even when
+`reply.send()` is called synchronously. Calling `reply.send()` without
+returning or awaiting `reply` can let the hook chain continue, particularly
+with multiple async `onSend` hooks.
 
 It is important to __not mix callbacks and `async`/`Promise`__, otherwise the
 hook chain will be executed twice.

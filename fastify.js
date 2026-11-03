@@ -457,7 +457,7 @@ function fastify (serverOptions) {
           let firstError = null
           for (const s of servers) {
             s.close(function (err) {
-              /* c8 ignore next 6 */
+              /* c8 ignore next 3 */
               if (err && err.code !== 'ERR_SERVER_NOT_RUNNING' && !firstError) {
                 firstError = err
               }

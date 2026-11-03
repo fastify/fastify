@@ -1111,7 +1111,7 @@ describe('replying from async lifecycle hook with multiple async onSend hooks', 
         }
 
         app.addHook(hookName, async (req, reply) => {
-          reply.code(401).send({ error: `unauthorized from ${hookName}` })
+          return reply.code(401).send({ error: `unauthorized from ${hookName}` })
         })
 
         app.get('/', async (req, reply) => {

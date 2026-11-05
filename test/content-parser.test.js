@@ -206,6 +206,69 @@ test('existingParser', async t => {
   t.assert.ok(!contentTypeParser.existingParser(/^application\/.+\+json/))
 })
 
+test('parser registration preserves case-sensitive parameter values', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.addContentTypeParser('Text/X-Profile; Profile="MiXeD"', { parseAs: 'string' }, (req, body, done) => {
+    done(null, 'matched')
+  })
+  fastify.post('/', request => request.body)
+
+  for (const contentType of ['text/x-profile; profile=MiXeD', 'TEXT/X-PROFILE; PROFILE="MiXeD"']) {
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': contentType },
+      payload: 'input'
+    })
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.strictEqual(response.body, 'matched')
+  }
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'text/x-profile; profile=mixed' },
+    payload: 'input'
+  })
+  t.assert.strictEqual(response.statusCode, 415)
+})
+
+test('parser registration distinguishes parameter values by case', t => {
+  const fastify = Fastify()
+  const mixed = 'text/x-profile; profile="MiXeD"'
+  const lower = 'text/x-profile; profile="mixed"'
+
+  fastify.addContentTypeParser(mixed, first)
+  fastify.addContentTypeParser(lower, second)
+  t.assert.ok(fastify.hasContentTypeParser(mixed))
+  t.assert.ok(fastify.hasContentTypeParser(lower))
+  t.assert.throws(() => fastify.addContentTypeParser('TEXT/X-PROFILE; PROFILE=MiXeD', third), FST_ERR_CTP_ALREADY_PRESENT)
+
+  fastify.removeContentTypeParser(mixed)
+  t.assert.ok(!fastify.hasContentTypeParser(mixed))
+  t.assert.ok(fastify.hasContentTypeParser(lower))
+})
+
+test('parser registration keeps normalizing charset values', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  fastify.addContentTypeParser('Text/X-Custom; Charset=UTF-8', { parseAs: 'string' }, (req, body, done) => {
+    done(null, 'matched')
+  })
+  t.assert.throws(() => fastify.addContentTypeParser('text/x-custom; charset=utf-8', first), FST_ERR_CTP_ALREADY_PRESENT)
+  fastify.post('/', request => request.body)
+  const response = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'content-type': 'text/x-custom; charset=utf-8' },
+    payload: 'input'
+  })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.strictEqual(response.body, 'matched')
+})
+
 test('add', async t => {
   await t.test('should only accept string and RegExp', t => {
     t.plan(4)

@@ -309,6 +309,9 @@ function fastify (serverOptions) {
     listeningOrigin: {
       get () {
         const address = this.addresses().slice(-1).pop()
+        if (!address) {
+          return ''
+        }
         /* ignore if windows: unix socket is not testable on Windows platform */
         /* c8 ignore next 3 */
         if (typeof address === 'string') {

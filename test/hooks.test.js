@@ -3674,3 +3674,31 @@ test('socket._meta and timeout listener are cleared on reply.hijack() when onTim
   )
   t.assert.strictEqual(hasFastifyTimeoutListenerAfterHijack, false, 'Fastify timeout listener must be removed after reply.hijack()')
 })
+
+test('socket._meta is cleared after response when logger is disabled and no onResponse hook is registered', async t => {
+  t.plan(3)
+
+  const fastify = Fastify({ logger: false, connectionTimeout: 200 })
+  t.after(() => fastify.close())
+
+  fastify.addHook('onTimeout', function (req, reply, done) { done() })
+
+  let capturedSocket
+  fastify.get('/', async (req) => {
+    capturedSocket = req.raw.socket
+    return { ok: true }
+  })
+
+  const address = await fastify.listen({ port: 0 })
+  const result = await fetch(address)
+  t.assert.strictEqual(result.status, 200)
+
+  await new Promise(resolve => setImmediate(resolve))
+
+  t.assert.strictEqual(capturedSocket._meta, null, 'socket._meta must be null after response')
+  t.assert.strictEqual(
+    capturedSocket.listeners('timeout').some(listener => listener.name === 'handleTimeout'),
+    false,
+    'Fastify timeout listener must be removed after response'
+  )
+})

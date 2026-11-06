@@ -170,6 +170,11 @@ section.
   capabilities, and metrics tracking.
 - [`@blastorg/fastify-aws-dynamodb-cache`](https://github.com/blastorg/fastify-aws-dynamodb-cache)
   A plugin to help with caching API responses using AWS DynamoDB.
+- [`@chanx-js/server`](https://github.com/chanx-dev/chanx-js/tree/main/packages/server)
+  Typed WebSocket consumers on `@fastify/websocket`: a validated handler per
+  message, groups broadcast across instances through Redis, AsyncAPI docs and
+  a generated typed client. Register with `chanxFastify(chanx)` from
+  `@chanx-js/server/fastify`.
 - [`@clerk/fastify`](https://github.com/clerk/javascript/tree/main/packages/fastify)
   Add authentication and user management to your Fastify application with Clerk.
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for

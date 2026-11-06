@@ -211,6 +211,77 @@ describe('ContentType class', () => {
   })
 })
 
+describe('ContentType class serialization', () => {
+  test('escapes a DQUOTE so the value survives a round trip', (t) => {
+    // RFC 9110 §5.6.4: DQUOTE cannot appear literally inside a quoted-string,
+    // so a sender must express it as a quoted-pair.
+    const found = new ContentType('application/json; name="he said \\"hi\\""')
+    t.assert.equal(found.parameters.get('name'), 'he said "hi"')
+    t.assert.equal(
+      found.toString(),
+      'application/json; name="he said \\"hi\\""'
+    )
+    t.assert.equal(
+      new ContentType(found.toString()).parameters.get('name'),
+      'he said "hi"'
+    )
+  })
+
+  test('escapes a backslash so the value survives a round trip', (t) => {
+    const found = new ContentType('application/json; name="a\\\\b"')
+    t.assert.equal(found.parameters.get('name'), 'a\\b')
+    t.assert.equal(found.toString(), 'application/json; name="a\\\\b"')
+    t.assert.equal(
+      new ContentType(found.toString()).parameters.get('name'),
+      'a\\b'
+    )
+  })
+
+  test('does not let a quoted value forge additional parameters', (t) => {
+    // `p` holds a single value that happens to contain `"; q="`. Serializing
+    // it without escaping would produce `p="a"; q="b"`, which is a different
+    // content type carrying two parameters.
+    const one = new ContentType('application/json; p="a\\"; q=\\"b"')
+    const two = new ContentType('application/json; p="a"; q="b"')
+
+    t.assert.equal(one.parameters.size, 1)
+    t.assert.equal(one.parameters.get('p'), 'a"; q="b')
+    t.assert.equal(two.parameters.size, 2)
+
+    t.assert.notEqual(one.toString(), two.toString())
+  })
+
+  test('leaves a value with no quoted-pair octets untouched', (t) => {
+    const found = new ContentType('application/json; charset=utf-8; foo=BaR')
+    t.assert.equal(found.toString(), 'application/json; charset="utf-8"; foo="BaR"')
+  })
+})
+
+describe('ContentType serialization and parser lookup', () => {
+  test('does not run a parser registered for a different content type', async (t) => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    // The registered type has one parameter whose value contains `"; q="`.
+    fastify.addContentTypeParser('text/plain; p="a\\"; q=\\"b"', function (request, payload, done) {
+      done(null, 'parsed by the registered parser')
+    })
+    fastify.post('/', (request, reply) => { reply.send(request.body) })
+
+    // A different content type: two parameters, p=a and q=b. It must not
+    // reach the parser above.
+    const response = await fastify.inject({
+      method: 'POST',
+      url: '/',
+      headers: { 'content-type': 'text/plain; p="a"; q="b"' },
+      payload: 'body'
+    })
+
+    t.assert.equal(response.statusCode, 200)
+    t.assert.notEqual(response.body, 'parsed by the registered parser')
+  })
+})
+
 describe('ContentType class cache', () => {
   test('allow access cache', (t) => {
     const contentType1 = ContentType.from('application/json')

@@ -590,6 +590,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.logLevel
   routeOptions.logSerializers
   routeOptions.prefix
+  routeOptions.isGeneratedHeadRoute // `true` only for a HEAD route generated from a GET route
 })
 ```
 

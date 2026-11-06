@@ -1707,6 +1707,10 @@ fastify.addHttpMethod('GET', {
 Omitting `overrideExisting: true` when the method already exists throws
 `FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED`.
 
+`addHttpMethod` must be called before the instance starts (before `ready()`
+resolves or `listen()` is called); afterwards it throws
+`FST_ERR_INSTANCE_ALREADY_STARTED`.
+
 #### addSchema
 <a id="add-schema"></a>
 

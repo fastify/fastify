@@ -251,6 +251,18 @@ test('parser registration distinguishes parameter values by case', t => {
   t.assert.ok(fastify.hasContentTypeParser(lower))
 })
 
+test('hasContentTypeParser finds a parser whatever the case of its media type and parameter names', t => {
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('Text/X-Profile; Profile="MiXeD"', first)
+  t.assert.ok(fastify.hasContentTypeParser('text/x-profile; profile=MiXeD'))
+  t.assert.ok(fastify.hasContentTypeParser('TEXT/X-PROFILE; PROFILE="MiXeD"'))
+  t.assert.ok(!fastify.hasContentTypeParser('text/x-profile; profile=mixed'))
+
+  fastify.removeContentTypeParser('TEXT/X-PROFILE; PROFILE=MiXeD')
+  t.assert.ok(!fastify.hasContentTypeParser('Text/X-Profile; Profile="MiXeD"'))
+})
+
 test('parser registration keeps normalizing charset values', async t => {
   const fastify = Fastify()
   t.after(() => fastify.close())

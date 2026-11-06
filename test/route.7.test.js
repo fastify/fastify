@@ -379,11 +379,9 @@ test('GET route with body schema should throw - shorthand', t => {
       schema: {
         body: {}
       }
-    },
-    function (req, reply) {
+    }, function (req, reply) {
       reply.send({ hello: 'world' })
-    }
-    )
+    })
   }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for GET:/shouldThrow route is not supported!')())
 })
 
@@ -397,10 +395,8 @@ test('HEAD route with body schema should throw - shorthand', t => {
       schema: {
         body: {}
       }
-    },
-    function (req, reply) {
+    }, function (req, reply) {
       reply.send({ hello: 'world' })
-    }
-    )
+    })
   }, createError('FST_ERR_ROUTE_BODY_VALIDATION_SCHEMA_NOT_SUPPORTED', 'Body validation schema for HEAD:/shouldThrow2 route is not supported!')())
 })

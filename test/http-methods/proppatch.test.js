@@ -50,8 +50,7 @@ test('shorthand - proppatch', t => {
                 </D:propstat>
                 <D:responsedescription> Copyright Owner cannot be deleted or altered.</D:responsedescription>
               </D:response>
-            </D:multistatus>`
-          )
+            </D:multistatus>`)
       }
     })
     t.assert.ok(true)

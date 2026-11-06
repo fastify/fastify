@@ -434,8 +434,7 @@ test('should return a defined output message parsing JOI errors', async (t) => {
     validatorCompiler: ({ schema, method, url, httpPart }) => {
       return data => schema.validate(data)
     }
-  },
-  function (req, reply) {
+  }, function (req, reply) {
     t.assert.fail()
   })
 
@@ -467,8 +466,7 @@ test('should return a defined output message parsing JOI error details', async (
         return { error: validation.error.details }
       }
     }
-  },
-  function (req, reply) {
+  }, function (req, reply) {
     t.assert.fail()
   })
 

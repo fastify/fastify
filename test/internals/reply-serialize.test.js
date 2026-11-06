@@ -572,7 +572,7 @@ test('Reply#getSerializationFunction', async t => {
 })
 
 test('Reply#serializeInput', async t => {
-  t.plan(6)
+  t.plan(7)
 
   await t.test(
     'Should throw if missed serialization function from HTTP status',
@@ -779,6 +779,57 @@ test('Reply#serializeInput', async t => {
 
       t.assert.strictEqual(compilerCalled, 1)
       t.assert.strictEqual(serializerCalled, 2)
+    }
+  )
+
+  await t.test(
+    'Should resolve the same serializer as getSerializationFunction for a schema with no metadata-specific entry',
+    async t => {
+      // Both lookups describe the same situation: a schema compiled without
+      // metadata, asked for under a content type that was never compiled.
+      // getSerializationFunction falls back to the no-metadata entry, so
+      // serializeInput has to reach that same entry instead of compiling a
+      // second serializer for the same schema.
+      const schemaObj = getDefaultSchema()
+      const testInput = { hello: 'world' }
+      const compiled = []
+      const fastify = Fastify()
+
+      fastify.get('/', {
+        serializerCompiler: ({ httpStatus, contentType }) => {
+          compiled.push({ httpStatus, contentType })
+          return JSON.stringify
+        }
+      }, (req, reply) => {
+        const plain = reply.compileSerializationSchema(schemaObj)
+
+        const viaGetter = reply.getSerializationFunction(schemaObj, 'application/xml')
+        t.assert.strictEqual(viaGetter, plain, 'getter falls back to the no-metadata serializer')
+
+        const compiledBefore = compiled.length
+        t.assert.strictEqual(
+          reply.serializeInput(testInput, schemaObj, undefined, 'application/xml'),
+          JSON.stringify(testInput)
+        )
+        if (compiled.length !== compiledBefore) {
+          throw new Error(
+            'serializeInput compiled a second serializer for a schema that already had one: ' +
+            JSON.stringify(compiled)
+          )
+        }
+
+        reply.send(testInput)
+      })
+
+      t.plan(2)
+
+      const res = await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+      if (res.statusCode !== 200) {
+        throw new Error('handler failed: ' + res.statusCode + ' ' + res.payload)
+      }
     }
   )
 

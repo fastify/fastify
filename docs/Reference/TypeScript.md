@@ -1537,8 +1537,8 @@ This interface is passed to instance of FastifyError.
 `onRequest` is the first hook to be executed in the request lifecycle. There was
 no previous hook, the next hook will be `preParsing`.
 
-Notice: in the `onRequest` hook, request.body will always be null, because the
-body parsing happens before the `preHandler` hook.
+Notice: in the `onRequest` hook, request.body will always be undefined, because
+the body parsing happens before the `preValidation` hook.
 
 ##### fastify.preParsingHookHandler< [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
@@ -1547,8 +1547,8 @@ body parsing happens before the `preHandler` hook.
 `preParsing` is the second hook to be executed in the request lifecycle. The
 previous hook was `onRequest`, the next hook will be `preValidation`.
 
-Notice: in the `preParsing` hook, request.body will always be null, because the
-body parsing happens before the `preValidation` hook.
+Notice: in the `preParsing` hook, request.body will always be undefined, because
+the body parsing happens before the `preValidation` hook.
 
 Notice: you should also add `receivedEncodedLength` property to the returned
 stream. This property is used to correctly match the request payload with the

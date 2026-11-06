@@ -95,6 +95,81 @@ test('reuse parsed content type when selecting response serializer', async t => 
   t.assert.ok(ContentType.cache.get(normalizedContentType))
 })
 
+test('mixed-case response content schema key is canonicalized and selected', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'Application/JSON': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                },
+                additionalProperties: false
+              }
+            }
+          }
+        }
+      }
+    }
+  }, async () => ({ name: 'foo', extra: 'should-be-stripped' }))
+
+  const response = await fastify.inject('/')
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { name: 'foo' })
+})
+
+test('duplicate case-equivalent response content schema keys are rejected', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': { schema: { type: 'object' } },
+            'Application/JSON': { schema: { type: 'object' } }
+          }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+    t.assert.match(err.message, /Duplicate case-equivalent content schema for 'application\/json'/)
+    t.assert.strictEqual(err.cause.code, 'FST_ERR_SCH_CONTENT_DUPLICATE')
+    return true
+  })
+})
+
+test('invalid response content schema key is rejected', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            foo: { schema: { type: 'object' } }
+          }
+        }
+      }
+    }
+  }, async () => 'ok')
+
+  await t.assert.rejects(fastify.ready(), (err) => {
+    t.assert.strictEqual(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+    t.assert.match(err.message, /Invalid content type 'foo' in schema\.content/)
+    t.assert.strictEqual(err.cause.code, 'FST_ERR_SCH_CONTENT_INVALID_CONTENT_TYPE')
+    return true
+  })
+})
+
 test('Different content types', (t, testDone) => {
   t.plan(46)
 

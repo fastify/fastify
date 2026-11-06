@@ -777,3 +777,44 @@ test('does not destroy connections with in-flight requests (default options)', a
   t.assert.strictEqual(response.statusCode, 200)
   t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
 })
+
+test('close waits for in-flight request on secondary listener to drain', async t => {
+  const fastify = Fastify()
+
+  let inFlight = 0
+
+  fastify.get('/', async () => {
+    inFlight++
+    fastify.close()
+    await sleep(200)
+    inFlight--
+    return { hello: 'world' }
+  })
+
+  fastify.addHook('onClose', (instance, done) => {
+    t.assert.strictEqual(inFlight, 0)
+    done()
+  })
+
+  await fastify.listen({ port: 0 })
+
+  // When listening on 'localhost' the main server binds to one of the two
+  // loopback families and secondary listeners are started for the others.
+  // The bug only reproduces when the in-flight request lands on a secondary
+  // listener, so pick any address that is not the main server's.
+  const mainAddress = fastify.server.address()
+  const secondary = fastify.addresses().find(({ address }) => address !== mainAddress.address)
+
+  if (secondary === undefined) {
+    t.skip('no secondary listener available')
+    return
+  }
+
+  const host = secondary.family === 'IPv6' ? `[${secondary.address}]` : secondary.address
+  const client = new Client(`http://${host}:${secondary.port}`)
+  t.after(() => client.close())
+
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
+})

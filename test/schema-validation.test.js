@@ -1921,6 +1921,109 @@ test('inline and local $ref header schemas do not emit FSTSEC002', async t => {
   t.assert.strictEqual(spyData.callCount(), 0)
 })
 
+test('header schema object with a registered $id is case-normalized', async t => {
+  const spyData = spyWarning(FSTSEC002)
+  t.after(spyData.restore)
+
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: 'admin-headers',
+    type: 'object',
+    required: ['X-Api-Key'],
+    properties: {
+      'X-Api-Key': { type: 'string' },
+      'X-Admin': { type: 'string', const: 'true' },
+      'X-Admin-Token': { type: 'string', const: 'server-secret' }
+    },
+    dependencies: { 'X-Admin': ['X-Admin-Token'] }
+  })
+  // The object returned by getSchema() carries the registered $id. The default
+  // validator compiler would return the registered, non-normalized validator
+  // for that $id, so Fastify must compile the normalized copy instead.
+  fastify.get('/', {
+    schema: { headers: fastify.getSchema('admin-headers') }
+  }, async () => ({ adminAction: true }))
+
+  await fastify.ready()
+
+  // The canonical-case `required` matches the lowercased request header.
+  const valid = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: { 'X-Api-Key': 'key', 'X-Admin': 'true', 'X-Admin-Token': 'server-secret' }
+  })
+  t.assert.strictEqual(valid.statusCode, 200)
+  t.assert.deepStrictEqual(valid.json(), { adminAction: true })
+
+  const missingToken = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: { 'X-Api-Key': 'key', 'X-Admin': 'true' }
+  })
+  t.assert.strictEqual(missingToken.statusCode, 400)
+  t.assert.strictEqual(missingToken.json().code, 'FST_ERR_VALIDATION')
+
+  const wrongToken = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: { 'X-Api-Key': 'key', 'X-Admin': 'true', 'X-Admin-Token': 'wrong' }
+  })
+  t.assert.strictEqual(wrongToken.statusCode, 400)
+  t.assert.strictEqual(wrongToken.json().code, 'FST_ERR_VALIDATION')
+
+  const missingKey = await fastify.inject({ method: 'GET', url: '/' })
+  t.assert.strictEqual(missingKey.statusCode, 400)
+  t.assert.strictEqual(missingKey.json().code, 'FST_ERR_VALIDATION')
+
+  t.assert.strictEqual(spyData.callCount(), 0)
+  // The registered schema is left untouched.
+  t.assert.strictEqual(fastify.getSchema('admin-headers').$id, 'admin-headers')
+  t.assert.deepStrictEqual(fastify.getSchema('admin-headers').required, ['X-Api-Key'])
+})
+
+test('header schema with an $id and an external $ref keeps the $id for reference resolution', async t => {
+  const spyData = spyWarning(FSTSEC002)
+  t.after(spyData.restore)
+
+  const fastify = Fastify()
+  fastify.addSchema({
+    $id: 'http://example.com/defs',
+    definitions: { token: { type: 'string', const: 'server-secret' } }
+  })
+  fastify.post('/', {
+    schema: {
+      headers: {
+        $id: 'http://example.com/headers',
+        type: 'object',
+        properties: {
+          // resolved against the root $id: http://example.com/defs
+          'x-admin-token': { $ref: 'defs#/definitions/token' }
+        }
+      }
+    }
+  }, async () => ({ ok: true }))
+
+  await fastify.ready()
+
+  t.assert.strictEqual(spyData.callCount(), 1)
+  t.assert.deepStrictEqual(spyData.calls[0].arguments, ['POST', '/', 'defs#/definitions/token'])
+
+  const valid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'x-admin-token': 'server-secret' }
+  })
+  t.assert.strictEqual(valid.statusCode, 200)
+
+  const invalid = await fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'x-admin-token': 'wrong' }
+  })
+  t.assert.strictEqual(invalid.statusCode, 400)
+  t.assert.strictEqual(invalid.json().code, 'FST_ERR_VALIDATION')
+})
+
 test('header schema with a $ref inside propertyNames emits FSTSEC003 (case-normalization does not reach it)', async t => {
   const spyData = spyWarning(FSTSEC003)
   t.after(spyData.restore)

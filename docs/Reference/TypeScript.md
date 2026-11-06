@@ -1101,7 +1101,9 @@ server.get('/', async (request, reply) => {
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L8)
 
 Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' |
-'OPTIONS'`
+'OPTIONS' | 'QUERY' | 'PROPFIND' | 'PROPPATCH' | 'MKCOL' | 'COPY' | 'MOVE' |
+'LOCK' | 'UNLOCK' | 'TRACE' | 'SEARCH' | 'REPORT' | 'MKCALENDAR'` and their
+lowercase forms. Any other string is accepted as well.
 
 ##### fastify.RawServerBase
 [src](https://github.com/fastify/fastify/blob/main/types/utils.d.ts#L13)

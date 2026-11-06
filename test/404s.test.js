@@ -2169,3 +2169,23 @@ test('encapsulated 404 handler is used when routerOptions.maxParamLength is rais
   t.assert.strictEqual(res.statusCode, 404)
   t.assert.strictEqual(res.payload, 'tenant 404')
 })
+
+test('encapsulated 404 handler is used when routerOptions.ignoreTrailingSlash is true and the prefix ends with a slash', async t => {
+  t.plan(2)
+
+  const fastify = Fastify({ routerOptions: { ignoreTrailingSlash: true } })
+
+  fastify.register(async function (instance) {
+    instance.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('prefixed 404')
+    })
+  }, { prefix: '/prefixed/' })
+
+  fastify.setNotFoundHandler(function (request, reply) {
+    reply.code(404).send('root 404')
+  })
+
+  const res = await fastify.inject('/prefixed')
+  t.assert.strictEqual(res.statusCode, 404)
+  t.assert.strictEqual(res.payload, 'prefixed 404')
+})

@@ -416,6 +416,35 @@ test('preHandler hooks should be able to block a request', (t, testDone) => {
   })
 })
 
+// The test above registers a single `onSend` hook. With two or more *async*
+// `onSend` hooks the chain is no longer halted: the handler runs and overwrites
+// the status code of the already-sent reply, so the response carries the hook's
+// body under the handler's status. Marked `todo` because the intended semantics
+// are still undecided - this pins the discrepancy rather than asserting which
+// side of it is correct. See https://github.com/fastify/fastify/issues/7090
+test('preHandler hooks should be able to block a request with 2+ async onSend hooks', { todo: 'https://github.com/fastify/fastify/issues/7090' }, async t => {
+  const fastify = Fastify()
+  let handlerRan = false
+
+  fastify.addHook('onSend', async (req, reply, payload) => payload)
+  fastify.addHook('onSend', async (req, reply, payload) => payload)
+
+  fastify.addHook('preHandler', async (req, reply) => {
+    reply.code(401).send({ error: 'unauthorized' })
+  })
+
+  fastify.get('/', async (request, reply) => {
+    handlerRan = true
+    return reply.code(400).send({ error: 'handler ran' })
+  })
+
+  const res = await fastify.inject('/')
+
+  t.assert.strictEqual(handlerRan, false, 'the handler should not run')
+  t.assert.strictEqual(res.statusCode, 401)
+  t.assert.deepStrictEqual(res.json(), { error: 'unauthorized' })
+})
+
 test('preValidation hooks should be able to block a request', (t, testDone) => {
   t.plan(5)
   const fastify = Fastify()

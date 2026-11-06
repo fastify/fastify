@@ -183,6 +183,16 @@ rewrite a regular expression. Author them to match lowercase (for example
 written in canonical case will not match, and the assertion it guards will not
 apply.
 
+Normalization applies to the schema object passed as `headers`, including one
+that carries the `$id` of a schema registered with `addSchema()`, such as the
+object returned by `getSchema()`. It does not reach a registered schema that the
+`headers` schema references through an external `$ref` (for example
+`{ $ref: 'shared-headers#' }`), because a registered schema can also be used to
+validate the body, querystring, or params. Fastify emits
+[`FSTSEC002`](./Warnings.md#FSTSEC002) at startup in that case. Pass the schema
+object instead (for example `fastify.getSchema('shared-headers')`), or write
+header names in lowercase.
+
 Example:
 ```js
 const bodyJsonSchema = {

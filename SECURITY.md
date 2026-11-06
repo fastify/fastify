@@ -30,6 +30,12 @@ The following are **not** considered vulnerabilities in Fastify:
 
 - **Application code vulnerabilities**: XSS, SQL injection, or other flaws in
 user-written route handlers, hooks, or plugins
+- **Unvalidated template selection**: Passing untrusted input directly as a
+template name or path (for example, `reply.view(request.query.page)`) without
+validating or allowlisting it is an application-level vulnerability. A template
+root used to resolve filenames is not a security sandbox unless the API
+explicitly guarantees path containment. Bypasses of documented containment
+or built-in path validation remain in scope.
 - **Malicious application code**: Issues caused by intentionally malicious
 plugins or handlers (application code is trusted)
 - **Validation schema issues**: Weak or incorrect schemas provided by developers

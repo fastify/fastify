@@ -96,6 +96,7 @@ declare namespace fastify {
   type TrustProxyFunction = (address: string, hop: number) => boolean
 
   export type FastifyRouterOptions<RawServer extends RawServerBase> = Omit<FindMyWayConfigForServer<RawServer>, 'defaultRoute' | 'onBadUrl' | 'onMaxParamLength' | 'querystringParser' | 'constraints'> & {
+    compile?: boolean,
     constraints?: {
       [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
     },

@@ -3,6 +3,7 @@ import * as http from 'node:http'
 import * as http2 from 'node:http2'
 import * as https from 'node:https'
 import { Socket } from 'node:net'
+import pino from 'pino'
 import { expect } from 'tstyche'
 import fastify, {
   ConnectionError,
@@ -180,6 +181,10 @@ const customLogger = {
   debug: () => { },
   child: () => customLogger
 }
+const pinoLogger = pino()
+const pinoLoggerServer: FastifyInstance = fastify({ loggerInstance: pinoLogger })
+
+expect(pinoLoggerServer).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ logger: customLogger })).type.toBeAssignableTo<
   FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>
 >()
@@ -355,6 +360,10 @@ expect(fastify.errorCodes).type.toBe<FastifyErrorCodes>()
 fastify({ routerOptions: { allowUnsafeRegex: true } })
 fastify({ routerOptions: { allowUnsafeRegex: false } })
 expect(fastify).type.not.toBeCallableWith({ routerOptions: { allowUnsafeRegex: 'invalid' } })
+
+fastify({ routerOptions: { compile: true } })
+fastify({ routerOptions: { compile: false } })
+expect(fastify).type.not.toBeCallableWith({ routerOptions: { compile: 'invalid' } })
 
 expect(fastify({ allowErrorHandlerOverride: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ allowErrorHandlerOverride: false })).type.toBeAssignableTo<FastifyInstance>()

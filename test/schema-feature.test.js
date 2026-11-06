@@ -459,7 +459,7 @@ test('Should emit a warning for every route with undefined schema', (t, testDone
     t.assert.ifError(error)
     t.assert.strictEqual(res.statusCode, 200)
     // fastify.inject run in series
-    // last callback recieve all warnings at once
+    // last callback receive all warnings at once
     // GET /undefinedParams/123
     t.assert.deepStrictEqual(spyData.calls[0], { arguments: ['params', 'GET', '/undefinedParams/:id'], result: true })
     t.assert.deepStrictEqual(spyData.calls[1], { arguments: ['params', 'HEAD', '/undefinedParams/:id'], result: true })

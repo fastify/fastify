@@ -6,6 +6,46 @@ const jsonParser = require('fast-json-body')
 
 process.removeAllListeners('warning')
 
+test('parameterized parser matches preserve precedence and encapsulation on repeated requests', async t => {
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.addContentTypeParser('application/custom', { parseAs: 'string' }, (request, body, done) => {
+    done(null, 'parent')
+  })
+  fastify.addContentTypeParser('application/custom; version=2', { parseAs: 'string' }, (request, body, done) => {
+    done(null, 'version 2')
+  })
+  fastify.post('/', request => request.body)
+
+  fastify.register(async child => {
+    child.removeContentTypeParser('application/custom')
+    child.addContentTypeParser('application/custom', { parseAs: 'string' }, (request, body, done) => {
+      done(null, 'child')
+    })
+    child.post('/child', request => request.body)
+  })
+
+  for (let i = 0; i < 3; i++) {
+    for (const [url, contentType, expected] of [
+      ['/', 'application/custom; charset=utf-8', 'parent'],
+      ['/child', 'application/custom; charset=utf-8', 'child'],
+      ['/', 'application/custom; version=2', 'version 2'],
+      ['/child', 'application/custom; version=2', 'version 2'],
+      ['/', 'Application/Custom ; Charset="utf-8"', 'parent']
+    ]) {
+      const response = await fastify.inject({
+        method: 'POST',
+        url,
+        headers: { 'content-type': contentType },
+        payload: 'body'
+      })
+      t.assert.strictEqual(response.statusCode, 200)
+      t.assert.strictEqual(response.body, expected)
+    }
+  }
+})
+
 test('should prefer string content types over RegExp ones', async (t) => {
   t.plan(6)
   const fastify = Fastify()

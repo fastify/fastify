@@ -10,6 +10,72 @@ const { normalizeSchema } = require('../../lib/schemas')
 const symbols = require('../../lib/validation').symbols
 const { kSchemaVisited } = require('../../lib/symbols')
 
+for (const [part, symbol] of [
+  ['params', symbols.paramsSchema],
+  ['body', symbols.bodySchema],
+  ['query', symbols.querystringSchema],
+  ['headers', symbols.headersSchema]
+]) {
+  for (const async of [false, true]) {
+    test(`validate reads only the validated ${part} once (${async ? 'async' : 'sync'})`, async t => {
+      const request = {}
+      const value = { hello: 'world' }
+      let reads = 0
+      let calls = 0
+
+      for (const name of ['params', 'body', 'query', 'headers']) {
+        Object.defineProperty(request, name, {
+          get () {
+            t.assert.strictEqual(name, part, 'unvalidated request parts must not be read')
+            reads++
+            return value
+          }
+        })
+      }
+
+      const context = {
+        [symbol]: data => {
+          calls++
+          t.assert.strictEqual(data, value)
+          return async ? Promise.resolve(data) : true
+        }
+      }
+
+      t.assert.strictEqual(await validation.validate(context, request), false)
+      t.assert.strictEqual(reads, 1)
+      t.assert.strictEqual(calls, 1)
+    })
+  }
+}
+
+test('validate skips a body without a matching content-type schema', t => {
+  const context = { [symbols.bodySchema]: { 'application/json': () => true } }
+  const request = {
+    mediaType: 'text/plain',
+    get body () {
+      t.assert.fail('an unvalidated body must not be read')
+    }
+  }
+
+  t.assert.strictEqual(validation.validate(context, request), false)
+})
+
+test('validate passes null for an undefined request part and preserves other values', t => {
+  for (const value of [undefined, null, false, 0, '']) {
+    let calls = 0
+    const context = {
+      [symbols.bodySchema]: data => {
+        calls++
+        t.assert.strictEqual(data, value === undefined ? null : value)
+        return true
+      }
+    }
+
+    t.assert.strictEqual(validation.validate(context, { body: value }), false)
+    t.assert.strictEqual(calls, 1)
+  }
+})
+
 test('Symbols', t => {
   t.plan(5)
   t.assert.strictEqual(typeof symbols.responseSchema, 'symbol')

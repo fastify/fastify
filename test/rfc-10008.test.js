@@ -99,12 +99,9 @@ describe('RFC 10008', () => {
     t.assert.equal(res.json().code, 'FST_ERR_CTP_INVALID_JSON_BODY')
   })
 
-  test('should return 400 if no content is provided for QUERY method', async (t) => {
-    // If a media type is specified but is inconsistent
-    // with the actual request content, a 400 (Bad Request)
-    // can be returned. That is, a server is not allowed to
-    // infer a media type from the request content and then
-    // override a missing or "erroneous" value (i.e., "content sniffing").
+  test('should return 200 if body is empty but media type allows it for QUERY method', async (t) => {
+    // If a media type is set and allows the body to be empty,
+    // the server must allow it.
     t.plan(2)
 
     const fastify = Fastify()
@@ -116,11 +113,11 @@ describe('RFC 10008', () => {
     const res = await fastify.inject({
       method: 'QUERY',
       url: '/query',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'text/plain' }
     })
 
-    t.assert.equal(res.statusCode, 400)
-    t.assert.equal(res.json().code, 'FST_ERR_ROUTE_MISSING_CONTENT')
+    t.assert.equal(res.statusCode, 200)
+    t.assert.equal(res.body, '')
   })
 
   test('should return 415 if unsupported media type is provided for QUERY method', async (t) => {

@@ -10,6 +10,7 @@ or [GitHub Sponsors](https://github.com/sponsors/fastify)!
 ## Tier 4
 
 - [SerpApi](https://serpapi.com/?utm_source=fastify)
+- [Cloudways](https://www.cloudways.com/en/velocity.php?id=1258368&data1=fastify)
 
 ## Tier 3
 

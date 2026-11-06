@@ -40,7 +40,7 @@ export interface FastifyListenOptions {
    */
   port?: number;
   /**
-   * Default to `localhost`.
+   * Default to `localhost`. Only used when listening on a `port`.
    */
   host?: string;
   /**

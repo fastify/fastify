@@ -247,6 +247,8 @@ function fastify (serverOptions) {
     addSchema,
     getSchema: schemaController.getSchema.bind(schemaController),
     getSchemas: schemaController.getSchemas.bind(schemaController),
+    getValidatorSchemas: schemaController.getValidatorSchemas.bind(schemaController),
+    getSerializerSchemas: schemaController.getSerializerSchemas.bind(schemaController),
     setValidatorCompiler,
     setSerializerCompiler,
     setSchemaController,
@@ -655,10 +657,10 @@ function fastify (serverOptions) {
   }
 
   // wrapper that we expose to the user for schemas handling
-  function addSchema (schema) {
+  function addSchema (schema, options) {
     throwIfAlreadyStarted('Cannot call "addSchema"!')
-    this[kSchemaController].add(schema)
-    this[kChildren].forEach(child => child.addSchema(schema))
+    this[kSchemaController].add(schema, options)
+    this[kChildren].forEach(child => child.addSchema(schema, options))
     return this
   }
 
@@ -786,6 +788,8 @@ function fastify (serverOptions) {
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
+    this.getValidatorSchemas = schemaController.getValidatorSchemas.bind(schemaController)
+    this.getSerializerSchemas = schemaController.getSerializerSchemas.bind(schemaController)
     return this
   }
 

@@ -150,16 +150,16 @@ remap the context to use one or more providers (for example, `typebox` and
 Example:
 
 ```ts
-import Fastify from 'fastify'
+import Fastify, { FastifyPluginCallback } from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
 import { Type } from 'typebox'
 
 const fastify = Fastify()
 
-function pluginWithTypebox(fastify: FastifyInstance, _opts, done): void {
+const pluginWithTypebox: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.withTypeProvider<TypeBoxTypeProvider>()
-    .get('/', {
+    .post('/', {
       schema: {
         body: Type.Object({
           x: Type.String(),
@@ -173,9 +173,9 @@ function pluginWithTypebox(fastify: FastifyInstance, _opts, done): void {
   done()
 }
 
-function pluginWithJsonSchema(fastify: FastifyInstance, _opts, done): void {
+const pluginWithJsonSchema: FastifyPluginCallback = (fastify, _opts, done) => {
   fastify.withTypeProvider<JsonSchemaToTsProvider>()
-    .get('/', {
+    .post('/', {
       schema: {
         body: {
           type: 'object',
@@ -192,8 +192,8 @@ function pluginWithJsonSchema(fastify: FastifyInstance, _opts, done): void {
   done()
 }
 
-fastify.register(pluginWithJsonSchema)
-fastify.register(pluginWithTypebox)
+fastify.register(pluginWithJsonSchema, { prefix: '/json-schema' })
+fastify.register(pluginWithTypebox, { prefix: '/typebox' })
 ```
 
 It is important to note that since the types do not propagate globally, it is
@@ -201,17 +201,14 @@ currently not possible to avoid multiple registrations on routes when dealing
 with several scopes, as shown below:
 
 ```ts
-import Fastify from 'fastify'
+import Fastify, { FastifyPluginCallback } from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type } from 'typebox'
 
 const server = Fastify().withTypeProvider<TypeBoxTypeProvider>()
 
-server.register(plugin1) // wrong
-server.register(plugin2) // correct
-
-function plugin1(fastify: FastifyInstance, _opts, done): void {
-  fastify.get('/', {
+const plugin1: FastifyPluginCallback = (fastify, _opts, done) => {
+  fastify.post('/', {
     schema: {
       body: Type.Object({
         x: Type.String(),
@@ -226,10 +223,10 @@ function plugin1(fastify: FastifyInstance, _opts, done): void {
   done()
 }
 
-function plugin2(fastify: FastifyInstance, _opts, done): void {
+const plugin2: FastifyPluginCallback = (fastify, _opts, done) => {
   const server = fastify.withTypeProvider<TypeBoxTypeProvider>()
 
-  server.get('/', {
+  server.post('/', {
     schema: {
       body: Type.Object({
         x: Type.String(),
@@ -243,6 +240,9 @@ function plugin2(fastify: FastifyInstance, _opts, done): void {
   });
   done()
 }
+
+server.register(plugin1, { prefix: '/without-provider' }) // wrong
+server.register(plugin2, { prefix: '/with-provider' }) // correct
 ```
 
 ### Type Definition of FastifyInstance + TypeProvider
@@ -284,7 +284,7 @@ type FastifyTypebox = FastifyInstance<
 >;
 
 export function registerRoutes(fastify: FastifyTypebox): void {
-  fastify.get('/', {
+  fastify.post('/', {
     schema: {
       body: Type.Object({
         x: Type.String(),

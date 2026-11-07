@@ -1370,8 +1370,8 @@ const plugin: FastifyPluginCallback<{
   option2: boolean;
 }> = function (instance, opts, done) { }
 
-server().register(plugin, {}) // Error - options object is missing required properties
-server().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
+server.register(plugin, {}) // Error - options object is missing required properties
+server.register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
 ```
 
 See the Learn By Example, [Plugins](#plugins) section for more detailed examples

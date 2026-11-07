@@ -5,7 +5,6 @@ module.exports = [
   ...neostandard({
     ignores: [
       'lib/config-validator.js',
-      'lib/error-serializer.js',
       'test/same-shape.test.js'
     ],
     ts: true

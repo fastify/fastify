@@ -590,9 +590,8 @@ expect(fastify().route({
 
 expect(fastify().get('/', {
   logSerializers: {
-    foo: (value: any) => JSON.stringify(value),
-  },
-  return503OnClosing: true,
+    foo: (value: any) => JSON.stringify(value)
+  }
 }, async () => 'test')).type.toBe<FastifyInstance>()
 
 expect(fastify().route({
@@ -600,10 +599,24 @@ expect(fastify().route({
   url: '/route-options',
   path: '/route-options',
   logSerializers: {
-    bar: (value: any) => String(value),
+    bar: (value: any) => String(value)
   },
-  return503OnClosing: false,
-  handler: async () => 'test',
+  handler: async () => 'test'
+})).type.toBe<FastifyInstance>()
+
+expect(fastify().route({
+  method: 'GET',
+  path: '/route-path-only',
+  handler: async () => 'test'
+})).type.toBe<FastifyInstance>()
+
+// The runtime rejects a route with neither location
+// (`opts.url || opts.path || ''` then an empty-path assertion), so the type
+// must reject it too.
+// @ts-expect-error Argument of type '{ method: "GET"; handler: () => Promise<string>; }' is not assignable
+expect(fastify().route({
+  method: 'GET',
+  handler: async () => 'test'
 })).type.toBe<FastifyInstance>()
 
 expect(fastify().route({

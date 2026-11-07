@@ -15,7 +15,6 @@ import {
   FastifySchema,
   FastifySchemaCompiler,
   FastifySchemaControllerOptions,
-  FastifySerializerCompiler,
   SchemaErrorFormatter
 } from './schema'
 import {
@@ -627,17 +626,6 @@ export interface FastifyInstance<
    * Set the input schema validator compiler for all routes.
    */
   setInputValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer,
-    RawRequest, RawReply, Logger, TypeProvider>;
-
-  /**
-   * Fastify schema serializer for all routes.
-   */
-  serializerCompiler: FastifySerializerCompiler<any> | undefined;
-
-  /**
-   * Set the schema serializer for all routes.
-   */
-  setSerializerCompiler<T = FastifySchema>(schemaCompiler: FastifySerializerCompiler<T>): FastifyInstance<RawServer,
     RawRequest, RawReply, Logger, TypeProvider>;
 
   /**

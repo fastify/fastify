@@ -4,8 +4,7 @@ const { test } = require('node:test')
 const Ajv = require('ajv')
 const Fastify = require('..')
 
-// `minimum` is ignored by fast-json-stringify: a response that violates it can
-// only be rejected by the output validator.
+// A response that violates `minimum` is rejected by the output validator.
 const atLeastTen = {
   200: {
     type: 'object',
@@ -172,7 +171,7 @@ test('the output validator is selected by content type', async t => {
   t.assert.deepStrictEqual((await fastify.inject('/v2')).json(), { n: 1 })
 })
 
-test('the payloads that do not reach fast-json-stringify are not validated', async t => {
+test('the payloads that are not stringified are not validated', async t => {
   t.plan(3)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -188,7 +187,7 @@ test('the payloads that do not reach fast-json-stringify are not validated', asy
   t.assert.strictEqual((await fastify.inject('/custom')).payload, '{"n":1}')
 })
 
-test('the default output pool shapes the handler payload before fast-json-stringify', async t => {
+test('the default output pool shapes the handler payload before JSON.stringify', async t => {
   t.plan(3)
   const fastify = Fastify()
   t.after(() => fastify.close())
@@ -217,6 +216,21 @@ test('the default output pool shapes the handler payload before fast-json-string
   t.assert.strictEqual(res.statusCode, 200)
   t.assert.deepStrictEqual(res.json(), { n: 42, a: 'x', o: { b: 7 } })
   t.assert.deepStrictEqual(payload, { n: 42, a: 'x', o: { b: 7 } }, 'the payload is shaped in place')
+})
+
+test('the undeclared properties are sent unless the schema declares additionalProperties: false', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const properties = { n: { type: 'number' } }
+  fastify.get('/open', { schema: { response: { 200: { type: 'object', properties } } } }, () => ({ n: 1, extra: true }))
+  fastify.get('/closed', {
+    schema: { response: { 200: { type: 'object', additionalProperties: false, properties } } }
+  }, () => ({ n: 1, extra: true }))
+
+  t.assert.deepStrictEqual((await fastify.inject('/open')).json(), { n: 1, extra: true })
+  t.assert.deepStrictEqual((await fastify.inject('/closed')).json(), { n: 1 })
 })
 
 test('the default output pool does not validate the formats', async t => {

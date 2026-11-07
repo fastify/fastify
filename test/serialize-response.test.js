@@ -6,16 +6,19 @@ const Fastify = require('../fastify')
 const sjson = require('secure-json-parse')
 
 const BadRequestSchema = S.object()
+  .additionalProperties(false)
   .prop('statusCode', S.number())
   .prop('error', S.string())
   .prop('message', S.string())
 
 const InternalServerErrorSchema = S.object()
+  .additionalProperties(false)
   .prop('statusCode', S.number())
   .prop('error', S.string())
   .prop('message', S.string())
 
 const NotFoundSchema = S.object()
+  .additionalProperties(false)
   .prop('statusCode', S.number())
   .prop('error', S.string())
   .prop('message', S.string())
@@ -33,7 +36,8 @@ const options = {
         type: 'object',
         properties: {
           id: { type: 'string' }
-        }
+        },
+        additionalProperties: false
       },
       400: {
         description: 'Bad Request',

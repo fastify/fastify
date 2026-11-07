@@ -17,7 +17,7 @@ import { FastifyInstance } from './instance'
 import { FastifyBaseLogger, FastifyChildLoggerFactory, LogLevel } from './logger'
 import { FastifyReply, ReplyGenericInterface } from './reply'
 import { FastifyRequest, RequestGenericInterface } from './request'
-import { FastifySchema, FastifySchemaCompiler, FastifySerializerCompiler, SchemaErrorFormatter } from './schema'
+import { FastifySchema, FastifySchemaCompiler, SchemaErrorFormatter } from './schema'
 import {
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
@@ -64,7 +64,6 @@ export interface RouteShorthandOptions<
   exposeHeadRoute?: boolean;
 
   inputValidatorCompiler?: FastifySchemaCompiler<NoInfer<SchemaCompiler>>;
-  serializerCompiler?: FastifySerializerCompiler<NoInfer<SchemaCompiler>>;
   bodyLimit?: number;
   handlerTimeout?: number;
   logLevel?: LogLevel;

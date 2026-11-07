@@ -313,7 +313,8 @@ test("serializer read validator's schemas", (t, testDone) => {
     type: 'object',
     properties: {
       hello: { $ref: 'http://fastify.test/schemas/base#/definitions/hello' }
-    }
+    },
+    additionalProperties: false
   }
 
   ajvInstance.addSchema(baseSchema)
@@ -374,7 +375,8 @@ test('setSchemaController in a plugin', (t, testDone) => {
     type: 'object',
     properties: {
       hello: { $ref: 'urn:schema:base#/definitions/hello' }
-    }
+    },
+    additionalProperties: false
   }
 
   const ajvInstance = new AJV()
@@ -545,7 +547,8 @@ test('setSchemaController in a plugin with head routes', (t, testDone) => {
     type: 'object',
     properties: {
       hello: { $ref: 'urn:schema:base#/definitions/hello' }
-    }
+    },
+    additionalProperties: false
   }
 
   const ajvInstance = new AJV()
@@ -627,7 +630,8 @@ test('multiple refs with the same ids', (t, testDone) => {
     type: 'object',
     properties: {
       hello: { $ref: 'urn:schema:base#/definitions/hello' }
-    }
+    },
+    additionalProperties: false
   }
 
   const fastify = Fastify()

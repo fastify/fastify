@@ -1,11 +1,10 @@
 'use strict'
 
 const { test } = require('node:test')
-const { request } = require('undici')
+const { request, Agent, fetch } = require('undici')
 const Fastify = require('../..')
 
 const { buildCertificate } = require('../build-certificate')
-const { Agent } = require('undici')
 test.before(buildCertificate)
 
 test('https', async (t) => {

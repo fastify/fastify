@@ -6,7 +6,7 @@ const h2url = require('h2url')
 const msg = { hello: 'world' }
 
 const { buildCertificate } = require('../build-certificate')
-const { Agent } = require('undici')
+const { Agent, fetch } = require('undici')
 test.before(buildCertificate)
 
 test('secure with fallback', async (t) => {

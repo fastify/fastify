@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '5.8.2'
+const VERSION = '6.0.0-alpha.6'
 
 const Avvio = require('avvio')
 const http = require('node:http')
@@ -33,7 +33,8 @@ const {
   kChildLoggerFactory,
   kGenReqId,
   kErrorHandlerAlreadySet,
-  kHandlerTimeout
+  kHandlerTimeout,
+  kLogController
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -44,7 +45,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/content-type-parser.js')
 const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
-const { createChildLogger, defaultChildLoggerFactory, createLogger } = require('./lib/logger-factory')
+const { createChildLogger, defaultChildLoggerFactory, createLogger, createLogController, LogController } = require('./lib/logger-factory')
 const pluginUtils = require('./lib/plugin-utils.js')
 const { getGenReqId, reqIdGenFactory } = require('./lib/req-id-gen-factory.js')
 const { buildRouting, validateBodyLimitOption, buildRouterOptions } = require('./lib/route')
@@ -56,31 +57,48 @@ const {
   AVVIO_ERRORS_MAP,
   ...errorCodes
 } = require('./lib/errors')
-const PonyPromise = require('./lib/promise')
 
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
+  FST_ERR_MAX_PARAM_LENGTH,
   FST_ERR_OPTIONS_NOT_OBJ,
   FST_ERR_QSP_NOT_FN,
   FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
-  FST_ERR_INSTANCE_ALREADY_LISTENING,
+  FST_ERR_INSTANCE_ALREADY_STARTED,
   FST_ERR_REOPENED_CLOSE_SERVER,
   FST_ERR_ROUTE_REWRITE_NOT_STR,
   FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN,
   FST_ERR_ERROR_HANDLER_NOT_FN,
   FST_ERR_ERROR_HANDLER_ALREADY_SET,
-  FST_ERR_ROUTE_METHOD_INVALID
+  FST_ERR_ROUTE_METHOD_INVALID,
+  FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
-const { FSTWRN004 } = require('./lib/warnings.js')
 
 const initChannel = diagnostics.channel('fastify.initialization')
+
+function asyncDisposableHook (disposable) {
+  return function (instance, done) {
+    disposable[Symbol.asyncDispose]().then(() => done(), done)
+  }
+}
+
+function disposableHook (disposable) {
+  return function (instance, done) {
+    try {
+      disposable[Symbol.dispose]()
+      done()
+    } catch (err) {
+      done(err)
+    }
+  }
+}
 
 /**
  * @param {import('./fastify.js').FastifyServerOptions} serverOptions
@@ -89,10 +107,10 @@ function fastify (serverOptions) {
   const {
     options,
     genReqId,
-    disableRequestLogging,
+    logController,
     hasLogger,
     initialConfig
-  } = processOptions(serverOptions, defaultRoute, onBadUrl)
+  } = processOptions(serverOptions, defaultRoute, onBadUrl, onMaxParamLength)
 
   // Default router
   const router = buildRouting(options.routerOptions)
@@ -141,7 +159,9 @@ function fastify (serverOptions) {
         'OPTIONS',
         'PATCH',
         'PUT',
-        'POST'
+        'POST',
+        // RFC 10008
+        'QUERY'
       ])
     },
     [kOptions]: options,
@@ -198,6 +218,9 @@ function fastify (serverOptions) {
     options: function _options (url, options, handler) {
       return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
     },
+    query: function _query (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'QUERY', url, options, handler })
+    },
     all: function _all (url, options, handler) {
       return router.prepareRoute.call(this, { method: this.supportedMethods, url, options, handler })
     },
@@ -215,6 +238,7 @@ function fastify (serverOptions) {
     },
     // expose logger instance
     log: options.logger,
+    [kLogController]: logController,
     // type provider
     withTypeProvider,
     // hooks
@@ -374,6 +398,13 @@ function fastify (serverOptions) {
 
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
+    // All the routes are registered at this point. Routes added or removed
+    // afterwards make find-my-way compile the changed trees again lazily.
+    if (options.routerOptions.compile === true) {
+      router.compileRoutes()
+      fourOhFour.router.compile()
+    }
+
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
@@ -381,11 +412,10 @@ function fastify (serverOptions) {
       hookRunnerApplication('preClose', fastify[kAvvioBoot], fastify, function () {
         if (fastify[kState].listening) {
           /* istanbul ignore next: Cannot test this without Node.js core support */
-          if (forceCloseConnections === 'idle') {
-            // Not needed in Node 19
+          if (forceCloseConnections === 'idle' && options.serverFactory) {
             instance.server.closeIdleConnections()
             /* istanbul ignore next: Cannot test this without Node.js core support */
-          } else if (serverHasCloseAllConnections && forceCloseConnections) {
+          } else if (serverHasCloseAllConnections && forceCloseConnections === true) {
             instance.server.closeAllConnections()
           } else if (forceCloseConnections === true) {
             for (const conn of fastify[kKeepAliveConnections]) {
@@ -423,8 +453,8 @@ function fastify (serverOptions) {
     })
   })
 
-  // Create bad URL context
-  const onBadUrlContext = new Context({
+  // Create route event (bad URL, max param length, etc) context
+  const routeEventContext = new Context({
     server: fastify,
     config: {}
   })
@@ -459,7 +489,7 @@ function fastify (serverOptions) {
   return fastify
 
   function throwIfAlreadyStarted (msg) {
-    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
+    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_STARTED(msg)
   }
 
   // HTTP injection handling
@@ -521,7 +551,7 @@ function fastify (serverOptions) {
     // It will work as a barrier for all the .ready() calls (ensuring single hook execution)
     // as well as a flow control mechanism to chain cbs and further
     // promises
-    this[kState].readyResolver = PonyPromise.withResolvers()
+    this[kState].readyResolver = Promise.withResolvers()
 
     if (!cb) {
       return this[kState].readyResolver.promise
@@ -592,9 +622,19 @@ function fastify (serverOptions) {
       }
     }
 
+    if (name === 'onClose' && typeof fn !== 'function') {
+      if (typeof fn[Symbol.asyncDispose] === 'function') {
+        fn = asyncDisposableHook(fn)
+      } else if (typeof fn[Symbol.dispose] === 'function') {
+        fn = disposableHook(fn)
+      } else {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, Object.prototype.toString.call(fn))
+      }
+    }
+
     if (name === 'onClose') {
       this.onClose(fn.bind(this))
-    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute') {
+    } else if (name === 'onReady' || name === 'onListen' || name === 'onRoute' || name === 'preClose') {
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -637,16 +677,13 @@ function fastify (serverOptions) {
 
   function onBadUrl (path, req, res) {
     if (options.frameworkErrors) {
-      const id = getGenReqId(onBadUrlContext.server, req)
-      const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
+      const id = getGenReqId(routeEventContext.server, req)
+      const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
 
-      const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+      const request = new Request(id, null, req, null, childLogger, routeEventContext)
       const reply = new Reply(res, request, childLogger)
 
-      const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
-      if (resolvedDisableRequestLogging === false) {
-        childLogger.info({ req: request }, 'incoming request')
-      }
+      routeEventContext.server[kLogController].incomingRequest(request, reply)
 
       return options.frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
@@ -663,21 +700,43 @@ function fastify (serverOptions) {
     res.end(body)
   }
 
+  function onMaxParamLength (path, req, res) {
+    if (options.frameworkErrors) {
+      const id = getGenReqId(routeEventContext.server, req)
+      const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
+
+      const request = new Request(id, null, req, null, childLogger, routeEventContext)
+      const reply = new Reply(res, request, childLogger)
+
+      routeEventContext.server[kLogController].incomingRequest(request, reply)
+
+      return options.frameworkErrors(new FST_ERR_MAX_PARAM_LENGTH(path), request, reply)
+    }
+    const body = JSON.stringify({
+      error: 'Bad Request',
+      code: 'FST_ERR_MAX_PARAM_LENGTH',
+      message: `'${path}' is exceeding the max param length`,
+      statusCode: 414
+    })
+    res.writeHead(414, {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(body)
+    })
+    res.end(body)
+  }
+
   function buildAsyncConstraintCallback (isAsync, req, res) {
     if (isAsync === false) return undefined
     return function onAsyncConstraintError (err) {
       if (err) {
         if (options.frameworkErrors) {
-          const id = getGenReqId(onBadUrlContext.server, req)
-          const childLogger = createChildLogger(onBadUrlContext, options.logger, req, id)
+          const id = getGenReqId(routeEventContext.server, req)
+          const childLogger = createChildLogger(routeEventContext, options.logger, req, id)
 
-          const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+          const request = new Request(id, null, req, null, childLogger, routeEventContext)
           const reply = new Reply(res, request, childLogger)
 
-          const resolvedDisableRequestLogging = typeof disableRequestLogging === 'function' ? disableRequestLogging(req) : disableRequestLogging
-          if (resolvedDisableRequestLogging === false) {
-            childLogger.info({ req: request }, 'incoming request')
-          }
+          routeEventContext.server[kLogController].incomingRequest(request, reply)
 
           return options.frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
         }
@@ -745,10 +804,8 @@ function fastify (serverOptions) {
       throw new FST_ERR_ERROR_HANDLER_NOT_FN()
     }
 
-    if (!options.allowErrorHandlerOverride && this[kErrorHandlerAlreadySet]) {
+    if (this[kErrorHandlerAlreadySet] && !options.allowErrorHandlerOverride) {
       throw new FST_ERR_ERROR_HANDLER_ALREADY_SET()
-    } else if (this[kErrorHandlerAlreadySet]) {
-      FSTWRN004("To disable this behavior, set 'allowErrorHandlerOverride' to false or ignore this message. For more information, visit: https://fastify.dev/docs/latest/Reference/Server/#allowerrorhandleroverride")
     }
 
     this[kErrorHandlerAlreadySet] = true
@@ -797,9 +854,16 @@ function fastify (serverOptions) {
     return this
   }
 
-  function addHttpMethod (method, { hasBody = false } = {}) {
+  function addHttpMethod (method, { hasBody = false, overrideExisting = false } = {}) {
     if (typeof method !== 'string' || http.METHODS.indexOf(method) === -1) {
       throw new FST_ERR_ROUTE_METHOD_INVALID()
+    }
+
+    const alreadyExists = this[kSupportedHTTPMethods].bodyless.has(method) ||
+      this[kSupportedHTTPMethods].bodywith.has(method)
+
+    if (alreadyExists && !overrideExisting) {
+      throw new FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED(method)
     }
 
     if (hasBody === true) {
@@ -821,7 +885,7 @@ function fastify (serverOptions) {
   }
 }
 
-function processOptions (options, defaultRoute, onBadUrl) {
+function processOptions (options, defaultRoute, onBadUrl, onMaxParamLength) {
   // Options validations
   if (options && typeof options !== 'object') {
     throw new FST_ERR_OPTIONS_NOT_OBJ()
@@ -831,13 +895,10 @@ function processOptions (options, defaultRoute, onBadUrl) {
   }
 
   if (
-    (options.querystringParser && typeof options.querystringParser !== 'function') ||
-    (
-      options.routerOptions?.querystringParser &&
+    options.routerOptions?.querystringParser &&
       typeof options.routerOptions.querystringParser !== 'function'
-    )
   ) {
-    throw new FST_ERR_QSP_NOT_FN(typeof (options.querystringParser ?? options.routerOptions.querystringParser))
+    throw new FST_ERR_QSP_NOT_FN(typeof options.routerOptions.querystringParser)
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
@@ -848,9 +909,7 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   const requestIdHeader = typeof options.requestIdHeader === 'string' && options.requestIdHeader.length !== 0 ? options.requestIdHeader.toLowerCase() : (options.requestIdHeader === true && 'request-id')
   const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
-  const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   options.bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  const disableRequestLogging = options.disableRequestLogging || false
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -866,6 +925,10 @@ function processOptions (options, defaultRoute, onBadUrl) {
 
   const { logger, hasLogger } = createLogger(options)
 
+  // the internal logger uses the input logger to execute the logging. This allows the user
+  // to customize every internal log line
+  const logController = createLogController(options)
+
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
@@ -873,11 +936,16 @@ function processOptions (options, defaultRoute, onBadUrl) {
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
   options.requestIdHeader = requestIdHeader
-  options.requestIdLogLabel = requestIdLogLabel
-  options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.allowErrorHandlerOverride = options.allowErrorHandlerOverride ?? defaultInitOptions.allowErrorHandlerOverride
+
+  options.routerOptions = buildRouterOptions(options, {
+    buildPrettyMeta: defaultBuildPrettyMeta,
+    defaultRoute,
+    onBadUrl,
+    onMaxParamLength
+  })
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -887,21 +955,10 @@ function processOptions (options, defaultRoute, onBadUrl) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
 
-  options.routerOptions = buildRouterOptions(options, {
-    defaultRoute,
-    onBadUrl,
-    ignoreTrailingSlash: defaultInitOptions.ignoreTrailingSlash,
-    ignoreDuplicateSlashes: defaultInitOptions.ignoreDuplicateSlashes,
-    maxParamLength: defaultInitOptions.maxParamLength,
-    allowUnsafeRegex: defaultInitOptions.allowUnsafeRegex,
-    buildPrettyMeta: defaultBuildPrettyMeta,
-    useSemicolonDelimiter: defaultInitOptions.useSemicolonDelimiter
-  })
-
   return {
     options,
     genReqId,
-    disableRequestLogging,
+    logController,
     hasLogger,
     initialConfig
   }
@@ -981,5 +1038,6 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
  */
 module.exports = fastify
 module.exports.errorCodes = errorCodes
+module.exports.LogController = LogController
 module.exports.fastify = fastify
 module.exports.default = fastify

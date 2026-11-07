@@ -1,12 +1,12 @@
 import { StandaloneValidator } from '@fastify/ajv-compiler'
 import { StandaloneSerializer } from '@fastify/fast-json-stringify-compiler'
 import Ajv from 'ajv'
-import { expectAssignable } from 'tsd'
-import fastify, { FastifyInstance, FastifySchema } from '../../fastify'
+import { expect } from 'tstyche'
+import fastify, { FastifyInstance, FastifySchema } from '../../fastify.js'
 
 const server = fastify()
 
-expectAssignable<FastifyInstance>(server.get(
+expect(server.get(
   '/full-schema',
   {
     schema: {
@@ -18,9 +18,9 @@ expectAssignable<FastifyInstance>(server.get(
     }
   },
   () => { }
-))
+)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.post(
+expect(server.post(
   '/multiple-content-schema',
   {
     schema: {
@@ -37,31 +37,31 @@ expectAssignable<FastifyInstance>(server.post(
     }
   },
   () => { }
-))
+)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.get(
+expect(server.get(
   '/empty-schema',
   {
     schema: {}
   },
   () => { }
-))
+)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.get(
+expect(server.get(
   '/no-schema',
   {},
   () => { }
-))
+)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.setValidatorCompiler(({ schema }) => {
+expect(server.setValidatorCompiler(({ schema }) => {
   return new Ajv().compile(schema)
-}))
+})).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.setSerializerCompiler(() => {
+expect(server.setSerializerCompiler(() => {
   return data => JSON.stringify(data)
-}))
+})).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.post('/test', {
+expect(server.post('/test', {
   validatorCompiler: ({ schema }) => {
     return data => {
       if (!data || data.constructor !== Object) {
@@ -70,9 +70,9 @@ expectAssignable<FastifyInstance>(server.post('/test', {
       return { value: data }
     }
   }
-}, async req => req.body))
+}, async req => req.body)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.post('/test', {
+expect(server.post('/test', {
   validatorCompiler: ({ schema }) => {
     return data => {
       if (!data || data.constructor !== Object) {
@@ -91,17 +91,17 @@ expectAssignable<FastifyInstance>(server.post('/test', {
       return { value: data }
     }
   }
-}, async req => req.body))
+}, async req => req.body)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
+expect(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
   function ({ schema }) {
     return new Ajv().compile(schema)
   }
-))
+)).type.toBe<FastifyInstance>()
 
-expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & { validate: string }>(
+expect(server.setSerializerCompiler<FastifySchema & { validate: string }>(
   () => data => JSON.stringify(data)
-))
+)).type.toBe<FastifyInstance>()
 
 // https://github.com/fastify/ajv-compiler/issues/95
 {

@@ -28,6 +28,20 @@ test('Fastify should throw on multiple assignment to the same route', (t) => {
   }
 })
 
+test('Fastify should throw on multiple assignment to the same route with array method', (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.route({ method: ['GET', 'POST'], url: '/', handler: () => {} })
+
+  try {
+    fastify.route({ method: ['GET', 'POST'], url: '/', handler: () => {} })
+    t.assert.fail('Should throw fastify duplicated route declaration')
+  } catch (error) {
+    t.assert.strictEqual(error.code, 'FST_ERR_DUPLICATED_ROUTE')
+  }
+})
+
 test('Fastify should throw for an invalid schema, printing the error route - headers', async (t) => {
   t.plan(1)
 

@@ -167,6 +167,32 @@ parameters at the top level.
 > ℹ For using the latest Ajv (v8), refer to the
 > [`schemaController`](./Server.md#schema-controller) section.
 
+##### Header name case
+
+Node.js exposes request header names in lowercase. Fastify normalizes header
+names in a `headers` schema to lowercase before compilation, so assertions
+written in the canonical header-name case still match the request, for example
+`required: ['X-Api-Key']`, `dependencies`, and a `propertyNames` deny-list that
+uses `enum` or `const`.
+
+Regular-expression constraints on header names are the exception. A
+`patternProperties` key and a `propertyNames` `pattern` are regular expressions
+matched against the already-lowercased header names, and Fastify cannot safely
+rewrite a regular expression. Author them to match lowercase (for example
+`^x-debug-.*$`, not `^X-Debug-.*$`) or make them case-insensitive. A pattern
+written in canonical case will not match, and the assertion it guards will not
+apply.
+
+Normalization applies to the schema object passed as `headers`, including one
+that carries the `$id` of a schema registered with `addSchema()`, such as the
+object returned by `getSchema()`. It does not reach a registered schema that the
+`headers` schema references through an external `$ref` (for example
+`{ $ref: 'shared-headers#' }`), because a registered schema can also be used to
+validate the body, querystring, or params. Fastify emits
+[`FSTSEC002`](./Warnings.md#FSTSEC002) at startup in that case. Pass the schema
+object instead (for example `fastify.getSchema('shared-headers')`), or write
+header names in lowercase.
+
 Example:
 ```js
 const bodyJsonSchema = {
@@ -299,6 +325,12 @@ fastify.post('/the/url', {
 Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) values to
 the types specified in the schema `type` keywords, both to pass validation and
 to use the correctly typed data afterwards.
+
+> ⚠ Important:
+> Fastify uses a custom [AJV configuration][1] such as `coerceTypes: 'array'`.
+> Evaluate its behavior and verify if it meets the project requirements.
+
+[1]: https://github.com/fastify/ajv-compiler?tab=readme-ov-file#ajv-configuration
 
 The Ajv default configuration in Fastify supports coercing array parameters in
 `querystring`. Example:
@@ -583,6 +615,11 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
+Fastify supports different JSON Schema validators via
+`setValidatorCompiler`. Community plugins that integrate alternative JSON
+Schema validators are listed on the
+[Ecosystem](https://fastify.dev/docs/latest/Guides/Ecosystem/) page.
+
 ##### Custom Validator Best Practices
 
 When implementing custom validators, follow these patterns to ensure compatibility
@@ -616,6 +653,34 @@ fastify.setValidatorCompiler(({ schema }) => {
 This pattern ensures validators work correctly with both sync and async
 `preValidation` hooks, preventing unhandled promise rejections that can crash
 an application.
+
+> [!IMPORTANT]
+> The `{ value, error }` result convention applies to **synchronous** validator
+> compilers only. An **asynchronous** validator (a compiler that returns a
+> promise, including an [`$async` Ajv schema](https://ajv.js.org/guide/async-validation.html))
+> is treated as pass/fail only: its resolved value is not unwrapped as
+> `{ value, error }`. An async schema resolves with the validated data itself, so
+> unwrapping it would let a payload that carries `value` or `error` keys replace
+> the request part or inject a validation error. An async validator must signal
+> failure by rejecting (throwing), and it cannot coerce the request part through
+> a resolved `value`.
+
+##### `headers` and the `{ value }` result
+
+For the `headers` part specifically, the synchronous success `value` is applied
+through the additive [`request.headers`](./Request.md#headers) setter. That
+setter *adds or overrides* headers on top of the raw request headers; it does
+**not** replace them. Raw request headers remain separately available as
+`request.raw.headers`, and any incoming header that is not present in the
+returned `value` is still visible on `request.headers`.
+
+Consequently, a synchronous custom `headers` validator cannot remove a header by
+simply omitting it from `value`. The same applies to the default Ajv validator:
+`request.headers` is the incoming request's headers (plus any additive values)
+and is not a sanitized, authoritative view. If your application needs a
+sanitized or allow-listed header view — for example to drive an authorization
+decision — build and consume that view explicitly from the validated data rather
+than re-reading `request.headers`.
 
 ##### .statusCode property
 
@@ -744,7 +809,7 @@ For example:
 const schema = {
   response: {
     200: {
-      description: 'Response schema that support different content types'
+      description: 'Response schema that support different content types',
       content: {
         'application/json': {
           schema: {
@@ -795,6 +860,15 @@ const schema = {
 
 fastify.post('/url', { schema }, handler)
 ```
+
+> When the route declares a per-content-type response schema through `content`,
+> Fastify matches the response `Content-Type` against the declared keys and falls
+> back to `*/*` (if present). If the response `Content-Type` is not declared and
+> there is no `*/*` key, serialization **fails closed**: Fastify throws
+> `FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN` and replies with a `500` error,
+> instead of silently serializing the payload with `JSON.stringify` (which would
+> bypass the response schema). Every `Content-Type` a route may respond with must
+> be declared, or the route must define a `*/*` catch-all.
 
 #### Serializer Compiler
 <a id="schema-serializer"></a>
@@ -865,14 +939,30 @@ with the following payload:
 
 To handle errors inside the route, specify the `attachValidation` option. If
 there is a validation error, the `validationError` property of the request will
-contain the `Error` object with the raw validation result as shown below:
+contain the same `Error` object Fastify would have sent on its own, so no
+message has to be rebuilt from the raw validation result:
+
+- `message` is the formatted message, identical to the one in the response
+  payload above (for example `body must have required property 'name'`). It is
+  produced by [`schemaErrorFormatter`](#schemaerrorformatter), so a custom
+  formatter is reflected here too.
+- `validation` is the raw validation result, as returned by the validator.
+- `validationContext` is the part of the request that failed validation
+  (`body`, `params`, `querystring` or `headers`).
+- `code` is `FST_ERR_VALIDATION` and `statusCode` is `400`.
+- When the validator reports a list of errors (as Ajv does) and the default
+  [`schemaErrorFormatter`](#schemaerrorformatter) is used, the error is an
+  instance of [`FST_ERR_VALIDATION`](./Errors.md#fst_err_validation) without a
+  [stack trace](./Errors.md#errors-in-input-data). Errors returned by the
+  validator itself, or by a custom formatter, are used as they are.
 
 ```js
 const fastify = Fastify()
 
 fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
   if (req.validationError) {
-    // `req.validationError.validation` contains the raw validation error
+    // `req.validationError.message` is the formatted message
+    // `req.validationError.validation` contains the raw validation result
     reply.code(400).send(req.validationError)
   }
 })
@@ -920,8 +1010,10 @@ For custom error responses in the schema, see
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
 
-> Install version 1.0.1 of `ajv-errors`, as later versions are not compatible
-> with AJV v6 (the version shipped by Fastify v3).
+> Fastify v5 uses AJV v8 and requires a compatible `ajv-errors` version.
+> Fastify v3 requires `ajv-errors@1.0.1`, which supports AJV v6.
+> See the [AJV compiler versions table](https://github.com/fastify/ajv-compiler/#versions)
+> for the AJV version used by each Fastify release.
 
 Below is an example showing how to add **custom error messages for each
 property** of a schema by supplying custom AJV options. Inline comments in the

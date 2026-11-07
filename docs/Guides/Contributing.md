@@ -70,18 +70,14 @@ guide, do one of the following:
   issue first. That way, other people can weigh in on the discussion before you
   do any work.
 
-<!--
-TODO: add link to a style guide, when we have one, here as in
-https://github.com/github/opensource.guide/blob/2868efbf0c14aec821909c19e210c3603a4a7805/CONTRIBUTING.md#style-guide
--->
 
 ## Setting Up Your Environment
 <a id="contributing-environment"></a>
 
-Please adhere to the project's code and documentation style. Some popular tools
-that automatically "correct" code and documentation do not follow a style that
-conforms to this project's styles. Notably, this project uses
-[StandardJS](https://standardjs.com) for code formatting.
+Please adhere to the project's code and [documentation](./Style-Guide.md)
+style. Some popular tools that automatically "correct" code and documentation
+do not follow a style that conforms to this project's styles. Notably, this
+project uses [StandardJS](https://standardjs.com) for code formatting.
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/fastify/fastify)
 
@@ -89,7 +85,7 @@ conforms to this project's styles. Notably, this project uses
 <a id="contributing-vscode"></a>
 
 What follows is how to use [Visual Studio Code (VSCode)
-portable](https://code.visualstudio.com/docs/editor/portable) to create a
+portable](https://code.visualstudio.com/docs/setup/portable) to create a
 Fastify specific environment. This guide is written as if you are setting up the
 environment on macOS, but the principles are the same across all platforms. See
 the previously linked VSCode portable guide for help with other platforms.
@@ -165,7 +161,7 @@ the left sidebar. But wait! We are not quite done yet. There are a few more
 baseline settings that should be set before VSCode is ready.
 
 Press `cmd+shift+p` to bring up the VSCode command input prompt. Type `open
-settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
+settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/configure/settings)
 options will appear in the dropdown: Workspace, Default,
 and User settings. We recommend selecting Default. This will open a document
 that is the settings for the editor. Paste the following JSON into this

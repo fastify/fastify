@@ -35,6 +35,10 @@ There are a few basic ground rules for contributors:
 1. A lead maintainer must merge SemVer-major changes in this repository.
 1. If it is not possible to reach a consensus in a pull request, the decision
    is left to the lead maintainer's team.
+1. Pure-AI contributions with no human in the loop are not welcome. Pull
+requests ***MUST*** be opened by a human. Pull requests opened by bots not
+managed by the Fastify organization will result in the bot being banned
+from the organization.
 
 ### Fastify previous versions
 
@@ -87,8 +91,8 @@ Welcome to the team! We are happy to have you. Before you start, please complete
 the following tasks:
 1. Set up 2 factor authentication for GitHub and NPM
     - [GitHub
-    2FA](https://help.github.com/en/articles/securing-your-account-with-two-factor-authentication-2fa)
-    - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
+    2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa)
+    - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication/)
 2. Choose which team to join *(more than one is ok!)* based on how you want to
    help.
     - Core team: maintains core Fastify and its documentation

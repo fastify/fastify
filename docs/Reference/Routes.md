@@ -32,7 +32,7 @@ fastify.route(options)
 <a id="options"></a>
 
 * `method`: currently it supports `GET`, `HEAD`, `TRACE`, `DELETE`,
-  `OPTIONS`, `PATCH`, `PUT` and `POST`. To accept more methods,
+  `OPTIONS`, `PATCH`, `PUT`, `POST` and `QUERY`. To accept more methods,
   the [`addHttpMethod`](./Server.md#addHttpMethod) must be used.
   It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
@@ -41,7 +41,7 @@ fastify.route(options)
   [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, PATCH,
-    TRACE, SEARCH, PROPFIND, PROPPATCH or LOCK method.
+    TRACE, SEARCH, PROPFIND, PROPPATCH, LOCK or QUERY method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -102,7 +102,7 @@ fastify.route(options)
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`:
+* `serializerCompiler({ schema, method, url, httpStatus, contentType })`:
   function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.
@@ -197,6 +197,10 @@ The above route declaration is more *Hapi*-like, but if you prefer an
 `fastify.options(path, [options], handler)`
 
 `fastify.patch(path, [options], handler)`
+
+`fastify.query(path, [options], handler)`
+
+> The `QUERY` method (RFC 10008) requires a `Content-Type` header.
 
 Example:
 ```js
@@ -327,6 +331,19 @@ Having a route with multiple parameters may negatively affect performance.
 Prefer a single parameter approach, especially on routes that are on the hot
 path of your application. For more details, see
 [find-my-way](https://github.com/delvedor/find-my-way).
+
+> ⚠️ Security:
+> Fastify (via find-my-way) percent-decodes route parameters and wildcards
+> before they reach your handler. Encoded separators in a segment are
+> decoded in the parameter value: for a route `/download/:file`, a request
+> to `/download/..%2fsecret.txt` yields
+> `request.params.file === '../secret.txt'`. Parameters are untrusted
+> input. Do not pass them to `path.join`, `fs` APIs, template engines, or
+> redirects without validation or path containment. To serve files from a
+> directory root, use
+> [`@fastify/static`](https://github.com/fastify/fastify-static) instead of
+> joining `request.params` into a filesystem path yourself. See also
+> [Request](./Request.md).
 
 To include a colon in a path without declaring a parameter, use a double colon.
 For example:
@@ -513,6 +530,9 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 Different log levels can be set for routes in Fastify by passing the `logLevel`
 option to the plugin or route with the desired
 [value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string).
+If a route `logLevel` is invalid, Fastify throws
+[`FST_ERR_ROUTE_LOG_LEVEL_INVALID`](./Errors.md#fst_err_route_log_level_invalid)
+during route registration.
 
 Be aware that setting `logLevel` at the plugin level also affects
 [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and
@@ -670,7 +690,7 @@ fastify.inject({
 
 > ⚠ Warning:
 > Set a
-> [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary)
+> [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Vary)
 > header in responses with the value used for versioning
 > (e.g., `'Accept-Version'`) to prevent cache poisoning attacks.
 > This can also be configured in a Proxy/CDN.

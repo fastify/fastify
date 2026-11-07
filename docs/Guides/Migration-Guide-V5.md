@@ -105,7 +105,7 @@ const fastify = require('fastify')({
 Starting with v5, Fastify instances will no longer default to supporting the use
 of semicolon delimiters in the query string as they did in v4.
 This is due to it being non-standard
-behavior and not adhering to [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986#section-3.4).
+behavior and not adhering to [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986#section-3.4).
 
 If you still wish to use semicolons as delimiters, you can do so by
 setting `useSemicolonDelimiter: true` in the server configuration.
@@ -405,7 +405,7 @@ fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 console.log(fastify.hasRoute({
   method: 'GET',
   url: '/example/12345.png'
-)); // true
+})); // true
 ```
 
 ```js
@@ -416,7 +416,7 @@ fastify.get('/example/:file(^\\d+).png', function (request, reply) { })
 console.log(fastify.hasRoute({
   method: 'GET',
   url: '/example/:file(^\\d+).png'
-)); // true
+})); // true
 ```
 
 ### Removal of some non-standard HTTP methods

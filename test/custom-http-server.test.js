@@ -63,6 +63,44 @@ async function setup () {
     )
   })
 
+  test('Should not make an extra closeIdleConnections call for native servers', async t => {
+    const fastify = Fastify({
+      forceCloseConnections: 'idle'
+    })
+
+    await fastify.listen({ port: 0 })
+
+    let called = 0
+    fastify.server.closeIdleConnections = function () {
+      called++
+    }
+
+    await fastify.close()
+
+    t.assert.strictEqual(called, 1)
+  })
+
+  test('Should preserve the extra closeIdleConnections call for custom servers', async t => {
+    let called = 0
+    const fastify = Fastify({
+      forceCloseConnections: 'idle',
+      serverFactory (handler) {
+        const server = http.createServer(handler)
+        const originalCloseIdleConnections = server.closeIdleConnections.bind(server)
+        server.closeIdleConnections = function () {
+          called++
+          return originalCloseIdleConnections()
+        }
+        return server
+      }
+    })
+
+    await fastify.listen({ port: 0 })
+    await fastify.close()
+
+    t.assert.strictEqual(called, 2)
+  })
+
   test('Should accept user defined serverFactory and ignore secondary server creation', async t => {
     const server = http.createServer(() => { })
     t.after(() => new Promise(resolve => server.close(resolve)))

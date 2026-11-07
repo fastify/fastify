@@ -112,3 +112,59 @@ test('addHttpMethod rejects fake http method', t => {
   const fastify = Fastify()
   t.assert.throws(() => { fastify.addHttpMethod('FOOO') }, /Provided method is invalid!/)
 })
+
+test('addHttpMethod rejects an implicit override of an existing method', t => {
+  const fastify = Fastify()
+
+  t.after(() => {
+    fastify.close()
+  })
+
+  t.assert.throws(
+    () => fastify.addHttpMethod('GET', { hasBody: true }),
+    {
+      code: 'FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED',
+      message: 'Method "GET" is already supported. Use `overrideExisting: true` to override it.'
+    }
+  )
+})
+
+test('addHttpMethod allows an explicit override of an existing method', t => {
+  const fastify = Fastify()
+  t.after(() => {
+    fastify.close()
+  })
+
+  t.assert.doesNotThrow(() => {
+    fastify.addHttpMethod('POST', { overrideExisting: true })
+  })
+})
+
+test('addHttpMethod can change an existing method body behavior', async t => {
+  const fastify = Fastify()
+
+  fastify.addHttpMethod('GET', {
+    hasBody: true,
+    overrideExisting: true
+  })
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    exposeHeadRoute: false,
+    schema: {
+      body: {
+        type: 'object'
+      }
+    },
+    handler: async request => request.body
+  })
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: '/',
+    payload: { hello: 'world' }
+  })
+
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.json(), { hello: 'world' })
+})

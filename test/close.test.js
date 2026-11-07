@@ -665,6 +665,40 @@ test('preClose async', async t => {
   await fastify.close()
 })
 
+test('preClose runs exactly once with a child plugin', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  let count = 0
+
+  fastify.register(async (child) => {
+    child.get('/x', async () => 'ok')
+  })
+  fastify.addHook('preClose', async () => { count++ })
+
+  await fastify.ready()
+  await fastify.close()
+
+  t.assert.strictEqual(count, 1)
+})
+
+test('preClose runs exactly once with nested child plugins', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  let count = 0
+
+  fastify.register(async (child) => {
+    child.register(async (grandchild) => {
+      grandchild.get('/y', async () => 'ok')
+    })
+  })
+  fastify.addHook('preClose', async () => { count++ })
+
+  await fastify.ready()
+  await fastify.close()
+
+  t.assert.strictEqual(count, 1)
+})
+
 test('preClose execution order', (t, done) => {
   t.plan(4)
   const fastify = Fastify()
@@ -703,4 +737,43 @@ test('preClose execution order', (t, done) => {
       done()
     })
   })
+})
+
+test('does not destroy connections with in-flight requests (forceCloseConnections - idle)', { skip: noSupport }, async t => {
+  const fastify = Fastify({ forceCloseConnections: 'idle' })
+
+  fastify.get('/', async () => {
+    // the server starts closing while this request is still being served
+    fastify.close()
+    await sleep(200)
+    return { hello: 'world' }
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const client = new Client('http://localhost:' + fastify.server.address().port)
+  t.after(() => client.close())
+
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
+})
+
+test('does not destroy connections with in-flight requests (default options)', async t => {
+  const fastify = Fastify()
+
+  fastify.get('/', async () => {
+    fastify.close()
+    await sleep(200)
+    return { hello: 'world' }
+  })
+
+  await fastify.listen({ port: 0 })
+
+  const client = new Client('http://localhost:' + fastify.server.address().port)
+  t.after(() => client.close())
+
+  const response = await client.request({ path: '/', method: 'GET' })
+  t.assert.strictEqual(response.statusCode, 200)
+  t.assert.deepStrictEqual(await response.body.json(), { hello: 'world' })
 })

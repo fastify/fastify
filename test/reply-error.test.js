@@ -245,6 +245,35 @@ test('Error status code below 400 defaults to 500', (t, testDone) => {
   })
 })
 
+test('Error status code above 599 defaults to 500', (t, testDone) => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+  const err = new Error('winter is coming')
+  err.statusCode = 600
+
+  fastify.get('/', () => {
+    return Promise.reject(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.assert.ifError(error)
+    t.assert.strictEqual(res.statusCode, 500)
+    t.assert.deepStrictEqual(
+      {
+        error: statusCodes['500'],
+        message: err.message,
+        statusCode: 500
+      },
+      JSON.parse(res.payload)
+    )
+    testDone()
+  })
+})
+
 test('Error.status property support', (t, testDone) => {
   t.plan(3)
   const fastify = Fastify()
@@ -575,7 +604,7 @@ test('allow re-thrown error to default error handler when route handler is async
 })
 
 // Issue 2078 https://github.com/fastify/fastify/issues/2078
-// Supported error code list: http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+// Supported error code list: https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 const invalidErrorCodes = [
   undefined,
   null,
@@ -812,4 +841,92 @@ test('pipe stream inside error handler should not cause error', (t, testDone) =>
     t.assert.deepStrictEqual(JSON.parse(res.payload), json)
     testDone()
   })
+})
+
+test('should catch error when setting invalid header on async preSerializeation hook', async (t) => {
+  t.plan(2)
+
+  const app = Fastify()
+  app.addHook('preSerialization', async (_, reply) => {
+    reply.header('X-Invalid', '\n')
+  })
+  app.addHook('onError', function (request, reply, err, done) {
+    // onError will run twice, since it execute preSerialization hook twice
+    // requires to fallback to root error handler
+    t.assert.ok(err)
+    done()
+  })
+  app.get('/', async () => ({ ok: true }))
+  await app.inject({ method: 'GET', path: '/' })
+})
+
+test('should catch error when setting invalid header on async onSend hook', async (t) => {
+  t.plan(2)
+
+  const app = Fastify()
+  app.addHook('onSend', async (_, reply, payload) => {
+    reply.header('X-Invalid', '\n')
+    return payload
+  })
+  app.addHook('onError', function (request, reply, err, done) {
+    // onError will run twice, since it execute onSend hook twice
+    // requires to fallback to root error handler
+    t.assert.ok(err)
+    done()
+  })
+  app.get('/', async () => ({ ok: true }))
+  await app.inject({ method: 'GET', path: '/' })
+})
+
+// The fallback error handler must not try to write a new response once the
+// current one has started transmitting: that would raise an uncaught
+// ERR_HTTP_HEADERS_SENT and terminate the process. It aborts the response.
+test('fallback error handler aborts the response when headers were already sent', async (t) => {
+  t.plan(2)
+
+  const app = Fastify()
+  app.addHook('onSend', async (request, reply) => {
+    if (reply.raw.headersSent === false) {
+      reply.raw.writeHead(200, { 'content-type': 'text/plain' })
+      reply.raw.write('partial')
+    }
+    throw new Error('kaboom')
+  })
+  app.get('/', async () => 'ok')
+
+  await app.listen({ port: 0 })
+  t.after(() => app.close())
+
+  const base = `http://127.0.0.1:${app.server.address().port}`
+  await t.assert.rejects(async () => {
+    const res = await fetch(`${base}/`)
+    await res.text()
+  })
+
+  // The server must not have crashed.
+  t.assert.strictEqual(app.server.listening, true)
+})
+
+test('fallback error handler aborts the response when writeHead throws ERR_HTTP_HEADERS_SENT', async (t) => {
+  t.plan(2)
+
+  const app = Fastify()
+  app.addHook('onSend', async (request, reply, payload) => {
+    reply.raw.writeHead = function () {
+      const err = new Error('Cannot write headers after they are sent to the client')
+      err.code = 'ERR_HTTP_HEADERS_SENT'
+      throw err
+    }
+    return payload
+  })
+  app.get('/', async () => 'ok')
+
+  await app.listen({ port: 0 })
+  t.after(() => app.close())
+
+  const base = `http://127.0.0.1:${app.server.address().port}`
+  await t.assert.rejects(fetch(`${base}/`))
+
+  // The server must not have crashed.
+  t.assert.strictEqual(app.server.listening, true)
 })

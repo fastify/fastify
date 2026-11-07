@@ -30,14 +30,14 @@ jobs:
       contents: read
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [24]
         os: [macos-latest, ubuntu-latest, windows-latest]
         include:
           - runtime: nsolid
-            node-version: 20
-            nsolid-version: 5
+            node-version: 24
+            nsolid-version: 6
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -55,45 +55,45 @@ jobs:
         run: |
           npm run unit
 
-  test-typescript:
+  test-types:
     runs-on: 'ubuntu-latest'
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
       - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         with:
-          node-version: 20
-          nsolid-version: 5
+          node-version: 24
+          nsolid-version: 6
 
       - name: Install
         run: |
           npm install --ignore-scripts
 
-      - name: Run typescript tests
+      - name: Run type tests
         run: |
-          npm run test:typescript
+          npm run test:types
         env:
           NODE_OPTIONS: no-network-family-autoselection
 
   package:
     needs:
-      - test-typescript
+      - test-types
       - test-unit
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - uses: nodesource/setup-nsolid@1ca68d2589d3d56ecd3881dfe6ffa87eeda9c939 # v1.0.1
         with:
-          nsolid-version: 5
+          nsolid-version: 6
       - name: install fastify
         run: |
           npm install --ignore-scripts

@@ -22,10 +22,9 @@ describes the properties available in that options object.
   - [`onConstructorPoisoning`](#onconstructorpoisoning)
   - [`logger`](#logger)
   - [`loggerInstance`](#loggerinstance)
-  - [`disableRequestLogging`](#disablerequestlogging)
+  - [`logController`](#logcontroller)
   - [`serverFactory`](#serverfactory)
   - [`requestIdHeader`](#requestidheader)
-  - [`requestIdLogLabel`](#requestidloglabel)
   - [`genReqId`](#genreqid)
   - [`trustProxy`](#trustproxy)
   - [`pluginTimeout`](#plugintimeout)
@@ -42,12 +41,14 @@ describes the properties available in that options object.
     - [`allowUnsafeRegex`](#allowunsaferegex)
     - [`buildPrettyMeta`](#buildprettymeta)
     - [`caseSensitive`](#casesensitive)
+    - [`compile`](#compile)
     - [`constraints`](#constraints)
     - [`defaultRoute`](#defaultroute)
     - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
     - [`ignoreTrailingSlash`](#ignoretrailingslash)
     - [`maxParamLength`](#maxparamlength)
     - [`onBadUrl`](#onbadurl)
+    - [`onMaxParamLength`](#onmaxparamlength)
     - [`querystringParser`](#querystringparser)
     - [`useSemicolonDelimiter`](#usesemicolondelimiter)
 - [Instance](#instance)
@@ -213,7 +214,7 @@ ignored.
 
 Defines the maximum number of milliseconds for receiving the entire request from
 the client. See [`server.requestTimeout`
-property](https://nodejs.org/dist/latest/docs/api/http.html#servertimeout)
+property](https://nodejs.org/dist/latest/docs/api/http.html#serverrequesttimeout)
 to understand the effect of this option.
 
 When `serverFactory` option is specified, this option is ignored.
@@ -385,54 +386,85 @@ Pino interface by having the following methods: `info`, `error`, `debug`,
   const fastify = require('fastify')({ loggerInstance: customLogger });
   ```
 
-### `disableRequestLogging`
-<a id="factory-disable-request-logging"></a>
+### `logController`
+<a id="factory-log-controller"></a>
 
-+ Default: `false`
++ Default: `undefined`
 
-When logging is enabled, Fastify will issue an `info` level log
-message when a request is received and when the response for that request has
-been sent. By setting this option to `true`, these log messages will be
-disabled. This allows for more flexible request start and end logging by
-attaching custom `onRequest` and `onResponse` hooks.
+Accepts an instance of `LogController` (or a subclass) to customize Fastify's
+internal log lines. Extend the `LogController` class and override only the
+methods you want to customize; all others keep their default behavior.
 
-This option can also be a function that receives the Fastify request object
-and returns a boolean. This allows for conditional request logging based on the
-request properties (e.g., URL, headers, decorations).
+The `LogController` class is exported from `fastify`:
 
 ```js
+const { LogController } = require('fastify')
+```
+
+The constructor accepts an optional options object:
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `disableRequestLogging` | `boolean \| (req) => boolean` | `false` | When `true` (or a function returning `true`), per-request log lines are suppressed. |
+| `requestIdLogLabel` | `string` | `'reqId'` | The label used for the request identifier when logging. |
+
+```js
+const { LogController } = require('fastify')
+
+class MyLogController extends LogController {
+  constructor () {
+    super({
+      requestIdLogLabel: 'traceId',
+      disableRequestLogging: (request) => {
+        return request.url === '/health'
+      }
+    })
+  }
+
+  incomingRequest (request, reply, metadata) {
+    // Use debug level instead of info for incoming requests
+    request.log.debug({ req: request }, 'incoming request')
+  }
+
+  requestCompleted (error, request, reply, metadata) {
+    // Add custom fields to the request completed log
+    if (error) {
+      reply.log.error({ res: reply, err: error, responseTime: reply.elapsedTime, customField: 'value' }, 'request errored')
+    } else {
+      reply.log.info({ res: reply, responseTime: reply.elapsedTime, customField: 'value' }, 'request completed')
+    }
+  }
+}
+
 const fastify = require('fastify')({
   logger: true,
-  disableRequestLogging: (request) => {
-    // Disable logging for health check endpoints
-    return request.url === '/health' || request.url === '/ready'
-  }
+  logController: new MyLogController()
 })
 ```
 
-The other log entries that will be disabled are:
-- an error log written by the default `onResponse` hook on reply callback errors
-- the error and info logs written by the `defaultErrorHandler`
-on error management
-- the info log written by the `fourOhFour` handler when a
-non existent route is requested
+The error-related methods share a unified signature:
+`(error, request, reply, metadata)`, where `metadata` carries any extra
+per-method data (for example, the `statusCode` passed to `serializerError`).
+`incomingRequest` and `routeNotFound` omit the `error` argument, since they fire
+at lifecycle points where no error exists. `serviceUnavailable` is a further
+exception, since no route — and therefore no `request`/`reply` — is formed.
 
-Other log messages emitted by Fastify will stay enabled,
-like deprecation warnings and messages
-emitted when requests are received while the server is closing.
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `isLogDisabled` | `(request)` | Checks whether request logging is disabled for the given request. It impacts all other log methods. |
+| `incomingRequest` | `(request, reply, metadata)` | Logs an incoming request at `info` level. |
+| `requestCompleted` | `(error, request, reply, metadata)` | Logs the outcome of a completed request. Uses `error` level when an error is present, `info` otherwise. |
+| `defaultErrorLog` | `(error, request, reply, metadata)` | Logs an error handled by the default error handler. Uses `error` for 5xx, `info` for 4xx. |
+| `streamError` | `(error, request, reply, metadata)` | Logs stream-level errors after headers have been sent. |
+| `routeNotFound` | `(request, reply, metadata)` | Logs a "route not found" message at `info` level. |
+| `writeHeadError` | `(error, request, reply, metadata)` | Logs a warning when `writeHead` fails during error handling. |
+| `serializerError` | `(error, request, reply, metadata)` | Logs an error when the serializer for a given status code fails. The triggering status code is available as `metadata.statusCode`. |
+| `serviceUnavailable` | `(logger, server)` | Logs a 503 when the server is closing. Always emitted, not gated by `disableRequestLogging`. |
 
-```js
-// Examples of hooks to replicate the disabled functionality.
-fastify.addHook('onRequest', (req, reply, done) => {
-  req.log.info({ url: req.raw.url, id: req.id }, 'received request')
-  done()
-})
-
-fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.raw.originalUrl, statusCode: reply.raw.statusCode }, 'request completed')
-  done()
-})
-```
+**Note:** When you override a method, you take full control of it — the
+default `disableRequestLogging` check is **not** automatically applied.
+If you need conditional logging, call `this.isLogDisabled(request)` yourself
+or override `isLogDisabled` as well.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>
@@ -471,7 +503,7 @@ enhance the server instance inside the `serverFactory` function before the
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-+ Default: `'request-id'`
++ Default: `false`
 
 The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
@@ -482,8 +514,6 @@ the specified string as the `requestIdHeader`.
 By default `requestIdHeader` is set to `false` and will immediately use [genReqId](#genreqid).
 Setting `requestIdHeader` to an empty String (`""`) will set the
 requestIdHeader to `false`.
-
-+ Default: `false`
 
 ```js
 const fastify = require('fastify')({
@@ -496,13 +526,6 @@ const fastify = require('fastify')({
 > Enabling this allows any callers to set `reqId` to a
 > value of their choosing.
 > No validation is performed on `requestIdHeader`.
-
-### `requestIdLogLabel`
-<a id="factory-request-id-log-label"></a>
-
-+ Default: `'reqId'`
-
-Defines the label used for the request identifier when logging the request.
 
 ### `genReqId`
 <a id="factory-gen-request-id"></a>
@@ -518,9 +541,9 @@ generation behavior as shown below. For generating `UUID`s you may want to check
 out [hyperid](https://github.com/mcollina/hyperid).
 
 > ℹ️ Note:
-> `genReqId` will be not called if the header set in
+> `genReqId` will not be called if the header set in
 > <code>[requestIdHeader](#requestidheader)</code> is available (defaults to
-> 'request-id').
+> `false`).
 
 ```js
 let i = 0
@@ -538,11 +561,14 @@ const fastify = require('fastify')({
 + `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of
   comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
 + `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
-+ `number`: Trust the nth hop from the front-facing proxy server as the client.
++ `number`: Hop-count-only trust is disabled because it cannot validate the
+  immediate peer and lets direct clients spoof `X-Forwarded-*` values. Use an
+  IP/CIDR string, array, or custom function that validates the proxy address
+  instead.
 + `Function`: Custom trust function that takes `address` as first argument
     ```js
     function myTrustFn(address, hop) {
-      return address === '1.2.3.4' || hop === 1
+      return address === '1.2.3.4' && hop === 0
     }
     ```
 
@@ -559,6 +585,14 @@ For more examples, refer to the
 
 You may access the `ip`, `ips`, `host` and `protocol` values on the
 [`request`](./Request.md) object.
+
+> ⚠️ Security:
+> These values are derived from socket/forwarding metadata and must be treated
+> as untrusted input unless your proxy chain is explicitly trusted and
+> validated. Do not use them directly for authorization or other
+> security-sensitive decisions without explicit validation. Custom trust
+> functions must validate the `address` argument; hop-count-only checks such as
+> `hop < 1` are unsafe when the Fastify origin can be reached directly.
 
 ```js
 fastify.get('/', (request, reply) => {
@@ -722,7 +756,7 @@ const fastify = require('fastify')({
       res.code(400)
       return res.send("Provided header is not valid")
     } else {
-      res.send(err)
+      res.send(error)
     }
   }
 })
@@ -848,7 +882,7 @@ function to sanitize a route's store object to use with the `prettyPrint`
 functions. This function should accept a single object and return an object.
 
 ```js
-fastify.get('/user/:username', (request, reply) => {
+const fastify = require('fastify')({
   routerOptions: {
     buildPrettyMeta: route => {
       const cleanMeta = Object.assign({}, route.store)
@@ -859,7 +893,7 @@ fastify.get('/user/:username', (request, reply) => {
       })
 
       return cleanMeta // this will show up in the pretty print output!
-    })
+    }
   }
 })
 ```
@@ -888,6 +922,36 @@ fastify.get('/user/:username', (request, reply) => {
   console.log(request.params.username) // -> 'NodeJS'
 })
 ```
+
+### `compile`
+<a id="compile"></a>
+
++ Default: `false`
+
+When `true`, Fastify calls the
+[`compile()`](https://github.com/delvedor/find-my-way#compiler-mode) method of
+`find-my-way` once all the routes are registered, right before the
+[`onReady`](./Hooks.md#onready) hooks run. This applies to both the main
+router and the router used for [not found handlers](#set-not-found-handler).
+Each HTTP method's routing tree is
+turned into generated JavaScript instead of being walked for every request,
+which makes route lookups faster. Matching semantics are the same as with the
+default tree walk.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    compile: true
+  }
+})
+```
+
+Keep in mind that:
+
++ the compiled matcher works on the raw request URL; URLs containing
+  percent-encoded characters fall back to the decoded path and are not faster;
++ every route generates its own code, so applications with thousands of routes
+  produce a large amount of JavaScript, which needs to warm up per route.
 
 ### `constraints`
 <a id="constraints"></a>
@@ -923,7 +987,7 @@ const fastify = require('fastify')({
 ```
 
 ### `defaultRoute`
-<a id="on-bad-url"></a>
+<a id="default-route"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
 can pass a default route with the option defaultRoute.
@@ -1013,9 +1077,14 @@ multi) routes by using `maxParamLength` option; the default value is 100
 characters. If the maximum length limit is reached, the not found route will
 be invoked.
 
-This can be useful especially if you have a regex-based route, protecting you
-against [ReDoS
-attacks](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+For regex routes, the limit applies to the values captured by the regular
+expression, and it is checked only after the expression has run against the
+whole path segment. `maxParamLength` therefore does not limit the input a route
+regex processes and does not protect against [ReDoS
+attacks](https://community.owasp.org/attacks/Regular_expression_Denial_of_Service_-_ReDoS).
+To guard against ReDoS, keep [`allowUnsafeRegex`](#allow-unsafe-regex)
+disabled so that potentially catastrophic regular expressions are rejected when
+the route is registered.
 
 
 ### `onBadUrl`
@@ -1039,11 +1108,33 @@ const fastify = require('fastify')({
 As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
 objects and do not provide Fastify's decorated helpers.
 
+### `onMaxParamLength`
+<a id="on-max-param-length"></a>
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) which supports,
+the use case of a provide custom handler when `maxParamLength ` is exceed.
+
+```js
+const fastify = require('fastify')({
+  routerOptions: {
+    maxParamLength: 10,
+    onMaxParamLength: (path, req, res) => {
+      res.statusCode = 414
+      res.end(`Bad path: ${path}`)
+    }
+  }
+})
+```
+
+As with `defaultRoute`, `req` and `res` are the raw Node.js request/response
+objects and do not provide Fastify's decorated helpers.
+
 ### `querystringParser`
 <a id="querystringparser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core
-`querystring` module.
+The default query string parser that Fastify uses is a more performant fork
+of Node.js's core `querystring` module called
+[`fast-querystring`](https://github.com/anonrig/fast-querystring).
 
 You can use this option to use a custom parser, such as
 [`qs`](https://www.npmjs.com/package/qs).
@@ -1064,7 +1155,7 @@ You can also use Fastify's default parser but change some handling behavior,
 like the example below for case insensitive keys and values:
 
 ```js
-const querystring = require('node:querystring')
+const querystring = require('fast-querystring')
 const fastify = require('fastify')({
   routerOptions: {
     querystringParser: str => querystring.parse(str.toLowerCase())
@@ -1101,15 +1192,14 @@ fastify.get('/dev', async (request, reply) => {
 ### `allowErrorHandlerOverride`
 <a id="allow-error-handler-override"></a>
 
-* **Default:** `true`
-
-> ⚠ Warning:
-> This option will be set to `false` by default
-> in the next major release.
+* **Default:** `false`
 
 When set to `false`, it prevents `setErrorHandler` from being called
 multiple times within the same scope, ensuring that the previous error
 handler is not unintentionally overridden.
+
+Set this option to `true` to allow an error handler to be overridden within
+the same scope.
 
 #### Example of incorrect usage:
 
@@ -1577,9 +1667,16 @@ Fake HTTP injection (for testing purposes)
 <a id="addHttpMethod"></a>
 
 Fastify supports the `GET`, `HEAD`, `TRACE`, `DELETE`, `OPTIONS`,
-`PATCH`, `PUT` and `POST` HTTP methods by default.
+`PATCH`, `PUT`, `POST` and `QUERY` HTTP methods by default.
 The `addHttpMethod` method allows to add any non standard HTTP
 methods to the server that are [supported by Node.js](https://nodejs.org/api/http.html#httpmethods).
+
+The method accepts an optional configuration object:
+
+| Property | Type | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| `hasBody` | `boolean` | `false` | Whether the method accepts a request body. |
+| `overrideExisting` | `boolean` | `false` | Whether to explicitly override an existing method. |
 
 ```js
 // Add a new HTTP method called 'MKCOL' that supports a request body
@@ -1599,8 +1696,18 @@ fastify.mkcol('/', (req, reply) => {
 })
 ```
 
-> ⚠ Warning:
-> `addHttpMethod` overrides existing methods.
+Calling `addHttpMethod` for an existing method requires `overrideExisting: true`
+and overrides its body behavior.
+
+```js
+fastify.addHttpMethod('GET', {
+  hasBody: true,
+  overrideExisting: true
+})
+```
+
+Omitting `overrideExisting: true` when the method already exists throws
+`FST_ERR_ROUTE_METHOD_ALREADY_SUPPORTED`.
 
 #### addSchema
 <a id="add-schema"></a>
@@ -2251,7 +2358,7 @@ fastify.get('/', {
       return
     }
 
-    fastify.errorHandler(error, request, response)
+    fastify.errorHandler(error, request, reply)
   }
 }, handler)
 ```
@@ -2304,17 +2411,16 @@ The properties that can currently be exposed are:
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)
-- disableRequestLogging
 - onProtoPoisoning
 - onConstructorPoisoning
 - pluginTimeout
 - requestIdHeader
-- requestIdLogLabel
 - http2SessionTimeout
 - routerOptions
   - allowUnsafeRegex
   - buildPrettyMeta
   - caseSensitive
+  - compile
   - constraints
   - defaultRoute
   - ignoreDuplicateSlashes

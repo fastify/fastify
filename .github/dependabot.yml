@@ -3,32 +3,49 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore"
+      include: "scope"
+      prefix: "ci"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 10
+    groups:
+      fastify-owned:
+        patterns:
+          - "fastify/*"
 
   - package-ecosystem: "npm"
     directory: "/"
     commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore"
+      include: "scope"
+      prefix: "build"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
+    versioning-strategy: "increase-if-necessary"
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    ignore:
+      # TODO: remove ignore until neostandard support ESLint 10
+      - dependency-name: "eslint"
+      - dependency-name: "neostandard"
+      - dependency-name: "@stylistic/*"
+      - dependency-name: "typescript"  
     open-pull-requests-limit: 10
     groups:
-      # Production dependencies without breaking changes
+      # Production dependencies with breaking changes
       dependencies:
         dependency-type: "production"
-        update-types:
-        - "minor"
-        - "patch"
-      # Production dependencies with breaking changes
-      dependencies-major:
-        dependency-type: "production"
-        update-types:
-        - "major"
+        patterns:
+          - "*"
       # ESLint related dependencies
       dev-dependencies-eslint:
         patterns:
@@ -39,10 +56,15 @@ updates:
       dev-dependencies-typescript:
         patterns:
           - "@types/*"
-          - "tsd"
+          - "tstyche"
           - "typescript"
       # Ajv related dependencies
       dev-dependencies-ajv:
         patterns:
           - "ajv"
           - "ajv-*"
+      # Catch-all development dependencies
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"

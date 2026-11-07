@@ -459,8 +459,8 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
     }
     */
 
-    request.body.name // will not throw type error
-    request.body.notthere // will throw type error
+    request.body.name // inferred as string
+    request.body.notthere // allowed, but inferred as unknown
 
     reply.status(201).send();
   },

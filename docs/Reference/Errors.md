@@ -64,6 +64,7 @@
     - [FST_ERR_FAILED_ERROR_SERIALIZATION](#fst_err_failed_error_serialization)
     - [FST_ERR_MISSING_SERIALIZATION_FN](#fst_err_missing_serialization_fn)
     - [FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN](#fst_err_missing_contenttype_serialization_fn)
+    - [FST_ERR_OUTPUT_VALIDATION](#fst_err_output_validation)
     - [FST_ERR_REQ_INVALID_VALIDATION_INVOCATION](#fst_err_req_invalid_validation_invocation)
     - [FST_ERR_SCH_MISSING_ID](#fst_err_sch_missing_id)
     - [FST_ERR_SCH_ALREADY_PRESENT](#fst_err_sch_already_present)
@@ -430,6 +431,7 @@ Below is a table with all the error codes used by Fastify.
 | <a id="fst_err_failed_error_serialization">FST_ERR_FAILED_ERROR_SERIALIZATION</a> | Failed to serialize an error. | - | [#4601](https://github.com/fastify/fastify/pull/4601) |
 | <a id="fst_err_missing_serialization_fn">FST_ERR_MISSING_SERIALIZATION_FN</a> | Missing serialization function. | Add a serialization function. | [#3970](https://github.com/fastify/fastify/pull/3970) |
 | <a id="fst_err_missing_contenttype_serialization_fn">FST_ERR_MISSING_CONTENTTYPE_SERIALIZATION_FN</a> | Missing `Content-Type` serialization function. | Add a serialization function. | [#4264](https://github.com/fastify/fastify/pull/4264) |
+| <a id="fst_err_output_validation">FST_ERR_OUTPUT_VALIDATION</a> | The response payload does not match the route response schema. | Fix the handler payload or the response schema. | - |
 | <a id="fst_err_req_invalid_validation_invocation">FST_ERR_REQ_INVALID_VALIDATION_INVOCATION</a> | Invalid validation invocation. Missing validation function for HTTP part nor schema provided. | Add a validation function. | [#3970](https://github.com/fastify/fastify/pull/3970) |
 | <a id="fst_err_sch_missing_id">FST_ERR_SCH_MISSING_ID</a> | The schema provided does not have `$id` property. | Add a `$id` property. | [#1168](https://github.com/fastify/fastify/pull/1168) |
 | <a id="fst_err_sch_already_present">FST_ERR_SCH_ALREADY_PRESENT</a> | A schema with the same `$id` already exists. | Use a different `$id`. | [#1168](https://github.com/fastify/fastify/pull/1168) |

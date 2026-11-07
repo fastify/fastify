@@ -83,6 +83,7 @@ describes the properties available in that options object.
     - [setSerializerCompiler](#setserializercompiler)
     - [validatorCompiler](#validatorcompiler)
     - [serializerCompiler](#serializercompiler)
+    - [outputValidatorCompiler](#outputvalidatorcompiler)
     - [schemaErrorFormatter](#schemaerrorformatter)
     - [schemaController](#schemacontroller)
     - [setNotFoundHandler](#setnotfoundhandler)
@@ -1784,6 +1785,22 @@ This property can be used to get the schema serializer. If not set, it will be
 compiled to a function for validating data. The input `schema` can access all
 the shared schemas added with [`.addSchema`](#add-schema) function.
 
+#### outputValidatorCompiler
+<a id="output-validator-compiler"></a>
+
+This read-only property can be used to get the response schema validator, used
+by the [output validation](./Validation-and-Serialization.md#output-validation).
+It is `undefined` until a route declares a response schema, then it is a
+function with the signature `function ({ schema, method, url, httpStatus,
+contentType })` that returns the response `schema` compiled to a function for
+validating the payload. The input `schema` can access all the shared schemas
+added with [`.addSchema`](#add-schema) function. Child contexts inherit it from
+their parent.
+
+To customize it, use the `outputValidatorOptions` and
+`compilersFactory.buildOutputValidator` options of the
+[`schemaController`](#schema-controller).
+
 #### schemaErrorFormatter
 <a id="schema-error-formatter"></a>
 
@@ -1797,6 +1814,16 @@ the `validationCompiler` fails to validate the schema. See
 This property can be used to fully manage:
 - `bucket`: where the schemas of your application will be stored
 - `compilersFactory`: what module must compile the JSON schemas
+- `outputValidatorOptions`: the options of the response validator used by the
+  [output validation](./Validation-and-Serialization.md#output-validation).
+  It accepts the [`@fastify/ajv-compiler`](https://github.com/fastify/ajv-compiler)
+  options (`customOptions`, `plugins`, `onCreate`), except the JTD `mode`. The
+  `customOptions` are merged on top of the [response validator
+  defaults](./Validation-and-Serialization.md#output-validation-options).
+
+These options can also be set for a single encapsulation context with
+`fastify.setSchemaController(schemaControllerOptions)`, before the server
+starts.
 
 It can be useful when your schemas are stored in another data structure that is
 unknown to Fastify.
@@ -1877,6 +1904,37 @@ const fastify = Fastify({
         return function serializerCompiler ({ schema, method, url, httpStatus, contentType }) {
           return data => JSON.stringify(data)
         }
+      },
+
+      /**
+       * This factory is called whenever a new response validator instance is needed.
+       * It may be called whenever `fastify.register()` is called only if new schemas have been added to the
+       * encapsulation context.
+       * It may receive as input the schemas of the parent context if some schemas have been added.
+       * @param {object} externalSchemas these schemas will be returned by the
+       * `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} outputValidatorOptions the `outputValidatorOptions`, with
+       * the `customOptions` already merged on top of the response validator defaults
+       */
+      buildOutputValidator: function factory (externalSchemas, outputValidatorOptions) {
+        // This factory function must return a response schema validator compiler.
+        // The compiled function returns `false` when the payload is invalid and
+        // can set the `errors` property to describe why.
+        // See [#output-validation](./Validation-and-Serialization.md#output-validation) for details.
+        const yourAjvInstance = new Ajv(outputValidatorOptions.customOptions)
+        return function outputValidatorCompiler ({ schema, method, url, httpStatus, contentType }) {
+          return yourAjvInstance.compile(schema)
+        }
+      }
+    },
+
+    /**
+     * The options of the response validator. The `customOptions` override the
+     * response validator defaults.
+     */
+    outputValidatorOptions: {
+      customOptions: {
+        validateFormats: true
       }
     }
   }

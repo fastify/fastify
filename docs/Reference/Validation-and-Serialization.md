@@ -36,12 +36,14 @@ specification.
 
 ### Core concepts
 Validation and serialization are handled by two customizable dependencies:
-- [Ajv v8](https://www.npmjs.com/package/ajv) for request validation
+- [Ajv v8](https://www.npmjs.com/package/ajv) for request validation and
+  [response validation](#output-validation)
 - [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for
   response body serialization
 
 These dependencies share only the JSON schemas added to Fastify's instance via
-`.addSchema(schema)`.
+`.addSchema(schema)`. The request and the response validators use two
+different Ajv instances, each one with its own options.
 
 #### Adding a shared schema
 <a id="shared-schema"></a>
@@ -705,7 +707,8 @@ Fastify adds two properties to all validation errors to help write a custom
 * `validation`: the content of the `error` property of the object returned by
   the validation function (returned by the custom `schemaCompiler`)
 * `validationContext`: the context (body, params, query, headers) where the
-  validation error occurred
+  validation error occurred, or `response` when the
+  [response payload](#output-validation) does not match the response schema
 
 A contrived example of such a custom `errorHandler` handling validation errors
 is shown below:
@@ -745,6 +748,10 @@ Fastify uses [fast-json-stringify](https://www.npmjs.com/package/fast-json-strin
 to send data as JSON if an output schema is provided in the route options. Using
 an output schema can drastically increase throughput and help prevent accidental
 disclosure of sensitive information.
+
+Before serializing, Fastify validates the payload against the same response
+schema. A payload that does not match the schema is rejected with a `500` error.
+See [Output Validation](#output-validation).
 
 Example:
 ```js
@@ -860,6 +867,144 @@ fastify.post('/url', { schema }, handler)
 > bypass the response schema). Every `Content-Type` a route may respond with must
 > be declared, or the route must define a `*/*` catch-all.
 
+#### Output Validation
+<a id="output-validation"></a>
+
+When a route declares a response schema, Fastify validates the payload with Ajv
+right before `fast-json-stringify` serializes it. The response validator is
+picked with the same rules as the serializer: the exact status code first, then
+the `2xx`-style wildcard, then `default`, and finally the content type when the
+schema uses `content`.
+
+The validator also changes the payload **in place** before it is serialized:
+missing properties that declare a `default` are filled in, values are coerced
+to the declared type, and undeclared properties are removed where the schema
+declares `additionalProperties: false`.
+
+```js
+fastify.get('/user', {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'integer' },
+          name: { type: 'string', default: 'anonymous' }
+        }
+      }
+    }
+  }
+}, async () => {
+  return { id: '42' }
+  // responds 200 with {"id":42,"name":"anonymous"}
+})
+
+fastify.get('/broken', {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        required: ['id'],
+        properties: { id: { type: 'integer' } }
+      }
+    }
+  }
+}, async () => {
+  return { name: 'foo' }
+  // responds 500 with FST_ERR_SCH_OUTPUT_VALIDATION:
+  // "Response validation failed. Errors: must have required property 'id'"
+})
+```
+
+A payload that does not match the schema is rejected with a
+[`FST_ERR_SCH_OUTPUT_VALIDATION`](./Errors.md#fst_err_sch_output_validation)
+error (status code `500`), and the error goes through the
+[error handler](#error-handling). This covers cases that
+`fast-json-stringify` used to patch silently, for example a missing `required`
+property, an object sent for a `type: 'string'` schema, a `const` mismatch, or
+keywords that the serializer ignores such as `minimum`.
+
+The payload is not validated when:
+- it is `null` or a string;
+- a custom serializer is set with [`reply.serializer()`](./Reply.md#serializerfunc)
+  or [`setReplySerializer`](./Server.md#setreplyserializer).
+
+A route-level `serializerCompiler` or
+[`setSerializerCompiler`](./Server.md#setserializercompiler) does **not** skip
+the output validation.
+
+If a response schema can not be compiled by the response validator, Fastify
+throws [`FST_ERR_SCH_OUTPUT_VALIDATION_BUILD`](./Errors.md#fst_err_sch_output_validation_build)
+at startup.
+
+##### Response validator options
+<a id="output-validation-options"></a>
+
+The response validator uses its own Ajv instance. It does not read the
+[`ajv`](./Server.md#ajv) server option: it is configured with the
+`outputValidatorOptions` of the [`schemaController`](./Server.md#schemacontroller).
+The defaults reproduce what `fast-json-stringify` writes and keep the response
+fast:
+
+| Option | Default | Why |
+|---|---|---|
+| `useDefaults` | `true` | Missing properties are filled in from `default`, like `fast-json-stringify` does. |
+| `coerceTypes` | `true` | Values are coerced to the declared type (`'42'` to `42`, `42` to `'42'`, `null` to `''`), like `fast-json-stringify` does. |
+| `removeAdditional` | `true` | Undeclared properties are removed where the schema declares `additionalProperties: false`. |
+| `allErrors` | `false` | A single error is enough to reject the payload. |
+| `validateFormats` | `false` | `fast-json-stringify` never checked `format`, and checking it is the most expensive part of the validation. |
+| `strict` | `false` | `fast-json-stringify` never linted response schemas, so annotation keywords such as `example` are accepted. |
+
+The `customOptions` override these defaults. `plugins` and `onCreate` are
+forwarded to [`@fastify/ajv-compiler`](https://github.com/fastify/ajv-compiler)
+as they are. The JTD `mode` is not supported for responses.
+
+```js
+const fastify = Fastify({
+  schemaController: {
+    outputValidatorOptions: {
+      customOptions: {
+        validateFormats: true, // check the `format` keyword of the responses
+        removeAdditional: 'all' // remove all the undeclared properties
+      }
+    }
+  }
+})
+```
+
+The options are encapsulated: a plugin can change them for its own routes with
+`setSchemaController`:
+
+```js
+fastify.register(async function (child) {
+  child.setSchemaController({
+    outputValidatorOptions: { customOptions: { coerceTypes: false } }
+  })
+
+  child.get('/strict', { schema }, handler)
+})
+```
+
+To replace the response validator with another library, set
+[`schemaController.compilersFactory.buildOutputValidator`](./Server.md#schemacontroller).
+The compiled response validator can be read with
+[`fastify.outputValidatorCompiler`](./Server.md#outputvalidatorcompiler).
+
+##### Differences from `fast-json-stringify`
+<a id="output-validation-differences"></a>
+
+The response validator is stricter than `fast-json-stringify` in some cases:
+- `Date` objects are rejected for a `type: 'string'` schema, while
+  `fast-json-stringify` serializes them as ISO strings.
+- Non-integer numbers are rejected for a `type: 'integer'` schema, while
+  `fast-json-stringify` rounds them (see
+  [`serializerOpts.rounding`](./Server.md#serializeropts)).
+- Without `additionalProperties: false`, undeclared properties are kept in the
+  validated object. `fast-json-stringify` still drops them when it serializes
+  the payload; set `removeAdditional: 'all'` to strip them during validation.
+- `$async` response schemas are not awaited.
+
 #### Serializer Compiler
 <a id="schema-serializer"></a>
 
@@ -892,6 +1037,10 @@ fastify.get('/user', {
 
 *To set a custom serializer in a specific part of the code, use
 [`reply.serializer(...)`](./Reply.md#serializerfunc).*
+
+> ℹ️ Note: A custom `serializerCompiler` changes only how the payload is
+> serialized. The payload is still [validated](#output-validation) against the
+> response schema before reaching the serializer.
 
 ### Error Handling
 When schema validation fails for a request, Fastify will automatically return a
@@ -955,6 +1104,24 @@ fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
     // `req.validationError.validation` contains the raw validation result
     reply.code(400).send(req.validationError)
   }
+})
+```
+
+When the response payload fails the [output validation](#output-validation),
+the error is a
+[`FST_ERR_SCH_OUTPUT_VALIDATION`](./Errors.md#fst_err_sch_output_validation)
+with status code `500`. It carries the same `validation` property and its
+`validationContext` is `response`, so an error handler can tell it apart from
+the request validation errors:
+
+```js
+fastify.setErrorHandler(function (error, request, reply) {
+  if (error.validationContext === 'response') {
+    request.log.error({ errors: error.validation }, 'invalid response payload')
+    reply.code(500).send({ message: 'Internal Server Error' })
+    return
+  }
+  reply.send(error)
 })
 ```
 

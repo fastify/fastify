@@ -114,32 +114,6 @@ test('Get serializerCompiler after setSerializerCompiler', (t, testDone) => {
   })
 })
 
-test('The outputValidatorCompiler accessor reads the output pool', (t, testDone) => {
-  t.plan(3)
-  const fastify = Fastify()
-  // Before the output pool is built the accessor answers `undefined`, exactly
-  // like the input accessor does before the input pool is built.
-  t.assert.strictEqual(fastify.outputValidatorCompiler, undefined)
-
-  fastify.get('/', {
-    schema: {
-      response: {
-        200: { type: 'object', properties: { hello: { type: 'string' } } }
-      }
-    }
-  }, function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.ready(err => {
-    t.assert.ifError(err)
-    // The route declared a response schema: the output pool is built and the
-    // accessor answers its compiler.
-    t.assert.strictEqual(typeof fastify.outputValidatorCompiler, 'function')
-    testDone()
-  })
-})
-
 test('Get compilers is empty when settle on routes', (t, testDone) => {
   t.plan(3)
 

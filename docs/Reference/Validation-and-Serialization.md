@@ -387,7 +387,7 @@ const schemaCompilers = {
   })
 }
 
-server.setValidatorCompiler(req => {
+server.setInputValidatorCompiler(req => {
     if (!req.httpPart) {
       throw new Error('Missing httpPart')
     }
@@ -429,17 +429,20 @@ For more information, see [Ajv Coercion](https://ajv.js.org/coercion.html).
 #### Ajv Plugins
 <a id="ajv-plugins"></a>
 
-A list of plugins can be provided for use with the default `ajv` instance.
+A list of plugins can be provided for use with the default input Ajv instance.
 Ensure the plugin is **compatible with the Ajv version shipped within Fastify**.
 
-> Refer to [`ajv options`](./Server.md#ajv) to check plugins format.
+> Refer to [`schemaController.inputValidatorOptions`](./Server.md#schema-controller)
+> to check plugins format.
 
 ```js
 const fastify = require('fastify')({
-  ajv: {
-    plugins: [
-      require('ajv-merge-patch')
-    ]
+  schemaController: {
+    inputValidatorOptions: {
+      plugins: [
+        require('ajv-merge-patch')
+      ]
+    }
   }
 })
 
@@ -490,11 +493,12 @@ fastify.post('/foo', {
 })
 ```
 
-#### Validator Compiler
+#### Input Validator Compiler
 <a id="schema-validator"></a>
 
-The `validatorCompiler` is a function that returns a function to validate the
-body, URL parameters, headers, and query string. The default `validatorCompiler`
+The `inputValidatorCompiler` is a function that returns a function to validate
+the body, URL parameters, headers, and query string. The default
+`inputValidatorCompiler`
 returns a function that implements the [ajv](https://ajv.js.org/) validation
 interface. Fastify uses it internally to speed up validation.
 
@@ -515,7 +519,8 @@ configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 ```
 
 Modify the baseline configuration by providing
-[`ajv.customOptions`](./Server.md#factory-ajv) to the Fastify factory.
+[`schemaController.inputValidatorOptions.customOptions`](./Server.md#schema-controller)
+to the Fastify factory.
 
 To change or set additional config options, create a custom instance and
 override the existing one:
@@ -530,7 +535,7 @@ const ajv = new Ajv({
   // any other options
   // ...
 })
-fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+fastify.setInputValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
@@ -543,14 +548,14 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
 ##### Using other validation libraries
 <a id="using-other-validation-libraries"></a>
 
-The `setValidatorCompiler` function allows substituting `ajv` with other
+The `setInputValidatorCompiler` function allows substituting `ajv` with other
 JavaScript validation libraries like [joi](https://github.com/hapijs/joi/) or
 [yup](https://github.com/jquense/yup/), or a custom one:
 
 ```js
 const Joi = require('joi')
 
-fastify.setValidatorCompiler(({ schema }) => {
+fastify.setInputValidatorCompiler(({ schema }) => {
   return (data) => {
     try {
       const { error, value } = schema.validate(data)
@@ -592,7 +597,7 @@ fastify.post('/the/url', {
       }).required()
     })
   },
-  validatorCompiler: ({ schema, method, url, httpPart }) => {
+  inputValidatorCompiler: ({ schema, method, url, httpPart }) => {
     return function (data) {
       // with option strict = false, yup `validateSync` function returns the
       // coerced value if validation was successful, or throws if validation failed
@@ -608,7 +613,7 @@ fastify.post('/the/url', {
 ```
 
 Fastify supports different JSON Schema validators via
-`setValidatorCompiler`. Community plugins that integrate alternative JSON
+`setInputValidatorCompiler`. Community plugins that integrate alternative JSON
 Schema validators are listed on the
 [Ecosystem](https://fastify.dev/docs/latest/Guides/Ecosystem/) page.
 
@@ -625,7 +630,7 @@ return { error: validationError } // On failure
 
 **Use try-catch for safety:**
 ```js
-fastify.setValidatorCompiler(({ schema }) => {
+fastify.setInputValidatorCompiler(({ schema }) => {
   return (data) => {
     try {
       // Validation logic here
@@ -697,7 +702,8 @@ libraries.
 
 To circumvent this issue, there are two main options:
 
-1. Ensure the validation function (returned by the custom `schemaCompiler`)
+1. Ensure the validation function (returned by the custom
+   `inputValidatorCompiler`)
    returns errors in the same structure and format as `ajv`.
 2. Use a custom `errorHandler` to intercept and format custom validation errors.
 
@@ -705,7 +711,7 @@ Fastify adds two properties to all validation errors to help write a custom
 `errorHandler`:
 
 * `validation`: the content of the `error` property of the object returned by
-  the validation function (returned by the custom `schemaCompiler`)
+  the validation function (returned by the custom `inputValidatorCompiler`)
 * `validationContext`: the context (body, params, query, headers) where the
   validation error occurred, or `response` when the
   [response payload](#output-validation) does not match the response schema
@@ -942,8 +948,8 @@ at startup.
 <a id="output-validation-options"></a>
 
 The response validator uses its own Ajv instance. It does not read the
-[`ajv`](./Server.md#ajv) server option: it is configured with the
-`outputValidatorOptions` of the [`schemaController`](./Server.md#schemacontroller).
+`inputValidatorOptions` used by the request validator: it is configured with
+the `outputValidatorOptions` of the [`schemaController`](./Server.md#schemacontroller).
 The defaults reproduce what `fast-json-stringify` writes and keep the response
 fast:
 
@@ -1179,15 +1185,17 @@ case:
 
 ```js
 const fastify = Fastify({
-  ajv: {
-    customOptions: {
-      jsonPointers: true,
-      // ⚠ Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
-      allErrors: true
-    },
-    plugins: [
-      require('ajv-errors')
-    ]
+  schemaController: {
+    inputValidatorOptions: {
+      customOptions: {
+        jsonPointers: true,
+        // ⚠ Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
+        allErrors: true
+      },
+      plugins: [
+        require('ajv-errors')
+      ]
+    }
   }
 })
 

@@ -124,7 +124,7 @@ import { ZodTypeProvider, serializerCompiler, validatorCompiler } from '@fastify
 import { z } from 'zod/v4'
 
 const server = fastify()
-server.setValidatorCompiler(validatorCompiler)
+server.setInputValidatorCompiler(validatorCompiler)
 server.setSerializerCompiler(serializerCompiler)
 
 server.withTypeProvider<ZodTypeProvider>().get('/route', {

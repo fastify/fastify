@@ -32,6 +32,23 @@ test('request.signal is available in the 404 fallback', async t => {
   t.assert.ok(signal instanceof AbortSignal)
 })
 
+test('request.signal is available in a custom not found handler', async t => {
+  let handlerCalled = false
+  let signal
+  const fastify = Fastify()
+  fastify.setNotFoundHandler((request, reply) => {
+    handlerCalled = true
+    signal = request.signal
+    reply.code(404).send()
+  })
+  t.after(() => fastify.close())
+
+  const response = await fastify.inject('/missing')
+  t.assert.strictEqual(handlerCalled, true)
+  t.assert.strictEqual(response.statusCode, 404)
+  t.assert.ok(signal instanceof AbortSignal)
+})
+
 test('default 404', async t => {
   t.plan(4)
 

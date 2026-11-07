@@ -246,6 +246,7 @@ function fastify (serverOptions) {
     getSchema: schemaController.getSchema.bind(schemaController),
     getSchemas: schemaController.getSchemas.bind(schemaController),
     setInputValidatorCompiler,
+    setOutputValidatorCompiler,
     setSchemaController,
     setReplySerializer,
     setSchemaErrorFormatter,
@@ -757,6 +758,12 @@ function fastify (serverOptions) {
   function setInputValidatorCompiler (inputValidatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setInputValidatorCompiler"!')
     this[kSchemaController].setInputValidatorCompiler(inputValidatorCompiler)
+    return this
+  }
+
+  function setOutputValidatorCompiler (outputValidatorCompiler) {
+    throwIfAlreadyStarted('Cannot call "setOutputValidatorCompiler"!')
+    this[kSchemaController].setOutputValidatorCompiler(outputValidatorCompiler)
     return this
   }
 

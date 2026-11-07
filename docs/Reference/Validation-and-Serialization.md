@@ -992,9 +992,40 @@ fastify.register(async function (child) {
 })
 ```
 
-To replace the response validator with another library, set
-[`schemaController.compilersFactory.buildOutputValidator`](./Server.md#schemacontroller).
-The compiled response validator can be read with
+##### Response validator compiler
+<a id="output-validation-compiler"></a>
+
+To replace the response validator with another library, use
+[`setOutputValidatorCompiler`](./Server.md#set-output-validator-compiler). The
+compiler is called once per response schema with
+`{ schema, method, url, httpStatus, contentType }` and returns a function that
+validates the payload:
+
+- it rejects the payload only by returning `false`, with the reasons in its
+  `errors` property (an Ajv-style array, it can be empty); any other return
+  value, `{ error }` included, accepts it;
+- it can change the payload in place, and the changed payload is the one that
+  is serialized.
+
+```js
+const Ajv = require('ajv')
+const ajv = new Ajv({ removeAdditional: 'all', coerceTypes: true })
+
+fastify.setOutputValidatorCompiler(({ schema, method, url, httpStatus, contentType }) => {
+  return ajv.compile(schema)
+})
+```
+
+The compiler is used as it is: it does not receive the `outputValidatorOptions`
+and it does not resolve the schemas added with
+[`addSchema`](./Server.md#add-schema) by itself. Like
+[`setInputValidatorCompiler`](./Server.md#set-input-validator-compiler), it
+applies to the routes of the current context and its children only.
+
+To build the response validator from the shared schemas and the
+`outputValidatorOptions`, set
+[`schemaController.compilersFactory.buildOutputValidator`](./Server.md#schemacontroller)
+instead. The compiled response validator can be read with
 [`fastify.outputValidatorCompiler`](./Server.md#outputvalidatorcompiler).
 
 ##### Differences from `fast-json-stringify`

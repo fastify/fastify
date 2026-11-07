@@ -78,6 +78,7 @@ describes the properties available in that options object.
     - [getSchema](#getschema)
     - [setReplySerializer](#setreplyserializer)
     - [setInputValidatorCompiler](#setinputvalidatorcompiler)
+    - [setOutputValidatorCompiler](#setoutputvalidatorcompiler)
     - [setSchemaErrorFormatter](#setschemaerrorformatter)
     - [setSerializerCompiler](#setserializercompiler)
     - [inputValidatorCompiler](#inputvalidatorcompiler)
@@ -1725,6 +1726,15 @@ Set the input schema validator compiler, used to validate the request, for all
 routes. See
 [#schema-validator](./Validation-and-Serialization.md#schema-validator).
 
+#### setOutputValidatorCompiler
+<a id="set-output-validator-compiler"></a>
+
+Set the output schema validator compiler, used to validate the response, for
+all routes of the current context and its children. The compiler is used as it
+is: it does not receive the `outputValidatorOptions` of the
+[`schemaController`](#schema-controller). See
+[#response-validator-compiler](./Validation-and-Serialization.md#output-validation-compiler).
+
 #### setSchemaErrorFormatter
 <a id="set-schema-error-formatter"></a>
 
@@ -1769,14 +1779,15 @@ the shared schemas added with [`.addSchema`](#add-schema) function.
 
 This read-only property can be used to get the response schema validator, used
 by the [output validation](./Validation-and-Serialization.md#output-validation).
-It is `undefined` until a route declares a response schema, then it is a
+If not set with [`setOutputValidatorCompiler`](#set-output-validator-compiler),
+it is `undefined` until a route declares a response schema, then it is a
 function with the signature `function ({ schema, method, url, httpStatus,
 contentType })` that returns the response `schema` compiled to a function for
 validating the payload. The input `schema` can access all the shared schemas
 added with [`.addSchema`](#add-schema) function. Child contexts inherit it from
 their parent.
 
-To customize it, use the `outputValidatorOptions` and
+To customize the default one, use the `outputValidatorOptions` and
 `compilersFactory.buildOutputValidator` options of the
 [`schemaController`](#schema-controller).
 

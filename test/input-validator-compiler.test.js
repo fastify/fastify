@@ -203,6 +203,21 @@ test('Encapsulation: setInputValidatorCompiler applies to its context only', asy
   t.assert.strictEqual((await fastify.inject({ method: 'POST', url: '/child', body })).statusCode, 400)
 })
 
+test('Encapsulation: setInputValidatorCompiler survives an addSchema in a child context', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  fastify.setInputValidatorCompiler(() => () => ({ error: new Error('rejected') }))
+
+  fastify.register(async (child) => {
+    child.addSchema({ $id: 'unused', type: 'string' })
+    child.post('/', { schema: numberBody }, echo)
+  })
+
+  t.assert.strictEqual((await fastify.inject({ method: 'POST', url: '/', body: { n: 1 } })).statusCode, 400)
+})
+
 test('the inputValidatorCompiler route option wins over the context compiler', async t => {
   t.plan(3)
   const fastify = Fastify()

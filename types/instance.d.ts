@@ -630,6 +630,16 @@ export interface FastifyInstance<
     RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
+   * Set the output schema validator compiler for all routes.
+   *
+   * The compiler is used as it is: it does not receive the
+   * `outputValidatorOptions`. A validator rejects the payload only when it
+   * returns `false`, reading the reasons from its `errors` property.
+   */
+  setOutputValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer,
+    RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
    * Fastify schema serializer for all routes.
    */
   serializerCompiler: FastifySerializerCompiler<any> | undefined;

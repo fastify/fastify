@@ -58,6 +58,10 @@ expect(server.setInputValidatorCompiler(({ schema }) => {
   return new Ajv().compile(schema)
 })).type.toBe<FastifyInstance>()
 
+expect(server.setOutputValidatorCompiler(({ schema }) => {
+  return new Ajv().compile(schema)
+})).type.toBe<FastifyInstance>()
+
 expect(server.setSerializerCompiler(() => {
   return data => JSON.stringify(data)
 })).type.toBe<FastifyInstance>()
@@ -95,6 +99,12 @@ expect(server.post('/test', {
 }, async req => req.body)).type.toBe<FastifyInstance>()
 
 expect(server.setInputValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
+  function ({ schema }) {
+    return new Ajv().compile(schema)
+  }
+)).type.toBe<FastifyInstance>()
+
+expect(server.setOutputValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
   function ({ schema }) {
     return new Ajv().compile(schema)
   }

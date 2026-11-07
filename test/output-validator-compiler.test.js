@@ -484,3 +484,76 @@ test('setSchemaController: a context can replace buildOutputValidator', async t 
   t.assert.strictEqual((await fastify.inject('/')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
   t.assert.deepStrictEqual((await fastify.inject('/lenient')).json(), { n: 1 })
 })
+
+test('setOutputValidatorCompiler replaces the default output pool', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  t.assert.strictEqual(fastify.setOutputValidatorCompiler(() => () => true), fastify)
+  fastify.get('/', { schema: { response: atLeastTen } }, () => ({ n: 1 }))
+
+  t.assert.deepStrictEqual((await fastify.inject('/')).json(), { n: 1 })
+})
+
+test('outputValidatorCompiler is the compiler set by setOutputValidatorCompiler', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const compiler = () => () => true
+
+  fastify.setOutputValidatorCompiler(compiler)
+  t.assert.strictEqual(fastify.outputValidatorCompiler, compiler)
+})
+
+test('setOutputValidatorCompiler ignores the outputValidatorOptions and survives an addSchema', async t => {
+  t.plan(1)
+  const fastify = Fastify({
+    schemaController: { outputValidatorOptions: { customOptions: { coerceTypes: false } } }
+  })
+  t.after(() => fastify.close())
+
+  fastify.setOutputValidatorCompiler(({ schema }) => new Ajv().compile(schema))
+  fastify.addSchema({ $id: 'unused', type: 'string' })
+  fastify.get('/', { schema: { response: atLeastTen } }, () => ({ n: 1 }))
+
+  t.assert.deepStrictEqual((await fastify.inject('/')).json(), outputValidationFailure('/n must be >= 10'))
+})
+
+test('Encapsulation: setOutputValidatorCompiler applies to its context only', async t => {
+  t.plan(5)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  const acceptAll = () => () => true
+  const route = (instance) => instance.get('/', { schema: { response: atLeastTen } }, () => ({ n: 1 }))
+
+  route(fastify)
+
+  fastify.register(async (child) => {
+    child.setOutputValidatorCompiler(acceptAll)
+    t.assert.strictEqual(child.outputValidatorCompiler, acceptAll)
+    route(child)
+
+    child.register(async (grandChild) => {
+      grandChild.addSchema({ $id: 'unused', type: 'string' })
+      route(grandChild)
+    }, { prefix: '/nested' })
+  }, { prefix: '/child' })
+
+  t.assert.strictEqual((await fastify.inject('/')).json().code, 'FST_ERR_SCH_OUTPUT_VALIDATION')
+  t.assert.deepStrictEqual((await fastify.inject('/child')).json(), { n: 1 })
+  t.assert.deepStrictEqual((await fastify.inject('/child/nested')).json(), { n: 1 })
+  t.assert.notStrictEqual(fastify.outputValidatorCompiler, acceptAll)
+})
+
+test('setOutputValidatorCompiler cannot be called after the instance is started', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.after(() => fastify.close())
+
+  await fastify.listen({ port: 0 })
+  t.assert.throws(() => fastify.setOutputValidatorCompiler(() => () => true), {
+    code: 'FST_ERR_INSTANCE_ALREADY_STARTED',
+    message: 'Fastify instance is already listening. Cannot call "setOutputValidatorCompiler"!'
+  })
+})

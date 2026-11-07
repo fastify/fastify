@@ -16,10 +16,9 @@ All examples use the
 specification.
 
 > ⚠ Warning:
-> Treat schema definitions as application code. Validation and serialization
-> features use `new Function()`, which is unsafe with user-provided schemas. See
-> [Ajv](https://www.npmjs.com/package/ajv) and
-> [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for details.
+> Treat schema definitions as application code. The validation features use
+> `new Function()`, which is unsafe with user-provided schemas. See
+> [Ajv](https://www.npmjs.com/package/ajv) for details.
 >
 > Whilst Fastify supports the
 > [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html),
@@ -35,15 +34,13 @@ specification.
 > correct pattern.
 
 ### Core concepts
-Validation and serialization are handled by two customizable dependencies:
-- [Ajv v8](https://www.npmjs.com/package/ajv) for request validation and
-  [response validation](#output-validation)
-- [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for
-  response body serialization
+Validation is handled by [Ajv v8](https://www.npmjs.com/package/ajv), for both
+the request validation and the [response validation](#output-validation). A
+response that matches its schema is sent with `JSON.stringify`.
 
-These dependencies share only the JSON schemas added to Fastify's instance via
-`.addSchema(schema)`. The request and the response validators use two
-different Ajv instances, each one with its own options.
+The request and the response validators share only the JSON schemas added to
+Fastify's instance via `.addSchema(schema)`. They use two different Ajv
+instances, each one with its own options.
 
 #### Adding a shared schema
 <a id="shared-schema"></a>
@@ -750,14 +747,18 @@ const errorHandler = (error, request, reply) => {
 ### Serialization
 <a id="serialization"></a>
 
-Fastify uses [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify)
-to send data as JSON if an output schema is provided in the route options. Using
-an output schema can drastically increase throughput and help prevent accidental
-disclosure of sensitive information.
+When the route options provide an output schema, Fastify validates the payload
+against it and then sends it as JSON with `JSON.stringify`. A payload that does
+not match the schema is rejected with a `500` error. See
+[Output Validation](#output-validation).
 
-Before serializing, Fastify validates the payload against the same response
-schema. A payload that does not match the schema is rejected with a `500` error.
-See [Output Validation](#output-validation).
+> ⚠ Warning:
+> The properties that the schema does not declare are sent to the client,
+> unless the schema declares `additionalProperties: false`. To avoid
+> accidental disclosure of sensitive information, declare
+> `additionalProperties: false` on the response schemas, or set
+> `removeAdditional: 'all'` in the
+> [response validator options](#output-validation-options).
 
 Example:
 ```js
@@ -877,10 +878,9 @@ fastify.post('/url', { schema }, handler)
 <a id="output-validation"></a>
 
 When a route declares a response schema, Fastify validates the payload with Ajv
-right before `fast-json-stringify` serializes it. The response validator is
-picked with the same rules as the serializer: the exact status code first, then
-the `2xx`-style wildcard, then `default`, and finally the content type when the
-schema uses `content`.
+and then sends it with `JSON.stringify`. The response validator is picked by the
+exact status code first, then the `2xx`-style wildcard, then `default`, and
+finally the content type when the schema uses `content`.
 
 The validator also changes the payload **in place** before it is serialized:
 missing properties that declare a `default` are filled in, values are coerced
@@ -926,19 +926,15 @@ fastify.get('/broken', {
 A payload that does not match the schema is rejected with a
 [`FST_ERR_SCH_OUTPUT_VALIDATION`](./Errors.md#fst_err_sch_output_validation)
 error (status code `500`), and the error goes through the
-[error handler](#error-handling). This covers cases that
-`fast-json-stringify` used to patch silently, for example a missing `required`
+[error handler](#error-handling). This covers cases that the v5 serializer
+(`fast-json-stringify`) patched silently, for example a missing `required`
 property, an object sent for a `type: 'string'` schema, a `const` mismatch, or
-keywords that the serializer ignores such as `minimum`.
+keywords that it ignored such as `minimum`.
 
 The payload is not validated when:
 - it is `null` or a string;
 - a custom serializer is set with [`reply.serializer()`](./Reply.md#serializerfunc)
   or [`setReplySerializer`](./Server.md#setreplyserializer).
-
-A route-level `serializerCompiler` or
-[`setSerializerCompiler`](./Server.md#setserializercompiler) does **not** skip
-the output validation.
 
 If a response schema can not be compiled by the response validator, Fastify
 throws [`FST_ERR_SCH_OUTPUT_VALIDATION_BUILD`](./Errors.md#fst_err_sch_output_validation_build)
@@ -950,17 +946,17 @@ at startup.
 The response validator uses its own Ajv instance. It does not read the
 `inputValidatorOptions` used by the request validator: it is configured with
 the `outputValidatorOptions` of the [`schemaController`](./Server.md#schemacontroller).
-The defaults reproduce what `fast-json-stringify` writes and keep the response
-fast:
+The defaults keep the v5 serializer (`fast-json-stringify`) behaviour where
+Ajv can, and keep the response fast:
 
 | Option | Default | Why |
 |---|---|---|
-| `useDefaults` | `true` | Missing properties are filled in from `default`, like `fast-json-stringify` does. |
-| `coerceTypes` | `true` | Values are coerced to the declared type (`'42'` to `42`, `42` to `'42'`, `null` to `''`), like `fast-json-stringify` does. |
+| `useDefaults` | `true` | Missing properties are filled in from `default`, like the v5 serializer did. |
+| `coerceTypes` | `true` | Values are coerced to the declared type (`'42'` to `42`, `42` to `'42'`, `null` to `''`), like the v5 serializer did. |
 | `removeAdditional` | `true` | Undeclared properties are removed where the schema declares `additionalProperties: false`. |
 | `allErrors` | `false` | A single error is enough to reject the payload. |
-| `validateFormats` | `false` | `fast-json-stringify` never checked `format`, and checking it is the most expensive part of the validation. |
-| `strict` | `false` | `fast-json-stringify` never linted response schemas, so annotation keywords such as `example` are accepted. |
+| `validateFormats` | `false` | The v5 serializer never checked `format`, and checking it is the most expensive part of the validation. |
+| `strict` | `false` | The v5 serializer never linted response schemas, so annotation keywords such as `example` are accepted. |
 
 The `customOptions` override these defaults. `plugins` and `onCreate` are
 forwarded to [`@fastify/ajv-compiler`](https://github.com/fastify/ajv-compiler)
@@ -1028,56 +1024,42 @@ To build the response validator from the shared schemas and the
 instead. The compiled response validator can be read with
 [`fastify.outputValidatorCompiler`](./Server.md#outputvalidatorcompiler).
 
-##### Differences from `fast-json-stringify`
+##### Differences from v5
 <a id="output-validation-differences"></a>
 
-The response validator is stricter than `fast-json-stringify` in some cases:
+In v5 the responses were serialized by `fast-json-stringify`, which wrote only
+what the schema declares. The response validator followed by `JSON.stringify`
+differs in some cases:
+- Without `additionalProperties: false`, undeclared properties are sent to the
+  client. `fast-json-stringify` always dropped them. Declare
+  `additionalProperties: false`, or set `removeAdditional: 'all'` to strip them
+  during validation.
 - `Date` objects are rejected for a `type: 'string'` schema, while
-  `fast-json-stringify` serializes them as ISO strings.
+  `fast-json-stringify` serialized them as ISO strings. A `Date` in an
+  undeclared property is sent as an ISO string by its `toJSON` method.
 - Non-integer numbers are rejected for a `type: 'integer'` schema, while
-  `fast-json-stringify` rounds them (see
-  [`serializerOpts.rounding`](./Server.md#serializeropts)).
-- Without `additionalProperties: false`, undeclared properties are kept in the
-  validated object. `fast-json-stringify` still drops them when it serializes
-  the payload; set `removeAdditional: 'all'` to strip them during validation.
-- `$async` response schemas are not awaited.
+  `fast-json-stringify` rounded them. The `serializerOpts.rounding` option is
+  removed.
+- A top-level primitive is not coerced: a `{ type: 'string' }` schema sends the
+  number `42` as `42`, where `fast-json-stringify` sent `"42"`.
+- The properties are sent in the order of the object, not of the schema; the
+  properties filled in from `default` come last.
+- `$async` response schemas are not awaited, and the payload is sent as it is.
 
-#### Serializer Compiler
+#### Custom Serializer
 <a id="schema-serializer"></a>
 
-The `serializerCompiler` returns a function that must return a string from an
-input object. When defining a response JSON Schema, change the default
-serialization method by providing a function to serialize each route.
+There is no serializer compiler: a response with a schema is always validated
+and then sent with `JSON.stringify`. To replace the response validator, see
+[Response validator compiler](#output-validation-compiler).
 
-```js
-fastify.setSerializerCompiler(({ schema, method, url, httpStatus, contentType }) => {
-  return data => JSON.stringify(data)
-})
+To serialize the payload differently, set a custom serializer with
+[`reply.serializer(...)`](./Reply.md#serializerfunc) or
+[`setReplySerializer`](./Server.md#setreplyserializer).
 
-fastify.get('/user', {
-  handler (req, reply) {
-    reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
-  },
-  schema: {
-    response: {
-      '2xx': {
-        type: 'object',
-        properties: {
-          id: { type: 'number' },
-          name: { type: 'string' }
-        }
-      }
-    }
-  }
-})
-```
-
-*To set a custom serializer in a specific part of the code, use
-[`reply.serializer(...)`](./Reply.md#serializerfunc).*
-
-> ℹ️ Note: A custom `serializerCompiler` changes only how the payload is
-> serialized. The payload is still [validated](#output-validation) against the
-> response schema before reaching the serializer.
+> ⚠ Warning: A custom serializer skips the
+> [output validation](#output-validation): the payload is not checked against
+> the response schema.
 
 ### Error Handling
 When schema validation fails for a request, Fastify will automatically return a
@@ -1409,8 +1391,6 @@ const refToSharedSchemaDefinitions = {
 - [JSON Schema](https://json-schema.org/)
 - [Understanding JSON
   Schema](https://json-schema.org/understanding-json-schema/about)
-- [fast-json-stringify
-  documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/ajv-validator/ajv/blob/master/README.md)
 - [Ajv i18n](https://github.com/ajv-validator/ajv-i18n)
 - [Ajv custom errors](https://github.com/ajv-validator/ajv-errors)

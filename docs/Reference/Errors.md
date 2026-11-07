@@ -228,9 +228,8 @@ contexts, see
 [the next section](#errors-in-fastify-lifecycle-hooks-and-a-custom-error-handler).
 
 Note that a route-level response schema is still applied to whatever the error
-handler sends, and will reshape the payload accordingly — including properties
-the built-in error serializer would have omitted, such as `stack`. See
-[Serialization](./Validation-and-Serialization.md#serialization).
+handler sends: the payload is validated against it and can be changed in
+place. See [Serialization](./Validation-and-Serialization.md#serialization).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 

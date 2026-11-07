@@ -118,14 +118,17 @@ The following sets up a Zod Type Provider:
 $ npm i zod @fastify/type-provider-zod
 ```
 
+> ℹ️ Note: Fastify v6 has no serializer compiler. A response schema written
+> with Zod needs a response validator set with
+> [`setOutputValidatorCompiler`](./Server.md#set-output-validator-compiler).
+
 ```typescript
 import fastify from 'fastify'
-import { ZodTypeProvider, serializerCompiler, validatorCompiler } from '@fastify/type-provider-zod'
+import { ZodTypeProvider, validatorCompiler } from '@fastify/type-provider-zod'
 import { z } from 'zod/v4'
 
 const server = fastify()
 server.setInputValidatorCompiler(validatorCompiler)
-server.setSerializerCompiler(serializerCompiler)
 
 server.withTypeProvider<ZodTypeProvider>().get('/route', {
   schema: {

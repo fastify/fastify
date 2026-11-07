@@ -246,37 +246,48 @@ expect(fastify({
 })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({ return503OnClosing: true })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
-  ajv: {
-    customOptions: {
-      removeAdditional: 'all'
-    },
-    plugins: [(ajv: Ajv): Ajv => ajv]
-  }
-})).type.toBeAssignableTo<FastifyInstance>()
-expect(fastify({
-  ajv: {
-    plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
-  }
-})).type.toBeAssignableTo<FastifyInstance>()
-fastify({
-  ajv: {
-    customOptions: {
-      removeAdditional: 'all'
-    },
-    plugins: [
-      // @ts-expect-error  Type 'void' is not assignable to type 'Ajv'.
-      () => { }
-    ]
-  }
-})
-expect(fastify({
-  ajv: {
-    onCreate: (ajvInstance) => {
-      expect(ajvInstance).type.toBe<Ajv>()
-      return ajvInstance
+  schemaController: {
+    inputValidatorOptions: {
+      customOptions: {
+        removeAdditional: 'all'
+      },
+      plugins: [(ajv: Ajv): Ajv => ajv]
     }
   }
 })).type.toBeAssignableTo<FastifyInstance>()
+expect(fastify({
+  schemaController: {
+    inputValidatorOptions: {
+      plugins: [[(ajv: Ajv): Ajv => ajv, ['keyword1', 'keyword2']]]
+    }
+  }
+})).type.toBeAssignableTo<FastifyInstance>()
+fastify({
+  schemaController: {
+    inputValidatorOptions: {
+      customOptions: {
+        removeAdditional: 'all'
+      },
+      plugins: [
+        // @ts-expect-error  Type 'void' is not assignable to type 'Ajv'.
+        () => { }
+      ]
+    }
+  }
+})
+expect(fastify({
+  schemaController: {
+    inputValidatorOptions: {
+      onCreate: (ajvInstance) => {
+        expect(ajvInstance).type.toBe<Ajv>()
+        return ajvInstance
+      }
+    }
+  }
+})).type.toBeAssignableTo<FastifyInstance>()
+// The top-level `ajv` option has been removed: use `schemaController.inputValidatorOptions`
+// @ts-expect-error  Object literal may only specify known properties
+fastify({ ajv: { customOptions: {} } })
 expect(fastify({ frameworkErrors: () => { } })).type.toBeAssignableTo<FastifyInstance>()
 expect(fastify({
   rewriteUrl: function (req) {

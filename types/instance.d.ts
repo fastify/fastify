@@ -606,9 +606,13 @@ export interface FastifyInstance<
     TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
-   * Fastify schema validator for all routes.
+   * Fastify input schema validator compiler for all routes.
+   *
+   * It reads the input Ajv pool of the schema controller. It answers
+   * `undefined` until the input pool is built, which happens when a route
+   * declares a request schema.
    */
-  validatorCompiler: FastifySchemaCompiler<any> | undefined;
+  inputValidatorCompiler: FastifySchemaCompiler<any> | undefined;
 
   /**
    * Fastify output schema validator compiler for all routes.
@@ -620,9 +624,9 @@ export interface FastifyInstance<
   outputValidatorCompiler: FastifySchemaCompiler<any> | undefined;
 
   /**
-   * Set the schema validator for all routes.
+   * Set the input schema validator compiler for all routes.
    */
-  setValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer,
+  setInputValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer,
     RawRequest, RawReply, Logger, TypeProvider>;
 
   /**

@@ -3,10 +3,10 @@
 const { test } = require('node:test')
 const Fastify = require('..')
 
-test('custom validatorCompiler returning falsy values should update request param', async (t) => {
+test('custom inputValidatorCompiler returning falsy values should update request param', async (t) => {
   const fastify = Fastify()
 
-  fastify.setValidatorCompiler(() => {
+  fastify.setInputValidatorCompiler(() => {
     return (data) => {
       if (typeof data === 'object' && data !== null && 'coerceTo' in data) {
         return { value: data.coerceTo }

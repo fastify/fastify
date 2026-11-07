@@ -737,3 +737,22 @@ test('Reply#compileSerializationSchema omits absent metadata instead of passing 
 
   await fastify.inject({ path: '/', method: 'GET' })
 })
+
+test('Reply#getSerializationFunction and Reply#serializeInput look up the exact response schema key', async t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { response: getResponseSchema() } }, (req, reply) => {
+    // no NXX fallback
+    t.assert.strictEqual(reply.getSerializationFunction(404), undefined)
+    t.assert.throws(() => reply.serializeInput({}, 404), { code: 'FST_ERR_MISSING_SERIALIZATION_FN', message: 'Missing serialization function. Key "404"' })
+    // a content map needs the content type
+    t.assert.strictEqual(reply.getSerializationFunction('3xx'), undefined)
+    t.assert.throws(() => reply.serializeInput({}, '3xx'), { code: 'FST_ERR_MISSING_SERIALIZATION_FN', message: 'Missing serialization function. Key "3xx"' })
+
+    reply.send({ hello: 'world' })
+  })
+
+  const result = await fastify.inject('/')
+  t.assert.strictEqual(result.statusCode, 200)
+})
